@@ -6,6 +6,7 @@ from tkinter import TclError, Toplevel, Variable
 from typing import Any, TYPE_CHECKING
 
 from ttkbootstrap.widgets.primitives.frame import Frame
+from ttkbootstrap.widgets.primitives.gridframe import GridFrame
 from ttkbootstrap.widgets.primitives.label import Label
 from ttkbootstrap.widgets.primitives.radiotoggle import RadioToggle
 from ttkbootstrap.widgets.composites.compositeframe import CompositeFrame
@@ -152,7 +153,12 @@ class NavigationViewGroup(Frame):
         self._header_frame.bind('<space>', self._on_header_click, add='+')
 
         # Content frame for child items
-        self._content_frame = Frame(self)
+        self._content_frame = GridFrame(
+            self,
+            columns=1,
+            gap=(0, 4),
+            sticky_items='ew',
+        )
         if self._is_expanded:
             self._content_frame.pack(fill='both', expand=True)
 
