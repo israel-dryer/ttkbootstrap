@@ -371,7 +371,7 @@ class NavigationViewGroup(Frame):
             # Hide header and content, show compact button
             self._header_frame.pack_forget()
             self._content_frame.pack_forget()
-            self._compact_toggle.pack(fill='x')
+            self._compact_toggle.pack()
             self._update_selection_state()
         else:
             # Hide compact button, show header (and content if expanded)
