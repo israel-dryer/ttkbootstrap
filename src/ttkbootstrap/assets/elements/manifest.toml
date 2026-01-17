@@ -462,3 +462,19 @@ width = 60
 height = 60
 border = [10, 14, 14, 14]
 padding = 0
+
+# Navigation Icon Button (icon-only with lighter selection indicator)
+
+[images.nav_icon_button_default]
+file = "nav-icon-button-default.png"
+width = 88
+height = 88
+border = [12, 16, 16, 16]
+padding = 0
+
+[images.nav_icon_button_compact]
+file = "nav-icon-button-compact.png"
+width = 60
+height = 60
+border = [10, 14, 14, 14]
+padding = 0
