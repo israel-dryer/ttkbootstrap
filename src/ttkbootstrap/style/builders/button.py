@@ -61,7 +61,8 @@ def build_solid_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str
             f'{ttk_style}.Button.border',
             normal_img.image,
             sticky="nsew",
-            border=normal_img.meta.border
+            border=normal_img.meta.border,
+            padding=normal_img.meta.border
         ).state_specs(
             [
                 ('disabled', disabled_img.image),
@@ -143,7 +144,8 @@ def build_outline_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: s
             f'{ttk_style}.Button.border',
             normal_img.image,
             sticky="nsew",
-            border=normal_img.meta.border
+            border=normal_img.meta.border,
+            padding=normal_img.meta.border
         ).state_specs(
             [
                 ('disabled', disabled_img.image),
@@ -215,7 +217,8 @@ def build_text_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str 
 
     b.create_style_element_image(
         ElementImage(
-            f'{ttk_style}.Button.border', normal_img.image, sticky="nsew", border=normal_img.meta.border).state_specs(
+            f'{ttk_style}.Button.border', normal_img.image, sticky="nsew",
+            border=normal_img.meta.border, padding=normal_img.meta.border).state_specs(
             [
                 ('disabled', disabled_img.image),
                 ('focus', focused_img.image),
@@ -284,7 +287,7 @@ def build_link_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str 
     b.create_style_element_image(
         ElementImage(
             f'{ttk_style}.Button.border', normal_img.image, sticky="nsew",
-            border=normal_img.meta.border).state_specs(
+            border=normal_img.meta.border, padding=normal_img.meta.border).state_specs(
             [
                 ('disabled', disabled_img.image),
                 ('focus', focused_img.image),
@@ -363,7 +366,7 @@ def build_ghost_button_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str
     b.create_style_element_image(
         ElementImage(
             f'{ttk_style}.Button.border', normal_img.image, sticky="nsew",
-            border=normal_img.meta.border).state_specs(
+            border=normal_img.meta.border, padding=normal_img.meta.border).state_specs(
             [
                 ('disabled', disabled_img.image),
                 ('background focus pressed', focused_pressed_img.image),
