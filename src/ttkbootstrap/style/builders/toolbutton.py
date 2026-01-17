@@ -23,6 +23,7 @@ from ttkbootstrap.style.builders.utils import (
 
 
 @BootstyleBuilderTTk.register_builder('default', 'Toolbutton')
+@BootstyleBuilderTTk.register_builder('solid', 'Toolbutton')
 def build_solid_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """
     Configure the button style.
@@ -193,7 +194,7 @@ def build_ghost_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent:
     image_key = f'button_{normalize_button_density(density)}'
 
     surface = b.color(surface_token)
-    on_surface = b.color('secondary')
+    on_surface = b.color('foreground')
 
     active = b.subtle(accent_token, surface)
     accent_color = b.color(accent_token)
