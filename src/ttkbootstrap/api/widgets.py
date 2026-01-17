@@ -8,6 +8,7 @@ from ttkbootstrap.widgets.primitives.badge import Badge
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.composites.buttongroup import ButtonGroup
 from ttkbootstrap.widgets.composites.calendar import Calendar
+from ttkbootstrap.widgets.primitives.card import Card
 from ttkbootstrap.widgets.primitives.checkbutton import CheckButton
 from ttkbootstrap.widgets.primitives.checktoggle import CheckToggle
 from ttkbootstrap.widgets.primitives.combobox import Combobox
@@ -62,6 +63,7 @@ __all__ = [
     "Badge",
     "Button",
     "ButtonGroup",
+    "Card",
     "CheckButton",
     "CheckToggle",
     "Combobox",

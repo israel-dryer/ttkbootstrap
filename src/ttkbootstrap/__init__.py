@@ -46,6 +46,7 @@ if TYPE_CHECKING:
     from ttkbootstrap.api.widgets import (
         Button,
         ButtonGroup,
+        Card,
         CheckButton,
         Combobox,
         ContextMenu,
@@ -153,6 +154,7 @@ _MODULE_EXPORTS = {
         *_TTK_PRIMITIVES,
         "Badge",
         "ButtonGroup",
+        "Card",
         "CheckToggle",
         "RadioToggle",
         "Calendar", "ContextMenu", "ContextMenuItem", "DateEntry",

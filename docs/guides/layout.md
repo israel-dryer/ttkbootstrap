@@ -110,6 +110,35 @@ GridFrame is the recommended choice when visual alignment matters.
 
 ---
 
+## Card
+
+Use **Card** to group related content in a visually elevated container with a border.
+
+Card is a convenience wrapper around Frame with `accent='card'`, `show_border=True`, and `padding=16` by default.
+
+```python
+import ttkbootstrap as ttk
+
+app = ttk.App()
+
+card = ttk.Card(app)
+card.pack(fill="x", padx=12, pady=12)
+
+ttk.Label(card, text="User Settings", font="label").pack(anchor="w")
+ttk.CheckButton(card, text="Enable notifications").pack(anchor="w")
+ttk.CheckButton(card, text="Dark mode").pack(anchor="w")
+
+app.mainloop()
+```
+
+Cards are ideal for:
+
+- grouping related form fields or controls
+- visually separating sections of content
+- creating panel-style layouts
+
+---
+
 ## Using Frame with pack or grid
 
 Standard Tk layout using `Frame` with `pack()` or `grid()` is fully supported.

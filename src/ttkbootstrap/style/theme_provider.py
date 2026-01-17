@@ -357,13 +357,13 @@ class ThemeProvider:
             colors['stroke'] = tinted_surface(min(bg_lightness + 12, 30))
             colors['stroke_subtle'] = tinted_surface(min(bg_lightness + 6, 22))
         else:
-            # Light mode: lower lightness = more recessed (chrome)
+            # Light mode: use subtle darkening for elevation (since bg is often near-white)
             surfaces = {
-                'chrome': tinted_surface(max(bg_lightness - 5, 90)),  # Slightly darker
+                'chrome': tinted_surface(max(bg_lightness - 8, 88)),  # Noticeably darker
                 'content': bg,                                         # Theme background
-                'card': tinted_surface(min(bg_lightness + 2, 100)),   # Elevated (lighter)
-                'overlay': tinted_surface(min(bg_lightness + 2, 100)), # Floating surfaces
-                'input': tinted_surface(min(bg_lightness + 2, 100)),  # Input fields
+                'card': tinted_surface(max(bg_lightness - 4, 92)),    # Slightly darker for contrast
+                'overlay': tinted_surface(max(bg_lightness - 2, 96)), # Subtle for popups
+                'input': tinted_surface(max(bg_lightness - 5, 90)),   # Recessed inputs
             }
             # Stroke colors for borders
             colors['stroke'] = tinted_surface(max(bg_lightness - 20, 70))

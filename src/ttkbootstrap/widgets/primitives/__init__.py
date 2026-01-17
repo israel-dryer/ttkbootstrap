@@ -2,6 +2,7 @@
 
 from .badge import Badge
 from .button import Button
+from .card import Card
 from .checkbutton import CheckButton
 from .checktoggle import CheckToggle
 from .combobox import Combobox
@@ -28,6 +29,7 @@ from .treeview import TreeView
 __all__ = [
     "Badge",
     "Button",
+    "Card",
     "CheckButton",
     "CheckToggle",
     "Combobox",
