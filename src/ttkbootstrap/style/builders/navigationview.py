@@ -121,7 +121,9 @@ def build_navigation_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, ac
     density = options.get('density', 'default')
     icon_only = options.get('icon_only', False)
     anchor = options.get('anchor', 'center' if icon_only else 'w')
-    image_key = f'nav_button_{normalize_button_density(density)}'
+    # Use lighter indicator assets for icon-only buttons
+    asset_prefix = 'nav_icon_button' if icon_only else 'nav_button'
+    image_key = f'{asset_prefix}_{normalize_button_density(density)}'
 
     surface = b.color(surface_token)
     surface_hover = b.color(f'{surface_token}_hover') if b.colors.get(f'{surface_token}_hover') else b.subtle('secondary', surface)
