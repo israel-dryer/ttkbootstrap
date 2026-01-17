@@ -165,7 +165,7 @@ class NavigationViewItem(Frame):
         if compact:
             # Switch to compact toggle (icon only, centered)
             self._toggle_full.pack_forget()
-            self._toggle_compact.pack(fill='x')
+            self._toggle_compact.pack()
         else:
             # Switch to full toggle (icon + text, left-aligned)
             self._toggle_compact.pack_forget()
