@@ -108,7 +108,7 @@ class ElementImage:
             name: str,
             image: Union[PhotoImage, str],
             *,
-            border: Optional[Union[int, Tuple[int, int]]] = None,
+            border: Optional[Union[int, Tuple[int, ...]]] = None,
             height: Optional[int] = None,
             width: Optional[int] = None,
             padding: Optional[Union[int, Tuple[int, ...]]] = None,
