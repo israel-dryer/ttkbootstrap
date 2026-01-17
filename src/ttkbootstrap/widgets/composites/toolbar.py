@@ -48,7 +48,8 @@ class Toolbar(Frame):
         show_window_controls: bool = False,
         draggable: bool = False,
         button_variant: str = 'ghost',
-        padding: int | tuple = 4,
+        density: Literal['default', 'compact'] = 'default',
+        padding: int | tuple = None,
         **kwargs: Any
     ):
         """Initialize a Toolbar.
@@ -61,14 +62,20 @@ class Toolbar(Frame):
                 the toolbar. Default False.
             button_variant (str): Default variant for toolbar buttons.
                 Default 'ghost'.
-            padding (int | tuple): Toolbar padding. Default 4.
+            density (str): Button density for toolbar items. 'compact' for
+                smaller buttons, 'default' for standard size. Default 'default'.
+            padding (int | tuple): Toolbar padding. If None, uses density-based
+                default ((3, 1) for compact, 3 for default).
             **kwargs: Additional arguments passed to Frame.
         """
+        if padding is None:
+            padding = (3, 1) if density == 'compact' else 3
         super().__init__(master, padding=padding, **kwargs)
 
         self._show_window_controls = show_window_controls
-        self._draggable = draggable
+        self._draggable = draggable or show_window_controls  # Auto-enable drag with window controls
         self._button_variant = button_variant
+        self._density = density
 
         # Content container (left side)
         self._content_frame = Frame(self)
@@ -83,7 +90,7 @@ class Toolbar(Frame):
         self._drag_start_x = 0
         self._drag_start_y = 0
 
-        if draggable:
+        if self._draggable:
             self._setup_drag()
 
     def _build_window_controls(self):
@@ -94,9 +101,10 @@ class Toolbar(Frame):
         # Minimize button
         self._minimize_btn = Button(
             self._controls_frame,
-            icon={'name': 'dash', 'size': 14},
+            icon='dash-lg',
             icon_only=True,
             variant='ghost',
+            density='compact',
             command=self._on_minimize,
         )
         self._minimize_btn.pack(side='left', padx=2)
@@ -104,9 +112,10 @@ class Toolbar(Frame):
         # Maximize/Restore button
         self._maximize_btn = Button(
             self._controls_frame,
-            icon={'name': 'square', 'size': 12},
+            icon='app',
             icon_only=True,
             variant='ghost',
+            density='compact',
             command=self._on_maximize,
         )
         self._maximize_btn.pack(side='left', padx=2)
@@ -114,10 +123,10 @@ class Toolbar(Frame):
         # Close button
         self._close_btn = Button(
             self._controls_frame,
-            icon={'name': 'x-lg', 'size': 14},
+            icon='x-lg',
             icon_only=True,
-            accent='danger',
             variant='ghost',
+            density='compact',
             command=self._on_close,
         )
         self._close_btn.pack(side='left', padx=2)
@@ -133,10 +142,10 @@ class Toolbar(Frame):
         # Check current state and toggle
         if window.state() == 'zoomed':
             window.state('normal')
-            self._maximize_btn.configure(icon={'name': 'square', 'size': 12})
+            self._maximize_btn.configure(icon='app')
         else:
             window.state('zoomed')
-            self._maximize_btn.configure(icon={'name': 'copy', 'size': 12})
+            self._maximize_btn.configure(icon='copy')
 
     def _on_close(self):
         """Handle close button click."""
@@ -207,6 +216,7 @@ class Toolbar(Frame):
             command=command,
             accent=accent,
             variant=variant or self._button_variant,
+            density=kwargs.pop('density', self._density),
             **kwargs
         )
         btn.pack(side='left')
@@ -246,10 +256,12 @@ class Toolbar(Frame):
 
         return lbl
 
-    def add_separator(self, **kwargs) -> Separator:
+    def add_separator(self, length: int = 16, **kwargs) -> Separator:
         """Add a vertical separator to the toolbar.
 
         Args:
+            length (int | None): Fixed length in pixels. If None, stretches
+                to fill the toolbar height.
             **kwargs: Additional arguments passed to Separator.
 
         Returns:
@@ -258,9 +270,14 @@ class Toolbar(Frame):
         sep = Separator(
             self._content_frame,
             orient='vertical',
+            length=length,
             **kwargs
         )
-        sep.pack(side='left', fill='y', padx=8, pady=4)
+        # Only fill='y' if no fixed length specified
+        if length:
+            sep.pack(side='left', padx=4)
+        else:
+            sep.pack(side='left', fill='y', padx=4)
         return sep
 
     def add_spacer(self) -> Frame:
@@ -313,6 +330,11 @@ class Toolbar(Frame):
     def draggable(self) -> bool:
         """Check if toolbar is draggable."""
         return self._draggable
+
+    @property
+    def density(self) -> str:
+        """Get the toolbar's button density."""
+        return self._density
 
     # --- Window Control Access ---
 

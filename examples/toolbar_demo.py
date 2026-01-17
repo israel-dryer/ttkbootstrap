@@ -19,8 +19,8 @@ def main():
     # --- Example 1: Basic toolbar ---
     ttk.Label(root, text="Basic Toolbar", font='heading').pack(anchor='w', padx=10, pady=(10, 5))
 
-    toolbar1 = Toolbar(root, show_border=True)
-    toolbar1.pack(fill='x', padx=10, pady=5)
+    toolbar1 = Toolbar(root, show_border=True, density='default', padding=3)
+    toolbar1.pack(fill='x', padx=8)
 
     toolbar1.add_button(icon='house', command=lambda: print("Home"))
     toolbar1.add_button(icon='folder', command=lambda: print("Open"))
@@ -38,7 +38,6 @@ def main():
     toolbar2.pack(fill='x', padx=10, pady=5)
 
     toolbar2.add_button(icon='list', command=lambda: print("Menu"))
-    toolbar2.add_separator()
     toolbar2.add_label(text="My Application", font='heading-md')
     toolbar2.add_spacer()
     toolbar2.add_label(text="Ready")
@@ -49,11 +48,10 @@ def main():
     # --- Example 3: Toolbar with window controls ---
     ttk.Label(root, text="Toolbar with Window Controls", font='heading').pack(anchor='w', padx=10, pady=(20, 5))
 
-    toolbar3 = Toolbar(root, show_window_controls=True, show_border=True)
+    toolbar3 = Toolbar(root, show_window_controls=True, show_border=True, density='compact')
     toolbar3.pack(fill='x', padx=10, pady=5)
 
     toolbar3.add_button(icon='list')
-    toolbar3.add_separator()
     toolbar3.add_label(text="Custom Titlebar", font='heading-md')
     toolbar3.add_spacer()
 
@@ -72,12 +70,12 @@ def main():
             win,
             show_window_controls=True,
             draggable=True,
-            bootstyle='primary',
+            accent='primary',
         )
         titlebar.pack(fill='x')
 
         titlebar.add_button(icon='app-indicator')
-        titlebar.add_label(text="Custom Window", font='heading-md', bootstyle='primary')
+        titlebar.add_label(text="Custom Window", font='heading-md', accent='primary')
         titlebar.add_spacer()
 
         # Content
