@@ -32,36 +32,36 @@ def create_page(parent, title, description):
 
 
 def main():
-    root = ttk.App(theme="bootstrap-light", title="NavigationView Demo", size=(1000, 650))
+    root = ttk.App(theme="amber-dark", title="NavigationView Demo", size=(1000, 650))
 
     # --- Toolbar at the top (spans full width) ---
-    toolbar = Toolbar(root, padding=(4, 4), show_border=True)
-    toolbar.pack(fill='x')
+    # toolbar = Toolbar(root, padding=(5, 0))
+    # toolbar.pack(fill='x')
 
     # --- Main container below toolbar ---
     main_container = ttk.Frame(root)
     main_container.pack(fill='both', expand=True)
 
     # NavigationView on the left (no internal header - using external toolbar)
-    nav = NavigationView(main_container, show_header=False)
+    nav = NavigationView(main_container, show_header=False, collapsible=False)
     nav.pack(side='left', fill='y')
 
     # Add toolbar buttons that control the navigation
-    toolbar.add_button(
-        icon={'name': 'arrow-left', 'size': 16},
-        command=lambda: nav.select('home'),
-    )
-    toolbar.add_button(
-        icon={'name': 'list', 'size': 16},
-        command=nav.toggle_pane,
-    )
-    toolbar.add_label(text='My App', font='heading-md')
-    toolbar.add_spacer()
-    toolbar.add_button(icon={'name': 'search', 'size': 16}, command=lambda: print("Search"))
-    toolbar.add_button(icon={'name': 'bell', 'size': 16}, command=lambda: print("Notifications"))
+    # toolbar.add_button(
+    #     icon='arrow-left',
+    #     command=lambda: nav.select('home'),
+    # )
+    # toolbar.add_button(
+    #     icon='list',
+    #     density='compact',
+    #     command=nav.toggle_pane,
+    # )
+    # toolbar.add_spacer()
+    # toolbar.add_button(icon='search', density='compact', command=lambda: print("Search"))
+    # toolbar.add_button(icon='bell', density='compact', command=lambda: print("Notifications"))
 
     # Content container on the right (routed page content)
-    content_container = ttk.Frame(main_container, accent='background[+1]')
+    content_container = ttk.Frame(main_container, surface='content')
     content_container.pack(side='right', fill='both', expand=True)
 
     # Create all pages
@@ -108,14 +108,14 @@ def main():
     nav.add_item('documents', text='Documents', icon='file-earmark-text')
     nav.add_item('downloads', text='Downloads', icon='cloud-download')
 
-    nav.add_separator()
+    # nav.add_separator()
     nav.add_header('Favorites')
 
     nav.add_item('photos', text='Photos', icon='image')
     nav.add_item('music', text='Music', icon='music-note-beamed')
     nav.add_item('videos', text='Videos', icon='camera-video')
 
-    nav.add_separator()
+    # nav.add_separator()
     nav.add_header('Storage')
 
     # Create a group for file locations

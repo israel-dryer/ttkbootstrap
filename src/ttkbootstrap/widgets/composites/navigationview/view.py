@@ -81,7 +81,7 @@ class NavigationView(Frame):
         title: str = '',
         show_header: bool = True,
         show_back_button: bool = False,
-        show_menu_button: bool = True,
+        collapsible: bool = True,
         display_mode: DisplayMode = 'expanded',
         is_pane_open: bool = True,
         pane_width: int = None,
@@ -97,7 +97,7 @@ class NavigationView(Frame):
             show_header (bool): Show internal header with toolbar. Default True.
                 Set to False when using an external toolbar.
             show_back_button (bool): Show back button in header. Default False.
-            show_menu_button (bool): Show hamburger menu button. Default True.
+            collapsible (bool): Allow pane to collapse. Shows hamburger menu. Default True.
             display_mode (DisplayMode): Initial display mode. Default 'expanded'.
             is_pane_open (bool): Initial pane state. Default True.
             pane_width (int | None): Custom pane width. Uses default based on mode.
@@ -110,7 +110,7 @@ class NavigationView(Frame):
         self._title = title
         self._show_header = show_header
         self._show_back_button = show_back_button
-        self._show_menu_button = show_menu_button
+        self._collapsible = collapsible
         self._display_mode = display_mode
         self._is_pane_open = is_pane_open
         self._pane_width = pane_width
@@ -150,6 +150,7 @@ class NavigationView(Frame):
         self._content_frame: Frame | None = None
         self._footer_frame: Frame | None = None
         self._menu_button: Button | None = None
+        self._menu_separator: Separator | None = None
         self._back_button: Button | None = None
         self._title_label: Label | None = None
 
@@ -158,18 +159,35 @@ class NavigationView(Frame):
 
     def _build_widget(self):
         """Build the internal widget structure."""
-        # Pane container
+        # Pane container - uses 'chrome' surface for UI chrome
         pane_width = self._pane_width or self.PANE_WIDTH_EXPANDED
-        self._pane_frame = Frame(self, width=pane_width, padding=4)
+        self._pane_frame = Frame(self, width=pane_width, padding=4, surface='chrome')
         self._pane_frame.pack(side='left', fill='y')
         self._pane_frame.pack_propagate(False)  # Fixed width
+
+        # Hamburger menu button at top (if collapsible)
+        if self._collapsible:
+            self._menu_button = Button(
+                self._pane_frame,
+                icon='list',
+                icon_only=True,
+                variant='ghost',
+                command=self.toggle_pane,
+            )
+            # Pack based on initial mode - compact stretches, expanded doesn't
+            if self._display_mode == 'compact':
+                self._menu_button.pack(fill='x')
+            else:
+                self._menu_button.pack(anchor='w')
+
+            # Separator after menu button
+            self._menu_separator = Separator(self._pane_frame, orient='horizontal')
+            self._menu_separator.pack(fill='x', pady=4)
 
         # Header section (optional - can be disabled when using external toolbar)
         self._toolbar = None
         if self._show_header:
             self._build_header()
-            # Separator after header
-            Separator(self._pane_frame, orient='horizontal').pack(fill='x', pady=(0, 4))
 
         # Scrollable content area (vertical only, scrollbar on hover)
         self._content_scroll = ScrollView(
@@ -214,13 +232,6 @@ class NavigationView(Frame):
                 command=self._on_back_clicked,
             )
 
-        # Menu button (hamburger)
-        if self._show_menu_button:
-            self._menu_button = self._toolbar.add_button(
-                icon={'name': 'list', 'size': 16},
-                command=self.toggle_pane,
-            )
-
         # Title
         if self._title:
             self._title_label = self._toolbar.add_label(
@@ -249,6 +260,13 @@ class NavigationView(Frame):
                 self._pane_frame.pack(side='left', fill='y')
             else:
                 self._pane_frame.pack_forget()
+
+        # Update menu button pack options based on mode
+        if self._collapsible and self._menu_button:
+            if is_compact:
+                self._menu_button.pack_configure(fill='x', anchor='center')
+            else:
+                self._menu_button.pack_configure(fill='none', anchor='w')
 
         # Hide section headers in compact mode
         for header in self._headers:
@@ -387,9 +405,10 @@ class NavigationView(Frame):
                 text=text,
                 icon=icon,
                 variable=self._selection_var,
+                indent_level=1,  # Indent via button padding, not frame padding
                 **kwargs
             )
-            item.pack(fill='x', padx=(16, 0))  # indent on left only
+            item.pack(fill='x')  # Full width, indentation is via button padding
 
             # Register with group
             target_group._add_item(item)

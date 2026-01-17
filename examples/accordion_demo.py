@@ -8,7 +8,7 @@ app = ttk.App(title="Accordion Demo", size=(400, 500), theme="dark")
 # Basic accordion (single selection, collapsible)
 Label(app, text="Basic Accordion (single selection)", font='heading').pack(pady=(10, 5))
 
-accordion1 = Accordion(app, show_separators=True, show_border=True)
+accordion1 = Accordion(app)
 accordion1.pack(fill='x', padx=10, pady=5)
 
 section1 = accordion1.add(title="Section 1", icon={'name': 'house', 'size': 16})

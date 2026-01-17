@@ -4,7 +4,7 @@ from ttkbootstrap import ContextMenuItem
 
 
 def main():
-    root = ttk.App(title="MenuBar Demo", size=(600, 400), theme='light')
+    root = ttk.App(title="MenuBar Demo", size=(600, 400), theme='docs-dark')
 
     status = ttk.Label(root, text="Select a menu item...", anchor="w")
 
@@ -58,7 +58,7 @@ def main():
     shortcuts.bind_to(root)
 
     # Create menubar
-    menubar = ttk.MenuBar(root, gap=6)
+    menubar = ttk.MenuBar(root)
     menubar.pack(fill="both")
 
     # File menu (before/left region)

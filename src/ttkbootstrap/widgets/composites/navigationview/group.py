@@ -7,7 +7,7 @@ from typing import Any, TYPE_CHECKING
 
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.primitives.label import Label
-from ttkbootstrap.widgets.composites.expander import Expander
+from ttkbootstrap.widgets.primitives.radiotoggle import RadioToggle
 from ttkbootstrap.widgets.composites.compositeframe import CompositeFrame
 from ttkbootstrap.widgets.composites.list import ListView
 from ttkbootstrap.widgets.mixins import configure_delegate
@@ -86,9 +86,11 @@ class NavigationViewGroup(Frame):
         self._compact = False
 
         # Widget references
-        self._expander: Expander | None = None
+        self._header_frame: CompositeFrame | None = None
+        self._header_label: Label | None = None
+        self._chevron_label: Label | None = None
         self._content_frame: Frame | None = None
-        self._compact_button: CompositeFrame | None = None
+        self._compact_toggle: RadioToggle | None = None
         self._popup: Toplevel | None = None
 
         # Track selection variable for highlighting
@@ -100,59 +102,85 @@ class NavigationViewGroup(Frame):
         self._build_widget()
 
     def _build_widget(self):
-        """Build the internal widget structure."""
-        # Create expander for expanded mode
-        self._expander = Expander(
+        """Build the internal widget structure.
+
+        Uses CompositeFrame with NavigationView styles for the header.
+        Child labels are registered for automatic state coordination.
+        """
+        # Header using CompositeFrame for automatic state coordination
+        # Padding compensates for Toolbutton's internal padding from image border + style padding
+        self._header_frame = CompositeFrame(
             self,
-            title=self._text,
-            icon=self._icon,
-            expanded=self._is_expanded,
-            collapsible=True,
-            highlight=True,  # Shows selected when expanded
-            padding=0,
-        )
-        self._expander.pack(fill='x')
-
-        # Get content frame for items
-        self._content_frame = self._expander.add()
-
-        # Bind expander events
-        self._expander.on_toggled(self._on_expander_toggle)
-
-        # Create compact mode button (hidden initially)
-        self._compact_button = CompositeFrame(
-            self,
-            padding=8,
+            ttk_class='NavigationView.TFrame',
+            accent='primary',
+            padding=(14, 10),
             takefocus=True,
+        )
+        self._header_frame.pack(fill='x')
+
+        # Combined icon+text label using compound for proper spacing
+        self._header_label = Label(
+            self._header_frame,
+            text=self._text,
+            icon=self._icon,
+            compound='left',
+            anchor='w',
+            ttk_class='NavigationView.TLabel',
+            accent='primary',
+            takefocus=False,
+        )
+        self._header_frame.register_composite(self._header_label)
+        self._header_label.pack(side='left', fill='x', expand=True)
+        self._header_label.bind('<Button-1>', self._on_header_click, add='+')
+
+        # Chevron for expand/collapse indicator - registered for state coordination
+        self._chevron_label = Label(
+            self._header_frame,
+            icon=self._get_chevron_icon(),
+            icon_only=True,
+            ttk_class='NavigationView.TLabel',
+            accent='primary',
+            takefocus=False,
+        )
+        self._header_frame.register_composite(self._chevron_label)
+        self._chevron_label.pack(side='right')
+        self._chevron_label.bind('<Button-1>', self._on_header_click, add='+')
+
+        # Bind header frame events
+        self._header_frame.bind('<Button-1>', self._on_header_click, add='+')
+        self._header_frame.bind('<Return>', self._on_header_click, add='+')
+        self._header_frame.bind('<space>', self._on_header_click, add='+')
+
+        # Content frame for child items
+        self._content_frame = Frame(self)
+        if self._is_expanded:
+            self._content_frame.pack(fill='both', expand=True)
+
+        # Compact mode toggle (icon only) - same as NavigationViewItem
+        self._compact_toggle = RadioToggle(
+            self,
+            icon=self._icon,
+            icon_only=True,
+            accent='primary',
+            variant='ghost',
+            command=self._on_compact_click,
         )
         # Don't pack yet - only shown in compact mode
 
-        # Icon for compact button
-        if self._icon:
-            self._compact_icon = Label(
-                self._compact_button,
-                icon=self._icon,
-                icon_only=True,
-                takefocus=False,
-            )
-            self._compact_button.register_composite(self._compact_icon)
-            self._compact_icon.pack(expand=True)
-            # Bind click on icon too
-            self._compact_icon.bind('<Button-1>', self._on_compact_click, add='+')
+        # Set initial selection state
+        self._update_selection_state()
 
-        # Bind compact button click
-        self._compact_button.bind('<Button-1>', self._on_compact_click, add='+')
-        self._compact_button.bind('<Return>', self._on_compact_click, add='+')
-        self._compact_button.bind('<space>', self._on_compact_click, add='+')
-
-    def _on_expander_toggle(self, event):
-        """Forward expander toggle events."""
-        expanded = event.data.get('expanded', False)
-        self._is_expanded = expanded
-        if expanded:
-            self.event_generate('<<GroupExpanding>>', data={'key': self._key})
+    def _get_chevron_icon(self) -> dict:
+        """Get the appropriate chevron icon for current state."""
+        if self._is_expanded:
+            return {'name': 'chevron-up', 'size': 16}
         else:
-            self.event_generate('<<GroupCollapsed>>', data={'key': self._key})
+            return {'name': 'chevron-down', 'size': 16}
+
+    def _on_header_click(self, event=None):
+        """Handle header click - toggle expand/collapse."""
+        self._header_frame.focus_set()
+        self.toggle()
 
     def _on_selection_changed(self, *args):
         """Handle selection variable changes to update group highlight."""
@@ -162,16 +190,12 @@ class NavigationViewGroup(Frame):
         """Update visual state based on whether any child is selected."""
         is_any_selected = self._is_any_child_selected()
 
-        # In expanded mode, update expander highlight
-        if not self._compact:
-            # The expander's highlight is tied to its expanded state
-            # For groups, we want highlight when any child is selected OR when expanded
-            # This is handled by the selection state on items
-            pass
-
-        # In compact mode, update the button's selected state
-        if self._compact and self._compact_button:
-            self._compact_button.set_selected(is_any_selected)
+        # In compact mode, update the toggle's selected state
+        if self._compact and self._compact_toggle:
+            if is_any_selected:
+                self._compact_toggle.state(['selected'])
+            else:
+                self._compact_toggle.state(['!selected'])
 
     def _is_any_child_selected(self) -> bool:
         """Check if any child item is currently selected."""
@@ -182,7 +206,7 @@ class NavigationViewGroup(Frame):
 
     def _on_compact_click(self, event=None):
         """Handle click in compact mode - show popup."""
-        self._compact_button.focus_set()
+        self._compact_toggle.focus_set()
         self._show_popup()
 
     def _show_popup(self):
@@ -244,9 +268,9 @@ class NavigationViewGroup(Frame):
         self._popup.update_idletasks()
 
         # Get button position
-        btn_x = self._compact_button.winfo_rootx()
-        btn_y = self._compact_button.winfo_rooty()
-        btn_width = self._compact_button.winfo_width()
+        btn_x = self._compact_toggle.winfo_rootx()
+        btn_y = self._compact_toggle.winfo_rooty()
+        btn_width = self._compact_toggle.winfo_width()
 
         # Position popup to the right of button
         popup_x = btn_x + btn_width + 4
@@ -338,30 +362,48 @@ class NavigationViewGroup(Frame):
         self._compact = compact
 
         if compact:
-            # Hide expander, show compact button
-            self._expander.pack_forget()
-            self._compact_button.pack(fill='x')
+            # Hide header and content, show compact button
+            self._header_frame.pack_forget()
+            self._content_frame.pack_forget()
+            self._compact_toggle.pack(fill='x')
             self._update_selection_state()
         else:
-            # Hide compact button, show expander
+            # Hide compact button, show header (and content if expanded)
             self._hide_popup()
-            self._compact_button.pack_forget()
-            self._expander.pack(fill='x')
+            self._compact_toggle.pack_forget()
+            self._header_frame.pack(fill='x')
+            if self._is_expanded:
+                self._content_frame.pack(fill='both', expand=True)
 
     def expand(self) -> None:
         """Expand to show items (expanded mode only)."""
-        if not self._compact:
-            self._expander.expand()
+        if self._compact or self._is_expanded:
+            return
+
+        self._is_expanded = True
+        self._content_frame.pack(fill='both', expand=True)
+        self._chevron_label.configure(icon=self._get_chevron_icon())
+        self.event_generate('<<GroupExpanding>>', data={'key': self._key})
 
     def collapse(self) -> None:
         """Collapse to hide items (expanded mode only)."""
-        if not self._compact:
-            self._expander.collapse()
+        if self._compact or not self._is_expanded:
+            return
+
+        self._is_expanded = False
+        self._content_frame.pack_forget()
+        self._chevron_label.configure(icon=self._get_chevron_icon())
+        self.event_generate('<<GroupCollapsed>>', data={'key': self._key})
 
     def toggle(self) -> None:
         """Toggle expansion state (expanded mode only)."""
-        if not self._compact:
-            self._expander.toggle()
+        if self._compact:
+            return
+
+        if self._is_expanded:
+            self.collapse()
+        else:
+            self.expand()
 
     # --- Internal: Item management (called by NavigationView) ---
 
@@ -391,7 +433,7 @@ class NavigationViewGroup(Frame):
     @property
     def is_expanded(self) -> bool:
         """Check if group is currently expanded."""
-        return self._expander.cget('expanded')
+        return self._is_expanded
 
     @property
     def has_items(self) -> bool:
@@ -416,8 +458,8 @@ class NavigationViewGroup(Frame):
         if value is None:
             return self._text
         self._text = value
-        if self._expander:
-            self._expander.configure(title=value)
+        if self._header_label:
+            self._header_label.configure(text=value)
         return None
 
     @configure_delegate('icon')
@@ -426,10 +468,10 @@ class NavigationViewGroup(Frame):
         if value is None:
             return self._icon
         self._icon = value
-        if self._expander:
-            self._expander.configure(icon=value)
-        if hasattr(self, '_compact_icon'):
-            self._compact_icon.configure(icon=value)
+        if self._header_label:
+            self._header_label.configure(icon=value)
+        if self._compact_toggle:
+            self._compact_toggle.configure(icon=value)
         return None
 
     # --- Cleanup ---

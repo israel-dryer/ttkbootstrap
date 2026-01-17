@@ -39,8 +39,8 @@ class NavigationViewHeader(Frame):
         """
         self._text = text
 
-        # Default padding: more top margin for visual separation
-        kwargs.setdefault('padding', (8, 12, 8, 4))
+        # Default padding: more top margin for visual separation between sections
+        kwargs.setdefault('padding', (8, 20, 8, 4))
 
         super().__init__(master, **kwargs)
 

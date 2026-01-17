@@ -36,6 +36,9 @@ class NavigationViewItem(Frame):
         ```
     """
 
+    # Default indent width in pixels per indent level
+    INDENT_WIDTH = 24
+
     def __init__(
         self,
         master: Master = None,
@@ -45,6 +48,7 @@ class NavigationViewItem(Frame):
         signal: 'Signal[Any]' = None,
         variable: Variable = None,
         is_enabled: bool = True,
+        indent_level: int = 0,
         **kwargs: Any
     ):
         """Initialize a NavigationViewItem.
@@ -57,6 +61,7 @@ class NavigationViewItem(Frame):
             signal (Signal | None): Reactive signal for selection state (preferred).
             variable (Variable | None): Shared variable for radio group selection.
             is_enabled (bool): Whether the item is interactive. Default True.
+            indent_level (int): Nesting level for indentation (0 = root, 1 = child). Default 0.
             **kwargs: Additional arguments passed to Frame.
         """
         if not key:
@@ -70,11 +75,12 @@ class NavigationViewItem(Frame):
         self._signal = signal
         self._variable = variable
         self._is_enabled = is_enabled
+        self._indent_level = indent_level
 
         # Compact mode state
         self._compact = False
 
-        # Widget references - two toggles: one full, one compact (icon only)
+        # Widget references - two toggles for different anchor modes
         self._toggle_full: RadioToggle | None = None
         self._toggle_compact: RadioToggle | None = None
 
@@ -88,7 +94,10 @@ class NavigationViewItem(Frame):
 
     def _build_widget(self):
         """Build the internal widget structure."""
-        # Full mode toggle (icon + text)
+        # Calculate indentation padding for expanded mode
+        indent_padding = self._indent_level * self.INDENT_WIDTH
+
+        # Full mode toggle (icon + text, left-aligned)
         self._toggle_full = RadioToggle(
             self,
             text=self._text,
@@ -100,10 +109,11 @@ class NavigationViewItem(Frame):
             accent='primary',
             variant='ghost',
             command=self._on_invoked,
+            padding=(8 + indent_padding, 0, 8, 0),
         )
         self._toggle_full.pack(fill='x')
 
-        # Compact mode toggle (icon only)
+        # Compact mode toggle (icon only, centered)
         self._toggle_compact = RadioToggle(
             self,
             icon=self._icon,
@@ -153,11 +163,11 @@ class NavigationViewItem(Frame):
         self._compact = compact
 
         if compact:
-            # Switch to compact toggle
+            # Switch to compact toggle (icon only, centered)
             self._toggle_full.pack_forget()
             self._toggle_compact.pack(fill='x')
         else:
-            # Switch to full toggle
+            # Switch to full toggle (icon + text, left-aligned)
             self._toggle_compact.pack_forget()
             self._toggle_full.pack(fill='x')
 
