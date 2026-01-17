@@ -6,6 +6,7 @@ from tkinter import Variable
 from typing import Any, Literal, TYPE_CHECKING
 
 from ttkbootstrap.widgets.primitives.frame import Frame
+from ttkbootstrap.widgets.primitives.gridframe import GridFrame
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.primitives.label import Label
 from ttkbootstrap.widgets.primitives.separator import Separator
@@ -196,10 +197,14 @@ class NavigationView(Frame):
             scrollbar_visibility='hover',
         )
         self._content_scroll.pack(fill='both', expand=True)
-        self._content_frame = self._content_scroll.add()
-
-        # Configure grid column to expand
-        self._content_frame.columnconfigure(0, weight=1)
+        self._content_frame = GridFrame(
+            self._content_scroll.canvas,
+            columns=1,
+            gap=(0, 4),
+            sticky_items='ew',
+            padding=(4, 0),
+        )
+        self._content_scroll.add(self._content_frame)
 
         # Stretch content to fill width when canvas resizes
         def on_canvas_resize(event):
@@ -210,7 +215,7 @@ class NavigationView(Frame):
         self._content_scroll.canvas.bind('<Configure>', on_canvas_resize, add='+')
 
         # Footer section
-        self._footer_frame = Frame(self._pane_frame)
+        self._footer_frame = Frame(self._pane_frame, padding=(4, 0))
         self._footer_frame.pack(side='bottom', fill='x')
 
         # Separator before footer (shown when footer has items)
@@ -351,9 +356,7 @@ class NavigationView(Frame):
             is_expanded=is_expanded,
             **kwargs
         )
-        row = len(self._content_widgets)
-        group.grid(row=row, column=0, sticky='ew')
-
+        group.grid()
         self._groups[key] = group
         self._content_widgets.append(group)
 
@@ -408,7 +411,7 @@ class NavigationView(Frame):
                 indent_level=1,  # Indent via button padding, not frame padding
                 **kwargs
             )
-            item.pack(fill='x')  # Full width, indentation is via button padding
+            item.grid()
 
             # Register with group
             target_group._add_item(item)
@@ -422,8 +425,7 @@ class NavigationView(Frame):
                 variable=self._selection_var,
                 **kwargs
             )
-            row = len(self._content_widgets)
-            item.grid(row=row, column=0, sticky='ew')
+            item.grid()
             self._content_widgets.append(item)
 
             # Apply current display mode
@@ -447,9 +449,7 @@ class NavigationView(Frame):
         """
         header = NavigationViewHeader(self._content_frame, text=text, **kwargs)
         self._headers.append(header)
-
-        row = len(self._content_widgets)
-        header.grid(row=row, column=0, sticky='ew')
+        header.grid()
         self._content_widgets.append(header)
 
         # Hide if in compact mode
@@ -468,8 +468,7 @@ class NavigationView(Frame):
             NavigationViewSeparator: The created separator.
         """
         sep = NavigationViewSeparator(self._content_frame, **kwargs)
-        row = len(self._content_widgets)
-        sep.grid(row=row, column=0, sticky='ew')
+        sep.grid()
         self._content_widgets.append(sep)
         self._separators.append(sep)
         return sep
