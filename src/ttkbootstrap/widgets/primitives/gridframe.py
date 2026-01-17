@@ -89,6 +89,9 @@ class GridFrame(Frame):
         # Track occupied cells for auto-placement
         self._occupied: set[tuple[int, int]] = set()
 
+        # Track widgets hidden via grid_remove (still managed, just hidden)
+        self._removed: set[tk.Widget] = set()
+
         # Auto-placement cursor
         self._next_row = 0
         self._next_col = 0
@@ -311,9 +314,10 @@ class GridFrame(Frame):
 
     def _regrid_all(self) -> None:
         """Remove and re-grid all widgets."""
-        # Ungrid all
+        # Ungrid all (except those in _removed which are already hidden)
         for widget, _, _ in self._managed:
-            tk.Grid.forget(widget)
+            if widget not in self._removed:
+                tk.Grid.forget(widget)
 
         # Clear and rebuild occupied set
         self._occupied.clear()
@@ -337,9 +341,12 @@ class GridFrame(Frame):
                 row, col = self._find_next_position(rowspan, colspan)
 
             self._occupy_area(row, col, rowspan, colspan)
-            options = self._build_options(row, col, rowspan, colspan, user_options)
-            tk.Grid.configure(widget, **options)
             new_managed.append((widget, user_options, (row, col, rowspan, colspan)))
+
+            # Only configure visible widgets (not those in _removed)
+            if widget not in self._removed:
+                options = self._build_options(row, col, rowspan, colspan, user_options)
+                tk.Grid.configure(widget, **options)
 
         self._managed = new_managed
 
@@ -359,6 +366,17 @@ class GridFrame(Frame):
 
         Applies frame defaults, handles gap spacing, auto-placement, and tracks the widget.
         """
+        # Check if widget was hidden via grid_remove and is being restored
+        if widget in self._removed and not options:
+            # Restore widget to its original position
+            self._removed.discard(widget)
+            idx = self._find_widget_index(widget)
+            if idx >= 0:
+                _, user_options, (row, col, rowspan, colspan) = self._managed[idx]
+                grid_options = self._build_options(row, col, rowspan, colspan, user_options)
+                tk.Grid.configure(widget, **grid_options)
+                return
+
         # Check if widget is already managed (reconfigure case)
         existing_idx = self._find_widget_index(widget)
 
@@ -402,23 +420,23 @@ class GridFrame(Frame):
         tk.Grid.forget(widget)
         self._free_area(row, col, rowspan, colspan)
         self._managed.pop(idx)
+        self._removed.discard(widget)  # Clean up if it was in removed set
 
     def _on_child_grid_remove(self, widget: tk.Widget) -> None:
         """Hook called when a child widget calls grid_remove().
 
-        Removes widget from display but keeps its configuration for later restore.
-        Note: We treat this the same as grid_forget for tracking purposes.
+        Hides widget but keeps its configuration for later restore via grid().
+        The widget's position is preserved so it can be restored with grid().
         """
         idx = self._find_widget_index(widget)
         if idx < 0:
             # Not managed by us, just remove it normally
-            tk.Grid.remove(widget)
+            tk.Grid.grid_remove(widget)
             return
 
-        _, _, (row, col, rowspan, colspan) = self._managed[idx]
-        tk.Grid.remove(widget)
-        self._free_area(row, col, rowspan, colspan)
-        self._managed.pop(idx)
+        # Hide the widget but keep it in _managed for position restoration
+        tk.Grid.grid_remove(widget)
+        self._removed.add(widget)
 
     # -------------------------------------------------------------------------
     # Public configuration methods
