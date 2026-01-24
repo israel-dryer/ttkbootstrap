@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
-from tkinter import TclError, Toplevel, Variable
+from tkinter import TclError, Variable
 from typing import Any, TYPE_CHECKING
 
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.primitives.gridframe import GridFrame
 from ttkbootstrap.widgets.primitives.label import Label
 from ttkbootstrap.widgets.composites.compositeframe import CompositeFrame
-from ttkbootstrap.widgets.composites.list import ListView
+from ttkbootstrap.widgets.composites.contextmenu import ContextMenu
 from ttkbootstrap.widgets.mixins import configure_delegate
 from ttkbootstrap.widgets.types import Master
 
@@ -107,8 +107,7 @@ class NavigationViewGroup(Frame):
         self._text_label: Label | None = None
         self._chevron_label: Label | None = None
         self._content_frame: Frame | None = None
-        self._popup: Toplevel | None = None
-        self._root_click_id: str | None = None
+        self._popup: ContextMenu | None = None
 
         # Selection state is now managed centrally by NavigationView
         # for better performance (only affected items are updated)
@@ -264,122 +263,45 @@ class NavigationViewGroup(Frame):
         return current in self._items
 
     def _show_popup(self):
-        """Show the popup flyout with group items using ListView."""
-        if self._popup and self._popup.winfo_exists():
-            self._hide_popup()
-            return
+        """Show the popup flyout with group items using ContextMenu."""
+        # Always destroy existing popup and create fresh one
+        # (ContextMenu handles click-outside-to-close automatically)
+        self._hide_popup()
 
-        # Create popup window
-        self._popup = Toplevel(self)
-        self._popup.withdraw()  # Hide initially
-        self._popup.overrideredirect(True)  # No window decorations
+        # Create ContextMenu positioned to the right of the container
+        self._popup = ContextMenu(
+            self,
+            target=self._container,
+            anchor='nw',
+            attach='ne',
+            offset=(12, 4),
+            minwidth=180,
+        )
 
-        # Style the popup
-        popup_frame = Frame(self._popup, padding=4, show_border=True)
-        popup_frame.pack(fill='both', expand=True)
-
-        # Add header
-        header = Label(popup_frame, text=self._text, font='label', accent='secondary')
-        header.pack(fill='x', padx=8, pady=(4, 8))
-
-        # Build items data for ListView
-        items_data = []
-        current_selection = self._variable.get() if self._variable else None
+        # Add items as commands
         for key in self._item_order:
             item = self._items[key]
-            items_data.append({
-                'id': key,
-                'text': item.cget('text'),
-                'icon': item.cget('icon'),
-                'selected': key == current_selection,
-            })
+            item_key = key  # Capture for closure
+            self._popup.add_command(
+                text=item.cget('text'),
+                icon=item.cget('icon'),
+                command=lambda k=item_key: self._on_popup_item_click(k),
+            )
 
-        # Create ListView for items
-        listview = ListView(
-            popup_frame,
-            items=items_data,
-            selection_mode='single',
-            scrollbar_visibility='never',
-            show_separator=False,
-        )
-        listview.pack(fill='both', expand=True)
+        # Show the popup
+        self._popup.show()
 
-        # Handle item click
-        def on_item_click(event):
-            record = event.data
-            key = record.get('id')
-            if key and key in self._items:
-                # Set selection and fire event
-                if self._variable:
-                    self._variable.set(key)
-                self._items[key].event_generate('<<ItemInvoked>>', data={'key': key})
-                # Delay popup close to allow event chain to complete
-                self.after(1, self._hide_popup)
-
-        listview.on_item_click(on_item_click)
-
-        # Bind to close on Escape
-        self._popup.bind('<Escape>', lambda e: self._hide_popup(), add='+')
-
-        # Bind to close on outside click
-        self._root_click_id = self.winfo_toplevel().bind('<Button-1>', self._on_root_click, add='+')
-
-        # Position and show after a brief delay to allow full layout
-        self._popup.after(10, self._position_and_show_popup)
-
-    def _position_and_show_popup(self):
-        """Position and display the popup after layout is complete."""
-        if not self._popup or not self._popup.winfo_exists():
-            return
-
-        # Force final layout calculation
-        self._popup.update_idletasks()
-
-        # Get container position
-        btn_x = self._container.winfo_rootx()
-        btn_y = self._container.winfo_rooty()
-        btn_width = self._container.winfo_width()
-
-        # Position popup to the right of container
-        popup_x = btn_x + btn_width + 12
-        popup_y = btn_y
-
-        # Ensure popup stays on screen
-        screen_width = self._popup.winfo_screenwidth()
-        popup_width = self._popup.winfo_reqwidth()
-        if popup_x + popup_width > screen_width:
-            # Show to the left instead
-            popup_x = btn_x - popup_width - 4
-
-        self._popup.geometry(f'+{popup_x}+{popup_y}')
-        self._popup.deiconify()
-
-    def _on_root_click(self, event):
-        """Handle click on root window - close popup if click is outside."""
-        if not self._popup or not self._popup.winfo_exists():
-            return
-
-        # Get popup bounds
-        popup_x = self._popup.winfo_rootx()
-        popup_y = self._popup.winfo_rooty()
-        popup_w = self._popup.winfo_width()
-        popup_h = self._popup.winfo_height()
-
-        # Check if click is outside popup
-        if not (popup_x <= event.x_root <= popup_x + popup_w and
-                popup_y <= event.y_root <= popup_y + popup_h):
-            self._hide_popup()
+    def _on_popup_item_click(self, key: str):
+        """Handle click on a popup menu item."""
+        if key in self._items:
+            # Set selection
+            if self._variable:
+                self._variable.set(key)
+            # Fire item invoked event
+            self._items[key].event_generate('<<ItemInvoked>>', data={'key': key})
 
     def _hide_popup(self):
         """Hide and destroy the popup."""
-        # Unbind root click handler
-        if hasattr(self, '_root_click_id') and self._root_click_id:
-            try:
-                self.winfo_toplevel().unbind('<Button-1>', self._root_click_id)
-            except TclError:
-                pass
-            self._root_click_id = None
-
         if self._popup:
             try:
                 self._popup.destroy()
