@@ -74,7 +74,7 @@ class NavigationView(Frame):
 
     # Default pane widths
     PANE_WIDTH_EXPANDED = 280
-    PANE_WIDTH_COMPACT = 56
+    PANE_WIDTH_COMPACT = 72
 
     def __init__(
         self,
@@ -88,6 +88,7 @@ class NavigationView(Frame):
         pane_width: int = None,
         signal: 'Signal[str]' = None,
         variable: Variable = None,
+        accent: str = 'primary',
         **kwargs: Any
     ):
         """Initialize a NavigationView.
@@ -104,9 +105,12 @@ class NavigationView(Frame):
             pane_width (int | None): Custom pane width. Uses default based on mode.
             signal (Signal | None): Reactive signal for selection state.
             variable (Variable | None): Tk variable for selection state.
+            accent (str): Accent color for selection indicators. Default 'primary'.
             **kwargs: Additional arguments passed to Frame.
         """
         super().__init__(master, **kwargs)
+
+        self._accent = accent
 
         self._title = title
         self._show_header = show_header
@@ -129,12 +133,14 @@ class NavigationView(Frame):
         # Get the variable for items (from signal or direct)
         self._selection_var = self._signal._var if self._signal else variable
 
-        # Track variable changes
+        # Track variable changes for efficient selection updates
+        self._prev_selection: str | None = None  # Track previous selection for efficient updates
         if self._selection_var:
             self._selection_var.trace_add('write', self._on_selection_changed)
 
         # Item and group tracking
         self._items: dict[str, NavigationViewItem] = {}  # All items by key
+        self._item_to_group: dict[str, str] = {}  # item_key -> group_key lookup
         self._groups: dict[str, NavigationViewGroup] = {}  # Groups by key
         self._footer_items: dict[str, NavigationViewItem] = {}
         self._headers: list[NavigationViewHeader] = []
@@ -158,6 +164,10 @@ class NavigationView(Frame):
         # Build the widget
         self._build_widget()
 
+        # Initialize previous selection tracker from current value
+        if self._selection_var:
+            self._prev_selection = self._selection_var.get() or None
+
     def _build_widget(self):
         """Build the internal widget structure."""
         # Pane container - uses 'chrome' surface for UI chrome
@@ -174,6 +184,7 @@ class NavigationView(Frame):
                 icon_only=True,
                 variant='ghost',
                 command=self.toggle_pane,
+                padding=(8, 6),
             )
             # Pack based on initial mode - compact stretches, expanded doesn't
             if self._display_mode == 'compact':
@@ -200,18 +211,21 @@ class NavigationView(Frame):
         self._content_frame = GridFrame(
             self._content_scroll.canvas,
             columns=1,
-            gap=(0, 4),
+            gap=(0, 0),
             sticky_items='ew',
             padding=(4, 0),
         )
         self._content_scroll.add(self._content_frame)
 
-        # Stretch content to fill width when canvas resizes
+        # Stretch content to fill width when canvas resizes (debounced)
+        self._resize_after_id = None
+
         def on_canvas_resize(event):
-            self._content_scroll.canvas.itemconfigure(
-                self._content_scroll._window_id,
-                width=event.width
-            )
+            # Debounce resize events to avoid excessive layout recalculations
+            if self._resize_after_id:
+                self.after_cancel(self._resize_after_id)
+            self._resize_after_id = self.after(16, lambda: self._apply_canvas_width(event.width))
+
         self._content_scroll.canvas.bind('<Configure>', on_canvas_resize, add='+')
 
         # Footer section
@@ -223,6 +237,15 @@ class NavigationView(Frame):
 
         # Apply initial display mode
         self._apply_display_mode()
+
+    def _apply_canvas_width(self, width: int):
+        """Apply the canvas width after debounce delay."""
+        self._resize_after_id = None
+        if self._content_scroll and self._content_scroll.winfo_exists():
+            self._content_scroll.canvas.itemconfigure(
+                self._content_scroll._window_id,
+                width=width
+            )
 
     def _build_header(self):
         """Build the pane header using Toolbar."""
@@ -248,6 +271,7 @@ class NavigationView(Frame):
         """Apply the current display mode to the pane."""
         is_compact = self._display_mode == 'compact'
 
+        # Update pane width and visibility
         if self._display_mode == 'expanded':
             width = self._pane_width or self.PANE_WIDTH_EXPANDED
             self._pane_frame.configure(width=width)
@@ -300,17 +324,59 @@ class NavigationView(Frame):
             item.set_compact(is_compact)
 
     def _get_item_group(self, key: str) -> str | None:
-        """Get the group key for an item, or None if at root."""
-        for group_key, group in self._groups.items():
-            if key in group._items:
-                return group_key
-        return None
+        """Get the group key for an item, or None if at root.
+
+        Uses O(1) lookup via _item_to_group cache.
+        """
+        return self._item_to_group.get(key)
 
     def _on_selection_changed(self, *args):
-        """Handle selection variable changes."""
-        if self._selection_var:
-            key = self._selection_var.get()
-            self.event_generate('<<SelectionChanged>>', data={'key': key})
+        """Handle selection variable changes.
+
+        This centralizes selection state updates for better performance.
+        Instead of each item tracing the variable (O(n) callbacks), we only
+        update the previously-selected and newly-selected items (O(1)).
+        """
+        if not self._selection_var:
+            return
+
+        new_key = self._selection_var.get()
+        old_key = self._prev_selection
+
+        # Skip if selection hasn't actually changed
+        if new_key == old_key:
+            return
+
+        # Update the previously selected item (deselect)
+        if old_key:
+            old_group = self._get_item_group(old_key)
+            if old_key in self._items:
+                self._items[old_key].set_selected(False)
+            elif old_key in self._footer_items:
+                self._footer_items[old_key].set_selected(False)
+
+            # Update old group's selection state
+            if old_group and old_group in self._groups:
+                self._groups[old_group].set_child_selected(False)
+
+        # Update the newly selected item (select)
+        new_group = None
+        if new_key:
+            new_group = self._get_item_group(new_key)
+            if new_key in self._items:
+                self._items[new_key].set_selected(True)
+            elif new_key in self._footer_items:
+                self._footer_items[new_key].set_selected(True)
+
+            # Update new group's selection state
+            if new_group and new_group in self._groups:
+                self._groups[new_group].set_child_selected(True)
+
+        # Track current selection for next change
+        self._prev_selection = new_key
+
+        # Fire selection changed event
+        self.event_generate('<<SelectionChanged>>', data={'key': new_key})
 
     def _on_back_clicked(self):
         """Handle back button click."""
@@ -347,6 +413,9 @@ class NavigationView(Frame):
         if key in self._groups or key in self._items or key in self._footer_items:
             raise ValueError(f"Key '{key}' already exists")
 
+        # Use view's accent as default, allow override via kwargs
+        group_kwargs = {'accent': self._accent, **kwargs}
+
         group = NavigationViewGroup(
             self._content_frame,
             key=key,
@@ -354,7 +423,7 @@ class NavigationView(Frame):
             icon=icon,
             variable=self._selection_var,
             is_expanded=is_expanded,
-            **kwargs
+            **group_kwargs
         )
         group.grid()
         self._groups[key] = group
@@ -396,6 +465,9 @@ class NavigationView(Frame):
         if key in self._items or key in self._groups or key in self._footer_items:
             raise ValueError(f"Key '{key}' already exists")
 
+        # Use view's accent as default, allow override via kwargs
+        item_kwargs = {'accent': self._accent, **kwargs}
+
         if group is not None:
             # Add to a group
             if group not in self._groups:
@@ -409,12 +481,13 @@ class NavigationView(Frame):
                 icon=icon,
                 variable=self._selection_var,
                 indent_level=1,  # Indent via button padding, not frame padding
-                **kwargs
+                **item_kwargs
             )
             item.grid()
 
-            # Register with group
+            # Register with group and update lookup cache
             target_group._add_item(item)
+            self._item_to_group[key] = group
         else:
             # Add at root level
             item = NavigationViewItem(
@@ -423,7 +496,7 @@ class NavigationView(Frame):
                 text=text,
                 icon=icon,
                 variable=self._selection_var,
-                **kwargs
+                **item_kwargs
             )
             item.grid()
             self._content_widgets.append(item)
@@ -501,13 +574,16 @@ class NavigationView(Frame):
         if not self._footer_items:
             self._footer_separator.pack(fill='x', pady=4)
 
+        # Use view's accent as default, allow override via kwargs
+        item_kwargs = {'accent': self._accent, **kwargs}
+
         item = NavigationViewItem(
             self._footer_frame,
             key=key,
             text=text,
             icon=icon,
             variable=self._selection_var,
-            **kwargs
+            **item_kwargs
         )
         item.pack(fill='x')
 
@@ -603,8 +679,8 @@ class NavigationView(Frame):
         if key in self._items:
             item = self._items.pop(key)
 
-            # Remove from group if in one
-            group_key = self._get_item_group(key)
+            # Remove from group if in one (check before removing from lookup)
+            group_key = self._item_to_group.pop(key, None)
             if group_key:
                 self._groups[group_key]._remove_item(key)
 
@@ -633,10 +709,11 @@ class NavigationView(Frame):
 
         group = self._groups.pop(key)
 
-        # Remove all items in the group
+        # Remove all items in the group and clean up lookups
         for item_key in list(group._items.keys()):
             if item_key in self._items:
                 del self._items[item_key]
+            self._item_to_group.pop(item_key, None)
 
         # Remove from content widgets
         if group in self._content_widgets:
@@ -750,6 +827,15 @@ class NavigationView(Frame):
         self._title = value
         if self._title_label:
             self._title_label.configure(text=value)
+        return None
+
+    @configure_delegate('accent')
+    def _delegate_accent(self, value: str = None):
+        """Configure the accent color (read-only after creation)."""
+        if value is None:
+            return self._accent
+        # Accent is read-only after creation since changing it would
+        # require rebuilding all item styles
         return None
 
     # --- Event Binding Helpers ---

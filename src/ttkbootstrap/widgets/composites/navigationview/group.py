@@ -8,7 +8,6 @@ from typing import Any, TYPE_CHECKING
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.primitives.gridframe import GridFrame
 from ttkbootstrap.widgets.primitives.label import Label
-from ttkbootstrap.widgets.primitives.radiotoggle import RadioToggle
 from ttkbootstrap.widgets.composites.compositeframe import CompositeFrame
 from ttkbootstrap.widgets.composites.list import ListView
 from ttkbootstrap.widgets.mixins import configure_delegate
@@ -27,6 +26,10 @@ class NavigationViewGroup(Frame):
     In compact mode, clicking the group shows a popup flyout to the right
     containing the group's items.
 
+    Uses a single CompositeFrame container with separate icon, text, and
+    chevron labels. In compact mode, text and chevron are hidden and the
+    icon is centered.
+
     The group shows as selected if any of its child items are currently selected.
 
     !!! note "Events"
@@ -43,6 +46,11 @@ class NavigationViewGroup(Frame):
         nav.add_item('cloud', text='Cloud', icon='cloud', group='files')
         ```
     """
+
+    # Default padding values (same as NavigationViewItem)
+    DEFAULT_PADDING_X = 12
+    DEFAULT_PADDING_Y = 10
+    DEFAULT_ICON_GAP = 10
 
     def __init__(
         self,
@@ -70,7 +78,14 @@ class NavigationViewGroup(Frame):
         if not key:
             raise ValueError("NavigationViewGroup requires a non-empty 'key'")
 
+        # Extract styling kwargs before super().__init__
+        # Must set these AFTER super().__init__ because TTKWrapperBase also sets _accent
+        saved_accent = kwargs.pop('accent', 'primary')
+
         super().__init__(master, **kwargs)
+
+        # Set after super() to avoid being overwritten by TTKWrapperBase
+        self._accent = saved_accent
 
         self._key = key
         self._text = text
@@ -87,17 +102,17 @@ class NavigationViewGroup(Frame):
         self._compact = False
 
         # Widget references
-        self._header_frame: CompositeFrame | None = None
-        self._header_label: Label | None = None
+        self._container: CompositeFrame | None = None
+        self._icon_label: Label | None = None
+        self._text_label: Label | None = None
         self._chevron_label: Label | None = None
         self._content_frame: Frame | None = None
-        self._compact_toggle: RadioToggle | None = None
         self._popup: Toplevel | None = None
+        self._root_click_id: str | None = None
 
-        # Track selection variable for highlighting
+        # Selection state is now managed centrally by NavigationView
+        # for better performance (only affected items are updated)
         self._trace_id: str | None = None
-        if variable:
-            self._trace_id = variable.trace_add('write', self._on_selection_changed)
 
         # Build internal structure
         self._build_widget()
@@ -105,76 +120,107 @@ class NavigationViewGroup(Frame):
     def _build_widget(self):
         """Build the internal widget structure.
 
-        Uses CompositeFrame with NavigationView styles for the header.
+        Uses CompositeFrame with NavigationButton styles for the header.
         Child labels are registered for automatic state coordination.
         """
-        # Header using CompositeFrame for automatic state coordination
-        # Padding compensates for Toolbutton's internal padding from image border + style padding
-        self._header_frame = CompositeFrame(
+        # Container using NavigationButton.TFrame for selection indicator
+        self._container = CompositeFrame(
             self,
-            ttk_class='NavigationView.TFrame',
-            accent='primary',
-            padding=(14, 10),
+            ttk_class='NavigationButton.TFrame',
+            accent=self._accent,
+            padding=(self.DEFAULT_PADDING_X, self.DEFAULT_PADDING_Y,
+                     self.DEFAULT_PADDING_X, self.DEFAULT_PADDING_Y),
             takefocus=True,
         )
-        self._header_frame.pack(fill='x')
+        self._container.pack(fill='x')
 
-        # Combined icon+text label using compound for proper spacing
-        self._header_label = Label(
-            self._header_frame,
+        # Icon label
+        if self._icon:
+            self._icon_label = Label(
+                self._container,
+                icon=self._icon,
+                icon_only=True,
+                ttk_class='NavigationButton.TLabel',
+                accent=self._accent,
+                takefocus=False,
+            )
+            self._container.register_composite(self._icon_label)
+
+        # Text label
+        self._text_label = Label(
+            self._container,
             text=self._text,
-            icon=self._icon,
-            compound='left',
             anchor='w',
-            ttk_class='NavigationView.TLabel',
-            accent='primary',
+            ttk_class='NavigationButton.TLabel',
+            accent=self._accent,
             takefocus=False,
         )
-        self._header_frame.register_composite(self._header_label)
-        self._header_label.pack(side='left', fill='x', expand=True)
-        self._header_label.bind('<Button-1>', self._on_header_click, add='+')
+        self._container.register_composite(self._text_label)
 
-        # Chevron for expand/collapse indicator - registered for state coordination
+        # Chevron for expand/collapse indicator
         self._chevron_label = Label(
-            self._header_frame,
+            self._container,
             icon=self._get_chevron_icon(),
             icon_only=True,
-            ttk_class='NavigationView.TLabel',
-            accent='primary',
+            ttk_class='NavigationButton.TLabel',
+            accent=self._accent,
             takefocus=False,
         )
-        self._header_frame.register_composite(self._chevron_label)
-        self._chevron_label.pack(side='right')
-        self._chevron_label.bind('<Button-1>', self._on_header_click, add='+')
+        self._container.register_composite(self._chevron_label)
 
-        # Bind header frame events
-        self._header_frame.bind('<Button-1>', self._on_header_click, add='+')
-        self._header_frame.bind('<Return>', self._on_header_click, add='+')
-        self._header_frame.bind('<space>', self._on_header_click, add='+')
+        # Apply initial layout
+        self._apply_layout()
+
+        # Bind click events
+        self._bind_events()
 
         # Content frame for child items
         self._content_frame = GridFrame(
             self,
             columns=1,
-            gap=(0, 4),
+            gap=(0, 0),
             sticky_items='ew',
         )
         if self._is_expanded:
             self._content_frame.pack(fill='both', expand=True)
 
-        # Compact mode toggle (icon only) - same as NavigationViewItem
-        self._compact_toggle = RadioToggle(
-            self,
-            icon=self._icon,
-            icon_only=True,
-            accent='primary',
-            variant='navigation',
-            command=self._on_compact_click,
-        )
-        # Don't pack yet - only shown in compact mode
-
         # Set initial selection state
         self._update_selection_state()
+
+    def _apply_layout(self):
+        """Apply the current layout based on compact mode."""
+        # Clear current layout
+        if self._icon_label:
+            self._icon_label.pack_forget()
+        self._text_label.pack_forget()
+        self._chevron_label.pack_forget()
+
+        if self._compact:
+            # Compact mode: icon only, centered
+            if self._icon_label:
+                self._icon_label.pack(expand=True)
+        else:
+            # Expanded mode: icon + text + chevron
+            if self._icon_label:
+                self._icon_label.pack(side='left', padx=(0, self.DEFAULT_ICON_GAP))
+            self._text_label.pack(side='left', fill='x', expand=True)
+            self._chevron_label.pack(side='right')
+
+    def _bind_events(self):
+        """Bind click and keyboard events.
+
+        Binds click to container and all child widgets since Tkinter
+        doesn't bubble events from children to parents.
+        """
+        self._container.bind('<Button-1>', self._on_header_click, add='+')
+        if self._icon_label:
+            self._icon_label.bind('<Button-1>', self._on_header_click, add='+')
+        self._text_label.bind('<Button-1>', self._on_header_click, add='+')
+        self._chevron_label.bind('<Button-1>', self._on_header_click, add='+')
+
+        # Keyboard support on focusable container
+        self._container.bind('<Return>', self._on_header_click, add='+')
+        self._container.bind('<space>', self._on_header_click, add='+')
 
     def _get_chevron_icon(self) -> dict:
         """Get the appropriate chevron icon for current state."""
@@ -184,24 +230,31 @@ class NavigationViewGroup(Frame):
             return {'name': 'chevron-down', 'size': 16}
 
     def _on_header_click(self, event=None):
-        """Handle header click - toggle expand/collapse."""
-        self._header_frame.focus_set()
-        self.toggle()
+        """Handle header click - toggle expand/collapse or show popup."""
+        self._container.focus_set()
 
-    def _on_selection_changed(self, *args):
-        """Handle selection variable changes to update group highlight."""
-        self._update_selection_state()
+        if self._compact:
+            # In compact mode, show popup
+            self._show_popup()
+        else:
+            # In expanded mode, toggle expand/collapse
+            self.toggle()
 
     def _update_selection_state(self):
         """Update visual state based on whether any child is selected."""
         is_any_selected = self._is_any_child_selected()
+        self._container.set_selected(is_any_selected)
 
-        # In compact mode, update the toggle's selected state
-        if self._compact and self._compact_toggle:
-            if is_any_selected:
-                self._compact_toggle.state(['selected'])
-            else:
-                self._compact_toggle.state(['!selected'])
+    def set_child_selected(self, has_selected_child: bool) -> None:
+        """Directly set whether a child is selected.
+
+        This is called by NavigationView for efficient selection updates,
+        avoiding the need to iterate through children.
+
+        Args:
+            has_selected_child: True if any child item is selected.
+        """
+        self._container.set_selected(has_selected_child)
 
     def _is_any_child_selected(self) -> bool:
         """Check if any child item is currently selected."""
@@ -209,11 +262,6 @@ class NavigationViewGroup(Frame):
             return False
         current = self._variable.get()
         return current in self._items
-
-    def _on_compact_click(self, event=None):
-        """Handle click in compact mode - show popup."""
-        self._compact_toggle.focus_set()
-        self._show_popup()
 
     def _show_popup(self):
         """Show the popup flyout with group items using ListView."""
@@ -270,16 +318,30 @@ class NavigationViewGroup(Frame):
 
         listview.on_item_click(on_item_click)
 
-        # Position popup to the right of the compact button
+        # Bind to close on Escape
+        self._popup.bind('<Escape>', lambda e: self._hide_popup(), add='+')
+
+        # Bind to close on outside click
+        self._root_click_id = self.winfo_toplevel().bind('<Button-1>', self._on_root_click, add='+')
+
+        # Position and show after a brief delay to allow full layout
+        self._popup.after(10, self._position_and_show_popup)
+
+    def _position_and_show_popup(self):
+        """Position and display the popup after layout is complete."""
+        if not self._popup or not self._popup.winfo_exists():
+            return
+
+        # Force final layout calculation
         self._popup.update_idletasks()
 
-        # Get button position
-        btn_x = self._compact_toggle.winfo_rootx()
-        btn_y = self._compact_toggle.winfo_rooty()
-        btn_width = self._compact_toggle.winfo_width()
+        # Get container position
+        btn_x = self._container.winfo_rootx()
+        btn_y = self._container.winfo_rooty()
+        btn_width = self._container.winfo_width()
 
-        # Position popup to the right of button
-        popup_x = btn_x + btn_width + 4
+        # Position popup to the right of container
+        popup_x = btn_x + btn_width + 12
         popup_y = btn_y
 
         # Ensure popup stays on screen
@@ -292,60 +354,34 @@ class NavigationViewGroup(Frame):
         self._popup.geometry(f'+{popup_x}+{popup_y}')
         self._popup.deiconify()
 
-        # Bind to close on click outside or focus loss
-        self._popup.bind('<FocusOut>', self._on_popup_focus_out, add='+')
-        self._popup.bind('<Escape>', lambda e: self._hide_popup(), add='+')
-
-    def _setup_popup_close_bindings(self):
-        """Set up bindings to close popup when clicking elsewhere."""
+    def _on_root_click(self, event):
+        """Handle click on root window - close popup if click is outside."""
         if not self._popup or not self._popup.winfo_exists():
             return
 
-        def check_click(event):
-            if not self._popup or not self._popup.winfo_exists():
-                return
-            # Check if click was outside popup
-            try:
-                x, y = event.x_root, event.y_root
-                px = self._popup.winfo_rootx()
-                py = self._popup.winfo_rooty()
-                pw = self._popup.winfo_width()
-                ph = self._popup.winfo_height()
+        # Get popup bounds
+        popup_x = self._popup.winfo_rootx()
+        popup_y = self._popup.winfo_rooty()
+        popup_w = self._popup.winfo_width()
+        popup_h = self._popup.winfo_height()
 
-                if not (px <= x <= px + pw and py <= y <= py + ph):
-                    self._hide_popup()
-            except TclError:
-                pass
-
-        # Bind to root window
-        root = self.winfo_toplevel()
-        self._click_bind_id = root.bind('<Button-1>', check_click, add='+')
-
-    def _on_popup_focus_out(self, event):
-        """Handle popup losing focus."""
-        # Delay to allow click events to process
-        if self._popup and self._popup.winfo_exists():
-            self._popup.after(100, self._check_popup_focus)
-
-    def _check_popup_focus(self):
-        """Check if popup should be closed."""
-        if not self._popup or not self._popup.winfo_exists():
-            return
-        try:
-            focus = self._popup.focus_get()
-            if focus is None or not str(focus).startswith(str(self._popup)):
-                self._hide_popup()
-        except TclError:
-            pass
+        # Check if click is outside popup
+        if not (popup_x <= event.x_root <= popup_x + popup_w and
+                popup_y <= event.y_root <= popup_y + popup_h):
+            self._hide_popup()
 
     def _hide_popup(self):
         """Hide and destroy the popup."""
+        # Unbind root click handler
+        if hasattr(self, '_root_click_id') and self._root_click_id:
+            try:
+                self.winfo_toplevel().unbind('<Button-1>', self._root_click_id)
+            except TclError:
+                pass
+            self._root_click_id = None
+
         if self._popup:
             try:
-                # Remove click binding from root
-                root = self.winfo_toplevel()
-                if hasattr(self, '_click_bind_id'):
-                    root.unbind('<Button-1>', self._click_bind_id)
                 self._popup.destroy()
             except TclError:
                 pass
@@ -366,20 +402,18 @@ class NavigationViewGroup(Frame):
             return
 
         self._compact = compact
+        self._hide_popup()
+        self._apply_layout()
 
         if compact:
-            # Hide header and content, show compact button
-            self._header_frame.pack_forget()
+            # Hide content in compact mode
             self._content_frame.pack_forget()
-            self._compact_toggle.pack()
-            self._update_selection_state()
         else:
-            # Hide compact button, show header (and content if expanded)
-            self._hide_popup()
-            self._compact_toggle.pack_forget()
-            self._header_frame.pack(fill='x')
+            # Restore content if expanded
             if self._is_expanded:
                 self._content_frame.pack(fill='both', expand=True)
+
+        self._update_selection_state()
 
     def expand(self) -> None:
         """Expand to show items (expanded mode only)."""
@@ -464,8 +498,8 @@ class NavigationViewGroup(Frame):
         if value is None:
             return self._text
         self._text = value
-        if self._header_label:
-            self._header_label.configure(text=value)
+        if self._text_label:
+            self._text_label.configure(text=value)
         return None
 
     @configure_delegate('icon')
@@ -474,10 +508,23 @@ class NavigationViewGroup(Frame):
         if value is None:
             return self._icon
         self._icon = value
-        if self._header_label:
-            self._header_label.configure(icon=value)
-        if self._compact_toggle:
-            self._compact_toggle.configure(icon=value)
+
+        if self._icon_label is not None:
+            self._icon_label.configure(icon=value)
+        elif value is not None:
+            # Create icon label if it doesn't exist
+            self._icon_label = Label(
+                self._container,
+                icon=value,
+                icon_only=True,
+                ttk_class='NavigationButton.TLabel',
+                accent=self._accent,
+                takefocus=False,
+            )
+            self._container.register_composite(self._icon_label)
+            self._icon_label.bind('<Button-1>', self._on_header_click, add='+')
+            # Re-apply layout
+            self._apply_layout()
         return None
 
     # --- Cleanup ---
@@ -485,9 +532,4 @@ class NavigationViewGroup(Frame):
     def destroy(self):
         """Clean up resources."""
         self._hide_popup()
-        if self._variable and self._trace_id:
-            try:
-                self._variable.trace_remove('write', self._trace_id)
-            except Exception:
-                pass
         super().destroy()

@@ -32,14 +32,16 @@ def create_page(parent, title, description):
 
 
 def main():
-    root = ttk.App(theme="forest-light", title="NavigationView Demo", size=(1000, 650))
+    root = ttk.App(theme="rose-light", title="NavigationView Demo", size=(1000, 650))
+
+    container = ttk.Frame(root).pack(fill='both', expand=True)
 
     # --- Toolbar at the top (spans full width) ---
-    # toolbar = Toolbar(root, padding=(5, 0))
-    # toolbar.pack(fill='x')
+    toolbar = Toolbar(container, padding=(5, 0), surface='chrome', show_window_controls=False)
+    toolbar.pack(fill='x')
 
     # --- Main container below toolbar ---
-    main_container = ttk.Frame(root)
+    main_container = ttk.Frame(container)
     main_container.pack(fill='both', expand=True)
 
     # NavigationView on the left (no internal header - using external toolbar)
@@ -47,59 +49,56 @@ def main():
     nav.pack(side='left', fill='y')
 
     # Add toolbar buttons that control the navigation
-    # toolbar.add_button(
-    #     icon='arrow-left',
-    #     command=lambda: nav.select('home'),
-    # )
-    # toolbar.add_button(
-    #     icon='list',
-    #     density='compact',
-    #     command=nav.toggle_pane,
-    # )
-    # toolbar.add_spacer()
-    # toolbar.add_button(icon='search', density='compact', command=lambda: print("Search"))
-    # toolbar.add_button(icon='bell', density='compact', command=lambda: print("Notifications"))
+    toolbar.add_button(
+        icon='arrow-left',
+        command=lambda: nav.select('home'),
+    )
+    toolbar.add_button(
+        icon='list',
+        command=nav.toggle_pane,
+    )
+
+    toolbar.add_spacer()
+    toolbar.add_button(icon='sun', command=ttk.toggle_theme)
 
     # Content container on the right (routed page content)
     content_container = ttk.Frame(main_container, surface='content')
     content_container.pack(side='right', fill='both', expand=True)
 
-    # Create all pages
-    pages = {
-        'home': create_page(content_container, 'Home',
-            'Welcome to the app! This is your home dashboard.'),
-        'documents': create_page(content_container, 'Documents',
-            'View and manage your documents here.'),
-        'downloads': create_page(content_container, 'Downloads',
-            'Access your downloaded files.'),
-        'photos': create_page(content_container, 'Photos',
-            'Browse your photo collection.'),
-        'music': create_page(content_container, 'Music',
-            'Listen to your music library.'),
-        'videos': create_page(content_container, 'Videos',
-            'Watch your video collection.'),
-        'local': create_page(content_container, 'Local Files',
-            'Files stored on this device.'),
-        'cloud': create_page(content_container, 'Cloud Storage',
-            'Files stored in the cloud.'),
-        'network': create_page(content_container, 'Network',
-            'Files on network drives.'),
-        'account': create_page(content_container, 'Account',
-            'Manage your account settings.'),
-        'settings': create_page(content_container, 'Settings',
-            'Configure application settings.'),
+    # Page definitions (lazy creation for better startup performance)
+    page_definitions = {
+        'home': ('Home', 'Welcome to the app! This is your home dashboard.'),
+        'documents': ('Documents', 'View and manage your documents here.'),
+        'downloads': ('Downloads', 'Access your downloaded files.'),
+        'photos': ('Photos', 'Browse your photo collection.'),
+        'music': ('Music', 'Listen to your music library.'),
+        'videos': ('Videos', 'Watch your video collection.'),
+        'local': ('Local Files', 'Files stored on this device.'),
+        'cloud': ('Cloud Storage', 'Files stored in the cloud.'),
+        'network': ('Network', 'Files on network drives.'),
+        'account': ('Account', 'Manage your account settings.'),
+        'settings': ('Settings', 'Configure application settings.'),
     }
 
-    # Initially show only home page
+    # Cache for created pages (lazy creation)
+    pages = {}
     current_page = [None]  # Use list to allow mutation in closure
+
+    def get_or_create_page(key):
+        """Get existing page or create it on first access (lazy loading)."""
+        if key not in pages and key in page_definitions:
+            title, description = page_definitions[key]
+            pages[key] = create_page(content_container, title, description)
+        return pages.get(key)
 
     def show_page(key):
         """Switch to the specified page."""
         if current_page[0]:
             current_page[0].pack_forget()
-        if key in pages:
-            pages[key].pack(fill='both', expand=True)
-            current_page[0] = pages[key]
+        page = get_or_create_page(key)
+        if page:
+            page.pack(fill='both', expand=True)
+            current_page[0] = page
 
     # --- Add navigation items ---
 
@@ -108,14 +107,14 @@ def main():
     nav.add_item('documents', text='Documents', icon='file-earmark-text')
     nav.add_item('downloads', text='Downloads', icon='cloud-download')
 
-    # nav.add_separator()
+    nav.add_separator()
     nav.add_header('Favorites')
 
     nav.add_item('photos', text='Photos', icon='image')
     nav.add_item('music', text='Music', icon='music-note-beamed')
     nav.add_item('videos', text='Videos', icon='camera-video')
 
-    # nav.add_separator()
+    nav.add_separator()
     nav.add_header('Storage')
 
     # Create a group for file locations
@@ -131,20 +130,6 @@ def main():
     # Select home by default
     nav.select('home')
     show_page('home')
-
-    # --- Display mode controls (at bottom of content) ---
-
-    mode_frame = ttk.Frame(content_container, padding=10)
-    mode_frame.pack(side='bottom', fill='x')
-
-    ttk.Label(mode_frame, text='Display Mode:').pack(side='left', padx=(0, 10))
-    for mode in ['expanded', 'compact', 'minimal']:
-        btn = ttk.Button(
-            mode_frame,
-            text=mode.capitalize(),
-            command=lambda m=mode: nav.set_display_mode(m),
-        )
-        btn.pack(side='left', padx=2)
 
     # --- Event handlers ---
 
