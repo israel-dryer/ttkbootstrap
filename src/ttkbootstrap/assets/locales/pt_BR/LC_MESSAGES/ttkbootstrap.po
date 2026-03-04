@@ -433,7 +433,7 @@ msgstr "Sair"
 # ============================================================================
 
 msgid "edit.cut"
-msgstr "Cortar"
+msgstr "Recortar"
 
 msgid "edit.copy"
 msgstr "Copiar"
