@@ -751,24 +751,24 @@ if TYPE_CHECKING:
 
 __all__ = [
     # Tk exports
-    Tk, Menu, Text, Canvas, TkFrame, Variable, StringVar, IntVar, BooleanVar, DoubleVar,
-    PhotoImage, LabelFrame,
+    "Tk", "Menu", "Text", "Canvas", "TkFrame", "Variable", "StringVar", "IntVar", "BooleanVar", "DoubleVar",
+    "PhotoImage", "LabelFrame",
 
     # TTk exports
-    Button, Checkbutton, Combobox, Entry, Frame, Labelframe,
-    Label, Menubutton, Notebook, Panedwindow, Progressbar, Radiobutton,
-    Scale, Scrollbar, Separator, Sizegrip, Spinbox,
-    Treeview, OptionMenu,
+    "Button", "Checkbutton", "Combobox", "Entry", "Frame", "Labelframe",
+    "Label", "Menubutton", "Notebook", "Panedwindow", "Progressbar", "Radiobutton",
+    "Scale", "Scrollbar", "Separator", "Sizegrip", "Spinbox",
+    "Treeview", "OptionMenu",
 
     # TTkBootstrap exports
-    Bootstyle,
-    Style,
-    Toplevel,
-    Window,
-    DateEntry,
-    Floodgauge,
-    FloodgaugeLegacy,
-    LabeledScale,
-    Meter,
-    M
+    "Bootstyle",
+    "Style",
+    "Toplevel",
+    "Window",
+    "DateEntry",
+    "Floodgauge",
+    "FloodgaugeLegacy",
+    "LabeledScale",
+    "Meter",
+    "M"
 ]
