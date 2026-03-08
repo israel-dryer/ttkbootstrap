@@ -2359,14 +2359,18 @@ class Tableview(ttk.Frame):
             show=HEADINGS,
             bootstyle=f"{bootstyle}-table",
         )
-        self.view.pack(fill=BOTH, expand=YES, side=LEFT)
 
         if self._yscrollbar:
             self.ybar = ttk.Scrollbar(
                 master=table_frame, command=self.view.yview, orient=VERTICAL
             )
-            self.ybar.pack(fill=Y, side=RIGHT)
             self.view.configure(yscrollcommand=self.ybar.set)
+            self.view.grid(row=0, column=0, sticky=NSEW)
+            self.ybar.grid(row=0, column=1, sticky=NS)
+            table_frame.columnconfigure(0, weight=1)
+            table_frame.rowconfigure(0, weight=1)
+        else:
+            self.view.pack(fill=BOTH, expand=YES, side=LEFT)
 
         self.hbar = ttk.Scrollbar(
             master=self, command=self.view.xview, orient=HORIZONTAL
