@@ -9,9 +9,11 @@ several patterns for organizing and switching between content areas.
 
 This guide covers:
 
+- **AppShell** — the fastest way to get toolbar + sidebar + pages
+- **SideNav** — standalone sidebar navigation with display modes and groups
 - **Tabs** — category-based switching with [Notebook](../widgets/views/notebook.md)
 - **Stacked views** — flow-based navigation with [PageStack](../widgets/views/pagestack.md)
-- **Sidebar navigation** — custom navigation panels controlling a PageStack
+- **Custom sidebar** — rolling your own navigation panel
 
 ---
 
@@ -19,9 +21,160 @@ This guide covers:
 
 | Pattern | Best for | Widget |
 |---------|----------|--------|
+| **AppShell** | Most desktop apps — toolbar, sidebar, and pages in one call | `AppShell` |
+| **SideNav + PageStack** | Custom layouts where you control toolbar/content placement | `SideNav` + `PageStack` |
 | **Tabs** | Category switching, settings panels, dashboards | `Notebook` |
 | **Stacked views** | Wizards, multi-step flows, drill-down navigation | `PageStack` |
-| **Sidebar + stack** | App-wide navigation, many sections, persistent menu | `PageStack` + custom sidebar |
+| **Custom sidebar** | Unusual layouts where built-in widgets don't fit | `PageStack` + custom sidebar |
+
+For most applications, **start with `AppShell`**. Drop down to `SideNav` + `PageStack` if you
+need more control over layout, or to a custom sidebar if your requirements are truly unique.
+
+---
+
+## AppShell
+
+`AppShell` is the fastest way to build a navigation-based application. It wires together
+a `Toolbar`, `SideNav`, and `PageStack` automatically:
+
+```python
+import ttkbootstrap as ttk
+
+shell = ttk.AppShell(title="My App", size=(1000, 650))
+
+# Each add_page() creates a nav item and returns a Frame for content
+home = shell.add_page("home", text="Home", icon="house")
+ttk.Label(home, text="Welcome!").pack(padx=20, pady=20)
+
+docs = shell.add_page("docs", text="Documents", icon="file-earmark-text")
+ttk.Label(docs, text="Your documents.").pack(padx=20, pady=20)
+
+# Toolbar buttons appear on the right side
+shell.toolbar.add_button(icon="sun", command=ttk.toggle_theme)
+
+shell.mainloop()
+```
+
+### Groups and footer items
+
+```python
+shell.add_group("files", text="Files", icon="folder")
+shell.add_page("local", text="Local", icon="hdd", group="files")
+shell.add_page("cloud", text="Cloud", icon="cloud", group="files")
+
+shell.add_page("settings", text="Settings", icon="gear", is_footer=True)
+```
+
+### Programmatic navigation
+
+```python
+shell.navigate("settings")
+
+shell.on_page_changed(lambda e: print(f"Now on: {shell.current_page}"))
+```
+
+### When to use AppShell
+
+- You want the standard toolbar + sidebar + pages layout
+- You want navigation wired to pages automatically
+- You want a quick scaffold without manual widget plumbing
+
+### When to use something else
+
+- You need a custom toolbar position or multiple toolbars — use `SideNav` + `PageStack` directly
+- You need horizontal tabs — use `Notebook`
+- You need a plain window — use `App`
+
+!!! link "AppShell Reference"
+    See [AppShell](../widgets/application/appshell.md) for all options including frameless mode, display modes, and component access.
+
+---
+
+## SideNav
+
+`SideNav` is the standalone sidebar navigation widget. Use it when you need sidebar navigation
+but want full control over the surrounding layout:
+
+```python
+import ttkbootstrap as ttk
+
+app = ttk.App(title="SideNav Demo", size=(900, 600))
+
+nav = ttk.SideNav(app)
+nav.pack(side="left", fill="y")
+
+nav.add_item("home", text="Home", icon="house")
+nav.add_item("docs", text="Documents", icon="file-earmark-text")
+nav.add_item("settings", text="Settings", icon="gear")
+
+nav.select("home")
+
+nav.on_selection_changed(lambda e: print(f"Selected: {e.data['key']}"))
+
+app.mainloop()
+```
+
+### Wiring SideNav to PageStack
+
+When using SideNav outside of AppShell, you wire it to a PageStack manually:
+
+```python
+import ttkbootstrap as ttk
+
+app = ttk.App(title="SideNav + PageStack", size=(900, 600))
+
+# Sidebar
+nav = ttk.SideNav(app)
+nav.pack(side="left", fill="y")
+
+# Content area
+stack = ttk.PageStack(app)
+stack.pack(side="left", fill="both", expand=True)
+
+# Add nav items and pages
+nav.add_item("home", text="Home", icon="house")
+home = stack.add("home", padding=20)
+ttk.Label(home, text="Welcome!").pack()
+
+nav.add_item("settings", text="Settings", icon="gear")
+settings = stack.add("settings", padding=20)
+ttk.Label(settings, text="Settings page").pack()
+
+# Wire selection to navigation
+nav.on_selection_changed(lambda e: stack.navigate(e.data["key"]))
+
+nav.select("home")
+app.mainloop()
+```
+
+### Display modes
+
+| Mode | Description |
+|------|-------------|
+| `expanded` | Full width with icon and text (default) |
+| `compact` | Narrow, icon-only; groups show popup menus |
+| `minimal` | Hidden until toggled open |
+
+```python
+nav = ttk.SideNav(app, display_mode="compact")
+
+# Toggle between modes
+nav.toggle_pane()
+nav.set_display_mode("expanded")
+```
+
+### Groups
+
+Groups expand/collapse in expanded mode and show a popup menu in compact mode:
+
+```python
+nav.add_group("files", text="Files", icon="folder")
+nav.add_item("local", text="Local", icon="hdd", group="files")
+nav.add_item("cloud", text="Cloud", icon="cloud", group="files")
+```
+
+!!! link "SideNav Reference"
+    See [SideNav](../widgets/navigation/sidenav.md) for headers, separators, footer items, events, and toolbar integration.
 
 ---
 
@@ -59,7 +212,7 @@ app.mainloop()
 
 ### When to avoid tabs
 
-- You have many sections (7+) — consider sidebar navigation
+- You have many sections (7+) — use SideNav or AppShell
 - Navigation is sequential — use PageStack instead
 - Views have parent-child relationships — use PageStack with back/forward
 
@@ -118,253 +271,66 @@ app.mainloop()
 
 ---
 
-## Sidebar navigation
+## Combining patterns
 
-For applications with many sections, a **sidebar** provides persistent navigation that controls
-a `PageStack`. This pattern is common in desktop applications and admin dashboards.
-
-### Basic sidebar with PageStack
+You can combine navigation patterns. For example, an AppShell for top-level sections,
+with tabs inside one of the pages:
 
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.App(title="Sidebar Navigation")
-app.geometry("800x500")
+shell = ttk.AppShell(title="Combined Navigation", size=(1000, 650))
 
-# Main layout: sidebar + content area
-main = ttk.PanedWindow(app, orient="horizontal")
-main.pack(fill="both", expand=True)
+# Simple page
+home = shell.add_page("home", text="Home", icon="house")
+ttk.Label(home, text="Dashboard", font="heading-xl").pack(anchor="w", padx=20, pady=20)
 
-# Sidebar
-sidebar = ttk.Frame(main, padding=10, width=200)
-main.add(sidebar, weight=0)
+# Page with tabs inside
+settings = shell.add_page("settings", text="Settings", icon="gear")
 
-# Content area with PageStack
-content = ttk.Frame(main)
-main.add(content, weight=1)
+tabs = ttk.Notebook(settings, padding=10)
+tabs.pack(fill="both", expand=True, padx=10, pady=10)
 
-stack = ttk.PageStack(content)
-stack.pack(fill="both", expand=True)
+general = tabs.add(text="General", key="general")
+ttk.Label(general, text="General settings").pack(anchor="w")
 
-# Create pages
-dashboard = stack.add("dashboard", padding=20)
-users = stack.add("users", padding=20)
-settings = stack.add("settings", padding=20)
-reports = stack.add("reports", padding=20)
+advanced = tabs.add(text="Advanced", key="advanced")
+ttk.Label(advanced, text="Advanced options").pack(anchor="w")
 
-ttk.Label(dashboard, text="Dashboard", font="heading-xl").pack(anchor="w")
-ttk.Label(dashboard, text="Overview of your application").pack(anchor="w", pady=(10, 0))
-
-ttk.Label(users, text="Users", font="heading-xl").pack(anchor="w")
-ttk.Label(users, text="Manage user accounts").pack(anchor="w", pady=(10, 0))
-
-ttk.Label(settings, text="Settings", font="heading-xl").pack(anchor="w")
-ttk.Label(settings, text="Application configuration").pack(anchor="w", pady=(10, 0))
-
-ttk.Label(reports, text="Reports", font="heading-xl").pack(anchor="w")
-ttk.Label(reports, text="View and export reports").pack(anchor="w", pady=(10, 0))
-
-# Sidebar navigation buttons
-nav_items = [
-    ("Dashboard", "dashboard"),
-    ("Users", "users"),
-    ("Settings", "settings"),
-    ("Reports", "reports"),
-]
-
-for label, page_key in nav_items:
-    btn = ttk.Button(
-        sidebar,
-        text=label,
-        width=20,
-        command=lambda k=page_key: stack.navigate(k),
-    )
-    btn.pack(fill="x", pady=2)
-
-app.mainloop()
-```
-
-### Highlighting the active item
-
-Track which navigation item is active and style it differently:
-
-```python
-import ttkbootstrap as ttk
-
-app = ttk.App(title="Sidebar with Active State")
-app.geometry("800x500")
-
-# Layout
-main = ttk.PanedWindow(app, orient="horizontal")
-main.pack(fill="both", expand=True)
-
-sidebar = ttk.Frame(main, padding=10, width=200)
-main.add(sidebar, weight=0)
-
-content = ttk.Frame(main)
-main.add(content, weight=1)
-
-stack = ttk.PageStack(content)
-stack.pack(fill="both", expand=True)
-
-# Pages
-for key in ["dashboard", "users", "settings"]:
-    page = stack.add(key, padding=20)
-    ttk.Label(page, text=key.title(), font="heading-xl").pack(anchor="w")
-
-# Navigation with active tracking
-nav_buttons = {}
-
-def navigate_to(page_key):
-    stack.navigate(page_key)
-    update_active_state(page_key)
-
-def update_active_state(active_key):
-    for key, btn in nav_buttons.items():
-        if key == active_key:
-            btn.configure(accent="primary")
-        else:
-            btn.configure(accent="secondary", variant="outline")
-
-nav_items = [
-    ("Dashboard", "dashboard"),
-    ("Users", "users"),
-    ("Settings", "settings"),
-]
-
-for label, page_key in nav_items:
-    btn = ttk.Button(
-        sidebar,
-        text=label,
-        width=20,
-        accent="secondary", variant="outline",
-        command=lambda k=page_key: navigate_to(k),
-    )
-    btn.pack(fill="x", pady=2)
-    nav_buttons[page_key] = btn
-
-# Set initial active state
-update_active_state("dashboard")
-
-app.mainloop()
-```
-
-### Using events to sync sidebar state
-
-Instead of manually updating state, listen to PageStack events:
-
-```python
-import ttkbootstrap as ttk
-
-app = ttk.App(title="Event-driven Sidebar")
-app.geometry("800x500")
-
-main = ttk.PanedWindow(app, orient="horizontal")
-main.pack(fill="both", expand=True)
-
-sidebar = ttk.Frame(main, padding=10, width=200)
-main.add(sidebar, weight=0)
-
-content = ttk.Frame(main)
-main.add(content, weight=1)
-
-stack = ttk.PageStack(content)
-stack.pack(fill="both", expand=True)
-
-# Pages
-for key in ["dashboard", "users", "settings"]:
-    page = stack.add(key, padding=20)
-    ttk.Label(page, text=key.title(), font="heading-xl").pack(anchor="w")
-
-# Navigation buttons
-nav_buttons = {}
-
-nav_items = [
-    ("Dashboard", "dashboard"),
-    ("Users", "users"),
-    ("Settings", "settings"),
-]
-
-for label, page_key in nav_items:
-    btn = ttk.Button(
-        sidebar,
-        text=label,
-        width=20,
-        accent="secondary", variant="outline",
-        command=lambda k=page_key: stack.navigate(k),
-    )
-    btn.pack(fill="x", pady=2)
-    nav_buttons[page_key] = btn
-
-# Sync sidebar state on page change
-def on_page_changed(event):
-    current = event.data.get("page")
-    for key, btn in nav_buttons.items():
-        if key == current:
-            btn.configure(accent="primary")
-        else:
-            btn.configure(accent="secondary", variant="outline")
-
-stack.on_page_changed(on_page_changed)
-
-# Trigger initial state
-stack.navigate("dashboard")
-
-app.mainloop()
+shell.mainloop()
 ```
 
 ---
 
-## Combining patterns
+## Custom sidebar
 
-You can combine navigation patterns. For example, a sidebar for top-level sections,
-with tabs inside one of the sections:
+For layouts where `SideNav` doesn't fit, you can build a custom sidebar with buttons
+controlling a `PageStack`:
 
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.App(title="Combined Navigation")
-app.geometry("900x600")
-
-main = ttk.PanedWindow(app, orient="horizontal")
-main.pack(fill="both", expand=True)
+app = ttk.App(title="Custom Sidebar", size=(800, 500))
 
 # Sidebar
-sidebar = ttk.Frame(main, padding=10, width=180)
-main.add(sidebar, weight=0)
+sidebar = ttk.Frame(app, padding=10, width=200)
+sidebar.pack(side="left", fill="y")
 
 # Content
-content = ttk.Frame(main)
-main.add(content, weight=1)
+stack = ttk.PageStack(app)
+stack.pack(side="left", fill="both", expand=True)
 
-stack = ttk.PageStack(content)
-stack.pack(fill="both", expand=True)
+# Pages
+for key in ["dashboard", "users", "settings"]:
+    page = stack.add(key, padding=20)
+    ttk.Label(page, text=key.title(), font="heading-xl").pack(anchor="w")
 
-# Dashboard page (simple)
-dashboard = stack.add("dashboard", padding=20)
-ttk.Label(dashboard, text="Dashboard", font="heading-xl").pack(anchor="w")
-
-# Settings page (with tabs)
-settings = stack.add("settings", padding=10)
-ttk.Label(settings, text="Settings", font="heading-xl").pack(anchor="w", pady=(0, 10))
-
-settings_tabs = ttk.Notebook(settings, padding=10)
-settings_tabs.pack(fill="both", expand=True)
-
-general = settings_tabs.add(text="General", key="general")
-ttk.Label(general, text="General settings go here").pack(anchor="w")
-
-advanced = settings_tabs.add(text="Advanced", key="advanced")
-ttk.Label(advanced, text="Advanced options").pack(anchor="w")
-
-# Sidebar buttons
+# Navigation buttons with active tracking
 nav_buttons = {}
 
-for label, key in [("Dashboard", "dashboard"), ("Settings", "settings")]:
+for label, key in [("Dashboard", "dashboard"), ("Users", "users"), ("Settings", "settings")]:
     btn = ttk.Button(
-        sidebar,
-        text=label,
-        width=18,
+        sidebar, text=label, width=20,
         accent="secondary", variant="outline",
         command=lambda k=key: stack.navigate(k),
     )
@@ -374,13 +340,19 @@ for label, key in [("Dashboard", "dashboard"), ("Settings", "settings")]:
 def on_page_changed(event):
     current = event.data.get("page")
     for key, btn in nav_buttons.items():
-        btn.configure(accent="primary" if key == current else "secondary", variant=None if key == current else "outline")
+        if key == current:
+            btn.configure(accent="primary", variant=None)
+        else:
+            btn.configure(accent="secondary", variant="outline")
 
 stack.on_page_changed(on_page_changed)
 stack.navigate("dashboard")
 
 app.mainloop()
 ```
+
+This is significantly more code than using `SideNav` or `AppShell`, so only use this
+approach when you need a layout that the built-in widgets can't provide.
 
 ---
 
@@ -403,9 +375,10 @@ app.mainloop()
 If your app needs to open a specific view programmatically:
 
 ```python
-# Navigate directly to a nested view
-stack.navigate("users")
-# Or with data
+# AppShell
+shell.navigate("users")
+
+# PageStack directly
 stack.navigate("user-detail", data={"user_id": 42})
 ```
 
@@ -421,7 +394,9 @@ When switching views, consider whether state should be preserved:
 
 ## Additional resources
 
+- [AppShell](../widgets/application/appshell.md) — app window with built-in navigation
+- [SideNav](../widgets/navigation/sidenav.md) — standalone sidebar navigation
+- [Toolbar](../widgets/navigation/toolbar.md) — horizontal toolbar
 - [Notebook](../widgets/views/notebook.md) — tabbed view container
 - [PageStack](../widgets/views/pagestack.md) — stacked views with history
-- [PanedWindow](../widgets/layout/panedwindow.md) — resizable split layouts
 - [App Structure](app-structure.md) — organizing your application code
