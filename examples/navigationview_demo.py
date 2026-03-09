@@ -9,8 +9,6 @@ Demonstrates the NavigationView container with actual page navigation:
 """
 
 import ttkbootstrap as ttk
-from ttkbootstrap.widgets.composites.navigationview import NavigationView
-from ttkbootstrap.widgets.composites.toolbar import Toolbar
 
 
 def create_page(parent, title, description):
@@ -37,7 +35,7 @@ def main():
     container = ttk.Frame(root).pack(fill='both', expand=True)
 
     # --- Toolbar at the top (spans full width) ---
-    toolbar = Toolbar(container, padding=(5, 0), surface='chrome', show_window_controls=False)
+    toolbar = ttk.Toolbar(container, padding=(5, 0), surface='chrome', show_window_controls=False)
     toolbar.pack(fill='x')
 
     # --- Main container below toolbar ---
@@ -45,14 +43,10 @@ def main():
     main_container.pack(fill='both', expand=True)
 
     # NavigationView on the left (no internal header - using external toolbar)
-    nav = NavigationView(main_container, show_header=False, collapsible=False)
+    nav = ttk.NavigationView(main_container, show_header=False, collapsible=False)
     nav.pack(side='left', fill='y')
 
     # Add toolbar buttons that control the navigation
-    toolbar.add_button(
-        icon='arrow-left',
-        command=lambda: nav.select('home'),
-    )
     toolbar.add_button(
         icon='list',
         command=nav.toggle_pane,
@@ -137,11 +131,7 @@ def main():
         key = event.data.get('key', '')
         show_page(key)
 
-    def on_back_requested(event):
-        nav.select('home')
-
     nav.on_selection_changed(on_selection_changed)
-    nav.on_back_requested(on_back_requested)
 
     root.mainloop()
 

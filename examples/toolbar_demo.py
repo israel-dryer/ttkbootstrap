@@ -48,7 +48,7 @@ def main():
     # --- Example 3: Toolbar with window controls ---
     ttk.Label(root, text="Toolbar with Window Controls", font='heading').pack(anchor='w', padx=10, pady=(20, 5))
 
-    toolbar3 = Toolbar(root, show_window_controls=True, show_border=True, density='compact')
+    toolbar3 = Toolbar(root, show_window_controls=True, show_border=True, density='compact', surface='success')
     toolbar3.pack(fill='x', padx=10, pady=5)
 
     toolbar3.add_button(icon='list')
@@ -69,8 +69,7 @@ def main():
         titlebar = Toolbar(
             win,
             show_window_controls=True,
-            draggable=True,
-            accent='primary',
+            draggable=True
         )
         titlebar.pack(fill='x')
 

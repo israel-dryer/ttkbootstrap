@@ -2,9 +2,18 @@
 
 from typing import Any
 
+from typing_extensions import TypedDict, Unpack
+
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.primitives.separator import Separator
 from ttkbootstrap.widgets.types import Master
+
+
+class NavigationViewSeparatorKwargs(TypedDict, total=False):
+    # Frame options
+    padding: Any
+    width: int
+    height: int
 
 
 class NavigationViewSeparator(Frame):
@@ -23,7 +32,9 @@ class NavigationViewSeparator(Frame):
         ```
     """
 
-    def __init__(self, master: Master = None, **kwargs: Any):
+    DEFAULT_PADDING = (0, 4, 0, 4)
+
+    def __init__(self, master: Master = None, **kwargs: Unpack[NavigationViewSeparatorKwargs]):
         """Initialize a NavigationViewSeparator.
 
         Args:
@@ -31,7 +42,7 @@ class NavigationViewSeparator(Frame):
             **kwargs: Additional arguments passed to Frame.
         """
         # Default padding for visual separation
-        kwargs.setdefault('padding', (0, 4, 0, 4))
+        kwargs.setdefault('padding', self.DEFAULT_PADDING)
 
         super().__init__(master, **kwargs)
 

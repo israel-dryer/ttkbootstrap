@@ -1,6 +1,7 @@
 """Composite ttkbootstrap widgets."""
 
 from ttkbootstrap.widgets.composites.accordion import Accordion
+from ttkbootstrap.widgets.composites.appshell import AppShell
 from ttkbootstrap.widgets.composites.compositeframe import Composite, CompositeFrame
 from ttkbootstrap.widgets.composites.expander import Expander
 from ttkbootstrap.widgets.composites.list import ListItem, ListView, MemoryDataSource, DataSourceProtocol
@@ -19,6 +20,7 @@ from ttkbootstrap.widgets.composites.navigationview import (
 
 __all__ = [
     'Accordion',
+    'AppShell',
     'Composite',
     'CompositeFrame',
     'Expander',

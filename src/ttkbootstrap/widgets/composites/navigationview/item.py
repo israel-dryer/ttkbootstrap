@@ -5,6 +5,8 @@ from __future__ import annotations
 from tkinter import Variable
 from typing import Any, Callable, TYPE_CHECKING
 
+from typing_extensions import TypedDict, Unpack
+
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.primitives.label import Label
 from ttkbootstrap.widgets.composites.compositeframe import CompositeFrame
@@ -13,6 +15,26 @@ from ttkbootstrap.widgets.types import Master
 
 if TYPE_CHECKING:
     from ttkbootstrap.core.signals import Signal
+
+
+class NavigationViewItemKwargs(TypedDict, total=False):
+    key: str
+    text: str
+    icon: Any
+    signal: Any
+    variable: Variable
+    is_enabled: bool
+    indent_level: int
+    command: Callable
+    padding_x: int
+    padding_y: int
+    icon_gap: int
+    accent: str
+    variant: str
+    # Frame options
+    padding: Any
+    width: int
+    height: int
 
 
 class NavigationViewItem(Frame):
@@ -46,8 +68,10 @@ class NavigationViewItem(Frame):
 
     # Default padding values
     DEFAULT_PADDING_X = 12  # Horizontal padding on left/right edges
-    DEFAULT_PADDING_Y = 10  # Vertical padding
+    DEFAULT_PADDING_Y = 6   # Vertical padding
     DEFAULT_ICON_GAP = 10   # Gap between icon and text in expanded mode
+    COMPACT_PADDING_X = 6   # Reduced horizontal padding in compact mode
+    COMPACT_PADDING_Y = 6   # Reduced vertical padding in compact mode
 
     def __init__(
         self,
@@ -63,7 +87,7 @@ class NavigationViewItem(Frame):
         padding_x: int = None,
         padding_y: int = None,
         icon_gap: int = None,
-        **kwargs: Any
+        **kwargs: Unpack[NavigationViewItemKwargs]
     ):
         """Initialize a NavigationViewItem.
 
@@ -183,10 +207,10 @@ class NavigationViewItem(Frame):
         self._text_label.pack_forget()
 
         if self._compact:
-            # Compact mode: symmetrical padding, icon centered
-            self._container.configure(
-                padding=(self._padding_x, self._padding_y, self._padding_x, self._padding_y)
-            )
+            # Compact mode: tighter symmetrical padding, icon centered
+            px = self.COMPACT_PADDING_X
+            py = self.COMPACT_PADDING_Y
+            self._container.configure(padding=(px, py, px, py))
             if self._icon_label:
                 self._icon_label.pack(expand=True)
         else:

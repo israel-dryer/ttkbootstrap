@@ -5,6 +5,8 @@ from __future__ import annotations
 from tkinter import TclError, Variable
 from typing import Any, TYPE_CHECKING
 
+from typing_extensions import TypedDict, Unpack
+
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.primitives.gridframe import GridFrame
 from ttkbootstrap.widgets.primitives.label import Label
@@ -16,6 +18,20 @@ from ttkbootstrap.widgets.types import Master
 if TYPE_CHECKING:
     from ttkbootstrap.core.signals import Signal
     from ttkbootstrap.widgets.composites.navigationview.item import NavigationViewItem
+
+
+class NavigationViewGroupKwargs(TypedDict, total=False):
+    key: str
+    text: str
+    icon: Any
+    signal: Any
+    variable: Variable
+    is_expanded: bool
+    accent: str
+    # Frame options
+    padding: Any
+    width: int
+    height: int
 
 
 class NavigationViewGroup(Frame):
@@ -49,8 +65,10 @@ class NavigationViewGroup(Frame):
 
     # Default padding values (same as NavigationViewItem)
     DEFAULT_PADDING_X = 12
-    DEFAULT_PADDING_Y = 10
+    DEFAULT_PADDING_Y = 6
     DEFAULT_ICON_GAP = 10
+    COMPACT_PADDING_X = 6
+    COMPACT_PADDING_Y = 6
 
     def __init__(
         self,
@@ -61,7 +79,7 @@ class NavigationViewGroup(Frame):
         signal: 'Signal[Any]' = None,
         variable: Variable = None,
         is_expanded: bool = False,
-        **kwargs: Any
+        **kwargs: Unpack[NavigationViewGroupKwargs]
     ):
         """Initialize a NavigationViewGroup.
 
@@ -195,11 +213,18 @@ class NavigationViewGroup(Frame):
         self._chevron_label.pack_forget()
 
         if self._compact:
-            # Compact mode: icon only, centered
+            # Compact mode: tighter padding, icon centered
+            px = self.COMPACT_PADDING_X
+            py = self.COMPACT_PADDING_Y
+            self._container.configure(padding=(px, py, px, py))
             if self._icon_label:
                 self._icon_label.pack(expand=True)
         else:
-            # Expanded mode: icon + text + chevron
+            # Expanded mode: restore default padding, icon + text + chevron
+            self._container.configure(
+                padding=(self.DEFAULT_PADDING_X, self.DEFAULT_PADDING_Y,
+                         self.DEFAULT_PADDING_X, self.DEFAULT_PADDING_Y)
+            )
             if self._icon_label:
                 self._icon_label.pack(side='left', padx=(0, self.DEFAULT_ICON_GAP))
             self._text_label.pack(side='left', fill='x', expand=True)

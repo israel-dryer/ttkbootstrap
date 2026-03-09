@@ -304,6 +304,10 @@ def build_navigationbutton_label_style(b: BootstyleBuilderTTk, ttk_style: str, a
     ]
 
     state_spec = dict(foreground=foreground_state_map, background=background_state_map)
-    state_spec = apply_icon_mapping(b, options, state_spec, icon_size(icon_only, density))
+
+    # Navigation icons use a smaller size than standalone icon buttons
+    # to stay visually consistent with context menu popup icons
+    nav_icon_size = 20 if icon_only else icon_size(icon_only, density)
+    state_spec = apply_icon_mapping(b, options, state_spec, nav_icon_size)
 
     b.map_style(ttk_style, **state_spec)

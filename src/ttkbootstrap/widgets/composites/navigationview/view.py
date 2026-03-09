@@ -5,6 +5,8 @@ from __future__ import annotations
 from tkinter import Variable
 from typing import Any, Literal, TYPE_CHECKING
 
+from typing_extensions import TypedDict, Unpack
+
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.primitives.gridframe import GridFrame
 from ttkbootstrap.widgets.primitives.button import Button
@@ -22,6 +24,24 @@ from ttkbootstrap.core.signals import Signal
 
 
 DisplayMode = Literal['expanded', 'compact', 'minimal']
+
+
+class NavigationViewKwargs(TypedDict, total=False):
+    title: str
+    show_header: bool
+    show_back_button: bool
+    collapsible: bool
+    display_mode: DisplayMode
+    is_pane_open: bool
+    pane_width: int
+    signal: Any
+    variable: Variable
+    accent: str
+    # Frame options
+    padding: Any
+    width: int
+    height: int
+    surface: str
 
 
 class NavigationView(Frame):
@@ -74,7 +94,7 @@ class NavigationView(Frame):
 
     # Default pane widths
     PANE_WIDTH_EXPANDED = 280
-    PANE_WIDTH_COMPACT = 72
+    PANE_WIDTH_COMPACT = 52
 
     def __init__(
         self,
@@ -89,7 +109,7 @@ class NavigationView(Frame):
         signal: 'Signal[str]' = None,
         variable: Variable = None,
         accent: str = 'primary',
-        **kwargs: Any
+        **kwargs: Unpack[NavigationViewKwargs]
     ):
         """Initialize a NavigationView.
 
@@ -211,7 +231,7 @@ class NavigationView(Frame):
         self._content_frame = GridFrame(
             self._content_scroll.canvas,
             columns=1,
-            gap=(0, 0),
+            gap=(0, 2),
             sticky_items='ew',
             padding=(4, 0),
         )
@@ -274,13 +294,13 @@ class NavigationView(Frame):
         # Update pane width and visibility
         if self._display_mode == 'expanded':
             width = self._pane_width or self.PANE_WIDTH_EXPANDED
-            self._pane_frame.configure(width=width)
+            self._pane_frame.configure(width=width, padding=4)
             if self._is_pane_open:
                 self._pane_frame.pack(side='left', fill='y')
             else:
                 self._pane_frame.pack_forget()
         elif self._display_mode == 'compact':
-            self._pane_frame.configure(width=self.PANE_WIDTH_COMPACT)
+            self._pane_frame.configure(width=self.PANE_WIDTH_COMPACT, padding=2)
             self._pane_frame.pack(side='left', fill='y')
         elif self._display_mode == 'minimal':
             if self._is_pane_open:
@@ -480,7 +500,7 @@ class NavigationView(Frame):
                 text=text,
                 icon=icon,
                 variable=self._selection_var,
-                indent_level=1,  # Indent via button padding, not frame padding
+                indent_level=0,
                 **item_kwargs
             )
             item.grid()

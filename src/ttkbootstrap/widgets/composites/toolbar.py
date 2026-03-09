@@ -5,11 +5,27 @@ from __future__ import annotations
 from tkinter import Widget
 from typing import Any, Callable, Literal
 
+from typing_extensions import TypedDict, Unpack
+
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.primitives.label import Label
 from ttkbootstrap.widgets.primitives.separator import Separator
+from ttkbootstrap.widgets.mixins import configure_delegate
 from ttkbootstrap.widgets.types import Master
+
+
+class ToolbarKwargs(TypedDict, total=False):
+    show_window_controls: bool
+    draggable: bool
+    button_variant: str
+    density: Literal['default', 'compact']
+    padding: Any
+    # Frame options
+    width: int
+    height: int
+    surface: str
+    show_border: bool
 
 
 class Toolbar(Frame):
@@ -50,7 +66,7 @@ class Toolbar(Frame):
         button_variant: str = 'ghost',
         density: Literal['default', 'compact'] = 'default',
         padding: int | tuple = None,
-        **kwargs: Any
+        **kwargs: Unpack[ToolbarKwargs]
     ):
         """Initialize a Toolbar.
 
@@ -105,6 +121,7 @@ class Toolbar(Frame):
             icon_only=True,
             variant='ghost',
             density='compact',
+            surface=self._surface,
             command=self._on_minimize,
         )
         self._minimize_btn.pack(side='left', padx=2)
@@ -116,6 +133,7 @@ class Toolbar(Frame):
             icon_only=True,
             variant='ghost',
             density='compact',
+            surface=self._surface,
             command=self._on_maximize,
         )
         self._maximize_btn.pack(side='left', padx=2)
@@ -127,6 +145,7 @@ class Toolbar(Frame):
             icon_only=True,
             variant='ghost',
             density='compact',
+            surface=self._surface,
             command=self._on_close,
         )
         self._close_btn.pack(side='left', padx=2)
@@ -217,6 +236,7 @@ class Toolbar(Frame):
             accent=accent,
             variant=variant or self._button_variant,
             density=kwargs.pop('density', self._density),
+            surface=kwargs.pop('surface', self._surface),
             **kwargs
         )
         btn.pack(side='left')
@@ -245,6 +265,7 @@ class Toolbar(Frame):
             text=text,
             icon=icon,
             font=font,
+            surface=kwargs.pop('surface', self._surface),
             **kwargs
         )
         lbl.pack(side='left', padx=4)
@@ -352,3 +373,21 @@ class Toolbar(Frame):
     def close_button(self) -> Button | None:
         """Get the close button (if window controls are shown)."""
         return getattr(self, '_close_btn', None)
+
+    # --- Configuration Delegates ---
+
+    @configure_delegate('density')
+    def _delegate_density(self, value: str = None):
+        """Configure the toolbar's default button density."""
+        if value is None:
+            return self._density
+        self._density = value
+        return None
+
+    @configure_delegate('button_variant')
+    def _delegate_button_variant(self, value: str = None):
+        """Configure the toolbar's default button variant."""
+        if value is None:
+            return self._button_variant
+        self._button_variant = value
+        return None

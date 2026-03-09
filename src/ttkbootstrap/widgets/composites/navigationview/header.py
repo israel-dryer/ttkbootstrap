@@ -2,10 +2,20 @@
 
 from typing import Any
 
+from typing_extensions import TypedDict, Unpack
+
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.primitives.label import Label
 from ttkbootstrap.widgets.mixins import configure_delegate
 from ttkbootstrap.widgets.types import Master
+
+
+class NavigationViewHeaderKwargs(TypedDict, total=False):
+    text: str
+    # Frame options
+    padding: Any
+    width: int
+    height: int
 
 
 class NavigationViewHeader(Frame):
@@ -24,11 +34,15 @@ class NavigationViewHeader(Frame):
         ```
     """
 
+    DEFAULT_PADDING = (8, 20, 8, 4)
+    DEFAULT_FONT = 'label'
+    DEFAULT_ACCENT = 'secondary'
+
     def __init__(
         self,
         master: Master = None,
         text: str = '',
-        **kwargs: Any
+        **kwargs: Unpack[NavigationViewHeaderKwargs]
     ):
         """Initialize a NavigationViewHeader.
 
@@ -40,7 +54,7 @@ class NavigationViewHeader(Frame):
         self._text = text
 
         # Default padding: more top margin for visual separation between sections
-        kwargs.setdefault('padding', (8, 20, 8, 4))
+        kwargs.setdefault('padding', self.DEFAULT_PADDING)
 
         super().__init__(master, **kwargs)
 
@@ -48,8 +62,8 @@ class NavigationViewHeader(Frame):
         self._text_label = Label(
             self,
             text=text,
-            font='label',
-            accent='secondary',
+            font=self.DEFAULT_FONT,
+            accent=self.DEFAULT_ACCENT,
             anchor='w',
         )
         self._text_label.pack(fill='x')
