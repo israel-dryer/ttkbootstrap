@@ -1,6 +1,8 @@
-"""NavigationViewHeader widget for section labels in navigation menus."""
+"""SideNavHeader widget for section labels in navigation menus."""
 
 from typing import Any
+
+from typing_extensions import TypedDict, Unpack
 
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.primitives.label import Label
@@ -8,29 +10,41 @@ from ttkbootstrap.widgets.mixins import configure_delegate
 from ttkbootstrap.widgets.types import Master
 
 
-class NavigationViewHeader(Frame):
+class SideNavHeaderKwargs(TypedDict, total=False):
+    text: str
+    # Frame options
+    padding: Any
+    width: int
+    height: int
+
+
+class SideNavHeader(Frame):
     """A non-selectable section header for grouping navigation items.
 
-    NavigationViewHeader provides a text label to identify groups of related
-    navigation items. Unlike NavigationViewItem, headers are not selectable
+    SideNavHeader provides a text label to identify groups of related
+    navigation items. Unlike SideNavItem, headers are not selectable
     and serve only as visual labels. Uses the 'label' font token for styling.
 
     Example:
         ```python
         nav.add_item('home', text='Home', icon='house')
-        nav.add_header('Favorites')  # Creates NavigationViewHeader
+        nav.add_header('Favorites')  # Creates SideNavHeader
         nav.add_item('photos', text='Photos', icon='image')
         nav.add_item('music', text='Music', icon='music-note')
         ```
     """
 
+    DEFAULT_PADDING = (8, 20, 8, 4)
+    DEFAULT_FONT = 'label'
+    DEFAULT_ACCENT = 'secondary'
+
     def __init__(
         self,
         master: Master = None,
         text: str = '',
-        **kwargs: Any
+        **kwargs: Unpack[SideNavHeaderKwargs]
     ):
-        """Initialize a NavigationViewHeader.
+        """Initialize a SideNavHeader.
 
         Args:
             master (Master | None): Parent widget.
@@ -39,8 +53,8 @@ class NavigationViewHeader(Frame):
         """
         self._text = text
 
-        # Default padding: more top margin for visual separation
-        kwargs.setdefault('padding', (8, 12, 8, 4))
+        # Default padding: more top margin for visual separation between sections
+        kwargs.setdefault('padding', self.DEFAULT_PADDING)
 
         super().__init__(master, **kwargs)
 
@@ -48,8 +62,8 @@ class NavigationViewHeader(Frame):
         self._text_label = Label(
             self,
             text=text,
-            font='label',
-            accent='secondary',
+            font=self.DEFAULT_FONT,
+            accent=self.DEFAULT_ACCENT,
             anchor='w',
         )
         self._text_label.pack(fill='x')

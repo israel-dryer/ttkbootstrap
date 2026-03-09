@@ -12,26 +12,22 @@ Use `ttkb start MyApp` to scaffold a new project with the recommended structure.
 
 ## The App Class
 
-Every ttkbootstrap application starts with an `App` instance:
+Every ttkbootstrap application starts with either `App` or `AppShell`:
+
+- **`App`** — a blank window. You build the layout from scratch.
+- **`AppShell`** — an `App` with a toolbar, sidebar navigation, and page stack already wired together.
 
 ```python
 import ttkbootstrap as ttk
 
+# Option A: blank window
 app = ttk.App(title="My Application", theme="darkly")
 
-# ... build your UI ...
-
-app.mainloop()
+# Option B: window with built-in navigation
+app = ttk.AppShell(title="My Application", theme="darkly", size=(1000, 650))
 ```
 
-The `App` class:
-
-- creates the main window
-- initializes theming
-- sets up the application context
-- manages the event loop
-
-You typically create one `App` per process. Additional windows use `Toplevel`.
+Both create the main window, initialize theming, set up the application context, and manage the event loop. You typically create one per process. Additional windows use `Toplevel`.
 
 ---
 
@@ -55,6 +51,53 @@ This demonstrates the core pattern:
 1. Create the App
 2. Add widgets to it
 3. Run the event loop
+
+---
+
+## AppShell: Navigation Built In
+
+Most desktop applications follow the same layout: toolbar at the top, sidebar on the left, page content on the right. `AppShell` gives you that in one call:
+
+```python
+import ttkbootstrap as ttk
+
+shell = ttk.AppShell(title="My App", theme="cosmo-light", size=(1000, 650))
+
+# Each add_page() creates a nav item and returns a Frame for content
+home = shell.add_page("home", text="Home", icon="house")
+ttk.Label(home, text="Welcome!").pack(padx=20, pady=20)
+
+# Add as many pages as you need
+docs = shell.add_page("docs", text="Documents", icon="file-earmark-text")
+ttk.Label(docs, text="Your documents.").pack(padx=20, pady=20)
+
+# Add toolbar buttons (they appear on the right side)
+shell.toolbar.add_button(icon="sun", command=ttk.toggle_theme)
+
+shell.mainloop()
+```
+
+`AppShell` extends `App`, so everything that works on `App` works on `AppShell` too.
+
+### Frameless window
+
+Set `frameless=True` to remove OS window chrome and get a fully custom window. The toolbar automatically gains minimize/maximize/close buttons and becomes draggable:
+
+```python
+shell = ttk.AppShell(
+    title="Custom Window",
+    size=(1000, 650),
+    frameless=True,
+)
+```
+
+### When to use App vs AppShell
+
+| | `App` | `AppShell` |
+|---|---|---|
+| Layout | You build everything | Toolbar + sidebar + pages included |
+| Best for | Custom layouts, simple tools, dialogs | Navigation-based apps |
+| Navigation | Manual (wire your own) | Automatic (add_page wires nav to pages) |
 
 ---
 
@@ -123,7 +166,7 @@ Use `ttkb start MyApp` to scaffold a new project with this structure.
 ttkbootstrap applications follow a **container hierarchy**:
 
 ```
-App (main window)
+App (blank window)
 └── PackFrame (main layout)
     ├── Frame (toolbar area)
     │   └── Button, Button, ...
@@ -131,6 +174,21 @@ App (main window)
     │   └── widgets...
     └── Frame (status bar)
         └── Label
+```
+
+With `AppShell`, the top-level structure is built for you:
+
+```
+AppShell (window)
+├── Toolbar
+│   └── hamburger, title, spacer, [your buttons]
+└── Frame (body)
+    ├── SideNav
+    │   └── SideNavItem, SideNavGroup, ...
+    └── PageStack
+        ├── Frame (page "home")
+        ├── Frame (page "docs")
+        └── ...
 ```
 
 Key principles:
@@ -317,6 +375,33 @@ This demonstrates:
 - PackFrame for layout
 - Reactive label updates
 - Clean separation of concerns
+
+For navigation-based applications, `AppShell` replaces the manual layout wiring:
+
+```python
+import ttkbootstrap as ttk
+
+shell = ttk.AppShell(title="My App", size=(900, 600))
+
+# State
+counter = ttk.Signal(0)
+
+# Pages
+home = shell.add_page("home", text="Home", icon="house")
+display = ttk.Label(home, font="display-xl[48]")
+counter.subscribe(lambda v: display.configure(text=str(v)))
+display.pack(padx=20, pady=20)
+
+controls = ttk.PackFrame(home, direction="horizontal", gap=10)
+controls.pack()
+ttk.Button(controls, text="+1", command=lambda: counter.set(counter.get() + 1)).pack()
+ttk.Button(controls, text="Reset", command=lambda: counter.set(0)).pack()
+
+about = shell.add_page("about", text="About", icon="info-circle")
+ttk.Label(about, text="Counter App v1.0").pack(padx=20, pady=20)
+
+shell.mainloop()
+```
 
 ---
 

@@ -16,10 +16,13 @@ def build_separator_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = 
     surface_token = options.get('surface', 'content')
     orient = options.get('orient', 'horizontal')
     thickness = options.get('thickness', 1)
+    length = options.get('length')  # None means stretch to fill
 
-    width, height = (40, thickness)
+    # Default length for the image (will stretch if packed with fill)
+    default_length = length or 40
+    width, height = (default_length, thickness)
     if orient == 'vertical':
-        width, height = (thickness, 40)
+        width, height = (thickness, default_length)
 
     surface = b.color(surface_token)
     if accent_token == 'border':
@@ -29,6 +32,14 @@ def build_separator_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = 
 
     img = create_box_image(width, height, accent_color)
     sticky = "ew" if orient == "horizontal" else "ns"
-    b.create_style_element_image(ElementImage(f"{ttk_style}.Separator", img, border=0, sticky=sticky))
+
+    # When length is specified, set explicit dimensions to prevent stretching
+    if length and orient == 'vertical':
+        b.create_style_element_image(ElementImage(f"{ttk_style}.Separator", img, border=0, sticky=sticky, height=length))
+    elif length and orient == 'horizontal':
+        b.create_style_element_image(ElementImage(f"{ttk_style}.Separator", img, border=0, sticky=sticky, width=length))
+    else:
+        b.create_style_element_image(ElementImage(f"{ttk_style}.Separator", img, border=0, sticky=sticky))
+
     b.create_style_layout(ttk_style, Element(f"{ttk_style}.Separator", sticky=sticky))
     b.configure_style(ttk_style, background=surface)

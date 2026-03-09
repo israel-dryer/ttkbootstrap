@@ -23,6 +23,7 @@ from ttkbootstrap.style.builders.utils import (
 
 
 @BootstyleBuilderTTk.register_builder('default', 'Toolbutton')
+@BootstyleBuilderTTk.register_builder('solid', 'Toolbutton')
 def build_solid_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     """
     Configure the button style.
@@ -193,7 +194,8 @@ def build_ghost_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent:
     image_key = f'button_{normalize_button_density(density)}'
 
     surface = b.color(surface_token)
-    on_surface = b.color('secondary')
+    surface_hover = b.color(f'{surface_token}_hover') if b.colors.get(f'{surface_token}_hover') else b.subtle('secondary', surface)
+    on_surface = b.color('foreground')
 
     active = b.subtle(accent_token, surface)
     accent_color = b.color(accent_token)
@@ -206,6 +208,7 @@ def build_ghost_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent:
 
     normal_img = recolor_element_image(image_key, surface, surface, surface, surface)
     normal_focus_img = recolor_element_image(image_key, surface, accent_color, focus_ring, surface)
+    hover_img = recolor_element_image(image_key, surface_hover, surface_hover, surface, surface)
     selected_img = recolor_element_image(image_key, active, active, surface, surface)
     selected_pressed_img = recolor_element_image(image_key, accent_pressed, accent_pressed, surface, surface)
     selected_focus_img = recolor_element_image(image_key, accent_focus, accent_color, focus_ring, surface)
@@ -225,6 +228,7 @@ def build_ghost_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent:
                 ('selected pressed', selected_pressed_img.image),
                 ('selected', selected_img.image),
                 ('background focus !selected', normal_focus_img.image),
+                ('hover !selected', hover_img.image),
                 ('', normal_img.image)
             ]))
 

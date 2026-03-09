@@ -49,7 +49,7 @@ def button_style_frame(bootstyle, widget_name):
 
 if __name__ == '__main__':
     # create visual widget style tests
-    root = ttk.App(theme="dark")
+    root = ttk.App(theme="ocean-dark")
 
     button_style_frame('solid', 'Solid Button').pack(side='left')
     button_style_frame('outline', 'Outline Button').pack(side='left')

@@ -23,6 +23,7 @@ class SeparatorKwargs(TypedDict, total=False):
     accent: str
     surface: str
     thickness: int
+    length: int
     style_options: dict[str, Any]
 
 
@@ -45,9 +46,11 @@ class Separator(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Sepa
                 Combined style tokens.
             surface (str): Optional surface token; otherwise inherited.
             thickness (int): Thickness of the separator.
+            length (int): Fixed length of the separator in pixels. If None,
+                stretches to fill available space.
             style_options (dict): Optional dict forwarded to the style builder.
         """
-        kwargs.update(style_options=self._capture_style_options(['thickness'], kwargs))
+        kwargs.update(style_options=self._capture_style_options(['thickness', 'length'], kwargs))
         super().__init__(master, **kwargs)
 
 

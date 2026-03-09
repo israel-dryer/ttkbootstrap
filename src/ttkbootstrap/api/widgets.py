@@ -8,10 +8,26 @@ from ttkbootstrap.widgets.primitives.badge import Badge
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.composites.buttongroup import ButtonGroup
 from ttkbootstrap.widgets.composites.calendar import Calendar
+from ttkbootstrap.widgets.primitives.card import Card
 from ttkbootstrap.widgets.primitives.checkbutton import CheckButton
 from ttkbootstrap.widgets.primitives.checktoggle import CheckToggle
 from ttkbootstrap.widgets.primitives.combobox import Combobox
 from ttkbootstrap.widgets.composites.contextmenu import ContextMenu, ContextMenuItem
+from ttkbootstrap.widgets.composites.sidenav import (
+    SideNav,
+    SideNavItem,
+    SideNavGroup,
+    SideNavHeader,
+    SideNavSeparator,
+)
+
+# Backward compatibility aliases
+NavigationView = SideNav
+NavigationViewItem = SideNavItem
+NavigationViewGroup = SideNavGroup
+NavigationViewHeader = SideNavHeader
+NavigationViewSeparator = SideNavSeparator
+from ttkbootstrap.widgets.composites.toolbar import Toolbar
 from ttkbootstrap.widgets.composites.dateentry import DateEntry
 from ttkbootstrap.widgets.composites.dropdownbutton import DropdownButton
 from ttkbootstrap.widgets.primitives.entry import Entry
@@ -62,6 +78,7 @@ __all__ = [
     "Badge",
     "Button",
     "ButtonGroup",
+    "Card",
     "CheckButton",
     "CheckToggle",
     "Combobox",
@@ -82,6 +99,16 @@ __all__ = [
     "LabelFrame",
     "LabeledScale",
     "MenuBar",
+    "SideNav",
+    "SideNavItem",
+    "SideNavGroup",
+    "SideNavHeader",
+    "SideNavSeparator",
+    "NavigationView",
+    "NavigationViewGroup",
+    "NavigationViewItem",
+    "NavigationViewHeader",
+    "NavigationViewSeparator",
     "MenuButton",
     "Meter",
     "Notebook",
@@ -111,6 +138,7 @@ __all__ = [
     "Toast",
     "ToggleGroup",
     "Switch",
+    "Toolbar",
     "ToolTip",
     "TreeView",
     "TK_WIDGETS",

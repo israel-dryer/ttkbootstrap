@@ -29,7 +29,7 @@ from ttkbootstrap_icons_bs import BootstrapIcon  # noqa: E402
 
 if TYPE_CHECKING:
     from ttkbootstrap.api.menu import MenuManager, create_menu
-    from ttkbootstrap.api.app import App, App as Window, Toplevel, AppSettings, get_app_settings, get_current_app, Shortcuts, Shortcut, get_shortcuts
+    from ttkbootstrap.api.app import App, AppShell, App as Window, Toplevel, AppSettings, get_app_settings, get_current_app, Shortcuts, Shortcut, get_shortcuts
     from ttkbootstrap.api.style import (
         Bootstyle,
         Font,
@@ -46,6 +46,7 @@ if TYPE_CHECKING:
     from ttkbootstrap.api.widgets import (
         Button,
         ButtonGroup,
+        Card,
         CheckButton,
         Combobox,
         ContextMenu,
@@ -66,6 +67,11 @@ if TYPE_CHECKING:
         MenuBar,
         MenuButton,
         Meter,
+        SideNav,
+        SideNavItem,
+        SideNavGroup,
+        SideNavHeader,
+        SideNavSeparator,
         Notebook,
         NumericEntry,
         OptionMenu,
@@ -83,6 +89,7 @@ if TYPE_CHECKING:
         ScrollView,
         SelectBox,
         Separator,
+        SideNav,
         SpinnerEntry,
         SizeGrip,
         Spinbox,
@@ -91,6 +98,7 @@ if TYPE_CHECKING:
         TextEntry,
         TimeEntry,
         Toast,
+        Toolbar,
         ToggleGroup,
         ToolTip,
         TreeView,
@@ -109,6 +117,11 @@ _DEPRECATED_ALIASES = {
     "Treeview": "TreeView",
     "Tableview": "TableView",
     "DatePicker": "Calendar",
+    "NavigationView": "SideNav",
+    "NavigationViewItem": "SideNavItem",
+    "NavigationViewGroup": "SideNavGroup",
+    "NavigationViewHeader": "SideNavHeader",
+    "NavigationViewSeparator": "SideNavSeparator",
 }
 
 _TK_EXPORTS = [
@@ -137,7 +150,7 @@ _TTK_PRIMITIVES = [
 _MODULE_EXPORTS = {
     # Application & Windows (includes menu and shortcuts)
     "ttkbootstrap.api.app": [
-        "App", "Toplevel", "Window", "AppSettings", "get_app_settings", "get_current_app",
+        "App", "AppShell", "Toplevel", "Window", "AppSettings", "get_app_settings", "get_current_app",
         "MenuManager", "create_menu",
         "Shortcuts", "Shortcut", "get_shortcuts",
     ],
@@ -153,13 +166,17 @@ _MODULE_EXPORTS = {
         *_TTK_PRIMITIVES,
         "Badge",
         "ButtonGroup",
+        "Card",
         "CheckToggle",
         "RadioToggle",
         "Calendar", "ContextMenu", "ContextMenuItem", "DateEntry",
         "Accordion", "DropdownButton", "Expander", "Field", "FieldOptions", "FloodGauge", "Form",
-        "GridFrame", "LabeledScale", "MenuBar", "Meter", "NumericEntry", "PackFrame", "PageStack",
+        "GridFrame", "LabeledScale", "MenuBar", "Meter",
+        "SideNav", "SideNavItem", "SideNavGroup",
+        "SideNavHeader", "SideNavSeparator",
+        "NumericEntry", "PackFrame", "PageStack",
         "PasswordEntry", "PathEntry", "RadioGroup", "ScrolledText", "ScrollView", "SpinnerEntry",
-        "SelectBox", "TableView", "TextEntry", "TimeEntry", "Toast", "ToggleGroup", "Switch",
+        "SelectBox", "TableView", "TextEntry", "TimeEntry", "Toast", "Toolbar", "ToggleGroup", "Switch",
         "ToolTip", "TK_WIDGETS", "TTK_WIDGETS",
     ],
     # Dialogs

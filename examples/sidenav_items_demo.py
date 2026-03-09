@@ -1,25 +1,25 @@
 """
-NavigationView Items Demo
+SideNav Items Demo
 
-This demo showcases the NavigationView item widgets:
-- NavigationViewItem: Selectable items with icons, text, and nested children
-- NavigationViewHeader: Section labels
-- NavigationViewSeparator: Visual dividers
+This demo showcases the SideNav item widgets:
+- SideNavItem: Selectable items with icons, text, and nested children
+- SideNavHeader: Section labels
+- SideNavSeparator: Visual dividers
 """
 
 import tkinter as tk
 import ttkbootstrap as ttk
-from ttkbootstrap.widgets.composites.navigationview import (
-    NavigationViewItem,
-    NavigationViewHeader,
-    NavigationViewSeparator,
+from ttkbootstrap.widgets.composites.sidenav import (
+    SideNavItem,
+    SideNavHeader,
+    SideNavSeparator,
 )
 
 
-class NavigationItemsDemo:
+class SideNavItemsDemo:
     def __init__(self, root):
         self.root = root
-        self.root.title("NavigationView Items Demo")
+        self.root.title("SideNav Items Demo")
         self.root.geometry("500x700")
 
         # Shared variable for radio group selection
@@ -56,7 +56,7 @@ class NavigationItemsDemo:
         container.pack(fill='both', expand=True)
 
         # --- Main items ---
-        home = NavigationViewItem(
+        home = SideNavItem(
             container,
             key='home',
             text='Home',
@@ -66,7 +66,7 @@ class NavigationItemsDemo:
         home.pack(fill='x')
         home.on_invoked(self._on_item_invoked)
 
-        documents = NavigationViewItem(
+        documents = SideNavItem(
             container,
             key='documents',
             text='Documents',
@@ -76,7 +76,7 @@ class NavigationItemsDemo:
         documents.pack(fill='x')
         documents.on_invoked(self._on_item_invoked)
 
-        downloads = NavigationViewItem(
+        downloads = SideNavItem(
             container,
             key='downloads',
             text='Downloads',
@@ -87,15 +87,15 @@ class NavigationItemsDemo:
         downloads.on_invoked(self._on_item_invoked)
 
         # --- Separator ---
-        sep1 = NavigationViewSeparator(container)
+        sep1 = SideNavSeparator(container)
         sep1.pack(fill='x')
 
         # --- Header ---
-        header1 = NavigationViewHeader(container, text='Favorites')
+        header1 = SideNavHeader(container, text='Favorites')
         header1.pack(fill='x')
 
         # --- More items ---
-        photos = NavigationViewItem(
+        photos = SideNavItem(
             container,
             key='photos',
             text='Photos',
@@ -105,7 +105,7 @@ class NavigationItemsDemo:
         photos.pack(fill='x')
         photos.on_invoked(self._on_item_invoked)
 
-        music = NavigationViewItem(
+        music = SideNavItem(
             container,
             key='music',
             text='Music',
@@ -116,11 +116,11 @@ class NavigationItemsDemo:
         music.on_invoked(self._on_item_invoked)
 
         # --- Another separator ---
-        sep2 = NavigationViewSeparator(container)
+        sep2 = SideNavSeparator(container)
         sep2.pack(fill='x')
 
         # --- Item with children ---
-        files = NavigationViewItem(
+        files = SideNavItem(
             container,
             key='files',
             text='Files',
@@ -148,11 +148,11 @@ class NavigationItemsDemo:
         gdrive.on_invoked(self._on_item_invoked)
 
         # --- Footer separator ---
-        sep3 = NavigationViewSeparator(container)
+        sep3 = SideNavSeparator(container)
         sep3.pack(fill='x')
 
         # --- Footer item ---
-        settings = NavigationViewItem(
+        settings = SideNavItem(
             container,
             key='settings',
             text='Settings',
@@ -179,7 +179,7 @@ class NavigationItemsDemo:
 
 def main():
     root = ttk.Window(theme="cosmo")
-    app = NavigationItemsDemo(root)
+    app = SideNavItemsDemo(root)
     root.mainloop()
 
 

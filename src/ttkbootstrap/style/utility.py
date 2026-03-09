@@ -705,6 +705,28 @@ def rgb_to_hex(rgb: tuple[int, int, int]) -> str:
     return "#{:02x}{:02x}{:02x}".format(*rgb)
 
 
+def hsl_to_hex(h: float, s: float, l: float) -> str:
+    """Convert HSL values to a hex color string.
+
+    Args:
+        h: Hue in degrees (0-360)
+        s: Saturation as percentage (0-100)
+        l: Lightness as percentage (0-100)
+
+    Returns:
+        Hex color string (e.g., '#ff0000')
+    """
+    # Normalize to 0-1 range
+    h_norm = h / 360.0
+    s_norm = s / 100.0
+    l_norm = l / 100.0
+
+    # colorsys uses HLS order (not HSL)
+    r, g, b = hls_to_rgb(h_norm, l_norm, s_norm)
+
+    return rgb_to_hex((round(r * 255), round(g * 255), round(b * 255)))
+
+
 def best_foreground(bg_color: str, candidates: list[str] = None) -> str:
     """Return the color with the highest contrast against the background."""
     if candidates is None:

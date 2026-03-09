@@ -6,7 +6,9 @@ from importlib import resources
 
 from ttkbootstrap.runtime.app import get_app_settings
 from ttkbootstrap.core.exceptions import ThemeError
-from ttkbootstrap.style.utility import shade_color, tint_color
+from ttkbootstrap.style.utility import (
+    shade_color, tint_color, color_to_hsl, hsl_to_hex, best_foreground
+)
 
 _registered_themes = {}
 _current_theme = None
@@ -310,49 +312,91 @@ class ThemeProvider:
         """Build semantic surface tokens for container backgrounds.
 
         Surface tokens provide deterministic, theme-defined backgrounds
-        that don't rely on "background +1 math" for elevation.
+        that don't rely on "background +1 math" for elevation. The hue
+        and saturation are derived from the theme's background color to
+        ensure consistent tinting across all surfaces.
 
         Token families:
-        - content: Main content areas (pages, cards, panels)
-        - chrome: UI chrome (sidebars, toolbars, navigation)
+        - chrome: UI shell (sidebars, toolbars, navigation)
+        - content: Main content area background (= theme background)
+        - card: Elevated content (cards, panels)
         - overlay: Floating elements (menus, dialogs, tooltips)
-        - titlebar: Window title bars
+        - input: Form control backgrounds
         """
         is_dark = self.mode == 'dark'
+        bg = colors['background']
+        fg = colors['foreground']
 
+        # Extract hue and saturation from background for tinting
+        hue, sat, bg_lightness = color_to_hsl(bg, model='hex')
+
+        # Cap saturation for subtle tinting (avoid garish surfaces)
+        # Use 0 saturation for near-neutral backgrounds
+        tint_sat = min(sat, 25) if sat >= 5 else 0
+
+        def tinted_surface(lightness: float) -> str:
+            """Generate a surface color with the theme's tint at given lightness."""
+            if tint_sat == 0:
+                # No tint - pure neutral grey
+                return hsl_to_hex(0, 0, lightness)
+            return hsl_to_hex(hue, tint_sat, lightness)
+
+        # Define surface lightness levels for each mode
+        # content = theme background (as defined in JSON)
+        # Other surfaces are relative to it
         if is_dark:
-            colors['content[0]'] = colors['background']
-            colors['content[1]'] = colors['gray[850]']
-            colors['content[2]'] = colors['gray[800]']
-
-            colors['chrome[0]'] = colors['gray[900]']
-            colors['chrome[1]'] = colors['gray[850]']
-
-            colors['titlebar[0]'] = colors['gray[900]']
-
-            colors['overlay[0]'] = colors['gray[850]']
-            colors['overlay[1]'] = colors['gray[800]']
-            colors['overlay[2]'] = colors['gray[750]']
-            colors['overlay[3]'] = colors['gray[700]']
+            # Dark mode: lower lightness = darker/recessed
+            surfaces = {
+                'chrome': tinted_surface(max(bg_lightness - 3, 3)),   # Darker than content
+                'content': bg,                                         # Theme background
+                'card': tinted_surface(min(bg_lightness + 4, 20)),    # Elevated cards
+                'overlay': tinted_surface(min(bg_lightness + 7, 25)), # Menus, dialogs
+                'input': tinted_surface(max(bg_lightness - 5, 2)),    # Recessed inputs
+            }
+            # Stroke colors for borders
+            colors['stroke'] = tinted_surface(min(bg_lightness + 12, 30))
+            colors['stroke_subtle'] = tinted_surface(min(bg_lightness + 6, 22))
         else:
-            colors['content[0]'] = colors['background']
-            colors['content[1]'] = colors['gray[50]']
-            colors['content[2]'] = colors['gray[150]']
+            # Light mode: use subtle darkening for elevation (since bg is often near-white)
+            surfaces = {
+                'chrome': tinted_surface(max(bg_lightness - 8, 88)),  # Noticeably darker
+                'content': bg,                                         # Theme background
+                'card': tinted_surface(max(bg_lightness - 4, 92)),    # Slightly darker for contrast
+                'overlay': tinted_surface(max(bg_lightness - 2, 96)), # Subtle for popups
+                'input': tinted_surface(max(bg_lightness - 5, 90)),   # Recessed inputs
+            }
+            # Stroke colors for borders
+            colors['stroke'] = tinted_surface(max(bg_lightness - 20, 70))
+            colors['stroke_subtle'] = tinted_surface(max(bg_lightness - 10, 80))
 
-            colors['chrome[0]'] = colors['gray[50]']
-            colors['chrome[1]'] = colors['gray[100]']
+        # Add surfaces to colors
+        for name, value in surfaces.items():
+            colors[name] = value
 
-            colors['titlebar[0]'] = colors['gray[50]']
+        # Pre-compute foreground colors for each surface
+        candidates = [fg, '#ffffff', '#000000']
+        for name, value in surfaces.items():
+            colors[f'on_{name}'] = best_foreground(value, candidates)
 
-            colors['overlay[0]'] = colors['gray[50]']
-            colors['overlay[1]'] = colors['gray[150]']
-            colors['overlay[2]'] = colors['gray[200]']
-            colors['overlay[3]'] = colors['gray[250]']
+        # Secondary/muted foreground for each surface (reduced contrast)
+        for name, value in surfaces.items():
+            # Generate a muted foreground by mixing fg with the surface
+            on_color = colors[f'on_{name}']
+            if on_color in ('#ffffff', '#FFFFFF'):
+                colors[f'on_{name}_secondary'] = tinted_surface(65) if is_dark else tinted_surface(45)
+            else:
+                colors[f'on_{name}_secondary'] = tinted_surface(35) if is_dark else tinted_surface(55)
 
-        colors['content'] = colors['content[0]']
-        colors['chrome'] = colors['chrome[0]']
-        colors['overlay'] = colors['overlay[0]']
-        colors['titlebar'] = colors['titlebar[0]']
+        # Hover states for each surface (subtle highlight)
+        for name in surfaces.keys():
+            if name == 'content':
+                # Content hover: slightly elevated
+                hover_l = min(bg_lightness + 5, 25) if is_dark else max(bg_lightness - 5, 90)
+            else:
+                # Other surfaces: shift toward content
+                surface_h, surface_s, surface_l = color_to_hsl(colors[name], model='hex')
+                hover_l = min(surface_l + 5, 30) if is_dark else max(surface_l - 5, 85)
+            colors[f'{name}_hover'] = tinted_surface(hover_l)
 
     @property
     def name(self):

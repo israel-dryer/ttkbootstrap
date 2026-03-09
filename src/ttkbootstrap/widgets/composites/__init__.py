@@ -5,17 +5,23 @@ from ttkbootstrap.widgets.composites.compositeframe import Composite, CompositeF
 from ttkbootstrap.widgets.composites.expander import Expander
 from ttkbootstrap.widgets.composites.list import ListItem, ListView, MemoryDataSource, DataSourceProtocol
 from ttkbootstrap.widgets.composites.menubar import MenuBar
-from ttkbootstrap.widgets.composites.sidenav import SideNav
+from ttkbootstrap.widgets.composites.sidenav import (
+    SideNav,
+    SideNavItem,
+    SideNavGroup,
+    SideNavHeader,
+    SideNavSeparator,
+)
 from ttkbootstrap.widgets.composites.tabs import Tabs, TabView
 from ttkbootstrap.widgets.composites.selectbox import SelectBox
 from ttkbootstrap.widgets.composites.toolbar import Toolbar
-from ttkbootstrap.widgets.composites.navigationview import (
-    NavigationView,
-    NavigationViewGroup,
-    NavigationViewItem,
-    NavigationViewHeader,
-    NavigationViewSeparator,
-)
+
+# Backward compatibility aliases
+NavigationView = SideNav
+NavigationViewItem = SideNavItem
+NavigationViewGroup = SideNavGroup
+NavigationViewHeader = SideNavHeader
+NavigationViewSeparator = SideNavSeparator
 
 __all__ = [
     'Accordion',
@@ -28,10 +34,15 @@ __all__ = [
     'DataSourceProtocol',
     'MenuBar',
     'SideNav',
+    'SideNavItem',
+    'SideNavGroup',
+    'SideNavHeader',
+    'SideNavSeparator',
     'Tabs',
     'TabView',
     'SelectBox',
     'Toolbar',
+    # Backward compatibility
     'NavigationView',
     'NavigationViewGroup',
     'NavigationViewItem',

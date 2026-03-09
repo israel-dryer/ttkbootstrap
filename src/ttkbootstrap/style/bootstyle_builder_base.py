@@ -558,12 +558,15 @@ class BootstyleBuilderBase:
         if isinstance(icon, str):
             return dict(name=icon, size=scaled_default)
         else:
-            if 'size' not in icon or icon.get('size') is None:
-                icon['size'] = scaled_default
-            elif icon.get('size'):
+            # Create a copy to avoid mutating the original dict
+            # This prevents size from growing on each theme change
+            result = icon.copy()
+            if 'size' not in result or result.get('size') is None:
+                result['size'] = scaled_default
+            elif result.get('size'):
                 # Scale user-provided size too
-                icon['size'] = scale_size(icon['size'])
-            return icon
+                result['size'] = scale_size(result['size'])
+            return result
 
     def map_stateful_icons(self, icon: IconSpec, foreground_spec: Sequence[tuple]):
         """

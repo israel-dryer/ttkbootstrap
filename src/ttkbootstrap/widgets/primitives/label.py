@@ -91,5 +91,5 @@ class Label(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, Widge
             surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
         """
-        kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon'], kwargs))
+        kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon', 'density'], kwargs))
         super().__init__(master, **kwargs)
