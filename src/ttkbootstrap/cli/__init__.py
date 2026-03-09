@@ -39,8 +39,8 @@ def main(argv: Sequence[str] | None = None) -> None:
         epilog="""\
 Examples:
   ttkb start MyApp              Create a new project
-  ttkb start MyApp --simple     Create minimal project
-  ttkb start MyApp --theme superhero  Use a specific theme
+  ttkb start MyApp --template appshell  Create an AppShell project
+  ttkb start MyApp --theme superhero    Use a specific theme
   ttkb run                      Run the application
   ttkb promote --pyinstaller    Enable PyInstaller support
   ttkb build                    Build for distribution

@@ -20,6 +20,12 @@ def add_parser(subparsers: argparse._SubParsersAction) -> None:
         help="Application name (e.g., 'MyApp')",
     )
     parser.add_argument(
+        "--template",
+        choices=["basic", "appshell"],
+        default="basic",
+        help="Project template: 'basic' for single-view app, 'appshell' for sidebar navigation (default: basic)",
+    )
+    parser.add_argument(
         "--simple",
         action="store_true",
         help="Create minimal project without assets or build configuration",
@@ -28,7 +34,7 @@ def add_parser(subparsers: argparse._SubParsersAction) -> None:
         "--container",
         choices=["grid", "pack"],
         default="grid",
-        help="Default container type for views (default: grid)",
+        help="Default container type for views (default: grid, ignored for appshell template)",
     )
     parser.add_argument(
         "--theme",
@@ -50,6 +56,11 @@ def run_start(args: argparse.Namespace) -> None:
     simple = args.simple
     container = args.container
     theme = args.theme
+    template = args.template
+
+    # Warn if --container is used with appshell (it's ignored)
+    if template == "appshell" and container != "grid":
+        print("Note: --container is ignored for appshell template.")
 
     # Determine target directory
     if args.dir:
@@ -66,12 +77,13 @@ def run_start(args: argparse.Namespace) -> None:
         return
 
     # Create the project
-    print(f"Creating project '{name}' in {target_dir}...")
+    print(f"Creating '{template}' project '{name}' in {target_dir}...")
     create_project(
         name=name,
         target_dir=target_dir,
         container=container,
         theme=theme,
+        template=template,
         simple=simple,
     )
 
@@ -83,6 +95,10 @@ def run_start(args: argparse.Namespace) -> None:
     print(f"  cd {target_dir.name}")
     print("  ttkb run")
     print()
+    if template == "appshell":
+        print("To add a new page:")
+        print("  ttkb add page DashboardPage")
+        print()
     if not simple:
         print("To build for distribution:")
         print("  ttkb promote --pyinstaller")
