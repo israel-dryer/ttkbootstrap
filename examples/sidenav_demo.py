@@ -1,7 +1,7 @@
 """
-NavigationView Demo
+SideNav Demo
 
-Demonstrates the NavigationView container with actual page navigation:
+Demonstrates the SideNav container with actual page navigation:
 - Toolbar at the top spanning full width
 - Clicking nav items switches the content area
 - Groups with expand/collapse and compact mode popup
@@ -30,7 +30,7 @@ def create_page(parent, title, description):
 
 
 def main():
-    root = ttk.App(theme="rose-light", title="NavigationView Demo", size=(1000, 650))
+    root = ttk.App(theme="rose-light", title="SideNav Demo", size=(1000, 650))
 
     container = ttk.Frame(root).pack(fill='both', expand=True)
 
@@ -42,8 +42,8 @@ def main():
     main_container = ttk.Frame(container)
     main_container.pack(fill='both', expand=True)
 
-    # NavigationView on the left (no internal header - using external toolbar)
-    nav = ttk.NavigationView(main_container, show_header=False, collapsible=False)
+    # SideNav on the left (no internal header - using external toolbar)
+    nav = ttk.SideNav(main_container, show_header=False, collapsible=False)
     nav.pack(side='left', fill='y')
 
     # Add toolbar buttons that control the navigation

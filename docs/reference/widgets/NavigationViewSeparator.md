@@ -1,3 +1,3 @@
-# NavigationViewSeparator
+# SideNavSeparator
 
-::: ttkbootstrap.widgets.composites.navigationview.separator.NavigationViewSeparator
+::: ttkbootstrap.widgets.composites.sidenav.separator.SideNavSeparator

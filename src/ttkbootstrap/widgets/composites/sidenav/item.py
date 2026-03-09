@@ -1,4 +1,4 @@
-"""NavigationViewItem widget for selectable navigation items."""
+"""SideNavItem widget for selectable navigation items."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from ttkbootstrap.core.signals import Signal
 
 
-class NavigationViewItemKwargs(TypedDict, total=False):
+class SideNavItemKwargs(TypedDict, total=False):
     key: str
     text: str
     icon: Any
@@ -37,10 +37,10 @@ class NavigationViewItemKwargs(TypedDict, total=False):
     height: int
 
 
-class NavigationViewItem(Frame):
+class SideNavItem(Frame):
     """A selectable navigation item with icon and text.
 
-    NavigationViewItem uses a CompositeFrame container with separate icon and
+    SideNavItem uses a CompositeFrame container with separate icon and
     text label children. This provides synchronized hover/pressed/selected
     states across all elements and precise control over layout.
 
@@ -57,7 +57,7 @@ class NavigationViewItem(Frame):
 
     Example:
         ```python
-        # Items are typically created via NavigationView.add_item()
+        # Items are typically created via SideNav.add_item()
         nav.add_item('home', text='Home', icon='house')
         nav.add_item('local', text='Local', icon='hdd', group='files')
         ```
@@ -87,9 +87,9 @@ class NavigationViewItem(Frame):
         padding_x: int = None,
         padding_y: int = None,
         icon_gap: int = None,
-        **kwargs: Unpack[NavigationViewItemKwargs]
+        **kwargs: Unpack[SideNavItemKwargs]
     ):
-        """Initialize a NavigationViewItem.
+        """Initialize a SideNavItem.
 
         Args:
             master (Master | None): Parent widget.
@@ -107,7 +107,7 @@ class NavigationViewItem(Frame):
             **kwargs: Additional arguments passed to Frame.
         """
         if not key:
-            raise ValueError("NavigationViewItem requires a non-empty 'key'")
+            raise ValueError("SideNavItem requires a non-empty 'key'")
 
         # Extract styling kwargs before super().__init__
         # Must set these AFTER super().__init__ because TTKWrapperBase also sets _accent/_variant
@@ -242,12 +242,12 @@ class NavigationViewItem(Frame):
     def _setup_variable_trace(self):
         """Set up variable trace for selection state updates.
 
-        Note: For performance, the NavigationView now manages selection updates
+        Note: For performance, the SideNav now manages selection updates
         centrally rather than each item tracing the variable. This method is
         kept for backwards compatibility but does nothing when used with
-        NavigationView.
+        SideNav.
         """
-        # Selection state is now managed by NavigationView._on_selection_changed()
+        # Selection state is now managed by SideNav._on_selection_changed()
         # which only updates the affected items rather than all items.
         # Initial state update
         self._update_selection_state()
@@ -261,7 +261,7 @@ class NavigationViewItem(Frame):
     def set_selected(self, selected: bool) -> None:
         """Directly set the selection visual state.
 
-        This is called by NavigationView for efficient selection updates,
+        This is called by SideNav for efficient selection updates,
         avoiding the need to query the variable.
 
         Args:

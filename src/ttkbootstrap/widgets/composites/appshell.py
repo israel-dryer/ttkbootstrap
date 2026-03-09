@@ -1,4 +1,4 @@
-"""AppShell widget - a composite layout for standard desktop applications.
+"""AppShell - a top-level application window with built-in navigation.
 
 Provides a convenient way to scaffold the standard desktop app layout:
 toolbar at top, sidebar navigation on the left, and page content on the right.
@@ -12,14 +12,21 @@ from typing_extensions import TypedDict, Unpack
 
 from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.composites.toolbar import Toolbar
-from ttkbootstrap.widgets.composites.navigationview import NavigationView
+from ttkbootstrap.widgets.composites.sidenav import SideNav
 from ttkbootstrap.widgets.composites.pagestack import PageStack
 from ttkbootstrap.widgets.mixins import configure_delegate
-from ttkbootstrap.widgets.types import Master
+from ttkbootstrap.runtime.app import App
 
 
 class AppShellKwargs(TypedDict, total=False):
     title: str
+    theme: str
+    size: tuple[int, int]
+    position: tuple[int, int]
+    minsize: tuple[int, int]
+    maxsize: tuple[int, int]
+    resizable: tuple[bool, bool]
+    frameless: bool
     show_toolbar: bool
     show_window_controls: bool
     draggable: bool
@@ -28,27 +35,21 @@ class AppShellKwargs(TypedDict, total=False):
     nav_display_mode: Literal['expanded', 'compact', 'minimal']
     nav_accent: str
     page_sticky: str
-    # Frame options
-    padding: Any
-    width: int
-    height: int
-    surface: str
 
 
-class AppShell(Frame):
-    """A composite layout widget for standard desktop applications.
+class AppShell(App):
+    """A top-level application window with built-in navigation.
 
-    AppShell wires together a ``Toolbar``, ``NavigationView``, and
-    ``PageStack`` into the common toolbar + sidebar + content layout.
-    Each component is optional and exposed as a property for customization.
+    AppShell extends ``App`` and wires together a ``Toolbar``,
+    ``SideNav``, and ``PageStack`` into the common
+    toolbar + sidebar + content layout. Each component is optional
+    and exposed as a property for customization.
 
     Example:
         ```python
         import ttkbootstrap as ttk
 
-        app = ttk.App(title='My App', size=(1000, 650))
-        shell = ttk.AppShell(app, title='My App')
-        shell.pack(fill='both', expand=True)
+        shell = ttk.AppShell(title='My App', size=(1000, 650))
 
         home = shell.add_page('home', text='Home', icon='house')
         ttk.Label(home, text='Welcome!').pack(padx=20, pady=20)
@@ -56,16 +57,20 @@ class AppShell(Frame):
         docs = shell.add_page('docs', text='Documents', icon='file-earmark-text')
         ttk.Label(docs, text='Your documents.').pack(padx=20, pady=20)
 
-        shell.add_page('settings', text='Settings', icon='gear', is_footer=True)
-
-        app.mainloop()
+        shell.mainloop()
         ```
     """
 
     def __init__(
         self,
-        master: Master = None,
         title: str = '',
+        theme: str | None = None,
+        size: tuple[int, int] | None = None,
+        position: tuple[int, int] | None = None,
+        minsize: tuple[int, int] | None = None,
+        maxsize: tuple[int, int] | None = None,
+        resizable: tuple[bool, bool] | None = None,
+        frameless: bool = False,
         show_toolbar: bool = True,
         show_window_controls: bool = False,
         draggable: bool = False,
@@ -79,23 +84,47 @@ class AppShell(Frame):
         """Initialize an AppShell.
 
         Args:
-            master: Parent widget.
-            title: Title displayed in the toolbar.
+            title: Title displayed in the toolbar and window title bar.
+            theme: Theme name. If None, uses the default theme.
+            size: Initial window size as (width, height).
+            position: Initial window position as (x, y).
+            minsize: Minimum window size as (width, height).
+            maxsize: Maximum window size as (width, height).
+            resizable: Whether the window is resizable as (width, height).
+            frameless: If True, remove OS window chrome (title bar, borders)
+                and rely on the toolbar for window controls and dragging.
+                Automatically enables ``show_window_controls`` and
+                ``draggable`` when True. Default False.
             show_toolbar: Include the toolbar at the top. Default True.
             show_window_controls: Show minimize/maximize/close buttons
                 in the toolbar. Default False.
             draggable: Enable window dragging via the toolbar. Default False.
             toolbar_density: Toolbar button density ('default' or 'compact').
             show_nav: Include the sidebar navigation. Default True.
-            nav_display_mode: Initial NavigationView display mode
+            nav_display_mode: Initial SideNav display mode
                 ('expanded', 'compact', or 'minimal'). Default 'expanded'.
             nav_accent: Accent color for navigation selection. Default 'primary'.
             page_sticky: Default grid sticky for pages. Default 'nsew'.
-            **kwargs: Additional arguments passed to Frame.
+            **kwargs: Additional arguments passed to App.
         """
-        super().__init__(master, **kwargs)
+        # Frameless mode: remove OS chrome and enable toolbar controls
+        if frameless:
+            show_window_controls = True
+            draggable = True
 
-        self._title = title
+        super().__init__(
+            title=title,
+            theme=theme,
+            size=size,
+            position=position,
+            minsize=minsize,
+            maxsize=maxsize,
+            resizable=resizable,
+            override_redirect=frameless,
+            **kwargs,
+        )
+
+        self._shell_title = title
         self._show_toolbar = show_toolbar
         self._show_nav = show_nav
         self._page_sticky = page_sticky
@@ -107,10 +136,10 @@ class AppShell(Frame):
 
         # Build components
         self._toolbar: Toolbar | None = None
-        self._nav: NavigationView | None = None
+        self._nav: SideNav | None = None
         self._pages: PageStack | None = None
 
-        self._build(
+        self._build_shell(
             show_toolbar=show_toolbar,
             show_window_controls=show_window_controls,
             draggable=draggable,
@@ -120,7 +149,7 @@ class AppShell(Frame):
             nav_accent=nav_accent,
         )
 
-    def _build(
+    def _build_shell(
         self,
         *,
         show_toolbar: bool,
@@ -153,8 +182,8 @@ class AppShell(Frame):
 
             # Title label
             self._title_label = None
-            if self._title:
-                self._title_label = self._toolbar.add_label(text=self._title, font='heading-md')
+            if self._shell_title:
+                self._title_label = self._toolbar.add_label(text=self._shell_title, font='heading-md')
 
             # Spacer pushes subsequent user-added buttons to the right
             self._toolbar.add_spacer()
@@ -163,12 +192,12 @@ class AppShell(Frame):
         body = Frame(self)
         body.pack(side='top', fill='both', expand=True)
 
-        # --- NavigationView ---
+        # --- SideNav ---
         if show_nav:
             # When toolbar is present, nav hides its own header and hamburger;
             # AppShell puts the hamburger in the toolbar instead.
             # When toolbar is absent, nav manages its own toggle.
-            self._nav = NavigationView(
+            self._nav = SideNav(
                 body,
                 show_header=False,
                 collapsible=not show_toolbar,
@@ -187,12 +216,12 @@ class AppShell(Frame):
     # --- Internal Handlers ---
 
     def _toggle_nav(self):
-        """Toggle the NavigationView pane."""
+        """Toggle the SideNav pane."""
         if self._nav is not None:
             self._nav.toggle_pane()
 
     def _on_nav_selection_changed(self, event):
-        """Handle NavigationView selection changes."""
+        """Handle SideNav selection changes."""
         key = event.data.get('key', '')
         if not key or key not in self._page_keys:
             return  # Not a page item (e.g. action-only item)
@@ -283,10 +312,10 @@ class AppShell(Frame):
             text: Display text.
             icon: Icon name or configuration.
             is_expanded: Initial expansion state.
-            **kwargs: Additional arguments passed to NavigationViewGroup.
+            **kwargs: Additional arguments passed to SideNavGroup.
 
         Returns:
-            NavigationViewGroup: The created group.
+            SideNavGroup: The created group.
         """
         if self._nav is None:
             raise RuntimeError("Cannot add groups when show_nav=False.")
@@ -299,10 +328,10 @@ class AppShell(Frame):
 
         Args:
             text: Header text.
-            **kwargs: Additional arguments passed to NavigationViewHeader.
+            **kwargs: Additional arguments passed to SideNavHeader.
 
         Returns:
-            NavigationViewHeader: The created header.
+            SideNavHeader: The created header.
         """
         if self._nav is None:
             raise RuntimeError("Cannot add headers when show_nav=False.")
@@ -314,10 +343,10 @@ class AppShell(Frame):
         Passthrough to ``nav.add_separator()``.
 
         Args:
-            **kwargs: Additional arguments passed to NavigationViewSeparator.
+            **kwargs: Additional arguments passed to SideNavSeparator.
 
         Returns:
-            NavigationViewSeparator: The created separator.
+            SideNavSeparator: The created separator.
         """
         if self._nav is None:
             raise RuntimeError("Cannot add separators when show_nav=False.")
@@ -386,8 +415,8 @@ class AppShell(Frame):
         return self._toolbar
 
     @property
-    def nav(self) -> NavigationView | None:
-        """The NavigationView widget, or None if ``show_nav=False``."""
+    def nav(self) -> SideNav | None:
+        """The SideNav widget, or None if ``show_nav=False``."""
         return self._nav
 
     @property
@@ -400,15 +429,3 @@ class AppShell(Frame):
         """The key of the currently displayed page, or None."""
         result = self._pages.current()
         return result[0] if result else None
-
-    # --- Configuration Delegates ---
-
-    @configure_delegate('title')
-    def _delegate_title(self, value: str = None):
-        """Configure the toolbar title."""
-        if value is None:
-            return self._title
-        self._title = value
-        if self._title_label is not None:
-            self._title_label.configure(text=value)
-        return None

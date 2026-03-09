@@ -1,3 +1,3 @@
-# NavigationViewGroup
+# SideNavGroup
 
-::: ttkbootstrap.widgets.composites.navigationview.group.NavigationViewGroup
+::: ttkbootstrap.widgets.composites.sidenav.group.SideNavGroup

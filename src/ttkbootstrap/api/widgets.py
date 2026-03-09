@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from ttkbootstrap.widgets import TK_WIDGETS, TTK_WIDGETS
 from ttkbootstrap.widgets.composites.accordion import Accordion
-from ttkbootstrap.widgets.composites.appshell import AppShell
 from ttkbootstrap.widgets.primitives.badge import Badge
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.composites.buttongroup import ButtonGroup
@@ -14,14 +13,20 @@ from ttkbootstrap.widgets.primitives.checkbutton import CheckButton
 from ttkbootstrap.widgets.primitives.checktoggle import CheckToggle
 from ttkbootstrap.widgets.primitives.combobox import Combobox
 from ttkbootstrap.widgets.composites.contextmenu import ContextMenu, ContextMenuItem
-from ttkbootstrap.widgets.composites.navigationview import (
-    NavigationView,
-    NavigationViewGroup,
-    NavigationViewItem,
-    NavigationViewHeader,
-    NavigationViewSeparator,
+from ttkbootstrap.widgets.composites.sidenav import (
+    SideNav,
+    SideNavItem,
+    SideNavGroup,
+    SideNavHeader,
+    SideNavSeparator,
 )
-from ttkbootstrap.widgets.composites.sidenav import SideNav
+
+# Backward compatibility aliases
+NavigationView = SideNav
+NavigationViewItem = SideNavItem
+NavigationViewGroup = SideNavGroup
+NavigationViewHeader = SideNavHeader
+NavigationViewSeparator = SideNavSeparator
 from ttkbootstrap.widgets.composites.toolbar import Toolbar
 from ttkbootstrap.widgets.composites.dateentry import DateEntry
 from ttkbootstrap.widgets.composites.dropdownbutton import DropdownButton
@@ -70,7 +75,6 @@ from ttkbootstrap.widgets.primitives.switch import Switch
 
 __all__ = [
     "Accordion",
-    "AppShell",
     "Badge",
     "Button",
     "ButtonGroup",
@@ -95,6 +99,11 @@ __all__ = [
     "LabelFrame",
     "LabeledScale",
     "MenuBar",
+    "SideNav",
+    "SideNavItem",
+    "SideNavGroup",
+    "SideNavHeader",
+    "SideNavSeparator",
     "NavigationView",
     "NavigationViewGroup",
     "NavigationViewItem",
@@ -120,7 +129,6 @@ __all__ = [
     "ScrolledText",
     "SelectBox",
     "Separator",
-    "SideNav",
     "SizeGrip",
     "Spinbox",
     "SpinnerEntry",

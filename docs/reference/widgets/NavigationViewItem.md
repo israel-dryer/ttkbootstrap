@@ -1,3 +1,3 @@
-# NavigationViewItem
+# SideNavItem
 
-::: ttkbootstrap.widgets.composites.navigationview.item.NavigationViewItem
+::: ttkbootstrap.widgets.composites.sidenav.item.SideNavItem

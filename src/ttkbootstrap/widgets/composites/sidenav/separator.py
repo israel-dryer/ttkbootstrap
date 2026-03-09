@@ -1,4 +1,4 @@
-"""NavigationViewSeparator widget for visual grouping in navigation menus."""
+"""SideNavSeparator widget for visual grouping in navigation menus."""
 
 from typing import Any
 
@@ -9,17 +9,17 @@ from ttkbootstrap.widgets.primitives.separator import Separator
 from ttkbootstrap.widgets.types import Master
 
 
-class NavigationViewSeparatorKwargs(TypedDict, total=False):
+class SideNavSeparatorKwargs(TypedDict, total=False):
     # Frame options
     padding: Any
     width: int
     height: int
 
 
-class NavigationViewSeparator(Frame):
-    """A visual separator for grouping items in a NavigationView.
+class SideNavSeparator(Frame):
+    """A visual separator for grouping items in a SideNav.
 
-    NavigationViewSeparator provides a horizontal line to visually separate
+    SideNavSeparator provides a horizontal line to visually separate
     groups of navigation items. It is a thin wrapper around the Separator
     primitive with appropriate padding for navigation contexts.
 
@@ -27,15 +27,15 @@ class NavigationViewSeparator(Frame):
         ```python
         nav.add_item('home', text='Home', icon='house')
         nav.add_item('documents', text='Documents', icon='folder')
-        nav.add_separator()  # Creates NavigationViewSeparator
+        nav.add_separator()  # Creates SideNavSeparator
         nav.add_item('settings', text='Settings', icon='gear')
         ```
     """
 
     DEFAULT_PADDING = (0, 4, 0, 4)
 
-    def __init__(self, master: Master = None, **kwargs: Unpack[NavigationViewSeparatorKwargs]):
-        """Initialize a NavigationViewSeparator.
+    def __init__(self, master: Master = None, **kwargs: Unpack[SideNavSeparatorKwargs]):
+        """Initialize a SideNavSeparator.
 
         Args:
             master (Master | None): Parent widget.

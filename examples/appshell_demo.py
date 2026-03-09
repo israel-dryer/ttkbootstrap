@@ -1,7 +1,7 @@
 """
 AppShell Demo
 
-Demonstrates the AppShell composite widget which provides a standard
+Demonstrates the AppShell application window which provides a standard
 desktop app layout: toolbar at top, sidebar navigation on the left,
 and page content on the right.
 
@@ -34,11 +34,11 @@ def create_page_content(parent, title, description):
 
 
 def main():
-    app = ttk.App(theme='rose-light', title='AppShell Demo', size=(1000, 650))
-
-    # Create the shell with toolbar and sidebar navigation
-    shell = ttk.AppShell(app, title='AppShell Demo')
-    shell.pack(fill='both', expand=True)
+    shell = ttk.AppShell(
+        title='AppShell Demo',
+        theme='rose-light',
+        size=(1000, 650),
+    )
 
     # Add a theme toggle button to the toolbar (after the auto-spacer)
     shell.toolbar.add_button(icon='sun', command=ttk.toggle_theme)
@@ -96,7 +96,7 @@ def main():
 
     shell.on_page_changed(on_page_changed)
 
-    app.mainloop()
+    shell.mainloop()
 
 
 if __name__ == '__main__':

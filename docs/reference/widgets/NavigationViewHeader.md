@@ -1,3 +1,3 @@
-# NavigationViewHeader
+# SideNavHeader
 
-::: ttkbootstrap.widgets.composites.navigationview.header.NavigationViewHeader
+::: ttkbootstrap.widgets.composites.sidenav.header.SideNavHeader

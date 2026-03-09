@@ -1,4 +1,4 @@
-"""NavigationView widget - a sidebar navigation container."""
+"""SideNav widget - a sidebar navigation container."""
 
 from __future__ import annotations
 
@@ -14,10 +14,10 @@ from ttkbootstrap.widgets.primitives.label import Label
 from ttkbootstrap.widgets.primitives.separator import Separator
 from ttkbootstrap.widgets.composites.scrollview import ScrollView
 from ttkbootstrap.widgets.composites.toolbar import Toolbar
-from ttkbootstrap.widgets.composites.navigationview.item import NavigationViewItem
-from ttkbootstrap.widgets.composites.navigationview.group import NavigationViewGroup
-from ttkbootstrap.widgets.composites.navigationview.header import NavigationViewHeader
-from ttkbootstrap.widgets.composites.navigationview.separator import NavigationViewSeparator
+from ttkbootstrap.widgets.composites.sidenav.item import SideNavItem
+from ttkbootstrap.widgets.composites.sidenav.group import SideNavGroup
+from ttkbootstrap.widgets.composites.sidenav.header import SideNavHeader
+from ttkbootstrap.widgets.composites.sidenav.separator import SideNavSeparator
 from ttkbootstrap.widgets.mixins import configure_delegate
 from ttkbootstrap.widgets.types import Master
 from ttkbootstrap.core.signals import Signal
@@ -26,7 +26,7 @@ from ttkbootstrap.core.signals import Signal
 DisplayMode = Literal['expanded', 'compact', 'minimal']
 
 
-class NavigationViewKwargs(TypedDict, total=False):
+class SideNavKwargs(TypedDict, total=False):
     title: str
     show_header: bool
     show_back_button: bool
@@ -44,10 +44,10 @@ class NavigationViewKwargs(TypedDict, total=False):
     surface: str
 
 
-class NavigationView(Frame):
+class SideNav(Frame):
     """A sidebar navigation container with header, scrollable items, and footer.
 
-    NavigationView provides a complete navigation solution with:
+    SideNav provides a complete navigation solution with:
     - Pane header with optional title and menu button
     - Scrollable navigation items area
     - Groups for organizing related items (expand/collapse in expanded mode,
@@ -69,7 +69,7 @@ class NavigationView(Frame):
 
     Example:
         ```python
-        nav = NavigationView(root, title='My App')
+        nav = SideNav(root, title='My App')
 
         # Add root-level items
         nav.add_item('home', text='Home', icon='house')
@@ -109,9 +109,9 @@ class NavigationView(Frame):
         signal: 'Signal[str]' = None,
         variable: Variable = None,
         accent: str = 'primary',
-        **kwargs: Unpack[NavigationViewKwargs]
+        **kwargs: Unpack[SideNavKwargs]
     ):
-        """Initialize a NavigationView.
+        """Initialize a SideNav.
 
         Args:
             master (Master | None): Parent widget.
@@ -159,12 +159,12 @@ class NavigationView(Frame):
             self._selection_var.trace_add('write', self._on_selection_changed)
 
         # Item and group tracking
-        self._items: dict[str, NavigationViewItem] = {}  # All items by key
+        self._items: dict[str, SideNavItem] = {}  # All items by key
         self._item_to_group: dict[str, str] = {}  # item_key -> group_key lookup
-        self._groups: dict[str, NavigationViewGroup] = {}  # Groups by key
-        self._footer_items: dict[str, NavigationViewItem] = {}
-        self._headers: list[NavigationViewHeader] = []
-        self._separators: list[NavigationViewSeparator] = []
+        self._groups: dict[str, SideNavGroup] = {}  # Groups by key
+        self._footer_items: dict[str, SideNavItem] = {}
+        self._headers: list[SideNavHeader] = []
+        self._separators: list[SideNavSeparator] = []
 
         # Track all content widgets in order for proper re-packing
         self._content_widgets: list = []
@@ -411,7 +411,7 @@ class NavigationView(Frame):
         icon: str | dict = None,
         is_expanded: bool = False,
         **kwargs
-    ) -> NavigationViewGroup:
+    ) -> SideNavGroup:
         """Add a navigation group to the pane.
 
         Groups contain related items and can be expanded/collapsed in expanded
@@ -422,10 +422,10 @@ class NavigationView(Frame):
             text (str): Display text.
             icon (str | dict | None): Icon name or configuration.
             is_expanded (bool): Initial expansion state. Default False.
-            **kwargs: Additional arguments passed to NavigationViewGroup.
+            **kwargs: Additional arguments passed to SideNavGroup.
 
         Returns:
-            NavigationViewGroup: The created group.
+            SideNavGroup: The created group.
 
         Raises:
             ValueError: If a group or item with the given key already exists.
@@ -436,7 +436,7 @@ class NavigationView(Frame):
         # Use view's accent as default, allow override via kwargs
         group_kwargs = {'accent': self._accent, **kwargs}
 
-        group = NavigationViewGroup(
+        group = SideNavGroup(
             self._content_frame,
             key=key,
             text=text,
@@ -464,7 +464,7 @@ class NavigationView(Frame):
         icon: str | dict = None,
         group: str = None,
         **kwargs
-    ) -> NavigationViewItem:
+    ) -> SideNavItem:
         """Add a navigation item to the pane.
 
         Args:
@@ -473,10 +473,10 @@ class NavigationView(Frame):
             icon (str | dict | None): Icon name or configuration.
             group (str | None): Key of the group to add this item to.
                 If None, item is added at root level.
-            **kwargs: Additional arguments passed to NavigationViewItem.
+            **kwargs: Additional arguments passed to SideNavItem.
 
         Returns:
-            NavigationViewItem: The created item.
+            SideNavItem: The created item.
 
         Raises:
             ValueError: If an item with the given key already exists.
@@ -494,7 +494,7 @@ class NavigationView(Frame):
                 raise ValueError(f"Group '{group}' does not exist")
 
             target_group = self._groups[group]
-            item = NavigationViewItem(
+            item = SideNavItem(
                 target_group.content_frame,
                 key=key,
                 text=text,
@@ -510,7 +510,7 @@ class NavigationView(Frame):
             self._item_to_group[key] = group
         else:
             # Add at root level
-            item = NavigationViewItem(
+            item = SideNavItem(
                 self._content_frame,
                 key=key,
                 text=text,
@@ -528,19 +528,19 @@ class NavigationView(Frame):
         self._items[key] = item
         return item
 
-    def add_header(self, text: str, **kwargs) -> NavigationViewHeader:
+    def add_header(self, text: str, **kwargs) -> SideNavHeader:
         """Add a section header to the pane.
 
         Headers are hidden in compact display mode.
 
         Args:
             text (str): Header text.
-            **kwargs: Additional arguments passed to NavigationViewHeader.
+            **kwargs: Additional arguments passed to SideNavHeader.
 
         Returns:
-            NavigationViewHeader: The created header.
+            SideNavHeader: The created header.
         """
-        header = NavigationViewHeader(self._content_frame, text=text, **kwargs)
+        header = SideNavHeader(self._content_frame, text=text, **kwargs)
         self._headers.append(header)
         header.grid()
         self._content_widgets.append(header)
@@ -551,16 +551,16 @@ class NavigationView(Frame):
 
         return header
 
-    def add_separator(self, **kwargs) -> NavigationViewSeparator:
+    def add_separator(self, **kwargs) -> SideNavSeparator:
         """Add a separator to the pane.
 
         Args:
-            **kwargs: Additional arguments passed to NavigationViewSeparator.
+            **kwargs: Additional arguments passed to SideNavSeparator.
 
         Returns:
-            NavigationViewSeparator: The created separator.
+            SideNavSeparator: The created separator.
         """
-        sep = NavigationViewSeparator(self._content_frame, **kwargs)
+        sep = SideNavSeparator(self._content_frame, **kwargs)
         sep.grid()
         self._content_widgets.append(sep)
         self._separators.append(sep)
@@ -572,17 +572,17 @@ class NavigationView(Frame):
         text: str = '',
         icon: str | dict = None,
         **kwargs
-    ) -> NavigationViewItem:
+    ) -> SideNavItem:
         """Add a navigation item to the footer section.
 
         Args:
             key (str): Unique identifier for the item.
             text (str): Display text.
             icon (str | dict | None): Icon name or configuration.
-            **kwargs: Additional arguments passed to NavigationViewItem.
+            **kwargs: Additional arguments passed to SideNavItem.
 
         Returns:
-            NavigationViewItem: The created item.
+            SideNavItem: The created item.
 
         Raises:
             ValueError: If an item with the given key already exists.
@@ -597,7 +597,7 @@ class NavigationView(Frame):
         # Use view's accent as default, allow override via kwargs
         item_kwargs = {'accent': self._accent, **kwargs}
 
-        item = NavigationViewItem(
+        item = SideNavItem(
             self._footer_frame,
             key=key,
             text=text,
@@ -616,14 +616,14 @@ class NavigationView(Frame):
 
         return item
 
-    def node(self, key: str) -> NavigationViewItem:
+    def node(self, key: str) -> SideNavItem:
         """Get an item by key.
 
         Args:
             key (str): The item key.
 
         Returns:
-            NavigationViewItem: The item.
+            SideNavItem: The item.
 
         Raises:
             KeyError: If no item with the given key exists.
@@ -634,11 +634,11 @@ class NavigationView(Frame):
             return self._footer_items[key]
         raise KeyError(f"No item with key '{key}'")
 
-    def nodes(self) -> tuple[NavigationViewItem, ...]:
+    def nodes(self) -> tuple[SideNavItem, ...]:
         """Get all items (excluding footer items).
 
         Returns:
-            A tuple of all NavigationViewItem instances.
+            A tuple of all SideNavItem instances.
         """
         return tuple(self._items.values())
 
@@ -650,14 +650,14 @@ class NavigationView(Frame):
         """
         return tuple(self._items.keys())
 
-    def group(self, key: str) -> NavigationViewGroup:
+    def group(self, key: str) -> SideNavGroup:
         """Get a group by key.
 
         Args:
             key (str): The group key.
 
         Returns:
-            NavigationViewGroup: The group.
+            SideNavGroup: The group.
 
         Raises:
             KeyError: If no group with the given key exists.
@@ -666,11 +666,11 @@ class NavigationView(Frame):
             raise KeyError(f"No group with key '{key}'")
         return self._groups[key]
 
-    def groups(self) -> tuple[NavigationViewGroup, ...]:
+    def groups(self) -> tuple[SideNavGroup, ...]:
         """Get all groups.
 
         Returns:
-            A tuple of all NavigationViewGroup instances.
+            A tuple of all SideNavGroup instances.
         """
         return tuple(self._groups.values())
 
@@ -811,11 +811,11 @@ class NavigationView(Frame):
             return self._selection_var.get() or None
         return None
 
-    def footer_nodes(self) -> tuple[NavigationViewItem, ...]:
+    def footer_nodes(self) -> tuple[SideNavItem, ...]:
         """Get all footer items in order.
 
         Returns:
-            A tuple of all footer NavigationViewItem instances.
+            A tuple of all footer SideNavItem instances.
         """
         return tuple(self._footer_items[key] for key in self._footer_order)
 

@@ -9,10 +9,12 @@ from ttkbootstrap.runtime.app import App, AppSettings, Window, get_app_settings,
 from ttkbootstrap.runtime.toplevel import Toplevel
 from ttkbootstrap.runtime.menu import MenuManager, create_menu
 from ttkbootstrap.runtime.shortcuts import Shortcuts, Shortcut, get_shortcuts
+from ttkbootstrap.widgets.composites.appshell import AppShell
 
 __all__ = [
     # Application
     "App",
+    "AppShell",
     "Window",
     "Toplevel",
     "AppSettings",

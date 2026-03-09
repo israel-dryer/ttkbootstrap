@@ -1,4 +1,4 @@
-"""NavigationViewGroup widget for grouping navigation items."""
+"""SideNavGroup widget for grouping navigation items."""
 
 from __future__ import annotations
 
@@ -17,10 +17,10 @@ from ttkbootstrap.widgets.types import Master
 
 if TYPE_CHECKING:
     from ttkbootstrap.core.signals import Signal
-    from ttkbootstrap.widgets.composites.navigationview.item import NavigationViewItem
+    from ttkbootstrap.widgets.composites.sidenav.item import SideNavItem
 
 
-class NavigationViewGroupKwargs(TypedDict, total=False):
+class SideNavGroupKwargs(TypedDict, total=False):
     key: str
     text: str
     icon: Any
@@ -34,10 +34,10 @@ class NavigationViewGroupKwargs(TypedDict, total=False):
     height: int
 
 
-class NavigationViewGroup(Frame):
+class SideNavGroup(Frame):
     """A collapsible group of navigation items.
 
-    NavigationViewGroup provides a container for related navigation items.
+    SideNavGroup provides a container for related navigation items.
     In expanded mode, it behaves like an Expander with a chevron toggle.
     In compact mode, clicking the group shows a popup flyout to the right
     containing the group's items.
@@ -56,14 +56,14 @@ class NavigationViewGroup(Frame):
 
     Example:
         ```python
-        # Groups are created via NavigationView.add_group()
+        # Groups are created via SideNav.add_group()
         nav.add_group('files', text='Files', icon='folder')
         nav.add_item('local', text='Local', icon='hdd', group='files')
         nav.add_item('cloud', text='Cloud', icon='cloud', group='files')
         ```
     """
 
-    # Default padding values (same as NavigationViewItem)
+    # Default padding values (same as SideNavItem)
     DEFAULT_PADDING_X = 12
     DEFAULT_PADDING_Y = 6
     DEFAULT_ICON_GAP = 10
@@ -79,9 +79,9 @@ class NavigationViewGroup(Frame):
         signal: 'Signal[Any]' = None,
         variable: Variable = None,
         is_expanded: bool = False,
-        **kwargs: Unpack[NavigationViewGroupKwargs]
+        **kwargs: Unpack[SideNavGroupKwargs]
     ):
-        """Initialize a NavigationViewGroup.
+        """Initialize a SideNavGroup.
 
         Args:
             master (Master | None): Parent widget.
@@ -94,7 +94,7 @@ class NavigationViewGroup(Frame):
             **kwargs: Additional arguments passed to Frame.
         """
         if not key:
-            raise ValueError("NavigationViewGroup requires a non-empty 'key'")
+            raise ValueError("SideNavGroup requires a non-empty 'key'")
 
         # Extract styling kwargs before super().__init__
         # Must set these AFTER super().__init__ because TTKWrapperBase also sets _accent
@@ -112,8 +112,8 @@ class NavigationViewGroup(Frame):
         self._variable = variable
         self._is_expanded = is_expanded
 
-        # Track child items (managed by NavigationView)
-        self._items: dict[str, 'NavigationViewItem'] = {}
+        # Track child items (managed by SideNav)
+        self._items: dict[str, 'SideNavItem'] = {}
         self._item_order: list[str] = []
 
         # Compact mode state
@@ -127,7 +127,7 @@ class NavigationViewGroup(Frame):
         self._content_frame: Frame | None = None
         self._popup: ContextMenu | None = None
 
-        # Selection state is now managed centrally by NavigationView
+        # Selection state is now managed centrally by SideNav
         # for better performance (only affected items are updated)
         self._trace_id: str | None = None
 
@@ -272,7 +272,7 @@ class NavigationViewGroup(Frame):
     def set_child_selected(self, has_selected_child: bool) -> None:
         """Directly set whether a child is selected.
 
-        This is called by NavigationView for efficient selection updates,
+        This is called by SideNav for efficient selection updates,
         avoiding the need to iterate through children.
 
         Args:
@@ -392,15 +392,15 @@ class NavigationViewGroup(Frame):
         else:
             self.expand()
 
-    # --- Internal: Item management (called by NavigationView) ---
+    # --- Internal: Item management (called by SideNav) ---
 
-    def _add_item(self, item: 'NavigationViewItem') -> None:
-        """Add an item to this group (internal use by NavigationView)."""
+    def _add_item(self, item: 'SideNavItem') -> None:
+        """Add an item to this group (internal use by SideNav)."""
         self._items[item.key] = item
         self._item_order.append(item.key)
 
     def _remove_item(self, key: str) -> None:
-        """Remove an item from this group (internal use by NavigationView)."""
+        """Remove an item from this group (internal use by SideNav)."""
         if key in self._items:
             del self._items[key]
             self._item_order.remove(key)
@@ -428,7 +428,7 @@ class NavigationViewGroup(Frame):
         return len(self._items) > 0
 
     @property
-    def items(self) -> list['NavigationViewItem']:
+    def items(self) -> list['SideNavItem']:
         """Get all items in order."""
         return [self._items[key] for key in self._item_order]
 

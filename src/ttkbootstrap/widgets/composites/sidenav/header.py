@@ -1,4 +1,4 @@
-"""NavigationViewHeader widget for section labels in navigation menus."""
+"""SideNavHeader widget for section labels in navigation menus."""
 
 from typing import Any
 
@@ -10,7 +10,7 @@ from ttkbootstrap.widgets.mixins import configure_delegate
 from ttkbootstrap.widgets.types import Master
 
 
-class NavigationViewHeaderKwargs(TypedDict, total=False):
+class SideNavHeaderKwargs(TypedDict, total=False):
     text: str
     # Frame options
     padding: Any
@@ -18,17 +18,17 @@ class NavigationViewHeaderKwargs(TypedDict, total=False):
     height: int
 
 
-class NavigationViewHeader(Frame):
+class SideNavHeader(Frame):
     """A non-selectable section header for grouping navigation items.
 
-    NavigationViewHeader provides a text label to identify groups of related
-    navigation items. Unlike NavigationViewItem, headers are not selectable
+    SideNavHeader provides a text label to identify groups of related
+    navigation items. Unlike SideNavItem, headers are not selectable
     and serve only as visual labels. Uses the 'label' font token for styling.
 
     Example:
         ```python
         nav.add_item('home', text='Home', icon='house')
-        nav.add_header('Favorites')  # Creates NavigationViewHeader
+        nav.add_header('Favorites')  # Creates SideNavHeader
         nav.add_item('photos', text='Photos', icon='image')
         nav.add_item('music', text='Music', icon='music-note')
         ```
@@ -42,9 +42,9 @@ class NavigationViewHeader(Frame):
         self,
         master: Master = None,
         text: str = '',
-        **kwargs: Unpack[NavigationViewHeaderKwargs]
+        **kwargs: Unpack[SideNavHeaderKwargs]
     ):
-        """Initialize a NavigationViewHeader.
+        """Initialize a SideNavHeader.
 
         Args:
             master (Master | None): Parent widget.

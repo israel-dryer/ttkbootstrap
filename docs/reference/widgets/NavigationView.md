@@ -1,3 +1,4 @@
-# NavigationView
+# NavigationView (Deprecated)
 
-::: ttkbootstrap.widgets.composites.navigationview.view.NavigationView
+!!! warning "Deprecated"
+    `NavigationView` has been renamed to **[SideNav](SideNav.md)**. See that page for API reference.

@@ -1,4 +1,4 @@
-"""Style builders for NavigationView widget components.
+"""Style builders for SideNav widget components.
 
 This module provides navigation-specific styling with selection indicator bars.
 """
@@ -16,7 +16,7 @@ from ttkbootstrap.style.builders.toolbutton import (
 
 @BootstyleBuilderTTk.register_builder('default', 'NavigationView.TFrame')
 def build_navigationview_frame_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
-    """Build NavigationView frame style for group expanders.
+    """Build SideNav frame style for group expanders.
 
     Uses standard button assets (no selection indicator needed since
     groups don't get selected, only their child items do).
@@ -64,7 +64,7 @@ def build_navigationview_frame_style(b: BootstyleBuilderTTk, ttk_style: str, acc
 
 @BootstyleBuilderTTk.register_builder('default', 'NavigationView.TLabel')
 def build_navigationview_label_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
-    """Build NavigationView label style with state-aware foreground colors.
+    """Build SideNav label style with state-aware foreground colors.
 
     Matches the ghost Toolbutton foreground color behavior.
     """
