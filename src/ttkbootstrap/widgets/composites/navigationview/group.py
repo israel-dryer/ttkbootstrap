@@ -299,7 +299,7 @@ class NavigationViewGroup(Frame):
             target=self._container,
             anchor='nw',
             attach='ne',
-            offset=(12, 4),
+            offset=(4, 0),
             minwidth=180,
         )
 
