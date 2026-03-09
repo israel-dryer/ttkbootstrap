@@ -19,6 +19,8 @@ MAIN_PY_TEMPLATE = '''\
 Run with: python -m {module_name}
 """
 
+import os
+
 import ttkbootstrap as ttk
 
 from {module_name}.views.main_view import MainView
@@ -28,7 +30,7 @@ def main() -> None:
     """Application entry point."""
     app = ttk.App(
         title="{app_name}",
-        theme="cosmo",
+        theme=os.environ.get("TTKB_THEME", "{theme}"),
         size=(800, 600),
     )
 
@@ -361,6 +363,7 @@ def create_project(
     name: str,
     target_dir: Path,
     container: ContainerType = "grid",
+    theme: str = "cosmo",
     simple: bool = False,
 ) -> None:
     """Create a new ttkbootstrap project.
@@ -369,6 +372,7 @@ def create_project(
         name: Application name.
         target_dir: Target directory for the project.
         container: Default container type ('grid' or 'pack').
+        theme: Theme name for the application.
         simple: If True, create minimal project without build config.
     """
     from ttkbootstrap.cli.config import write_config
@@ -391,6 +395,7 @@ def create_project(
     main_content = MAIN_PY_TEMPLATE.format(
         app_name=name,
         module_name=module_name,
+        theme=theme,
     )
     (src_dir / "main.py").write_text(main_content, encoding="utf-8")
 
@@ -417,6 +422,7 @@ def create_project(
         path=target_dir / "ttkb.toml",
         name=name,
         entry=f"src/{module_name}/main.py",
+        theme=theme,
         include_build=False,
     )
 

@@ -5,6 +5,7 @@ The ttkb CLI provides commands for:
 - Running applications (run)
 - Building for distribution (build)
 - Adding components (add)
+- Listing resources (list)
 
 Usage:
     ttkb start <appname>        Create a new project
@@ -15,6 +16,7 @@ Usage:
     ttkb add dialog <ClassName> Add a new dialog
     ttkb add theme <name>       Add a custom theme
     ttkb add i18n               Add i18n support
+    ttkb list themes            List available themes
     ttkb demo                   Launch the widget demo
 """
 
@@ -24,7 +26,7 @@ import argparse
 import sys
 from typing import Sequence
 
-from ttkbootstrap.cli import add, build, promote, run, start
+from ttkbootstrap.cli import add, build, list_cmd, promote, run, start
 from ttkbootstrap.cli.demo import run_demo
 
 
@@ -38,10 +40,12 @@ def main(argv: Sequence[str] | None = None) -> None:
 Examples:
   ttkb start MyApp              Create a new project
   ttkb start MyApp --simple     Create minimal project
+  ttkb start MyApp --theme superhero  Use a specific theme
   ttkb run                      Run the application
   ttkb promote --pyinstaller    Enable PyInstaller support
   ttkb build                    Build for distribution
   ttkb add view SettingsView    Add a new view
+  ttkb list themes              List available themes
   ttkb demo                     Launch the widget demo
 
 For more information on a command:
@@ -67,6 +71,7 @@ For more information on a command:
     promote.add_parser(subparsers)
     build.add_parser(subparsers)
     add.add_parser(subparsers)
+    list_cmd.add_parser(subparsers)
 
     # Demo command (kept for backwards compatibility)
     demo_parser = subparsers.add_parser(

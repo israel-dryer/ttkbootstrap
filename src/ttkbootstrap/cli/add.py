@@ -302,6 +302,10 @@ def _get_dark_theme_template(name: str) -> str:
 
 def _get_po_template(lang: str) -> str:
     """Get a .po file template."""
+    from datetime import datetime, timezone
+
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M%z")
+
     return f'''\
 # {lang.upper()} translations for the application.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
@@ -311,7 +315,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\\n"
 "Report-Msgid-Bugs-To: \\n"
-"POT-Creation-Date: 2024-01-01 00:00+0000\\n"
+"POT-Creation-Date: {now}\\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\\n"
 "Language-Team: {lang.upper()} <LL@li.org>\\n"

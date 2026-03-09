@@ -29,6 +29,7 @@ def add_parser(subparsers: argparse._SubParsersAction) -> None:
 def run_run(args: argparse.Namespace) -> None:
     """Execute the run command."""
     path = args.path
+    config = None
 
     # Determine what to run
     if path:
@@ -71,14 +72,20 @@ def run_run(args: argparse.Namespace) -> None:
 
     # Run the application
     # Add project src directory to PYTHONPATH
+    import os
+
     src_dir = project_root / "src"
-    env = dict(__import__("os").environ)
+    env = dict(os.environ)
     python_path = env.get("PYTHONPATH", "")
     if src_dir.exists():
         if python_path:
-            env["PYTHONPATH"] = f"{src_dir}{__import__('os').pathsep}{python_path}"
+            env["PYTHONPATH"] = f"{src_dir}{os.pathsep}{python_path}"
         else:
             env["PYTHONPATH"] = str(src_dir)
+
+    # Pass theme from config so the app can pick it up
+    if config is not None and config.settings.theme:
+        env["TTKB_THEME"] = config.settings.theme
 
     try:
         result = subprocess.run(

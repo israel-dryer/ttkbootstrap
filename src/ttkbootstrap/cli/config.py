@@ -24,7 +24,7 @@ id = "{app_id}"
 entry = "{entry}"
 
 [settings]
-theme = "cosmo"
+theme = "{theme}"
 language = "en"
 appearance = "system"
 
@@ -222,6 +222,7 @@ def generate_config(
     name: str,
     app_id: Optional[str] = None,
     entry: Optional[str] = None,
+    theme: str = "cosmo",
     include_build: bool = False,
 ) -> str:
     """Generate ttkb.toml content.
@@ -230,6 +231,7 @@ def generate_config(
         name: Application name.
         app_id: Application identifier (defaults to com.example.<name>).
         entry: Entry point path (defaults to src/<name>/main.py).
+        theme: Theme name (default: cosmo).
         include_build: Whether to include [build] section.
 
     Returns:
@@ -245,6 +247,7 @@ def generate_config(
         name=name,
         app_id=app_id,
         entry=entry,
+        theme=theme,
     )
 
     if include_build:
@@ -258,6 +261,7 @@ def write_config(
     name: str,
     app_id: Optional[str] = None,
     entry: Optional[str] = None,
+    theme: str = "cosmo",
     include_build: bool = False,
 ) -> None:
     """Write ttkb.toml to disk.
@@ -267,8 +271,9 @@ def write_config(
         name: Application name.
         app_id: Application identifier.
         entry: Entry point path.
+        theme: Theme name (default: cosmo).
         include_build: Whether to include [build] section.
     """
     path = Path(path)
-    content = generate_config(name, app_id, entry, include_build)
+    content = generate_config(name, app_id, entry, theme, include_build)
     path.write_text(content, encoding="utf-8")

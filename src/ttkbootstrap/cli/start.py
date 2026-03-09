@@ -31,6 +31,11 @@ def add_parser(subparsers: argparse._SubParsersAction) -> None:
         help="Default container type for views (default: grid)",
     )
     parser.add_argument(
+        "--theme",
+        default="cosmo",
+        help="Theme name for the application (default: cosmo)",
+    )
+    parser.add_argument(
         "--dir",
         type=Path,
         default=None,
@@ -44,6 +49,7 @@ def run_start(args: argparse.Namespace) -> None:
     name = args.name
     simple = args.simple
     container = args.container
+    theme = args.theme
 
     # Determine target directory
     if args.dir:
@@ -65,6 +71,7 @@ def run_start(args: argparse.Namespace) -> None:
         name=name,
         target_dir=target_dir,
         container=container,
+        theme=theme,
         simple=simple,
     )
 
