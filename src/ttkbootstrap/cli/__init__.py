@@ -12,6 +12,7 @@ Usage:
     ttkb run [path]             Run the application
     ttkb promote --pyinstaller  Enable PyInstaller support
     ttkb build                  Build for distribution
+    ttkb add page <ClassName>   Add a new page (AppShell)
     ttkb add view <ClassName>   Add a new view
     ttkb add dialog <ClassName> Add a new dialog
     ttkb add theme <name>       Add a custom theme

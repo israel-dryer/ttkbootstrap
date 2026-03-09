@@ -6,7 +6,7 @@ import argparse
 from pathlib import Path
 
 from ttkbootstrap.cli.config import TtkbConfig, find_config
-from ttkbootstrap.cli.templates import create_dialog, create_view
+from ttkbootstrap.cli.templates import create_dialog, create_page, create_view
 
 
 def add_parser(subparsers: argparse._SubParsersAction) -> None:
@@ -14,9 +14,26 @@ def add_parser(subparsers: argparse._SubParsersAction) -> None:
     parser = subparsers.add_parser(
         "add",
         help="Add components to the project",
-        description="Add views, dialogs, themes, or i18n support to the project.",
+        description="Add views, pages, dialogs, themes, or i18n support to the project.",
     )
     add_subparsers = parser.add_subparsers(dest="component")
+
+    # ttkb add page <ClassName>
+    page_parser = add_subparsers.add_parser(
+        "page",
+        help="Add a new page (for AppShell projects)",
+    )
+    page_parser.add_argument(
+        "class_name",
+        help="Page class name (CamelCase, e.g., 'DashboardPage')",
+    )
+    page_parser.add_argument(
+        "--dir",
+        type=Path,
+        default=None,
+        help="Target directory (default: src/<app>/pages/)",
+    )
+    page_parser.set_defaults(func=run_add_page)
 
     # ttkb add view <ClassName>
     view_parser = add_subparsers.add_parser(
@@ -132,6 +149,59 @@ def run_add_view(args: argparse.Namespace) -> None:
     file_path = create_view(class_name, target_dir, container)
 
     print(f"Created view: {file_path.relative_to(project_root)}")
+
+
+def run_add_page(args: argparse.Namespace) -> None:
+    """Add a new page to an AppShell project."""
+    class_name = args.class_name
+
+    # Validate class name
+    if not class_name[0].isupper():
+        print("Error: Class name should be CamelCase (e.g., 'DashboardPage')")
+        return
+
+    # Find project configuration
+    config_path = find_config()
+    if config_path is None:
+        print("Error: No ttkb.toml found. Are you in a ttkbootstrap project?")
+        return
+
+    project_root = config_path.parent
+    config = TtkbConfig.load(config_path)
+
+    # Check that this is an AppShell project
+    if config.app.template != "appshell":
+        print("Error: 'ttkb add page' is for AppShell projects.")
+        print("This project uses the 'basic' template. Use 'ttkb add view' instead.")
+        return
+
+    # Determine target directory
+    if args.dir:
+        target_dir = args.dir
+    else:
+        entry_path = Path(config.app.entry)
+        if entry_path.parts[0] == "src" and len(entry_path.parts) >= 2:
+            module_name = entry_path.parts[1]
+            target_dir = project_root / "src" / module_name / "pages"
+        else:
+            target_dir = project_root / "pages"
+
+    target_dir.mkdir(parents=True, exist_ok=True)
+
+    # Ensure __init__.py exists
+    init_file = target_dir / "__init__.py"
+    if not init_file.exists():
+        init_file.write_text('"""Pages package."""\n', encoding="utf-8")
+
+    # Create page
+    file_path = create_page(class_name, target_dir)
+
+    print(f"Created page: {file_path.relative_to(project_root)}")
+    print()
+    print("To wire it up in main.py:")
+    print(f"  from <module>.pages.{file_path.stem} import {class_name}")
+    print(f'  page = shell.add_page("<id>", text="<Label>", icon="<icon>")')
+    print(f"  {class_name}(page)")
 
 
 def run_add_dialog(args: argparse.Namespace) -> None:
