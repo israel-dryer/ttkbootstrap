@@ -33,6 +33,11 @@ def add_parser(subparsers: argparse._SubParsersAction) -> None:
         default=None,
         help="Target directory (default: src/<app>/pages/)",
     )
+    page_parser.add_argument(
+        "--scrollable",
+        action="store_true",
+        help="Make the page scrollable (wraps content in a ScrollView)",
+    )
     page_parser.set_defaults(func=run_add_page)
 
     # ttkb add view <ClassName>
@@ -194,13 +199,15 @@ def run_add_page(args: argparse.Namespace) -> None:
         init_file.write_text('"""Pages package."""\n', encoding="utf-8")
 
     # Create page
-    file_path = create_page(class_name, target_dir)
+    scrollable = args.scrollable
+    file_path = create_page(class_name, target_dir, scrollable=scrollable)
 
     print(f"Created page: {file_path.relative_to(project_root)}")
     print()
     print("To wire it up in main.py:")
     print(f"  from <module>.pages.{file_path.stem} import {class_name}")
-    print(f'  page = shell.add_page("<id>", text="<Label>", icon="<icon>")')
+    scrollable_arg = ", scrollable=True" if scrollable else ""
+    print(f'  page = shell.add_page("<id>", text="<Label>", icon="<icon>"{scrollable_arg})')
     print(f"  {class_name}(page)")
 
 

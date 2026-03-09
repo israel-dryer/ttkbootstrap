@@ -136,7 +136,6 @@ class TabView(Frame):
         closable: Union[bool, Literal['hover'], None] = None,
         close_command: Callable = None,
         command: Callable = None,
-        sticky: str = 'nsew',
         **kwargs
     ) -> tk.Widget:
         """Add a tab and its associated page.
@@ -151,7 +150,6 @@ class TabView(Frame):
             close_command: Callback when close button is clicked.
                 If not provided and closable is enabled, removes the tab/page.
             command: Callback when tab is selected.
-            sticky: Grid sticky parameter for the page layout.
             **kwargs: Additional arguments passed to page Frame (if created).
 
         Returns:
@@ -176,7 +174,7 @@ class TabView(Frame):
         self._tab_map[key] = tab
 
         # Add page
-        page_widget = self._page_stack.add(key, page, sticky=sticky, **kwargs)
+        page_widget = self._page_stack.add(key, page, **kwargs)
 
         # If this is the first tab, select it
         if len(self._tab_map) == 1:

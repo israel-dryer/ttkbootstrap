@@ -91,7 +91,7 @@ class MainView(ttk.GridFrame):
         ttk.Button(
             self,
             text="Get Started",
-            bootstyle="primary",
+            accent="primary",
             command=self._on_submit,
         ).grid(row=3, column=0, columnspan=2, pady=(20, 0))
 
@@ -154,7 +154,7 @@ class MainView(ttk.PackFrame):
         btn = ttk.Button(
             self,
             text="Get Started",
-            bootstyle="primary",
+            accent="primary",
             command=self._on_submit,
         )
         self.add(btn)
@@ -277,7 +277,7 @@ class {class_name}(Dialog):
         ttk.Button(
             box,
             text="OK",
-            bootstyle="primary",
+            accent="primary",
             command=self.ok,
         ).pack(side="right")
 
@@ -597,12 +597,15 @@ Application settings are defined in `ttkb.toml`:
 def create_page(
     class_name: str,
     target_dir: Path,
+    scrollable: bool = False,
 ) -> Path:
     """Create a new AppShell page file.
 
     Args:
         class_name: Page class name (CamelCase).
         target_dir: Directory to create the page in.
+        scrollable: If True, the page template notes that
+            ``scrollable=True`` should be passed to ``add_page()``.
 
     Returns:
         Path to the created file.

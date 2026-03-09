@@ -20,7 +20,6 @@ class PageOptions(TypedDict, total=False):
     variant: str
     surface: str
     style_options: dict[str, Any]
-    sticky: str
 
 
 class PageStackKwargs(TypedDict, total=False):
@@ -76,13 +75,12 @@ class PageStack(Frame):
         self._history: list[tuple[str, dict]] = []
         self._index: int = -1
 
-    def add(self, key: str, page: tkinter.Widget = None, *, sticky: str = '', **kwargs) -> tkinter.Widget:
+    def add(self, key: str, page: tkinter.Widget = None, **kwargs) -> tkinter.Widget:
         """Add a page to the stack, optionally creating a Frame.
 
         Args:
             key (str): Unique identifier for the page (required for navigation).
             page (Widget | None): The widget to add. If None, creates a Frame.
-            sticky (str): Grid sticky parameter for the page layout (e.g., 'nsew').
             **kwargs: When page is None, these are passed to Frame (e.g., padding, color, variant).
 
         Returns:
@@ -101,8 +99,8 @@ class PageStack(Frame):
             page = Frame(self, **kwargs)
 
         self._pages[key] = page
-        page.grid(sticky=sticky)
-        page.grid_remove()
+        page.pack(fill='both', expand=True)
+        page.pack_forget()
         return page
 
     def remove(self, key: str) -> None:
@@ -178,7 +176,7 @@ class PageStack(Frame):
         # Unmount previous page
         if self._current is not None:
             self._pages[self._current].event_generate('<<PageUnmount>>', when="tail")
-            self._pages[self._current].grid_remove()
+            self._pages[self._current].pack_forget()
 
         # Normalized payload (self-contained snapshot)
         payload = dict(data)
@@ -198,7 +196,7 @@ class PageStack(Frame):
         # Mount and notify
         page = self._pages[key]
         page.event_generate('<<PageWillMount>>', data=payload, when="tail")
-        page.grid()
+        page.pack(fill='both', expand=True)
         self._current = key
         self.event_generate('<<PageMount>>', data=payload, when="tail")
         self.event_generate('<<PageChange>>', data=payload, when="tail")
@@ -299,8 +297,7 @@ class PageStack(Frame):
 
         Args:
             key: The identifier of the page to configure.
-            option: Optional configuration option to query. If 'sticky', returns
-                   the grid sticky value. Otherwise queries the widget option.
+            option: Optional configuration option to query.
             **kwargs: Configuration options to set on the page widget.
 
         Returns:
@@ -315,9 +312,7 @@ class PageStack(Frame):
             raise ValueError("Page key cannot be an empty string")
         if key not in self._pages:
             raise KeyError(f"No page with key '{key}'")
-        if option == 'sticky':
-            return self._pages[key].grid_info().get('sticky')
-        elif option is not None:
+        if option is not None:
             return self._pages[key].cget(option)
         else:
             return self._pages[key].configure(**kwargs)

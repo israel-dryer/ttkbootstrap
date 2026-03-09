@@ -14,6 +14,7 @@ from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.composites.toolbar import Toolbar
 from ttkbootstrap.widgets.composites.sidenav import SideNav
 from ttkbootstrap.widgets.composites.pagestack import PageStack
+from ttkbootstrap.widgets.composites.scrollview import ScrollView
 from ttkbootstrap.widgets.mixins import configure_delegate
 from ttkbootstrap.runtime.app import App
 
@@ -34,7 +35,6 @@ class AppShellKwargs(TypedDict, total=False):
     show_nav: bool
     nav_display_mode: Literal['expanded', 'compact', 'minimal']
     nav_accent: str
-    page_sticky: str
 
 
 class AppShell(App):
@@ -78,7 +78,6 @@ class AppShell(App):
         show_nav: bool = True,
         nav_display_mode: Literal['expanded', 'compact', 'minimal'] = 'expanded',
         nav_accent: str = 'primary',
-        page_sticky: str = 'nsew',
         **kwargs: Unpack[AppShellKwargs],
     ):
         """Initialize an AppShell.
@@ -104,7 +103,6 @@ class AppShell(App):
             nav_display_mode: Initial SideNav display mode
                 ('expanded', 'compact', or 'minimal'). Default 'expanded'.
             nav_accent: Accent color for navigation selection. Default 'primary'.
-            page_sticky: Default grid sticky for pages. Default 'nsew'.
             **kwargs: Additional arguments passed to App.
         """
         # Frameless mode: remove OS chrome and enable toolbar controls
@@ -127,7 +125,6 @@ class AppShell(App):
         self._shell_title = title
         self._show_toolbar = show_toolbar
         self._show_nav = show_nav
-        self._page_sticky = page_sticky
 
         # Track which nav keys have associated pages
         self._page_keys: set[str] = set()
@@ -244,8 +241,8 @@ class AppShell(App):
         icon: str | dict = None,
         page=None,
         group: str = None,
-        page_sticky: str = None,
         is_footer: bool = False,
+        scrollable: bool = False,
         **nav_kwargs,
     ):
         """Add a navigation item and its corresponding page in one call.
@@ -257,13 +254,16 @@ class AppShell(App):
             page: An existing widget to use as the page. If None, a Frame
                 is created automatically.
             group: Key of the nav group to add this item to.
-            page_sticky: Grid sticky for this page. Uses the shell default
-                if not specified.
             is_footer: If True, add the nav item to the footer section.
+            scrollable: If True, the page is wrapped in a ScrollView with
+                vertical scrolling. The returned widget is the ScrollView
+                content frame, so widgets can be packed into it as usual.
             **nav_kwargs: Additional arguments passed to the nav item.
 
         Returns:
-            The page widget (passed or auto-created Frame).
+            The page widget (passed or auto-created Frame). When
+            ``scrollable=True``, returns the ScrollView so that children
+            are packed into the scrollable area.
 
         Raises:
             RuntimeError: If ``show_nav=False`` was set. Use
@@ -284,9 +284,23 @@ class AppShell(App):
             self._nav.add_item(key, text=text, icon=icon, **nav_kwargs)
 
         # Add page
-        sticky = page_sticky or self._page_sticky
-        page_widget = self._pages.add(key, page=page, sticky=sticky)
+        page_widget = self._pages.add(key, page=page)
         self._page_keys.add(key)
+
+        # Wrap in ScrollView when requested
+        if scrollable:
+            sv = ScrollView(
+                page_widget,
+                scroll_direction="vertical",
+                scrollbar_visibility="hover",
+            )
+            sv.pack(fill="both", expand=True)
+            page_widget = sv.add()
+
+            # Stretch content frame to canvas width so fill=X works
+            def _on_canvas_resize(event, _sv=sv):
+                _sv.canvas.itemconfigure(_sv._window_id, width=event.width)
+            sv.canvas.bind('<Configure>', _on_canvas_resize, add='+')
 
         # Auto-navigate to the first page added
         if not self._first_page_added:
