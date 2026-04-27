@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Tuple, Union, cast
 
-from PIL import Image, ImageColor, ImageOps, ImageDraw
+from PIL import Image, ImageChops, ImageColor, ImageOps, ImageDraw
 from PIL.ImageTk import PhotoImage
 
 from ttkbootstrap.core.images import Image as ImageService
@@ -509,39 +509,38 @@ def recolor_element_image(
     mag_rgb = color_to_rgb(magenta_color) if magenta_color else None
     trans_rgb = color_to_rgb(transparent_color) if transparent_color else None
 
-    result = Image.new("RGBA", img.size)
-    src_pixels = img.load()
-    dst_pixels = result.load()
+    # Luminance-based recoloring via per-channel LUTs applied to grayscale.
+    # Output channel value = round(bg + (fg - bg) * gray / 255). PIL applies
+    # the LUT in C, replacing the per-pixel Python loop.
+    def _channel_lut(bg_c: int, fg_c: int) -> list[int]:
+        return [round(bg_c + (fg_c - bg_c) * i / 255.0) for i in range(256)]
 
-    # Apply luminance-based recoloring (same algorithm as recolor_image)
-    for y in range(img.height):
-        for x in range(img.width):
-            r_src, g_src, b_src, a = src_pixels[x, y]
+    r_chan = gray.point(_channel_lut(bg_rgb[0], fg_rgb[0]))
+    g_chan = gray.point(_channel_lut(bg_rgb[1], fg_rgb[1]))
+    b_chan = gray.point(_channel_lut(bg_rgb[2], fg_rgb[2]))
 
-            if a == 0:
-                if trans_rgb:
-                    dst_pixels[x, y] = (*trans_rgb, 255)
-                else:
-                    dst_pixels[x, y] = (0, 0, 0, 0)
-                continue
+    r_src, g_src, b_src, alpha = img.split()
+    result = Image.merge("RGBA", (r_chan, g_chan, b_chan, alpha))
 
-            alpha_frac = a / 255.0
+    # Magenta passthrough: pixels whose source RGB is exactly (255, 0, 255)
+    # are replaced with mag_rgb. Build a 0/255 mask via channel LUTs and
+    # AND them with ImageChops.multiply (255 * 255 / 255 = 255).
+    if mag_rgb:
+        r_eq = r_src.point([255 if i == 255 else 0 for i in range(256)])
+        g_eq = g_src.point([255 if i == 0 else 0 for i in range(256)])
+        b_eq = b_src.point([255 if i == 255 else 0 for i in range(256)])
+        mag_mask = ImageChops.multiply(ImageChops.multiply(r_eq, g_eq), b_eq)
+        mag_solid = Image.new("RGBA", img.size, (*mag_rgb, 255))
+        composited = Image.composite(mag_solid, result, mag_mask)
+        # composite replaces alpha too; restore the original alpha.
+        nr, ng, nb, _ = composited.split()
+        result = Image.merge("RGBA", (nr, ng, nb, alpha))
 
-            if mag_rgb and (r_src, g_src, b_src) == (255, 0, 255):
-                r, g, b = mag_rgb
-            else:
-                lum = gray.getpixel((x, y)) / 255.0
-                r = round(bg_rgb[0] + (fg_rgb[0] - bg_rgb[0]) * lum)
-                g = round(bg_rgb[1] + (fg_rgb[1] - bg_rgb[1]) * lum)
-                b = round(bg_rgb[2] + (fg_rgb[2] - bg_rgb[2]) * lum)
-
-            if trans_rgb:
-                r_final = round(trans_rgb[0] * (1 - alpha_frac) + r * alpha_frac)
-                g_final = round(trans_rgb[1] * (1 - alpha_frac) + g * alpha_frac)
-                b_final = round(trans_rgb[2] * (1 - alpha_frac) + b * alpha_frac)
-                dst_pixels[x, y] = (r_final, g_final, b_final, 255)
-            else:
-                dst_pixels[x, y] = (r, g, b, a)
+    # Flatten partial transparency over a solid backing color. Matches the
+    # old per-pixel `r_final = trans*(1-a) + r*a, alpha=255` exactly.
+    if trans_rgb:
+        backing = Image.new("RGBA", img.size, (*trans_rgb, 255))
+        result = Image.alpha_composite(backing, result)
 
     # Scale the image
     # Use rounding (+ 0.5) to ensure image size matches metadata dimensions exactly.
