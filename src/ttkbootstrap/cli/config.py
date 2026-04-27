@@ -22,9 +22,10 @@ DEFAULT_CONFIG_TEMPLATE = """\
 name = "{name}"
 id = "{app_id}"
 entry = "{entry}"
+template = "{template}"
 
 [settings]
-theme = "cosmo"
+theme = "{theme}"
 language = "en"
 appearance = "system"
 
@@ -59,6 +60,7 @@ class AppConfig:
     name: str = "MyApp"
     id: str = "com.example.myapp"
     entry: str = "src/myapp/main.py"
+    template: str = "basic"
 
 
 @dataclass
@@ -123,6 +125,7 @@ class TtkbConfig:
             name=app_data.get("name", "MyApp"),
             id=app_data.get("id", "com.example.myapp"),
             entry=app_data.get("entry", "src/myapp/main.py"),
+            template=app_data.get("template", "basic"),
         )
 
         settings = SettingsConfig(
@@ -222,6 +225,8 @@ def generate_config(
     name: str,
     app_id: Optional[str] = None,
     entry: Optional[str] = None,
+    theme: str = "cosmo",
+    template: str = "basic",
     include_build: bool = False,
 ) -> str:
     """Generate ttkb.toml content.
@@ -230,6 +235,8 @@ def generate_config(
         name: Application name.
         app_id: Application identifier (defaults to com.example.<name>).
         entry: Entry point path (defaults to src/<name>/main.py).
+        theme: Theme name (default: cosmo).
+        template: Project template type (default: basic).
         include_build: Whether to include [build] section.
 
     Returns:
@@ -245,6 +252,8 @@ def generate_config(
         name=name,
         app_id=app_id,
         entry=entry,
+        theme=theme,
+        template=template,
     )
 
     if include_build:
@@ -258,6 +267,8 @@ def write_config(
     name: str,
     app_id: Optional[str] = None,
     entry: Optional[str] = None,
+    theme: str = "cosmo",
+    template: str = "basic",
     include_build: bool = False,
 ) -> None:
     """Write ttkb.toml to disk.
@@ -267,8 +278,10 @@ def write_config(
         name: Application name.
         app_id: Application identifier.
         entry: Entry point path.
+        theme: Theme name (default: cosmo).
+        template: Project template type (default: basic).
         include_build: Whether to include [build] section.
     """
     path = Path(path)
-    content = generate_config(name, app_id, entry, include_build)
+    content = generate_config(name, app_id, entry, theme, template, include_build)
     path.write_text(content, encoding="utf-8")

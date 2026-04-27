@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Literal
 
 ContainerType = Literal["grid", "pack"]
+TemplateType = Literal["basic", "appshell"]
 
 
 # =============================================================================
@@ -19,6 +20,8 @@ MAIN_PY_TEMPLATE = '''\
 Run with: python -m {module_name}
 """
 
+import os
+
 import ttkbootstrap as ttk
 
 from {module_name}.views.main_view import MainView
@@ -28,7 +31,7 @@ def main() -> None:
     """Application entry point."""
     app = ttk.App(
         title="{app_name}",
-        theme="cosmo",
+        theme=os.environ.get("TTKB_THEME", "{theme}"),
         size=(800, 600),
     )
 
@@ -88,7 +91,7 @@ class MainView(ttk.GridFrame):
         ttk.Button(
             self,
             text="Get Started",
-            bootstyle="primary",
+            accent="primary",
             command=self._on_submit,
         ).grid(row=3, column=0, columnspan=2, pady=(20, 0))
 
@@ -151,7 +154,7 @@ class MainView(ttk.PackFrame):
         btn = ttk.Button(
             self,
             text="Get Started",
-            bootstyle="primary",
+            accent="primary",
             command=self._on_submit,
         )
         self.add(btn)
@@ -274,7 +277,7 @@ class {class_name}(Dialog):
         ttk.Button(
             box,
             text="OK",
-            bootstyle="primary",
+            accent="primary",
             command=self.ok,
         ).pack(side="right")
 
@@ -357,10 +360,288 @@ Application settings are defined in `ttkb.toml`:
 '''
 
 
+# =============================================================================
+# AppShell templates
+# =============================================================================
+
+APPSHELL_MAIN_PY_TEMPLATE = '''\
+"""
+{app_name} - A ttkbootstrap application.
+
+Run with: python -m {module_name}
+"""
+
+import os
+
+import ttkbootstrap as ttk
+
+from {module_name}.pages.home_page import HomePage
+from {module_name}.pages.settings_page import SettingsPage
+
+
+def main() -> None:
+    """Application entry point."""
+    shell = ttk.AppShell(
+        title="{app_name}",
+        theme=os.environ.get("TTKB_THEME", "{theme}"),
+        size=(1000, 650),
+    )
+
+    # Add a theme toggle button to the toolbar
+    shell.toolbar.add_button(icon="sun", command=ttk.toggle_theme)
+
+    # Navigation pages
+    home = shell.add_page("home", text="Home", icon="house")
+    HomePage(home)
+
+    shell.add_separator()
+
+    # Footer pages
+    settings = shell.add_page("settings", text="Settings", icon="gear", is_footer=True)
+    SettingsPage(settings)
+
+    # Start on the home page
+    shell.navigate("home")
+    shell.mainloop()
+
+
+if __name__ == "__main__":
+    main()
+'''
+
+
+APPSHELL_HOME_PAGE_TEMPLATE = '''\
+"""Home page."""
+
+import ttkbootstrap as ttk
+
+
+class HomePage:
+    """Home page content.
+
+    Pages in an AppShell are not widget subclasses. The ``parent`` frame
+    is created by ``shell.add_page()`` and this class populates it.
+    """
+
+    def __init__(self, parent):
+        self.parent = parent
+        self._build()
+
+    def _build(self):
+        ttk.Label(
+            self.parent,
+            text="Welcome to {app_name}",
+            font="heading-xl",
+        ).pack(anchor="w", padx=20, pady=(20, 10))
+
+        ttk.Label(
+            self.parent,
+            text="This is your home page. Edit this file to get started.",
+            wraplength=500,
+        ).pack(anchor="w", padx=20, pady=(0, 20))
+
+        content = ttk.LabelFrame(self.parent, text="Getting Started", padding=20)
+        content.pack(fill="both", expand=True, padx=20, pady=(0, 20))
+
+        ttk.Label(
+            content,
+            text=(
+                "Add your widgets here.\\n\\n"
+                "To add another page:\\n"
+                "  1. Run 'ttkb add page <Name>' to generate the file under pages/.\\n"
+                "  2. In main.py, import it, call shell.add_page(...), and pass\\n"
+                "     the returned frame to your page class. The CLI prints the\\n"
+                "     exact lines to paste."
+            ),
+        ).pack(expand=True)
+'''
+
+
+APPSHELL_SETTINGS_PAGE_TEMPLATE = '''\
+"""Settings page."""
+
+import ttkbootstrap as ttk
+
+
+class SettingsPage:
+    """Settings page content.
+
+    Pages in an AppShell are not widget subclasses. The ``parent`` frame
+    is created by ``shell.add_page()`` and this class populates it.
+    """
+
+    def __init__(self, parent):
+        self.parent = parent
+        self._build()
+
+    def _build(self):
+        ttk.Label(
+            self.parent,
+            text="Settings",
+            font="heading-xl",
+        ).pack(anchor="w", padx=20, pady=(20, 10))
+
+        ttk.Label(
+            self.parent,
+            text="Configure your application preferences.",
+            wraplength=500,
+        ).pack(anchor="w", padx=20, pady=(0, 20))
+
+        content = ttk.LabelFrame(self.parent, text="Preferences", padding=20)
+        content.pack(fill="both", expand=True, padx=20, pady=(0, 20))
+
+        # Example settings
+        theme_frame = ttk.Frame(content)
+        theme_frame.pack(fill="x", pady=(0, 10))
+        ttk.Label(theme_frame, text="Theme:", width=15).pack(side="left")
+        ttk.Button(
+            theme_frame,
+            text="Toggle Light/Dark",
+            command=ttk.toggle_theme,
+        ).pack(side="left")
+'''
+
+
+APPSHELL_PAGE_TEMPLATE = '''\
+"""{page_title} page."""
+
+import ttkbootstrap as ttk
+
+
+class {class_name}:
+    """{page_title} page content.
+
+    Pages in an AppShell are not widget subclasses. The ``parent`` frame
+    is created by ``shell.add_page()`` and this class populates it.
+    """
+
+    def __init__(self, parent):
+        self.parent = parent
+        self._build()
+
+    def _build(self):
+        ttk.Label(
+            self.parent,
+            text="{page_title}",
+            font="heading-xl",
+        ).pack(anchor="w", padx=20, pady=(20, 10))
+
+        content = ttk.LabelFrame(self.parent, text="Content", padding=20)
+        content.pack(fill="both", expand=True, padx=20, pady=(0, 20))
+
+        # Add your widgets here
+'''
+
+
+APPSHELL_README_TEMPLATE = '''\
+# {app_name}
+
+A ttkbootstrap application using AppShell navigation.
+
+## Getting Started
+
+### Development
+
+```bash
+# Run the application
+python -m {module_name}
+
+# Or use the CLI
+ttkb run
+```
+
+### Adding Pages
+
+```bash
+# Scaffold a new page
+ttkb add page DashboardPage
+
+# Then wire it up in main.py:
+#   from {module_name}.pages.dashboard_page import DashboardPage
+#   page = shell.add_page("dashboard", text="Dashboard", icon="speedometer2")
+#   DashboardPage(page)
+```
+
+### Building for Distribution
+
+```bash
+# Promote to packaging-ready (adds PyInstaller support)
+ttkb promote --pyinstaller
+
+# Build the executable
+ttkb build
+```
+
+## Project Structure
+
+```
+{project_dir}/
+\u251c\u2500\u2500 src/{module_name}/
+\u2502   \u251c\u2500\u2500 __init__.py
+\u2502   \u251c\u2500\u2500 main.py
+\u2502   \u2514\u2500\u2500 pages/
+\u2502       \u251c\u2500\u2500 __init__.py
+\u2502       \u251c\u2500\u2500 home_page.py
+\u2502       \u2514\u2500\u2500 settings_page.py
+\u251c\u2500\u2500 assets/
+\u251c\u2500\u2500 ttkb.toml
+\u2514\u2500\u2500 README.md
+```
+
+## Configuration
+
+Application settings are defined in `ttkb.toml`:
+
+- `[app]` - Application metadata
+- `[settings]` - Runtime settings (theme, language)
+- `[layout]` - Default layout preferences
+- `[build]` - Build/packaging configuration (after `ttkb promote`)
+'''
+
+
+def create_page(
+    class_name: str,
+    target_dir: Path,
+    scrollable: bool = False,
+) -> Path:
+    """Create a new AppShell page file.
+
+    Args:
+        class_name: Page class name (CamelCase).
+        target_dir: Directory to create the page in.
+        scrollable: If True, the page template notes that
+            ``scrollable=True`` should be passed to ``add_page()``.
+
+    Returns:
+        Path to the created file.
+    """
+    file_name = _camel_to_snake(class_name) + ".py"
+
+    # Derive a readable title from the class name (e.g. "DashboardPage" -> "Dashboard")
+    page_title = class_name
+    if page_title.endswith("Page"):
+        page_title = page_title[:-4]
+    # Insert spaces before uppercase letters
+    import re
+    page_title = re.sub(r"([a-z])([A-Z])", r"\1 \2", page_title)
+
+    content = APPSHELL_PAGE_TEMPLATE.format(
+        class_name=class_name,
+        page_title=page_title,
+    )
+
+    file_path = target_dir / file_name
+    file_path.write_text(content, encoding="utf-8")
+
+    return file_path
+
+
 def create_project(
     name: str,
     target_dir: Path,
     container: ContainerType = "grid",
+    theme: str = "cosmo",
+    template: TemplateType = "basic",
     simple: bool = False,
 ) -> None:
     """Create a new ttkbootstrap project.
@@ -369,8 +650,24 @@ def create_project(
         name: Application name.
         target_dir: Target directory for the project.
         container: Default container type ('grid' or 'pack').
+        theme: Theme name for the application.
+        template: Project template ('basic' or 'appshell').
         simple: If True, create minimal project without build config.
     """
+    if template == "appshell":
+        _create_appshell_project(name, target_dir, theme, simple)
+    else:
+        _create_basic_project(name, target_dir, container, theme, simple)
+
+
+def _create_basic_project(
+    name: str,
+    target_dir: Path,
+    container: ContainerType,
+    theme: str,
+    simple: bool,
+) -> None:
+    """Create a basic single-view project."""
     from ttkbootstrap.cli.config import write_config
 
     # Normalize names
@@ -391,6 +688,7 @@ def create_project(
     main_content = MAIN_PY_TEMPLATE.format(
         app_name=name,
         module_name=module_name,
+        theme=theme,
     )
     (src_dir / "main.py").write_text(main_content, encoding="utf-8")
 
@@ -417,12 +715,83 @@ def create_project(
         path=target_dir / "ttkb.toml",
         name=name,
         entry=f"src/{module_name}/main.py",
+        theme=theme,
+        template="basic",
         include_build=False,
     )
 
     # Write README.md
     if not simple:
         readme_content = README_TEMPLATE.format(
+            app_name=name,
+            module_name=module_name,
+            project_dir=target_dir.name,
+        )
+        (target_dir / "README.md").write_text(readme_content, encoding="utf-8")
+
+
+def _create_appshell_project(
+    name: str,
+    target_dir: Path,
+    theme: str,
+    simple: bool,
+) -> None:
+    """Create an AppShell project with sidebar navigation and pages."""
+    from ttkbootstrap.cli.config import write_config
+
+    # Normalize names
+    name_lower = name.lower().replace(" ", "_").replace("-", "_")
+    module_name = name_lower
+
+    # Create directory structure
+    src_dir = target_dir / "src" / module_name
+    pages_dir = src_dir / "pages"
+    assets_dir = target_dir / "assets"
+
+    src_dir.mkdir(parents=True, exist_ok=True)
+    pages_dir.mkdir(parents=True, exist_ok=True)
+    if not simple:
+        assets_dir.mkdir(parents=True, exist_ok=True)
+
+    # Write main.py
+    main_content = APPSHELL_MAIN_PY_TEMPLATE.format(
+        app_name=name,
+        module_name=module_name,
+        theme=theme,
+    )
+    (src_dir / "main.py").write_text(main_content, encoding="utf-8")
+
+    # Write __init__.py
+    init_content = INIT_PY_TEMPLATE.format(app_name=name)
+    (src_dir / "__init__.py").write_text(init_content, encoding="utf-8")
+
+    # Write pages/__init__.py
+    (pages_dir / "__init__.py").write_text(
+        '"""Pages package."""\n', encoding="utf-8"
+    )
+
+    # Write home_page.py
+    home_content = APPSHELL_HOME_PAGE_TEMPLATE.format(app_name=name)
+    (pages_dir / "home_page.py").write_text(home_content, encoding="utf-8")
+
+    # Write settings_page.py
+    (pages_dir / "settings_page.py").write_text(
+        APPSHELL_SETTINGS_PAGE_TEMPLATE, encoding="utf-8"
+    )
+
+    # Write ttkb.toml
+    write_config(
+        path=target_dir / "ttkb.toml",
+        name=name,
+        entry=f"src/{module_name}/main.py",
+        theme=theme,
+        template="appshell",
+        include_build=False,
+    )
+
+    # Write README.md
+    if not simple:
+        readme_content = APPSHELL_README_TEMPLATE.format(
             app_name=name,
             module_name=module_name,
             project_dir=target_dir.name,

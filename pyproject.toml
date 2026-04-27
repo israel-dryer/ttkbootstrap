@@ -45,6 +45,7 @@ classifiers = [
 dependencies = [
     "pillow>=10,<=12",
     "ttkbootstrap-icons>=4",
+    "ttkbootstrap-icons-bs>=1",
 
     # Runtime localization/formatting stack
     "Babel>=2.12",

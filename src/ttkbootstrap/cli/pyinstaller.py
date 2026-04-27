@@ -23,23 +23,20 @@ Edit ttkb.toml to change build settings, then regenerate with:
 import sys
 from pathlib import Path
 
+# PyInstaller exec's this spec with SPECPATH (directory of the .spec file)
+# in the namespace. __file__ is not defined inside a spec.
+PROJECT_ROOT = Path(SPECPATH).parent.parent
+CONFIG_PATH = PROJECT_ROOT / "ttkb.toml"
+
 # Ensure we can import ttkbootstrap CLI tools
 try:
     from ttkbootstrap.cli.config import TtkbConfig
 except ImportError:
-    sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
+    sys.path.insert(0, str(PROJECT_ROOT / "src"))
     from ttkbootstrap.cli.config import TtkbConfig
 
-
-# =============================================================================
-# Load configuration from ttkb.toml
-# =============================================================================
-
-PROJECT_ROOT = Path(__file__).parent.parent.parent
-CONFIG_PATH = PROJECT_ROOT / "ttkb.toml"
-
 if not CONFIG_PATH.exists():
-    raise FileNotFoundError(f"ttkb.toml not found at {CONFIG_PATH}")
+    raise FileNotFoundError(f"ttkb.toml not found at {{CONFIG_PATH}}")
 
 config = TtkbConfig.load(CONFIG_PATH)
 
@@ -56,10 +53,13 @@ if config.build and config.build.icon.path:
     if icon_candidate.exists():
         ICON_PATH = str(icon_candidate)
 else:
-    # Try default ttkbootstrap icon
+    # Fall back to the bundled ttkbootstrap launch icon (the same artwork
+    # the runtime sets via wm_iconphoto, just rendered as a multi-size
+    # .ico for Windows). Users can override by setting [build.icon] path
+    # in ttkb.toml.
     try:
         import ttkbootstrap
-        default_icon = Path(ttkbootstrap.__file__).parent / "assets" / "icons" / "app.ico"
+        default_icon = Path(ttkbootstrap.__file__).parent / "assets" / "ttkbootstrap.ico"
         if default_icon.exists():
             ICON_PATH = str(default_icon)
     except Exception:
@@ -92,29 +92,31 @@ if config.build and config.build.datas.include:
 
 
 # =============================================================================
-# Collect ttkbootstrap assets
+# Collect package data (themes, fonts, icon glyphmaps, locales, etc.)
 # =============================================================================
 
-try:
-    import ttkbootstrap
-    ttkb_path = Path(ttkbootstrap.__file__).parent
+# PyInstaller's collect_data_files walks a package and grabs every non-.py
+# file, returning (src, dest) tuples in the form `datas` expects. We use it
+# here for ttkbootstrap's own assets, plus a downstream workaround:
+#
+# WORKAROUND (until upstream fixes ship):
+#   ttkbootstrap_icons ships a complete _pyinstaller/ hook directory, but
+#   its pyproject.toml does not declare the `pyinstaller40` entry point, so
+#   PyInstaller never discovers those hooks. ttkbootstrap_icons_bs also has
+#   no hook of its own. Both manifest at runtime as:
+#       ModuleNotFoundError: No module named 'ttkbootstrap_icons_bs.assets'
+#   We bundle their data files manually here so frozen apps actually work.
+#   Tracked at: https://github.com/israel-dryer/ttkbootstrap-icons/issues
+#   Once upstream lands the entry point + a `hook-ttkbootstrap_icons_bs.py`,
+#   the two icon-package entries below can be dropped — PyInstaller will
+#   pick them up automatically.
+from PyInstaller.utils.hooks import collect_data_files
 
-    # Include ttkbootstrap themes
-    themes_dir = ttkb_path / "themes"
-    if themes_dir.exists():
-        for theme_file in themes_dir.glob("*.json"):
-            datas.append((str(theme_file), "ttkbootstrap/themes"))
-
-    # Include ttkbootstrap assets
-    assets_dir = ttkb_path / "assets"
-    if assets_dir.exists():
-        for asset_file in assets_dir.rglob("*"):
-            if asset_file.is_file():
-                rel = asset_file.relative_to(ttkb_path)
-                datas.append((str(asset_file), str(Path("ttkbootstrap") / rel.parent)))
-
-except Exception as e:
-    print(f"Warning: Could not collect ttkbootstrap assets: {{e}}")
+for _pkg in ("ttkbootstrap", "ttkbootstrap_icons", "ttkbootstrap_icons_bs"):
+    try:
+        datas += collect_data_files(_pkg)
+    except Exception as _e:  # pragma: no cover
+        print(f"Warning: Could not collect data files from {{_pkg}}: {{_e}}")
 
 
 # =============================================================================
@@ -126,13 +128,22 @@ hiddenimports = [
     "ttkbootstrap.themes",
     "ttkbootstrap.style",
     "ttkbootstrap.widgets",
+    "ttkbootstrap_icons",
+    "ttkbootstrap_icons_bs",
     "PIL",
     "PIL._tkinter_finder",
-    "babel",
     "babel.numbers",
     "babel.dates",
     "dateutil",
     "dateparser",
+]
+
+# babel.bin is a CLI script package whose __init__.py calls exit(1) when
+# imported without args; PyInstaller's binary-dependency analyzer
+# imports it during package walking and crashes. Excluding it is safe
+# because nothing in a ttkbootstrap app uses babel's command-line tools.
+excludes = [
+    "babel.bin",
 ]
 
 
@@ -149,7 +160,7 @@ a = Analysis(
     hookspath=[],
     hooksconfig={{}},
     runtime_hooks=[],
-    excludes=[],
+    excludes=excludes,
     noarchive=False,
     optimize=0,
 )

@@ -153,10 +153,11 @@ That data is included in lifecycle event payloads so pages can react to it.
 
 ### Full-bleed pages
 
-When adding pages, control how they fill the stack:
+Pages automatically fill the entire stack using pack layout with `fill='both'` and `expand=True`. To control layout, use pack or grid on the page contents themselves:
 
 ```python
-stack.add("full", sticky="nsew")
+page = stack.add("full")
+ttk.Label(page, text="This page fills the stack").pack(fill="both", expand=True)
 ```
 
 ### Removing pages

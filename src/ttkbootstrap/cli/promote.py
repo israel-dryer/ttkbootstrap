@@ -81,6 +81,17 @@ def run_promote(args: argparse.Namespace) -> None:
     print("Updated:")
     print(f"  - ttkb.toml (added [build] section)")
     print()
+
+    # Warn early if PyInstaller isn't on this interpreter — `ttkb build`
+    # needs it but the promote step itself only writes config.
+    try:
+        import PyInstaller  # noqa: F401
+    except ImportError:
+        print("Note: PyInstaller is not installed in this environment.")
+        print("      Install it before running 'ttkb build':")
+        print("      pip install pyinstaller")
+        print()
+
     print("Next steps:")
     print("  1. (Optional) Edit ttkb.toml [build] section")
     print("  2. Run 'ttkb build' to create executable")

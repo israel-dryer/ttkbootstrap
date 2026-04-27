@@ -122,19 +122,42 @@ app = ttk.App(
 
 ## Project Structure
 
-A CLI-generated ttkbootstrap project:
+`ttkb start` generates one of two layouts depending on the template you
+choose. The **basic** template (default) produces a single-view `App`:
 
 ```
-myapp/
+myapp/                       # ttkb start MyApp
 ├── src/myapp/
 │   ├── __init__.py
-│   ├── main.py          # App entry point
+│   ├── main.py              # App entry point
 │   └── views/
+│       ├── __init__.py
 │       └── main_view.py
-├── assets/              # Images, icons
-├── ttkb.toml            # Project configuration
+├── assets/                  # Images, icons
+├── ttkb.toml                # Project configuration
 └── README.md
 ```
+
+The **appshell** template produces an `AppShell` with sidebar navigation
+and one file per page:
+
+```
+myapp/                       # ttkb start MyApp --template appshell
+├── src/myapp/
+│   ├── __init__.py
+│   ├── main.py
+│   └── pages/
+│       ├── __init__.py
+│       ├── home_page.py
+│       └── settings_page.py
+├── assets/
+├── ttkb.toml
+└── README.md
+```
+
+The chosen template is recorded in `ttkb.toml` as `[app].template`, so
+`ttkb add view` and `ttkb add page` know which scaffold is appropriate for
+the project.
 
 As your project grows:
 
