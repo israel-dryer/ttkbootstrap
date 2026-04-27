@@ -217,7 +217,7 @@ class Field(EntryMixin, Frame):
         self._message_lbl = Label(self, localize=self._localize, text=message or '', font="caption", accent="secondary")
 
         # field container & field - pass density for styling via style_options
-        field_padding = 4 if self._density == 'compact' else 7
+        field_padding = 4 if self._density == 'compact' else 5
         self._field = Frame(self, accent=self._accent, padding=field_padding, ttk_class="TField", style_options={'density': self._density})
 
         if kind == "numeric":
