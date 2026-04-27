@@ -39,7 +39,7 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 CONFIG_PATH = PROJECT_ROOT / "ttkb.toml"
 
 if not CONFIG_PATH.exists():
-    raise FileNotFoundError(f"ttkb.toml not found at {{CONFIG_PATH}}")
+    raise FileNotFoundError(f"ttkb.toml not found at {CONFIG_PATH}")
 
 config = TtkbConfig.load(CONFIG_PATH)
 

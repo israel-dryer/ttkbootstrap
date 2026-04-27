@@ -476,7 +476,7 @@ class BootstyleBuilderBase:
                 gray = "#495057"
                 mix_ratio = 0.20
         else:
-            raise ValueError("Invalid role: {role}. Expected 'text' or 'background'.")
+            raise ValueError(f"Invalid role: {role}. Expected 'text' or 'background'.")
 
         return mix_colors(gray, surface, mix_ratio)
 
