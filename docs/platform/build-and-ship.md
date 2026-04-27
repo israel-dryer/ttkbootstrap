@@ -34,16 +34,21 @@ For most desktop apps, the most common approach is **PyInstaller**.
 Create a project in the style you want:
 
 ```bash
+# Default: a single-view App with assets/, README.md, and a starter view
+ttkb start MyApp
+
+# AppShell with sidebar navigation and starter pages
+ttkb start MyApp --template appshell
+
+# Pick the starting theme (any value from `ttkb list themes`)
+ttkb start MyApp --theme superhero
+
+# Minimal: skip assets/ and README.md
 ttkb start MyApp --simple
 ```
 
-Or start with distribution-oriented defaults:
-
-```bash
-ttkb start MyApp --pyinstaller
-```
-
-(If your CLI separates these concerns, you can instead run `ttkb promote --pyinstaller` later.)
+Packaging support is opt-in — you'll add it via `ttkb promote --pyinstaller`
+in step 3 once the app is working.
 
 ---
 
