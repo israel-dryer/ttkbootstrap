@@ -163,6 +163,12 @@ class ScrollView(Frame):
                 self.horizontal_scrollbar.unbind('<Enter>')
                 self.horizontal_scrollbar.unbind('<Leave>')
 
+            # Sync gutter reservation with the new mode
+            if value in ('hover', 'scroll'):
+                self._set_scrollbar_gutter(reserve=True)
+            else:
+                self._set_scrollbar_gutter(reserve=False)
+
             # Bind new events and update scrollbar visibility
             self._bind_container_events()
             self._update_scrollbar_visibility()
@@ -208,7 +214,20 @@ class ScrollView(Frame):
             self.bind_class(self._scroll_tag, "<Shift-MouseWheel>", self._on_shift_mousewheel)
 
     def _layout_widgets(self):
-        """Layout the canvas and scrollbars."""
+        """Layout the canvas and scrollbars.
+
+        For 'hover' and 'scroll' visibility modes the grid column and row that
+        hold the scrollbars are given a fixed minimum size equal to the
+        scrollbar's natural dimensions before the scrollbars are hidden. This
+        reserves the gutter permanently so the canvas never resizes when a
+        scrollbar is toggled — the same principle as the CSS
+        ``scrollbar-gutter: stable`` property.
+
+        An overlay approach (lift/lower over the canvas) was considered but
+        rejected because the scrollbar then covers content, which was reported
+        as confusing by users. Reserving the gutter avoids both the
+        layout-shift problem *and* the content-coverage problem.
+        """
         self.canvas.grid(row=0, column=0, sticky='nsew')
 
         if self._direction in ('vertical', 'both'):
@@ -229,8 +248,40 @@ class ScrollView(Frame):
             self.vertical_scrollbar.grid_remove()
             self.horizontal_scrollbar.grid_remove()
         elif self._scrollbar_visibility in ('hover', 'scroll'):
+            # Hide scrollbars now; defer gutter measurement to after_idle so
+            # the style system has finished sizing the widgets before we read
+            # their dimensions.  Measuring too early (before the widget is
+            # placed in its parent) can return an inflated reqwidth and leave
+            # a visible gap beside the scrollbar when it appears.
             self.vertical_scrollbar.grid_remove()
             self.horizontal_scrollbar.grid_remove()
+            self.after_idle(lambda: self._set_scrollbar_gutter(reserve=True))
+
+    def _set_scrollbar_gutter(self, reserve: bool):
+        """Reserve or release the grid gutter used by each scrollbar.
+
+        When *reserve* is ``True`` the column (vertical scrollbar) and row
+        (horizontal scrollbar) are given a ``minsize`` equal to the scrollbar's
+        natural requested dimensions.  The minsize persists even after the
+        scrollbar widget is removed from the grid via ``grid_remove()``, so the
+        canvas occupies a constant area regardless of scrollbar visibility.
+
+        When *reserve* is ``False`` the minsize is cleared (set to 0), which
+        is appropriate for 'always' and 'never' modes where no gutter needs to
+        be held open.
+        """
+        if reserve:
+            if self._direction in ('vertical', 'both'):
+                width = self.vertical_scrollbar.winfo_reqwidth()
+                if width > 1:
+                    self.grid_columnconfigure(1, minsize=width)
+            if self._direction in ('horizontal', 'both'):
+                height = self.horizontal_scrollbar.winfo_reqheight()
+                if height > 1:
+                    self.grid_rowconfigure(1, minsize=height)
+        else:
+            self.grid_columnconfigure(1, minsize=0)
+            self.grid_rowconfigure(1, minsize=0)
 
     def _bind_container_events(self):
         """Bind events for the container (enter/leave for autohide)."""
