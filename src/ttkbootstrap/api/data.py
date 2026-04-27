@@ -9,7 +9,7 @@ from ttkbootstrap.datasource.base import BaseDataSource
 from ttkbootstrap.datasource.memory_source import MemoryDataSource
 from ttkbootstrap.datasource.sqlite_source import SqliteDataSource
 from ttkbootstrap.datasource.file_source import FileDataSource, FileSourceConfig
-from ttkbootstrap.datasource.types import DataSourceProtocol
+from ttkbootstrap.datasource.types import DataSourceProtocol, Primitive, Record
 
 __all__ = [
     "BaseDataSource",
@@ -18,4 +18,6 @@ __all__ = [
     "FileDataSource",
     "FileSourceConfig",
     "DataSourceProtocol",
+    "Primitive",
+    "Record",
 ]

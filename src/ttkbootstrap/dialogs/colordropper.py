@@ -118,8 +118,8 @@ class ColorDropperDialog:
         rgb = colorutils.color_to_rgb(hx)
         self.result.set(ColorChoice(rgb, hsl, hx))
         if self.toplevel:
-            self.toplevel.destroy()
             self.toplevel.grab_release()
+            self.toplevel.destroy()
         if self.zoom_toplevel:
             self.zoom_toplevel.destroy()
         return self.result.get()
@@ -158,7 +158,7 @@ class ColorDropperDialog:
         """Get the color that is hovered over by the mouse cursor."""
         x1, y1, x2, y2 = self.zoom_canvas.bbox('indicator')
         x = x1 + (x2 - x1) // 2
-        y = y1 + (y2 - y2) // 2
+        y = y1 + (y2 - y1) // 2
         r, g, b = self.zoom_data.getpixel((x, y))
         hx = colorutils.color_to_hex((r, g, b))
         return hx

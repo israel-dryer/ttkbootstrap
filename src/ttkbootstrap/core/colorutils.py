@@ -63,12 +63,10 @@ def color_to_rgb(color, model=HEX):
         tuple[int, int, int]:
             The rgb color values.
     """
-    color_ = conform_color_model(color, model)    
-    try:
-        return ImageColor.getrgb(color_)
-    except:
-        print('this')
-    
+    color_ = conform_color_model(color, model)
+    return ImageColor.getrgb(color_)
+
+
 def color_to_hex(color, model=RGB):
     """Convert color value to hex.
 

@@ -21,7 +21,7 @@ def build_striped_progressbar_style(b: BootstyleBuilderTTk, ttk_style: str, acce
 
 
 @BootstyleBuilderTTk.register_builder('thin', 'TProgressbar')
-def build_striped_progressbar_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = 'primary', **options):
+def build_thin_progressbar_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = 'primary', **options):
     build_progressbar_style(b, ttk_style, accent, 'thin', **options)
 
 def build_progressbar_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str, variant: str, **options):

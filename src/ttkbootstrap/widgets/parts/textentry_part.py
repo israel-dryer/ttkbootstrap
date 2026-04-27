@@ -133,7 +133,7 @@ class TextEntryPart(ValidationMixin, Entry):
                 "prev_value": self._prev_changed_value,
                 "text": self.textsignal.get()
             }
-            self.event_generate('<<Change>>', data={"value": self._value})
+            self.event_generate('<<Change>>', data=data)
             self._prev_changed_value = self._value
 
     def _parse_or_none(self, s: str):
@@ -199,7 +199,7 @@ class TextEntryPart(ValidationMixin, Entry):
 
     def on_changed(self, callback: Callable) -> str:
         """Bind to ``<<Change>>``. Callback receives ``event.data = {'value': Any, 'prev_value': Any, 'text': str}``."""
-        return self.bind("<<Change>>", callback)
+        return self.bind("<<Change>>", callback, add=True)
 
     def off_changed(self, bind_id: str | None = None) -> None:
         """Unbind from ``<<Change>>``."""
