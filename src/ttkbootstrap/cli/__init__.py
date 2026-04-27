@@ -18,6 +18,7 @@ Usage:
     ttkb add theme <name>       Add a custom theme
     ttkb add i18n               Add i18n support
     ttkb list themes            List available themes
+    ttkb doctor                 Diagnose project and environment health
     ttkb demo                   Launch the widget demo
 """
 
@@ -27,7 +28,7 @@ import argparse
 import sys
 from typing import Sequence
 
-from ttkbootstrap.cli import add, build, list_cmd, promote, run, start
+from ttkbootstrap.cli import add, build, doctor, list_cmd, promote, run, start
 from ttkbootstrap.cli.demo import run_demo
 
 
@@ -47,6 +48,7 @@ Examples:
   ttkb build                    Build for distribution
   ttkb add view SettingsView    Add a new view
   ttkb list themes              List available themes
+  ttkb doctor                   Diagnose project and environment health
   ttkb demo                     Launch the widget demo
 
 For more information on a command:
@@ -58,6 +60,12 @@ For more information on a command:
         "--version",
         action="version",
         version=_get_version(),
+    )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Print full tracebacks on error",
     )
 
     subparsers = parser.add_subparsers(
@@ -73,6 +81,7 @@ For more information on a command:
     build.add_parser(subparsers)
     add.add_parser(subparsers)
     list_cmd.add_parser(subparsers)
+    doctor.add_parser(subparsers)
 
     # Demo command (kept for backwards compatibility)
     demo_parser = subparsers.add_parser(
@@ -96,7 +105,12 @@ For more information on a command:
         print("\nInterrupted.")
         sys.exit(1)
     except Exception as e:
-        print(f"Error: {e}")
+        if getattr(args, "verbose", False):
+            import traceback
+            traceback.print_exc()
+        else:
+            print(f"Error: {e}")
+            print("(Run with --verbose for the full traceback.)")
         sys.exit(1)
 
 

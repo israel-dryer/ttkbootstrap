@@ -202,6 +202,53 @@ That’s fine — but the recommended path is:
 
 ---
 
+## Shipping to macOS
+
+`ttkb build` produces a `.app` bundle on macOS via PyInstaller. That bundle
+runs locally, but it is **not yet ready for distribution**: modern macOS
+(10.15+) refuses to launch unsigned, unnotarized apps with the
+"\"MyApp.app\" is damaged and can't be opened" Gatekeeper dialog.
+
+To ship a `.app` to other users, you need four additional steps that
+ttkbootstrap intentionally does **not** perform itself:
+
+1. **Code-sign** the bundle with an Apple Developer ID certificate
+   ($99/yr Apple Developer Program membership).
+2. **Notarize** it via `xcrun notarytool submit` (Apple's automated
+   malware scan).
+3. **Staple** the notarization ticket to the bundle so it works offline
+   (`xcrun stapler staple`).
+4. **Package** the result into a DMG (or PKG) for distribution.
+
+Apple's notarization toolchain changes often enough that wrapping it
+into `ttkb build` would mean ongoing maintenance for a feature only a
+fraction of users need. The recommended path instead is to hand off to
+**[Briefcase](https://briefcase.readthedocs.io/)** (BeeWare), which
+handles the full chain — signing, notarization, stapling, and DMG
+creation — across macOS, Linux (`.deb`/AppImage), and Windows (MSI).
+
+A typical workflow:
+
+```bash
+# Develop and iterate with ttkb
+ttkb start MyApp
+ttkb run
+
+# When you're ready to ship to macOS:
+pip install briefcase
+briefcase create macOS
+briefcase build macOS
+briefcase package macOS --identity "Developer ID Application: Your Name (TEAMID)"
+```
+
+The Briefcase project layout is independent of the `ttkb start` layout,
+so you'll typically point Briefcase at your existing `src/` package and
+reuse your assets. See the
+[Briefcase macOS docs](https://briefcase.readthedocs.io/en/stable/reference/platforms/macOS.html)
+for the full setup.
+
+---
+
 ## Next steps
 
 - Read [Platform → CLI](cli.md)

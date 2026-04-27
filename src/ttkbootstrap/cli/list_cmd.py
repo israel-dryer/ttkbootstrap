@@ -56,8 +56,10 @@ def run_list_themes(args: argparse.Namespace) -> None:
     themes.sort(key=lambda t: (t["mode"], t["name"]))
 
     # Print table
-    name_width = max(len(t["name"]) for t in themes)
-    display_width = max(len(t["display_name"]) for t in themes)
+    name_width = max(max(len(t["name"]) for t in themes), len("Name"))
+    display_width = max(
+        max(len(t["display_name"]) for t in themes), len("Display Name")
+    )
 
     header = f"  {'Name':<{name_width}}  {'Display Name':<{display_width}}  Mode"
     print(header)

@@ -131,6 +131,12 @@ def run_add_view(args: argparse.Namespace) -> None:
     project_root = config_path.parent
     config = TtkbConfig.load(config_path)
 
+    # Reject in AppShell projects — views belong to the basic template
+    if config.app.template == "appshell":
+        print("Error: 'ttkb add view' is for basic-template projects.")
+        print("This project uses the 'appshell' template. Use 'ttkb add page' instead.")
+        return
+
     # Determine container type
     container = args.container
     if container is None:
@@ -149,6 +155,11 @@ def run_add_view(args: argparse.Namespace) -> None:
             target_dir = project_root / "views"
 
     target_dir.mkdir(parents=True, exist_ok=True)
+
+    # Ensure __init__.py exists
+    init_file = target_dir / "__init__.py"
+    if not init_file.exists():
+        init_file.write_text('"""Views package."""\n', encoding="utf-8")
 
     # Create view
     file_path = create_view(class_name, target_dir, container)
@@ -180,16 +191,16 @@ def run_add_page(args: argparse.Namespace) -> None:
         print("This project uses the 'basic' template. Use 'ttkb add view' instead.")
         return
 
-    # Determine target directory
-    if args.dir:
-        target_dir = args.dir
+    # Determine target directory and module name for the import hint
+    entry_path = Path(config.app.entry)
+    if entry_path.parts[0] == "src" and len(entry_path.parts) >= 2:
+        module_name = entry_path.parts[1]
+        default_target = project_root / "src" / module_name / "pages"
     else:
-        entry_path = Path(config.app.entry)
-        if entry_path.parts[0] == "src" and len(entry_path.parts) >= 2:
-            module_name = entry_path.parts[1]
-            target_dir = project_root / "src" / module_name / "pages"
-        else:
-            target_dir = project_root / "pages"
+        module_name = None
+        default_target = project_root / "pages"
+
+    target_dir = args.dir if args.dir else default_target
 
     target_dir.mkdir(parents=True, exist_ok=True)
 
@@ -204,8 +215,11 @@ def run_add_page(args: argparse.Namespace) -> None:
 
     print(f"Created page: {file_path.relative_to(project_root)}")
     print()
-    print("To wire it up in main.py:")
-    print(f"  from <module>.pages.{file_path.stem} import {class_name}")
+    print("This created the file only — it is NOT yet shown in the sidebar.")
+    print("To register it with the AppShell, paste these lines into main.py:")
+    print()
+    import_module = f"{module_name}.pages" if module_name else "<module>.pages"
+    print(f"  from {import_module}.{file_path.stem} import {class_name}")
     scrollable_arg = ", scrollable=True" if scrollable else ""
     print(f'  page = shell.add_page("<id>", text="<Label>", icon="<icon>"{scrollable_arg})')
     print(f"  {class_name}(page)")
@@ -287,9 +301,11 @@ def run_add_theme(args: argparse.Namespace) -> None:
 
     print(f"Created theme: {theme_file.relative_to(project_root)}")
     print()
-    print("To use this theme:")
-    print(f"  1. Register it in your app: style.register_theme('{theme_name}')")
-    print(f"  2. Apply it: style.theme_use('{theme_name}')")
+    print("To use this theme, register the JSON file before creating your App:")
+    print()
+    print("  from ttkbootstrap.style.theme_provider import register_user_theme")
+    print(f'  register_user_theme("{theme_name}", "themes/{theme_name}.json")')
+    print(f'  app = ttk.App(theme="{theme_name}")')
 
 
 def run_add_i18n(args: argparse.Namespace) -> None:
@@ -327,54 +343,70 @@ def run_add_i18n(args: argparse.Namespace) -> None:
     print("  3. Use translations in code: ttk.mc('Hello')")
 
 
+_BASE_SHADES = {
+    "blue": "#0d6efd",
+    "indigo": "#6610f2",
+    "purple": "#6f42c1",
+    "red": "#dc3545",
+    "orange": "#fd7e14",
+    "yellow": "#ffc107",
+    "green": "#198754",
+    "teal": "#20c997",
+    "cyan": "#0dcaf0",
+    "gray": "#adb5bd",
+    "pink": "#d63384",
+}
+
+
+def _theme_display_name(name: str) -> str:
+    return " ".join(part.capitalize() for part in name.replace("_", "-").split("-") if part)
+
+
+def _render_theme(name: str, mode: str) -> str:
+    """Render a v2 theme JSON template.
+
+    Light themes use the [600] step for semantic accents (so text on white
+    has good contrast); dark themes use [400] (lighter accents on a dark
+    background). Both schemas match the format consumed by
+    ``ttkbootstrap.style.theme_provider``.
+    """
+    if mode == "light":
+        foreground, background, step = "#212529", "#ffffff", "600"
+    else:
+        foreground, background, step = "#f8f9fa", "#212529", "400"
+
+    payload = {
+        "name": name,
+        "display_name": _theme_display_name(name),
+        "mode": mode,
+        "foreground": foreground,
+        "background": background,
+        "white": "#ffffff",
+        "black": "#000000",
+        "shades": _BASE_SHADES,
+        "semantic": {
+            "primary": f"blue[{step}]",
+            "secondary": f"gray[{step}]",
+            "success": f"green[{step}]",
+            "info": f"cyan[{step}]",
+            "warning": f"yellow[{step}]",
+            "danger": f"red[{step}]",
+            "light": "gray[100]",
+            "dark": "gray[900]",
+        },
+    }
+    import json as _json
+    return _json.dumps(payload, indent=2) + "\n"
+
+
 def _get_light_theme_template(name: str) -> str:
-    """Get a light theme template."""
-    return f'''\
-{{
-    "name": "{name}",
-    "type": "light",
-    "colors": {{
-        "primary": "#0d6efd",
-        "secondary": "#6c757d",
-        "success": "#198754",
-        "info": "#0dcaf0",
-        "warning": "#ffc107",
-        "danger": "#dc3545",
-        "light": "#f8f9fa",
-        "dark": "#212529",
-        "background": "#ffffff",
-        "foreground": "#212529",
-        "border": "#dee2e6",
-        "inputBackground": "#ffffff",
-        "inputForeground": "#212529"
-    }}
-}}
-'''
+    """Get a v2 light-mode theme template."""
+    return _render_theme(name, "light")
 
 
 def _get_dark_theme_template(name: str) -> str:
-    """Get a dark theme template."""
-    return f'''\
-{{
-    "name": "{name}",
-    "type": "dark",
-    "colors": {{
-        "primary": "#0d6efd",
-        "secondary": "#6c757d",
-        "success": "#198754",
-        "info": "#0dcaf0",
-        "warning": "#ffc107",
-        "danger": "#dc3545",
-        "light": "#f8f9fa",
-        "dark": "#212529",
-        "background": "#212529",
-        "foreground": "#f8f9fa",
-        "border": "#495057",
-        "inputBackground": "#343a40",
-        "inputForeground": "#f8f9fa"
-    }}
-}}
-'''
+    """Get a v2 dark-mode theme template."""
+    return _render_theme(name, "dark")
 
 
 def _get_po_template(lang: str) -> str:

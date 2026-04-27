@@ -139,9 +139,14 @@ def load_system_themes():
 
 
 def load_user_defined_theme(path):
-    with open(path, "rb") as f:
-        None
-        # return tomllib.load(f)
+    """Load a user-defined theme from a JSON file on disk.
+
+    The file must follow the v2 theme schema (top-level ``name``,
+    ``display_name``, ``mode``, ``foreground``, ``background``, plus
+    ``shades`` and ``semantic`` mappings).
+    """
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
 
 
 def load_package_theme(filename: str, package="ttkbootstrap.assets.themes"):

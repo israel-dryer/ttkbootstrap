@@ -445,9 +445,14 @@ class HomePage:
 
         ttk.Label(
             content,
-            text="Add your widgets here.\\n\\n"
-            "Use shell.add_page() to create new pages,\\n"
-            "and ttkb add page <PageName> to scaffold them.",
+            text=(
+                "Add your widgets here.\\n\\n"
+                "To add another page:\\n"
+                "  1. Run 'ttkb add page <Name>' to generate the file under pages/.\\n"
+                "  2. In main.py, import it, call shell.add_page(...), and pass\\n"
+                "     the returned frame to your page class. The CLI prints the\\n"
+                "     exact lines to paste."
+            ),
         ).pack(expand=True)
 '''
 
