@@ -192,7 +192,9 @@ class SideNav(Frame):
         """Build the internal widget structure."""
         # Pane container - uses 'chrome' surface for UI chrome
         pane_width = self._pane_width or self.PANE_WIDTH_EXPANDED
-        self._pane_frame = Frame(self, width=pane_width, padding=4, surface='chrome')
+        # padding=(left, top, right, bottom): right=0 so the scrollbar lane in
+        # the ScrollView runs flush to the pane edge with no trailing gap.
+        self._pane_frame = Frame(self, width=pane_width, padding=(4, 4, 0, 4), surface='chrome')
         self._pane_frame.pack(side='left', fill='y')
         self._pane_frame.pack_propagate(False)  # Fixed width
 
@@ -294,13 +296,13 @@ class SideNav(Frame):
         # Update pane width and visibility
         if self._display_mode == 'expanded':
             width = self._pane_width or self.PANE_WIDTH_EXPANDED
-            self._pane_frame.configure(width=width, padding=4)
+            self._pane_frame.configure(width=width, padding=(4, 4, 0, 4))
             if self._is_pane_open:
                 self._pane_frame.pack(side='left', fill='y')
             else:
                 self._pane_frame.pack_forget()
         elif self._display_mode == 'compact':
-            self._pane_frame.configure(width=self.PANE_WIDTH_COMPACT, padding=2)
+            self._pane_frame.configure(width=self.PANE_WIDTH_COMPACT, padding=(2, 2, 0, 2))
             self._pane_frame.pack(side='left', fill='y')
         elif self._display_mode == 'minimal':
             if self._is_pane_open:
@@ -330,6 +332,17 @@ class SideNav(Frame):
                 self._title_label.pack_forget()
             else:
                 self._title_label.pack(side='left', fill='x', expand=True)
+
+        # In compact mode the pane is icon-only (52 px) and content never
+        # overflows vertically, so reserving a scrollbar gutter wastes ~25 % of
+        # the pane width.  Switch the ScrollView to 'never' visibility to
+        # release the gutter; restore 'hover' (with stable gutter) when the
+        # pane is expanded again.
+        if self._content_scroll:
+            if is_compact:
+                self._content_scroll.configure(scrollbar_visibility='never')
+            else:
+                self._content_scroll.configure(scrollbar_visibility='hover')
 
         # Set compact mode on all items and groups
         for item in self._items.values():
