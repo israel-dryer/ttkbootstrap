@@ -783,6 +783,16 @@ class ContextMenu(CustomConfigMixin):
         menu_dx, menu_dy = anchor_offsets(self._anchor, menu_w, menu_h)
         final_x = int(base_x - menu_dx + self._offset[0])
         final_y = int(base_y - menu_dy + self._offset[1])
+
+        # Flip vertically when the menu would overflow the screen bottom and
+        # there's room above the target. Matches Tk combobox PlacePopdown.
+        if self._target is not None and self._target.winfo_exists():
+            screen_h = self._toplevel.winfo_screenheight()
+            if final_y + menu_h > screen_h:
+                target_top = self._target.winfo_rooty()
+                alt_y = target_top - menu_h - self._offset[1]
+                if alt_y >= 0:
+                    final_y = alt_y
         return final_x, final_y
 
     def _setup_click_outside_handler(self) -> None:

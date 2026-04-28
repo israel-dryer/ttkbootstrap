@@ -159,9 +159,20 @@ class SelectBox(Field):
     def _create_popup_toplevel(self):
         """Create and position the popup toplevel window."""
         x = self.winfo_rootx() + (1 if self._search_enabled else 3)
-        y = self.entry_widget.winfo_rooty() + self.entry_widget.winfo_height() + (8 if self._search_enabled else 5)
+        gap_below = 8 if self._search_enabled else 5
+        gap_above = 4 if self._search_enabled else 1
+        entry_top = self.entry_widget.winfo_rooty()
+        entry_bottom = entry_top + self.entry_widget.winfo_height()
         width = self.winfo_width() - (2 if self._search_enabled else 6)
         max_height = 200  # Maximum popup height in pixels
+
+        # Flip above the entry when there isn't enough room below — matches
+        # Tk's combobox PlacePopdown behavior.
+        screen_h = self.winfo_screenheight()
+        if entry_bottom + gap_below + max_height > screen_h and entry_top - gap_above - max_height >= 0:
+            y = entry_top - gap_above - max_height
+        else:
+            y = entry_bottom + gap_below
 
         toplevel = Toplevel(self)
         toplevel.withdraw()
