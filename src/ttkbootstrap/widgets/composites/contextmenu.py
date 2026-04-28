@@ -25,6 +25,7 @@ class _CommandItemFrame(CompositeFrame):
     """
 
     def __init__(self, master, **kwargs):
+        """Create a command item container frame."""
         self._button: Button | None = None  # Must be set before super().__init__
         super().__init__(master, **kwargs)
 

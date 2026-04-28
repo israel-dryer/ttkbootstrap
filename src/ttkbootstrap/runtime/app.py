@@ -1,3 +1,9 @@
+"""Application runtime — App window, lifecycle helpers, and settings.
+
+Provides the main ``App`` class (a ``Tk`` subclass), ``AppSettings``, and
+process-wide helpers for accessing the active app instance, reading settings,
+and managing the current locale and theme from anywhere in the application.
+"""
 from __future__ import annotations
 
 import tkinter

@@ -119,7 +119,6 @@ def main():
         target=btn,
         anchor='nw',
         attach='sw',
-        offset=(0, 4),
         hide_on_outside_click=True,
     )
     dynamic_menu.add_command(text='Copy', icon='clipboard2', command=lambda: print('Copy'))
