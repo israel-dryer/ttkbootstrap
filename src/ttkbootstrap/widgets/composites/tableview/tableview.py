@@ -197,6 +197,10 @@ class TableView(Frame):
             search_mode=search_mode,
             search_trigger=search_trigger,
         )
+        # User-facing filter description (e.g., "fin" or a SQL expression in
+        # advanced SQL mode). Falls back to the raw datasource WHERE clause
+        # when set externally.
+        self._filter_summary: str = ""
         self._row_alternation = _build_row_alternation_options(
             striped=striped,
             striped_background=striped_background,
@@ -694,13 +698,18 @@ class TableView(Frame):
 
     def _build_toolbar(self) -> None:
         bar = Frame(self, name="toolbar")
-        bar.pack(fill="x", pady=(0, 4))
+        # Grid in column 0 only so the toolbar's right edge stops at the
+        # tree's right edge instead of extending past the vsb.
+        bar.grid(row=0, column=0, sticky="ew", pady=(0, 4))
 
         if self._searchbar['enabled']:
             self._search_entry = TextEntry(bar)
             self._search_entry.insert_addon(Label, 'before', icon="search", icon_only=True)
             self._search_entry.insert_addon(Button, 'after', icon="x-lg", icon_only=True, command=self._clear_search)
-            self._search_entry.pack(side="left", fill="x", expand=True, padx=(0, 6))
+            # Only reserve a 6 px right gap when the advanced-mode SelectBox
+            # follows the entry; otherwise the entry hugs the toolbar edge.
+            search_padx = (0, 6) if self._searchbar['mode'] == 'advanced' else 0
+            self._search_entry.pack(side="left", fill="x", expand=True, padx=search_padx)
             trigger = str(self._searchbar.get('event', 'enter')).lower()
             if trigger == 'input':
                 self._search_entry.on_input(lambda _e: self._run_search())
@@ -770,27 +779,34 @@ class TableView(Frame):
             ).pack(side="right", padx=(0, 4))
 
     def _build_tree(self) -> None:
-        frame = Frame(self)
-        frame.pack(fill="both", expand=True)
-
         cols = [self._col_text(c) for c in self._column_defs] or self._column_keys
-        tree_container = Frame(frame)
-        tree_container.pack(side="left", fill="both", expand=True)
-        # Prevent the tree from expanding the container beyond the available viewport
-        tree_container.pack_propagate(False)
+
+        # Grid layout for the TableView body:
+        #   row 0: toolbar     (col 0)
+        #   row 1: tree        (col 0)   |   vsb (col 1, only this row)
+        #   row 2: hsb         (col 0)
+        #   row 3: footer      (col 0)
+        # Column 0 expands; column 1 takes the vsb's natural width when present.
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
 
         self._tree = TreeView(
-            tree_container,
+            self,
             columns=list(range(len(cols))),
             selectmode=_parse_selection_mode(self._selection['mode']),
             show="headings"
         )
-        self._tree.pack(side="top", fill="both", expand=True, padx=3)
+        # Inset the tree by the focus-ring affordance baked into sibling
+        # entry images so the tree's content edge lines up with the visible
+        # edge of the toolbar/footer entries (search box, pagination input).
+        from ttkbootstrap.style.bootstyle_builder_base import BootstyleBuilderBase
+        affordance = BootstyleBuilderBase.scale_from_source(8)
+        self._tree.grid(row=1, column=0, sticky="nsew", padx=affordance)
         self._display_columns = list(range(len(cols)))
 
         if self._paging['yscroll']:
-            self._vsb = Scrollbar(frame, orient="vertical", command=self._tree.yview)
-            self._vsb.pack(side="right", fill="y")
+            self._vsb = Scrollbar(self, orient="vertical", command=self._tree.yview)
+            self._vsb.grid(row=1, column=1, sticky="ns")
             if self._paging['mode'] == "virtual":
                 self._tree.configure(yscrollcommand=self._on_scroll)
             else:
@@ -799,8 +815,10 @@ class TableView(Frame):
             self._vsb = None
 
         if self._paging['xscroll']:
-            self._hsb = Scrollbar(tree_container, orient="horizontal", command=self._tree.xview)
-            self._hsb.pack(side="bottom", fill="x")
+            self._hsb = Scrollbar(self, orient="horizontal", command=self._tree.xview)
+            # Mirror the tree's affordance inset so the hsb aligns with the
+            # tree content and stops at the same right edge.
+            self._hsb.grid(row=2, column=0, sticky="ew", padx=affordance)
             self._tree.configure(xscrollcommand=self._hsb.set)
         else:
             self._hsb = None
@@ -837,7 +855,9 @@ class TableView(Frame):
 
     def _build_footer(self) -> None:
         bar = Frame(self)
-        bar.pack(fill="x", pady=(4, 0))
+        # Same column 0 as the toolbar so the footer aligns with the table
+        # content and stops at the vsb edge.
+        bar.grid(row=3, column=0, sticky="ew", pady=(4, 0))
         status_frame = Frame(bar)
         status_frame.pack(side="left", fill="x", expand=True)
         self._filter_label = Label(status_frame, text="", anchor="w", accent="secondary")
@@ -1121,9 +1141,9 @@ class TableView(Frame):
         colnames = self._column_keys
         quoted_cols = [self._quote_col(c) for c in colnames]
         where = ""
+        mode_upper = mode.upper().replace(" ", "_")
         if text and quoted_cols:
             crit = text.replace("'", "''")
-            mode_upper = mode.upper().replace(" ", "_")
             if mode_upper == "CONTAINS":
                 where = " OR ".join([f"{c} LIKE '%{crit}%'" for c in quoted_cols])
             elif mode_upper == "STARTS_WITH":
@@ -1134,6 +1154,12 @@ class TableView(Frame):
                 where = text
             else:  # equals
                 where = " OR ".join([f"{c} = '{crit}'" for c in quoted_cols])
+        # In SQL mode the user typed the expression themselves, so showing it
+        # back is meaningful. For all other modes, show just the search term.
+        if mode_upper == "SQL":
+            self._filter_summary = text
+        else:
+            self._filter_summary = repr(text) if text else ""
         try:
             self._datasource.set_filter(where)
         except Exception:
@@ -1144,6 +1170,7 @@ class TableView(Frame):
 
     def _clear_search(self) -> None:
         self._search_entry.delete(0, 'end')
+        self._filter_summary = ""
         try:
             self._datasource.set_filter("")
         except Exception:
@@ -1171,12 +1198,16 @@ class TableView(Frame):
         self._update_status_labels()
 
     def _update_status_labels(self) -> None:
-        # Filter
+        # Filter — prefer the user-friendly summary set by the search bar.
+        # Fall back to the raw WHERE clause only when an external caller set
+        # the filter (so we have no friendlier description).
         filter_txt = ""
         try:
-            where = getattr(self._datasource, "_where", "")
-            if where:
-                filter_txt = MessageCatalog.translate("table.filter_status", where)
+            description = self._filter_summary
+            if not description:
+                description = getattr(self._datasource, "_where", "") or ""
+            if description:
+                filter_txt = MessageCatalog.translate("table.filter_status", description)
         except Exception:
             pass
         # Sort
@@ -1229,9 +1260,9 @@ class TableView(Frame):
         if self._editing['updating'] or self._editing['deleting']:
             menu.add_separator()
             if self._editing['updating']:
-                menu.add_command(text="table.edit", icon="pencil", command=self._edit_selected_row)
+                menu.add_command(text="table.edit", command=self._edit_selected_row)
             if self._editing['deleting']:
-                menu.add_command(text="table.delete_row", icon="trash", command=self._delete_selected_row)
+                menu.add_command(text="table.delete_row", command=self._delete_selected_row)
         self._row_menu = menu
 
     def _on_row_context(self, event) -> None:
