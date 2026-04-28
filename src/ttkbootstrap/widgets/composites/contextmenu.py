@@ -72,14 +72,12 @@ class ContextMenuItem:
         self.kwargs: dict[str, Any] = kwargs
 
 
-class ContextMenu(CustomConfigMixin):
-    """A customizable context menu widget.
+class _ToplevelContextMenu(CustomConfigMixin):
+    """Themed Toplevel-backed context menu (Win/Linux backend).
 
-    Displays a popup menu with support for command buttons, checkbuttons,
-    radiobuttons, and separators. The menu automatically hides when clicking
-    outside or when an item is selected.
-
-    Items can be accessed by key (str) or index (int) for backward compatibility.
+    Internal backend used by ``ContextMenu`` on Windows and Linux. Renders
+    items as ttkbootstrap-styled widgets inside an overrideredirect Toplevel
+    so theme tokens, density, and rich item types apply consistently.
     """
 
     def __init__(
@@ -97,7 +95,7 @@ class ContextMenu(CustomConfigMixin):
             items: list[ContextMenuItem] = None,
             density: str = 'default',
     ):
-        """Initialize a ContextMenu widget.
+        """Initialize the themed Toplevel backend.
 
         Args:
             master: Parent widget. If None, uses the default root window.
@@ -137,7 +135,10 @@ class ContextMenu(CustomConfigMixin):
         self._click_binding_root = None
         self._click_bind_after_id = None
 
-        # Create toplevel window
+        # Create toplevel window. This backend is selected on Win/Linux only;
+        # Aqua dispatches to ``_NativeContextMenu`` to avoid the key-window
+        # activation issues that affect a reused overrideredirect Toplevel
+        # on macOS.
         self._toplevel = Toplevel(master)
         self._toplevel.withdraw()
         self._toplevel.overrideredirect(True)
@@ -967,3 +968,712 @@ class ContextMenu(CustomConfigMixin):
         self._counter = 0
         self.add_items(value)
         return None
+
+
+class _NativeContextMenu(CustomConfigMixin):
+    """Native ``tk.Menu``-backed context menu (Aqua/Windows backend).
+
+    Internal backend used by ``ContextMenu`` on macOS so the popup is a real
+    NSMenu — sidesteps the key-window/activation issues that affect a
+    reused overrideredirect Toplevel. Theming follows the system menu look;
+    icons resolve through ``BootstrapIcon`` and re-render on theme change.
+    """
+
+    def __init__(
+            self,
+            master: Master = None,
+            minwidth: int = 150,
+            width: int = None,
+            minheight: int = None,
+            height: int = None,
+            target: Widget = None,
+            anchor: str = 'nw',
+            attach: str = 'se',
+            offset: tuple[int, int] = None,
+            hide_on_outside_click: bool = True,
+            items: list[ContextMenuItem] = None,
+            density: str = 'default',
+    ):
+        """Initialize the native tk.Menu backend.
+
+        Args mirror the themed backend so the public ``ContextMenu`` API is
+        identical across platforms. Several options (``minwidth``, ``width``,
+        ``height``, ``hide_on_outside_click``, ``density``) are stored for
+        ``cget`` parity but have no effect — the system menu controls
+        sizing, dismissal, and typography on the host platform.
+        """
+        import tkinter as tk
+        from ttkbootstrap.runtime.menu import MenuManager
+
+        super().__init__()
+        self._master = master
+        self._target = target
+        self._minwidth = minwidth
+        self._width = width
+        self._minheight = minheight
+        self._height = height
+        self._anchor = (anchor or 'nw').lower()
+        self._attach = (attach or 'nw').lower()
+        # Default offset matches the themed backend so consumers that pass
+        # an explicit offset for chrome alignment don't need a Mac-specific
+        # branch. The native menu still clamps to screen edges itself.
+        self._offset = offset if offset is not None else (BootstyleBuilderBase.scale_from_source(10), 0)
+        self._hide_on_outside_click = hide_on_outside_click
+        self._density = density
+        self._on_item_click_callback = None
+
+        # Create the native menu and look up the per-root MenuManager so
+        # icon resolution, label translation, and <<ThemeChanged>> tracking
+        # are shared with the rest of the app's tk.Menu surfaces (menubars,
+        # other context menus). Avoids duplicating those concerns here.
+        self._menu = tk.Menu(master, tearoff=0)
+        self._mgr = MenuManager.for_widget(master) if master is not None else None
+
+        # Item tracking by key with insertion order; specs are kept so we
+        # can rebuild the menu on insert/move (tk.Menu has no atomic move).
+        self._item_specs: dict[str, dict] = {}
+        self._item_order: list[str] = []
+        self._counter = 0
+
+        # Strong ref to Tk variables so they aren't GC'd while the menu
+        # holds them. PhotoImage refs live in MenuManager.menu_items so
+        # we don't need to track them locally.
+        self._var_refs: dict[str, Any] = {}
+
+        if items:
+            self.add_items(items)
+
+    # ----- Internal helpers -------------------------------------------------
+
+    def _generate_key(self) -> str:
+        key = f"item_{self._counter}"
+        self._counter += 1
+        return key
+
+    def _resolve_key(self, key_or_index: str | int) -> str:
+        if isinstance(key_or_index, int):
+            try:
+                return self._item_order[key_or_index]
+            except IndexError as exc:
+                raise IndexError(
+                    f"ContextMenu item index {key_or_index} out of range"
+                ) from exc
+        if key_or_index not in self._item_specs:
+            raise KeyError(f"No item with key '{key_or_index}'")
+        return key_or_index
+
+    def _key_to_index(self, key: str) -> int:
+        return self._item_order.index(key)
+
+    def _resolve_label(self, text: str | None) -> str:
+        """Translate a label via MenuManager (or pass-through if no manager)."""
+        if self._mgr is None:
+            return text or ''
+        return self._mgr.translate_label(text) or ''
+
+    def _resolve_icon(self, icon_spec: Any) -> tuple[Any, str | None, int]:
+        """Resolve an icon spec via MenuManager.
+
+        Returns ``(None, None, 0)`` when no manager is available or the
+        spec doesn't produce an icon, mirroring MenuManager's contract.
+        """
+        if self._mgr is None:
+            return None, None, 0
+        return self._mgr.resolve_icon(icon_spec)
+
+    def _wrap_command(self, type_: str, text: str | None,
+                      command: Callable | None, value: Any = None) -> Callable:
+        def fire():
+            if self._on_item_click_callback:
+                self._on_item_click_callback({
+                    'type': type_,
+                    'text': text,
+                    'value': value,
+                })
+            if command:
+                command()
+        return fire
+
+    def _resolve_shortcut(self, shortcut: str | None) -> str | None:
+        if not shortcut:
+            return None
+        display = get_shortcuts().display(shortcut)
+        return display if display else shortcut
+
+    # ----- Public API mirroring the themed backend ---------------------------
+
+    def on_item_click(self, callback: Callable) -> None:
+        self._on_item_click_callback = callback
+
+    def off_item_click(self) -> None:
+        self._on_item_click_callback = None
+
+    def add_command(
+            self,
+            text: str = None,
+            icon: str = None,
+            command: Callable = None,
+            disabled: bool = False,
+            shortcut: str = None,
+            key: str = None,
+    ) -> str:
+        """Add a command. Returns the item key (no widget on this backend)."""
+        key = key or self._generate_key()
+        if key in self._item_specs:
+            raise ValueError(f"Item with key '{key}' already exists")
+
+        photo, icon_name, icon_size = self._resolve_icon(icon)
+        accelerator = self._resolve_shortcut(shortcut)
+
+        opts: dict[str, Any] = {
+            'label': self._resolve_label(text),
+            'command': self._wrap_command('command', text, command),
+        }
+        if photo is not None:
+            opts['image'] = photo
+            opts['compound'] = 'left'
+        if accelerator:
+            opts['accelerator'] = accelerator
+        if disabled:
+            opts['state'] = 'disabled'
+
+        self._menu.add_command(**opts)
+
+        if icon_name and self._mgr is not None:
+            self._mgr.register_icon(self._menu, self._menu.index('end'), icon_name, icon_size)
+
+        self._item_specs[key] = {
+            'type': 'command',
+            'text': text,
+            'icon': icon,
+            'command': command,
+            'disabled': disabled,
+            'shortcut': shortcut,
+        }
+        self._item_order.append(key)
+        return key
+
+    def add_checkbutton(
+            self,
+            text: str = None,
+            value: bool = False,
+            command: Callable = None,
+            key: str = None,
+    ) -> str:
+        key = key or self._generate_key()
+        if key in self._item_specs:
+            raise ValueError(f"Item with key '{key}' already exists")
+
+        var = BooleanVar(value=value)
+        self._var_refs[key] = var
+
+        def on_toggle():
+            if self._on_item_click_callback:
+                self._on_item_click_callback({
+                    'type': 'checkbutton',
+                    'text': text,
+                    'value': var.get(),
+                })
+            if command:
+                command()
+
+        self._menu.add_checkbutton(
+            label=self._resolve_label(text), variable=var, command=on_toggle,
+        )
+        self._item_specs[key] = {
+            'type': 'checkbutton',
+            'text': text,
+            'value': value,
+            'command': command,
+        }
+        self._item_order.append(key)
+        return key
+
+    def add_radiobutton(
+            self,
+            text: str = None,
+            value: Any = None,
+            variable: Union[StringVar, IntVar] = None,
+            command: Callable = None,
+            key: str = None,
+    ) -> str:
+        key = key or self._generate_key()
+        if key in self._item_specs:
+            raise ValueError(f"Item with key '{key}' already exists")
+
+        if variable is None:
+            variable = StringVar()
+        # Always retain a strong ref; if the caller owns the variable, this
+        # is a harmless extra reference.
+        self._var_refs[key] = variable
+
+        def on_select():
+            if self._on_item_click_callback:
+                self._on_item_click_callback({
+                    'type': 'radiobutton',
+                    'text': text,
+                    'value': value,
+                })
+            if command:
+                command()
+
+        self._menu.add_radiobutton(
+            label=self._resolve_label(text),
+            variable=variable,
+            value=value,
+            command=on_select,
+        )
+        self._item_specs[key] = {
+            'type': 'radiobutton',
+            'text': text,
+            'value': value,
+            'variable': variable,
+            'command': command,
+        }
+        self._item_order.append(key)
+        return key
+
+    def add_separator(self, key: str = None) -> str:
+        key = key or self._generate_key()
+        if key in self._item_specs:
+            raise ValueError(f"Item with key '{key}' already exists")
+        self._menu.add_separator()
+        self._item_specs[key] = {'type': 'separator'}
+        self._item_order.append(key)
+        return key
+
+    def add_item(self, type: str, **kwargs: Any) -> str:
+        if type == 'command':
+            return self.add_command(**kwargs)
+        if type == 'checkbutton':
+            return self.add_checkbutton(**kwargs)
+        if type == 'radiobutton':
+            return self.add_radiobutton(**kwargs)
+        if type == 'separator':
+            return self.add_separator(**kwargs)
+        raise ValueError(f"Unknown item type: {type}")
+
+    def add_items(self, items: list) -> None:
+        for item in items:
+            if isinstance(item, ContextMenuItem):
+                self.add_item(item.type, **item.kwargs)
+            elif isinstance(item, dict):
+                item_type = item.get('type')
+                kwargs = {k: v for k, v in item.items() if k != 'type'}
+                self.add_item(item_type, **kwargs)
+
+    def items(self, value=None):
+        if value is None:
+            return self._delegate_items(None)
+        self._delegate_items(value)
+        return None
+
+    def keys(self) -> tuple[str, ...]:
+        return tuple(self._item_order)
+
+    def insert_item(self, index: int, type: str, **kwargs: Any) -> str:
+        # Append, then reorder + rebuild — tk.Menu has no atomic move op
+        # that preserves command bindings cleanly across insert points.
+        new_key = self.add_item(type, **kwargs)
+        self._item_order.remove(new_key)
+        if index < 0:
+            index = 0
+        if index > len(self._item_order):
+            index = len(self._item_order)
+        self._item_order.insert(index, new_key)
+        self._rebuild_menu()
+        return new_key
+
+    def item(self, key_or_index: str | int) -> dict:
+        """Return the spec dict for an item.
+
+        Note: native backend has no per-item widget. The returned dict is
+        the original spec passed to ``add_*`` — useful for inspection but
+        not a Tk widget. Mutating it does not affect the rendered menu.
+        """
+        key = self._resolve_key(key_or_index)
+        return self._item_specs[key]
+
+    def remove_item(self, key_or_index: str | int) -> None:
+        key = self._resolve_key(key_or_index)
+        idx = self._key_to_index(key)
+        try:
+            self._menu.delete(idx)
+        except TclError:
+            pass
+        self._item_order.remove(key)
+        self._item_specs.pop(key, None)
+        self._var_refs.pop(key, None)
+        # Drop all icon-tracking entries for this menu and re-register
+        # remaining items so MenuManager's index map stays correct after
+        # the deletion shifted later items down by one.
+        if self._mgr is not None:
+            self._mgr.unregister_menu(self._menu)
+            self._reregister_icons()
+        return None
+
+    def _reregister_icons(self) -> None:
+        """Re-register tracked icons with MenuManager from current spec state.
+
+        Used after remove/move/rebuild operations so theme-change updates
+        target the correct entry indices.
+        """
+        if self._mgr is None:
+            return
+        for i, key in enumerate(self._item_order):
+            spec = self._item_specs.get(key, {})
+            icon_spec = spec.get('icon')
+            if not icon_spec or icon_spec == 'empty':
+                continue
+            _, name, size = self._mgr.resolve_icon(icon_spec)
+            if name:
+                self._mgr.register_icon(self._menu, i, name, size)
+
+    def move_item(self, from_key_or_index: str | int, to_index: int):
+        key = self._resolve_key(from_key_or_index)
+        self._item_order.remove(key)
+        if to_index < 0:
+            to_index = 0
+        if to_index > len(self._item_order):
+            to_index = len(self._item_order)
+        self._item_order.insert(to_index, key)
+        self._rebuild_menu()
+        return self._item_specs[key]
+
+    def configure_item(self, key_or_index: str | int,
+                       option: str | None = None, **kwargs: Any) -> Any:
+        key = self._resolve_key(key_or_index)
+        idx = self._key_to_index(key)
+        if option is None and not kwargs:
+            return self._menu.entryconfigure(idx)
+        if option is not None and not kwargs:
+            return self._menu.entryconfigure(idx, option)
+        return self._menu.entryconfigure(idx, **kwargs)
+
+    def show(self, position: tuple[int, int] = None) -> None:
+        x, y = self._compute_position(position)
+        try:
+            self._menu.tk_popup(x, y)
+        finally:
+            try:
+                self._menu.grab_release()
+            except TclError:
+                pass
+
+    def hide(self) -> None:
+        try:
+            self._menu.unpost()
+        except TclError:
+            pass
+
+    def destroy(self) -> None:
+        # Drop tracking entries with the shared MenuManager so its
+        # <<ThemeChanged>> handler doesn't try to reconfigure a deleted
+        # menu's entries on the next theme change.
+        if self._mgr is not None:
+            try:
+                self._mgr.unregister_menu(self._menu)
+            except Exception:
+                pass
+        try:
+            self._menu.destroy()
+        except TclError:
+            pass
+
+    # ----- Internal: full menu rebuild ---------------------------------------
+
+    def _rebuild_menu(self) -> None:
+        """Tear down and re-add all entries from stored specs.
+
+        Used by ``insert_item`` and ``move_item`` since tk.Menu offers no
+        atomic reorder. Icon tracking is unregistered then re-registered
+        with MenuManager so theme-change updates target the right indices.
+        """
+        try:
+            last = self._menu.index('end')
+        except TclError:
+            last = None
+        if last is not None:
+            try:
+                self._menu.delete(0, last)
+            except TclError:
+                pass
+
+        if self._mgr is not None:
+            self._mgr.unregister_menu(self._menu)
+
+        for key in self._item_order:
+            spec = self._item_specs[key]
+            type_ = spec['type']
+            if type_ == 'separator':
+                self._menu.add_separator()
+                continue
+
+            label = self._resolve_label(spec.get('text'))
+            text = spec.get('text')
+
+            if type_ == 'command':
+                opts: dict[str, Any] = {
+                    'label': label,
+                    'command': self._wrap_command(
+                        'command', text, spec.get('command'),
+                    ),
+                }
+                photo, icon_name, icon_size = self._resolve_icon(spec.get('icon'))
+                if photo is not None:
+                    opts['image'] = photo
+                    opts['compound'] = 'left'
+                accelerator = self._resolve_shortcut(spec.get('shortcut'))
+                if accelerator:
+                    opts['accelerator'] = accelerator
+                if spec.get('disabled'):
+                    opts['state'] = 'disabled'
+                self._menu.add_command(**opts)
+                if icon_name and self._mgr is not None:
+                    self._mgr.register_icon(
+                        self._menu, self._menu.index('end'), icon_name, icon_size,
+                    )
+            elif type_ == 'checkbutton':
+                var = self._var_refs[key]
+                command = spec.get('command')
+
+                def on_toggle(_var=var, _text=text, _cmd=command):
+                    if self._on_item_click_callback:
+                        self._on_item_click_callback({
+                            'type': 'checkbutton',
+                            'text': _text,
+                            'value': _var.get(),
+                        })
+                    if _cmd:
+                        _cmd()
+
+                self._menu.add_checkbutton(
+                    label=label, variable=var, command=on_toggle,
+                )
+            elif type_ == 'radiobutton':
+                var = spec.get('variable') or self._var_refs.get(key)
+                value = spec.get('value')
+                command = spec.get('command')
+
+                def on_select(_text=text, _value=value, _cmd=command):
+                    if self._on_item_click_callback:
+                        self._on_item_click_callback({
+                            'type': 'radiobutton',
+                            'text': _text,
+                            'value': _value,
+                        })
+                    if _cmd:
+                        _cmd()
+
+                self._menu.add_radiobutton(
+                    label=label,
+                    variable=var,
+                    value=value,
+                    command=on_select,
+                )
+
+    def _compute_position(self, position: tuple[int, int] | None) -> tuple[int, int]:
+        """Resolve the screen-coordinate target for ``tk_popup``.
+
+        Mirrors the themed backend's anchor/attach/offset semantics, but
+        without the menu-size step (the native menu auto-positions). When
+        ``position`` is given, anchor/attach are ignored and only ``offset``
+        applies, matching the themed backend behavior.
+        """
+        if position is not None:
+            return int(position[0] + self._offset[0]), int(position[1] + self._offset[1])
+
+        if self._target and self._target.winfo_exists():
+            self._target.update_idletasks()
+            target_w = self._target.winfo_width()
+            target_h = self._target.winfo_height()
+            base_x = self._target.winfo_rootx()
+            base_y = self._target.winfo_rooty()
+            attach_table = {
+                'nw': (0, 0),
+                'n': (target_w / 2, 0),
+                'ne': (target_w, 0),
+                'w': (0, target_h / 2),
+                'center': (target_w / 2, target_h / 2),
+                'e': (target_w, target_h / 2),
+                'sw': (0, target_h),
+                's': (target_w / 2, target_h),
+                'se': (target_w, target_h),
+            }
+            dx, dy = attach_table.get(self._attach, (0, 0))
+            return (
+                int(base_x + dx + self._offset[0]),
+                int(base_y + dy + self._offset[1]),
+            )
+
+        return 0, 0
+
+    # ----- Configuration delegates -------------------------------------------
+
+    @configure_delegate('minwidth')
+    def _delegate_minwidth(self, value: int | None):
+        if value is None:
+            return self._minwidth
+        self._minwidth = value
+        return None
+
+    @configure_delegate('minheight')
+    def _delegate_minheight(self, value: int | None):
+        if value is None:
+            return self._minheight
+        self._minheight = value
+        return None
+
+    @configure_delegate('width')
+    def _delegate_width(self, value: int | None):
+        if value is None:
+            return self._width
+        self._width = value
+        return None
+
+    @configure_delegate('height')
+    def _delegate_height(self, value: int | None):
+        if value is None:
+            return self._height
+        self._height = value
+        return None
+
+    @configure_delegate('anchor')
+    def _delegate_anchor(self, value: str | None):
+        if value is None:
+            return self._anchor
+        self._anchor = (value or 'nw').lower()
+        return None
+
+    @configure_delegate('attach')
+    def _delegate_attach(self, value: str | None):
+        if value is None:
+            return self._attach
+        self._attach = (value or 'nw').lower()
+        return None
+
+    @configure_delegate('offset')
+    def _delegate_offset(self, value: tuple[int, int] | None):
+        if value is None:
+            return self._offset
+        try:
+            dx, dy = value  # type: ignore[misc]
+        except Exception:
+            dx, dy = (0, 0)
+        self._offset = (dx, dy)
+        return None
+
+    @configure_delegate('hide_on_outside_click')
+    def _delegate_hide_on_outside_click(self, value: bool | None):
+        if value is None:
+            return self._hide_on_outside_click
+        self._hide_on_outside_click = bool(value)
+        return None
+
+    @configure_delegate('target')
+    def _delegate_target(self, value: Widget | None):
+        if value is None:
+            return self._target
+        self._target = value
+        return None
+
+    @configure_delegate('items')
+    def _delegate_items(self, value: list | None):
+        if value is None:
+            # Return spec dicts in order (no widgets exist on this backend)
+            return [self._item_specs[key] for key in self._item_order]
+
+        # Replace all items
+        try:
+            last = self._menu.index('end')
+            if last is not None:
+                self._menu.delete(0, last)
+        except TclError:
+            pass
+        if self._mgr is not None:
+            self._mgr.unregister_menu(self._menu)
+        self._item_specs = {}
+        self._item_order = []
+        self._counter = 0
+        self._var_refs = {}
+        self.add_items(value)
+        return None
+
+
+class ContextMenu:
+    """Public ContextMenu — dispatches to a platform-appropriate backend.
+
+    On macOS this materializes as a native ``tk.Menu`` (NSMenu) so popups
+    integrate with the system, dodging the key-window/activation issues
+    that affect a reused overrideredirect Toplevel on Aqua. On Windows
+    and Linux it uses the themed Toplevel-backed implementation so
+    bootstyle, density, and rich item types apply consistently.
+
+    The public API is identical across backends. Consumers should not
+    rely on ``item()`` returning a Tk widget — on the native backend it
+    returns the original spec dict, since no per-item widget exists.
+    """
+
+    def __init__(
+            self,
+            master: Master = None,
+            minwidth: int = 150,
+            width: int = None,
+            minheight: int = None,
+            height: int = None,
+            target: Widget = None,
+            anchor: str = 'nw',
+            attach: str = 'se',
+            offset: tuple[int, int] = None,
+            hide_on_outside_click: bool = True,
+            items: list[ContextMenuItem] = None,
+            density: str = 'default',
+    ):
+        winsys = None
+        probe = master if master is not None else target
+        if probe is not None:
+            try:
+                winsys = probe.tk.call('tk', 'windowingsystem')
+            except (TclError, AttributeError):
+                winsys = None
+        if winsys is None:
+            try:
+                import tkinter as _tk
+                root = _tk._get_default_root()
+                if root is not None:
+                    winsys = root.tk.call('tk', 'windowingsystem')
+            except (TclError, AttributeError):
+                winsys = None
+
+        backend_cls = _NativeContextMenu if winsys == 'aqua' else _ToplevelContextMenu
+        self._impl = backend_cls(
+            master=master,
+            minwidth=minwidth,
+            width=width,
+            minheight=minheight,
+            height=height,
+            target=target,
+            anchor=anchor,
+            attach=attach,
+            offset=offset,
+            hide_on_outside_click=hide_on_outside_click,
+            items=items,
+            density=density,
+        )
+
+    # Forward every other attribute (methods, configure delegates, etc.)
+    # to the active backend. ``_impl`` itself is a real instance attribute
+    # so it's resolved by normal attribute lookup before __getattr__ runs.
+    def __getattr__(self, name: str):
+        # __getattr__ is only consulted when normal lookup fails, so we
+        # won't recurse on '_impl' here unless backend init raised.
+        impl = self.__dict__.get('_impl')
+        if impl is None:
+            raise AttributeError(name)
+        return getattr(impl, name)
+
+    def __getitem__(self, key):
+        return self._impl[key]
+
+    def __setitem__(self, key, value):
+        self._impl[key] = value

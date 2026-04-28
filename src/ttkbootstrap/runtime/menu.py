@@ -35,9 +35,10 @@ Examples:
 """
 import tkinter as tk
 from tkinter import font, ttk
-from typing import Any, Union
+from typing import Any, Optional, Union
 
 from ttkbootstrap_icons_bs import BootstrapIcon
+from ttkbootstrap.core.localization import MessageCatalog
 from ttkbootstrap.style.style import get_style
 
 
@@ -77,6 +78,27 @@ class MenuManager:
         # Set up theme change monitoring
         self._setup_theme_monitoring()
 
+    @classmethod
+    def for_widget(cls, widget: Any) -> "MenuManager":
+        """Return the singleton MenuManager for ``widget``'s root window.
+
+        Creates one on first access and stores it on the root as
+        ``_menu_manager``. Use this to share icon-tracking and theme
+        monitoring across all tk.Menu-based widgets in an application
+        (menubars, context menus, etc.) without each one binding its own
+        ``<<ThemeChanged>>`` handler.
+        """
+        root = widget.winfo_toplevel() if hasattr(widget, 'winfo_toplevel') else widget
+        existing = getattr(root, '_menu_manager', None)
+        if existing is not None:
+            return existing
+        mgr = cls(root)
+        try:
+            root._menu_manager = mgr
+        except Exception:
+            pass
+        return mgr
+
     def _setup_theme_monitoring(self):
         """Set up monitoring for <<ThemeChanged>> events on the root window."""
         # Get the root window
@@ -101,7 +123,63 @@ class MenuManager:
                 # Menu item may have been deleted
                 pass
 
-    def _parse_icon_spec(self, icon_spec: Union[str, dict]) -> tuple[str, int]:
+    # ----- Public helpers for tk.Menu callers --------------------------------
+
+    @staticmethod
+    def translate_label(text: Optional[str]) -> Optional[str]:
+        """Run a label through ``MessageCatalog.translate``.
+
+        Semantic keys (e.g. ``'table.sort_asc'``) become localized strings;
+        plain text passes through unchanged because ``translate`` returns
+        the source when no translation is registered.
+        """
+        if not text:
+            return text
+        try:
+            return MessageCatalog.translate(text)
+        except Exception:
+            return text
+
+    def resolve_icon(self, icon_spec: Union[str, dict, None]) -> tuple[Any, Optional[str], int]:
+        """Resolve an icon spec to a ``(PhotoImage, name, size)`` triple.
+
+        Returns ``(None, None, 0)`` for empty/unsupported specs. The returned
+        PhotoImage is the same kind ``MenuManager`` uses internally for its
+        own menus, so the caller can pass it straight to
+        ``menu.add_command(image=..., compound='left')``.
+        """
+        if not icon_spec or icon_spec == 'empty':
+            return None, None, 0
+        name, size = self._parse_icon_spec(icon_spec)
+        if not name:
+            return None, None, 0
+        try:
+            fg = self.style.style_builder.color('foreground')
+            icon = BootstrapIcon(name, size, fg)
+        except Exception:
+            return None, None, 0
+        return icon, name, size
+
+    def register_icon(self, menu: tk.Menu, index: int, icon_name: str, icon_size: int) -> None:
+        """Track a menu item for theme-aware icon re-rendering.
+
+        Call after ``menu.add_*(image=icon)`` so subsequent
+        ``<<ThemeChanged>>`` events refresh the entry's icon color.
+        """
+        self._track_icon(menu, index, icon_name, icon_size)
+
+    def unregister_menu(self, menu: tk.Menu) -> None:
+        """Drop all tracking entries for ``menu``.
+
+        Call when the menu is being destroyed or fully rebuilt so stale
+        ``(menu, index)`` references don't try to reconfigure deleted entries
+        on the next ``<<ThemeChanged>>``.
+        """
+        prefix = f"{id(menu)}_"
+        for key in [k for k in self.menu_items if k.startswith(prefix)]:
+            del self.menu_items[key]
+
+    def _parse_icon_spec(self, icon_spec: Union[str, dict]) -> tuple[Optional[str], int]:
         """Parse icon specification into name and size tuple."""
         # Use menu font linespace as default icon size
         menu_font = font.nametofont("TkMenuFont")
@@ -137,19 +215,19 @@ class MenuManager:
             options = options.copy()
             sub_items = options.pop('items', [])
 
+            # Translate the label so semantic keys (e.g. 'menu.file') resolve
+            # via MessageCatalog. Plain text passes through unchanged.
+            if 'label' in options:
+                options['label'] = self.translate_label(options['label'])
+
             # Handle icon for cascade menu BEFORE popping tearoff
             icon_spec = options.pop('icon', None)
             icon_name = None
             icon_size = 16
 
             if icon_spec:
-                icon_name, icon_size = self._parse_icon_spec(icon_spec)
-
-                if icon_name:
-                    # Get foreground color
-                    fg_color = self.style.style_builder.color('foreground')
-                    # Create icon with current foreground color
-                    icon = BootstrapIcon(icon_name, icon_size, fg_color)
+                icon, icon_name, icon_size = self.resolve_icon(icon_spec)
+                if icon is not None:
                     options['image'] = icon
                     options['compound'] = options.get('compound', 'left')
 
@@ -163,10 +241,7 @@ class MenuManager:
 
             # Track cascade icon if present
             if icon_name:
-                # Get the index of the cascade we just added
-                cascade_index = parent.index('end')
-                item_id = f"{id(parent)}_cascade_{cascade_index}"
-                self.menu_items[item_id] = (parent, cascade_index, icon_name, icon_size)
+                self.register_icon(parent, parent.index('end'), icon_name, icon_size)
 
             # Add all sub-items to this menu
             self._add_menu_items(menu, sub_items)
@@ -183,49 +258,35 @@ class MenuManager:
                 # This item has subitems, so it's a cascade
                 # Pass to create_menu which will handle the cascade
                 self.create_menu(menu, [opts])
-            else:
-                # Regular menu item (not a cascade)
-                # Handle icon if present
-                icon_spec = opts.pop('icon', None)
-                icon_name = None
-                icon_size = 16
+                continue
 
-                if icon_spec:
-                    icon_name, icon_size = self._parse_icon_spec(icon_spec)
+            # Regular menu item (not a cascade)
+            if 'label' in opts:
+                opts['label'] = self.translate_label(opts['label'])
 
-                    if icon_name:
-                        # Get foreground color
-                        fg_color = self.style.style_builder.color('foreground')
-                        # Create icon with current foreground color
-                        icon = BootstrapIcon(icon_name, icon_size, fg_color)
-                        opts['image'] = icon
-                        opts['compound'] = opts.get('compound', 'left')
+            icon_spec = opts.pop('icon', None)
+            icon_name = None
+            icon_size = 0
+            if icon_spec:
+                icon, icon_name, icon_size = self.resolve_icon(icon_spec)
+                if icon is not None:
+                    opts['image'] = icon
+                    opts['compound'] = opts.get('compound', 'left')
 
-                if 'type' not in opts:
-                    menu.add_command(**opts)
-                    if icon_name:
-                        index = menu.index('end')
-                        self._track_icon(menu, index, icon_name, icon_size)
-                elif opts['type'] == 'checkbutton':
-                    opts.pop('type')
-                    menu.add_checkbutton(**opts)
-                    if icon_name:
-                        index = menu.index('end')
-                        self._track_icon(menu, index, icon_name, icon_size)
-                elif opts['type'] == 'radiobutton':
-                    opts.pop('type')
-                    menu.add_radiobutton(**opts)
-                    if icon_name:
-                        index = menu.index('end')
-                        self._track_icon(menu, index, icon_name, icon_size)
-                elif opts['type'] == 'command':
-                    opts.pop('type')
-                    menu.add_command(**opts)
-                    if icon_name:
-                        index = menu.index('end')
-                        self._track_icon(menu, index, icon_name, icon_size)
-                elif opts['type'] == 'separator':
-                    menu.add_separator()
+            item_type = opts.pop('type', 'command')
+            if item_type == 'separator':
+                menu.add_separator()
+                continue
+
+            adder = {
+                'command': menu.add_command,
+                'checkbutton': menu.add_checkbutton,
+                'radiobutton': menu.add_radiobutton,
+            }.get(item_type, menu.add_command)
+            adder(**opts)
+
+            if icon_name:
+                self.register_icon(menu, menu.index('end'), icon_name, icon_size)
 
     def _track_icon(self, menu: tk.Menu, index: int, icon_name: str, icon_size: int):
         """Register a menu item with an icon for automatic theme updates."""

@@ -85,7 +85,12 @@ class MenuButton(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, 
         # focus-ring affordance offset so it aligns with the visible button
         # border. Subclasses (OptionMenu, DropdownButton) use a ContextMenu
         # and override show_menu, so this only affects the native path.
-        self.bind("<Button-1>", self._on_button_press, add="+")
+        # On Aqua, Tk's native Menubutton class binding drives an NSMenu
+        # state machine that manages mouse/focus capture; bypassing it with
+        # a manual `menu post` strands focus after item selection, so we
+        # skip the offset path on Mac and let the default class binding run.
+        if self.tk.call('tk', 'windowingsystem') != 'aqua':
+            self.bind("<Button-1>", self._on_button_press, add="+")
 
     def _on_button_press(self, _event):
         """Focus self, and if a native menu is attached, post it with offset."""
