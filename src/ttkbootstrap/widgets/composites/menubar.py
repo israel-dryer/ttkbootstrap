@@ -147,7 +147,7 @@ class MenuBar(GridFrame):
         # affordance baked into the menu trigger image so popdowns align with
         # the visible button border.
         from ttkbootstrap.style.bootstyle_builder_base import BootstyleBuilderBase
-        self._popdown_options = {"offset": (BootstyleBuilderBase.scale_from_source(10), 0)}
+        self._popdown_options = {"offset": (BootstyleBuilderBase.scale_from_source(10), 0), "density": "compact"}
         if popdown_options:
             self._popdown_options.update(popdown_options)
 
