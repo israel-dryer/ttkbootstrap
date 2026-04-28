@@ -297,9 +297,15 @@ class FormDialog:
         if not self._scrollable:
             return
         if self._dialog and self._dialog.toplevel:
-            # Make sure all pending geometry work is processed while withdrawn
-            self._dialog.toplevel.update_idletasks()
-            self._dialog.toplevel.update()
+            # Make sure all pending geometry work is processed while withdrawn.
+            # update_idletasks alone flushes layout/redraw; full update() also
+            # pumps input/IO events, which can hang on Aqua when the form
+            # contains heavy widgets (same pattern as the Dialog/BaseWindow
+            # pre-deiconify hang). Gate update() to win32 only.
+            top = self._dialog.toplevel
+            top.update_idletasks()
+            if getattr(top, 'winsys', None) == 'win32':
+                top.update()
         # Run once synchronously so sizing is applied before deiconify
         self._fire_initial_configure(blocking=True)
 
