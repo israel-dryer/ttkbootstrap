@@ -63,11 +63,13 @@ class Composite:
             self.on_invoked(lambda e: self.set_selected(not self._selected))
 
     @property
-    def selected(self):
+    def selected(self) -> bool:
+        """Whether this composite is currently in the selected state."""
         return self._selected
 
     @property
-    def disabled(self):
+    def disabled(self) -> bool:
+        """Whether this composite is currently in the disabled state."""
         return self._disabled
 
     def register_composite(self, widget: ttk.Widget):

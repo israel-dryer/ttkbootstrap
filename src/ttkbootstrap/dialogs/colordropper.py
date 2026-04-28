@@ -35,6 +35,7 @@ class ColorDropperDialog:
     """
 
     def __init__(self) -> None:
+        """Initialize the ColorDropperDialog and prepare all state attributes."""
         self.zoom_yoffset = None
         self.zoom_xoffset = None
         self.zoom_width = None

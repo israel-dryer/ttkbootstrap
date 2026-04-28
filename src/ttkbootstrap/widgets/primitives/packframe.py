@@ -22,7 +22,7 @@ class PackFrame(Frame):
 
     Children packed into this frame automatically receive the frame's
     default layout options. Simply use the standard `pack()` method
-    on child widgets - no special `add()` method needed.
+    on child widgets — no special `add()` method is needed.
 
     Example:
         ```python
@@ -31,17 +31,6 @@ class PackFrame(Frame):
         Label(frame, text="Second").pack()
         Button(frame, text="Click").pack(expand=True)  # override default
         ```
-
-    Args:
-        master: Parent widget. If None, uses the default root window.
-        direction: Layout direction. Options: "vertical", "horizontal",
-            "row", "column", "row-reverse", "column-reverse". Defaults to "vertical".
-        gap: Spacing between children in pixels. Defaults to 0.
-        fill_items: Default fill behavior for children ("none", "x", "y", "both").
-        expand_items: Default expand behavior for children.
-        anchor_items: Default anchor for children.
-        propagate: Whether the frame should resize to fit its contents.
-        **kwargs: Additional Frame options (color, variant, padding, etc.).
     """
 
     SIDE_MAP: dict[Direction, Side] = {
@@ -65,6 +54,25 @@ class PackFrame(Frame):
         propagate: Optional[bool] = None,
         **kwargs: Any,
     ) -> None:
+        """Create a PackFrame with automatic pack-based layout.
+
+        Args:
+            master: Parent widget. If None, uses the default root window.
+            direction: Layout direction — `'vertical'`, `'horizontal'`,
+                `'row'`, `'column'`, `'row-reverse'`, or `'column-reverse'`.
+                Defaults to `'vertical'`.
+            gap: Spacing between children in pixels. Defaults to 0.
+            fill_items: Default `fill` option for children
+                (`'none'`, `'x'`, `'y'`, or `'both'`). If None, no default fill
+                is applied.
+            expand_items: Default `expand` option for children. If None, no
+                default expand is applied.
+            anchor_items: Default `anchor` for children. If None, no default
+                anchor is applied.
+            propagate: If False, the frame will not resize to fit its contents.
+                Defaults to None (Tk default behaviour).
+            **kwargs: Additional keyword arguments forwarded to `Frame`.
+        """
         super().__init__(master, **kwargs)
 
         self._direction = direction

@@ -28,7 +28,7 @@ print(f"Preparing {len(rows)} records")
 app = ttk.App(
     theme="dark",
     size=(1200, 800),
-    settings=ttk.AppSettings(locale='ja')
+    # settings=ttk.AppSettings(locale='ja')
 )
 
 columns = [
@@ -49,9 +49,10 @@ grid = ttk.TableView(
     columns=columns,
     rows=rows,
     search_trigger="enter",
-    column_auto_width=True,
+    column_auto_width=False,
     striped=True,
     enable_editing=True,
+    enable_deleting=True,
 )
 grid.pack(fill="both", expand=True, padx=5, pady=5)
 

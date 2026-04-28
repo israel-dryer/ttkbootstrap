@@ -42,6 +42,16 @@ class OptionMenuKwargs(TypedDict, total=False):
 
 
 class OptionMenu(MenuButton):
+    """A single-selection dropdown menu backed by a ContextMenu.
+
+    Renders as a `MenuButton` with a chevron icon. Clicking the button opens
+    a popup menu containing the provided options as radiobutton items. Selecting
+    an item updates the displayed text and fires a `<<Change>>` event.
+
+    !!! note "Events"
+        - `<<Change>>`: Fired when the selected value changes.
+          `event.data = {'value': Any}`
+    """
 
     def __init__(
             self,

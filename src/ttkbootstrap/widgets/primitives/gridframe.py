@@ -40,7 +40,7 @@ class GridFrame(Frame):
 
     Children gridded into this frame automatically receive the frame's
     default layout options. Simply use the standard `grid()` method
-    on child widgets - no special `add()` method needed.
+    on child widgets — no special `add()` method is needed.
 
     Example:
         ```python
@@ -51,17 +51,6 @@ class GridFrame(Frame):
         Label(frame, text="D").grid()  # auto-placed at row=1, col=0
         Label(frame, text="Wide").grid(columnspan=2)  # spans 2 columns
         ```
-
-    Args:
-        master: Parent widget. If None, uses the default root window.
-        rows: Number of rows (int) or list of row size specs.
-            Size specs can be int (weight) or str ("auto", "100px").
-        columns: Number of columns (int) or list of column size specs.
-        gap: Spacing between cells. Int for uniform, tuple for (column, row).
-        sticky_items: Default sticky value for children.
-        propagate: Whether the frame should resize to fit its contents.
-        auto_flow: Auto-placement mode ("row", "column", "row-dense", "column-dense", "none").
-        **kwargs: Additional Frame options (color, variant, padding, etc.).
     """
 
     def __init__(
@@ -76,6 +65,23 @@ class GridFrame(Frame):
         auto_flow: AutoFlow = "row",
         **kwargs: Any,
     ) -> None:
+        """Create a GridFrame with automatic grid-based layout.
+
+        Args:
+            master: Parent widget. If None, uses the default root window.
+            rows: Number of rows as an `int`, or a list of size specs where each
+                spec is an `int` weight or a string such as `'auto'` or `'100px'`.
+            columns: Number of columns or a list of size specs (same format as `rows`).
+            gap: Spacing between cells. An `int` applies the same gap in both
+                directions; a `(col_gap, row_gap)` tuple sets them independently.
+            sticky_items: Default `sticky` value applied to all children when
+                they call `grid()`. If None, no default sticky is applied.
+            propagate: If False, the frame will not resize to fit its contents.
+                Defaults to None (Tk default behaviour).
+            auto_flow: Auto-placement mode — `'row'` (default), `'column'`,
+                `'row-dense'`, `'column-dense'`, or `'none'`.
+            **kwargs: Additional keyword arguments forwarded to `Frame`.
+        """
         super().__init__(master, **kwargs)
 
         self._gap = self._normalize_gap(gap)

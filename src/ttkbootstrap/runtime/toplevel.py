@@ -1,3 +1,4 @@
+"""Themed top-level window for secondary application windows."""
 from __future__ import annotations
 
 import tkinter

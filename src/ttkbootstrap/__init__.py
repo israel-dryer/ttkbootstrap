@@ -1,3 +1,17 @@
+"""ttkbootstrap — themed ttk widgets and application framework for Tkinter.
+
+All widgets, dialogs, style utilities, and application primitives are
+accessible directly from this namespace via lazy imports.
+
+Examples:
+    ```python
+    import ttkbootstrap as ttk
+
+    app = ttk.App(title="My App", themename="flatly")
+    ttk.Label(app, text="Hello, world!").pack(padx=20, pady=20)
+    app.mainloop()
+    ```
+"""
 import importlib as _importlib
 from typing import TYPE_CHECKING
 
