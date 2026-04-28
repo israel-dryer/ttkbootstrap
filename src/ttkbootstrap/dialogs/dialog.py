@@ -373,7 +373,7 @@ class Dialog:
                 icon=spec.icon,
                 compound="left" if spec.icon else "text",
             )
-            btn.pack(side="right", padx=(4, 0))
+            btn.pack(side="right")
 
             if spec.default and default_button is None:
                 default_button = btn
