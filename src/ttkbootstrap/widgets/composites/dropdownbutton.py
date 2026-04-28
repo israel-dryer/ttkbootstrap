@@ -131,7 +131,18 @@ class DropdownButton(MenuButton):
 
     def _build_context_menu(self):
         """Construct the ContextMenu with current items and options."""
-        options = {"anchor": "nw", "attach": "sw", "offset": (2, 0)}
+        # Offset compensates for the focus-ring affordance baked into the
+        # button image so the dropdown's left edge aligns with the visible
+        # button border. Same treatment as OptionMenu.
+        from ttkbootstrap.style.bootstyle_builder_base import BootstyleBuilderBase
+        offset_x = BootstyleBuilderBase.scale_from_source(10)
+        density = self.configure_style_options('density') or 'default'
+        options = {
+            "anchor": "nw",
+            "attach": "sw",
+            "offset": (offset_x, 0),
+            "density": density,
+        }
         options.update(self._popdown_options)
         cm = ContextMenu(self, target=self, items=self._items, **options)
         if self._item_click_callback:
