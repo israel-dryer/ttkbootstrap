@@ -592,7 +592,7 @@ class ColorChooserDialog:
             text='button.ok',
             command=self._on_ok,
         )
-        ok.pack(side=RIGHT, padx=(4, 0))
+        ok.pack(side=RIGHT)
 
         cancel = ttk.Button(
             master,
@@ -600,7 +600,7 @@ class ColorChooserDialog:
             text='button.cancel',
             command=self._on_cancel,
         )
-        cancel.pack(side=RIGHT, padx=(4, 0))
+        cancel.pack(side=RIGHT)
 
     # callbacks ----------------------------------------------------------------
     def _on_show_color_dropper(self, _: tkinter.Event) -> None:
