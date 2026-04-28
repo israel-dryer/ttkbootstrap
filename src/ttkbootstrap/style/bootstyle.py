@@ -417,6 +417,7 @@ class Bootstyle:
             style_options = kwargs.pop("style_options", {})
             inherit_surface = kwargs.pop('inherit_surface', None)
             surface_token = kwargs.pop('surface', None)
+            input_bg_token = kwargs.pop('input_background', None)
 
             # Extract ttk_class for style lookup (doesn't affect widget's actual class_)
             # This allows custom style builders without affecting bindtags
@@ -464,6 +465,24 @@ class Bootstyle:
             setattr(self, '_surface', effective_surface_token)
             if effective_surface_token != 'content' and effective_surface_token is not None:
                 style_options.setdefault('surface', effective_surface_token)
+
+            # ===== Input background inheritance =====
+
+            if hasattr(self, 'master') and self.master is not None:
+                parent_input_bg = getattr(self.master, '_input_background', None)
+            else:
+                parent_input_bg = None
+
+            if input_bg_token:
+                effective_input_bg = input_bg_token
+            elif inherit_surface and parent_input_bg:
+                effective_input_bg = parent_input_bg
+            else:
+                effective_input_bg = None
+
+            setattr(self, '_input_background', effective_input_bg)
+            if effective_input_bg:
+                style_options.setdefault('input_background', effective_input_bg)
 
             # ==== Orientation =====
 

@@ -245,7 +245,7 @@ class FormDialog:
             min_col_width=self._min_col_width,
             on_data_changed=self._on_data_changed,
             width=None,  # Let form size naturally
-            height=self._height,
+            height=None if self._scrollable else self._height,
             buttons=None,
         )
 

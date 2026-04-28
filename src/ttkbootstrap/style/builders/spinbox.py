@@ -23,17 +23,19 @@ from ttkbootstrap.style.builders.utils import (
 @BootstyleBuilderTTk.register_builder('default', 'TSpinbox')
 def build_spinbox_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     surface_token = options.get('surface', 'content')
+    fill_token = options.get('input_background') or 'content'
     density = normalize_button_density(options.get('density', 'default'))
 
-    surface = b.color(surface_token)
+    fill = b.color(fill_token)
+    container_surface = b.color(surface_token)
     accent_color = b.color(accent or 'primary')
-    foreground = b.on_color(surface)
+    foreground = b.on_color(fill)
 
-    normal = surface
-    border = b.border(surface)
+    normal = fill
+    border = b.border(fill)
     disabled = b.disabled()
     focused_border = b.focus_border(accent_color)
-    focused_ring = b.focus_ring(accent_color, surface)
+    focused_ring = b.focus_ring(accent_color, container_surface)
 
     select_background = b.color('primary')
     select_foreground = b.on_color(select_background)
@@ -41,9 +43,9 @@ def build_spinbox_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = No
 
     # input elements - use density-aware images from manifest
     img_key = entry_image_key('input', density)
-    normal_img = recolor_element_image(img_key, normal, border, surface)
-    focused_img = recolor_element_image(img_key, normal, focused_border, focused_ring)
-    disabled_img = recolor_element_image(img_key, disabled, border, surface)
+    normal_img = recolor_element_image(img_key, normal, border, container_surface, container_surface)
+    focused_img = recolor_element_image(img_key, normal, focused_border, focused_ring, container_surface)
+    disabled_img = recolor_element_image(img_key, disabled, border, container_surface, container_surface)
 
     b.create_style_element_image(
         ElementImage(f'{ttk_style}.field', normal_img.image, sticky='nsew', border=normal_img.meta.border).state_specs(
@@ -100,7 +102,7 @@ def build_spinbox_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = No
     b.configure_style(
         ttk_style,
         foreground=foreground,
-        background=surface,
+        background=fill,
         padding=entry_padding(b, density),
         selectforeground=select_foreground,
         selectbackground=select_background,

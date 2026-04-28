@@ -8,6 +8,7 @@ from tkinter import BooleanVar, IntVar, StringVar, TclError, Toplevel, Widget
 from typing import Any, Callable, Union
 
 from ttkbootstrap.runtime.shortcuts import get_shortcuts
+from ttkbootstrap.style.bootstyle_builder_base import BootstyleBuilderBase
 from ttkbootstrap.widgets.primitives import RadioToggle, CheckToggle, Frame, Label, Separator
 from ttkbootstrap.widgets.primitives.button import Button
 from ttkbootstrap.widgets.types import Master
@@ -90,9 +91,10 @@ class ContextMenu(CustomConfigMixin):
             target: Widget = None,
             anchor: str = 'nw',
             attach: str = 'se',
-            offset: tuple[int, int] = (0, 0),
+            offset: tuple[int, int] = None,
             hide_on_outside_click: bool = True,
-            items: list[ContextMenuItem] = None
+            items: list[ContextMenuItem] = None,
+            density: str = 'default',
     ):
         """Initialize a ContextMenu widget.
 
@@ -105,10 +107,17 @@ class ContextMenu(CustomConfigMixin):
             target: Target widget to attach the menu to. Used for relative positioning.
             anchor: Anchor point on the menu to align (e.g., 'nw', 'ne', 'sw', 'se', 'center').
             attach: Anchor point on the target to align to (same options as anchor).
-            offset: Tuple (dx, dy) applied after alignment.
+            offset: Tuple (dx, dy) applied after alignment. Defaults to
+                ``(scale_from_source(10), 0)`` to account for the focus-ring
+                affordance baked into trigger button images, so attached menus
+                align with the visible button border out of the box. Pass
+                ``(0, 0)`` explicitly to position the menu at the exact anchor
+                point with no offset.
             hide_on_outside_click: If True, menu hides when clicking outside.
                 Default is True.
             items: List of ContextMenuItem objects to add initially.
+            density: Item typography density ('default' or 'compact'). Items
+                inherit this so they match the trigger widget's font size.
         """
         super().__init__()
         self._master = master
@@ -119,8 +128,9 @@ class ContextMenu(CustomConfigMixin):
         self._height = height
         self._anchor = (anchor or 'nw').lower()
         self._attach = (attach or 'nw').lower()
-        self._offset = offset or (0, 0)
+        self._offset = offset if offset is not None else (BootstyleBuilderBase.scale_from_source(10), 0)
         self._hide_on_outside_click = hide_on_outside_click
+        self._density = density
         self._on_item_click_callback = None
         self._click_handler_id = None
         self._click_binding_root = None
@@ -270,6 +280,7 @@ class ContextMenu(CustomConfigMixin):
                 icon=icon or 'empty',
                 compound='left',
                 variant='context-item',
+                density=self._density,
                 command=lambda: self._handle_item_click('command', text, command)
             )
             btn.pack(side='left', fill='x', expand=True)
@@ -278,6 +289,7 @@ class ContextMenu(CustomConfigMixin):
                 container,
                 text=shortcut_display,
                 variant='context-label',
+                density=self._density,
                 padding=(0, 0, 4, 0)
             )
             shortcut_label.pack(side='right')
@@ -300,6 +312,7 @@ class ContextMenu(CustomConfigMixin):
                 icon=icon or 'empty',
                 compound='left',
                 variant='context-item',
+                density=self._density,
                 command=lambda: self._handle_item_click('command', text, command)
             )
             if disabled:
@@ -336,6 +349,7 @@ class ContextMenu(CustomConfigMixin):
             text=text,
             variable=var,
             variant='context-check',
+            density=self._density,
             command=on_toggle
         )
         cb.pack(fill='x', padx=0, pady=0)
@@ -373,6 +387,7 @@ class ContextMenu(CustomConfigMixin):
             value=value,
             variable=variable,
             variant='context-radio',
+            density=self._density,
             command=on_select
         )
         rb.pack(fill='x', padx=0, pady=0)
@@ -753,12 +768,6 @@ class ContextMenu(CustomConfigMixin):
 
         if position is not None:
             base_x, base_y = position
-            screen_w = self._toplevel.winfo_screenwidth()
-            screen_h = self._toplevel.winfo_screenheight()
-            if base_x < 0:
-                base_x = screen_w + base_x
-            if base_y < 0:
-                base_y = screen_h + base_y
         elif self._target and self._target.winfo_exists():
             self._target.update_idletasks()
             target_w = self._target.winfo_width()
@@ -774,6 +783,16 @@ class ContextMenu(CustomConfigMixin):
         menu_dx, menu_dy = anchor_offsets(self._anchor, menu_w, menu_h)
         final_x = int(base_x - menu_dx + self._offset[0])
         final_y = int(base_y - menu_dy + self._offset[1])
+
+        # Flip vertically when the menu would overflow the screen bottom and
+        # there's room above the target. Matches Tk combobox PlacePopdown.
+        if self._target is not None and self._target.winfo_exists():
+            screen_h = self._toplevel.winfo_screenheight()
+            if final_y + menu_h > screen_h:
+                target_top = self._target.winfo_rooty()
+                alt_y = target_top - menu_h - self._offset[1]
+                if alt_y >= 0:
+                    final_y = alt_y
         return final_x, final_y
 
     def _setup_click_outside_handler(self) -> None:

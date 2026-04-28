@@ -29,6 +29,7 @@ class FrameKwargs(TypedDict, total=False):
     accent: str
     variant: str
     surface: str
+    input_background: str
     show_border: bool
     style_options: dict[str, Any]
     bootstyle: str  # DEPRECATED: Use accent and variant instead
@@ -58,6 +59,13 @@ class Frame(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Frame):
             bootstyle (str): DEPRECATED - Use `accent` and `variant` instead.
                 Combined style tokens (e.g., 'secondary').
             surface (str): Optional surface token; otherwise inherited.
+            input_background (str): Surface token used as the fill color for all input
+                widgets (Entry, Combobox, Spinbox, Field) inside this container. Cascades
+                to descendants the same way ``surface`` does. Input foreground, border,
+                and focus-ring colors are all derived from this fill so contrast is always
+                correct. Defaults to ``'content'`` (the app background), which keeps
+                inputs visually distinct regardless of the container surface. Override
+                with any surface token (e.g. ``'card'``) to match the container.
             show_border (bool): Draw a border around the frame.
             style_options (dict): Optional dict forwarded to the style builder.
         """
@@ -67,12 +75,18 @@ class Frame(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Frame):
     def configure_style_options(self, value=None, **kwargs):
         """Set style options and refresh descendant surfaces if needed."""
         old_surface = getattr(self, "_surface", "background")
+        old_input_bg = getattr(self, "_input_background", None)
         result = super().configure_style_options(value, **kwargs)
-        if value is None and "surface" in kwargs:
-            new_surface = getattr(self, "_surface", "background")
-            if old_surface != new_surface:
-                self.rebuild_style()
-                self._refresh_descendant_surfaces(old_surface, new_surface)
+        if value is None:
+            if "surface" in kwargs:
+                new_surface = getattr(self, "_surface", "background")
+                if old_surface != new_surface:
+                    self.rebuild_style()
+                    self._refresh_descendant_surfaces(old_surface, new_surface)
+            if "input_background" in kwargs:
+                new_input_bg = getattr(self, "_input_background", None)
+                if old_input_bg != new_input_bg:
+                    self._refresh_descendant_input_backgrounds(old_input_bg, new_input_bg)
         return result
 
     @configure_delegate("bootstyle")
@@ -125,6 +139,50 @@ class Frame(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Frame):
             else:
                 try:
                     builder_tk.call_builder(child, surface=new_surface)
+                except Exception:
+                    pass
+
+    def _refresh_descendant_input_backgrounds(self, old_bg: str | None, new_bg: str | None) -> None:
+        if old_bg == new_bg:
+            return
+
+        style = get_style()
+        builder_tk = BootstyleBuilderBuilderTk(
+            theme_provider=style.theme_provider if style else None,
+            style_instance=style,
+        )
+
+        for child in self._iter_descendants():
+            try:
+                child_input_bg = getattr(child, "_input_background", None)
+            except Exception:
+                child_input_bg = None
+
+            explicit_input_bg = None
+            try:
+                explicit_input_bg = getattr(child, "_style_options", {}).get("input_background")
+            except Exception:
+                explicit_input_bg = None
+
+            if explicit_input_bg and explicit_input_bg != old_bg:
+                continue
+
+            if child_input_bg != old_bg:
+                continue
+
+            try:
+                setattr(child, "_input_background", new_bg)
+            except Exception:
+                continue
+
+            if hasattr(child, "rebuild_style"):
+                try:
+                    child.rebuild_style()
+                except Exception:
+                    pass
+            else:
+                try:
+                    builder_tk.call_builder(child, input_background=new_bg)
                 except Exception:
                     pass
 

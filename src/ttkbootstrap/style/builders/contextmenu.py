@@ -3,7 +3,7 @@ from __future__ import annotations
 from ttkbootstrap_icons_bs import BootstrapIcon
 
 from ttkbootstrap.style.bootstyle_builder_ttk import BootstyleBuilderTTk
-from ttkbootstrap.style.builders.utils import apply_icon_mapping
+from ttkbootstrap.style.builders.utils import apply_icon_mapping, button_font, normalize_button_density
 from ttkbootstrap.style.element import Element
 from ttkbootstrap.style.utility import create_transparent_image
 
@@ -22,6 +22,7 @@ def _context_item_layout(ttk_style: str) -> Element:
 @BootstyleBuilderTTk.register_builder('context-check', 'Toolbutton')
 def build_context_check_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     surface_token = options.get('surface', 'content')
+    density = normalize_button_density(options.get('density', 'default'))
 
     surface = b.color(surface_token)
     on_surface = b.on_color(surface)
@@ -44,7 +45,7 @@ def build_context_check_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str,
         stipple='gray12',
         padding=(6, 3),
         anchor='w',
-        font='caption',
+        font=button_font(density),
         compound='left',
         focuscolor=''
     )
@@ -79,6 +80,7 @@ def build_context_check_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str,
 @BootstyleBuilderTTk.register_builder('context-radio', 'Toolbutton')
 def build_context_radio_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = None, **options):
     surface_token = options.get('surface', 'content')
+    density = normalize_button_density(options.get('density', 'default'))
 
     surface = b.color(surface_token)
     on_surface = b.on_color(surface)
@@ -101,7 +103,7 @@ def build_context_radio_toolbutton_style(b: BootstyleBuilderTTk, ttk_style: str,
         stipple='gray12',
         padding=(6, 3),
         anchor='w',
-        font='caption',
+        font=button_font(density),
         compound='left',
         focuscolor=''
     )
@@ -171,6 +173,7 @@ def build_context_label_style(b: BootstyleBuilderTTk, ttk_style: str, accent: st
     Uses muted foreground color and matches context-item state behavior.
     """
     surface_token = options.get('surface', 'content')
+    density = normalize_button_density(options.get('density', 'default'))
 
     surface = b.color(surface_token)
     muted = b.color('secondary')
@@ -186,7 +189,7 @@ def build_context_label_style(b: BootstyleBuilderTTk, ttk_style: str, accent: st
         foreground=muted,
         relief='flat',
         anchor='e',
-        font='caption',
+        font=button_font(density),
     )
 
     b.map_style(
@@ -216,9 +219,11 @@ def build_context_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, acce
         * icon
         * icon_only
         * anchor
+        * density
     """
     anchor = options.get('anchor', 'w')
     surface_token = options.get('surface', 'content')
+    density = normalize_button_density(options.get('density', 'default'))
 
     surface = b.color(surface_token)
     on_surface = b.on_color(surface)
@@ -236,7 +241,7 @@ def build_context_item_button_style(b: BootstyleBuilderTTk, ttk_style: str, acce
         stipple='gray12',
         padding=(6, 3),
         anchor=anchor,
-        font='caption',
+        font=button_font(density),
         focuscolor=''
     )
 

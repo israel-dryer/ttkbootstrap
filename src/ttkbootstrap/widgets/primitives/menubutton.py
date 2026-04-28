@@ -81,5 +81,33 @@ class MenuButton(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, 
         kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon', 'density'], kwargs))
         super().__init__(master, **kwargs)
 
-        # Ensure the menubutton receives focus when clicked so focus styling is visible.
-        self.bind("<Button-1>", lambda _: self.focus_set(), add="+")
+        # When a native tk.Menu is attached, post it ourselves with the
+        # focus-ring affordance offset so it aligns with the visible button
+        # border. Subclasses (OptionMenu, DropdownButton) use a ContextMenu
+        # and override show_menu, so this only affects the native path.
+        self.bind("<Button-1>", self._on_button_press, add="+")
+
+    def _on_button_press(self, _event):
+        """Focus self, and if a native menu is attached, post it with offset."""
+        self.focus_set()
+        try:
+            menu_path = self.cget('menu')
+        except Exception:
+            menu_path = None
+        if not menu_path:
+            return None
+        try:
+            # If the menu is already visible, unpost so a second click closes it.
+            if int(self.tk.eval(f"winfo viewable {menu_path}")):
+                self.tk.call(menu_path, 'unpost')
+                return 'break'
+            from ttkbootstrap.style.bootstyle_builder_base import BootstyleBuilderBase
+            offset = BootstyleBuilderBase.scale_from_source(10)
+            x = self.winfo_rootx() + offset
+            y = self.winfo_rooty() + self.winfo_height()
+            self.tk.call(menu_path, 'post', x, y)
+        except Exception:
+            return None
+        # Suppress Tk's default class binding so it doesn't also post the
+        # menu at its un-offset position.
+        return 'break'

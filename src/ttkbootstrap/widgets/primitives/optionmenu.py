@@ -122,7 +122,14 @@ class OptionMenu(MenuButton):
         return self.textsignal.subscribe(lambda v: self.event_generate('<<Change>>', data={"value": v}))
 
     def _build_context_menu(self):
-        # Create menu items that update the shared variable
+        # Affordance baked into the button image (focus ring + border line in
+        # source-px); aligning the menu's left edge to it matches the visible
+        # button border the same way the combobox popdown does.
+        from ttkbootstrap.style.bootstyle_builder_base import BootstyleBuilderBase
+        offset_x = BootstyleBuilderBase.scale_from_source(10)
+
+        density = self.configure_style_options('density') or 'default'
+
         menu_items = [
             ContextMenuItem(
                 type="radiobutton",
@@ -132,12 +139,24 @@ class OptionMenu(MenuButton):
             )
             for item in self._menu_options
         ]
-        return ContextMenu(self, target=self, items=menu_items, anchor="nw", attach="sw", offset=(2, 2))
+        return ContextMenu(
+            self, target=self, items=menu_items,
+            anchor="nw", attach="sw",
+            offset=(offset_x, 0),
+            density=density,
+        )
 
     def show_menu(self):
         """Show the dropdown menu unless disabled or readonly."""
         if not self.instate(("!disabled", "!readonly")):
             return
+        # Match the menu's minimum width to the visible button width so the
+        # dropdown never renders narrower than its trigger.
+        from ttkbootstrap.style.bootstyle_builder_base import BootstyleBuilderBase
+        affordance = BootstyleBuilderBase.scale_from_source(10)
+        target_w = self.winfo_width() - 2 * affordance
+        if target_w > 0:
+            self._context_menu.configure(minwidth=max(150, target_w))
         self._context_menu.show()
 
     def get(self) -> str:

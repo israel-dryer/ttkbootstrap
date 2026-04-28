@@ -44,39 +44,50 @@ class BootstyleBuilderMixed(BootstyleBuilderBase):
         be configured manually via Tcl/Tk calls.
 
         This method configures:
-        - The popdown listbox window (colors, borders, selection, width)
+        - The popdown listbox window (colors, borders, selection)
         - The scrollbar within the popdown
 
         Args:
             widget: ttk.Combobox widget to update
         """
-        # Determine colors for the popdown listbox
-        surface = self.color('background')
+        # Match the entry field: surface = 'content', selection = primary
+        surface = self.color('content')
         on_surface = self.on_color(surface)
         select = self.color('primary')
         on_select = self.on_color(select)
-        border = self.border(surface)
 
-        # Build Tk configuration settings for the listbox
-        tk_settings = []
-        tk_settings.extend(["-borderwidth", 2])
-        tk_settings.extend(["-highlightthickness", 1])
-        tk_settings.extend(["-highlightcolor", border])
-        tk_settings.extend(["-background", surface])
-        tk_settings.extend(["-foreground", on_surface])
-        tk_settings.extend(["-selectbackground", select])
-        tk_settings.extend(["-selectforeground", on_select])
+        # Listbox has no border of its own — the popdown frame already draws
+        # the outer border, and stacking a listbox highlight on top creates a
+        # visible double-border effect.
+        tk_settings = [
+            "-borderwidth", 0,
+            "-highlightthickness", 0,
+            "-background", surface,
+            "-foreground", on_surface,
+            "-selectbackground", select,
+            "-selectforeground", on_select,
+            "-activestyle", "none",
+            "-relief", "flat",
+        ]
 
         try:
-            # Get the popdown window path via Tcl
-            popdown = widget.tk.eval(f"ttk::combobox::PopdownWindow {widget}")
+            # Skip if the popdown hasn't been created yet (lazy construction).
+            # The postcommand handler will style it on first open.
+            popdown_path = f"{widget}.popdown"
+            if not int(widget.tk.eval(f"winfo exists {popdown_path}")):
+                return
+            widget.tk.call(f"{popdown_path}.f.l", "configure", *tk_settings)
 
-            # Configure the listbox within the popdown
-            widget.tk.call(f"{popdown}.f.l", "configure", *tk_settings)
-
-            # Configure the scrollbar style
-            sb_style = "Vertical.TScrollbar"
-            widget.tk.call(f"{popdown}.f.sb", "configure", "-style", sb_style)
+            # Build a themed scrollbar style and apply it to the popdown
+            # scrollbar. Bootstyle.create_ttk_style returns a hashed style
+            # name (e.g. bs[xxx].Default.Vertical.TScrollbar) that is rebuilt
+            # automatically on theme change.
+            from ttkbootstrap.style.bootstyle import Bootstyle
+            sb_style = Bootstyle.create_ttk_style(
+                'TScrollbar', variant='default',
+                style_options={'orient': 'vertical', 'show_arrows': False},
+            )
+            widget.tk.call(f"{popdown_path}.f.sb", "configure", "-style", sb_style)
         except Exception:
             # Silently fail if widget isn't fully initialized or mapped yet
             pass

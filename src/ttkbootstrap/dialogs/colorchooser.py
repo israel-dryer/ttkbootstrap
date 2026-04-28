@@ -574,8 +574,6 @@ class ColorChooserDialog:
         self._chooser.pack(fill=BOTH, expand=YES)
 
     def _build_footer(self, master: tkinter.Widget) -> None:
-        frame = ttk.Frame(master, padding=(5, 5))
-
         # color dropper (not supported on macOS)
         winsys = ""
         try:
@@ -583,28 +581,26 @@ class ColorChooserDialog:
         except Exception:
             winsys = ""
         if winsys != 'aqua':
-            dropper = ttk.Label(frame, text=PEN, font=('-size 16'))
+            dropper = ttk.Label(master, text=PEN, font=('-size 16'))
             ToolTip(dropper, 'color.dropper')
-            dropper.pack(side=LEFT, padx=2)
+            dropper.pack(side=LEFT, padx=(0, 4))
             dropper.bind("<Button-1>", self._on_show_color_dropper)
 
         ok = ttk.Button(
-            frame,
+            master,
             accent=PRIMARY,
             text='button.ok',
             command=self._on_ok,
         )
-        ok.pack(padx=2, side=RIGHT)
+        ok.pack(side=RIGHT)
 
         cancel = ttk.Button(
-            frame,
+            master,
             accent=SECONDARY,
             text='button.cancel',
             command=self._on_cancel,
         )
-        cancel.pack(padx=2, side=RIGHT)
-
-        frame.pack(side=BOTTOM, fill=X, anchor=S)
+        cancel.pack(side=RIGHT)
 
     # callbacks ----------------------------------------------------------------
     def _on_show_color_dropper(self, _: tkinter.Event) -> None:

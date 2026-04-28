@@ -318,7 +318,15 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
         return self._ttk_base.configure(self, style=ttk_style)  # type: ignore[misc]
 
     def configure_style_options(self, value=None, **kwargs):
-        """Get or set the widget style options if handled by the widget's style builder."""
+        """Get or set the widget style options if handled by the widget's style builder.
+
+        Special cascading keys:
+            surface: Updates ``_surface`` on this widget and (via Frame subclass) triggers
+                ``_refresh_descendant_surfaces`` to propagate the change to children.
+            input_background: Updates ``_input_background`` on this widget and (via Frame
+                subclass) triggers ``_refresh_descendant_input_backgrounds`` to propagate
+                the change to all descendant input widgets.
+        """
         options = getattr(self, "_style_options", {})
         if value is None:
             options.update(**kwargs)
@@ -326,6 +334,8 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
             if "surface" in kwargs:
                 surface = kwargs.get("surface")
                 setattr(self, "_surface", surface or "content")
+            if "input_background" in kwargs:
+                setattr(self, "_input_background", kwargs.get("input_background"))
             return None
         else:
             return options.get(value, None)
