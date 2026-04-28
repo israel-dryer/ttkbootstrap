@@ -174,8 +174,9 @@ class SelectBox(Field):
 
     def _create_popup_frame(self, toplevel, popup_state):
         """Create popup frame with scrollable item list."""
-        # Outer frame with border and padding
-        outer_frame = Frame(toplevel, padding=3, show_border=True, surface='background[+1]')
+        # Outer frame with border and padding — match the entry's input
+        # surface so the popup fill blends with the field background.
+        outer_frame = Frame(toplevel, padding=3, show_border=True, surface='content')
         outer_frame.pack(fill='both', expand=True)
 
         # Create scrollview inside the outer frame
