@@ -97,8 +97,30 @@ class Toplevel(BaseWindow, WidgetCapabilitiesMixin, tkinter.Toplevel):
             self.iconify()
 
         # Toplevel-specific window attributes
-        if windowtype is not None and self.winsys == "x11":
-            self.attributes("-type", windowtype)
+        if windowtype is not None:
+            if self.winsys == "x11":
+                self.attributes("-type", windowtype)
+            elif self.winsys == "aqua":
+                # Map well-known windowtypes to Tk's Cocoa-styling hook so
+                # tooltips/popups get a borderless, non-activating NSWindow
+                # instead of one with a title bar (the ttkbootstrap default
+                # on Aqua skips overrideredirect to avoid focus issues).
+                # 'help none' is the canonical recipe for tooltip-class
+                # windows on macOS (Tk bug #1395 / Tcl Wiki balloon help).
+                aqua_style = {
+                    "tooltip": ("help", "none"),
+                    "splash": ("plain", "none"),
+                    "utility": ("utility", "none"),
+                    "dock": ("plain", "none"),
+                }.get(windowtype)
+                if aqua_style is not None:
+                    try:
+                        self.tk.call(
+                            "::tk::unsupported::MacWindowStyle", "style",
+                            self, aqua_style[0], aqua_style[1],
+                        )
+                    except tkinter.TclError:
+                        pass
 
         if topmost:
             self.attributes("-topmost", 1)
