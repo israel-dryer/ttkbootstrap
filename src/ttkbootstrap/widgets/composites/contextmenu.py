@@ -92,7 +92,8 @@ class ContextMenu(CustomConfigMixin):
             attach: str = 'se',
             offset: tuple[int, int] = (0, 0),
             hide_on_outside_click: bool = True,
-            items: list[ContextMenuItem] = None
+            items: list[ContextMenuItem] = None,
+            density: str = 'default',
     ):
         """Initialize a ContextMenu widget.
 
@@ -109,6 +110,8 @@ class ContextMenu(CustomConfigMixin):
             hide_on_outside_click: If True, menu hides when clicking outside.
                 Default is True.
             items: List of ContextMenuItem objects to add initially.
+            density: Item typography density ('default' or 'compact'). Items
+                inherit this so they match the trigger widget's font size.
         """
         super().__init__()
         self._master = master
@@ -121,6 +124,7 @@ class ContextMenu(CustomConfigMixin):
         self._attach = (attach or 'nw').lower()
         self._offset = offset or (0, 0)
         self._hide_on_outside_click = hide_on_outside_click
+        self._density = density
         self._on_item_click_callback = None
         self._click_handler_id = None
         self._click_binding_root = None
@@ -270,6 +274,7 @@ class ContextMenu(CustomConfigMixin):
                 icon=icon or 'empty',
                 compound='left',
                 variant='context-item',
+                density=self._density,
                 command=lambda: self._handle_item_click('command', text, command)
             )
             btn.pack(side='left', fill='x', expand=True)
@@ -278,6 +283,7 @@ class ContextMenu(CustomConfigMixin):
                 container,
                 text=shortcut_display,
                 variant='context-label',
+                density=self._density,
                 padding=(0, 0, 4, 0)
             )
             shortcut_label.pack(side='right')
@@ -300,6 +306,7 @@ class ContextMenu(CustomConfigMixin):
                 icon=icon or 'empty',
                 compound='left',
                 variant='context-item',
+                density=self._density,
                 command=lambda: self._handle_item_click('command', text, command)
             )
             if disabled:
@@ -336,6 +343,7 @@ class ContextMenu(CustomConfigMixin):
             text=text,
             variable=var,
             variant='context-check',
+            density=self._density,
             command=on_toggle
         )
         cb.pack(fill='x', padx=0, pady=0)
@@ -373,6 +381,7 @@ class ContextMenu(CustomConfigMixin):
             value=value,
             variable=variable,
             variant='context-radio',
+            density=self._density,
             command=on_select
         )
         rb.pack(fill='x', padx=0, pady=0)
