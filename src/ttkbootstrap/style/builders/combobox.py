@@ -81,6 +81,14 @@ def build_combobox_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = N
             ])
     )
 
+    # postoffset aligns the popdown with the inner edge of the visible input
+    # border, accounting for both the focus-ring affordance and the border
+    # line baked into the input image (10 source-px for default, 8 source-px
+    # for compact). Tk's PlacePopdown reads {dx dy dw dh} and adjusts the
+    # popdown geometry accordingly.
+    inset = b.scale_from_source(8 if density == 'compact' else 10)
+    postoffset = (inset, 0, -2 * inset, 0)
+
     b.configure_style(
         ttk_style,
         foreground=foreground,
@@ -90,7 +98,8 @@ def build_combobox_style(b: BootstyleBuilderTTk, ttk_style: str, accent: str = N
         selectbackground=select_background,
         insertcolor=foreground,
         selectborderwidth=0,
-        font=entry_font(density)
+        font=entry_font(density),
+        postoffset=postoffset,
     )
 
     b.map_style(
