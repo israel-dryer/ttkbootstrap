@@ -440,10 +440,16 @@ class Dialog:
                 ensure_visible=True
             )
 
-        # Apply window style while still withdrawn, right before showing
+        # Apply window style while still withdrawn, right before showing.
+        # The update() call is here so pywinstyles can attach to a fully
+        # realized HWND on Windows; on Aqua (and X11) it serves no purpose
+        # and can hang indefinitely flushing children's pending events
+        # (e.g. FontDialog's Treeview with hundreds of tag-configure font
+        # calls), so gate it on the platform that actually needs it.
         self._toplevel.update_idletasks()
         self._toplevel._apply_window_style()
-        self._toplevel.update()
+        if getattr(self._toplevel, 'winsys', None) == 'win32':
+            self._toplevel.update()
         self._toplevel.deiconify()
 
         # Second centering pass for default positioning (handles dynamic sizing)
