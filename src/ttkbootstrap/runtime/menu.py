@@ -100,17 +100,50 @@ class MenuManager:
         return mgr
 
     def _setup_theme_monitoring(self):
-        """Set up monitoring for <<ThemeChanged>> events on the root window."""
+        """Set up monitoring for theme and macOS appearance changes."""
         # Get the root window
         root = self.parent.winfo_toplevel() if hasattr(self.parent, 'winfo_toplevel') else self.parent
 
-        # Bind to theme change event on root
-        if hasattr(root, 'bind'):
-            root.bind('<<ThemeChanged>>', self._on_theme_changed, add='+')
+        if not hasattr(root, 'bind'):
+            return
+
+        # ttkbootstrap theme changes
+        root.bind('<<ThemeChanged>>', self._on_theme_changed, add='+')
+        # macOS light/dark appearance toggle (Tk 8.6.10+ on Aqua). Without
+        # this, icons rendered with a cached system-text color stay stale
+        # after the user flips system Appearance.
+        try:
+            root.bind('<<TkSystemAppearanceChanged>>', self._on_theme_changed, add='+')
+        except tk.TclError:
+            pass
+
+    def _menu_icon_color(self) -> str:
+        """Return the right foreground color for icons going into a tk.Menu.
+
+        On Aqua, NSMenu always uses system appearance regardless of the
+        app theme, so icons must match the system text color (which Tk
+        keeps in sync with macOS light/dark mode). Everywhere else, the
+        app theme's foreground is the right answer.
+        """
+        try:
+            winsys = self.parent.tk.call('tk', 'windowingsystem')
+        except tk.TclError:
+            winsys = None
+
+        if winsys == 'aqua':
+            try:
+                # winfo_rgb returns 16-bit channels; pack into a hex string
+                # BootstrapIcon (and PIL underneath) understands.
+                r, g, b = self.parent.winfo_rgb('systemTextColor')
+                return f'#{r >> 8:02x}{g >> 8:02x}{b >> 8:02x}'
+            except tk.TclError:
+                pass
+
+        return self.style.style_builder.color('foreground')
 
     def _on_theme_changed(self, event=None):
-        """Update all menu icon colors when theme changes."""
-        fg_color = self.style.style_builder.color('foreground')
+        """Update all menu icon colors when theme or system appearance changes."""
+        fg_color = self._menu_icon_color()
 
         # Update all menu items (including cascades)
         for menu, index, icon_name, size in self.menu_items.values():
@@ -154,8 +187,7 @@ class MenuManager:
         if not name:
             return None, None, 0
         try:
-            fg = self.style.style_builder.color('foreground')
-            icon = BootstrapIcon(name, size, fg)
+            icon = BootstrapIcon(name, size, self._menu_icon_color())
         except Exception:
             return None, None, 0
         return icon, name, size
