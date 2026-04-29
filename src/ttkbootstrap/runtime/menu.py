@@ -225,6 +225,21 @@ class MenuManager:
             return name, size
         return None, default_size
 
+    def _is_aqua_special_name(self, name: str) -> bool:
+        """Return True if ``name`` triggers macOS-native menu handling.
+
+        Tk on Aqua reserves three submenu names off the menubar: ``apple``
+        (the app menu — gets auto-filled with About/Hide/Quit), ``window``
+        (auto-populated with open Toplevels), and ``help`` (gets the
+        system Help search field). Names are case-sensitive and only have
+        meaning under windowingsystem='aqua'.
+        """
+        try:
+            winsys = self.parent.tk.call('tk', 'windowingsystem')
+        except tk.TclError:
+            return False
+        return winsys == 'aqua' and name in ('apple', 'window', 'help')
+
     def create_menu(self, parent: Any, items: list[dict]) -> tk.Menu:
         """Create a menu from a list of item dictionaries.
 
@@ -247,6 +262,13 @@ class MenuManager:
             options = options.copy()
             sub_items = options.pop('items', [])
 
+            # Pull off the optional ``name`` early so it's never passed to
+            # add_cascade. On Aqua, three magic names get system handling:
+            # 'apple' → app menu (auto-fills with About/Hide/Quit),
+            # 'window' → Tk auto-populates the open Toplevel list,
+            # 'help' → system menu search across all menus.
+            menu_name = options.pop('name', None)
+
             # Translate the label so semantic keys (e.g. 'menu.file') resolve
             # via MessageCatalog. Plain text passes through unchanged.
             if 'label' in options:
@@ -265,8 +287,12 @@ class MenuManager:
 
             options.setdefault('tearoff', 0)
 
-            # Create a menu for this item
-            menu = tk.Menu(parent, tearoff=options.pop('tearoff'))
+            # Create a menu for this item. On Aqua, propagate the magic name
+            # so Tk wires up NSApp's app/window/help menu integration.
+            menu_kwargs: dict[str, Any] = {'tearoff': options.pop('tearoff')}
+            if menu_name and self._is_aqua_special_name(menu_name):
+                menu_kwargs['name'] = menu_name
+            menu = tk.Menu(parent, **menu_kwargs)
 
             # Add it as a cascade to the parent menu
             parent.add_cascade(menu=menu, **options)
@@ -345,6 +371,13 @@ def create_menu(parent: Any, items: list[dict]) -> tk.Menu:
           'radiobutton', or 'separator'
         - **variable** (Variable): Tkinter variable for checkbutton/radiobutton
         - **value** (Any): Value for radiobutton items
+        - **name** (str): Optional Tcl widget name for the cascade. On macOS
+          three names trigger system-native menu integration: ``'apple'``
+          gives you the application menu (Tk auto-fills it with About,
+          Hide, Hide Others, Show All, Quit; any items you add appear
+          before the system items), ``'window'`` gets auto-populated with
+          open Toplevels, and ``'help'`` enables system Help search.
+          Ignored on Win/Linux.
         - Any other valid Tkinter menu item options (accelerator, underline, etc.)
 
     Args:
