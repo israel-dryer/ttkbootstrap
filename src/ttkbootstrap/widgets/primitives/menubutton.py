@@ -1,3 +1,4 @@
+"""MenuButton widget — a ttk.Menubutton with theme and icon support."""
 from __future__ import annotations
 
 from tkinter import ttk
@@ -16,6 +17,8 @@ if TYPE_CHECKING:
 
 
 class MenuButtonKwargs(TypedDict, total=False):
+    """Keyword arguments for MenuButton."""
+
     # Standard ttk.Menubutton options
     text: Any
     image: Any
@@ -45,7 +48,7 @@ class MenuButtonKwargs(TypedDict, total=False):
 
 
 class MenuButton(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Menubutton):
-    """ttkbootstrap wrapper for `ttk.Menubutton` with bootstyle and icon support."""
+    """ttkbootstrap Menubutton with theme and icon support."""
 
     _ttk_base = ttk.Menubutton
 
@@ -55,7 +58,8 @@ class MenuButton(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, 
         Args:
             master: Parent widget. If None, uses the default root window.
 
-        Other Parameters:
+        Other Parameters
+        ----------------
             text (str): Text to display in the menubutton.
             image (PhotoImage): Image to display.
             icon (str | dict): Theme-aware icon spec handled by the style system.
@@ -77,6 +81,7 @@ class MenuButton(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, 
             surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
             localize (bool | Literal['auto']): Determines the widget's localization mode.
+
         """
         kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon', 'density'], kwargs))
         super().__init__(master, **kwargs)

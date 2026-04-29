@@ -1,3 +1,4 @@
+"""RadioToggle widget — a Radiobutton styled as a toggle badge."""
 from typing import Literal
 
 from ttkbootstrap.widgets.primitives.radiobutton import RadioButton
@@ -13,7 +14,8 @@ class RadioToggle(RadioButton):
         Args:
             master: Parent widget. If None, uses the default root window.
 
-        Other Parameters:
+        Other Parameters
+        ----------------
             text (str): Text to display.
             textvariable (Variable): Tk variable linked to the text.
             textsignal (Signal[str]): Reactive Signal linked to the text (auto-synced with textvariable).
@@ -36,6 +38,7 @@ class RadioToggle(RadioButton):
             surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
             localize (bool | Literal['auto']): Determines the widget's localization mode.
+
         """
         self._capture_density_option(kwargs)
         kwargs.setdefault('ttk_class', 'Toolbutton')

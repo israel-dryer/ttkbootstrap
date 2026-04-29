@@ -1,3 +1,4 @@
+"""Scrollbar widget — a ttk.Scrollbar with theme support."""
 from __future__ import annotations
 
 from tkinter import ttk
@@ -11,6 +12,8 @@ from ttkbootstrap.widgets.types import Master
 
 
 class ScrollbarKwargs(TypedDict, total=False):
+    """Keyword arguments for Scrollbar."""
+
     # Standard ttk.Scrollbar options
     orient: Any
     command: Any
@@ -29,7 +32,7 @@ class ScrollbarKwargs(TypedDict, total=False):
 
 
 class Scrollbar(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Scrollbar):
-    """ttkbootstrap wrapper for `ttk.Scrollbar` with bootstyle support."""
+    """ttkbootstrap Scrollbar with theme support."""
 
     _ttk_base = ttk.Scrollbar
 
@@ -39,7 +42,8 @@ class Scrollbar(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Scro
         Args:
             master: Parent widget. If None, uses the default root window.
 
-        Other Parameters:
+        Other Parameters
+        ----------------
             orient (str): Orientation of the scrollbar ('horizontal' or 'vertical').
             command (Callable): Scroll command callback.
             takefocus (bool): Whether the widget participates in focus traversal.
@@ -50,6 +54,7 @@ class Scrollbar(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Scro
                 Combined style tokens (e.g., 'primary', 'danger-square').
             surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
+
         """
         super().__init__(master, **kwargs)
 

@@ -1,3 +1,4 @@
+"""PackFrame widget — a Frame with automatic pack layout management."""
 from __future__ import annotations
 
 import tkinter as tk
@@ -31,6 +32,7 @@ class PackFrame(Frame):
         Label(frame, text="Second").pack()
         Button(frame, text="Click").pack(expand=True)  # override default
         ```
+
     """
 
     SIDE_MAP: dict[Direction, Side] = {
@@ -72,6 +74,7 @@ class PackFrame(Frame):
             propagate: If False, the frame will not resize to fit its contents.
                 Defaults to None (Tk default behaviour).
             **kwargs: Additional keyword arguments forwarded to `Frame`.
+
         """
         super().__init__(master, **kwargs)
 
@@ -179,7 +182,7 @@ class PackFrame(Frame):
     # -------------------------------------------------------------------------
 
     def _on_child_pack(self, widget: tk.Widget, **options: Any) -> None:
-        """Hook called when a child widget calls pack().
+        """Handle a child widget calling pack().
 
         Applies frame defaults, handles gap spacing, and tracks the widget.
         """
@@ -209,7 +212,7 @@ class PackFrame(Frame):
                 self._managed.append((widget, options))
 
     def _on_child_pack_forget(self, widget: tk.Widget) -> None:
-        """Hook called when a child widget calls pack_forget().
+        """Handle a child widget calling pack_forget().
 
         Removes widget from tracking and repacks remaining widgets if needed.
         """

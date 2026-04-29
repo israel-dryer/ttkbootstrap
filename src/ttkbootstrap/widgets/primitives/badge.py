@@ -1,3 +1,4 @@
+"""Badge widget — a Label styled as a badge."""
 from typing_extensions import Unpack
 from ttkbootstrap.widgets.primitives.label import Label, LabelKwargs
 from ttkbootstrap.widgets.types import Master
@@ -12,7 +13,8 @@ class Badge(Label):
         Args:
             master: Parent widget. If None, uses the default root window.
 
-        Other Parameters:
+        Other Parameters
+        ----------------
             text (str): Text to display on the badge.
             image (PhotoImage): Image to display.
             icon (str | dict): Theme-aware icon spec handled by the style system.
@@ -36,6 +38,7 @@ class Badge(Label):
             variant (str): Shape of badge. 'pill' or 'square' (default).
             surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
+
         """
         kwargs.setdefault('ttk_class', 'TBadge')
         kwargs.setdefault('anchor', 'center')

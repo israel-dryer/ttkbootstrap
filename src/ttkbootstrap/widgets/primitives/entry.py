@@ -1,3 +1,4 @@
+"""Entry widget — a ttk.Entry with theme support."""
 from __future__ import annotations
 
 from tkinter import ttk
@@ -15,6 +16,8 @@ if TYPE_CHECKING:
 
 
 class EntryKwargs(TypedDict, total=False):
+    """Keyword arguments for Entry."""
+
     # Standard ttk.Entry options
     textvariable: Any
     textsignal: Signal[str]
@@ -46,7 +49,7 @@ class EntryKwargs(TypedDict, total=False):
 
 
 class Entry(TextSignalMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Entry):
-    """ttkbootstrap wrapper for `ttk.Entry` with bootstyle support."""
+    """ttkbootstrap Entry with theme support."""
 
     _ttk_base = ttk.Entry
 
@@ -56,7 +59,8 @@ class Entry(TextSignalMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMi
         Args:
             master: Parent widget. If None, uses the default root window.
 
-        Other Parameters:
+        Other Parameters
+        ----------------
             textvariable (Variable): Tk variable linked to the entry text.
             textsignal (Signal[str]): Reactive Signal linked to the entry text (auto-synced with textvariable).
             show (str): Substitute character for masked input.
@@ -80,6 +84,7 @@ class Entry(TextSignalMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMi
                 Combined style tokens (e.g., 'primary').
             surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
+
         """
         if kwargs.get('density') == 'compact':
             kwargs['font'] = 'caption'

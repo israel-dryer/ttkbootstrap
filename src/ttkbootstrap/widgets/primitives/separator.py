@@ -1,3 +1,4 @@
+"""Separator widget — a ttk.Separator with theme support."""
 from __future__ import annotations
 
 from tkinter import ttk
@@ -11,6 +12,8 @@ from ttkbootstrap.widgets.types import Master
 
 
 class SeparatorKwargs(TypedDict, total=False):
+    """Keyword arguments for Separator."""
+
     # Standard ttk.Separator options
     orient: Any
     style: str
@@ -28,7 +31,7 @@ class SeparatorKwargs(TypedDict, total=False):
 
 
 class Separator(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Separator):
-    """ttkbootstrap wrapper for `ttk.Separator` with bootstyle support."""
+    """ttkbootstrap Separator with theme support."""
 
     _ttk_base = ttk.Separator
 
@@ -38,7 +41,8 @@ class Separator(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Sepa
         Args:
             master: Parent widget. If None, uses the default root window.
 
-        Other Parameters:
+        Other Parameters
+        ----------------
             orient (str): Orientation of the separator ('horizontal' or 'vertical').
             style (str): Explicit ttk style name (overrides accent/variant).
             accent (str): Accent token for styling, e.g. 'primary', 'secondary' otherwise derived from inherited surface.
@@ -49,6 +53,7 @@ class Separator(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Sepa
             length (int): Fixed length of the separator in pixels. If None,
                 stretches to fill available space.
             style_options (dict): Optional dict forwarded to the style builder.
+
         """
         kwargs.update(style_options=self._capture_style_options(['thickness', 'length'], kwargs))
         super().__init__(master, **kwargs)

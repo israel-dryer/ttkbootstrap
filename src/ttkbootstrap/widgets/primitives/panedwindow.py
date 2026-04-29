@@ -1,3 +1,4 @@
+"""PanedWindow widget — a ttk.PanedWindow with theme support."""
 from __future__ import annotations
 
 from tkinter import ttk
@@ -11,6 +12,8 @@ from ttkbootstrap.widgets.types import Master
 
 
 class PanedWindowKwargs(TypedDict, total=False):
+    """Keyword arguments for PanedWindow."""
+
     # Standard ttk.Panedwindow options
     orient: Any
     padding: Any
@@ -30,7 +33,7 @@ class PanedWindowKwargs(TypedDict, total=False):
 
 
 class PanedWindow(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.PanedWindow):
-    """ttkbootstrap wrapper for `ttk.Panedwindow` with bootstyle support."""
+    """ttkbootstrap PanedWindow with theme support."""
 
     _ttk_base = ttk.Panedwindow
 
@@ -40,7 +43,8 @@ class PanedWindow(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Pa
         Args:
             master: Parent widget. If None, uses the default root window.
 
-        Other Parameters:
+        Other Parameters
+        ----------------
             orient (str): Orientation of panes ('horizontal' or 'vertical').
             padding (int | tuple): Extra internal padding.
             width (int): Requested width in pixels.
@@ -52,6 +56,7 @@ class PanedWindow(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Pa
                 Combined style tokens.
             surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
+
         """
         super().__init__(master, **kwargs)
 

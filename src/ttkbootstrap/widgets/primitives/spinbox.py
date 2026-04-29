@@ -1,3 +1,4 @@
+"""Spinbox widget — a ttk.Spinbox with theme support."""
 from __future__ import annotations
 
 from tkinter import ttk
@@ -15,6 +16,8 @@ if TYPE_CHECKING:
 
 
 class SpinboxKwargs(TypedDict, total=False):
+    """Keyword arguments for Spinbox."""
+
     # Standard ttk.Spinbox options
     from_: float
     to: float
@@ -43,7 +46,7 @@ class SpinboxKwargs(TypedDict, total=False):
 
 
 class Spinbox(TextSignalMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Spinbox):
-    """ttkbootstrap wrapper for `ttk.Spinbox` with bootstyle support."""
+    """ttkbootstrap Spinbox with theme support."""
 
     _ttk_base = ttk.Spinbox
 
@@ -53,7 +56,8 @@ class Spinbox(TextSignalMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkState
         Args:
             master: Parent widget. If None, uses the default root window.
 
-        Other Parameters:
+        Other Parameters
+        ----------------
             from_ (float): Minimum value.
             to (float): Maximum value.
             increment (float): Step size between values.
@@ -72,6 +76,7 @@ class Spinbox(TextSignalMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkState
             bootstyle (str): DEPRECATED - Use `accent` instead.
             surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
+
         """
         if kwargs.get('density') == 'compact':
             kwargs['font'] = 'caption'
