@@ -254,6 +254,12 @@ class AppSettings:
         window_style: Windows-only pywinstyles effect for all windows.
             Options include 'mica', 'acrylic', 'aero', 'transparent', 'win7'.
             Defaults to 'mica'. Set to None to disable.
+        macos_quit_behavior: How the close button and Cmd+Q behave on macOS.
+            'native' (default) follows Mac convention: clicking the window
+            close button or Cmd+H hides the app (withdraws), clicking the
+            dock icon reshows it, and Cmd+Q (or Dock → Quit) actually
+            destroys it. 'classic' restores the cross-platform behavior
+            where the close button destroys the window. No-op on Win/Linux.
 
     Examples:
         ```python
@@ -299,6 +305,7 @@ class AppSettings:
 
     # platform-specific
     window_style: str | None = 'mica'
+    macos_quit_behavior: str = 'native'
 
     def __post_init__(self):
         """Populate localization defaults when not explicitly configured."""
@@ -328,6 +335,7 @@ class AppSettingsKwargs(TypedDict, total=False):
 
     # platform-specific
     window_style: str | None
+    macos_quit_behavior: str
 
 
 DEFAULT_LOCALE = "en_US"
@@ -537,6 +545,10 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
         if self.settings.follow_system_appearance and self._is_dark_capable_platform():
             self._bind_system_appearance_tracking()
 
+        # Install macOS-native close/quit/hide handlers when requested.
+        if self.winsys == 'aqua' and self.settings.macos_quit_behavior == 'native':
+            self._install_macos_quit_handlers()
+
         # Initialize the localization bridge so MessageCatalog.translate()
         # and <<LocaleChanged>> are available throughout the app.
         MessageCatalog.init(
@@ -631,6 +643,50 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
 
         try:
             self.bind('<<TkSystemAppearanceChanged>>', on_appearance_changed, add='+')
+        except tkinter.TclError:
+            pass
+
+    # ----- macOS Quit/Close conventions --------------------------------------
+
+    def _install_macos_quit_handlers(self) -> None:
+        """Wire macOS-native close/quit/hide gestures.
+
+        macOS convention: clicking the window close button hides the app
+        (it stays in the Dock and Cmd+Tab list) rather than destroying it.
+        Cmd+Q (and Dock → Quit) is what actually quits. Cmd+H hides the
+        app, and clicking the Dock icon brings the main window back.
+
+        This method installs the matching Tk handlers so apps that opt
+        into ``macos_quit_behavior='native'`` behave correctly without
+        each app duplicating the boilerplate.
+        """
+        # Close button → withdraw. We replace the protocol unconditionally
+        # because the default Tk behavior on close is to destroy, which is
+        # wrong on Mac. Apps that want to hook close should call
+        # `app.on_close(my_handler)` after construction; that overrides
+        # this default.
+        self.protocol('WM_DELETE_WINDOW', self.withdraw)
+
+        # Cmd+Q / Dock → Quit fire <<AppleQuit>>; that's the real quit signal.
+        try:
+            self.bind('<<AppleQuit>>', lambda _e: self.destroy(), add='+')
+        except tkinter.TclError:
+            pass
+
+        # Cmd+H hides the app.
+        try:
+            self.bind('<<Apple-Hide>>', lambda _e: self.withdraw(), add='+')
+        except tkinter.TclError:
+            pass
+
+        # Clicking the Dock icon when no window is visible fires
+        # <<Apple-ReopenApplication>>; bring the main window back.
+        try:
+            self.bind(
+                '<<Apple-ReopenApplication>>',
+                lambda _e: self.deiconify(),
+                add='+',
+            )
         except tkinter.TclError:
             pass
 
