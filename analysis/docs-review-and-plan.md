@@ -176,8 +176,8 @@ This is the foundation for Goal 1.
 
 ### Phase 4 — Platform section completion (Goal 2)
 
-- [ ] **4A.** New page: `platform/threading-and-async.md`. Covers worker thread + `Queue` pattern, `app.after_idle`, `asyncio` integration trade-offs.
-- [ ] **4B.** New page: `platform/platform-differences.md`. Single matrix-style page covering macOS / Windows / Linux differences (Cmd vs Ctrl, App menu, DPI, fullscreen, Toast position, path separators, native dialogs). Cross-linked from every affected widget and reference page.
+- [x] **4A.** New page: `platform/threading-and-async.md`. Covers worker thread + `Queue` pattern, `after_idle`, `after_repeat`, and `asyncio` integration trade-offs. Added to nav under Operations.
+- [x] **4B.** New page: `platform/platform-differences.md`. Single matrix-style page covering macOS / Windows / Linux differences (Mod key, ContextMenu trigger and backend, Toast position, App quit behavior, window_style, system appearance sync, state directory, native vs themed dialogs). Added to nav.
 - [ ] **4C.** New page: `platform/accessibility.md`. Keyboard navigation, focus order, screen reader status per OS, contrast, focus rings.
 - [ ] **4D.** Expand `platform/images-and-dpi.md` with per-OS subsections covering @2x assets, fractional scaling on Linux, Retina on macOS, DPI manifest on Windows.
 - [ ] **4E.** Expand `platform/build-and-ship.md` with Windows MSI signing, Linux AppImage / `.deb` / Flatpak. (Or explicitly delegate, like the existing Briefcase handoff for macOS.)
@@ -195,7 +195,7 @@ This is the foundation for Goal 1.
 - [ ] **5C.** Same for typography.
 - [ ] **5D.** Same for theming.
 - [ ] **5E.** Same for layout / spacing.
-- [ ] **5F.** New page: `guides/migrating.md`. Covers v1 → v2 (deprecated aliases from `_DEPRECATED_ALIASES`) and tkinter → ttkbootstrap.
+- [-] **5F.** Deferred. Library will be rebranded; migration story will be handled as part of that effort rather than as a standalone guide.
 - [ ] **5G.** Update widget-page examples to lead with signals; show Tk-vars as a "compatibility" alternative where relevant.
 - [~] **5H.** Standardize the canonical import (`import ttkbootstrap as ttk`) across all examples in guides and widgets. Fixed `scrollbar.md` (`tk.Text` → `ttk.Text`) and `menubutton.md` (`from tkinter import Menu` → `ttk.Menu`). Remaining `from ttkbootstrap import X` patterns in guides are intentional named imports (localization helpers `L`, `LV`, `MessageCatalog`, `IntlFormatter`; theming utilities; `Font`) — acceptable alongside `import ttkbootstrap as ttk`.
 - [ ] **5I.** Add `tools/check_doc_structure.py` — verifies each `docs/widgets/<category>/<widget>.md` has the required H2s from `docs/_template/widget-<category>-template.md`. Run in CI.
