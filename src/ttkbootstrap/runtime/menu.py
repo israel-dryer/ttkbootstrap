@@ -39,6 +39,7 @@ from typing import Any, Optional, Union
 
 from ttkbootstrap_icons_bs import BootstrapIcon
 from ttkbootstrap.core.localization import MessageCatalog
+from ttkbootstrap.runtime.shortcuts import format_shortcut
 from ttkbootstrap.style.style import get_style
 
 
@@ -322,6 +323,16 @@ class MenuManager:
             if 'label' in opts:
                 opts['label'] = self.translate_label(opts['label'])
 
+            # Resolve a shortcut spec (registered key or modifier pattern)
+            # to a platform-correct accelerator display. Caller-supplied
+            # ``accelerator`` wins (legacy literal pass-through), so existing
+            # menus with ``accelerator='Ctrl+S'`` are not auto-translated.
+            shortcut_spec = opts.pop('shortcut', None)
+            if shortcut_spec and 'accelerator' not in opts:
+                display = format_shortcut(shortcut_spec)
+                if display:
+                    opts['accelerator'] = display
+
             icon_spec = opts.pop('icon', None)
             icon_name = None
             icon_size = 0
@@ -378,7 +389,18 @@ def create_menu(parent: Any, items: list[dict]) -> tk.Menu:
           before the system items), ``'window'`` gets auto-populated with
           open Toplevels, and ``'help'`` enables system Help search.
           Ignored on Win/Linux.
-        - Any other valid Tkinter menu item options (accelerator, underline, etc.)
+        - **shortcut** (str): Platform-aware accelerator. Accepts a
+          registered shortcut key (e.g. ``'save'`` if you've called
+          ``Shortcuts.register('save', 'Mod+S', save_file)``) or a
+          modifier pattern like ``'Mod+S'``, ``'Ctrl+Shift+N'``, ``'F5'``.
+          Renders as ``⌘S`` on macOS and ``Ctrl+S`` on Win/Linux.
+          For the actual keypress binding, register the shortcut and call
+          ``Shortcuts.bind_to(app)`` — that's the canonical pathway.
+        - **accelerator** (str): Legacy literal display string passed
+          straight through to ``tk.Menu`` (e.g. ``'Ctrl+S'``). No platform
+          translation. Prefer ``shortcut`` for new code. If both are
+          provided, ``accelerator`` wins.
+        - Any other valid Tkinter menu item options (underline, etc.)
 
     Args:
         parent: The parent widget (Window, Toplevel, or Menu). If a Window

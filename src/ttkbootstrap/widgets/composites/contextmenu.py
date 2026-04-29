@@ -1101,10 +1101,17 @@ class _NativeContextMenu(CustomConfigMixin):
         return fire
 
     def _resolve_shortcut(self, shortcut: str | None) -> str | None:
+        """Platform-correct accelerator display via the Shortcuts service.
+
+        Accepts a registered key, a modifier pattern (``'Mod+S'``,
+        ``'F5'``), or a literal display string. See
+        ``ttkbootstrap.runtime.shortcuts.format_shortcut`` for details.
+        """
         if not shortcut:
             return None
-        display = get_shortcuts().display(shortcut)
-        return display if display else shortcut
+        from ttkbootstrap.runtime.shortcuts import format_shortcut
+        display = format_shortcut(shortcut)
+        return display or None
 
     # ----- Public API mirroring the themed backend ---------------------------
 
