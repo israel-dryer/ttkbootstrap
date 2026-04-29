@@ -368,7 +368,7 @@ def _render_theme(name: str, mode: str) -> str:
     Light themes use the [600] step for semantic accents (so text on white
     has good contrast); dark themes use [400] (lighter accents on a dark
     background). Both schemas match the format consumed by
-    ``ttkbootstrap.style.theme_provider``.
+    `ttkbootstrap.style.theme_provider`.
     """
     if mode == "light":
         foreground, background, step = "#212529", "#ffffff", "600"

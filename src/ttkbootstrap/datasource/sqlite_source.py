@@ -188,14 +188,14 @@ class SqliteDataSource(BaseDataSource):
         The fragment is interpolated into the query unmodified, so the caller
         is responsible for ensuring it is trusted/author-controlled. Do not
         pass strings built from end-user input — use parameterized queries
-        directly via ``self.conn`` instead.
+        directly via `self.conn` instead.
         """
         self._where = where_sql
 
     def set_sort(self, order_by_sql: str = ""):
         """Apply SQL ORDER BY clause for sorting.
 
-        Same trust contract as :meth:`set_filter`: the fragment is interpolated
+        Same trust contract as `set_filter`: the fragment is interpolated
         verbatim, so it must be author-controlled, not user input.
         """
         self._order_by = order_by_sql

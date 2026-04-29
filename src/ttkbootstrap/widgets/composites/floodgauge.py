@@ -39,22 +39,22 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
             master: Parent widget. If None, uses the default root window.
             value (int): Initial progress value (0-maximum).
             maximum (int): Maximum value for determinate range.
-            mode (str): Progress mode - ``'determinate'`` for known progress or
-                ``'indeterminate'`` for unknown duration.
-            mask (str): Format string for text overlay with ``'{}'`` placeholder for
-                the value. Examples: ``'{}% Complete'`` or ``'Progress: {}/100'``.
+            mode (str): Progress mode - `'determinate'` for known progress or
+                `'indeterminate'` for unknown duration.
+            mask (str): Format string for text overlay with `'{}'` placeholder for
+                the value. Examples: `'{}% Complete'` or `'Progress: {}/100'`.
                 If None, no automatic text formatting is applied.
             text (str): Static text label shown when no mask is specified.
-            font (tuple | str): Font specification as tuple ``(family, size)`` or
-                string like ``'Arial 12 bold'``.
-            accent (str): Accent token from ttkbootstrap (e.g., ``'primary'``,
-                ``'success'``, ``'info'``, ``'warning'``, ``'danger'``).
-            orient (str): Widget orientation - ``'horizontal'`` or ``'vertical'``.
+            font (tuple | str): Font specification as tuple `(family, size)` or
+                string like `'Arial 12 bold'`.
+            accent (str): Accent token from ttkbootstrap (e.g., `'primary'`,
+                `'success'`, `'info'`, `'warning'`, `'danger'`).
+            orient (str): Widget orientation - `'horizontal'` or `'vertical'`.
             length (int): Size in pixels along the main axis (width if horizontal,
                 height if vertical).
             thickness (int): Size in pixels along the minor axis (height if horizontal,
                 width if vertical).
-            increment (int): Step size for value changes when using ``step()`` method
+            increment (int): Step size for value changes when using `step()` method
                 or during animations.
 
         Other Parameters:
@@ -63,7 +63,7 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
 
         Note:
             The widget automatically updates colors when the theme changes via the
-            ``<<ThemeChanged>>`` event. When using variable or textvariable bindings,
+            `<<ThemeChanged>>` event. When using variable or textvariable bindings,
             the widget redraws automatically when the variables change.
         """
 

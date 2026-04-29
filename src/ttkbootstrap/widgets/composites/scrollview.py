@@ -221,7 +221,7 @@ class ScrollView(Frame):
         scrollbar's natural dimensions before the scrollbars are hidden. This
         reserves the gutter permanently so the canvas never resizes when a
         scrollbar is toggled — the same principle as the CSS
-        ``scrollbar-gutter: stable`` property.
+        `scrollbar-gutter: stable` property.
 
         An overlay approach (lift/lower over the canvas) was considered but
         rejected because the scrollbar then covers content, which was reported
@@ -260,13 +260,13 @@ class ScrollView(Frame):
     def _set_scrollbar_gutter(self, reserve: bool):
         """Reserve or release the grid gutter used by each scrollbar.
 
-        When *reserve* is ``True`` the column (vertical scrollbar) and row
-        (horizontal scrollbar) are given a ``minsize`` equal to the scrollbar's
+        When *reserve* is `True` the column (vertical scrollbar) and row
+        (horizontal scrollbar) are given a `minsize` equal to the scrollbar's
         natural requested dimensions.  The minsize persists even after the
-        scrollbar widget is removed from the grid via ``grid_remove()``, so the
+        scrollbar widget is removed from the grid via `grid_remove()`, so the
         canvas occupies a constant area regardless of scrollbar visibility.
 
-        When *reserve* is ``False`` the minsize is cleared (set to 0), which
+        When *reserve* is `False` the minsize is cleared (set to 0), which
         is appropriate for 'always' and 'never' modes where no gutter needs to
         be held open.
         """

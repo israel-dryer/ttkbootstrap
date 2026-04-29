@@ -42,14 +42,14 @@ class PathEntry(Field):
 
     !!! note "Events"
 
-        ``<<Change>>``: Fired when a path is selected from the dialog.
-          Provides ``event.data`` with keys: ``value``, ``prev_value``, ``text``, ``dialog_result``.
+        `<<Change>>`: Fired when a path is selected from the dialog.
+          Provides `event.data` with keys: `value`, `prev_value`, `text`, `dialog_result`.
 
-        ``<<Input>>``: Fired when user manually types in the entry.
+        `<<Input>>`: Fired when user manually types in the entry.
 
-        ``<<Valid>>``: Fired when validation passes.
+        `<<Valid>>`: Fired when validation passes.
 
-        ``<<Invalid>>``: Fired when validation fails.
+        `<<Invalid>>`: Fired when validation fails.
 
     Attributes:
         entry_widget (TextEntryPart): The underlying text entry widget.
@@ -100,7 +100,7 @@ class PathEntry(Field):
                 Common options: title, initialdir, initialfile, filetypes,
                 defaultextension, multiple.
             button_text: Text to display on the browse button. Default is "Browse".
-                Can be changed at runtime via ``configure(button_text=...)``.
+                Can be changed at runtime via `configure(button_text=...)`.
             label (str): Label text to display above the entry field (from FieldOptions).
             message (str): Message text to display below the field.
 
@@ -123,7 +123,7 @@ class PathEntry(Field):
         Note:
             When multiple files are selected (using 'openfilenames' or 'openfiles'),
             the paths are joined with ", " (comma-space) and displayed in the entry.
-            The raw dialog result (tuple/list) is available via the ``dialog_result``
+            The raw dialog result (tuple/list) is available via the `dialog_result`
             property.
         """
         self._dialog = dialog

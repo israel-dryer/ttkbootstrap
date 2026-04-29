@@ -49,7 +49,7 @@ def get_theme(name):
     """Return a registered theme by name.
 
     If the theme is not currently registered this will re-run
-    ``load_system_themes`` once to pick up any newly added themes before
+    `load_system_themes` once to pick up any newly added themes before
     failing.
     """
     if name in _registered_themes:
@@ -84,8 +84,8 @@ def get_theme(name):
 def load_system_themes():
     """Load system themes from the package.
 
-    Loads all v2 themes from ``ttkbootstrap.assets.themes`` and all legacy
-    themes from ``ttkbootstrap.assets.themes.legacy``. Themes matching
+    Loads all v2 themes from `ttkbootstrap.assets.themes` and all legacy
+    themes from `ttkbootstrap.assets.themes.legacy`. Themes matching
     app settings dark_theme or .light_theme are also registered with
     'dark' and 'light' aliases for convenience.
     """
@@ -141,9 +141,9 @@ def load_system_themes():
 def load_user_defined_theme(path):
     """Load a user-defined theme from a JSON file on disk.
 
-    The file must follow the v2 theme schema (top-level ``name``,
-    ``display_name``, ``mode``, ``foreground``, ``background``, plus
-    ``shades`` and ``semantic`` mappings).
+    The file must follow the v2 theme schema (top-level `name`,
+    `display_name`, `mode`, `foreground`, `background`, plus
+    `shades` and `semantic` mappings).
     """
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
@@ -225,11 +225,13 @@ class ThemeProvider:
     def list_themes(self) -> list[dict[str, str]]:
         """Return a list of available themes with names and display names.
 
-        The result is a list of dictionaries in the form::
+        The result is a list of dictionaries in the form:
 
-            {"name": "cosmo", "display_name": "Cosmo"}
+        ```python
+        {"name": "cosmo", "display_name": "Cosmo"}
+        ```
 
-        Aliases such as ``\"light\"`` and ``\"dark\"`` are not included; only the
+        Aliases such as `\"light\"` and `\"dark\"` are not included; only the
         canonical theme entries loaded into the provider are returned.
         """
         themes: list[dict[str, str]] = []

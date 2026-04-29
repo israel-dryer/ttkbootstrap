@@ -22,8 +22,8 @@ class Expander(Frame):
     button. Clicking anywhere on the header toggles the visibility of the
     content area.
 
-    Expander also supports selection state via ``signal``/``variable`` and
-    ``value``, similar to RadioButton. When clicked, it sets the variable to
+    Expander also supports selection state via `signal`/`variable` and
+    `value`, similar to RadioButton. When clicked, it sets the variable to
     its value, enabling radio-group-like behavior for navigation.
 
     Attributes:
@@ -31,10 +31,10 @@ class Expander(Frame):
         is_selected (bool): Whether this expander's value matches the variable (read-only).
 
     !!! note "Events"
-        - ``<<Toggle>>``: Fired when expanded/collapsed.
-          ``event.data = {'expanded': bool}``
-        - ``<<Selected>>``: Fired when this expander is selected.
-          ``event.data = {'value': Any}``
+        - `<<Toggle>>`: Fired when expanded/collapsed.
+          `event.data = {'expanded': bool}`
+        - `<<Selected>>`: Fired when this expander is selected.
+          `event.data = {'value': Any}`
     """
 
     def __init__(
@@ -326,42 +326,42 @@ class Expander(Frame):
         return False
 
     def on_toggled(self, callback: Callable) -> str:
-        """Bind callback to ``<<Toggle>>`` events.
+        """Bind callback to `<<Toggle>>` events.
 
         Args:
             callback: Function to call when toggled. Receives event with
-                ``event.data = {'expanded': bool}``.
+                `event.data = {'expanded': bool}`.
 
         Returns:
-            Bind ID that can be passed to ``off_toggled`` to remove this callback.
+            Bind ID that can be passed to `off_toggled` to remove this callback.
         """
         return self.bind('<<Toggle>>', callback, add='+')
 
     def off_toggled(self, bind_id: str | None = None) -> None:
-        """Unbind ``<<Toggle>>`` callback(s).
+        """Unbind `<<Toggle>>` callback(s).
 
         Args:
-            bind_id: Bind ID returned by ``on_toggled``. If None, unbinds all.
+            bind_id: Bind ID returned by `on_toggled`. If None, unbinds all.
         """
         self.unbind('<<Toggle>>', bind_id)
 
     def on_selected(self, callback: Callable) -> str:
-        """Bind callback to ``<<Selected>>`` events.
+        """Bind callback to `<<Selected>>` events.
 
         Args:
             callback: Function to call when selected. Receives event with
-                ``event.data = {'value': Any}``.
+                `event.data = {'value': Any}`.
 
         Returns:
-            Bind ID that can be passed to ``off_selected`` to remove this callback.
+            Bind ID that can be passed to `off_selected` to remove this callback.
         """
         return self.bind('<<Selected>>', callback, add='+')
 
     def off_selected(self, bind_id: str = None):
-        """Unbind ``<<Selected>>`` callback(s).
+        """Unbind `<<Selected>>` callback(s).
 
         Args:
-            bind_id (str | None): Bind ID returned by ``on_selected``. If None, unbinds all.
+            bind_id (str | None): Bind ID returned by `on_selected`. If None, unbinds all.
         """
         self.unbind('<<Selected>>', bind_id)
 

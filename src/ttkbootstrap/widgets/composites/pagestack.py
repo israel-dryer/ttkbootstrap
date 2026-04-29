@@ -38,14 +38,14 @@ class PageStack(Frame):
 
     !!! note "Events"
 
-        - ``<<PageUnmount>>``: Triggered when the current page is hidden.
-        - ``<<PageWillMount>>``: Triggered before a new page is displayed.
-        - ``<<PageMount>>``: Triggered after a new page is displayed.
-        - ``<<PageChange>>``: Triggered after page navigation completes.
+        - `<<PageUnmount>>`: Triggered when the current page is hidden.
+        - `<<PageWillMount>>`: Triggered before a new page is displayed.
+        - `<<PageMount>>`: Triggered after a new page is displayed.
+        - `<<PageChange>>`: Triggered after page navigation completes.
 
-        All events provide ``event.data`` with keys: ``page``, ``prev_page``, ``prev_data``,
-        ``nav`` ('push', 'back', 'forward'), ``index``, ``length``, ``can_back``,
-        ``can_forward``.
+        All events provide `event.data` with keys: `page`, `prev_page`, `prev_data`,
+        `nav` ('push', 'back', 'forward'), `index`, `length`, `can_back`,
+        `can_forward`.
     """
 
     def __init__(self, master: Master = None, **kwargs: Unpack[PageStackKwargs]):
@@ -130,8 +130,8 @@ class PageStack(Frame):
         """Navigate to the page with the given key.
 
         This method handles page transitions, manages navigation history,
-        and triggers lifecycle events (``<<PageUnmount>>``, ``<<PageWillMount>>``,
-        ``<<PageMount>>``, ``<<PageChange>>``).
+        and triggers lifecycle events (`<<PageUnmount>>`, `<<PageWillMount>>`,
+        `<<PageMount>>`, `<<PageChange>>`).
 
         Args:
             key: The identifier of the page to navigate to
@@ -318,7 +318,7 @@ class PageStack(Frame):
             return self._pages[key].configure(**kwargs)
 
     def on_page_changed(self, callback: Callable) -> str:
-        """Bind to ``<<PageChange>>``. Callback receives ``event.data`` with navigation info.
+        """Bind to `<<PageChange>>`. Callback receives `event.data` with navigation info.
 
         Returns:
             Binding identifier for use with off_page_changed().
@@ -326,5 +326,5 @@ class PageStack(Frame):
         return self.bind('<<PageChange>>', callback, add="+")
 
     def off_page_changed(self, bind_id: str | None = None) -> None:
-        """Unbind from ``<<PageChange>>``."""
+        """Unbind from `<<PageChange>>`."""
         self.unbind("<<PageChange>>", bind_id)

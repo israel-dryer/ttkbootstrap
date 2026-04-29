@@ -71,15 +71,15 @@ class MessageCatalog:
         Args:
             root: Optional Tk root to ensure msgcat is available.
             locales_dir: Base directory containing gettext catalogs
-                (``<lang>/LC_MESSAGES/<domain>.mo``). If ``None``, the
+                (`<lang>/LC_MESSAGES/<domain>.mo`). If `None`, the
                 directory is auto-discovered.
             domain: Gettext domain name.
             default_locale: Locale to activate after initialization.
-            strip_ampersands: If true, remove mnemonic ``&`` markers.
+            strip_ampersands: If true, remove mnemonic `&` markers.
             emit_virtual_event: If true, generate a Tk virtual event after
                 locale changes so widgets can refresh themselves.
             virtual_event_name: The virtual event name to emit when the
-                locale changes (default ``"<<LocaleChanged>>"``).
+                locale changes (default `"<<LocaleChanged>>"`).
         """
         # Ensure a Tk exists so msgcat calls work even if root is omitted
         from ttkbootstrap.runtime.app import get_default_root
@@ -100,8 +100,8 @@ class MessageCatalog:
     def _install_gettext(lang: str) -> None:
         """Install gettext catalogs for the requested language.
 
-        Prefers an exact match (e.g. ``de_DE``) and falls back to base
-        language (``de``) if available.
+        Prefers an exact match (e.g. `de_DE`) and falls back to base
+        language (`de`) if available.
 
         Args:
             lang: Requested locale code.
@@ -127,12 +127,12 @@ class MessageCatalog:
         """Return a plausible locales directory for this installation.
 
         Priority order:
-        1) ``TTKBOOTSTRAP_LOCALES`` environment variable
-        2) Package asset ``src/ttkbootstrap/assets/locales``
-        3) Module-local ``ttkbootstrap/localization/locales``
-        4) Package-local ``src/ttkbootstrap/locales``
-        5) Repository root ``locales/``
-        6) Current working directory ``./locales``
+        1) `TTKBOOTSTRAP_LOCALES` environment variable
+        2) Package asset `src/ttkbootstrap/assets/locales`
+        3) Module-local `ttkbootstrap/localization/locales`
+        4) Package-local `src/ttkbootstrap/locales`
+        5) Repository root `locales/`
+        6) Current working directory `./locales`
         """
         import os
         env = os.environ.get("TTKBOOTSTRAP_LOCALES")
@@ -162,7 +162,7 @@ class MessageCatalog:
         """Set Tcl msgcat locale to match the Python-side locale.
 
         Args:
-            lang: Locale code (e.g. ``en``, ``de_DE``).
+            lang: Locale code (e.g. `en`, `de_DE`).
         """
         from ttkbootstrap.runtime.app import get_default_root
         root = get_default_root()
@@ -175,10 +175,10 @@ class MessageCatalog:
 
     @staticmethod
     def _normalize_lang(code: str) -> str:
-        """Normalize a locale code to gettext style (``ll`` or ``ll_RR``).
+        """Normalize a locale code to gettext style (`ll` or `ll_RR`).
 
         Args:
-            code: Input locale code (e.g. ``de-de``, ``pt_br``).
+            code: Input locale code (e.g. `de-de`, `pt_br`).
 
         Returns:
             Normalized locale code for gettext use.
@@ -190,10 +190,10 @@ class MessageCatalog:
 
     @staticmethod
     def _to_msgcat_locale(code: str) -> str:
-        """Normalize a locale code to msgcat style (``ll`` or ``ll_rr``).
+        """Normalize a locale code to msgcat style (`ll` or `ll_rr`).
 
         Args:
-            code: Input locale code (e.g. ``de-DE``, ``pt_BR``).
+            code: Input locale code (e.g. `de-DE`, `pt_BR`).
 
         Returns:
             Lowercased region code used by msgcat.

@@ -30,8 +30,8 @@ class QueryDialog:
 
     !!! note "Events"
 
-        ``<<DialogResult>>``: Fired when dialog closes.
-          Provides ``event.data`` with keys: ``result`` (Any), ``confirmed`` (bool).
+        `<<DialogResult>>`: Fired when dialog closes.
+          Provides `event.data` with keys: `result` (Any), `confirmed` (bool).
     """
 
     def __init__(
@@ -274,13 +274,13 @@ class QueryDialog:
     def on_dialog_result(self, callback: Callable[[Any], None]) -> Optional[str]:
         """Bind a callback fired when the dialog produces a result.
 
-        The callback receives ``event.data["result"]`` when available.
+        The callback receives `event.data["result"]` when available.
 
         Args:
             callback: Callable that receives the result payload.
 
         Returns:
-            Binding identifier for use with ``off_dialog_result``.
+            Binding identifier for use with `off_dialog_result`.
         """
         target = self._dialog.toplevel or self._master
         if target is None:

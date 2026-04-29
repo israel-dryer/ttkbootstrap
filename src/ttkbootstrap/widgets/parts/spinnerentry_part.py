@@ -23,14 +23,14 @@ class SpinnerEntryPart(ValidationMixin, Spinbox):
 
     !!! note "Events"
 
-        - ``<<Input>>``: Triggered on each keystroke.
-          Provides ``event.data`` with keys: ``text``.
+        - `<<Input>>`: Triggered on each keystroke.
+          Provides `event.data` with keys: `text`.
 
-        - ``<<Change>>``: Triggered when value changes after commit.
-          Provides ``event.data`` with keys: ``value``, ``prev_value``, ``text``.
+        - `<<Change>>`: Triggered when value changes after commit.
+          Provides `event.data` with keys: `value`, `prev_value`, `text`.
 
         - **<Return>**: Triggered on Enter key press.
-          Provides ``event.data`` with keys: ``value``, ``text``.
+          Provides `event.data` with keys: `value`, `text`.
     """
 
     def __init__(

@@ -321,10 +321,10 @@ class TTKWrapperBase(FontMixin, ConfigureDelegationMixin):
         """Get or set the widget style options if handled by the widget's style builder.
 
         Special cascading keys:
-            surface: Updates ``_surface`` on this widget and (via Frame subclass) triggers
-                ``_refresh_descendant_surfaces`` to propagate the change to children.
-            input_background: Updates ``_input_background`` on this widget and (via Frame
-                subclass) triggers ``_refresh_descendant_input_backgrounds`` to propagate
+            surface: Updates `_surface` on this widget and (via Frame subclass) triggers
+                `_refresh_descendant_surfaces` to propagate the change to children.
+            input_background: Updates `_input_background` on this widget and (via Frame
+                subclass) triggers `_refresh_descendant_input_backgrounds` to propagate
                 the change to all descendant input widgets.
         """
         options = getattr(self, "_style_options", {})

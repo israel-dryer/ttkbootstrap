@@ -21,11 +21,11 @@ class PasswordEntry(Field):
 
     !!! note "Events"
 
-        - ``<<Input>>``: Triggered on each keystroke.
-        - ``<<Change>>``: Triggered when value changes after commit.
-        - ``<<Valid>>``: Triggered when validation passes.
-        - ``<<Invalid>>``: Triggered when validation fails.
-        - ``<<Validate>>``: Triggered after any validation.
+        - `<<Input>>`: Triggered on each keystroke.
+        - `<<Change>>`: Triggered when value changes after commit.
+        - `<<Valid>>`: Triggered when validation passes.
+        - `<<Invalid>>`: Triggered when validation fails.
+        - `<<Validate>>`: Triggered after any validation.
 
     Attributes:
         entry_widget (TextEntryPart): The underlying text entry widget.
@@ -61,7 +61,7 @@ class PasswordEntry(Field):
                 validation fails.
             show_visibility_toggle: If True, displays the visibility toggle button
                 (eye icon) that reveals the password while pressed. Default is True.
-                Can be changed at runtime via ``configure(show_visibility_toggle=...)``.
+                Can be changed at runtime via `configure(show_visibility_toggle=...)`.
 
         Other Parameters:
             show (str): Character to mask password input. Default is '•'.

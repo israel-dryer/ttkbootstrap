@@ -540,8 +540,8 @@ class ColorChooserDialog:
 
     !!! note "Events"
 
-        ``<<DialogResult>>``: Fired when the dialog is closed.
-          Provides ``event.data`` with keys: ``result`` (ColorChoice|None), ``confirmed`` (bool).
+        `<<DialogResult>>`: Fired when the dialog is closed.
+          Provides `event.data` with keys: `result` (ColorChoice|None), `confirmed` (bool).
     """
 
     def __init__(

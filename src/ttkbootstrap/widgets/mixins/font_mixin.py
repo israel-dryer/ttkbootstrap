@@ -4,8 +4,8 @@ This module provides a mixin that enables concise font modification syntax for a
 ttkbootstrap widgets. The syntax uses bracket notation similar to bootstyle modifiers,
 allowing inline font customization without creating custom Font objects.
 
-Syntax
-------
+## Syntax
+
 The full modifier syntax follows the pattern: `family[size][weight][style]`
 
 All components are optional and can be mixed in any combination. When components are
@@ -24,57 +24,67 @@ Font Tokens:
     body, label, heading-md, heading-lg, heading-xl, display-lg, display-xl,
     code, hyperlink, caption, body-sm, body-lg, body-xl
 
-Behavior
---------
+## Behavior
+
 - **At widget creation**: Modifiers are applied to the widget's default style font
 - **At runtime**: Modifiers are applied to the widget's current font
 - **Missing family**: Uses widget's current font family (or 'body' token if none)
 - **Missing size**: Uses widget's current font size (or 'body' token size if none)
 
-Examples
---------
-Basic modifications::
+## Examples
 
-    # Use body token, make it bold
-    Label(root, text="Title", font="body[bold]")
+Basic modifications:
 
-    # Change current font to 16pt (preserves family)
-    label.configure(font="[16]")
+```python
+# Use body token, make it bold
+Label(root, text="Title", font="body[bold]")
 
-    # Make current font bold and italic (preserves family and size)
-    label.configure(font="[bold,italic]")
+# Change current font to 16pt (preserves family)
+label.configure(font="[16]")
 
-Custom font families::
+# Make current font bold and italic (preserves family and size)
+label.configure(font="[bold,italic]")
+```
 
-    # Helvetica, 16pt, bold
-    Button(root, text="Click", font="helvetica[16][bold]")
+Custom font families:
 
-    # Arial, 14 pixels (negative in Tk), bold and italic
-    Label(root, text="Text", font="arial[14px][bold,italic]")
+```python
+# Helvetica, 16pt, bold
+Button(root, text="Click", font="helvetica[16][bold]")
 
-Size tokens::
+# Arial, 14 pixels (negative in Tk), bold and italic
+Label(root, text="Text", font="arial[14px][bold,italic]")
+```
 
-    # Small size (10pt) with bold
-    Entry(root, font="[sm][bold]")
+Size tokens:
 
-    # Large size (14pt)
-    Label(root, font="[lg]")
+```python
+# Small size (10pt) with bold
+Entry(root, font="[sm][bold]")
 
-Font tokens with modifiers::
+# Large size (14pt)
+Label(root, font="[lg]")
+```
 
-    # Heading-lg token with italic style
-    Label(root, text="Heading", font="heading-lg[italic]")
+Font tokens with modifiers:
 
-    # Label token at custom size
-    Button(root, text="Button", font="label[16]")
+```python
+# Heading-lg token with italic style
+Label(root, text="Heading", font="heading-lg[italic]")
 
-Multiple style modifiers::
+# Label token at custom size
+Button(root, text="Button", font="label[16]")
+```
 
-    # Bold, italic, and underlined
-    Label(root, text="Emphasis", font="[16][bold,italic,underline]")
+Multiple style modifiers:
 
-Integration
------------
+```python
+# Bold, italic, and underlined
+Label(root, text="Emphasis", font="[16][bold,italic,underline]")
+```
+
+## Integration
+
 FontMixin is automatically integrated into all ttkbootstrap widgets via TTKWrapperBase.
 No additional setup is required - all widgets supporting the 'font' argument automatically
 gain modifier syntax support.

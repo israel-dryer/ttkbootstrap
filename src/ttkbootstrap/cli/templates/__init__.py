@@ -419,8 +419,8 @@ import ttkbootstrap as ttk
 class HomePage:
     """Home page content.
 
-    Pages in an AppShell are not widget subclasses. The ``parent`` frame
-    is created by ``shell.add_page()`` and this class populates it.
+    Pages in an AppShell are not widget subclasses. The `parent` frame
+    is created by `shell.add_page()` and this class populates it.
     """
 
     def __init__(self, parent):
@@ -466,8 +466,8 @@ import ttkbootstrap as ttk
 class SettingsPage:
     """Settings page content.
 
-    Pages in an AppShell are not widget subclasses. The ``parent`` frame
-    is created by ``shell.add_page()`` and this class populates it.
+    Pages in an AppShell are not widget subclasses. The `parent` frame
+    is created by `shell.add_page()` and this class populates it.
     """
 
     def __init__(self, parent):
@@ -511,8 +511,8 @@ import ttkbootstrap as ttk
 class {class_name}:
     """{page_title} page content.
 
-    Pages in an AppShell are not widget subclasses. The ``parent`` frame
-    is created by ``shell.add_page()`` and this class populates it.
+    Pages in an AppShell are not widget subclasses. The `parent` frame
+    is created by `shell.add_page()` and this class populates it.
     """
 
     def __init__(self, parent):
@@ -610,7 +610,7 @@ def create_page(
         class_name: Page class name (CamelCase).
         target_dir: Directory to create the page in.
         scrollable: If True, the page template notes that
-            ``scrollable=True`` should be passed to ``add_page()``.
+            `scrollable=True` should be passed to `add_page()`.
 
     Returns:
         Path to the created file.

@@ -335,16 +335,16 @@ def center_on_parent(win, parent=None):
 def bind_right_click(widget, handler, add: str | bool = '+'):
     """Bind a right-click handler portably across Tk windowing systems.
 
-    On Win/Linux right-click maps to ``<Button-3>``. On macOS Tk maps the
-    right mouse button (and two-finger trackpad click) to ``<Button-2>``,
+    On Win/Linux right-click maps to `<Button-3>`. On macOS Tk maps the
+    right mouse button (and two-finger trackpad click) to `<Button-2>`,
     and Mac users also expect Ctrl+click as a context-menu trigger. This
     helper binds the appropriate event(s) for the current platform so
     callers don't have to repeat the platform check.
 
     Args:
-        widget: Any Tk widget with a ``.bind`` method and a ``.tk`` attribute.
+        widget: Any Tk widget with a `.bind` method and a `.tk` attribute.
         handler: Event handler callable (or Tcl command string).
-        add: Passed through to ``bind``. Defaults to ``'+'`` so the helper
+        add: Passed through to `bind`. Defaults to `'+'` so the helper
             never silently replaces an existing binding.
     """
     widget.bind('<Button-3>', handler, add=add)

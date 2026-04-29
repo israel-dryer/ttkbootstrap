@@ -14,12 +14,12 @@ class SelectBox(Field):
     """Dropdown-like field widget built on top of Field.
 
     Renders a field with a suffix button that opens a popup list of available
-    items. Selecting an item updates the field value and emits ``<<Change>>``.
+    items. Selecting an item updates the field value and emits `<<Change>>`.
 
     !!! note "Events"
 
-          ``<<Change>>``: Fired when the selection changes (user or code).
-          Provides ``event.data`` with keys: ``value``, ``prev_value``, ``text``.
+          `<<Change>>`: Fired when the selection changes (user or code).
+          Provides `event.data` with keys: `value`, `prev_value`, `text`.
 
     Attributes:
         entry_widget (TextEntryPart): The underlying entry widget.
@@ -47,7 +47,7 @@ class SelectBox(Field):
 
         Args:
             master: Parent widget. If None, uses the default root window.
-            value (str): Initial selected value; should typically be present in ``items``.
+            value (str): Initial selected value; should typically be present in `items`.
             items (list): Sequence of string options to present in the popup list.
             label (str): Optional label text shown above the field.
             message (str): Optional helper/error message shown below the field.
@@ -525,7 +525,7 @@ class SelectBox(Field):
 
     @value.setter
     def value(self, value):
-        """Set the selected value and emit ``<<Change>>`` when it differs."""
+        """Set the selected value and emit `<<Change>>` when it differs."""
         prev_value = Field.value.fget(self)
         Field.value.fset(self, value)
         new_value = Field.value.fget(self)

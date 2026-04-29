@@ -26,9 +26,9 @@ class Tabs(Frame):
     orientation, and styling of child TabItems.
 
     !!! note "Events"
-        - ``<<TabSelect>>``: Fired when a tab is selected (bubbled from TabItem).
-        - ``<<TabClose>>``: Fired when a tab's close button is clicked (bubbled from TabItem).
-        - ``<<TabAdd>>``: Fired when the add button is clicked (if enable_adding=True).
+        - `<<TabSelect>>`: Fired when a tab is selected (bubbled from TabItem).
+        - `<<TabClose>>`: Fired when a tab's close button is clicked (bubbled from TabItem).
+        - `<<TabAdd>>`: Fired when the add button is clicked (if enable_adding=True).
 
     Attributes:
         orient (str): The orientation of the tab bar ('horizontal' or 'vertical').
@@ -220,7 +220,7 @@ class Tabs(Frame):
         self.event_generate('<<TabAdd>>')
 
     def on_tab_added(self, callback: Callable) -> str:
-        """Bind to ``<<TabAdd>>`` event.
+        """Bind to `<<TabAdd>>` event.
 
         Args:
             callback: Function to call when add button is clicked.

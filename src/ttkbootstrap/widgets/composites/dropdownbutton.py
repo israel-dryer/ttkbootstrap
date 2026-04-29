@@ -120,7 +120,7 @@ class DropdownButton(MenuButton):
         self.items = self._context_menu.items
 
     def on_item_click(self, callback: Callable) -> None:
-        """Set item click callback. Callback receives ``item_info = {'type': str, 'text': str, 'value': Any}``."""
+        """Set item click callback. Callback receives `item_info = {'type': str, 'text': str, 'value': Any}`."""
         self._item_click_callback = callback
         self._context_menu.on_item_click(callback)
 

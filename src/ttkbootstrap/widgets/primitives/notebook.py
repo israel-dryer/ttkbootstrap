@@ -65,13 +65,13 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
 
     !!! note "Events"
 
-        - ``<<NotebookTabChange>>``: Triggered when the selected tab changes.
-        - ``<<NotebookTabActivate>>``: Triggered when a tab becomes active.
-        - ``<<NotebookTabDeactivate>>``: Triggered when a tab becomes inactive.
+        - `<<NotebookTabChange>>`: Triggered when the selected tab changes.
+        - `<<NotebookTabActivate>>`: Triggered when a tab becomes active.
+        - `<<NotebookTabDeactivate>>`: Triggered when a tab becomes inactive.
 
-        All events provide ``event.data`` with keys: ``current`` (TabRef), ``previous``
-        (TabRef), ``reason`` ('user', 'api', 'hide', 'forget', 'reorder'),
-        ``via`` ('click', 'key', 'programmatic').
+        All events provide `event.data` with keys: `current` (TabRef), `previous`
+        (TabRef), `reason` ('user', 'api', 'hide', 'forget', 'reorder'),
+        `via` ('click', 'key', 'programmatic').
     """
 
     _ttk_base = ttk.Notebook
@@ -307,7 +307,7 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
         fmtargs: tuple[Any, ...] | list[Any] = (),
         **kwargs
     ) -> tkinter.Widget:
-        """Insert a widget as a tab at position ``index``, optionally creating a Frame.
+        """Insert a widget as a tab at position `index`, optionally creating a Frame.
 
         Args:
             index (str | int): Position to insert the widget. Defaults to 'end'.
@@ -448,63 +448,63 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
         return self.tab(key, option, **kwargs)
 
     def on_tab_activated(self, callback: Callable[[Any], Any]) -> str:
-        """Bind a callback to the ``<<NotebookTabActivate>>`` event.
+        """Bind a callback to the `<<NotebookTabActivate>>` event.
 
-        The ``event.data`` payload includes ``current`` (TabRef), ``previous``
-        (TabRef), ``reason`` (ChangeReason), and ``via`` (ChangeMethod).
+        The `event.data` payload includes `current` (TabRef), `previous`
+        (TabRef), `reason` (ChangeReason), and `via` (ChangeMethod).
 
         Args:
             callback (Callable): Function to call when a tab is activated.
 
         Returns:
-            str: The funcid that can be used with ``off_tab_activated()``.
+            str: The funcid that can be used with `off_tab_activated()`.
         """
         return self.bind("<<NotebookTabActivate>>", callback, add=True)
 
     def off_tab_activated(self, bind_id: str | None = None) -> None:
-        """Remove a ``<<NotebookTabActivate>>`` binding.
+        """Remove a `<<NotebookTabActivate>>` binding.
 
         Args:
-            bind_id (str): The bind_id returned by ``on_tab_activated()``.
+            bind_id (str): The bind_id returned by `on_tab_activated()`.
         """
         self.unbind("<<NotebookTabActivate>>", bind_id)
 
     def on_tab_deactivated(self, callback: Callable[[Any], Any]) -> str:
-        """Bind a callback to the ``<<NotebookTabDeactivate>>`` event.
+        """Bind a callback to the `<<NotebookTabDeactivate>>` event.
 
-        The ``event.data`` payload includes ``current`` (TabRef), ``previous``
-        (TabRef), ``reason`` (ChangeReason), and ``via`` (ChangeMethod).
+        The `event.data` payload includes `current` (TabRef), `previous`
+        (TabRef), `reason` (ChangeReason), and `via` (ChangeMethod).
 
         Args:
             callback (Callable): Function to call when a tab is deactivated.
 
         Returns:
-            str: The funcid that can be used with ``off_tab_deactivated()``.
+            str: The funcid that can be used with `off_tab_deactivated()`.
         """
         return self.bind("<<NotebookTabDeactivate>>", callback, add=True)
 
     def off_tab_deactivated(self, bind_id: str | None = None) -> None:
-        """Remove a ``<<NotebookTabDeactivate>>`` binding.
+        """Remove a `<<NotebookTabDeactivate>>` binding.
 
         Args:
-            bind_id (str): The bind_id returned by ``on_tab_deactivated()``.
+            bind_id (str): The bind_id returned by `on_tab_deactivated()`.
         """
         self.unbind("<<NotebookTabDeactivate>>", bind_id)
 
     def on_tab_changed(self, callback: Callable[[Any], Any]) -> str:
-        """Bind a callback to the ``<<NotebookTabChange>>`` event.
+        """Bind a callback to the `<<NotebookTabChange>>` event.
 
-        This also emits ``<<NotebookTabActivate>>`` and ``<<NotebookTabDeactivate>>``
+        This also emits `<<NotebookTabActivate>>` and `<<NotebookTabDeactivate>>`
         events for the affected tabs.
 
-        The ``event.data`` payload includes ``current`` (TabRef), ``previous``
-        (TabRef), ``reason`` (ChangeReason), and ``via`` (ChangeMethod).
+        The `event.data` payload includes `current` (TabRef), `previous`
+        (TabRef), `reason` (ChangeReason), and `via` (ChangeMethod).
 
         Args:
             callback (Callable): Function to call when the tab selection changes.
 
         Returns:
-            str: The funcid that can be used with ``off_tab_changed()``.
+            str: The funcid that can be used with `off_tab_changed()`.
         """
 
         def build_payload(event: Any) -> Any:
@@ -543,9 +543,9 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
         return self.bind("<<NotebookTabChange>>", wrapper, add=True)
 
     def off_tab_changed(self, bind_id: str | None = None) -> None:
-        """Remove a ``<<NotebookTabChange>>`` binding.
+        """Remove a `<<NotebookTabChange>>` binding.
 
         Args:
-            bind_id (str): The bind_id returned by ``on_tab_changed()``.
+            bind_id (str): The bind_id returned by `on_tab_changed()`.
         """
         self.unbind("<<NotebookTabChange>>", bind_id)

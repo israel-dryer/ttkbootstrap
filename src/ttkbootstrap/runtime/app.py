@@ -1,6 +1,6 @@
 """Application runtime — App window, lifecycle helpers, and settings.
 
-Provides the main ``App`` class (a ``Tk`` subclass), ``AppSettings``, and
+Provides the main `App` class (a `Tk` subclass), `AppSettings`, and
 process-wide helpers for accessing the active app instance, reading settings,
 and managing the current locale and theme from anywhere in the application.
 """
@@ -269,7 +269,7 @@ class AppSettings:
             When None, defaults to a per-app file under the OS config
             directory (Library/Application Support on macOS, %APPDATA% on
             Windows, $XDG_CONFIG_HOME on Linux). The leaf filename includes
-            ``app_name`` so multiple ttkbootstrap apps don't collide.
+            `app_name` so multiple ttkbootstrap apps don't collide.
 
     Examples:
         ```python
@@ -727,7 +727,7 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
         """Return True if the current windowing system reports an appearance.
 
         Currently only macOS exposes a Tk-level light/dark signal
-        (``<<TkSystemAppearanceChanged>>`` and ``MacWindowStyle isDark``).
+        (`<<TkSystemAppearanceChanged>>` and `MacWindowStyle isDark`).
         Win/Linux apps that want to track system theme need their own
         OS-specific hook, which is out of scope for this method.
         """
@@ -770,7 +770,7 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
         app, and clicking the Dock icon brings the main window back.
 
         This method installs the matching Tk handlers so apps that opt
-        into ``macos_quit_behavior='native'`` behave correctly without
+        into `macos_quit_behavior='native'` behave correctly without
         each app duplicating the boilerplate.
         """
         # Close button → withdraw. We replace the protocol unconditionally
@@ -806,9 +806,9 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
     def _trigger_close(self, _event=None) -> str:
         """Invoke the registered WM_DELETE_WINDOW handler for this window.
 
-        Lets ``Cmd+W`` and any other "close this window" gesture flow
+        Lets `Cmd+W` and any other "close this window" gesture flow
         through the same code path as clicking the close button, so a
-        custom ``app.on_close(handler)`` is honored.
+        custom `app.on_close(handler)` is honored.
         """
         try:
             handler_script = self.tk.call(
@@ -839,7 +839,7 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
     def on_about(self, handler: Callable[[], Any]) -> None:
         """Register a handler for the macOS "About <App>" menu item.
 
-        Tk on Aqua calls ``::tk::mac::standardAboutPanel`` when the user
+        Tk on Aqua calls `::tk::mac::standardAboutPanel` when the user
         picks About from the application menu. This method overrides
         that proc with the supplied Python callable. No-op on Win/Linux,
         where there's no equivalent system menu.
@@ -858,7 +858,7 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
     def on_preferences(self, handler: Callable[[], Any]) -> None:
         """Register a handler for the macOS "Preferences…" menu item.
 
-        Tk on Aqua calls ``::tk::mac::ShowPreferences`` when the user picks
+        Tk on Aqua calls `::tk::mac::ShowPreferences` when the user picks
         Preferences (Cmd+,) from the application menu. This method
         overrides that proc with the supplied Python callable. No-op on
         Win/Linux.

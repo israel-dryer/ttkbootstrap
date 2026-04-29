@@ -35,7 +35,7 @@ class Toolbar(Frame):
     arranged horizontally. It optionally supports window control buttons
     (minimize, maximize, close) and window dragging for custom titlebars.
 
-    Items are added from left to right. Use ``add_spacer()`` to push
+    Items are added from left to right. Use `add_spacer()` to push
     subsequent items to the right side.
 
     Example:
@@ -321,7 +321,7 @@ class Toolbar(Frame):
         """Add a custom widget to the toolbar.
 
         The widget must already be created with the toolbar's content frame
-        as its parent. Use ``toolbar.content`` to get the parent frame.
+        as its parent. Use `toolbar.content` to get the parent frame.
 
         Args:
             widget (Widget): The widget to add.

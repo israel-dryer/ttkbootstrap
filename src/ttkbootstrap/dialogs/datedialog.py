@@ -209,10 +209,10 @@ class DateDialog:
         Args:
             master: Parent widget; positions dialog relative to it when set.
             title: Dialog window title text.
-            initial_date: Initial date shown; defaults to ``date.today()``.
+            initial_date: Initial date shown; defaults to `date.today()`.
             first_weekday: First weekday index (0=Monday, 6=Sunday).
-            accent: Calendar accent token (e.g., ``primary``, ``secondary``).
-            bootstyle: DEPRECATED - Use ``accent`` instead.
+            accent: Calendar accent token (e.g., `primary`, `secondary`).
+            bootstyle: DEPRECATED - Use `accent` instead.
             disabled_dates: Iterable of dates to disable selection.
             min_date: Lower bound for selectable dates.
             max_date: Upper bound for selectable dates.
@@ -363,13 +363,13 @@ class DateDialog:
     def on_result(self, callback: Callable[[date], None]) -> Optional[str]:
         """Bind a callback fired when a result is produced.
 
-        The callback receives ``event.data["result"]`` (a ``datetime.date``).
+        The callback receives `event.data["result"]` (a `datetime.date`).
 
         Args:
-            callback: Callable that receives the selected ``datetime.date``.
+            callback: Callable that receives the selected `datetime.date`.
 
         Returns:
-            The Tk binding identifier, which can be used with ``off_result``.
+            The Tk binding identifier, which can be used with `off_result`.
         """
         target = self._dialog.toplevel or self._master
         if target is None:
@@ -381,10 +381,10 @@ class DateDialog:
         return target.bind("<<DialogResult>>", handler, add="+")
 
     def off_result(self, funcid: str) -> None:
-        """Unbind a previously bound ``on_result`` callback.
+        """Unbind a previously bound `on_result` callback.
 
         Args:
-            funcid: Binding identifier returned by ``on_result``.
+            funcid: Binding identifier returned by `on_result`.
         """
         target = self._dialog.toplevel or self._master
         if target is None:

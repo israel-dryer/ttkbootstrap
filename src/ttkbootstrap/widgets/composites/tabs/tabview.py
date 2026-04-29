@@ -21,10 +21,10 @@ class TabView(Frame):
     page.
 
     !!! note "Events"
-        - ``<<TabSelect>>``: Fired when a tab is selected.
-        - ``<<TabClose>>``: Fired when a tab's close button is clicked.
-        - ``<<TabAdd>>``: Fired when the add button is clicked (if enable_adding=True).
-        - ``<<PageChange>>``: Fired when the page changes (from PageStack).
+        - `<<TabSelect>>`: Fired when a tab is selected.
+        - `<<TabClose>>`: Fired when a tab's close button is clicked.
+        - `<<TabAdd>>`: Fired when the add button is clicked (if enable_adding=True).
+        - `<<PageChange>>`: Fired when the page changes (from PageStack).
     """
 
     def __init__(
@@ -322,7 +322,7 @@ class TabView(Frame):
         tab.configure(**kwargs)
 
     def on_page_changed(self, callback: Callable) -> str:
-        """Bind to ``<<PageChange>>`` event.
+        """Bind to `<<PageChange>>` event.
 
         Args:
             callback: Function to call when page changes.
@@ -333,11 +333,11 @@ class TabView(Frame):
         return self._page_stack.on_page_changed(callback)
 
     def off_page_changed(self, bind_id: str | None = None) -> None:
-        """Unbind from ``<<PageChange>>`` event."""
+        """Unbind from `<<PageChange>>` event."""
         self._page_stack.off_page_changed(bind_id)
 
     def on_tab_added(self, callback: Callable) -> str:
-        """Bind to ``<<TabAdd>>`` event (when add button is clicked).
+        """Bind to `<<TabAdd>>` event (when add button is clicked).
 
         Args:
             callback: Function to call when add button is clicked.
@@ -348,5 +348,5 @@ class TabView(Frame):
         return self._tabs.on_tab_added(callback)
 
     def off_tab_added(self, bind_id: str | None = None) -> None:
-        """Unbind from ``<<TabAdd>>`` event."""
+        """Unbind from `<<TabAdd>>` event."""
         self._tabs.off_tab_added(bind_id)

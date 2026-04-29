@@ -452,7 +452,7 @@ def get_themes() -> list[dict[str, str]]:
     """Return the list of all registered themes.
 
     Returns:
-        List of dictionaries containing ``name`` and ``display_name`` for each theme.
+        List of dictionaries containing `name` and `display_name` for each theme.
 
     Examples:
         >>> themes = get_themes()

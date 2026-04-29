@@ -9,21 +9,27 @@ loading images from various sources while automatically caching them to avoid
 repeated decoding and to prevent garbage collection issues with Tk images.
 
 Examples:
-    Basic usage with file paths::
+    Basic usage with file paths:
 
-        from ttkbootstrap import Image
+    ```python
+    from ttkbootstrap import Image
 
-        # Load an image from disk (cached automatically)
-        photo = Image.open("icons/save.png")
-        button = Button(app, image=photo)
+    # Load an image from disk (cached automatically)
+    photo = Image.open("icons/save.png")
+    button = Button(app, image=photo)
+    ```
 
-    Loading from bytes (e.g., embedded resources)::
+    Loading from bytes (e.g., embedded resources):
 
-        photo = Image.from_bytes(icon_data)
+    ```python
+    photo = Image.from_bytes(icon_data)
+    ```
 
-    Creating transparent spacer images::
+    Creating transparent spacer images:
 
-        spacer = Image.transparent(16, 16)
+    ```python
+    spacer = Image.transparent(16, 16)
+    ```
 """
 
 from __future__ import annotations
