@@ -27,6 +27,7 @@ For conceptual explanations and patterns, see **Platform** and **Capabilities**.
 - [Data](data/index.md)
 - [i18n](i18n/index.md)
 - [Utils](utils/index.md)
+- [Deprecated names](deprecated.md)
 
 ## Notes
 

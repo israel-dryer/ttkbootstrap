@@ -21,7 +21,6 @@ Theme variants: light / dark
 ### With a Text widget
 
 ```python
-import tkinter as tk
 import ttkbootstrap as ttk
 
 app = ttk.App()
@@ -29,7 +28,7 @@ app = ttk.App()
 frame = ttk.Frame(app)
 frame.pack(fill="both", expand=True, padx=20, pady=20)
 
-text = tk.Text(frame, wrap="none")
+text = ttk.Text(frame, wrap="none")
 text.grid(row=0, column=0, sticky="nsew")
 
 ys = ttk.Scrollbar(frame, orient="vertical", command=text.yview)

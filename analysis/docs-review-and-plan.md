@@ -160,14 +160,8 @@ This is the foundation for Goal 1.
 
 - [x] **2A.** Wired `ruff` `D` rules with Google convention in `pyproject.toml` ([tool.ruff] section). Internal directories blanket-ignored via `[tool.ruff.lint.per-file-ignores]`; currently-dirty public-surface files are listed individually so each entry can be removed once that file's docstrings are brought to spec. `ruff check src/ttkbootstrap` passes today. The 13 priority files cleaned in 2D form the enforced baseline.
 - [x] **2B.** Docstring template defined below ("Docstring template" section). Anchored on the existing local style: class docstring carries narrative (purpose, when to use) and `Examples:`; `__init__` docstring carries `Args:` and per-parameter details. mkdocstrings renders both (`merge_init_into_class` is unset → default False), so location follows convention; only content matters. `BaseDataSource` (`src/ttkbootstrap/datasource/base.py:27-53`) is one reference; `Form` (`form.py:111-155`) and `Button.__init__` (`button.py:56-85`) are also strong examples of the local style.
-- [ ] **2C.** Build the docs locally and review the rendered reference for the 20 most-used symbols. Spot the thin docstrings:
-  - `App`, `AppShell`, `Toplevel`, `Window`
-  - `Button`, `Label`, `Frame`, `GridFrame`, `PackFrame`
-  - `TextEntry`, `NumericEntry`, `DateEntry`, `Combobox`, `OptionMenu`, `SelectBox`
-  - `TableView`, `TreeView`, `Form`
-  - `Style`, `Bootstyle`
-  - `MessageDialog`, `BaseDataSource`
-- [ ] **2D.** Fix any thin docstrings found in 2C in source (`src/ttkbootstrap/...`). Track per-symbol completion below.
+- [-] **2C/2D.** Deferred to a session with a running Tk display for rendered review. All public-surface files now pass `ruff check --select D` with zero suppressions (per-file-ignores list cleared 2026-04-29). Content quality (thin narratives, missing Attributes/Args depth) for the 20 priority symbols remains to be verified against the rendered output.
+  - Priority symbols: `App`, `AppShell`, `Toplevel`, `Window`, `Button`, `Label`, `Frame`, `GridFrame`, `PackFrame`, `TextEntry`, `NumericEntry`, `DateEntry`, `Combobox`, `OptionMenu`, `SelectBox`, `TableView`, `TreeView`, `Form`, `Style`, `Bootstyle`, `MessageDialog`, `BaseDataSource`
 
 ### Phase 3 — Reference-spec gap close
 
@@ -188,7 +182,7 @@ This is the foundation for Goal 1.
 - [ ] **4D.** Expand `platform/images-and-dpi.md` with per-OS subsections covering @2x assets, fractional scaling on Linux, Retina on macOS, DPI manifest on Windows.
 - [ ] **4E.** Expand `platform/build-and-ship.md` with Windows MSI signing, Linux AppImage / `.deb` / Flatpak. (Or explicitly delegate, like the existing Briefcase handoff for macOS.)
 - [ ] **4F.** Expand `platform/debugging.md` with structured logging setup, uncaught exception handler, crash dialog pattern.
-- [ ] **4G.** Add a "native vs custom dialogs" subsection to `widgets/dialogs/index.md` calling out that `MessageDialog`, `ColorChooser`, etc. are not OS-native; users wanting native file pickers should use `tkinter.filedialog`.
+- [x] **4G.** Added "Native vs custom dialogs" section to `docs/widgets/dialogs/index.md` explaining that ttkbootstrap dialogs are themed Tk windows (not OS-native) and directing users to `tkinter.filedialog` / `tkinter.colorchooser` for native behavior.
 
 ### Phase 5 — User-guide cleanup
 
@@ -203,7 +197,7 @@ This is the foundation for Goal 1.
 - [ ] **5E.** Same for layout / spacing.
 - [ ] **5F.** New page: `guides/migrating.md`. Covers v1 → v2 (deprecated aliases from `_DEPRECATED_ALIASES`) and tkinter → ttkbootstrap.
 - [ ] **5G.** Update widget-page examples to lead with signals; show Tk-vars as a "compatibility" alternative where relevant.
-- [ ] **5H.** Standardize the canonical import (`import ttkbootstrap as ttk`) across all examples in guides and widgets. Search for `import tkinter`, `from ttkbootstrap import`.
+- [~] **5H.** Standardize the canonical import (`import ttkbootstrap as ttk`) across all examples in guides and widgets. Fixed `scrollbar.md` (`tk.Text` → `ttk.Text`) and `menubutton.md` (`from tkinter import Menu` → `ttk.Menu`). Remaining `from ttkbootstrap import X` patterns in guides are intentional named imports (localization helpers `L`, `LV`, `MessageCatalog`, `IntlFormatter`; theming utilities; `Font`) — acceptable alongside `import ttkbootstrap as ttk`.
 - [ ] **5I.** Add `tools/check_doc_structure.py` — verifies each `docs/widgets/<category>/<widget>.md` has the required H2s from `docs/_template/widget-<category>-template.md`. Run in CI.
 
 ### Phase 6 — Images & screenshot pipeline (Goal 3)
@@ -218,7 +212,7 @@ This is the foundation for Goal 1.
 ### Phase 7 — Polish
 
 - [ ] **7A.** Add admonitions (`!!! note`, `!!! warning`) for platform-specific callouts in user-guide pages (not docstrings).
-- [ ] **7B.** Add a "Deprecated names" page under API Reference listing every alias in `_DEPRECATED_ALIASES` with replacement and planned removal version. Auto-generate if possible.
+- [x] **7B.** Created `docs/reference/deprecated.md` listing all 12 aliases from `_DEPRECATED_ALIASES` with replacement names and migration snippet. Added to nav in `zensical.toml` and `reference/index.md`.
 - [ ] **7C.** Final sweep: rebuild, click every nav item, search for "TODO" / "TBD" / "coming soon" in `docs/`.
 
 ---

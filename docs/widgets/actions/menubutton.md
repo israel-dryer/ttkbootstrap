@@ -15,11 +15,10 @@ Use it for classic menu patterns (File/Edit/View), or when the options list is t
 
 ```python
 import ttkbootstrap as ttk
-from tkinter import Menu
 
 app = ttk.App()
 
-m = Menu(app, tearoff=0)
+m = ttk.Menu(app, tearoff=0)
 m.add_command(label="Open", command=lambda: print("Open"))
 m.add_command(label="Save", command=lambda: print("Save"))
 m.add_separator()

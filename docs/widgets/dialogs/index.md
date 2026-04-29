@@ -17,6 +17,19 @@ Dialogs are modal or transient windows used for focused interactions - displayin
 - [QueryBox](querybox.md) - static convenience methods (string, integer, float, item)
 - [FormDialog](formdialog.md) - multi-field form submission
 
+## Native vs custom dialogs
+
+ttkbootstrap dialogs (`MessageDialog`, `ColorChooser`, `DateDialog`, etc.) are **not** OS-native windows — they are custom Tk toplevels styled to match your theme. This means they look consistent across platforms but differ from system dialogs in appearance.
+
+For cases where OS-native behavior is required — file and directory pickers, native font or color dialogs — use Python's built-in `tkinter.filedialog`, `tkinter.colorchooser`, or `tkinter.font` modules directly. These delegate to the operating system and ignore ttkbootstrap themes.
+
+```python
+import tkinter.filedialog as fd
+
+# Native file picker — ignores ttkbootstrap theme
+path = fd.askopenfilename(title="Open file")
+```
+
 ## Specialized pickers
 
 - [Dialog](dialog.md) - base class for building custom dialogs
