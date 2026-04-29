@@ -396,6 +396,11 @@ class ListView(Frame):
         """
         super().__init__(master, variant='container', ttk_class='ListView.TFrame', **kwargs)
 
+        # Cache the windowing system so scroll bindings can dispatch
+        # platform-correctly: Aqua/Win send <MouseWheel>, X11 sends
+        # <Button-4>/<Button-5>.
+        self.winsys = self.tk.call('tk', 'windowingsystem')
+
         # Configuration
         self._selection_mode = selection_mode
         self._show_selection_controls = show_selection_controls
@@ -452,8 +457,8 @@ class ListView(Frame):
 
         # Bind events
         self.bind('<Configure>', self._on_resize, add='+')
-        self.bind('<MouseWheel>', self._on_mousewheel, add='+')
-        self._container.bind('<MouseWheel>', self._on_mousewheel, add='+')
+        self._bind_scroll_events(self)
+        self._bind_scroll_events(self._container)
 
         # Bind ListItem events
         self._container.bind('<<ItemSelecting>>', self._on_item_selecting, add='+')
@@ -779,7 +784,7 @@ class ListView(Frame):
 
         # Only bind if we haven't already bound this widget
         if widget_id not in self._mousewheel_bound_widgets:
-            widget.bind('<MouseWheel>', self._on_mousewheel, add='+')
+            self._bind_scroll_events(widget)
             self._mousewheel_bound_widgets.add(widget_id)
 
         try:
@@ -802,6 +807,19 @@ class ListView(Frame):
                 self._bind_arrow_keys_recursive(child)
         except Exception:
             pass
+
+    def _bind_scroll_events(self, widget) -> None:
+        """Bind the platform-correct scroll-wheel events to ``widget``.
+
+        On Aqua/Win the event is ``<MouseWheel>`` with ``event.delta``
+        carrying direction and magnitude. On X11 there's no MouseWheel —
+        scroll up is ``<Button-4>`` and scroll down is ``<Button-5>``.
+        """
+        if self.winsys.lower() == 'x11':
+            widget.bind('<Button-4>', self._on_mousewheel, add='+')
+            widget.bind('<Button-5>', self._on_mousewheel, add='+')
+        else:
+            widget.bind('<MouseWheel>', self._on_mousewheel, add='+')
 
     def _on_mousewheel(self, event):
         """Handle mouse wheel scrolling.
@@ -829,7 +847,12 @@ class ListView(Frame):
         if not is_child:
             return
 
-        delta = -1 if event.delta > 0 else 1
+        # Resolve scroll direction per platform: X11 carries it in event.num
+        # (4=up, 5=down) and has no event.delta; Aqua/Win use event.delta.
+        if self.winsys.lower() == 'x11':
+            delta = -1 if getattr(event, 'num', 0) == 4 else 1
+        else:
+            delta = -1 if event.delta > 0 else 1
         self._start_index += delta
         self._clamp_indices()
         self._update_rows()

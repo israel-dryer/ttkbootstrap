@@ -293,7 +293,9 @@ class SideNavGroup(Frame):
         # (ContextMenu handles click-outside-to-close automatically)
         self._hide_popup()
 
-        # Create ContextMenu positioned to the right of the container
+        # Create ContextMenu positioned to the right of the container.
+        # SideNav opens this popup via its own click flow, so opt out of
+        # ContextMenu's auto right-click trigger.
         self._popup = ContextMenu(
             self,
             target=self._container,
@@ -301,6 +303,7 @@ class SideNavGroup(Frame):
             attach='ne',
             offset=(4, 0),
             minwidth=180,
+            trigger=None,
         )
 
         # Add items as commands

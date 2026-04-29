@@ -366,4 +366,58 @@ def get_shortcuts() -> Shortcuts:
     return Shortcuts()
 
 
-__all__ = ['Shortcut', 'Shortcuts', 'get_shortcuts']
+def format_shortcut(spec: str | None) -> str:
+    """Resolve a shortcut spec to its platform-appropriate display string.
+
+    Accepts three forms in order of precedence:
+
+    1. **Registered key** — the key passed to ``Shortcuts.register``
+       (e.g. ``"save"``, ``"file.open"``). Returns the registered
+       shortcut's `display`.
+    2. **Pattern** — a modifier expression like ``"Mod+S"``,
+       ``"Ctrl+Shift+N"``, or ``"F5"``. Treated as a transient pattern;
+       returns the pattern's platform display without registering anything.
+    3. **Plain text** — anything that doesn't parse as a pattern (no
+       modifier separator, not a function key) is returned unchanged so
+       callers can still pass a literal display string.
+
+    Args:
+        spec: A registered key, modifier pattern, or literal display.
+
+    Returns:
+        Platform-appropriate display string, or empty string when ``spec``
+        is empty/None.
+
+    Examples:
+        ```python
+        format_shortcut("save")       # "⌘S" on Mac, "Ctrl+S" on Win/Linux
+                                      # (assumes 'save' is registered)
+        format_shortcut("Mod+Shift+N") # "⇧⌘N" on Mac, "Ctrl+Shift+N" on Win
+        format_shortcut("F5")         # "F5" everywhere
+        format_shortcut("⌘S")         # "⌘S" — passes through unchanged
+        ```
+    """
+    if not spec:
+        return ''
+
+    # 1) Registered key wins.
+    registered = Shortcuts().get(spec)
+    if registered is not None:
+        return registered.display
+
+    # 2) Pattern-shaped strings (contain '+' or are bare F-keys) get
+    # parsed into a transient Shortcut for display only — no registration,
+    # no binding side effect.
+    looks_like_pattern = '+' in spec or (
+        len(spec) >= 2
+        and spec[0].upper() == 'F'
+        and spec[1:].isdigit()
+    )
+    if looks_like_pattern:
+        return Shortcut(key='', pattern=spec, command=lambda: None).display
+
+    # 3) Anything else is treated as a literal display string.
+    return spec
+
+
+__all__ = ['Shortcut', 'Shortcuts', 'get_shortcuts', 'format_shortcut']

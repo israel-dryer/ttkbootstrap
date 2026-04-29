@@ -90,6 +90,12 @@ def build_desktop_tokens(
     elif system == "darwin":
         default_ui = "SF Pro Text"
         default_mono = "SF Mono"
+        # Tk's pt-to-pixel conversion uses the active scaling factor.
+        # macOS defaults to 1.0 (72 DPI baseline) vs ~1.334 on Win/Linux,
+        # so the same point size renders ~25% smaller on Mac. Bump the
+        # base to keep visual parity across platforms and align with the
+        # macOS HIG default control text size (13pt).
+        base = _clamp_base_size(base + 2)
     else:
         default_ui = "DejaVu Sans"
         default_mono = "DejaVu Sans Mono"

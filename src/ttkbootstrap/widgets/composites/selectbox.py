@@ -174,6 +174,11 @@ class SelectBox(Field):
         else:
             y = entry_bottom + gap_below
 
+        # The base_window.py warning about overrideredirect on Aqua applies
+        # to full app windows that combine it with grab/transient semantics;
+        # this popup uses neither (it dismisses via a root <Button-1>
+        # binding), so overrideredirect is safe here and matches Tk's own
+        # ttk::combobox::PlacePopdown approach for Mac popdowns.
         toplevel = Toplevel(self)
         toplevel.withdraw()
         toplevel.overrideredirect(True)

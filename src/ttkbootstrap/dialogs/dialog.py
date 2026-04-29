@@ -8,6 +8,7 @@ and footer builders.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import tkinter
 from tkinter import Widget
 from typing import Any, Callable, Iterable, Literal, Mapping, Optional, Tuple, TypedDict, Union
 
@@ -22,7 +23,7 @@ ContentBuilder = Callable[[Widget], None]
 FooterBuilder = Callable[[Widget], None]
 
 ButtonRole = Literal["primary", "secondary", "danger", "cancel", "help"]
-DialogMode = Literal["modal", "popover"]
+DialogMode = Literal["modal", "popover", "sheet"]
 
 
 @dataclass
@@ -126,6 +127,10 @@ class Dialog:
         mode: Dialog interaction mode.
             - "modal": Blocks parent window interaction, requires user response
             - "popover": Closes automatically when focus leaves dialog
+            - "sheet": Like "modal" but on macOS applies the Cocoa sheet
+              window class for a chromeless, sheet-styled dialog tied to
+              its parent (via ``transient``). Falls back to plain modal
+              behavior on Windows/Linux where there's no equivalent.
             Defaults to "modal".
         frameless: If True, removes window decorations (title bar, borders) and adds
             a solid border frame around the dialog content. Useful for dropdown-style
@@ -218,7 +223,7 @@ class Dialog:
             3. Default: Center on parent window
         """
         if modal is None:
-            modal = (self._mode == "modal")
+            modal = self._mode in ("modal", "sheet")
 
         self.result = None
         self._create_toplevel(modal=modal)
@@ -240,7 +245,11 @@ class Dialog:
             self._toplevel.bind("<FocusOut>", self._on_focus_out, add="+")
 
         if modal:
-            if self._mode == "modal":
+            # Sheets are inherently modal to their parent on Aqua via the
+            # sheet window class; calling grab_set on top of that is fine
+            # but unnecessary. Plain modal mode still uses grab to block
+            # interaction with the parent on platforms without a sheet.
+            if self._mode in ("modal", "sheet"):
                 self._toplevel.grab_set()
             self._master.wait_window(self._toplevel)
 
@@ -287,6 +296,20 @@ class Dialog:
             self._toplevel.withdraw()
         except Exception:
             pass
+
+        # Sheet mode: on Aqua, apply the Cocoa 'sheet' window class so the
+        # dialog renders chromeless and tied to its parent. Must be set
+        # before the window is mapped, hence here while still withdrawn.
+        # On non-Aqua, sheet mode is treated as plain modal — there's no
+        # cross-platform equivalent of a Cocoa sheet.
+        if self._mode == "sheet" and getattr(self._toplevel, 'winsys', None) == 'aqua':
+            try:
+                self._toplevel.tk.call(
+                    '::tk::unsupported::MacWindowStyle', 'style',
+                    self._toplevel, 'sheet', 'none',
+                )
+            except tkinter.TclError:
+                pass
 
         if self._minsize:
             self._toplevel.minsize(*self._minsize)
@@ -440,10 +463,16 @@ class Dialog:
                 ensure_visible=True
             )
 
-        # Apply window style while still withdrawn, right before showing
+        # Apply window style while still withdrawn, right before showing.
+        # The update() call is here so pywinstyles can attach to a fully
+        # realized HWND on Windows; on Aqua (and X11) it serves no purpose
+        # and can hang indefinitely flushing children's pending events
+        # (e.g. FontDialog's Treeview with hundreds of tag-configure font
+        # calls), so gate it on the platform that actually needs it.
         self._toplevel.update_idletasks()
         self._toplevel._apply_window_style()
-        self._toplevel.update()
+        if getattr(self._toplevel, 'winsys', None) == 'win32':
+            self._toplevel.update()
         self._toplevel.deiconify()
 
         # Second centering pass for default positioning (handles dynamic sizing)

@@ -17,6 +17,7 @@ def run_test():
     MessageBox.show_question("Messagebox.show_question")
     MessageBox.show_warning("Messagebox.show_warning")
 
+
     QueryBox.get_date(title="Querybox.get_date")
     QueryBox.get_float("Querybox.get_float")
     QueryBox.get_integer("Querybox.get_integer")

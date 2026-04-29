@@ -6,9 +6,10 @@ and managing the current locale and theme from anywhere in the application.
 """
 from __future__ import annotations
 
+import sys
 import tkinter
 from dataclasses import dataclass
-from typing import Literal, Optional, Sequence, TypedDict, Union
+from typing import Any, Callable, Literal, Optional, Sequence, TypedDict, Union
 
 from babel.core import UnknownLocaleError
 from babel.dates import get_date_format, get_time_format
@@ -227,6 +228,13 @@ class AppSettings:
         theme: The current theme name ('light', 'dark', or a specific theme).
         light_theme: The theme to use when `theme='light'`.
         dark_theme: The theme to use when `theme='dark'`.
+        follow_system_appearance: If True, automatically switch between
+            `light_theme` and `dark_theme` to match the OS appearance and
+            track changes at runtime. Currently effective on macOS, where
+            Tk fires `<<TkSystemAppearanceChanged>>` and exposes the
+            current mode via `tk::unsupported::MacWindowStyle isDark`.
+            Defaults to False so existing apps that pin a theme keep
+            doing so.
         available_themes: Sequence of available theme names.
         inherit_surface_color: If True, child widgets inherit the parent's
             surface color for consistent backgrounds.
@@ -247,6 +255,21 @@ class AppSettings:
         window_style: Windows-only pywinstyles effect for all windows.
             Options include 'mica', 'acrylic', 'aero', 'transparent', 'win7'.
             Defaults to 'mica'. Set to None to disable.
+        macos_quit_behavior: How the close button and Cmd+Q behave on macOS.
+            'native' (default) follows Mac convention: clicking the window
+            close button or Cmd+H hides the app (withdraws), clicking the
+            dock icon reshows it, and Cmd+Q (or Dock → Quit) actually
+            destroys it. 'classic' restores the cross-platform behavior
+            where the close button destroys the window. No-op on Win/Linux.
+        remember_window_state: If True, the App's geometry (size + position)
+            is saved on close and restored on next launch, with off-screen
+            positions clamped back into a visible monitor. Off by default
+            so existing apps that pin a size/position keep doing so.
+        state_path: Optional override for where window state is stored.
+            When None, defaults to a per-app file under the OS config
+            directory (Library/Application Support on macOS, %APPDATA% on
+            Windows, $XDG_CONFIG_HOME on Linux). The leaf filename includes
+            ``app_name`` so multiple ttkbootstrap apps don't collide.
 
     Examples:
         ```python
@@ -275,6 +298,7 @@ class AppSettings:
     theme: str = "light"
     light_theme: str = "docs-light"
     dark_theme: str = "docs-dark"
+    follow_system_appearance: bool = False
     available_themes: Sequence[str] = ()
     inherit_surface_color: bool = True
 
@@ -291,6 +315,11 @@ class AppSettings:
 
     # platform-specific
     window_style: str | None = 'mica'
+    macos_quit_behavior: str = 'native'
+
+    # window state persistence
+    remember_window_state: bool = False
+    state_path: str | None = None
 
     def __post_init__(self):
         """Populate localization defaults when not explicitly configured."""
@@ -306,6 +335,7 @@ class AppSettingsKwargs(TypedDict, total=False):
     theme: str
     light_theme: str
     dark_theme: str
+    follow_system_appearance: bool
     available_themes: Sequence[str]
     inherit_surface_color: bool
 
@@ -319,6 +349,11 @@ class AppSettingsKwargs(TypedDict, total=False):
 
     # platform-specific
     window_style: str | None
+    macos_quit_behavior: str
+
+    # window state persistence
+    remember_window_state: bool
+    state_path: str | None
 
 
 DEFAULT_LOCALE = "en_US"
@@ -512,9 +547,38 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
         # Setup window system info
         self.winsys: str = self.tk.call('tk', 'windowingsystem')
 
-        # Apply theme (use resolved settings.theme)
+        # Apply theme (use resolved settings.theme). If the app opts into
+        # following system appearance, override the explicit theme with the
+        # mode-appropriate one and bind a listener to track future toggles.
         from ttkbootstrap.style.style import set_theme
-        set_theme(self.settings.theme)
+        initial_theme = self.settings.theme
+        if self.settings.follow_system_appearance and self._is_dark_capable_platform():
+            initial_theme = (
+                self.settings.dark_theme
+                if self._system_is_dark()
+                else self.settings.light_theme
+            )
+        set_theme(initial_theme)
+
+        if self.settings.follow_system_appearance and self._is_dark_capable_platform():
+            self._bind_system_appearance_tracking()
+
+        # Install macOS-native close/quit/hide handlers when requested.
+        if self.winsys == 'aqua' and self.settings.macos_quit_behavior == 'native':
+            self._install_macos_quit_handlers()
+
+        # macOS-only polish: sync tk appname so the apple menu's first
+        # entry shows the app name (otherwise Tk uses the interpreter's
+        # name, typically "Python"), and bind Cmd+W to fire the standard
+        # WM_DELETE_WINDOW protocol so the close shortcut behaves like a
+        # close-button click.
+        if self.winsys == 'aqua':
+            if self.settings.app_name:
+                try:
+                    self.tk.call('tk', 'appname', self.settings.app_name)
+                except tkinter.TclError:
+                    pass
+            self.bind('<Command-w>', self._trigger_close, add='+')
 
         # Initialize the localization bridge so MessageCatalog.translate()
         # and <<LocaleChanged>> are available throughout the app.
@@ -534,6 +598,14 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
         # Setup icon
         self._setup_icon(icon, default_icon_enabled=True)
 
+        # If the app opted into state restoration, override the explicit
+        # size/position with whatever was saved last time. The saved geometry
+        # is a single 'WxH+X+Y' string applied after _setup_window so it
+        # supersedes both kwargs and centering logic.
+        saved_geometry = None
+        if self.settings.remember_window_state:
+            saved_geometry = self._read_saved_geometry()
+
         # Setup window using BaseWindow
         # Use window_style from parameter if explicitly provided, otherwise use settings
         _window_style = self.settings.window_style if window_style is _USE_SETTINGS else window_style
@@ -549,6 +621,9 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
             alpha=self._alpha,
             window_style=_window_style,
         )
+
+        if saved_geometry is not None:
+            self._apply_saved_geometry(saved_geometry)
 
         # Apply ttkbootstrap-specific bindings
         apply_class_bindings(self)
@@ -572,8 +647,232 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
 
     def destroy(self) -> None:
         """Destroys the window and all its children."""
+        if self.settings.remember_window_state:
+            try:
+                if self.winfo_exists():
+                    self._save_window_state()
+            except tkinter.TclError:
+                pass
         clear_current_app(self)
         super().destroy()
+
+    # ----- Window state persistence ------------------------------------------
+
+    def _state_file_path(self):
+        """Return the path where this App's window state is persisted."""
+        from pathlib import Path
+        import os
+        if self.settings.state_path:
+            return Path(self.settings.state_path)
+        # Per-platform config dir; leaf includes app_name to avoid collisions
+        # between multiple ttkbootstrap apps installed on the same machine.
+        app_name = self.settings.app_name or 'ttkbootstrap'
+        if sys.platform == 'darwin':
+            base = Path.home() / 'Library' / 'Application Support'
+        elif sys.platform == 'win32':
+            base = Path(os.environ.get('APPDATA') or (Path.home() / 'AppData' / 'Roaming'))
+        else:
+            base = Path(os.environ.get('XDG_CONFIG_HOME') or (Path.home() / '.config'))
+        return base / app_name / 'window_state.json'
+
+    def _read_saved_geometry(self):
+        """Return the persisted 'WxH+X+Y' string, or None if not present/valid."""
+        import json
+        path = self._state_file_path()
+        try:
+            raw = path.read_text()
+        except (FileNotFoundError, OSError):
+            return None
+        try:
+            data = json.loads(raw)
+        except json.JSONDecodeError:
+            return None
+        geo = data.get('geometry') if isinstance(data, dict) else None
+        return geo if isinstance(geo, str) and geo else None
+
+    def _apply_saved_geometry(self, geometry: str) -> None:
+        """Restore a saved 'WxH+X+Y' string, clamping off-screen positions."""
+        try:
+            self.geometry(geometry)
+            self.update_idletasks()
+        except tkinter.TclError:
+            return
+        # If the saved position is on a now-disconnected monitor, drag it
+        # back into a visible region so the window doesn't open invisibly.
+        try:
+            from ttkbootstrap.runtime.window_utilities import WindowPositioning
+            x, y = self.winfo_x(), self.winfo_y()
+            x, y = WindowPositioning.ensure_on_screen(self, x, y)
+            self.geometry(f'+{x}+{y}')
+        except Exception:
+            pass
+
+    def _save_window_state(self) -> None:
+        """Write the current geometry to the state file."""
+        import json
+        path = self._state_file_path()
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+        except OSError:
+            return
+        try:
+            geo = self.geometry()
+            path.write_text(json.dumps({'geometry': geo}))
+        except (OSError, tkinter.TclError):
+            pass
+
+    # ----- System appearance tracking ----------------------------------------
+
+    def _is_dark_capable_platform(self) -> bool:
+        """Return True if the current windowing system reports an appearance.
+
+        Currently only macOS exposes a Tk-level light/dark signal
+        (``<<TkSystemAppearanceChanged>>`` and ``MacWindowStyle isDark``).
+        Win/Linux apps that want to track system theme need their own
+        OS-specific hook, which is out of scope for this method.
+        """
+        return getattr(self, 'winsys', None) == 'aqua'
+
+    def _system_is_dark(self) -> bool:
+        """Return True if the OS is currently in dark mode (macOS)."""
+        try:
+            return bool(int(self.tk.call(
+                '::tk::unsupported::MacWindowStyle', 'isDark', self,
+            )))
+        except tkinter.TclError:
+            return False
+
+    def _bind_system_appearance_tracking(self) -> None:
+        """Switch themes when the OS toggles between light and dark mode."""
+        def on_appearance_changed(_event=None):
+            if not self.settings.follow_system_appearance:
+                return
+            from ttkbootstrap.style.style import set_theme
+            set_theme(
+                self.settings.dark_theme
+                if self._system_is_dark()
+                else self.settings.light_theme
+            )
+
+        try:
+            self.bind('<<TkSystemAppearanceChanged>>', on_appearance_changed, add='+')
+        except tkinter.TclError:
+            pass
+
+    # ----- macOS Quit/Close conventions --------------------------------------
+
+    def _install_macos_quit_handlers(self) -> None:
+        """Wire macOS-native close/quit/hide gestures.
+
+        macOS convention: clicking the window close button hides the app
+        (it stays in the Dock and Cmd+Tab list) rather than destroying it.
+        Cmd+Q (and Dock → Quit) is what actually quits. Cmd+H hides the
+        app, and clicking the Dock icon brings the main window back.
+
+        This method installs the matching Tk handlers so apps that opt
+        into ``macos_quit_behavior='native'`` behave correctly without
+        each app duplicating the boilerplate.
+        """
+        # Close button → withdraw. We replace the protocol unconditionally
+        # because the default Tk behavior on close is to destroy, which is
+        # wrong on Mac. Apps that want to hook close should call
+        # `app.on_close(my_handler)` after construction; that overrides
+        # this default.
+        self.protocol('WM_DELETE_WINDOW', self.withdraw)
+
+        # Cmd+Q / Dock → Quit fire <<AppleQuit>>; that's the real quit signal.
+        try:
+            self.bind('<<AppleQuit>>', lambda _e: self.destroy(), add='+')
+        except tkinter.TclError:
+            pass
+
+        # Cmd+H hides the app.
+        try:
+            self.bind('<<Apple-Hide>>', lambda _e: self.withdraw(), add='+')
+        except tkinter.TclError:
+            pass
+
+        # Clicking the Dock icon when no window is visible fires
+        # <<Apple-ReopenApplication>>; bring the main window back.
+        try:
+            self.bind(
+                '<<Apple-ReopenApplication>>',
+                lambda _e: self.deiconify(),
+                add='+',
+            )
+        except tkinter.TclError:
+            pass
+
+    def _trigger_close(self, _event=None) -> str:
+        """Invoke the registered WM_DELETE_WINDOW handler for this window.
+
+        Lets ``Cmd+W`` and any other "close this window" gesture flow
+        through the same code path as clicking the close button, so a
+        custom ``app.on_close(handler)`` is honored.
+        """
+        try:
+            handler_script = self.tk.call(
+                'wm', 'protocol', self._w, 'WM_DELETE_WINDOW',
+            )
+        except tkinter.TclError:
+            handler_script = ''
+        if handler_script:
+            try:
+                self.tk.eval(handler_script)
+            except tkinter.TclError:
+                pass
+        else:
+            # No handler registered — fall back to the platform-correct
+            # default for this app: withdraw on native macOS, destroy
+            # otherwise.
+            if (
+                self.winsys == 'aqua'
+                and self.settings.macos_quit_behavior == 'native'
+            ):
+                self.withdraw()
+            else:
+                self.destroy()
+        return 'break'
+
+    # ----- macOS apple menu hooks --------------------------------------------
+
+    def on_about(self, handler: Callable[[], Any]) -> None:
+        """Register a handler for the macOS "About <App>" menu item.
+
+        Tk on Aqua calls ``::tk::mac::standardAboutPanel`` when the user
+        picks About from the application menu. This method overrides
+        that proc with the supplied Python callable. No-op on Win/Linux,
+        where there's no equivalent system menu.
+
+        Args:
+            handler: Zero-argument callable invoked when the user picks
+                About from the apple menu.
+        """
+        if self.winsys != 'aqua':
+            return
+        try:
+            self.tk.createcommand('::tk::mac::standardAboutPanel', handler)
+        except tkinter.TclError:
+            pass
+
+    def on_preferences(self, handler: Callable[[], Any]) -> None:
+        """Register a handler for the macOS "Preferences…" menu item.
+
+        Tk on Aqua calls ``::tk::mac::ShowPreferences`` when the user picks
+        Preferences (Cmd+,) from the application menu. This method
+        overrides that proc with the supplied Python callable. No-op on
+        Win/Linux.
+
+        Args:
+            handler: Zero-argument callable invoked when the user picks
+                Preferences from the apple menu.
+        """
+        if self.winsys != 'aqua':
+            return
+        try:
+            self.tk.createcommand('::tk::mac::ShowPreferences', handler)
+        except tkinter.TclError:
+            pass
 
 
 # Backward compatibility alias

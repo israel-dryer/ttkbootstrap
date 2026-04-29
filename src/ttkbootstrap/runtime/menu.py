@@ -35,9 +35,11 @@ Examples:
 """
 import tkinter as tk
 from tkinter import font, ttk
-from typing import Any, Union
+from typing import Any, Optional, Union
 
 from ttkbootstrap_icons_bs import BootstrapIcon
+from ttkbootstrap.core.localization import MessageCatalog
+from ttkbootstrap.runtime.shortcuts import format_shortcut
 from ttkbootstrap.style.style import get_style
 
 
@@ -77,18 +79,72 @@ class MenuManager:
         # Set up theme change monitoring
         self._setup_theme_monitoring()
 
+    @classmethod
+    def for_widget(cls, widget: Any) -> "MenuManager":
+        """Return the singleton MenuManager for ``widget``'s root window.
+
+        Creates one on first access and stores it on the root as
+        ``_menu_manager``. Use this to share icon-tracking and theme
+        monitoring across all tk.Menu-based widgets in an application
+        (menubars, context menus, etc.) without each one binding its own
+        ``<<ThemeChanged>>`` handler.
+        """
+        root = widget.winfo_toplevel() if hasattr(widget, 'winfo_toplevel') else widget
+        existing = getattr(root, '_menu_manager', None)
+        if existing is not None:
+            return existing
+        mgr = cls(root)
+        try:
+            root._menu_manager = mgr
+        except Exception:
+            pass
+        return mgr
+
     def _setup_theme_monitoring(self):
-        """Set up monitoring for <<ThemeChanged>> events on the root window."""
+        """Set up monitoring for theme and macOS appearance changes."""
         # Get the root window
         root = self.parent.winfo_toplevel() if hasattr(self.parent, 'winfo_toplevel') else self.parent
 
-        # Bind to theme change event on root
-        if hasattr(root, 'bind'):
-            root.bind('<<ThemeChanged>>', self._on_theme_changed, add='+')
+        if not hasattr(root, 'bind'):
+            return
+
+        # ttkbootstrap theme changes
+        root.bind('<<ThemeChanged>>', self._on_theme_changed, add='+')
+        # macOS light/dark appearance toggle (Tk 8.6.10+ on Aqua). Without
+        # this, icons rendered with a cached system-text color stay stale
+        # after the user flips system Appearance.
+        try:
+            root.bind('<<TkSystemAppearanceChanged>>', self._on_theme_changed, add='+')
+        except tk.TclError:
+            pass
+
+    def _menu_icon_color(self) -> str:
+        """Return the right foreground color for icons going into a tk.Menu.
+
+        On Aqua, NSMenu always uses system appearance regardless of the
+        app theme, so icons must match the system text color (which Tk
+        keeps in sync with macOS light/dark mode). Everywhere else, the
+        app theme's foreground is the right answer.
+        """
+        try:
+            winsys = self.parent.tk.call('tk', 'windowingsystem')
+        except tk.TclError:
+            winsys = None
+
+        if winsys == 'aqua':
+            try:
+                # winfo_rgb returns 16-bit channels; pack into a hex string
+                # BootstrapIcon (and PIL underneath) understands.
+                r, g, b = self.parent.winfo_rgb('systemTextColor')
+                return f'#{r >> 8:02x}{g >> 8:02x}{b >> 8:02x}'
+            except tk.TclError:
+                pass
+
+        return self.style.style_builder.color('foreground')
 
     def _on_theme_changed(self, event=None):
-        """Update all menu icon colors when theme changes."""
-        fg_color = self.style.style_builder.color('foreground')
+        """Update all menu icon colors when theme or system appearance changes."""
+        fg_color = self._menu_icon_color()
 
         # Update all menu items (including cascades)
         for menu, index, icon_name, size in self.menu_items.values():
@@ -101,7 +157,62 @@ class MenuManager:
                 # Menu item may have been deleted
                 pass
 
-    def _parse_icon_spec(self, icon_spec: Union[str, dict]) -> tuple[str, int]:
+    # ----- Public helpers for tk.Menu callers --------------------------------
+
+    @staticmethod
+    def translate_label(text: Optional[str]) -> Optional[str]:
+        """Run a label through ``MessageCatalog.translate``.
+
+        Semantic keys (e.g. ``'table.sort_asc'``) become localized strings;
+        plain text passes through unchanged because ``translate`` returns
+        the source when no translation is registered.
+        """
+        if not text:
+            return text
+        try:
+            return MessageCatalog.translate(text)
+        except Exception:
+            return text
+
+    def resolve_icon(self, icon_spec: Union[str, dict, None]) -> tuple[Any, Optional[str], int]:
+        """Resolve an icon spec to a ``(PhotoImage, name, size)`` triple.
+
+        Returns ``(None, None, 0)`` for empty/unsupported specs. The returned
+        PhotoImage is the same kind ``MenuManager`` uses internally for its
+        own menus, so the caller can pass it straight to
+        ``menu.add_command(image=..., compound='left')``.
+        """
+        if not icon_spec or icon_spec == 'empty':
+            return None, None, 0
+        name, size = self._parse_icon_spec(icon_spec)
+        if not name:
+            return None, None, 0
+        try:
+            icon = BootstrapIcon(name, size, self._menu_icon_color())
+        except Exception:
+            return None, None, 0
+        return icon, name, size
+
+    def register_icon(self, menu: tk.Menu, index: int, icon_name: str, icon_size: int) -> None:
+        """Track a menu item for theme-aware icon re-rendering.
+
+        Call after ``menu.add_*(image=icon)`` so subsequent
+        ``<<ThemeChanged>>`` events refresh the entry's icon color.
+        """
+        self._track_icon(menu, index, icon_name, icon_size)
+
+    def unregister_menu(self, menu: tk.Menu) -> None:
+        """Drop all tracking entries for ``menu``.
+
+        Call when the menu is being destroyed or fully rebuilt so stale
+        ``(menu, index)`` references don't try to reconfigure deleted entries
+        on the next ``<<ThemeChanged>>``.
+        """
+        prefix = f"{id(menu)}_"
+        for key in [k for k in self.menu_items if k.startswith(prefix)]:
+            del self.menu_items[key]
+
+    def _parse_icon_spec(self, icon_spec: Union[str, dict]) -> tuple[Optional[str], int]:
         """Parse icon specification into name and size tuple."""
         # Use menu font linespace as default icon size
         menu_font = font.nametofont("TkMenuFont")
@@ -114,6 +225,21 @@ class MenuManager:
             size = icon_spec.get('size', default_size)
             return name, size
         return None, default_size
+
+    def _is_aqua_special_name(self, name: str) -> bool:
+        """Return True if ``name`` triggers macOS-native menu handling.
+
+        Tk on Aqua reserves three submenu names off the menubar: ``apple``
+        (the app menu — gets auto-filled with About/Hide/Quit), ``window``
+        (auto-populated with open Toplevels), and ``help`` (gets the
+        system Help search field). Names are case-sensitive and only have
+        meaning under windowingsystem='aqua'.
+        """
+        try:
+            winsys = self.parent.tk.call('tk', 'windowingsystem')
+        except tk.TclError:
+            return False
+        return winsys == 'aqua' and name in ('apple', 'window', 'help')
 
     def create_menu(self, parent: Any, items: list[dict]) -> tk.Menu:
         """Create a menu from a list of item dictionaries.
@@ -137,36 +263,44 @@ class MenuManager:
             options = options.copy()
             sub_items = options.pop('items', [])
 
+            # Pull off the optional ``name`` early so it's never passed to
+            # add_cascade. On Aqua, three magic names get system handling:
+            # 'apple' → app menu (auto-fills with About/Hide/Quit),
+            # 'window' → Tk auto-populates the open Toplevel list,
+            # 'help' → system menu search across all menus.
+            menu_name = options.pop('name', None)
+
+            # Translate the label so semantic keys (e.g. 'menu.file') resolve
+            # via MessageCatalog. Plain text passes through unchanged.
+            if 'label' in options:
+                options['label'] = self.translate_label(options['label'])
+
             # Handle icon for cascade menu BEFORE popping tearoff
             icon_spec = options.pop('icon', None)
             icon_name = None
             icon_size = 16
 
             if icon_spec:
-                icon_name, icon_size = self._parse_icon_spec(icon_spec)
-
-                if icon_name:
-                    # Get foreground color
-                    fg_color = self.style.style_builder.color('foreground')
-                    # Create icon with current foreground color
-                    icon = BootstrapIcon(icon_name, icon_size, fg_color)
+                icon, icon_name, icon_size = self.resolve_icon(icon_spec)
+                if icon is not None:
                     options['image'] = icon
                     options['compound'] = options.get('compound', 'left')
 
             options.setdefault('tearoff', 0)
 
-            # Create a menu for this item
-            menu = tk.Menu(parent, tearoff=options.pop('tearoff'))
+            # Create a menu for this item. On Aqua, propagate the magic name
+            # so Tk wires up NSApp's app/window/help menu integration.
+            menu_kwargs: dict[str, Any] = {'tearoff': options.pop('tearoff')}
+            if menu_name and self._is_aqua_special_name(menu_name):
+                menu_kwargs['name'] = menu_name
+            menu = tk.Menu(parent, **menu_kwargs)
 
             # Add it as a cascade to the parent menu
             parent.add_cascade(menu=menu, **options)
 
             # Track cascade icon if present
             if icon_name:
-                # Get the index of the cascade we just added
-                cascade_index = parent.index('end')
-                item_id = f"{id(parent)}_cascade_{cascade_index}"
-                self.menu_items[item_id] = (parent, cascade_index, icon_name, icon_size)
+                self.register_icon(parent, parent.index('end'), icon_name, icon_size)
 
             # Add all sub-items to this menu
             self._add_menu_items(menu, sub_items)
@@ -183,49 +317,45 @@ class MenuManager:
                 # This item has subitems, so it's a cascade
                 # Pass to create_menu which will handle the cascade
                 self.create_menu(menu, [opts])
-            else:
-                # Regular menu item (not a cascade)
-                # Handle icon if present
-                icon_spec = opts.pop('icon', None)
-                icon_name = None
-                icon_size = 16
+                continue
 
-                if icon_spec:
-                    icon_name, icon_size = self._parse_icon_spec(icon_spec)
+            # Regular menu item (not a cascade)
+            if 'label' in opts:
+                opts['label'] = self.translate_label(opts['label'])
 
-                    if icon_name:
-                        # Get foreground color
-                        fg_color = self.style.style_builder.color('foreground')
-                        # Create icon with current foreground color
-                        icon = BootstrapIcon(icon_name, icon_size, fg_color)
-                        opts['image'] = icon
-                        opts['compound'] = opts.get('compound', 'left')
+            # Resolve a shortcut spec (registered key or modifier pattern)
+            # to a platform-correct accelerator display. Caller-supplied
+            # ``accelerator`` wins (legacy literal pass-through), so existing
+            # menus with ``accelerator='Ctrl+S'`` are not auto-translated.
+            shortcut_spec = opts.pop('shortcut', None)
+            if shortcut_spec and 'accelerator' not in opts:
+                display = format_shortcut(shortcut_spec)
+                if display:
+                    opts['accelerator'] = display
 
-                if 'type' not in opts:
-                    menu.add_command(**opts)
-                    if icon_name:
-                        index = menu.index('end')
-                        self._track_icon(menu, index, icon_name, icon_size)
-                elif opts['type'] == 'checkbutton':
-                    opts.pop('type')
-                    menu.add_checkbutton(**opts)
-                    if icon_name:
-                        index = menu.index('end')
-                        self._track_icon(menu, index, icon_name, icon_size)
-                elif opts['type'] == 'radiobutton':
-                    opts.pop('type')
-                    menu.add_radiobutton(**opts)
-                    if icon_name:
-                        index = menu.index('end')
-                        self._track_icon(menu, index, icon_name, icon_size)
-                elif opts['type'] == 'command':
-                    opts.pop('type')
-                    menu.add_command(**opts)
-                    if icon_name:
-                        index = menu.index('end')
-                        self._track_icon(menu, index, icon_name, icon_size)
-                elif opts['type'] == 'separator':
-                    menu.add_separator()
+            icon_spec = opts.pop('icon', None)
+            icon_name = None
+            icon_size = 0
+            if icon_spec:
+                icon, icon_name, icon_size = self.resolve_icon(icon_spec)
+                if icon is not None:
+                    opts['image'] = icon
+                    opts['compound'] = opts.get('compound', 'left')
+
+            item_type = opts.pop('type', 'command')
+            if item_type == 'separator':
+                menu.add_separator()
+                continue
+
+            adder = {
+                'command': menu.add_command,
+                'checkbutton': menu.add_checkbutton,
+                'radiobutton': menu.add_radiobutton,
+            }.get(item_type, menu.add_command)
+            adder(**opts)
+
+            if icon_name:
+                self.register_icon(menu, menu.index('end'), icon_name, icon_size)
 
     def _track_icon(self, menu: tk.Menu, index: int, icon_name: str, icon_size: int):
         """Register a menu item with an icon for automatic theme updates."""
@@ -252,7 +382,25 @@ def create_menu(parent: Any, items: list[dict]) -> tk.Menu:
           'radiobutton', or 'separator'
         - **variable** (Variable): Tkinter variable for checkbutton/radiobutton
         - **value** (Any): Value for radiobutton items
-        - Any other valid Tkinter menu item options (accelerator, underline, etc.)
+        - **name** (str): Optional Tcl widget name for the cascade. On macOS
+          three names trigger system-native menu integration: ``'apple'``
+          gives you the application menu (Tk auto-fills it with About,
+          Hide, Hide Others, Show All, Quit; any items you add appear
+          before the system items), ``'window'`` gets auto-populated with
+          open Toplevels, and ``'help'`` enables system Help search.
+          Ignored on Win/Linux.
+        - **shortcut** (str): Platform-aware accelerator. Accepts a
+          registered shortcut key (e.g. ``'save'`` if you've called
+          ``Shortcuts.register('save', 'Mod+S', save_file)``) or a
+          modifier pattern like ``'Mod+S'``, ``'Ctrl+Shift+N'``, ``'F5'``.
+          Renders as ``⌘S`` on macOS and ``Ctrl+S`` on Win/Linux.
+          For the actual keypress binding, register the shortcut and call
+          ``Shortcuts.bind_to(app)`` — that's the canonical pathway.
+        - **accelerator** (str): Legacy literal display string passed
+          straight through to ``tk.Menu`` (e.g. ``'Ctrl+S'``). No platform
+          translation. Prefer ``shortcut`` for new code. If both are
+          provided, ``accelerator`` wins.
+        - Any other valid Tkinter menu item options (underline, etc.)
 
     Args:
         parent: The parent widget (Window, Toplevel, or Menu). If a Window

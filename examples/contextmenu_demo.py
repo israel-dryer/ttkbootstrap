@@ -25,7 +25,7 @@ def main():
 
     # Create context menu (right-click anywhere in the window)
     menu = ContextMenu(
-        master=root,
+        target=root,
         anchor='nw',      # menu corner to align
         attach='nw',      # aligns to the click point provided to show()
         offset=(0, 0),

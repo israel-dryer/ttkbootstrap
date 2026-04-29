@@ -19,6 +19,7 @@ from ttkbootstrap_icons_bs import BootstrapIcon
 from ttkbootstrap.style.style import get_style
 from ttkbootstrap.datasource.sqlite_source import SqliteDataSource
 from ttkbootstrap.widgets.primitives.button import Button
+from ttkbootstrap.runtime.utility import bind_right_click
 from ttkbootstrap.widgets.composites.contextmenu import ContextMenu
 from ttkbootstrap.widgets.composites.dropdownbutton import DropdownButton
 from ttkbootstrap.widgets.primitives.entry import Entry
@@ -847,7 +848,7 @@ class TableView(Frame):
         self._tree.bind("<<TreeviewSelect>>", self._on_selection_event)
         self._tree.bind("<ButtonRelease-1>", self._on_row_click_event)
         if self._context_menus != "none":
-            self._tree.bind("<Button-3>", self._on_tree_context)
+            bind_right_click(self._tree, self._on_tree_context)
         if self._editing['updating']:
             self._tree.bind("<Double-1>", self._on_row_double_click)
         # Track resize events to rebalance grouped layouts
@@ -1240,7 +1241,10 @@ class TableView(Frame):
             return
         if self._row_menu:
             return
-        menu = ContextMenu(master=self, target=self._tree, attach='sw')
+        # Activation is wired upstream by bind_right_click on the tree so the
+        # row vs header dispatch can run before the (lazily built) menu
+        # decides which one to show.
+        menu = ContextMenu(master=self, target=self._tree, attach='sw', trigger=None)
         if not self._sorting == 'none':
             menu.add_command(text="table.sort_asc", command=lambda: self._sort_selection(True))
             menu.add_command(text="table.sort_desc", command=lambda: self._sort_selection(False))
@@ -1980,7 +1984,7 @@ class TableView(Frame):
             return
         if self._header_menu:
             return
-        menu = ContextMenu(master=self, target=self._tree)
+        menu = ContextMenu(master=self, target=self._tree, trigger=None)
         menu.add_command(text="table.align_left", icon="align-start", command=self._align_header_left)
         menu.add_command(text="table.align_center", icon="align-center", command=self._align_header_center)
         menu.add_command(text="table.align_right", icon="align-end", command=self._align_header_right)

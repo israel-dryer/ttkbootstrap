@@ -9,7 +9,7 @@ import ttkbootstrap as ttk
 
 
 def main():
-    app = ttk.App(theme='rose-light', title='Card Demo', size=(600, 500))
+    app = ttk.App(theme='rose-light', title='Card Demo', size=(600, 600))
 
     container = ttk.Frame(app, padding=20)
     container.pack(fill='both', expand=True)

@@ -154,6 +154,9 @@ class OptionMenu(MenuButton):
             anchor="nw", attach="sw",
             offset=(offset_x, 0),
             density=density,
+            # OptionMenu drives activation via ``show_menu`` (left-click,
+            # Return/KP_Enter), not ContextMenu's auto-trigger.
+            trigger=None,
         )
 
     def show_menu(self):

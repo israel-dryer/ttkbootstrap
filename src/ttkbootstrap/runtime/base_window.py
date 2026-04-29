@@ -281,10 +281,15 @@ class BaseWindow:
         This forces a geometry/layout pass before mapping the window, which is
         useful if you have performed setup that affects sizing.
         """
-        # Apply Windows window style while still withdrawn to prevent flash
+        # Apply Windows window style while still withdrawn to prevent flash.
+        # The update() flushes input/IO events so pywinstyles can attach to a
+        # fully realized HWND on Windows; on Aqua it can hang indefinitely
+        # processing children's pending events (see Dialog._position_dialog
+        # for the same pattern), so gate it on the platform that needs it.
         self.update_idletasks()
         self._apply_window_style()
-        self.update()
+        if getattr(self, 'winsys', None) == 'win32':
+            self.update()
         self.deiconify()
 
     def title(self, value: str | None = None) -> str:

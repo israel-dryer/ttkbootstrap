@@ -1,4 +1,4 @@
-﻿"""Utility functions for ttkbootstrap.
+"""Utility functions for ttkbootstrap.
 
 This module provides various utility functions for common tasks in
  ttksbootstrap applications, including high-DPI support, screen geometry
@@ -25,10 +25,24 @@ Example:
 """
 
 
+def _platform_baseline() -> float:
+    """Return the default Tk scaling baseline for the current platform.
+
+    Tk scaling is measured in pixels-per-point (72 points per inch).
+    - Windows/Linux default DPI is 96  → baseline = 96/72 ≈ 1.334
+    - macOS default DPI is 72          → baseline = 72/72 = 1.0
+      (Retina pixel-doubling is handled by the OS, not Tk scaling)
+    """
+    import platform
+    if platform.system() == 'Darwin':
+        return 1.0
+    return 1.33398982438864281  # 96 DPI / 72
+
+
 class _ScalingState:
     """Internal class to store global scaling state."""
     _scale_factor: float = 1.0
-    _baseline: float = 1.33398982438864281  # Default tk scaling on Windows 96 DPI
+    _baseline: float = _platform_baseline()
 
     @classmethod
     def set_scale_factor(cls, factor: float):
@@ -316,6 +330,31 @@ def center_on_parent(win, parent=None):
     x = px + (pw - ww) // 2
     y = py + (ph - wh) // 2
     win.geometry(f"{ww}x{wh}+{x}+{y}")
+
+
+def bind_right_click(widget, handler, add: str | bool = '+'):
+    """Bind a right-click handler portably across Tk windowing systems.
+
+    On Win/Linux right-click maps to ``<Button-3>``. On macOS Tk maps the
+    right mouse button (and two-finger trackpad click) to ``<Button-2>``,
+    and Mac users also expect Ctrl+click as a context-menu trigger. This
+    helper binds the appropriate event(s) for the current platform so
+    callers don't have to repeat the platform check.
+
+    Args:
+        widget: Any Tk widget with a ``.bind`` method and a ``.tk`` attribute.
+        handler: Event handler callable (or Tcl command string).
+        add: Passed through to ``bind``. Defaults to ``'+'`` so the helper
+            never silently replaces an existing binding.
+    """
+    widget.bind('<Button-3>', handler, add=add)
+    try:
+        winsys = widget.tk.call('tk', 'windowingsystem')
+    except Exception:
+        winsys = None
+    if winsys == 'aqua':
+        widget.bind('<Button-2>', handler, add=add)
+        widget.bind('<Control-Button-1>', handler, add=add)
 
 
 def clamp(value, min_val, max_val):

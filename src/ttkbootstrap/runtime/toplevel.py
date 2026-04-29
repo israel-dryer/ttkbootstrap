@@ -75,6 +75,29 @@ class Toplevel(BaseWindow, WidgetCapabilitiesMixin, tkinter.Toplevel):
         # Setup window system info
         self.winsys: str = self.tk.call("tk", "windowingsystem")
 
+        # Apply Aqua MacWindowStyle BEFORE any setup that might pump the
+        # event loop (icons, geometry, update_idletasks). Tk's docs require
+        # the style to be set on a freshly-created, never-mapped window;
+        # after the first event-loop trip the call silently has no effect
+        # and the window keeps its default chrome. We withdraw immediately
+        # so the window is unmapped, set the style, then continue.
+        self.withdraw()
+        if windowtype is not None and self.winsys == "aqua":
+            aqua_style = {
+                "tooltip": ("help", "none"),
+                "splash": ("plain", "none"),
+                "utility": ("utility", "none"),
+                "dock": ("plain", "none"),
+            }.get(windowtype)
+            if aqua_style is not None:
+                try:
+                    self.tk.call(
+                        "::tk::unsupported::MacWindowStyle", "style",
+                        self, aqua_style[0], aqua_style[1],
+                    )
+                except tkinter.TclError:
+                    pass
+
         # Setup icon (use default ttkbootstrap icon if no icon provided)
         self._setup_icon(icon, default_icon_enabled=True)
 
@@ -96,7 +119,8 @@ class Toplevel(BaseWindow, WidgetCapabilitiesMixin, tkinter.Toplevel):
         if iconify:
             self.iconify()
 
-        # Toplevel-specific window attributes
+        # X11 -type attribute. The Aqua case was handled before
+        # _setup_window above (style must be set pre-map).
         if windowtype is not None and self.winsys == "x11":
             self.attributes("-type", windowtype)
 

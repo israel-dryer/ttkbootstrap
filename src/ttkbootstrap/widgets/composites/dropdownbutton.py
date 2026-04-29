@@ -144,7 +144,9 @@ class DropdownButton(MenuButton):
             "density": density,
         }
         options.update(self._popdown_options)
-        cm = ContextMenu(self, target=self, items=self._items, **options)
+        # DropdownButton manages its own activation (left-click, Return/
+        # KP_Enter via show_menu), so opt out of ContextMenu's auto-trigger.
+        cm = ContextMenu(self, target=self, items=self._items, trigger=None, **options)
         if self._item_click_callback:
             self.on_item_click(self._item_click_callback)
         return cm
