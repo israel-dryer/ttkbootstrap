@@ -6,6 +6,7 @@ and managing the current locale and theme from anywhere in the application.
 """
 from __future__ import annotations
 
+import sys
 import tkinter
 from dataclasses import dataclass
 from typing import Any, Callable, Literal, Optional, Sequence, TypedDict, Union
@@ -260,6 +261,15 @@ class AppSettings:
             dock icon reshows it, and Cmd+Q (or Dock → Quit) actually
             destroys it. 'classic' restores the cross-platform behavior
             where the close button destroys the window. No-op on Win/Linux.
+        remember_window_state: If True, the App's geometry (size + position)
+            is saved on close and restored on next launch, with off-screen
+            positions clamped back into a visible monitor. Off by default
+            so existing apps that pin a size/position keep doing so.
+        state_path: Optional override for where window state is stored.
+            When None, defaults to a per-app file under the OS config
+            directory (Library/Application Support on macOS, %APPDATA% on
+            Windows, $XDG_CONFIG_HOME on Linux). The leaf filename includes
+            ``app_name`` so multiple ttkbootstrap apps don't collide.
 
     Examples:
         ```python
@@ -307,6 +317,10 @@ class AppSettings:
     window_style: str | None = 'mica'
     macos_quit_behavior: str = 'native'
 
+    # window state persistence
+    remember_window_state: bool = False
+    state_path: str | None = None
+
     def __post_init__(self):
         """Populate localization defaults when not explicitly configured."""
         _apply_localization_defaults(self)
@@ -336,6 +350,10 @@ class AppSettingsKwargs(TypedDict, total=False):
     # platform-specific
     window_style: str | None
     macos_quit_behavior: str
+
+    # window state persistence
+    remember_window_state: bool
+    state_path: str | None
 
 
 DEFAULT_LOCALE = "en_US"
@@ -580,6 +598,14 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
         # Setup icon
         self._setup_icon(icon, default_icon_enabled=True)
 
+        # If the app opted into state restoration, override the explicit
+        # size/position with whatever was saved last time. The saved geometry
+        # is a single 'WxH+X+Y' string applied after _setup_window so it
+        # supersedes both kwargs and centering logic.
+        saved_geometry = None
+        if self.settings.remember_window_state:
+            saved_geometry = self._read_saved_geometry()
+
         # Setup window using BaseWindow
         # Use window_style from parameter if explicitly provided, otherwise use settings
         _window_style = self.settings.window_style if window_style is _USE_SETTINGS else window_style
@@ -595,6 +621,9 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
             alpha=self._alpha,
             window_style=_window_style,
         )
+
+        if saved_geometry is not None:
+            self._apply_saved_geometry(saved_geometry)
 
         # Apply ttkbootstrap-specific bindings
         apply_class_bindings(self)
@@ -618,8 +647,79 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
 
     def destroy(self) -> None:
         """Destroys the window and all its children."""
+        if self.settings.remember_window_state:
+            try:
+                if self.winfo_exists():
+                    self._save_window_state()
+            except tkinter.TclError:
+                pass
         clear_current_app(self)
         super().destroy()
+
+    # ----- Window state persistence ------------------------------------------
+
+    def _state_file_path(self):
+        """Return the path where this App's window state is persisted."""
+        from pathlib import Path
+        import os
+        if self.settings.state_path:
+            return Path(self.settings.state_path)
+        # Per-platform config dir; leaf includes app_name to avoid collisions
+        # between multiple ttkbootstrap apps installed on the same machine.
+        app_name = self.settings.app_name or 'ttkbootstrap'
+        if sys.platform == 'darwin':
+            base = Path.home() / 'Library' / 'Application Support'
+        elif sys.platform == 'win32':
+            base = Path(os.environ.get('APPDATA') or (Path.home() / 'AppData' / 'Roaming'))
+        else:
+            base = Path(os.environ.get('XDG_CONFIG_HOME') or (Path.home() / '.config'))
+        return base / app_name / 'window_state.json'
+
+    def _read_saved_geometry(self):
+        """Return the persisted 'WxH+X+Y' string, or None if not present/valid."""
+        import json
+        path = self._state_file_path()
+        try:
+            raw = path.read_text()
+        except (FileNotFoundError, OSError):
+            return None
+        try:
+            data = json.loads(raw)
+        except json.JSONDecodeError:
+            return None
+        geo = data.get('geometry') if isinstance(data, dict) else None
+        return geo if isinstance(geo, str) and geo else None
+
+    def _apply_saved_geometry(self, geometry: str) -> None:
+        """Restore a saved 'WxH+X+Y' string, clamping off-screen positions."""
+        try:
+            self.geometry(geometry)
+            self.update_idletasks()
+        except tkinter.TclError:
+            return
+        # If the saved position is on a now-disconnected monitor, drag it
+        # back into a visible region so the window doesn't open invisibly.
+        try:
+            from ttkbootstrap.runtime.window_utilities import WindowPositioning
+            x, y = self.winfo_x(), self.winfo_y()
+            x, y = WindowPositioning.ensure_on_screen(self, x, y)
+            self.geometry(f'+{x}+{y}')
+        except Exception:
+            pass
+
+    def _save_window_state(self) -> None:
+        """Write the current geometry to the state file."""
+        import json
+        path = self._state_file_path()
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+        except OSError:
+            return
+        try:
+            geo = self.geometry()
+            path.write_text(json.dumps({'geometry': geo}))
+        except (OSError, tkinter.TclError):
+            pass
 
     # ----- System appearance tracking ----------------------------------------
 
