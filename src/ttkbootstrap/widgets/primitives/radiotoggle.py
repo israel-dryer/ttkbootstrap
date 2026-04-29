@@ -13,6 +13,7 @@ class RadioToggle(RadioButton):
 
         Args:
             master: Parent widget. If None, uses the default root window.
+            **kwargs: See `Other Parameters` below.
 
         Other Parameters
         ----------------
