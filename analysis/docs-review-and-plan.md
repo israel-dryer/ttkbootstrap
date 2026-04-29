@@ -171,16 +171,14 @@ This is the foundation for Goal 1.
 
 ### Phase 3 — Reference-spec gap close
 
-- [ ] **3A.** Decide handling for stdlib re-exports. Recommended: single page `docs/reference/app/tk-reexports.md` listing `Tk`, `Menu`, `Text`, `Canvas`, `TkFrame`, `Variable`, `StringVar`, `IntVar`, `BooleanVar`, `DoubleVar`, `PhotoImage` with one-liners and links to Python's own docs.
-- [ ] **3B.** Add reference pages for missing widgets: `MenuBar`, `SideNavItem`, `SideNavGroup`, `SideNavHeader`, `SideNavSeparator`, `Accordion`, `Badge`, `CheckToggle`, `RadioToggle`. Each is `::: module.Name` after the docstring is spec-grade.
-- [ ] **3C.** Add reference pages for `Window`, `Shortcut`, `get_shortcuts`. (`Window` may just point at `App`.)
-- [ ] **3D.** Decide on `TK_WIDGETS` / `TTK_WIDGETS` constants — either reference page (probably under `reference/style/` or a new `reference/constants/`) or make them private.
-- [ ] **3E.** Resolve duplicate URLs in `reference/widgets/`. Delete `App.md`, `AppShell.md`, `Toplevel.md`, `Style.md`, and the 13 dialog pages from `reference/widgets/`. Update `zensical.toml` so the Widgets nav doesn't duplicate App/Style/Dialogs entries.
-- [ ] **3F.** Decide what `docs/reference/capabilities/` is (see Open Questions). Either:
-  - Convert each page to `::: ttkbootstrap.core.mixins.X` for the mixin that exposes those Tk methods, **or**
-  - Move the content to `docs/capabilities/` as user-guide pages and remove `reference/capabilities/`.
-- [ ] **3G.** Decide what `docs/reference/core/app.md` and `docs/reference/core/style.md` are. They aren't in nav. Promote, delete, or document why they exist.
-- [ ] **3H.** Audit `docs/reference/<section>/index.md` pages — under spec mode these are the navigation surface. They should be navigable maps (alphabetized, grouped, one-line summaries), not placeholder lists.
+- [-] **3A.** Skipped per scope decision: Tk re-exports (`Tk`, `Menu`, `Text`, `Canvas`, `TkFrame`, `Variable`, `StringVar`, `IntVar`, `BooleanVar`, `DoubleVar`, `PhotoImage`) point at stdlib classes. Their canonical docs are at python.org; a redundant page in our reference is editorial work for little value. Re-visit if user need surfaces.
+- [x] **3B.** Reconciled: only `MenuBar` was actually missing. (`SideNavItem/Group/Header/Separator` existed under their old `NavigationView*` names; renamed in Phase 1D. `Accordion`, `Badge`, `CheckToggle`, `RadioToggle` already had pages — survey notes were over-broad.) Created `docs/reference/widgets/MenuBar.md`.
+- [x] **3C.** Created `docs/reference/app/Shortcut.md` and `docs/reference/app/get_shortcuts.md`. Also added the existing `Shortcuts.md` to nav (it had a file but no nav entry). `Window` resolved by mention in `App` class docstring (Phase 2D); separate page deferred — alias inheriting App's spec is sufficient.
+- [-] **3D.** Decision (confirmed by user 2026-04-29): leave `TK_WIDGETS` / `TTK_WIDGETS` as public constants for `isinstance()` use, but skip a dedicated reference page. Hand-writing prose for two tuples-of-classes is editorial; mkdocstrings doesn't autodoc them well; the canonical view of their composition is in `src/ttkbootstrap/widgets/__init__.py`.
+- [x] **3E.** Resolved duplicate URLs in `reference/widgets/`. Deleted 16 files via `git rm` (preserves history): `App.md`, `AppShell.md`, `Toplevel.md`, `Style.md`, and 12 dialog pages. All were byte-identical to their canonical home in `reference/app/`, `reference/style/`, or `reference/dialogs/` (except `widgets/AppShell.md` which was a redirect-style page with no inbound links, and `widgets/App.md` which was a thinner version of the canonical). No nav entries pointed at any of them; ruff still passes.
+- [x] **3F.** No change needed. `reference/capabilities/` pages already follow the spec model — each renders the relevant mixin via `::: ttkbootstrap.core.capabilities.X.YMixin`. They serve users browsing "what can my widget do?" The brief intro paragraph on each page is mechanical (not editorial). Originally flagged for review; no action required.
+- [x] **3G.** Done. `docs/reference/core/app.md` and `docs/reference/core/style.md` were both 0-byte stubs with no nav reference. Deleted via `git rm`; empty `docs/reference/core/` directory removed.
+- [x] **3H.** Audited and patched `reference/<section>/index.md` pages: `app/index.md` gained `Shortcut` and `get_shortcuts` entries (the latter previously linked to `Shortcuts.md` instead of its own page); `style/index.md` and `reference/index.md` had stale "bootstyle" framing in narrative — replaced with the canonical token vocabulary (`accent`, `variant`, `surface`, etc.); `i18n/index.md` referenced a non-existent "Platform → Localization" page — corrected to "Guides → Localization."
 
 ### Phase 4 — Platform section completion (Goal 2)
 
@@ -310,6 +308,7 @@ Raises:
 3. **`TK_WIDGETS` / `TTK_WIDGETS` (Phase 3D).** Public API or internal? Currently in `_MODULE_EXPORTS["ttkbootstrap.api.widgets"]`.
 4. **Per-OS packaging guidance scope (Phase 4E).** First-party recipes, or "use Briefcase / use PyInstaller" pointers?
 5. **Image policy strictness (Phase 6A).** Mandatory for every widget, or judgment call per page?
+6. **`Tabs` and `TabView` API status.** ~~Both classes exist in `widgets/composites/tabs/` and have reference + user-guide pages, but neither is in `_MODULE_EXPORTS`.~~ Resolved 2026-04-29: per user direction, made consistent with peer layout widgets. Added `Tabs` and `TabView` to `api/widgets.py` exports and to `__init__.py` `_MODULE_EXPORTS` + TYPE_CHECKING block. `import ttkbootstrap as ttk; ttk.Tabs` now resolves.
 
 ---
 
@@ -326,6 +325,8 @@ Date — Decision — Rationale.
 - 2026-04-29 — Examples in docstrings made off-by-default. Only included when the call shape is non-obvious or signature ambiguity needs a one-liner to resolve. The user guide owns examples and screenshots.
 - 2026-04-29 — `bootstyle` is deprecated and should not appear in descriptive prose. Class narratives describe styling via the canonical tokens (`accent`, `variant`, etc.). The deprecated `bootstyle` parameter itself is still marked DEPRECATED in argument docs for users who haven't migrated.
 - 2026-04-29 — Phase 2A landed. `ruff` `D` rules with Google convention enforced via `[tool.ruff]` in `pyproject.toml`. Currently-dirty public-surface files use per-file ignores; each entry is removed when that file's docstrings conform. Internal directories (`builders/`, `mixins/`, `internal/`, `parts/`, `capabilities/`, `cli/`, `assets/`) are blanket-ignored. New files in non-ignored directories are linted from day 1.
+- 2026-04-29 — `Tabs` and `TabView` promoted to public API exports per user direction (consistent with peer layout widgets `PageStack`, `Notebook`, `SideNav`, `Toolbar`). Added to `api/widgets.py` and `__init__.py` `_MODULE_EXPORTS` + TYPE_CHECKING block.
+- 2026-04-29 — `TK_WIDGETS` / `TTK_WIDGETS` left public but with no dedicated reference page. Same call applies to Tk re-exports (`Tk`, `Variable`, `StringVar`, etc.) — canonical Python docs already cover them; a redundant page in our reference is editorial work for little value.
 
 ---
 

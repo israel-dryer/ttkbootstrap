@@ -8,7 +8,7 @@ For conceptual explanations and patterns, see **Platform** and **Capabilities**.
 ## How this reference is organized
 
 - **App**: application runtime, windows, menus, and app-scoped settings
-- **Style**: themes, bootstyle tokens, builders, and theme utilities
+- **Style**: themes, design-system tokens (`accent`, `variant`, `surface`), and theme utilities
 - **Capabilities (Widget Interface)**: capability slices that describe **facets of widget behavior**
   (implemented via internal capability modules / mixins, exposed through widgets)
 - **Widgets**: widget classes and composites

@@ -203,6 +203,9 @@ nav = [
             { "get_app_settings" = "reference/app/get_app_settings.md" },
             { "MenuManager" = "reference/app/MenuManager.md" },
             { "create_menu" = "reference/app/create_menu.md" },
+            { "Shortcuts" = "reference/app/Shortcuts.md" },
+            { "Shortcut" = "reference/app/Shortcut.md" },
+            { "get_shortcuts" = "reference/app/get_shortcuts.md" },
         ] },
         { "Style" = [
             { "Overview" = "reference/style/index.md" },
@@ -261,6 +264,7 @@ nav = [
             { "Label" = "reference/widgets/Label.md" },
             { "LabeledScale" = "reference/widgets/LabeledScale.md" },
             { "LabelFrame" = "reference/widgets/LabelFrame.md" },
+            { "MenuBar" = "reference/widgets/MenuBar.md" },
             { "MenuButton" = "reference/widgets/MenuButton.md" },
             { "Meter" = "reference/widgets/Meter.md" },
             { "Notebook" = "reference/widgets/Notebook.md" },

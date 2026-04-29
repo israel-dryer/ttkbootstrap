@@ -109,6 +109,8 @@ if TYPE_CHECKING:
         Spinbox,
         Switch,
         TableView,
+        Tabs,
+        TabView,
         TextEntry,
         TimeEntry,
         Toast,
@@ -190,7 +192,7 @@ _MODULE_EXPORTS = {
         "SideNavHeader", "SideNavSeparator",
         "NumericEntry", "PackFrame", "PageStack",
         "PasswordEntry", "PathEntry", "RadioGroup", "ScrolledText", "ScrollView", "SpinnerEntry",
-        "SelectBox", "TableView", "TextEntry", "TimeEntry", "Toast", "Toolbar", "ToggleGroup", "Switch",
+        "SelectBox", "TableView", "Tabs", "TabView", "TextEntry", "TimeEntry", "Toast", "Toolbar", "ToggleGroup", "Switch",
         "ToolTip", "TK_WIDGETS", "TTK_WIDGETS",
     ],
     # Dialogs

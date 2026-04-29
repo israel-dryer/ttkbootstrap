@@ -1,14 +1,14 @@
 # Style
 
-Themes, tokens, bootstyle parsing, and style access helpers.
+Themes, design-system tokens, and style access helpers.
 
 This section documents the style engine entry points: selecting themes, resolving tokens,
-and configuring widget appearance through **bootstyle**.
+and configuring widget appearance through `accent`, `variant`, `surface`, and related tokens.
 
 ## Key types
 
 - [Style](Style.md): style/theme manager
-- [Bootstyle](Bootstyle.md): bootstyle tokens and parsing
+- [Bootstyle](Bootstyle.md): widget integration layer for `accent`/`variant` tokens (and the deprecated `bootstyle` parameter)
 - [BootstrapIcon](BootstrapIcon.md): icon provider integration
 
 ## Common functions
