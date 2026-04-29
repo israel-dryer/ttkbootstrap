@@ -46,7 +46,9 @@ class DialogButton:
         variant (str | None): Style variant (e.g., 'outline', 'link').
         bootstyle (str | None): DEPRECATED - Use accent and variant instead.
         icon (str | dict | None): Optional icon specification for the button.
+
     """
+
     text: str
     role: ButtonRole = "secondary"
     result: Any | None = None  # value assigned to dialog.result
@@ -73,7 +75,9 @@ class ShowOptions(TypedDict, total=False):
         window_point (AnchorPoint): Point on the dialog window.
         offset (tuple[int, int]): Additional (x, y) offset in pixels.
         auto_flip (bool | str): Smart positioning to keep window on screen.
+
     """
+
     position: Optional[Tuple[int, int]]
     modal: Optional[bool]
     anchor_to: Optional[Union[Widget, Literal["screen", "cursor", "parent"]]]
@@ -138,6 +142,7 @@ class Dialog:
         window_style: Windows-only pywinstyles effect. Options include
             'mica', 'acrylic', 'aero', 'transparent', 'win7', etc.
             If None (default), uses AppSettings.window_style.
+
     """
 
     def __init__(
@@ -156,6 +161,7 @@ class Dialog:
             frameless: bool = False,
             window_style: str | None = None,
     ):
+        """Initialize the dialog with the given configuration."""
         import tkinter
         self._master = master if master else tkinter._default_root
         self._title = title
@@ -221,6 +227,7 @@ class Dialog:
             1. If position is provided: Use explicit coordinates
             2. If anchor_to is provided: Use anchor-based positioning
             3. Default: Center on parent window
+
         """
         if modal is None:
             modal = self._mode in ("modal", "sheet")
