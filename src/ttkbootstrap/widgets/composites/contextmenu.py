@@ -4,7 +4,7 @@ Provides a customizable context menu with support for commands, checkbuttons,
 radiobuttons, and separators.
 """
 
-from tkinter import BooleanVar, IntVar, StringVar, TclError, Toplevel, Widget
+from tkinter import BooleanVar, IntVar, Misc, StringVar, TclError, Toplevel, Widget
 from typing import Any, Callable, Union
 
 from ttkbootstrap.runtime.shortcuts import get_shortcuts
@@ -16,6 +16,12 @@ from ttkbootstrap.widgets.primitives.checkbutton import CheckButton
 from ttkbootstrap.widgets.composites.compositeframe import CompositeFrame
 from ttkbootstrap.widgets.mixins import CustomConfigMixin, configure_delegate
 from ttkbootstrap.widgets.primitives.radiobutton import RadioButton
+
+
+# Sentinel for "argument not provided" so we can distinguish between
+# "caller omitted target" (default to master) and "caller passed target=None
+# explicitly" (no target — no positioning, no auto-trigger).
+_TARGET_DEFAULT: Any = object()
 
 
 class _CommandItemFrame(CompositeFrame):
@@ -87,7 +93,7 @@ class _ToplevelContextMenu(CustomConfigMixin):
             width: int = None,
             minheight: int = None,
             height: int = None,
-            target: Widget = None,
+            target: Misc = None,
             anchor: str = 'nw',
             attach: str = 'se',
             offset: tuple[int, int] = None,
@@ -943,7 +949,7 @@ class _ToplevelContextMenu(CustomConfigMixin):
         return None
 
     @configure_delegate('target')
-    def _delegate_target(self, value: Widget | None):
+    def _delegate_target(self, value: Misc | None):
         """Get or set the target widget used for positioning."""
         if value is None:
             return self._target
@@ -986,7 +992,7 @@ class _NativeContextMenu(CustomConfigMixin):
             width: int = None,
             minheight: int = None,
             height: int = None,
-            target: Widget = None,
+            target: Misc = None,
             anchor: str = 'nw',
             attach: str = 'se',
             offset: tuple[int, int] = None,
@@ -1571,7 +1577,7 @@ class _NativeContextMenu(CustomConfigMixin):
         return None
 
     @configure_delegate('target')
-    def _delegate_target(self, value: Widget | None):
+    def _delegate_target(self, value: Misc | None):
         if value is None:
             return self._target
         self._target = value
@@ -1621,7 +1627,7 @@ class ContextMenu:
             width: int = None,
             minheight: int = None,
             height: int = None,
-            target: Widget = None,
+            target: Misc = _TARGET_DEFAULT,
             anchor: str = 'nw',
             attach: str = 'se',
             offset: tuple[int, int] = None,
@@ -1638,6 +1644,11 @@ class ContextMenu:
         themselves. Set ``trigger=None`` (or ``'manual'``) to opt out and
         manage activation in caller code (e.g. when the menu is built lazily).
 
+        ``target`` defaults to ``master`` when omitted, since the menu is
+        usually attached to the same widget that owns it. Pass ``target=None``
+        explicitly to opt out of positioning/auto-binding (e.g. when calling
+        ``show(position=(x, y))`` with cursor-driven coordinates instead).
+
         Trigger values:
             - ``'right-click'`` (default): portable right-click via
               :func:`ttkbootstrap.runtime.utility.bind_right_click` —
@@ -1651,6 +1662,10 @@ class ContextMenu:
               menus, since macOS uses Ctrl+click as a context-menu gesture).
             - ``None`` or ``'manual'``: no auto-binding.
         """
+        # Default target to master when omitted; explicit ``None`` opts out.
+        if target is _TARGET_DEFAULT:
+            target = master
+
         winsys = None
         probe = master if master is not None else target
         if probe is not None:
@@ -1690,7 +1705,7 @@ class ContextMenu:
         if target is not None and trigger not in (None, 'manual', 'none'):
             self._bind_trigger(target, trigger)
 
-    def _bind_trigger(self, target: Widget, trigger: str) -> None:
+    def _bind_trigger(self, target: Misc, trigger: str) -> None:
         """Bind ``target``'s activation event to show this menu at the click."""
         from ttkbootstrap.runtime.utility import bind_right_click
 
