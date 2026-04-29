@@ -18,6 +18,7 @@ Region = Literal["before", "center", "after"]
 
 class MenuBarButtonKwargs(TypedDict, total=False):
     """Keyword arguments for MenuBar.add_button()."""
+
     command: Optional[Callable[[], Any]]
     image: Any
     icon: Any
@@ -32,6 +33,7 @@ class MenuBarButtonKwargs(TypedDict, total=False):
 
 class MenuBarMenuKwargs(TypedDict, total=False):
     """Keyword arguments for MenuBar.add_menu()."""
+
     image: Any
     icon: Any
     icon_only: bool
@@ -80,6 +82,7 @@ class MenuBar(GridFrame):
         chevron: Show dropdown chevron on menu buttons. Defaults to False.
         popdown_options: Default popdown options for all menus.
         **kwargs: Additional GridFrame options (accent, variant, etc.).
+
     """
 
     # Column indices for the 5-column layout
@@ -99,6 +102,7 @@ class MenuBar(GridFrame):
         popdown_options: Optional[dict[str, Any]] = None,
         **kwargs: Any,
     ) -> None:
+        """Initialize the MenuBar."""
         # Initialize GridFrame with 5-column centered layout
         # columns=[0, 1, 0, 1, 0] means:
         #   col 0 (before): weight=0 (shrink to content)
@@ -219,6 +223,7 @@ class MenuBar(GridFrame):
 
         Returns:
             The created Button widget.
+
         """
         frame = self._get_region_frame(region)
         kwargs.pop("variant", None)
@@ -247,6 +252,7 @@ class MenuBar(GridFrame):
 
         Returns:
             The created Label widget.
+
         """
         frame = self._get_region_frame(region)
         kwargs.setdefault("font", "caption")
@@ -275,6 +281,7 @@ class MenuBar(GridFrame):
 
         Returns:
             The created DropdownButton widget.
+
         """
         frame = self._get_region_frame(region)
 

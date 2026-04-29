@@ -56,7 +56,9 @@ class FieldOptions(TypedDict, total=False):
         required: If True, field cannot be empty (adds validation rule).
         xscrollcommand: Callback for horizontal scrolling.
         localize: Determines the field label localization mode. 'auto', True, False.
+
     """
+
     allow_blank: bool
     bootstyle: str  # DEPRECATED: Use accent instead
     accent: str
@@ -114,6 +116,7 @@ class Field(EntryMixin, Frame):
     Attributes:
         variable (Variable): Tkinter Variable linked to entry text.
         signal (Signal): Signal object for reactive updates.
+
     """
 
     def __init__(
@@ -157,7 +160,8 @@ class Field(EntryMixin, Frame):
                 (uses TextEntryPart) or 'numeric' for numeric input (uses
                 NumberEntryPart). Default is 'text'.
 
-        Other Parameters:
+        Other Parameters
+        ----------------
             value_format (str): ICU format pattern for parsing/formatting.
             allow_blank (bool): Allow empty input.
             locale (str): Locale for formatting (e.g., 'en_US').
@@ -170,6 +174,7 @@ class Field(EntryMixin, Frame):
             maxvalue (int | float): Maximum allowed value (numeric kind only).
             increment (int | float): Step size for up/down arrows (numeric kind only).
             wrap (bool): Wrap around at boundaries (numeric kind only).
+
         """
         # Accept legacy parameter name and prevent it from reaching the Tk widget.
         if 'show_messages' in kwargs:
@@ -319,7 +324,7 @@ class Field(EntryMixin, Frame):
 
     @property
     def addons(self):
-        """Get the dictionary of inserted addon widgets"""
+        """Get the dictionary of inserted addon widgets."""
         return self._addons
 
     @configure_delegate
@@ -333,7 +338,7 @@ class Field(EntryMixin, Frame):
 
     @configure_delegate
     def _config_bootstyle(self, value=None):
-        """DEPRECATED: Use accent instead."""
+        """Use accent instead (deprecated)."""
         if value is None:
             return self._accent
         else:
@@ -402,6 +407,7 @@ class Field(EntryMixin, Frame):
                 For Label: text, icon, image, bootstyle, etc.
                 Note: bootstyle and takefocus are set automatically but can be
                 overridden.
+
         """
         variant = "suffix" if position == "after" else "prefix"
         kwargs.setdefault('ttk_class', 'TField')

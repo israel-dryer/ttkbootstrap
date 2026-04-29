@@ -1,3 +1,4 @@
+"""FloodGauge widget — a progress indicator styled as a flood fill."""
 from tkinter import Canvas, Event, IntVar, StringVar
 from typing import Any, Optional, Union
 
@@ -15,6 +16,7 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
     Attributes:
         variable (IntVar): Tkinter IntVar for value binding.
         textvariable (StringVar): Tkinter StringVar for text binding.
+
     """
 
     def __init__(
@@ -57,7 +59,8 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
             increment (int): Step size for value changes when using `step()` method
                 or during animations.
 
-        Other Parameters:
+        Other Parameters
+        ----------------
             variable (IntVar): Tkinter IntVar for value binding.
             textvariable (StringVar): Tkinter StringVar for text binding.
 
@@ -65,8 +68,8 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
             The widget automatically updates colors when the theme changes via the
             `<<ThemeChanged>>` event. When using variable or textvariable bindings,
             the widget redraws automatically when the variables change.
-        """
 
+        """
         # Handle deprecated bootstyle parameter
         bootstyle = kwargs.pop("bootstyle", None)
 
@@ -227,6 +230,7 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
 
         Args:
             value: The new progress value.
+
         """
         self._variable.set(value)
 
@@ -354,6 +358,7 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
         Args:
             amount (int): Amount to increment. Value wraps around after reaching
                 maximum.
+
         """
         self._value = (self._value + amount) % (self._maximum + 1)
         self._variable.set(self._value)
@@ -370,6 +375,7 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
                 for indeterminate mode, 1 for determinate mode.
             interval (int): Time in milliseconds between animation steps. Defaults
                 to 20ms for indeterminate mode, 50ms for determinate mode.
+
         """
         if self._mode == "indeterminate":
             self._increment = step_size if step_size is not None else 8

@@ -1,3 +1,4 @@
+"""Notebook widget — a ttk.Notebook with theme support."""
 from __future__ import annotations
 
 import tkinter
@@ -21,12 +22,16 @@ Tab = tkinter.Widget | int | str
 
 
 class TabRef(TypedDict):
+    """Internal reference to a tab by index and widget name."""
+
     index: int | None
     key: str | None
     label: str | None
 
 
 class NotebookKwargs(TypedDict, total=False):
+    """Keyword arguments for Notebook."""
+
     # Standard ttk.Notebook options
     padding: Any
     height: int
@@ -45,6 +50,8 @@ class NotebookKwargs(TypedDict, total=False):
 
 
 class TabOptions(TypedDict, total=False):
+    """Options for adding a tab to a Notebook."""
+
     state: Literal['normal', 'disabled', 'hidden']
     sticky: str
     padding: str | float | tuple[str | float] | tuple[str | float, str | float] | tuple[
@@ -82,7 +89,8 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
         Args:
             master: Parent widget. If None, uses the default root window.
 
-        Other Parameters:
+        Other Parameters
+        ----------------
             padding (int | tuple): Extra space around the tab header and pane area.
             height (int): Requested widget height in pixels.
             width (int): Requested widget width in pixels.
@@ -93,6 +101,7 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
                 Combined style tokens (e.g., 'primary', 'secondary').
             surface (str): Optional surface color token; inherits from the current theme if omitted.
             style_options (dict): Additional options forwarded to the style builder.
+
         """
         super().__init__(master, **kwargs)
         self._key_registry: dict[str, tkinter.Misc] = {}  # key -> widget
@@ -116,6 +125,7 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
 
         Args:
             reason: The reason for the change ('api', 'hide', 'forget', 'reorder').
+
         """
         self._last_change_reason = reason
         self._last_change_via = 'programmatic'
@@ -132,6 +142,7 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
         Raises:
             NavigationError: If the key already exists in the registry.
             ValueError: If key is an empty string.
+
         """
         if key is not None and not key:
             raise ValueError("Tab key cannot be an empty string")
@@ -171,6 +182,7 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
         Raises:
             NavigationError: If the tab reference is invalid, out of range,
                            or of an unsupported type.
+
         """
         # tab is widget
         if isinstance(tab, tkinter.Misc):
@@ -210,6 +222,7 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
         Returns:
             A TabRef dictionary with index, key, and label fields, or None if the
             tabid is invalid or doesn't exist in the notebook.
+
         """
         ref: TabRef = {"index": None, "key": None, "label": None}
         if not tabid:
@@ -237,16 +250,16 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
 
 
     def hide(self, tab: Tab) -> None:
-        """Hide a tab without removing it; selection may change implicitly"""
+        """Hide a tab without removing it; selection may change implicitly."""
         self._mark_api_change('hide')
         super().hide(self._to_tab_id(tab))
 
     def index(self, tab: Tab) -> int:
-        """Return the current position of a tab"""
+        """Return the current position of a tab."""
         return super().index(self._to_tab_id(tab))
 
     def select(self, tab: Tab = None) -> str | None:
-        """Select a tab or return the current tab id"""
+        """Select a tab or return the current tab id."""
         if tab is None:
             return super().select()
         else:
@@ -286,6 +299,7 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
 
         Returns:
             Widget: The tab content widget (passed or created Frame).
+
         """
         return self.insert(
             'end', child, key=key, text=text, state=state, sticky=sticky,
@@ -324,6 +338,7 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
 
         Returns:
             Widget: The tab content widget (passed or created Frame).
+
         """
         # Create Frame with kwargs if no child provided
         if child is None:
@@ -354,7 +369,7 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
         return child
 
     def remove(self, tab: Tab) -> None:
-        """Remove a tab and clean registry"""
+        """Remove a tab and clean registry."""
         self._mark_api_change('forget')
         tabid = self._to_tab_id(tab)
         key = self._tk_to_key.pop(tabid, None)
@@ -376,7 +391,8 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
             tab (Tab): The tab to configure. Can be an index, key, or widget.
             option (str): The option to query.
 
-        Other Parameters:
+        Other Parameters
+        ----------------
             state (str): One of 'normal', 'disabled', 'hidden'.
             sticky (str): How the content is positioned in the pane area.
             padding (int | tuple): Extra space between notebook and pane.
@@ -385,8 +401,10 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
             image (PhotoImage): The image to display in the tab.
             underline (int): Index of character to underline in the label.
 
-        Returns:
+        Returns
+        -------
             Any: The value of option if specified, otherwise None.
+
         """
         tabid = self._to_tab_id(tab)
         fmtargs = tuple(kwargs.pop('fmtargs', ()))
@@ -411,6 +429,7 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
 
         Raises:
             KeyError: If no tab with the given key exists.
+
         """
         if key not in self._key_registry:
             raise KeyError(f"No tab with key '{key}'")
@@ -421,6 +440,7 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
 
         Returns:
             A tuple of all tab content widgets in tab order.
+
         """
         tab_ids = super().tabs()
         return tuple(self.nametowidget(tid) for tid in tab_ids)
@@ -430,6 +450,7 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
 
         Returns:
             A tuple of all tab keys in tab order.
+
         """
         tab_ids = super().tabs()
         return tuple(self._tk_to_key.get(tid, '') for tid in tab_ids)
@@ -444,6 +465,7 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
 
         Returns:
             If option is provided, returns the value of that option.
+
         """
         return self.tab(key, option, **kwargs)
 
@@ -458,6 +480,7 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
 
         Returns:
             str: The funcid that can be used with `off_tab_activated()`.
+
         """
         return self.bind("<<NotebookTabActivate>>", callback, add=True)
 
@@ -466,6 +489,7 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
 
         Args:
             bind_id (str): The bind_id returned by `on_tab_activated()`.
+
         """
         self.unbind("<<NotebookTabActivate>>", bind_id)
 
@@ -480,6 +504,7 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
 
         Returns:
             str: The funcid that can be used with `off_tab_deactivated()`.
+
         """
         return self.bind("<<NotebookTabDeactivate>>", callback, add=True)
 
@@ -488,6 +513,7 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
 
         Args:
             bind_id (str): The bind_id returned by `on_tab_deactivated()`.
+
         """
         self.unbind("<<NotebookTabDeactivate>>", bind_id)
 
@@ -505,10 +531,11 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
 
         Returns:
             str: The funcid that can be used with `off_tab_changed()`.
+
         """
 
         def build_payload(event: Any) -> Any:
-            """Attach NotebookChanged data payload to the event"""
+            """Attach NotebookChanged data payload to the event."""
             payload = dict(
                 current=self._tab_ref(self.select()),
                 previous=self._tab_ref(self._last_selected),
@@ -547,5 +574,6 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
 
         Args:
             bind_id (str): The bind_id returned by `on_tab_changed()`.
+
         """
         self.unbind("<<NotebookTabChange>>", bind_id)

@@ -1,3 +1,4 @@
+"""Meter widget — a circular gauge for displaying a value."""
 import math
 from tkinter import Canvas, DoubleVar, IntVar, StringVar, font as tkfont
 from typing import Any, Callable, Literal
@@ -105,6 +106,7 @@ class Meter(Frame):
 
         !!! note "Events"
             - `<<Change>>`: Emitted when the value changes (see on_changed()).
+
         """
         legacy = Meter._coerce_legacy_params(kwargs)
         super().__init__(master, **kwargs)
@@ -223,6 +225,7 @@ class Meter(Frame):
 
     @property
     def value(self):
+        """The current meter value."""
         return self._value_var.get()
 
     @value.setter
@@ -231,6 +234,7 @@ class Meter(Frame):
 
     @property
     def subtitle(self):
+        """The subtitle text displayed below the value."""
         return self._subtitle_var.get()
 
     @subtitle.setter
@@ -248,6 +252,7 @@ class Meter(Frame):
 
         Returns:
             The current meter value (int or float depending on dtype).
+
         """
         return self.value
 
@@ -259,6 +264,7 @@ class Meter(Frame):
 
         Args:
             value: The new meter value.
+
         """
         self.value = value
 
@@ -657,6 +663,7 @@ class Meter(Frame):
 
         Returns:
             Canvas item ID.
+
         """
         if item_id is None:
             return self._canvas.create_text(x, y, text=text, font=font, fill=fill, anchor=anchor)
@@ -796,6 +803,7 @@ class Meter(Frame):
 
         Returns:
             Degree value for meter indicator position.
+
         """
         minvalue = self._minvalue
         maxvalue = self._maxvalue
@@ -854,6 +862,7 @@ class Meter(Frame):
 
         Args:
             delta: Amount to step by (default 1).
+
         """
         value = self._value_var.get()
         minvalue = self._minvalue

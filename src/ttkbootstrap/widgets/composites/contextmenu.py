@@ -65,6 +65,7 @@ class ContextMenuItem:
     Attributes:
         type (str): Type of menu item ('command', 'checkbutton', 'radiobutton', 'separator').
         kwargs (dict): Additional keyword arguments for the item.
+
     """
 
     def __init__(self, type: str, **kwargs) -> None:
@@ -73,6 +74,7 @@ class ContextMenuItem:
         Args:
             type (str): Type of menu item ('command', 'checkbutton', 'radiobutton', 'separator').
             **kwargs: Additional arguments passed to the widget.
+
         """
         self.type: str = type
         self.kwargs: dict[str, Any] = kwargs
@@ -123,6 +125,7 @@ class _ToplevelContextMenu(CustomConfigMixin):
             items: List of ContextMenuItem objects to add initially.
             density: Item typography density ('default' or 'compact'). Items
                 inherit this so they match the trigger widget's font size.
+
         """
         super().__init__()
         self._master = master
@@ -199,6 +202,7 @@ class _ToplevelContextMenu(CustomConfigMixin):
         Raises:
             KeyError: If key not found.
             IndexError: If index out of range.
+
         """
         if isinstance(key_or_index, int):
             try:
@@ -222,6 +226,7 @@ class _ToplevelContextMenu(CustomConfigMixin):
 
         Raises:
             ValueError: If key already exists.
+
         """
         if key is None:
             key = self._generate_key()
@@ -267,6 +272,7 @@ class _ToplevelContextMenu(CustomConfigMixin):
 
         Returns:
             Button: The created Button widget.
+
         """
         # Resolve shortcut display text from the Shortcuts service
         shortcut_display = None
@@ -346,6 +352,7 @@ class _ToplevelContextMenu(CustomConfigMixin):
 
         Returns:
             CheckButton: The created CheckButton widget.
+
         """
         var = BooleanVar(value=value)
 
@@ -384,6 +391,7 @@ class _ToplevelContextMenu(CustomConfigMixin):
 
         Returns:
             RadioButton: The created RadioButton widget.
+
         """
 
         def on_select():
@@ -410,6 +418,7 @@ class _ToplevelContextMenu(CustomConfigMixin):
 
         Returns:
             Separator: The created Separator widget.
+
         """
         sep = Separator(self._frame, orient='horizontal')
         sep.pack(fill='x', padx=0, pady=3)
@@ -425,6 +434,7 @@ class _ToplevelContextMenu(CustomConfigMixin):
 
         Returns:
             Widget: The created widget.
+
         """
         if type == 'command':
             return self.add_command(**kwargs)
@@ -442,6 +452,7 @@ class _ToplevelContextMenu(CustomConfigMixin):
 
         Args:
             items (list): List of ContextMenuItem objects or dictionaries with 'type' and 'kwargs'.
+
         """
         for item in items:
             if isinstance(item, ContextMenuItem):
@@ -463,6 +474,7 @@ class _ToplevelContextMenu(CustomConfigMixin):
 
         Returns:
             A tuple of all item keys in the order they were added.
+
         """
         return tuple(self._item_order)
 
@@ -476,6 +488,7 @@ class _ToplevelContextMenu(CustomConfigMixin):
 
         Returns:
             Widget: The created widget.
+
         """
         before_key = self._item_order[index] if 0 <= index < len(self._item_order) else None
         before_widget = self._items[before_key] if before_key else None
@@ -510,6 +523,7 @@ class _ToplevelContextMenu(CustomConfigMixin):
         Raises:
             KeyError: If no item with the given key exists.
             IndexError: If the index is out of range.
+
         """
         key = self._resolve_key(key_or_index)
         return self._items[key]
@@ -519,6 +533,7 @@ class _ToplevelContextMenu(CustomConfigMixin):
 
         Args:
             key_or_index: Key (str) or index (int) of the item to remove.
+
         """
         key = self._resolve_key(key_or_index)
         widget = self._items.pop(key)
@@ -539,6 +554,7 @@ class _ToplevelContextMenu(CustomConfigMixin):
 
         Returns:
             Widget: The moved widget.
+
         """
         key = self._resolve_key(from_key_or_index)
         widget = self._items[key]
@@ -581,6 +597,7 @@ class _ToplevelContextMenu(CustomConfigMixin):
             - When called with no kwargs and no option: full option map for the item.
             - When called with option only: a 5-tuple matching tkinter's configure.
             - When called with kwargs: the result of the underlying widget's configure.
+
         """
         key = self._resolve_key(key_or_index)
         widget = self._items[key]
@@ -603,6 +620,7 @@ class _ToplevelContextMenu(CustomConfigMixin):
             position (tuple): Optional screen coordinate (x, y) to align to. If provided,
                 the menu's anchor will align to this point. Negative x/y are
                 treated as offsets from the screen's right/bottom.
+
         """
         # Update geometry before showing
         self._toplevel.update_idletasks()
@@ -625,7 +643,7 @@ class _ToplevelContextMenu(CustomConfigMixin):
             self._setup_click_outside_handler()
 
     def _setup_keyboard_bindings(self) -> None:
-        """Setup keyboard navigation bindings on the toplevel."""
+        """Set up keyboard navigation bindings on the toplevel."""
         self._toplevel.bind('<Escape>', lambda e: self.hide())
         self._toplevel.bind('<Down>', self._on_arrow_down)
         self._toplevel.bind('<Up>', self._on_arrow_up)
@@ -727,6 +745,7 @@ class _ToplevelContextMenu(CustomConfigMixin):
             text (str): Text of the item.
             command (Callable): Command to execute.
             value (Any): Value associated with the item.
+
         """
         # Prepare event data
         data = {
@@ -804,7 +823,7 @@ class _ToplevelContextMenu(CustomConfigMixin):
         return final_x, final_y
 
     def _setup_click_outside_handler(self) -> None:
-        """Setup handler to hide menu when clicking outside."""
+        """Set up a handler to hide the menu when clicking outside."""
 
         def on_click(event):
             # Don't process if menu is not visible
@@ -1740,6 +1759,7 @@ class ContextMenu:
     # to the active backend. `_impl` itself is a real instance attribute
     # so it's resolved by normal attribute lookup before __getattr__ runs.
     def __getattr__(self, name: str):
+        """Look up attribute on the underlying menu implementation."""
         # __getattr__ is only consulted when normal lookup fails, so we
         # won't recurse on '_impl' here unless backend init raised.
         impl = self.__dict__.get('_impl')
@@ -1748,7 +1768,9 @@ class ContextMenu:
         return getattr(impl, name)
 
     def __getitem__(self, key):
+        """Get a menu item by key."""
         return self._impl[key]
 
     def __setitem__(self, key, value):
+        """Set a menu item by key."""
         self._impl[key] = value

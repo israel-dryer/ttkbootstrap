@@ -1,3 +1,4 @@
+"""PageStack widget — a container that shows one page at a time."""
 import tkinter
 from collections.abc import ValuesView
 from typing import Any, Callable
@@ -10,6 +11,8 @@ from ttkbootstrap.core import NavigationError
 
 
 class PageOptions(TypedDict, total=False):
+    """Options for a page registered in PageStack."""
+
     padding: Any
     width: int
     height: int
@@ -23,6 +26,8 @@ class PageOptions(TypedDict, total=False):
 
 
 class PageStackKwargs(TypedDict, total=False):
+    """Keyword arguments for PageStack."""
+
     takefocus: bool
     width: int
     height: int
@@ -58,7 +63,8 @@ class PageStack(Frame):
         Args:
             master: Parent widget. If None, uses the default root window.
 
-        Other Parameters:
+        Other Parameters
+        ----------------
             takefocus (bool): If True, the widget can receive keyboard focus.
             width (int): Width of the PageStack in pixels.
             height (int): Height of the PageStack in pixels.
@@ -68,6 +74,7 @@ class PageStack(Frame):
         Note:
             Pages must be added using add() before navigation can occur.
             The PageStack starts with an empty history and no current page.
+
         """
         super().__init__(master, **kwargs)
         self._pages: dict[str, tkinter.Widget] = {}
@@ -89,6 +96,7 @@ class PageStack(Frame):
         Raises:
             NavigationError: If a page with the given key already exists.
             ValueError: If key is an empty string.
+
         """
         if not key:
             raise ValueError("Page key cannot be an empty string")
@@ -112,6 +120,7 @@ class PageStack(Frame):
         Note:
             If the removed page is currently displayed, the current page
             will be set to None without navigating to another page.
+
         """
         if key in self._pages:
             page = self._pages.pop(key)
@@ -147,6 +156,7 @@ class PageStack(Frame):
         Note:
             Event payloads include: page, prev_page, prev_data, nav, index,
             length, can_back, and can_forward.
+
         """
         if not key:
             raise ValueError("Page key cannot be an empty string")
@@ -234,6 +244,7 @@ class PageStack(Frame):
         Returns:
             True if there is a previous page in the history to navigate back to,
             False otherwise.
+
         """
         return self._index > 0
 
@@ -243,6 +254,7 @@ class PageStack(Frame):
         Returns:
             True if there is a next page in the history to navigate forward to,
             False otherwise.
+
         """
         return self._index < len(self._history) - 1
 
@@ -252,6 +264,7 @@ class PageStack(Frame):
         Returns:
             A tuple of (page_key, data_dict) if a page is currently displayed,
             None if no page is currently displayed.
+
         """
         if self._current is None:
             return None
@@ -269,6 +282,7 @@ class PageStack(Frame):
         Raises:
             KeyError: If no page with the given key exists.
             ValueError: If key is an empty string.
+
         """
         if not key:
             raise ValueError("Page key cannot be an empty string")
@@ -281,6 +295,7 @@ class PageStack(Frame):
 
         Returns:
             A tuple of all page widgets managed by this PageStack.
+
         """
         return tuple(self._pages.values())
 
@@ -289,6 +304,7 @@ class PageStack(Frame):
 
         Returns:
             A tuple of all page keys in the stack.
+
         """
         return tuple(self._pages.keys())
 
@@ -307,6 +323,7 @@ class PageStack(Frame):
         Raises:
             KeyError: If no page with the given key exists.
             ValueError: If key is an empty string.
+
         """
         if not key:
             raise ValueError("Page key cannot be an empty string")
@@ -322,6 +339,7 @@ class PageStack(Frame):
 
         Returns:
             Binding identifier for use with off_page_changed().
+
         """
         return self.bind('<<PageChange>>', callback, add="+")
 
