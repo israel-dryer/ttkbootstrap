@@ -227,6 +227,13 @@ class AppSettings:
         theme: The current theme name ('light', 'dark', or a specific theme).
         light_theme: The theme to use when `theme='light'`.
         dark_theme: The theme to use when `theme='dark'`.
+        follow_system_appearance: If True, automatically switch between
+            `light_theme` and `dark_theme` to match the OS appearance and
+            track changes at runtime. Currently effective on macOS, where
+            Tk fires `<<TkSystemAppearanceChanged>>` and exposes the
+            current mode via `tk::unsupported::MacWindowStyle isDark`.
+            Defaults to False so existing apps that pin a theme keep
+            doing so.
         available_themes: Sequence of available theme names.
         inherit_surface_color: If True, child widgets inherit the parent's
             surface color for consistent backgrounds.
@@ -275,6 +282,7 @@ class AppSettings:
     theme: str = "light"
     light_theme: str = "docs-light"
     dark_theme: str = "docs-dark"
+    follow_system_appearance: bool = False
     available_themes: Sequence[str] = ()
     inherit_surface_color: bool = True
 
@@ -306,6 +314,7 @@ class AppSettingsKwargs(TypedDict, total=False):
     theme: str
     light_theme: str
     dark_theme: str
+    follow_system_appearance: bool
     available_themes: Sequence[str]
     inherit_surface_color: bool
 
@@ -512,9 +521,21 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
         # Setup window system info
         self.winsys: str = self.tk.call('tk', 'windowingsystem')
 
-        # Apply theme (use resolved settings.theme)
+        # Apply theme (use resolved settings.theme). If the app opts into
+        # following system appearance, override the explicit theme with the
+        # mode-appropriate one and bind a listener to track future toggles.
         from ttkbootstrap.style.style import set_theme
-        set_theme(self.settings.theme)
+        initial_theme = self.settings.theme
+        if self.settings.follow_system_appearance and self._is_dark_capable_platform():
+            initial_theme = (
+                self.settings.dark_theme
+                if self._system_is_dark()
+                else self.settings.light_theme
+            )
+        set_theme(initial_theme)
+
+        if self.settings.follow_system_appearance and self._is_dark_capable_platform():
+            self._bind_system_appearance_tracking()
 
         # Initialize the localization bridge so MessageCatalog.translate()
         # and <<LocaleChanged>> are available throughout the app.
@@ -574,6 +595,44 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
         """Destroys the window and all its children."""
         clear_current_app(self)
         super().destroy()
+
+    # ----- System appearance tracking ----------------------------------------
+
+    def _is_dark_capable_platform(self) -> bool:
+        """Return True if the current windowing system reports an appearance.
+
+        Currently only macOS exposes a Tk-level light/dark signal
+        (``<<TkSystemAppearanceChanged>>`` and ``MacWindowStyle isDark``).
+        Win/Linux apps that want to track system theme need their own
+        OS-specific hook, which is out of scope for this method.
+        """
+        return getattr(self, 'winsys', None) == 'aqua'
+
+    def _system_is_dark(self) -> bool:
+        """Return True if the OS is currently in dark mode (macOS)."""
+        try:
+            return bool(int(self.tk.call(
+                '::tk::unsupported::MacWindowStyle', 'isDark', self,
+            )))
+        except tkinter.TclError:
+            return False
+
+    def _bind_system_appearance_tracking(self) -> None:
+        """Switch themes when the OS toggles between light and dark mode."""
+        def on_appearance_changed(_event=None):
+            if not self.settings.follow_system_appearance:
+                return
+            from ttkbootstrap.style.style import set_theme
+            set_theme(
+                self.settings.dark_theme
+                if self._system_is_dark()
+                else self.settings.light_theme
+            )
+
+        try:
+            self.bind('<<TkSystemAppearanceChanged>>', on_appearance_changed, add='+')
+        except tkinter.TclError:
+            pass
 
 
 # Backward compatibility alias
