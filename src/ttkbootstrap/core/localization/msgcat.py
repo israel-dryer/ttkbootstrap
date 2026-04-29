@@ -41,6 +41,7 @@ class MessageCatalog:
     Translation prefers gettext when available and falls back to Tcl msgcat
     for both translation and printf-style formatting.
     """
+
     # --- internal state for gettext bridge ---
     _inited: bool = False
     _locales_dir: Path | None = None
@@ -80,6 +81,7 @@ class MessageCatalog:
                 locale changes so widgets can refresh themselves.
             virtual_event_name: The virtual event name to emit when the
                 locale changes (default `"<<LocaleChanged>>"`).
+
         """
         # Ensure a Tk exists so msgcat calls work even if root is omitted
         from ttkbootstrap.runtime.app import get_default_root
@@ -105,6 +107,7 @@ class MessageCatalog:
 
         Args:
             lang: Requested locale code.
+
         """
         MessageCatalog._locale = MessageCatalog._normalize_lang(lang)
         # Try exact match, then base language (e.g., de_DE -> de)
@@ -163,6 +166,7 @@ class MessageCatalog:
 
         Args:
             lang: Locale code (e.g. `en`, `de_DE`).
+
         """
         from ttkbootstrap.runtime.app import get_default_root
         root = get_default_root()
@@ -182,6 +186,7 @@ class MessageCatalog:
 
         Returns:
             Normalized locale code for gettext use.
+
         """
         if not code:
             return "en"
@@ -197,6 +202,7 @@ class MessageCatalog:
 
         Returns:
             Lowercased region code used by msgcat.
+
         """
         parts = code.replace("-", "_").split("_")
         return parts[0].lower() if len(parts) == 1 else f"{parts[0].lower()}_{parts[1].lower()}"
@@ -210,6 +216,7 @@ class MessageCatalog:
 
         Returns:
             String of brace-wrapped arguments joined by spaces.
+
         """
         new_args = []
         for arg in args:
@@ -232,6 +239,7 @@ class MessageCatalog:
 
         Returns:
             Cleaned string with mnemonic indicators removed.
+
         """
         if not s or "&" not in s:
             return s
@@ -270,6 +278,7 @@ class MessageCatalog:
 
         Returns:
             Localized and formatted string.
+
         """
         from ttkbootstrap.runtime.app import get_default_root
         root = get_default_root()
@@ -337,6 +346,7 @@ class MessageCatalog:
         Returns:
             The active normalized locale code (or Tcl's current code when
             queried).
+
         """
         from ttkbootstrap.runtime.app import get_default_root
         root = get_default_root()
@@ -371,6 +381,7 @@ class MessageCatalog:
 
         Returns:
             Number of files loaded, as reported by Tcl.
+
         """
         msgs = Path(dirname).as_posix()
         from ttkbootstrap.runtime.app import get_default_root
@@ -385,6 +396,7 @@ class MessageCatalog:
             locale: Target locale code.
             src: Message id.
             translated: Localized string.
+
         """
         loc = MessageCatalog._normalize_lang(locale)
         MessageCatalog._overrides.setdefault(loc, {})[src] = translated or ""
@@ -402,6 +414,7 @@ class MessageCatalog:
 
         Returns:
             Number of messages set, as reported by Tcl.
+
         """
         loc = MessageCatalog._normalize_lang(locale)
         # update Python overrides
@@ -420,6 +433,7 @@ class MessageCatalog:
 
     @staticmethod
     def max(*src: str) -> int:
+        """Return the length of the longest translation across the given message IDs."""
         from ttkbootstrap.runtime.app import get_default_root
         root = get_default_root()
         return int(root.tk.eval(f"::msgcat::mcmax {' '.join(src)}"))

@@ -1,3 +1,4 @@
+"""Exception types for ttkbootstrap."""
 from __future__ import annotations
 
 from typing import Optional
@@ -5,6 +6,7 @@ from typing import Optional
 
 class TTKBootstrapError(Exception):
     """Base for all ttkbootstrap errors."""
+
     __slots__ = ("hint", "code", "widget_id")
 
     def __init__(
@@ -17,6 +19,7 @@ class TTKBootstrapError(Exception):
             hint: Optional suggestion for how to resolve the error.
             code: Optional machine-readable error code for programmatic handling.
             widget_id: Optional Tk widget path string identifying the source widget.
+
         """
         super().__init__(message)
         self.hint = hint
@@ -24,6 +27,7 @@ class TTKBootstrapError(Exception):
         self.widget_id = widget_id
 
     def __str__(self) -> str:
+        """Format the error, appending the hint if present."""
         base = super().__str__()
         if self.hint:
             return f"{base} — Hint: {self.hint}"
