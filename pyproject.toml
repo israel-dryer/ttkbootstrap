@@ -81,3 +81,129 @@ where = ["src"]
     # ship compiled gettext catalogs within the package
     "assets/locales/**/LC_MESSAGES/*.mo",
 ]
+
+# -----------------------------------------------------------------------------
+# Ruff: docstring discipline on the public API surface.
+#
+# `D` rules with the Google convention enforce presence and style of docstrings
+# on public modules, classes, methods, and functions. The intent is for every
+# symbol in `_MODULE_EXPORTS` (see `src/ttkbootstrap/__init__.py`) and the
+# files that define them to have spec-grade docstrings. Internal directories
+# are blanket-ignored. Files awaiting cleanup are listed individually so the
+# entry can be removed (and the file enforced) once its docstrings conform.
+#
+# Convention and template: see `analysis/docs-review-and-plan.md`.
+#
+# Run locally:
+#   ruff check --select D src/ttkbootstrap
+#
+# To clean a file: bring its docstrings up to spec, run the command above
+# scoped to that file, and remove the per-file ignore once it passes.
+# -----------------------------------------------------------------------------
+
+[tool.ruff]
+src = ["src"]
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["D"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+# Internal directories — not part of the public API surface.
+"src/ttkbootstrap/style/builders/**" = ["D"]
+"src/ttkbootstrap/style/builders_tk/**" = ["D"]
+"src/ttkbootstrap/widgets/mixins/**" = ["D"]
+"src/ttkbootstrap/widgets/internal/**" = ["D"]
+"src/ttkbootstrap/widgets/parts/**" = ["D"]
+"src/ttkbootstrap/core/capabilities/**" = ["D"]
+"src/ttkbootstrap/core/mixins/**" = ["D"]
+"src/ttkbootstrap/cli/**" = ["D"]
+"src/ttkbootstrap/assets/**" = ["D"]
+"tests/**" = ["D"]
+"docs_scripts/**" = ["D"]
+"development/**" = ["D"]
+"tools/**" = ["D"]
+
+# Public-surface files awaiting docstring cleanup.
+# Remove the entry when `ruff check --select D <file>` is clean.
+"src/ttkbootstrap/runtime/app.py" = ["D"]
+"src/ttkbootstrap/runtime/shortcuts.py" = ["D"]
+"src/ttkbootstrap/runtime/utility.py" = ["D"]
+"src/ttkbootstrap/runtime/visual_focus.py" = ["D"]
+"src/ttkbootstrap/runtime/window_utilities.py" = ["D"]
+"src/ttkbootstrap/dialogs/__init__.py" = ["D"]
+"src/ttkbootstrap/dialogs/colorchooser.py" = ["D"]
+"src/ttkbootstrap/dialogs/colordropper.py" = ["D"]
+"src/ttkbootstrap/dialogs/datedialog.py" = ["D"]
+"src/ttkbootstrap/dialogs/dialog.py" = ["D"]
+"src/ttkbootstrap/datasource/memory_source.py" = ["D"]
+"src/ttkbootstrap/style/__init__.py" = ["D"]
+"src/ttkbootstrap/style/bootstyle_builder_base.py" = ["D"]
+"src/ttkbootstrap/style/bootstyle_builder_tk.py" = ["D"]
+"src/ttkbootstrap/style/bootstyle_builder_ttk.py" = ["D"]
+"src/ttkbootstrap/style/element.py" = ["D"]
+"src/ttkbootstrap/style/theme_provider.py" = ["D"]
+"src/ttkbootstrap/style/token_maps.py" = ["D"]
+"src/ttkbootstrap/style/types.py" = ["D"]
+"src/ttkbootstrap/style/typography.py" = ["D"]
+"src/ttkbootstrap/style/utility.py" = ["D"]
+"src/ttkbootstrap/core/colorutils.py" = ["D"]
+"src/ttkbootstrap/core/exceptions.py" = ["D"]
+"src/ttkbootstrap/core/publisher.py" = ["D"]
+"src/ttkbootstrap/core/variables.py" = ["D"]
+"src/ttkbootstrap/core/localization/__init__.py" = ["D"]
+"src/ttkbootstrap/core/localization/intl_format.py" = ["D"]
+"src/ttkbootstrap/core/localization/msgcat.py" = ["D"]
+"src/ttkbootstrap/core/localization/specs.py" = ["D"]
+"src/ttkbootstrap/core/signals/integration.py" = ["D"]
+"src/ttkbootstrap/core/signals/signal.py" = ["D"]
+"src/ttkbootstrap/core/validation/types.py" = ["D"]
+"src/ttkbootstrap/core/validation/validation_result.py" = ["D"]
+"src/ttkbootstrap/core/validation/validation_rules.py" = ["D"]
+"src/ttkbootstrap/widgets/composites/accordion.py" = ["D"]
+"src/ttkbootstrap/widgets/composites/appshell.py" = ["D"]
+"src/ttkbootstrap/widgets/composites/buttongroup.py" = ["D"]
+"src/ttkbootstrap/widgets/composites/compositeframe.py" = ["D"]
+"src/ttkbootstrap/widgets/composites/contextmenu.py" = ["D"]
+"src/ttkbootstrap/widgets/composites/dropdownbutton.py" = ["D"]
+"src/ttkbootstrap/widgets/composites/field.py" = ["D"]
+"src/ttkbootstrap/widgets/composites/floodgauge.py" = ["D"]
+"src/ttkbootstrap/widgets/composites/labeledscale.py" = ["D"]
+"src/ttkbootstrap/widgets/composites/menubar.py" = ["D"]
+"src/ttkbootstrap/widgets/composites/meter.py" = ["D"]
+"src/ttkbootstrap/widgets/composites/pagestack.py" = ["D"]
+"src/ttkbootstrap/widgets/composites/radiogroup.py" = ["D"]
+"src/ttkbootstrap/widgets/composites/toast.py" = ["D"]
+"src/ttkbootstrap/widgets/composites/togglegroup.py" = ["D"]
+"src/ttkbootstrap/widgets/composites/toolbar.py" = ["D"]
+"src/ttkbootstrap/widgets/composites/tooltip.py" = ["D"]
+"src/ttkbootstrap/widgets/composites/list/listitem.py" = ["D"]
+"src/ttkbootstrap/widgets/composites/sidenav/group.py" = ["D"]
+"src/ttkbootstrap/widgets/composites/sidenav/header.py" = ["D"]
+"src/ttkbootstrap/widgets/composites/sidenav/item.py" = ["D"]
+"src/ttkbootstrap/widgets/composites/sidenav/separator.py" = ["D"]
+"src/ttkbootstrap/widgets/composites/sidenav/view.py" = ["D"]
+"src/ttkbootstrap/widgets/composites/tableview/tableview.py" = ["D"]
+"src/ttkbootstrap/widgets/primitives/badge.py" = ["D"]
+"src/ttkbootstrap/widgets/primitives/card.py" = ["D"]
+"src/ttkbootstrap/widgets/primitives/checkbutton.py" = ["D"]
+"src/ttkbootstrap/widgets/primitives/checktoggle.py" = ["D"]
+"src/ttkbootstrap/widgets/primitives/entry.py" = ["D"]
+"src/ttkbootstrap/widgets/primitives/gridframe.py" = ["D"]
+"src/ttkbootstrap/widgets/primitives/labelframe.py" = ["D"]
+"src/ttkbootstrap/widgets/primitives/menubutton.py" = ["D"]
+"src/ttkbootstrap/widgets/primitives/notebook.py" = ["D"]
+"src/ttkbootstrap/widgets/primitives/packframe.py" = ["D"]
+"src/ttkbootstrap/widgets/primitives/panedwindow.py" = ["D"]
+"src/ttkbootstrap/widgets/primitives/progressbar.py" = ["D"]
+"src/ttkbootstrap/widgets/primitives/radiobutton.py" = ["D"]
+"src/ttkbootstrap/widgets/primitives/radiotoggle.py" = ["D"]
+"src/ttkbootstrap/widgets/primitives/scale.py" = ["D"]
+"src/ttkbootstrap/widgets/primitives/scrollbar.py" = ["D"]
+"src/ttkbootstrap/widgets/primitives/separator.py" = ["D"]
+"src/ttkbootstrap/widgets/primitives/sizegrip.py" = ["D"]
+"src/ttkbootstrap/widgets/primitives/spinbox.py" = ["D"]
+"src/ttkbootstrap/widgets/primitives/switch.py" = ["D"]

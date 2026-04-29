@@ -1,7 +1,8 @@
-"""Bootstyle parsing and widget integration for ttkbootstrap.
+"""Style parsing and widget integration for ttkbootstrap.
 
-Handles parsing of bootstyle strings and provides integration layer between
-user-friendly bootstyle syntax and TTK style names.
+Translates `accent`/`variant` tokens (and the deprecated `bootstyle`
+parameter) into TTK style names, and provides the integration layer
+that wires those names into widget constructors and `configure` calls.
 """
 
 from __future__ import annotations
@@ -305,10 +306,12 @@ def extract_widget_class_from_style(ttk_style: str) -> Optional[str]:
 
 
 class Bootstyle:
-    """Widget integration layer for bootstyle functionality.
+    """Widget integration layer for ttkbootstrap styling.
 
-    Wires ttkbootstrap into tkinter/ttk by overriding widget constructors and
-    configure methods to accept `bootstyle` parameter.
+    Provides static methods used by widget constructors and `configure`
+    methods to apply theme-aware styling. Translates `accent` and
+    `variant` tokens (and the deprecated `bootstyle` parameter) into TTK
+    style names registered with the active `Style` instance.
     """
 
     @staticmethod

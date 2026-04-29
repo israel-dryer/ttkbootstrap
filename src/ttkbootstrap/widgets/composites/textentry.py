@@ -1,3 +1,4 @@
+"""Themed text entry field widget with label, validation, and message support."""
 from typing import Any
 
 from typing_extensions import Unpack

@@ -1,3 +1,4 @@
+"""Themed combobox widget."""
 from __future__ import annotations
 
 from tkinter import ttk
@@ -16,6 +17,8 @@ if TYPE_CHECKING:
 
 
 class ComboboxKwargs(TypedDict, total=False):
+    """Keyword-argument schema for `Combobox.__init__`."""
+
     # Standard ttk.Combobox options
     values: Any
     textvariable: Any
@@ -44,7 +47,14 @@ class ComboboxKwargs(TypedDict, total=False):
 
 
 class Combobox(TextSignalMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Combobox):
-    """ttkbootstrap wrapper for `ttk.Combobox` with bootstyle support."""
+    """Themed single-line text entry combined with a dropdown list.
+
+    Extends `ttk.Combobox` with theme-aware styling and text-signal
+    binding. The entry shows the current value; the dropdown exposes
+    choices from `values`. The `state` setting controls whether users
+    can also type free-form values (`normal`) or only choose from the
+    list (`readonly`).
+    """
 
     _ttk_base = ttk.Combobox
 

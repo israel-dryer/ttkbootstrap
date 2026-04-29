@@ -1,3 +1,4 @@
+"""Themed label widget."""
 from __future__ import annotations
 
 from tkinter import ttk
@@ -16,6 +17,8 @@ if TYPE_CHECKING:
 
 
 class LabelKwargs(TypedDict, total=False):
+    """Keyword-argument schema for `Label.__init__`."""
+
     # Standard ttk.Label options
     text: Any
     image: Any
@@ -52,7 +55,13 @@ class LabelKwargs(TypedDict, total=False):
 
 
 class Label(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Label):
-    """ttkbootstrap wrapper for `ttk.Label` with bootstyle and icon support."""
+    """Themed static or dynamic text and image display.
+
+    Extends `ttk.Label` with theme-aware styling, icon integration,
+    text-signal binding, and localization. Text content is sourced from
+    `text`, `textvariable`, or `textsignal`; icons render through the
+    style system and image content through `image`.
+    """
 
     _ttk_base = ttk.Label
 

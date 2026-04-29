@@ -1,3 +1,4 @@
+"""Themed single-selection dropdown menu widget."""
 from __future__ import annotations
 
 from tkinter import StringVar
@@ -15,6 +16,8 @@ if TYPE_CHECKING:
 
 
 class OptionMenuKwargs(TypedDict, total=False):
+    """Keyword-argument schema for `OptionMenu.__init__`."""
+
     command: Optional[Callable[[], Any]]
     image: Any
     icon: Any
@@ -62,9 +65,6 @@ class OptionMenu(MenuButton):
     ):
         """Create an OptionMenu backed by a ContextMenu.
 
-        !!! note "Events"
-            - `<<Change>>`: Fired when the selected value changes. `event.data = {'value': Any}`
-
         Args:
             master: Parent widget. If None, uses the default root window.
             value: Initial selected value.
@@ -73,7 +73,7 @@ class OptionMenu(MenuButton):
         Other Parameters:
             command (Callable): Callback invoked when the value changes via menu selection.
             image (PhotoImage): Tk image to display.
-            icon (str | dict): Bootstyle icon spec for the label content.
+            icon (str | dict): Optional icon spec integrated via the style system.
             icon_only (bool): Whether to reserve label padding when showing only an icon.
             compound (str): Placement of image relative to text.
             padding (int | tuple): Extra padding around the menubutton content.

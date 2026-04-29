@@ -134,24 +134,6 @@ class Form(Frame):
         data (dict): Current form data (read-only property).
         value (dict): Alias for form data (get/set property).
         result (Any): Result value set by button commands.
-
-    Args:
-        master: Parent widget.
-        data: Initial data backing the form. If items are not provided,
-            field items are inferred from the keys and value types.
-        items: Optional explicit form definition. Accepts dictionaries that
-            match the FieldItem/GroupItem/TabsItem shapes or the dataclass
-            instances directly.
-        col_count: Number of columns at the top level.
-        min_col_width: Minimum width for each column in pixels.
-        on_data_changed: Optional callback invoked with the updated data dict
-            whenever a field value changes.
-        width: Requested width for the form container.
-        height: Requested height for the form container.
-        accent: Accent token for the form container (e.g., 'primary', 'secondary').
-        buttons: Optional footer buttons. Accepts plain strings, DialogButton
-            instances, or dictionaries that map to DialogButton kwargs.
-        **kwargs: Additional Frame configuration options.
     """
 
     def __init__(

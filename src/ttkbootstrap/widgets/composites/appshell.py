@@ -40,25 +40,11 @@ class AppShellKwargs(TypedDict, total=False):
 class AppShell(App):
     """A top-level application window with built-in navigation.
 
-    AppShell extends `App` and wires together a `Toolbar`,
-    `SideNav`, and `PageStack` into the common
-    toolbar + sidebar + content layout. Each component is optional
-    and exposed as a property for customization.
-
-    Example:
-        ```python
-        import ttkbootstrap as ttk
-
-        shell = ttk.AppShell(title='My App', size=(1000, 650))
-
-        home = shell.add_page('home', text='Home', icon='house')
-        ttk.Label(home, text='Welcome!').pack(padx=20, pady=20)
-
-        docs = shell.add_page('docs', text='Documents', icon='file-earmark-text')
-        ttk.Label(docs, text='Your documents.').pack(padx=20, pady=20)
-
-        shell.mainloop()
-        ```
+    AppShell extends `App` and wires together a `Toolbar`, `SideNav`, and
+    `PageStack` into the common toolbar + sidebar + content layout. Each
+    component is optional and exposed as a property for customization.
+    Pages are registered through `add_page`, which creates the navigation
+    item and the page container in one call.
     """
 
     def __init__(

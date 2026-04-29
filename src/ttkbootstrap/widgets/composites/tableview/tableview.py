@@ -55,10 +55,12 @@ _TABLE_SEARCH_MODE_OPTIONS = [
 
 
 class TableView(Frame):
-    """TableView backed by an in-memory SqliteDataSource.
+    """Sortable, filterable, paginated tabular data view.
 
-    Provides sortable headers, filtering/search, pagination or virtual scrolling,
-    optional grouping, column striping, and configurable exporting/editing.
+    Renders rows from a `SqliteDataSource` (an in-memory source is created
+    by default) with sortable column headers, header- and row-level
+    filtering, search, standard pagination or virtual scrolling, optional
+    grouping, column striping, in-place editing, and exporting.
 
     !!! note "Events"
         - `<<SelectionChange>>`: Fired when row selection changes. `event.data = {'records': list[dict], 'iids': list[str]}`

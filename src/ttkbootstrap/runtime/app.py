@@ -437,10 +437,20 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
     """The primary application window and entry point.
 
     App adds theming, localization, and platform setup on top of `tkinter.Tk`.
+    Also exported under the legacy alias `Window`.
 
     The standard widget API (events, scheduling, clipboard, geometry managers,
-    winfo, etc.) is documented under ttkbootstrap capabilities and is available
-    on App via inheritance.
+    winfo, etc.) is inherited from `BaseWindow` and `WidgetCapabilitiesMixin`.
+
+    Platform:
+        On Windows, `window_style` enables pywinstyles effects (`mica`,
+        `acrylic`, `aero`, `transparent`, `win7`); the parameter is ignored
+        on macOS and Linux.
+        On macOS, native quit behavior (Cmd+Q, dock-icon hide/show) is
+        installed by default; configure via `AppSettings.macos_quit_behavior`.
+        The per-platform window-state directory used for `state_path`
+        defaults: `Library/Application Support` (macOS), `%APPDATA%`
+        (Windows), `$XDG_CONFIG_HOME` (Linux).
     """
 
     def __init__(
@@ -496,6 +506,9 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
             transient: The parent window for this window.
             override_redirect: If `True`, creates a window without standard
                 decorations (title bar, borders, etc.).
+            window_style: Windows-only pywinstyles effect for all windows
+                (`mica`, `acrylic`, `aero`, `transparent`, `win7`). Overrides
+                `AppSettings.window_style`. Ignored on macOS and Linux.
             **kwargs: Additional keyword arguments to pass to the
                 underlying `tkinter.Tk` constructor.
         """

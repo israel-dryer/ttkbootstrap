@@ -1,3 +1,4 @@
+"""Themed treeview widget."""
 from __future__ import annotations
 
 from tkinter import ttk
@@ -11,6 +12,8 @@ from ttkbootstrap.widgets.types import Master
 
 
 class TreeViewKwargs(TypedDict, total=False):
+    """Keyword-argument schema for `TreeView.__init__`."""
+
     # Standard ttk.Treeview options
     columns: Any
     displaycolumns: Any
@@ -34,7 +37,13 @@ class TreeViewKwargs(TypedDict, total=False):
 
 
 class TreeView(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Treeview):
-    """ttkbootstrap wrapper for `ttk.Treeview` with bootstyle support."""
+    """Themed hierarchical and tabular item display.
+
+    Extends `ttk.Treeview` with theme-aware styling, surface and density
+    tokens, custom borders, and per-column header and selection
+    styling. Renders items as a tree (`show='tree'`), as flat columns
+    (`show='headings'`), or both (the default).
+    """
 
     _ttk_base = ttk.Treeview
 

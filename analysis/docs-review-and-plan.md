@@ -158,13 +158,8 @@ Status legend: `[ ]` pending · `[~]` in progress · `[x]` done · `[-]` deferre
 
 This is the foundation for Goal 1.
 
-- [ ] **2A.** Add a docstring-coverage tool (`interrogate`, `ruff D`, or `pydocstyle`) configured to lint **only** the public surface (the symbols in `_MODULE_EXPORTS` and the modules they live in). Add to dev requirements and CI.
-- [ ] **2B.** Define a docstring template for the public API:
-  - One-line summary
-  - Longer description (1–3 paragraphs)
-  - `Args:`, `Attributes:`, `Returns:`, `Raises:`, `Examples:` (Google style)
-  - For deprecated symbols: `Deprecated:` section with replacement and removal version
-  - For platform-specific behavior: a "Platform notes" paragraph (plain Markdown, no admonitions in docstrings — they don't render the same)
+- [x] **2A.** Wired `ruff` `D` rules with Google convention in `pyproject.toml` ([tool.ruff] section). Internal directories blanket-ignored via `[tool.ruff.lint.per-file-ignores]`; currently-dirty public-surface files are listed individually so each entry can be removed once that file's docstrings are brought to spec. `ruff check src/ttkbootstrap` passes today. The 13 priority files cleaned in 2D form the enforced baseline.
+- [x] **2B.** Docstring template defined below ("Docstring template" section). Anchored on the existing local style: class docstring carries narrative (purpose, when to use) and `Examples:`; `__init__` docstring carries `Args:` and per-parameter details. mkdocstrings renders both (`merge_init_into_class` is unset → default False), so location follows convention; only content matters. `BaseDataSource` (`src/ttkbootstrap/datasource/base.py:27-53`) is one reference; `Form` (`form.py:111-155`) and `Button.__init__` (`button.py:56-85`) are also strong examples of the local style.
 - [ ] **2C.** Build the docs locally and review the rendered reference for the 20 most-used symbols. Spot the thin docstrings:
   - `App`, `AppShell`, `Toplevel`, `Window`
   - `Button`, `Label`, `Frame`, `GridFrame`, `PackFrame`
@@ -230,6 +225,84 @@ This is the foundation for Goal 1.
 
 ---
 
+## Docstring Template
+
+Local convention: class docstring carries narrative + examples; `__init__` docstring carries `Args:`. mkdocstrings (per `zensical.toml:399-408`) renders both — `merge_init_into_class` is unset, so each appears as its own section on the rendered page. **Don't relocate existing content; fill the gaps.**
+
+### Class docstring
+
+Spec, not user guide. Describe what the class **is** and what it **does** — mechanics, not editorial. Don't write "when to use it," "best practices," or "how it compares to X." Those belong on the user-guide page (`docs/widgets/...`).
+
+```
+"""<One-line summary ending with a period.>
+
+<1–2 short paragraphs describing what the class is and how it behaves
+mechanically.> No advice, no comparisons, no "when to use." If users
+need to choose between this and a sibling class, that's a user-guide
+question.
+
+Attributes:
+    <name> (<type>): <one-line description>.
+    ...
+
+Notes:
+    <Behavioral facts not covered above: threading, lifecycle, ordering,
+    side effects, cache behavior, etc. Anything that's part of the
+    contract.> Only include if there's something to say.
+
+Platform:
+    On macOS, ...
+    On Windows, ...
+    <Only if behavior differs by platform.>
+
+Deprecated:
+    Since 2.0. Use `<replacement>` instead. Will be removed in 3.0.
+    <Only if applicable.>
+"""
+```
+
+Examples are **off by default**. The user guide owns examples and screenshots. Add an `Examples:` section to a docstring **only** when one of the following is true:
+
+- The call shape is non-obvious from the signature (decorator, context manager, abstract subclassing pattern, callback signature, unusual nested data structure).
+- An ambiguity in the signature (e.g. polymorphic argument types) is best resolved by showing one line of code.
+
+"Construct it and pack it" is not a reason to add an example. Most widget classes will not have `Examples:` blocks.
+
+### `__init__` docstring
+
+```
+"""<One-line summary of construction.>
+
+Args:
+    <name> (<type>): <description>. Mention defaults in prose, not in the type.
+    ...
+
+Other Parameters:
+    <kw> (<type>): <description>.
+    ...
+        (Use Other Parameters for `**kwargs` items expanded from a TypedDict.)
+
+Raises:
+    <ExceptionType>: <when it's raised>.
+"""
+```
+
+### Rules
+
+- **Spec, not user guide.** Describe mechanics. No editorial language: no "best to use when…", no comparisons to sibling classes, no recommendations, no rationale.
+- **Plain Markdown only.** No reST roles or directives (`:param:`, `:func:`, `.. note::`).
+- **Google style.** mkdocstrings is configured for it (`zensical.toml:400`).
+- **Code fences must specify a language** (`python`, `bash`, etc.).
+- **Examples must be runnable as-shown** with `import ttkbootstrap as ttk`.
+- **One canonical import** in examples: `import ttkbootstrap as ttk`.
+- **Don't duplicate Args between class and `__init__`.** Args go on `__init__`.
+- **Keep `Attributes:` on the class**, not on `__init__`.
+- **Admonitions are allowed but optional.** The `admonition` extension is enabled (`zensical.toml:418`), so `!!! note "Events"` and similar render correctly. Existing docstrings use this convention for `Events:` blocks. Plain prose sections (`Notes:`, `Platform:`) are equally fine — pick one style per docstring and stay consistent with the surrounding file.
+- **Don't link to user-guide pages from docstrings.** The spec is self-contained. Cross-links live on the reference page or the user-guide page itself, not inside the source.
+- **Don't reference `bootstyle` in descriptive prose.** The `bootstyle` parameter is deprecated (see `_DEPRECATED_ALIASES` and inline DEPRECATED markers in `*Kwargs` TypedDicts). In class-level narrative, describe styling via the canonical tokens — `accent`, `variant`, `density`, `surface`, `show_border`, etc. — typically as "theme-aware styling" or by naming the tokens directly. The `bootstyle` parameter itself can still be marked DEPRECATED in `Other Parameters:` for users who haven't migrated.
+
+---
+
 ## Open Questions
 
 1. **`docs/reference/capabilities/` direction (Phase 3F).** Spec for mixins, or move to user-guide? Decision needs to be made before 3F.
@@ -247,33 +320,42 @@ Date — Decision — Rationale.
 - 2026-04-29 — Adopted user-guide vs API-spec split as the documentation model. Reference pages stay bare `::: module.Class`; narrative goes in user guide. Spec quality = docstring quality. CI lint enforces it.
 - 2026-04-29 — `LIBRARY_STRUCTURE.md` reframed: not a duplicate, serves contributors/AI context. Final disposition pending user decision (1E).
 - 2026-04-29 — Image placeholder convention is the HTML-comment block (`<!-- IMAGE: ... -->`) used in layout/navigation widget pages. Visible quote-block placeholders replaced.
+- 2026-04-29 — Docstring location convention: class docstring carries narrative + `Attributes:` + `Examples:`; `__init__` carries `Args:`. Both render via mkdocstrings (`merge_init_into_class` unset). Don't relocate existing content; fill gaps in the class docstring.
+- 2026-04-29 — Phase 2 sequencing changed: 2B → 2D (in batches) → 2A. Tooling (2A) added at the end so CI doesn't go red on day 1.
+- 2026-04-29 — Docstring template tightened: spec, not user guide. No "when to use," no comparisons, no editorial. Mechanics + minimal examples. User-guide content stays in `docs/widgets/...`, `docs/guides/...`.
+- 2026-04-29 — Examples in docstrings made off-by-default. Only included when the call shape is non-obvious or signature ambiguity needs a one-liner to resolve. The user guide owns examples and screenshots.
+- 2026-04-29 — `bootstyle` is deprecated and should not appear in descriptive prose. Class narratives describe styling via the canonical tokens (`accent`, `variant`, etc.). The deprecated `bootstyle` parameter itself is still marked DEPRECATED in argument docs for users who haven't migrated.
+- 2026-04-29 — Phase 2A landed. `ruff` `D` rules with Google convention enforced via `[tool.ruff]` in `pyproject.toml`. Currently-dirty public-surface files use per-file ignores; each entry is removed when that file's docstrings conform. Internal directories (`builders/`, `mixins/`, `internal/`, `parts/`, `capabilities/`, `cli/`, `assets/`) are blanket-ignored. New files in non-ignored directories are linted from day 1.
 
 ---
 
 ## Per-Symbol Docstring Status (Phase 2C/2D tracker)
 
-Filled out as Phase 2 progresses.
+Surveyed 2026-04-29. "Gap" describes what's missing relative to the template; the existing `__init__` Args layout is the local convention and is preserved.
 
-| Symbol | Source location | Status | Notes |
-|---|---|---|---|
-| `App` | `runtime/app.py` | [ ] | |
-| `AppShell` | `widgets/composites/appshell.py` | [ ] | |
-| `Toplevel` | `runtime/toplevel.py` | [ ] | |
-| `Button` | `widgets/primitives/button.py` | [ ] | |
-| `Label` | `widgets/primitives/label.py` | [ ] | |
-| `Frame` | `widgets/primitives/frame.py` | [ ] | |
-| `GridFrame` | `widgets/primitives/gridframe.py` | [ ] | |
-| `PackFrame` | `widgets/primitives/packframe.py` | [ ] | |
-| `TextEntry` | `widgets/composites/textentry.py` | [ ] | |
-| `NumericEntry` | `widgets/composites/numericentry.py` | [ ] | |
-| `DateEntry` | `widgets/composites/dateentry.py` | [ ] | |
-| `Combobox` | `widgets/primitives/combobox.py` | [ ] | |
-| `OptionMenu` | `widgets/primitives/optionmenu.py` | [ ] | |
-| `SelectBox` | `widgets/composites/selectbox.py` | [ ] | |
-| `TableView` | `widgets/composites/tableview/` | [ ] | |
-| `TreeView` | `widgets/primitives/treeview.py` | [ ] | |
-| `Form` | `widgets/composites/form.py` | [ ] | |
-| `Style` | `style/style.py` | [ ] | |
-| `Bootstyle` | `style/bootstyle.py` | [ ] | |
-| `MessageDialog` | `dialogs/message.py` | [ ] | |
-| `BaseDataSource` | `datasource/base.py` | [ ] | |
+Under the tightened template, **no `Examples:`** is the default. Most rows now reduce to: confirm class narrative is mechanical (not editorial), confirm `Args:` is complete, confirm `Attributes:` covers public attributes.
+
+| Symbol | Source | Class docstring | `__init__` Args | Gap | Status |
+|---|---|---|---|---|---|
+| `BaseDataSource` | `datasource/base.py` | rich | yes | none — reference for abstract-subclass pattern; example is justified | [x] |
+| `Toplevel` | `runtime/toplevel.py` | multi-section | yes | done — added `Platform:` (Windows/X11/Aqua), removed construct-and-mainloop example | [x] |
+| `AppShell` | `widgets/composites/appshell.py` | multi-section | yes | done — removed example (covered by `add_page` docs and user guide) | [x] |
+| `Form` | `widgets/composites/form.py` | rich | yes | done — removed duplicated `Args:` from class docstring | [x] |
+| `GridFrame` | `widgets/primitives/gridframe.py` | multi-section | yes | none — verified on-spec; example shows non-obvious auto-placement and is justified | [x] |
+| `PackFrame` | `widgets/primitives/packframe.py` | multi-section | yes | none — verified on-spec; example shows non-obvious auto-placement and is justified | [x] |
+| `TextEntry` | `widgets/composites/textentry.py` | multi-section | yes | none — verified on-spec | [x] |
+| `NumericEntry` | `widgets/composites/numericentry.py` | multi-section | yes | none — verified on-spec | [x] |
+| `DateEntry` | `widgets/composites/dateentry.py` | multi-section | yes | none — verified on-spec | [x] |
+| `SelectBox` | `widgets/composites/selectbox.py` | brief | yes | none — verified on-spec (brief is fine, it's mechanical) | [x] |
+| `Style` | `style/style.py` | multi-section | yes | none — verified on-spec | [x] |
+| `MessageDialog` | `dialogs/message.py` | multi-section | yes | done — fixed doubled summary, removed editorial advice, mentioned `show()`/`.result` call shape, updated `bootstyle` references in Args | [x] |
+| `App` | `runtime/app.py` | multi-section | yes | done — added `Platform:` section, added missing `window_style` to `__init__` Args | [x] |
+| `Window` | (alias for `App`) | inherits | inherits | done — alias acknowledged in `App` class docstring; reference page deferred to Phase 3C | [x] |
+| `OptionMenu` | `widgets/primitives/optionmenu.py` | multi-section | yes | done — removed duplicated Events admonition from `__init__`, neutralized "Bootstyle icon spec" wording | [x] |
+| `TableView` | `widgets/composites/tableview/` | multi-section | extensive | done — improved class summary; `__init__` is fine | [x] |
+| `Button` | `widgets/primitives/button.py` | one-liner | extensive | done — added 2-sentence mechanical narrative to class docstring | [x] |
+| `Label` | `widgets/primitives/label.py` | one-liner | extensive | done — added 2-sentence mechanical narrative to class docstring | [x] |
+| `Frame` | `widgets/primitives/frame.py` | one-liner | extensive | done — added 2-sentence mechanical narrative to class docstring | [x] |
+| `Combobox` | `widgets/primitives/combobox.py` | one-liner | extensive | done — added 2-sentence mechanical narrative to class docstring | [x] |
+| `TreeView` | `widgets/primitives/treeview.py` | one-liner | extensive | done — added 2-sentence mechanical narrative to class docstring | [x] |
+| `Bootstyle` | `style/bootstyle.py` | brief | n/a (functions) | done — clarified class docstring (handles accent/variant + deprecated bootstyle), updated module summary | [x] |

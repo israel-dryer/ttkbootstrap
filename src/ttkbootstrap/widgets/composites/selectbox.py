@@ -1,3 +1,4 @@
+"""Themed dropdown-like field widget with optional search and custom values."""
 from tkinter import Toplevel
 
 from typing_extensions import Unpack
