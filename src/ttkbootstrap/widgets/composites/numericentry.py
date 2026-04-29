@@ -22,12 +22,12 @@ class NumericEntry(Field):
 
     !!! note "Events"
 
-        - ``<<Increment>>``: Fired when increment is requested (before step occurs).
-        - ``<<Decrement>>``: Fired when decrement is requested (before step occurs).
-        - ``<<Change>>``: Fired when value changes after commit.
-        - ``<<Input>>``: Fired on each keystroke.
-        - ``<<Valid>>``: Fired when validation passes.
-        - ``<<Invalid>>``: Fired when validation fails.
+        - `<<Increment>>`: Fired when increment is requested (before step occurs).
+        - `<<Decrement>>`: Fired when decrement is requested (before step occurs).
+        - `<<Change>>`: Fired when value changes after commit.
+        - `<<Input>>`: Fired on each keystroke.
+        - `<<Valid>>`: Fired when validation passes.
+        - `<<Invalid>>`: Fired when validation fails.
 
     Attributes:
         entry_widget (NumberEntryPart): The underlying entry widget.
@@ -61,7 +61,7 @@ class NumericEntry(Field):
             master: Parent widget. If None, uses the default root window.
             value (int | float): Initial numeric value to display.
             label (str): Optional label text to display above the entry field.
-                If ``required=True``, an asterisk (*) is automatically appended.
+                If `required=True`, an asterisk (*) is automatically appended.
             message (str): Optional message text to display below the entry field.
                 Used for hints or help text. Replaced by validation errors when
                 validation fails.
@@ -76,8 +76,8 @@ class NumericEntry(Field):
         Other Parameters:
             wrap (bool): If True, values wrap around at min/max boundaries.
             value_format (str): Number format specification for IntlFormatter.
-                Examples: ``'decimal'``, ``'percent'``, ``'currency'``, ``'#,##0.00'``.
-            locale (str): Locale identifier for number formatting (e.g., ``'en_US'``).
+                Examples: `'decimal'`, `'percent'`, `'currency'`, `'#,##0.00'`.
+            locale (str): Locale identifier for number formatting (e.g., `'en_US'`).
             required (bool): If True, field cannot be empty.
             accent (str): Accent token for the focus ring and active border.
             bootstyle (str): DEPRECATED - Use `accent` instead.
@@ -87,7 +87,7 @@ class NumericEntry(Field):
             font (str): Font for text display.
             foreground (str): Text color.
             initial_focus (bool): If True, widget receives focus on creation.
-            justify (str): Text alignment (``'left'``, ``'center'``, ``'right'``).
+            justify (str): Text alignment (`'left'`, `'center'`, `'right'`).
             show_message (bool): If True, displays message area.
             padding (int | tuple): Padding around entry widget.
             takefocus (bool): If True, widget accepts Tab focus.

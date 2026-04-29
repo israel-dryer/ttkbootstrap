@@ -40,8 +40,8 @@ class AppShellKwargs(TypedDict, total=False):
 class AppShell(App):
     """A top-level application window with built-in navigation.
 
-    AppShell extends ``App`` and wires together a ``Toolbar``,
-    ``SideNav``, and ``PageStack`` into the common
+    AppShell extends `App` and wires together a `Toolbar`,
+    `SideNav`, and `PageStack` into the common
     toolbar + sidebar + content layout. Each component is optional
     and exposed as a property for customization.
 
@@ -92,8 +92,8 @@ class AppShell(App):
             resizable: Whether the window is resizable as (width, height).
             frameless: If True, remove OS window chrome (title bar, borders)
                 and rely on the toolbar for window controls and dragging.
-                Automatically enables ``show_window_controls`` and
-                ``draggable`` when True. Default False.
+                Automatically enables `show_window_controls` and
+                `draggable` when True. Default False.
             show_toolbar: Include the toolbar at the top. Default True.
             show_window_controls: Show minimize/maximize/close buttons
                 in the toolbar. Default False.
@@ -262,12 +262,12 @@ class AppShell(App):
 
         Returns:
             The page widget (passed or auto-created Frame). When
-            ``scrollable=True``, returns the ScrollView so that children
+            `scrollable=True`, returns the ScrollView so that children
             are packed into the scrollable area.
 
         Raises:
-            RuntimeError: If ``show_nav=False`` was set. Use
-                ``shell.pages.add()`` directly instead.
+            RuntimeError: If `show_nav=False` was set. Use
+                `shell.pages.add()` directly instead.
         """
         if self._nav is None:
             raise RuntimeError(
@@ -319,7 +319,7 @@ class AppShell(App):
     ):
         """Add a navigation group.
 
-        Passthrough to ``nav.add_group()``.
+        Passthrough to `nav.add_group()`.
 
         Args:
             key: Unique identifier for the group.
@@ -338,7 +338,7 @@ class AppShell(App):
     def add_header(self, text: str, **kwargs):
         """Add a section header to the navigation.
 
-        Passthrough to ``nav.add_header()``.
+        Passthrough to `nav.add_header()`.
 
         Args:
             text: Header text.
@@ -354,7 +354,7 @@ class AppShell(App):
     def add_separator(self, **kwargs):
         """Add a separator to the navigation.
 
-        Passthrough to ``nav.add_separator()``.
+        Passthrough to `nav.add_separator()`.
 
         Args:
             **kwargs: Additional arguments passed to SideNavSeparator.
@@ -392,7 +392,7 @@ class AppShell(App):
             self._navigating = False
 
     def select(self, key: str, data: dict = None):
-        """Alias for ``navigate()``.
+        """Alias for `navigate()`.
 
         Args:
             key: The page key to navigate to.
@@ -409,7 +409,7 @@ class AppShell(App):
             callback: Function to call when the page changes.
 
         Returns:
-            Binding identifier for use with ``off_page_changed()``.
+            Binding identifier for use with `off_page_changed()`.
         """
         return self._pages.on_page_changed(callback)
 
@@ -417,7 +417,7 @@ class AppShell(App):
         """Unbind from page change events.
 
         Args:
-            bind_id: The binding identifier returned by ``on_page_changed()``.
+            bind_id: The binding identifier returned by `on_page_changed()`.
         """
         self._pages.off_page_changed(bind_id)
 
@@ -425,12 +425,12 @@ class AppShell(App):
 
     @property
     def toolbar(self) -> Toolbar | None:
-        """The Toolbar widget, or None if ``show_toolbar=False``."""
+        """The Toolbar widget, or None if `show_toolbar=False`."""
         return self._toolbar
 
     @property
     def nav(self) -> SideNav | None:
-        """The SideNav widget, or None if ``show_nav=False``."""
+        """The SideNav widget, or None if `show_nav=False`."""
         return self._nav
 
     @property

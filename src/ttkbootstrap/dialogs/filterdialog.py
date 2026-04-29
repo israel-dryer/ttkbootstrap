@@ -179,8 +179,8 @@ class FilterDialog(ttk.Frame):
 
     !!! note "Events"
 
-        ``<<SelectionChange>>``: Triggered when OK is clicked and selections are confirmed.
-          Provides ``event.data`` with key: ``selected`` (list[Any]).
+        `<<SelectionChange>>`: Triggered when OK is clicked and selections are confirmed.
+          Provides `event.data` with key: `selected` (list[Any]).
 
     Attributes:
         result (list[Any] | None): List of selected values after dialog is closed,
@@ -245,7 +245,7 @@ class FilterDialog(ttk.Frame):
                 self.event_generate('<<SelectionChange>>', data={"selected": self.result.copy()})
 
     def on_selection_changed(self, callback: Callable) -> str:
-        """Bind to ``<<SelectionChange>>``. Callback receives ``event.data = {"selected": list[Any]}``.
+        """Bind to `<<SelectionChange>>`. Callback receives `event.data = {"selected": list[Any]}`.
 
         Returns:
             Binding identifier for use with off_selection_changed().

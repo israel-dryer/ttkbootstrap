@@ -59,13 +59,13 @@ class SideNav(Frame):
     for radio-group behavior.
 
     !!! note "Events"
-        - ``<<PaneToggled>>``: Fired when pane is opened/closed.
-          ``event.data = {'is_open': bool}``
-        - ``<<DisplayModeChanged>>``: Fired when display mode changes.
-          ``event.data = {'mode': str}``
-        - ``<<SelectionChanged>>``: Fired when selected item changes.
-          ``event.data = {'key': str}``
-        - ``<<BackRequested>>``: Fired when back button is clicked.
+        - `<<PaneToggled>>`: Fired when pane is opened/closed.
+          `event.data = {'is_open': bool}`
+        - `<<DisplayModeChanged>>`: Fired when display mode changes.
+          `event.data = {'mode': str}`
+        - `<<SelectionChanged>>`: Fired when selected item changes.
+          `event.data = {'key': str}`
+        - `<<BackRequested>>`: Fired when back button is clicked.
 
     Example:
         ```python
@@ -874,7 +874,7 @@ class SideNav(Frame):
     # --- Event Binding Helpers ---
 
     def on_selection_changed(self, callback) -> str:
-        """Bind to ``<<SelectionChanged>>``.
+        """Bind to `<<SelectionChanged>>`.
 
         Args:
             callback: Function to call when selection changes.
@@ -885,11 +885,11 @@ class SideNav(Frame):
         return self.bind('<<SelectionChanged>>', callback, add='+')
 
     def off_selection_changed(self, bind_id: str = None) -> None:
-        """Unbind from ``<<SelectionChanged>>``."""
+        """Unbind from `<<SelectionChanged>>`."""
         self.unbind('<<SelectionChanged>>', bind_id)
 
     def on_back_requested(self, callback) -> str:
-        """Bind to ``<<BackRequested>>``.
+        """Bind to `<<BackRequested>>`.
 
         Args:
             callback: Function to call when back button is clicked.
@@ -900,11 +900,11 @@ class SideNav(Frame):
         return self.bind('<<BackRequested>>', callback, add='+')
 
     def off_back_requested(self, bind_id: str = None) -> None:
-        """Unbind from ``<<BackRequested>>``."""
+        """Unbind from `<<BackRequested>>`."""
         self.unbind('<<BackRequested>>', bind_id)
 
     def on_pane_toggled(self, callback) -> str:
-        """Bind to ``<<PaneToggled>>``.
+        """Bind to `<<PaneToggled>>`.
 
         Args:
             callback: Function to call when pane is toggled.
@@ -915,5 +915,5 @@ class SideNav(Frame):
         return self.bind('<<PaneToggled>>', callback, add='+')
 
     def off_pane_toggled(self, bind_id: str = None) -> None:
-        """Unbind from ``<<PaneToggled>>``."""
+        """Unbind from `<<PaneToggled>>`."""
         self.unbind('<<PaneToggled>>', bind_id)

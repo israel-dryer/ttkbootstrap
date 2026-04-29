@@ -176,9 +176,9 @@ def _check_build(config: TtkbConfig, project_root: Path) -> int:
 def _probe_tk() -> tuple[str | None, str | None]:
     """Return (version, None) on success, (None, error_message) on failure.
 
-    Uses ``_tkinter`` module constants directly so the probe does not have
+    Uses `_tkinter` module constants directly so the probe does not have
     to instantiate a Tk interpreter (ttkbootstrap monkey-patches
-    ``Tk.__init__`` to require an App, which would trip the probe).
+    `Tk.__init__` to require an App, which would trip the probe).
     """
     try:
         import _tkinter

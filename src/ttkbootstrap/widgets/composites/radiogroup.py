@@ -350,7 +350,7 @@ class RadioGroup(Frame):
         button.configure(**kwargs)
 
     def on_changed(self, callback: Callable) -> Any:
-        """Subscribe to value changes. Callback receives ``new_value: str`` directly."""
+        """Subscribe to value changes. Callback receives `new_value: str` directly."""
         return self._signal.subscribe(callback)
 
     def off_changed(self, bind_id: Any) -> None:

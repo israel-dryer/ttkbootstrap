@@ -52,8 +52,8 @@ class SideNavItem(Frame):
     and NavigationButton.TLabel for the icon and text labels.
 
     !!! note "Events"
-        - ``<<ItemInvoked>>``: Fired when the item is clicked.
-          ``event.data = {'key': str}``
+        - `<<ItemInvoked>>`: Fired when the item is clicked.
+          `event.data = {'key': str}`
 
     Example:
         ```python
@@ -394,7 +394,7 @@ class SideNavItem(Frame):
     # --- Event Binding Helpers ---
 
     def on_invoked(self, callback) -> str:
-        """Bind to ``<<ItemInvoked>>``.
+        """Bind to `<<ItemInvoked>>`.
 
         Args:
             callback: Function to call when item is invoked.
@@ -405,7 +405,7 @@ class SideNavItem(Frame):
         return self.bind('<<ItemInvoked>>', callback, add='+')
 
     def off_invoked(self, bind_id: str = None) -> None:
-        """Unbind from ``<<ItemInvoked>>``.
+        """Unbind from `<<ItemInvoked>>`.
 
         Args:
             bind_id (str | None): Binding identifier from on_invoked().

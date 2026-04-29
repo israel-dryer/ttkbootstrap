@@ -1,6 +1,6 @@
 """Core dialog base class for ttkbootstrap dialogs.
 
-This module provides the base ``Dialog`` class using a builder pattern
+This module provides the base `Dialog` class using a builder pattern
 for creating flexible, customizable dialogs with composition-based content
 and footer builders.
 """
@@ -33,11 +33,11 @@ class DialogButton:
     Attributes:
         text (str): Button label text displayed to the user.
         role (ButtonRole): Button role determining styling and behavior.
-            - ``"primary"``: Main action (blue, triggered by Enter)
-            - ``"secondary"``: Standard action (gray)
-            - ``"danger"``: Destructive action (red)
-            - ``"cancel"``: Cancel action (outline, triggered by Escape)
-            - ``"help"``: Help/info action (link style)
+            - `"primary"`: Main action (blue, triggered by Enter)
+            - `"secondary"`: Standard action (gray)
+            - `"danger"`: Destructive action (red)
+            - `"cancel"`: Cancel action (outline, triggered by Escape)
+            - `"help"`: Help/info action (link style)
         result (Any | None): Value assigned to dialog.result when clicked.
         closes (bool): Whether button closes the dialog when clicked.
         default (bool): Whether this is the default button (focused, triggered by Enter).
@@ -129,7 +129,7 @@ class Dialog:
             - "popover": Closes automatically when focus leaves dialog
             - "sheet": Like "modal" but on macOS applies the Cocoa sheet
               window class for a chromeless, sheet-styled dialog tied to
-              its parent (via ``transient``). Falls back to plain modal
+              its parent (via `transient`). Falls back to plain modal
               behavior on Windows/Linux where there's no equivalent.
             Defaults to "modal".
         frameless: If True, removes window decorations (title bar, borders) and adds

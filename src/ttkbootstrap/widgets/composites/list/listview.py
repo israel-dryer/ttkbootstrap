@@ -333,15 +333,15 @@ class ListView(Frame):
     implementation for more complex scenarios (database, API, etc.).
 
     !!! note "Events"
-        - ``<<SelectionChange>>``: Fired when selection state changes. ``event.data = None`` (use ``get_selected()`` to get current selection)
-        - ``<<ItemDelete>>``: Fired when an item is deleted. ``event.data = {'record': dict}``
-        - ``<<ItemDeleteFail>>``: Fired when item deletion fails. ``event.data = {'record': dict, 'error': str}``
-        - ``<<ItemInsert>>``: Fired when a new item is inserted. ``event.data = {'record': dict}``
-        - ``<<ItemUpdate>>``: Fired when an item is updated. ``event.data = {'record': dict}``
-        - ``<<ItemClick>>``: Fired when an item is clicked. ``event.data = {'record': dict}``
-        - ``<<ItemDragStart>>``: Fired when a drag begins. ``event.data = {'record': dict, 'index': int}``
-        - ``<<ItemDrag>>``: Fired when an item is being dragged. ``event.data = {'source_index': int, 'target_index': int, 'x': int, 'y': int}``
-        - ``<<ItemDragEnd>>``: Fired when a drag ends. ``event.data = {'moved': bool, 'source_index': int, 'target_index': int}``
+        - `<<SelectionChange>>`: Fired when selection state changes. `event.data = None` (use `get_selected()` to get current selection)
+        - `<<ItemDelete>>`: Fired when an item is deleted. `event.data = {'record': dict}`
+        - `<<ItemDeleteFail>>`: Fired when item deletion fails. `event.data = {'record': dict, 'error': str}`
+        - `<<ItemInsert>>`: Fired when a new item is inserted. `event.data = {'record': dict}`
+        - `<<ItemUpdate>>`: Fired when an item is updated. `event.data = {'record': dict}`
+        - `<<ItemClick>>`: Fired when an item is clicked. `event.data = {'record': dict}`
+        - `<<ItemDragStart>>`: Fired when a drag begins. `event.data = {'record': dict, 'index': int}`
+        - `<<ItemDrag>>`: Fired when an item is being dragged. `event.data = {'source_index': int, 'target_index': int, 'x': int, 'y': int}`
+        - `<<ItemDragEnd>>`: Fired when a drag ends. `event.data = {'moved': bool, 'source_index': int, 'target_index': int}`
     """
 
     def __init__(
@@ -809,11 +809,11 @@ class ListView(Frame):
             pass
 
     def _bind_scroll_events(self, widget) -> None:
-        """Bind the platform-correct scroll-wheel events to ``widget``.
+        """Bind the platform-correct scroll-wheel events to `widget`.
 
-        On Aqua/Win the event is ``<MouseWheel>`` with ``event.delta``
+        On Aqua/Win the event is `<MouseWheel>` with `event.delta`
         carrying direction and magnitude. On X11 there's no MouseWheel —
-        scroll up is ``<Button-4>`` and scroll down is ``<Button-5>``.
+        scroll up is `<Button-4>` and scroll down is `<Button-5>`.
         """
         if self.winsys.lower() == 'x11':
             widget.bind('<Button-4>', self._on_mousewheel, add='+')
@@ -1435,73 +1435,73 @@ class ListView(Frame):
     # Event handler API
 
     def on_selection_changed(self, callback: Callable) -> str:
-        """Bind to ``<<SelectionChange>>``. Callback receives ``event.data = None`` (use ``get_selected()`` to get current selection)."""
+        """Bind to `<<SelectionChange>>`. Callback receives `event.data = None` (use `get_selected()` to get current selection)."""
         return self.bind('<<SelectionChange>>', callback, add='+')
 
     def off_selection_changed(self, bind_id: str | None = None) -> None:
-        """Unbind from ``<<SelectionChange>>``."""
+        """Unbind from `<<SelectionChange>>`."""
         self.unbind('<<SelectionChange>>', bind_id)
 
     def on_item_delete(self, callback: Callable) -> str:
-        """Bind to ``<<ItemDelete>>``. Callback receives ``event.data = {'record': dict}``."""
+        """Bind to `<<ItemDelete>>`. Callback receives `event.data = {'record': dict}`."""
         return self.bind('<<ItemDelete>>', callback, add='+')
 
     def off_item_delete(self, bind_id: str | None = None) -> None:
-        """Unbind from ``<<ItemDelete>>``."""
+        """Unbind from `<<ItemDelete>>`."""
         self.unbind('<<ItemDelete>>', bind_id)
 
     def on_item_delete_fail(self, callback: Callable) -> str:
-        """Bind to ``<<ItemDeleteFail>>``. Callback receives ``event.data = {'record': dict, 'error': str}``."""
+        """Bind to `<<ItemDeleteFail>>`. Callback receives `event.data = {'record': dict, 'error': str}`."""
         return self.bind('<<ItemDeleteFail>>', callback, add='+')
 
     def off_item_delete_fail(self, bind_id: str | None = None) -> None:
-        """Unbind from ``<<ItemDeleteFail>>``."""
+        """Unbind from `<<ItemDeleteFail>>`."""
         self.unbind('<<ItemDeleteFail>>', bind_id)
 
     def on_item_insert(self, callback: Callable) -> str:
-        """Bind to ``<<ItemInsert>>``. Callback receives ``event.data = {'record': dict}``."""
+        """Bind to `<<ItemInsert>>`. Callback receives `event.data = {'record': dict}`."""
         return self.bind('<<ItemInsert>>', callback, add='+')
 
     def off_item_insert(self, bind_id: str | None = None) -> None:
-        """Unbind from ``<<ItemInsert>>``."""
+        """Unbind from `<<ItemInsert>>`."""
         self.unbind('<<ItemInsert>>', bind_id)
 
     def on_item_update(self, callback: Callable) -> str:
-        """Bind to ``<<ItemUpdate>>``. Callback receives ``event.data = {'record': dict}``."""
+        """Bind to `<<ItemUpdate>>`. Callback receives `event.data = {'record': dict}`."""
         return self.bind('<<ItemUpdate>>', callback, add='+')
 
     def off_item_update(self, bind_id: str | None = None) -> None:
-        """Unbind from ``<<ItemUpdate>>``."""
+        """Unbind from `<<ItemUpdate>>`."""
         self.unbind('<<ItemUpdate>>', bind_id)
 
     def on_item_click(self, callback: Callable) -> str:
-        """Bind to ``<<ItemClick>>``. Callback receives ``event.data = {'record': dict}``."""
+        """Bind to `<<ItemClick>>`. Callback receives `event.data = {'record': dict}`."""
         return self.bind('<<ItemClick>>', callback, add='+')
 
     def off_item_click(self, bind_id: str | None = None) -> None:
-        """Unbind from ``<<ItemClick>>``."""
+        """Unbind from `<<ItemClick>>`."""
         self.unbind('<<ItemClick>>', bind_id)
 
     def on_item_drag_start(self, callback: Callable) -> str:
-        """Bind to ``<<ItemDragStart>>``. Callback receives ``event.data = {'record': dict, 'index': int}``."""
+        """Bind to `<<ItemDragStart>>`. Callback receives `event.data = {'record': dict, 'index': int}`."""
         return self.bind('<<ItemDragStart>>', callback, add='+')
 
     def off_item_drag_start(self, bind_id: str | None = None) -> None:
-        """Unbind from ``<<ItemDragStart>>``."""
+        """Unbind from `<<ItemDragStart>>`."""
         self.unbind('<<ItemDragStart>>', bind_id)
 
     def on_item_drag(self, callback: Callable) -> str:
-        """Bind to ``<<ItemDrag>>``. Callback receives ``event.data = {'source_index': int, 'target_index': int, 'x': int, 'y': int}``."""
+        """Bind to `<<ItemDrag>>`. Callback receives `event.data = {'source_index': int, 'target_index': int, 'x': int, 'y': int}`."""
         return self.bind('<<ItemDrag>>', callback, add='+')
 
     def off_item_drag(self, bind_id: str | None = None) -> None:
-        """Unbind from ``<<ItemDrag>>``."""
+        """Unbind from `<<ItemDrag>>`."""
         self.unbind('<<ItemDrag>>', bind_id)
 
     def on_item_drag_end(self, callback: Callable) -> str:
-        """Bind to ``<<ItemDragEnd>>``. Callback receives ``event.data = {'moved': bool, 'source_index': int, 'target_index': int}``."""
+        """Bind to `<<ItemDragEnd>>`. Callback receives `event.data = {'moved': bool, 'source_index': int, 'target_index': int}`."""
         return self.bind('<<ItemDragEnd>>', callback, add='+')
 
     def off_item_drag_end(self, bind_id: str | None = None) -> None:
-        """Unbind from ``<<ItemDragEnd>>``."""
+        """Unbind from `<<ItemDragEnd>>`."""
         self.unbind('<<ItemDragEnd>>', bind_id)

@@ -141,9 +141,9 @@ class Shortcuts:
     Provides cross-platform keyboard shortcut registration and binding.
     The service automatically translates modifier keys for each platform:
 
-    - ``Mod`` becomes ``Ctrl`` on Windows/Linux, ``Command`` on Mac
-    - ``Alt`` becomes ``Alt`` on Windows/Linux, ``Option`` on Mac
-    - ``Shift`` works the same on all platforms
+    - `Mod` becomes `Ctrl` on Windows/Linux, `Command` on Mac
+    - `Alt` becomes `Alt` on Windows/Linux, `Option` on Mac
+    - `Shift` works the same on all platforms
 
     Examples:
         ```python
@@ -178,10 +178,10 @@ class Shortcuts:
         Args:
             key: Unique identifier (e.g., "save", "file.open")
             pattern: Shortcut pattern using symbolic modifiers:
-                - ``Mod+S`` - Primary modifier + S
-                - ``Mod+Shift+S`` - Primary modifier + Shift + S
-                - ``Alt+F4`` - Alt + F4
-                - ``F5`` - Function key alone
+                - `Mod+S` - Primary modifier + S
+                - `Mod+Shift+S` - Primary modifier + Shift + S
+                - `Alt+F4` - Alt + F4
+                - `F5` - Function key alone
             command: Function to call when triggered
 
         Returns:
@@ -371,11 +371,11 @@ def format_shortcut(spec: str | None) -> str:
 
     Accepts three forms in order of precedence:
 
-    1. **Registered key** — the key passed to ``Shortcuts.register``
-       (e.g. ``"save"``, ``"file.open"``). Returns the registered
+    1. **Registered key** — the key passed to `Shortcuts.register`
+       (e.g. `"save"`, `"file.open"`). Returns the registered
        shortcut's `display`.
-    2. **Pattern** — a modifier expression like ``"Mod+S"``,
-       ``"Ctrl+Shift+N"``, or ``"F5"``. Treated as a transient pattern;
+    2. **Pattern** — a modifier expression like `"Mod+S"`,
+       `"Ctrl+Shift+N"`, or `"F5"`. Treated as a transient pattern;
        returns the pattern's platform display without registering anything.
     3. **Plain text** — anything that doesn't parse as a pattern (no
        modifier separator, not a function key) is returned unchanged so
@@ -385,7 +385,7 @@ def format_shortcut(spec: str | None) -> str:
         spec: A registered key, modifier pattern, or literal display.
 
     Returns:
-        Platform-appropriate display string, or empty string when ``spec``
+        Platform-appropriate display string, or empty string when `spec`
         is empty/None.
 
     Examples:

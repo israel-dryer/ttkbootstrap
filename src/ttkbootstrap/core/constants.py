@@ -1,6 +1,6 @@
 """Backwards compatibility layer - constants moved to ttkbootstrap.constants.
 
-.. deprecated::
+!!! warning "Deprecated"
     Import from `ttkbootstrap.constants` instead of `ttkbootstrap.core.constants`.
 
 This module re-exports all constants from the root-level constants module

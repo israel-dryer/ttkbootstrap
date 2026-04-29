@@ -26,22 +26,22 @@ class DateEntry(Field):
     supports various date format presets and custom ICU date format patterns,
     and can accept input as strings, date objects, or datetime objects.
 
-    The available date format presets are: ``longDate`` (January 15, 2025),
-    ``shortDate`` (1/15/25), ``monthAndDate`` (January 15), ``monthAndYear``
-    (January 2025), ``quarterAndYear`` (Q1 2025), ``day`` (15), ``dayOfWeek``
-    (Wednesday), ``month`` (January), ``quarter`` (Q1), ``year`` (2025),
-    ``longTime`` (3:30:45 PM PST), ``shortTime`` (3:30 PM), ``longDateLongTime``,
-    ``shortDateShortTime``, or any custom ICU date format pattern (e.g., "yyyy-MM-dd").
+    The available date format presets are: `longDate` (January 15, 2025),
+    `shortDate` (1/15/25), `monthAndDate` (January 15), `monthAndYear`
+    (January 2025), `quarterAndYear` (Q1 2025), `day` (15), `dayOfWeek`
+    (Wednesday), `month` (January), `quarter` (Q1), `year` (2025),
+    `longTime` (3:30:45 PM PST), `shortTime` (3:30 PM), `longDateLongTime`,
+    `shortDateShortTime`, or any custom ICU date format pattern (e.g., "yyyy-MM-dd").
 
     !!! note "Events"
 
-        - ``<<Change>>``: Fired when date value changes after commit.
-        - ``<<Input>>``: Fired on each keystroke.
-        - ``<<Valid>>``: Fired when validation passes.
-        - ``<<Invalid>>``: Fired when validation fails.
+        - `<<Change>>`: Fired when date value changes after commit.
+        - `<<Input>>`: Fired on each keystroke.
+        - `<<Valid>>`: Fired when validation passes.
+        - `<<Invalid>>`: Fired when validation fails.
 
         The calendar picker button uses a DateDialog. The button can be hidden
-        using ``show_picker_button=False``.
+        using `show_picker_button=False`.
 
     Attributes:
         entry_widget (TextEntryPart): Access to the underlying TextEntryPart widget.

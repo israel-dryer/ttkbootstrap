@@ -43,7 +43,7 @@ class FontDialog:
 
     This dialog provides a comprehensive interface for selecting fonts,
     including family, size, weight, slant, and effects (underline, overstrike).
-    The selected font is returned as a ``tkinter.font.Font`` object when OK is
+    The selected font is returned as a `tkinter.font.Font` object when OK is
     pressed, or None if canceled.
 
     Attributes:

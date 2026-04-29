@@ -680,7 +680,7 @@
 #
 #         If themename is None, returns the theme in use, otherwise, set
 #         the current theme to themename, refreshes all widgets and emits
-#         a ``<<ThemeChanged>>`` event.
+#         a `<<ThemeChanged>>` event.
 #
 #         Only use this method if you are changing the theme *during*
 #         runtime. Otherwise, pass the theme name into the Style
@@ -5028,8 +5028,8 @@
 #     This class provides utilities to parse those tokens from strings and
 #     widget state, determine the target widget class and orientation, and
 #     resolve the requested color and variant. It also wires ttkbootstrap
-#     into tkinter/ttk via ``setup_ttkbootstrap_api`` so that widgets accept
-#     the ``bootstyle=...`` keyword at construction or during configure().
+#     into tkinter/ttk via `setup_ttkbootstrap_api` so that widgets accept
+#     the `bootstyle=...` keyword at construction or during configure().
 #
 #     Typical end users will not call these methods directly; they are used
 #     internally by the Style engine and by widget constructor overrides.

@@ -25,10 +25,10 @@ class TimeEntry(SelectBox):
 
     !!! note "Events"
 
-        - ``<<Change>>``: Fired when time value changes after commit.
-        - ``<<Input>>``: Fired on each keystroke.
-        - ``<<Valid>>``: Fired when validation passes.
-        - ``<<Invalid>>``: Fired when validation fails.
+        - `<<Change>>`: Fired when time value changes after commit.
+        - `<<Input>>`: Fired on each keystroke.
+        - `<<Valid>>`: Fired when validation passes.
+        - `<<Invalid>>`: Fired when validation fails.
 
     Attributes:
         entry_widget (TextEntryPart): The underlying text entry widget.

@@ -114,13 +114,13 @@ class Calendar(ttk.Frame):
         Args:
             master: Parent widget. If None, uses the default root window.
             value (date | datetime | str): Initial selected date for single selection mode.
-            start_date (date | datetime | str): Range start date. Use ``value`` instead
+            start_date (date | datetime | str): Range start date. Use `value` instead
                 for single selection mode.
             end_date (date | datetime | str): Range end date. Only used when
-                ``selection_mode='range'``.
+                `selection_mode='range'`.
             disabled_dates (Iterable): Collection of dates that cannot be selected.
-            selection_mode (str): Selection mode - ``'single'`` for single date or
-                ``'range'`` for date range selection.
+            selection_mode (str): Selection mode - `'single'` for single date or
+                `'range'` for date range selection.
             max_date (date | datetime | str): Maximum selectable date. Dates after
                 this are disabled.
             min_date (date | datetime | str): Minimum selectable date. Dates before
@@ -206,7 +206,7 @@ class Calendar(ttk.Frame):
     def set(self, value: date | datetime | str | None) -> None:
         """Set the selected date programmatically.
 
-        This method does NOT emit ``<<DateSelect>>``. Use for programmatic
+        This method does NOT emit `<<DateSelect>>`. Use for programmatic
         updates when you don't want to trigger event handlers.
 
         Args:
@@ -231,7 +231,7 @@ class Calendar(ttk.Frame):
     def value(self) -> date | None:
         """The currently selected date.
 
-        This property provides convenient access to ``get()`` and ``set()``.
+        This property provides convenient access to `get()` and `set()`.
         """
         return self.get()
 
@@ -257,7 +257,7 @@ class Calendar(ttk.Frame):
     ) -> None:
         """Set the selected date range programmatically.
 
-        This method does NOT emit ``<<DateSelect>>``. Use for programmatic
+        This method does NOT emit `<<DateSelect>>`. Use for programmatic
         updates when you don't want to trigger event handlers.
 
         If both start and end are provided and end < start, they are
@@ -281,8 +281,8 @@ class Calendar(ttk.Frame):
     def range(self) -> tuple[date | None, date | None]:
         """The selected date range as (start, end).
 
-        This property provides convenient access to ``get_range()`` and
-        ``set_range()``.
+        This property provides convenient access to `get_range()` and
+        `set_range()`.
         """
         return self.get_range()
 
@@ -308,11 +308,11 @@ class Calendar(ttk.Frame):
 
     # Event binding ---------------------------------------------------
     def on_date_selected(self, callback: Callable) -> str:
-        """Bind to ``<<DateSelect>>``. Callback receives ``event.data = {'date': date, 'range': tuple[date, date | None]}``."""
+        """Bind to `<<DateSelect>>`. Callback receives `event.data = {'date': date, 'range': tuple[date, date | None]}`."""
         return self.bind("<<DateSelect>>", callback, add=True)
 
     def off_date_selected(self, bind_id: str | None = None) -> None:
-        """Unbind from ``<<DateSelect>>``."""
+        """Unbind from `<<DateSelect>>`."""
         return self.unbind("<<DateSelect>>", bind_id)
 
     # --- UI construction --------------------------------------------

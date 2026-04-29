@@ -19,9 +19,9 @@ class NumberEntryPart(TextEntryPart):
     via keyboard and mouse wheel, and optional wrapping.
 
     !!! note "Events"
-        - ``<<Increment>>``: Fired when an increment is requested (before step occurs). ``event.data = {'value': current_value}``
-        - ``<<Decrement>>``: Fired when a decrement is requested (before step occurs). ``event.data = {'value': current_value}``
-        - Plus all events from TextEntryPart: ``<<Input>>``, ``<<Change>>``, ``<Return>``
+        - `<<Increment>>`: Fired when an increment is requested (before step occurs). `event.data = {'value': current_value}`
+        - `<<Decrement>>`: Fired when a decrement is requested (before step occurs). `event.data = {'value': current_value}`
+        - Plus all events from TextEntryPart: `<<Input>>`, `<<Change>>`, `<Return>`
     """
 
     def __init__(
@@ -291,19 +291,19 @@ class NumberEntryPart(TextEntryPart):
             self._normalize_display_from_value()
 
     def on_increment(self, callback) -> str:
-        """Bind to ``<<Increment>>``. Callback receives ``event.data = {'value': current_value}``."""
+        """Bind to `<<Increment>>`. Callback receives `event.data = {'value': current_value}`."""
         return self.bind('<<Increment>>', callback, add=True)
 
     def off_increment(self, bind_id: str | None = None) -> None:
-        """Unbind from ``<<Increment>>``."""
+        """Unbind from `<<Increment>>`."""
         self.unbind('<<Increment>>', bind_id)
 
     def on_decrement(self, callback) -> str:
-        """Bind to ``<<Decrement>>``. Callback receives ``event.data = {'value': current_value}``."""
+        """Bind to `<<Decrement>>`. Callback receives `event.data = {'value': current_value}`."""
         return self.bind('<<Decrement>>', callback, add=True)
 
     def off_decrement(self, bind_id: str | None = None) -> None:
-        """Unbind from ``<<Decrement>>``."""
+        """Unbind from `<<Decrement>>`."""
         self.unbind('<<Decrement>>', bind_id)
 
     @configure_delegate('minvalue')

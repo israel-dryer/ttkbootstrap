@@ -126,8 +126,8 @@ class Signal(Generic[T]):
     def get(self) -> T:
         """Return the current value of the signal.
 
-        Alias for calling the instance directly (``signal()``). Mirrors
-        tkinter's ``Variable.get`` naming for consistency.
+        Alias for calling the instance directly (`signal()`). Mirrors
+        tkinter's `Variable.get` naming for consistency.
         """
         return self()
 

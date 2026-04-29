@@ -61,11 +61,11 @@ class Frame(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Frame):
             surface (str): Optional surface token; otherwise inherited.
             input_background (str): Surface token used as the fill color for all input
                 widgets (Entry, Combobox, Spinbox, Field) inside this container. Cascades
-                to descendants the same way ``surface`` does. Input foreground, border,
+                to descendants the same way `surface` does. Input foreground, border,
                 and focus-ring colors are all derived from this fill so contrast is always
-                correct. Defaults to ``'content'`` (the app background), which keeps
+                correct. Defaults to `'content'` (the app background), which keeps
                 inputs visually distinct regardless of the container surface. Override
-                with any surface token (e.g. ``'card'``) to match the container.
+                with any surface token (e.g. `'card'`) to match the container.
             show_border (bool): Draw a border around the frame.
             style_options (dict): Optional dict forwarded to the style builder.
         """

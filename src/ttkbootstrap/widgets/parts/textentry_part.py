@@ -12,12 +12,12 @@ class TextEntryPart(ValidationMixin, Entry):
 
     This widget separates user input (display text) from the committed/parsed value,
     providing a clean pattern for handling formatted data entry. Parsing and formatting
-    only occur when the user commits the value via ``<FocusOut>`` or ``<Return>``.
+    only occur when the user commits the value via `<FocusOut>` or `<Return>`.
 
     !!! note "Events"
-        - ``<<Input>>``: Triggered on each keystroke. ``event.data = {'text': str}``
-        - ``<<Change>>``: Triggered when value changes after commit. ``event.data = {'value': Any, 'prev_value': Any, 'text': str}``
-        - ``<Return>``: Triggered on Enter key press. ``event.data = {'value': Any, 'text': str}``
+        - `<<Input>>`: Triggered on each keystroke. `event.data = {'text': str}`
+        - `<<Change>>`: Triggered when value changes after commit. `event.data = {'value': Any, 'prev_value': Any, 'text': str}`
+        - `<Return>`: Triggered on Enter key press. `event.data = {'value': Any, 'text': str}`
     """
 
     def __init__(
@@ -41,8 +41,8 @@ class TextEntryPart(ValidationMixin, Entry):
             value: Initial value to display and parse. Can be a string or any value
                 that can be formatted using value_format. Default is empty string.
             value_format (str): ICU format pattern for parsing and formatting the value.
-                Common patterns: ``'#,##0.00'`` (decimal), ``'¤#,##0.00'`` (currency),
-                ``'yyyy-MM-dd'`` (date), ``'#,##0.00%'`` (percent).
+                Common patterns: `'#,##0.00'` (decimal), `'¤#,##0.00'` (currency),
+                `'yyyy-MM-dd'` (date), `'#,##0.00%'` (percent).
                 If None, value is treated as plain text (no parsing/formatting).
             initial_focus (bool): If True, widget receives focus when created.
             allow_blank (bool): If True, empty input is parsed as None. If False, empty
@@ -51,7 +51,7 @@ class TextEntryPart(ValidationMixin, Entry):
 
         Note:
             The widget automatically subscribes to text changes and sets up
-            event handlers for ``<FocusIn>``, ``<FocusOut>``, and ``<Return>``.
+            event handlers for `<FocusIn>`, `<FocusOut>`, and `<Return>`.
         """
         kwargs.setdefault('ttk_class', 'TField')
         kwargs.setdefault('variant', 'input')
@@ -176,15 +176,15 @@ class TextEntryPart(ValidationMixin, Entry):
             return str(value)
 
     def on_input(self, callback: Callable) -> str:
-        """Bind to ``<<Input>>``. Callback receives ``event.data = {'text': str}``."""
+        """Bind to `<<Input>>`. Callback receives `event.data = {'text': str}`."""
         return self.bind('<<Input>>', callback, add=True)
 
     def off_input(self, bind_id: str | None = None) -> None:
-        """Unbind from ``<<Input>>``."""
+        """Unbind from `<<Input>>`."""
         self.unbind('<<Input>>', bind_id)
 
     def on_enter(self, callback: Callable) -> str:
-        """Bind to ``<Return>``. Callback receives ``event.data = {'value': Any, 'text': str}``."""
+        """Bind to `<Return>`. Callback receives `event.data = {'value': Any, 'text': str}`."""
 
         def enrich_callback(event: Event) -> None:
             data = {"value": self._value, "text": self.textsignal.get()}
@@ -194,15 +194,15 @@ class TextEntryPart(ValidationMixin, Entry):
         return self.bind('<Return>', enrich_callback, add=True)
 
     def off_enter(self, bind_id: str | None = None) -> None:
-        """Unbind from ``<Return>``."""
+        """Unbind from `<Return>`."""
         self.unbind('<Return>', bind_id)
 
     def on_changed(self, callback: Callable) -> str:
-        """Bind to ``<<Change>>``. Callback receives ``event.data = {'value': Any, 'prev_value': Any, 'text': str}``."""
+        """Bind to `<<Change>>`. Callback receives `event.data = {'value': Any, 'prev_value': Any, 'text': str}`."""
         return self.bind("<<Change>>", callback, add=True)
 
     def off_changed(self, bind_id: str | None = None) -> None:
-        """Unbind from ``<<Change>>``."""
+        """Unbind from `<<Change>>`."""
         self.unbind('<<Change>>', bind_id)
 
     def value(self, value=None):

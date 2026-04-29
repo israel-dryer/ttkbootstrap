@@ -27,7 +27,7 @@ class ColorDropperDialog:
     """Screen color picker with zoom preview.
 
     Click anywhere on screen to select a color. The selected color is stored in
-    ``result`` as a ColorChoice named tuple with rgb, hsl, and hex values.
+    `result` as a ColorChoice named tuple with rgb, hsl, and hex values.
 
     Note:
         Supported on Windows and Linux. macOS is not supported due to ImageGrab

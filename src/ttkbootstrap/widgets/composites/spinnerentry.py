@@ -22,10 +22,10 @@ class SpinnerEntry(Field):
 
     !!! note "Events"
 
-        - ``<<Change>>``  : Fired when value changes after commit.
-        - ``<<Input>>``   : Fired on each keystroke.
-        - ``<<Valid>>``   : Fired when validation passes.
-        - ``<<Invalid>>`` : Fired when validation fails.
+        - `<<Change>>`  : Fired when value changes after commit.
+        - `<<Input>>`   : Fired on each keystroke.
+        - `<<Valid>>`   : Fired when validation passes.
+        - `<<Invalid>>` : Fired when validation fails.
 
     Attributes:
         entry_widget (SpinnerEntryPart): The underlying spinbox entry widget.

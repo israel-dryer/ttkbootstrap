@@ -81,7 +81,7 @@ class ContextMenuItem:
 class _ToplevelContextMenu(CustomConfigMixin):
     """Themed Toplevel-backed context menu (Win/Linux backend).
 
-    Internal backend used by ``ContextMenu`` on Windows and Linux. Renders
+    Internal backend used by `ContextMenu` on Windows and Linux. Renders
     items as ttkbootstrap-styled widgets inside an overrideredirect Toplevel
     so theme tokens, density, and rich item types apply consistently.
     """
@@ -113,10 +113,10 @@ class _ToplevelContextMenu(CustomConfigMixin):
             anchor: Anchor point on the menu to align (e.g., 'nw', 'ne', 'sw', 'se', 'center').
             attach: Anchor point on the target to align to (same options as anchor).
             offset: Tuple (dx, dy) applied after alignment. Defaults to
-                ``(scale_from_source(10), 0)`` to account for the focus-ring
+                `(scale_from_source(10), 0)` to account for the focus-ring
                 affordance baked into trigger button images, so attached menus
                 align with the visible button border out of the box. Pass
-                ``(0, 0)`` explicitly to position the menu at the exact anchor
+                `(0, 0)` explicitly to position the menu at the exact anchor
                 point with no offset.
             hide_on_outside_click: If True, menu hides when clicking outside.
                 Default is True.
@@ -142,7 +142,7 @@ class _ToplevelContextMenu(CustomConfigMixin):
         self._click_bind_after_id = None
 
         # Create toplevel window. This backend is selected on Win/Linux only;
-        # Aqua dispatches to ``_NativeContextMenu`` to avoid the key-window
+        # Aqua dispatches to `_NativeContextMenu` to avoid the key-window
         # activation issues that affect a reused overrideredirect Toplevel
         # on macOS.
         self._toplevel = Toplevel(master)
@@ -234,7 +234,7 @@ class _ToplevelContextMenu(CustomConfigMixin):
         return key
 
     def on_item_click(self, callback: Callable) -> None:
-        """Set item click callback. Callback receives ``item_info = {'type': str, 'text': str, 'value': Any}``."""
+        """Set item click callback. Callback receives `item_info = {'type': str, 'text': str, 'value': Any}`."""
         self._on_item_click_callback = callback
 
     def off_item_click(self) -> None:
@@ -977,12 +977,12 @@ class _ToplevelContextMenu(CustomConfigMixin):
 
 
 class _NativeContextMenu(CustomConfigMixin):
-    """Native ``tk.Menu``-backed context menu (Aqua/Windows backend).
+    """Native `tk.Menu`-backed context menu (Aqua/Windows backend).
 
-    Internal backend used by ``ContextMenu`` on macOS so the popup is a real
+    Internal backend used by `ContextMenu` on macOS so the popup is a real
     NSMenu — sidesteps the key-window/activation issues that affect a
     reused overrideredirect Toplevel. Theming follows the system menu look;
-    icons resolve through ``BootstrapIcon`` and re-render on theme change.
+    icons resolve through `BootstrapIcon` and re-render on theme change.
     """
 
     def __init__(
@@ -1002,10 +1002,10 @@ class _NativeContextMenu(CustomConfigMixin):
     ):
         """Initialize the native tk.Menu backend.
 
-        Args mirror the themed backend so the public ``ContextMenu`` API is
-        identical across platforms. Several options (``minwidth``, ``width``,
-        ``height``, ``hide_on_outside_click``, ``density``) are stored for
-        ``cget`` parity but have no effect — the system menu controls
+        Args mirror the themed backend so the public `ContextMenu` API is
+        identical across platforms. Several options (`minwidth`, `width`,
+        `height`, `hide_on_outside_click`, `density`) are stored for
+        `cget` parity but have no effect — the system menu controls
         sizing, dismissal, and typography on the host platform.
         """
         import tkinter as tk
@@ -1080,7 +1080,7 @@ class _NativeContextMenu(CustomConfigMixin):
     def _resolve_icon(self, icon_spec: Any) -> tuple[Any, str | None, int]:
         """Resolve an icon spec via MenuManager.
 
-        Returns ``(None, None, 0)`` when no manager is available or the
+        Returns `(None, None, 0)` when no manager is available or the
         spec doesn't produce an icon, mirroring MenuManager's contract.
         """
         if self._mgr is None:
@@ -1103,9 +1103,9 @@ class _NativeContextMenu(CustomConfigMixin):
     def _resolve_shortcut(self, shortcut: str | None) -> str | None:
         """Platform-correct accelerator display via the Shortcuts service.
 
-        Accepts a registered key, a modifier pattern (``'Mod+S'``,
-        ``'F5'``), or a literal display string. See
-        ``ttkbootstrap.runtime.shortcuts.format_shortcut`` for details.
+        Accepts a registered key, a modifier pattern (`'Mod+S'`,
+        `'F5'`), or a literal display string. See
+        `ttkbootstrap.runtime.shortcuts.format_shortcut` for details.
         """
         if not shortcut:
             return None
@@ -1301,7 +1301,7 @@ class _NativeContextMenu(CustomConfigMixin):
         """Return the spec dict for an item.
 
         Note: native backend has no per-item widget. The returned dict is
-        the original spec passed to ``add_*`` — useful for inspection but
+        the original spec passed to `add_*` — useful for inspection but
         not a Tk widget. Mutating it does not affect the rendered menu.
         """
         key = self._resolve_key(key_or_index)
@@ -1398,7 +1398,7 @@ class _NativeContextMenu(CustomConfigMixin):
     def _rebuild_menu(self) -> None:
         """Tear down and re-add all entries from stored specs.
 
-        Used by ``insert_item`` and ``move_item`` since tk.Menu offers no
+        Used by `insert_item` and `move_item` since tk.Menu offers no
         atomic reorder. Icon tracking is unregistered then re-registered
         with MenuManager so theme-change updates target the right indices.
         """
@@ -1486,11 +1486,11 @@ class _NativeContextMenu(CustomConfigMixin):
                 )
 
     def _compute_position(self, position: tuple[int, int] | None) -> tuple[int, int]:
-        """Resolve the screen-coordinate target for ``tk_popup``.
+        """Resolve the screen-coordinate target for `tk_popup`.
 
         Mirrors the themed backend's anchor/attach/offset semantics, but
         without the menu-size step (the native menu auto-positions). When
-        ``position`` is given, anchor/attach are ignored and only ``offset``
+        `position` is given, anchor/attach are ignored and only `offset`
         applies, matching the themed backend behavior.
         """
         if position is not None:
@@ -1616,14 +1616,14 @@ class _NativeContextMenu(CustomConfigMixin):
 class ContextMenu:
     """Public ContextMenu — dispatches to a platform-appropriate backend.
 
-    On macOS this materializes as a native ``tk.Menu`` (NSMenu) so popups
+    On macOS this materializes as a native `tk.Menu` (NSMenu) so popups
     integrate with the system, dodging the key-window/activation issues
     that affect a reused overrideredirect Toplevel on Aqua. On Windows
     and Linux it uses the themed Toplevel-backed implementation so
     bootstyle, density, and rich item types apply consistently.
 
     The public API is identical across backends. Consumers should not
-    rely on ``item()`` returning a Tk widget — on the native backend it
+    rely on `item()` returning a Tk widget — on the native backend it
     returns the original spec dict, since no per-item widget exists.
     """
 
@@ -1645,31 +1645,31 @@ class ContextMenu:
     ):
         """Create a ContextMenu.
 
-        Args mirror the underlying backend; ``trigger`` is a dispatcher-level
-        convenience that auto-binds the menu to ``target``'s click event so
-        callers don't have to wire a ``bind('<Button-3>', show_at)`` handler
-        themselves. Set ``trigger=None`` (or ``'manual'``) to opt out and
+        Args mirror the underlying backend; `trigger` is a dispatcher-level
+        convenience that auto-binds the menu to `target`'s click event so
+        callers don't have to wire a `bind('<Button-3>', show_at)` handler
+        themselves. Set `trigger=None` (or `'manual'`) to opt out and
         manage activation in caller code (e.g. when the menu is built lazily).
 
-        ``target`` defaults to ``master`` when omitted, since the menu is
-        usually attached to the same widget that owns it. Pass ``target=None``
+        `target` defaults to `master` when omitted, since the menu is
+        usually attached to the same widget that owns it. Pass `target=None`
         explicitly to opt out of positioning/auto-binding (e.g. when calling
-        ``show(position=(x, y))`` with cursor-driven coordinates instead).
+        `show(position=(x, y))` with cursor-driven coordinates instead).
 
         Trigger values:
-            - ``'right-click'`` (default): portable right-click via
-              ``ttkbootstrap.runtime.utility.bind_right_click`` —
-              ``<Button-3>`` on Win/Linux plus ``<Button-2>`` and
-              ``<Control-Button-1>`` on Aqua.
-            - ``'click'`` / ``'left-click'``: ``<Button-1>``.
-            - ``'double-click'``: ``<Double-Button-1>``.
-            - ``'shift-click'``: ``<Shift-Button-1>``.
-            - ``'ctrl-click'`` / ``'control-click'``: ``<Control-Button-1>``
+            - `'right-click'` (default): portable right-click via
+              `ttkbootstrap.runtime.utility.bind_right_click` —
+              `<Button-3>` on Win/Linux plus `<Button-2>` and
+              `<Control-Button-1>` on Aqua.
+            - `'click'` / `'left-click'`: `<Button-1>`.
+            - `'double-click'`: `<Double-Button-1>`.
+            - `'shift-click'`: `<Shift-Button-1>`.
+            - `'ctrl-click'` / `'control-click'`: `<Control-Button-1>`
               (note that on Aqua this is the same as Ctrl+click for context
               menus, since macOS uses Ctrl+click as a context-menu gesture).
-            - ``None`` or ``'manual'``: no auto-binding.
+            - `None` or `'manual'`: no auto-binding.
         """
-        # Default target to master when omitted; explicit ``None`` opts out.
+        # Default target to master when omitted; explicit `None` opts out.
         if target is _TARGET_DEFAULT:
             target = master
 
@@ -1713,7 +1713,7 @@ class ContextMenu:
             self._bind_trigger(target, trigger)
 
     def _bind_trigger(self, target: Misc, trigger: str) -> None:
-        """Bind ``target``'s activation event to show this menu at the click."""
+        """Bind `target`'s activation event to show this menu at the click."""
         from ttkbootstrap.runtime.utility import bind_right_click
 
         def show_at(event):
@@ -1737,7 +1737,7 @@ class ContextMenu:
             )
 
     # Forward every other attribute (methods, configure delegates, etc.)
-    # to the active backend. ``_impl`` itself is a real instance attribute
+    # to the active backend. `_impl` itself is a real instance attribute
     # so it's resolved by normal attribute lookup before __getattr__ runs.
     def __getattr__(self, name: str):
         # __getattr__ is only consulted when normal lookup fails, so we

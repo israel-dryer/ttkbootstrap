@@ -23,14 +23,14 @@ class Meter(Frame):
 
     The meter value can be accessed and modified using:
 
-    - ``get()`` / ``set(value)`` - Standard value-widget API methods
-    - ``.value`` property - Direct property access
-    - ``configure(value=x)`` - Via the configure interface
+    - `get()` / `set(value)` - Standard value-widget API methods
+    - `.value` property - Direct property access
+    - `configure(value=x)` - Via the configure interface
 
     !!! note "Events"
 
-        ``<<Change>>``: Fired whenever the meter value changes.
-          Provides ``event.data`` with keys: ``value``, ``prev_value``.
+        `<<Change>>`: Fired whenever the meter value changes.
+          Provides `event.data` with keys: `value`, `prev_value`.
     """
 
     def __init__(
@@ -74,7 +74,7 @@ class Meter(Frame):
         Args:
             master: The parent widget.
             accent: Accent token for the meter indicator (e.g., 'primary', 'success').
-            bootstyle: DEPRECATED - Use ``accent`` instead.
+            bootstyle: DEPRECATED - Use `accent` instead.
 
             value: Current meter value.
             minvalue: Minimum value for the meter range.
@@ -104,7 +104,7 @@ class Meter(Frame):
             **kwargs: Additional keyword arguments passed to the Frame parent class.
 
         !!! note "Events"
-            - ``<<Change>>``: Emitted when the value changes (see on_changed()).
+            - `<<Change>>`: Emitted when the value changes (see on_changed()).
         """
         legacy = Meter._coerce_legacy_params(kwargs)
         super().__init__(master, **kwargs)
@@ -244,7 +244,7 @@ class Meter(Frame):
         """Return the current meter value.
 
         This is part of the standard value-widget API. It is equivalent
-        to accessing the ``.value`` property.
+        to accessing the `.value` property.
 
         Returns:
             The current meter value (int or float depending on dtype).
@@ -255,7 +255,7 @@ class Meter(Frame):
         """Set the meter value.
 
         This is part of the standard value-widget API. It is equivalent
-        to setting the ``.value`` property.
+        to setting the `.value` property.
 
         Args:
             value: The new meter value.
@@ -874,10 +874,10 @@ class Meter(Frame):
             self._value_var.set(value_updated)
 
     def on_changed(self, callback: Callable[[Any], Any]) -> str:
-        """Bind a callback to the ``<<Change>>`` virtual event."""
+        """Bind a callback to the `<<Change>>` virtual event."""
         return self.bind('<<Change>>', callback, add="+")
 
     def off_changed(self, bind_id: str):
-        """Remove a previously registered ``<<Change>>`` callback."""
+        """Remove a previously registered `<<Change>>` callback."""
         self.unbind('<<Change>>', bind_id)
 

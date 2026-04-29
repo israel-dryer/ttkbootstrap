@@ -115,20 +115,20 @@ class Form(Frame):
     and manipulating form fields and their values.
 
     Field Access:
-        - ``field(key)`` — returns the Field widget for a key
-        - ``fields()`` — returns all Field widgets in order
-        - ``keys()`` — returns all field keys in order
+        - `field(key)` — returns the Field widget for a key
+        - `fields()` — returns all Field widgets in order
+        - `keys()` — returns all field keys in order
 
     Value Operations:
-        - ``get_field_value(key)`` — get a single field's value
-        - ``set_field_value(key, value)`` — set a single field's value
-        - ``get()`` / ``set(values)`` — get/set all values as a dict
-        - ``value`` property — get/set all values as a dict
+        - `get_field_value(key)` — get a single field's value
+        - `set_field_value(key, value)` — set a single field's value
+        - `get()` / `set(values)` — get/set all values as a dict
+        - `value` property — get/set all values as a dict
 
     Variable & Signal Access:
-        - ``field_variable(key)`` — get Tk Variable for a field
-        - ``field_signal(key)`` — get Signal for a field's value
-        - ``field_textsignal(key)`` — get Signal for a field's text
+        - `field_variable(key)` — get Tk Variable for a field
+        - `field_signal(key)` — get Signal for a field's value
+        - `field_textsignal(key)` — get Signal for a field's text
 
     Attributes:
         data (dict): Current form data (read-only property).
@@ -393,7 +393,7 @@ class Form(Frame):
         """Return the Tk variable associated with a field key, if any.
 
         Deprecated:
-            Use ``field_variable(key)`` instead.
+            Use `field_variable(key)` instead.
         """
         return self.field_variable(key)
 
@@ -401,7 +401,7 @@ class Form(Frame):
         """Return the Signal associated with a field key, if any.
 
         Deprecated:
-            Use ``field_signal(key)`` instead.
+            Use `field_signal(key)` instead.
         """
         return self.field_signal(key)
 
@@ -409,7 +409,7 @@ class Form(Frame):
         """Return the TextSignal associated with a field key, if any.
 
         Deprecated:
-            Use ``field_textsignal(key)`` instead.
+            Use `field_textsignal(key)` instead.
         """
         return self.field_textsignal(key)
 

@@ -1,8 +1,8 @@
 """Integration helpers for using Signal with tkinter/ttk widgets.
 
-Call ``enable_widget_integration()`` once early (after creating your Tk/Window)
-to allow passing ``Signal`` objects directly to widget constructors and
-``configure(...)`` for options like ``textvariable`` and ``variable``.
+Call `enable_widget_integration()` once early (after creating your Tk/Window)
+to allow passing `Signal` objects directly to widget constructors and
+`configure(...)` for options like `textvariable` and `variable`.
 
 Without this, some environments/widgets may not coerce custom objects to the
 required Tcl variable name automatically.
@@ -67,11 +67,11 @@ def _patch(classes: Iterable[type]) -> None:
 
 
 def enable_widget_integration() -> None:
-    """Enable passing ``Signal`` directly to widget options.
+    """Enable passing `Signal` directly to widget options.
 
-    Patches common tk/ttk widget classes so that when you pass a ``Signal``
-    instance to ``textvariable`` or ``variable`` in the constructor or in
-    ``configure(...)``, it is automatically converted to its Tcl name.
+    Patches common tk/ttk widget classes so that when you pass a `Signal`
+    instance to `textvariable` or `variable` in the constructor or in
+    `configure(...)`, it is automatically converted to its Tcl name.
     """
 
     ttk_classes: Tuple[type, ...] = (

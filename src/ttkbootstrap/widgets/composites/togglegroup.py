@@ -336,7 +336,7 @@ class ToggleGroup(Frame):
         return tuple(self._buttons.keys())
 
     def on_changed(self, callback: Callable) -> Any:
-        """Subscribe to value changes. Callback receives ``new_value: str | set[str]`` directly (str in 'single' mode, set in 'multi' mode)."""
+        """Subscribe to value changes. Callback receives `new_value: str | set[str]` directly (str in 'single' mode, set in 'multi' mode)."""
         return self._signal.subscribe(callback)
 
     def off_changed(self, bind_id: Any) -> None:

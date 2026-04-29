@@ -63,7 +63,7 @@ class OptionMenu(MenuButton):
         """Create an OptionMenu backed by a ContextMenu.
 
         !!! note "Events"
-            - ``<<Change>>``: Fired when the selected value changes. ``event.data = {'value': Any}``
+            - `<<Change>>`: Fired when the selected value changes. `event.data = {'value': Any}`
 
         Args:
             master: Parent widget. If None, uses the default root window.
@@ -154,7 +154,7 @@ class OptionMenu(MenuButton):
             anchor="nw", attach="sw",
             offset=(offset_x, 0),
             density=density,
-            # OptionMenu drives activation via ``show_menu`` (left-click,
+            # OptionMenu drives activation via `show_menu` (left-click,
             # Return/KP_Enter), not ContextMenu's auto-trigger.
             trigger=None,
         )
@@ -190,11 +190,11 @@ class OptionMenu(MenuButton):
         self.set(value)
 
     def on_changed(self, callback: Callable) -> str:
-        """Bind to ``<<Change>>``. Callback receives ``event.data = {'value': Any}``."""
+        """Bind to `<<Change>>`. Callback receives `event.data = {'value': Any}`."""
         return self.bind('<<Change>>', callback, add="+")
 
     def off_changed(self, bind_id: str | None = None) -> None:
-        """Unbind from ``<<Change>>``."""
+        """Unbind from `<<Change>>`."""
         self.unbind('<<Change>>', bind_id)
 
     @configure_delegate('options')

@@ -17,8 +17,8 @@ class Accordion(Frame):
     """A container of Expander widgets with optional mutual exclusion.
 
     The Accordion manages a group of Expanders, optionally enforcing that only
-    one can be expanded at a time. When ``allow_multiple=False``, expanding one
-    section automatically collapses the others. When ``allow_collapse_all=False``,
+    one can be expanded at a time. When `allow_multiple=False`, expanding one
+    section automatically collapses the others. When `allow_collapse_all=False`,
     at least one section must remain open.
 
     Attributes:
@@ -26,8 +26,8 @@ class Accordion(Frame):
         expanded (list[Expander]): Currently expanded Expander(s).
 
     !!! note "Events"
-        - ``<<AccordionChange>>``: Fired when the expanded section(s) change.
-          ``event.data = {'expanded': list[Expander]}``
+        - `<<AccordionChange>>`: Fired when the expanded section(s) change.
+          `event.data = {'expanded': list[Expander]}`
     """
 
     def __init__(
@@ -365,21 +365,21 @@ class Accordion(Frame):
         return None
 
     def on_accordion_changed(self, callback: Callable) -> str:
-        """Bind callback to ``<<AccordionChange>>`` events.
+        """Bind callback to `<<AccordionChange>>` events.
 
         Args:
             callback: Function to call when expanded sections change.
-                Receives event with ``event.data = {'expanded': list[Expander]}``.
+                Receives event with `event.data = {'expanded': list[Expander]}`.
 
         Returns:
-            Bind ID that can be passed to ``off_accordion_changed`` to remove this callback.
+            Bind ID that can be passed to `off_accordion_changed` to remove this callback.
         """
         return self.bind('<<AccordionChange>>', callback, add='+')
 
     def off_accordion_changed(self, bind_id: str = None):
-        """Unbind ``<<AccordionChange>>`` callback(s).
+        """Unbind `<<AccordionChange>>` callback(s).
 
         Args:
-            bind_id (str | None): Bind ID returned by ``on_accordion_changed``. If None, unbinds all.
+            bind_id (str | None): Bind ID returned by `on_accordion_changed`. If None, unbinds all.
         """
         self.unbind('<<AccordionChange>>', bind_id)

@@ -81,13 +81,13 @@ class MenuManager:
 
     @classmethod
     def for_widget(cls, widget: Any) -> "MenuManager":
-        """Return the singleton MenuManager for ``widget``'s root window.
+        """Return the singleton MenuManager for `widget`'s root window.
 
         Creates one on first access and stores it on the root as
-        ``_menu_manager``. Use this to share icon-tracking and theme
+        `_menu_manager`. Use this to share icon-tracking and theme
         monitoring across all tk.Menu-based widgets in an application
         (menubars, context menus, etc.) without each one binding its own
-        ``<<ThemeChanged>>`` handler.
+        `<<ThemeChanged>>` handler.
         """
         root = widget.winfo_toplevel() if hasattr(widget, 'winfo_toplevel') else widget
         existing = getattr(root, '_menu_manager', None)
@@ -161,10 +161,10 @@ class MenuManager:
 
     @staticmethod
     def translate_label(text: Optional[str]) -> Optional[str]:
-        """Run a label through ``MessageCatalog.translate``.
+        """Run a label through `MessageCatalog.translate`.
 
-        Semantic keys (e.g. ``'table.sort_asc'``) become localized strings;
-        plain text passes through unchanged because ``translate`` returns
+        Semantic keys (e.g. `'table.sort_asc'`) become localized strings;
+        plain text passes through unchanged because `translate` returns
         the source when no translation is registered.
         """
         if not text:
@@ -175,12 +175,12 @@ class MenuManager:
             return text
 
     def resolve_icon(self, icon_spec: Union[str, dict, None]) -> tuple[Any, Optional[str], int]:
-        """Resolve an icon spec to a ``(PhotoImage, name, size)`` triple.
+        """Resolve an icon spec to a `(PhotoImage, name, size)` triple.
 
-        Returns ``(None, None, 0)`` for empty/unsupported specs. The returned
-        PhotoImage is the same kind ``MenuManager`` uses internally for its
+        Returns `(None, None, 0)` for empty/unsupported specs. The returned
+        PhotoImage is the same kind `MenuManager` uses internally for its
         own menus, so the caller can pass it straight to
-        ``menu.add_command(image=..., compound='left')``.
+        `menu.add_command(image=..., compound='left')`.
         """
         if not icon_spec or icon_spec == 'empty':
             return None, None, 0
@@ -196,17 +196,17 @@ class MenuManager:
     def register_icon(self, menu: tk.Menu, index: int, icon_name: str, icon_size: int) -> None:
         """Track a menu item for theme-aware icon re-rendering.
 
-        Call after ``menu.add_*(image=icon)`` so subsequent
-        ``<<ThemeChanged>>`` events refresh the entry's icon color.
+        Call after `menu.add_*(image=icon)` so subsequent
+        `<<ThemeChanged>>` events refresh the entry's icon color.
         """
         self._track_icon(menu, index, icon_name, icon_size)
 
     def unregister_menu(self, menu: tk.Menu) -> None:
-        """Drop all tracking entries for ``menu``.
+        """Drop all tracking entries for `menu`.
 
         Call when the menu is being destroyed or fully rebuilt so stale
-        ``(menu, index)`` references don't try to reconfigure deleted entries
-        on the next ``<<ThemeChanged>>``.
+        `(menu, index)` references don't try to reconfigure deleted entries
+        on the next `<<ThemeChanged>>`.
         """
         prefix = f"{id(menu)}_"
         for key in [k for k in self.menu_items if k.startswith(prefix)]:
@@ -227,11 +227,11 @@ class MenuManager:
         return None, default_size
 
     def _is_aqua_special_name(self, name: str) -> bool:
-        """Return True if ``name`` triggers macOS-native menu handling.
+        """Return True if `name` triggers macOS-native menu handling.
 
-        Tk on Aqua reserves three submenu names off the menubar: ``apple``
-        (the app menu — gets auto-filled with About/Hide/Quit), ``window``
-        (auto-populated with open Toplevels), and ``help`` (gets the
+        Tk on Aqua reserves three submenu names off the menubar: `apple`
+        (the app menu — gets auto-filled with About/Hide/Quit), `window`
+        (auto-populated with open Toplevels), and `help` (gets the
         system Help search field). Names are case-sensitive and only have
         meaning under windowingsystem='aqua'.
         """
@@ -263,7 +263,7 @@ class MenuManager:
             options = options.copy()
             sub_items = options.pop('items', [])
 
-            # Pull off the optional ``name`` early so it's never passed to
+            # Pull off the optional `name` early so it's never passed to
             # add_cascade. On Aqua, three magic names get system handling:
             # 'apple' → app menu (auto-fills with About/Hide/Quit),
             # 'window' → Tk auto-populates the open Toplevel list,
@@ -325,8 +325,8 @@ class MenuManager:
 
             # Resolve a shortcut spec (registered key or modifier pattern)
             # to a platform-correct accelerator display. Caller-supplied
-            # ``accelerator`` wins (legacy literal pass-through), so existing
-            # menus with ``accelerator='Ctrl+S'`` are not auto-translated.
+            # `accelerator` wins (legacy literal pass-through), so existing
+            # menus with `accelerator='Ctrl+S'` are not auto-translated.
             shortcut_spec = opts.pop('shortcut', None)
             if shortcut_spec and 'accelerator' not in opts:
                 display = format_shortcut(shortcut_spec)
@@ -383,23 +383,23 @@ def create_menu(parent: Any, items: list[dict]) -> tk.Menu:
         - **variable** (Variable): Tkinter variable for checkbutton/radiobutton
         - **value** (Any): Value for radiobutton items
         - **name** (str): Optional Tcl widget name for the cascade. On macOS
-          three names trigger system-native menu integration: ``'apple'``
+          three names trigger system-native menu integration: `'apple'`
           gives you the application menu (Tk auto-fills it with About,
           Hide, Hide Others, Show All, Quit; any items you add appear
-          before the system items), ``'window'`` gets auto-populated with
-          open Toplevels, and ``'help'`` enables system Help search.
+          before the system items), `'window'` gets auto-populated with
+          open Toplevels, and `'help'` enables system Help search.
           Ignored on Win/Linux.
         - **shortcut** (str): Platform-aware accelerator. Accepts a
-          registered shortcut key (e.g. ``'save'`` if you've called
-          ``Shortcuts.register('save', 'Mod+S', save_file)``) or a
-          modifier pattern like ``'Mod+S'``, ``'Ctrl+Shift+N'``, ``'F5'``.
-          Renders as ``⌘S`` on macOS and ``Ctrl+S`` on Win/Linux.
+          registered shortcut key (e.g. `'save'` if you've called
+          `Shortcuts.register('save', 'Mod+S', save_file)`) or a
+          modifier pattern like `'Mod+S'`, `'Ctrl+Shift+N'`, `'F5'`.
+          Renders as `⌘S` on macOS and `Ctrl+S` on Win/Linux.
           For the actual keypress binding, register the shortcut and call
-          ``Shortcuts.bind_to(app)`` — that's the canonical pathway.
+          `Shortcuts.bind_to(app)` — that's the canonical pathway.
         - **accelerator** (str): Legacy literal display string passed
-          straight through to ``tk.Menu`` (e.g. ``'Ctrl+S'``). No platform
-          translation. Prefer ``shortcut`` for new code. If both are
-          provided, ``accelerator`` wins.
+          straight through to `tk.Menu` (e.g. `'Ctrl+S'`). No platform
+          translation. Prefer `shortcut` for new code. If both are
+          provided, `accelerator` wins.
         - Any other valid Tkinter menu item options (underline, etc.)
 
     Args:
