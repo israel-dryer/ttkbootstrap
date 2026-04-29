@@ -180,11 +180,21 @@ Most commonly used:
 
 ### Binding to signals or variables
 
-Use two-way binding for app state.
+Use `textsignal=` for reactive two-way binding:
 
-!!! tip "Two-way binding"
-    If you want two-way binding with your own state, set `textvariable=...`
-    via the underlying field options.
+```python
+selection = ttk.Signal("Medium")
+
+box = ttk.SelectBox(
+    app,
+    items=["Low", "Medium", "High"],
+    textsignal=selection,
+)
+
+selection.subscribe(lambda v: print("selected:", v))
+```
+
+For compatibility with code that uses `StringVar`, pass `textvariable=` instead.
 
 ### Validation and constraints
 

@@ -448,6 +448,7 @@ app = ttk.App(theme=initial_theme)
 
 ## Next Steps
 
+- [Design System: Custom Themes](../design-system/custom-themes.md) — theme vocabulary: properties, shades, semantic tokens, built-in themes
 - [Styling](styling.md) — using color and variant tokens
 - [Typography](typography.md) — font tokens and modifiers
 - [App Structure](app-structure.md) — application organization

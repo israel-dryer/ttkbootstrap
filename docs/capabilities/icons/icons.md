@@ -1,133 +1,86 @@
 # Icons
 
-Icons are symbolic visual elements used to communicate actions, states, and
-affordances within the user interface.
-
-In ttkbootstrap, icons are treated as a **shared capability** rather than a
-per-widget feature, allowing consistent behavior across the framework.
+ttkbootstrap treats icon usage as a **shared capability** — all icon-bearing
+widgets plug into a common pipeline rather than each implementing their own
+icon handling.
 
 ---
 
-## Purpose of icons
+## Provider resolution
 
-Icons are used to:
+When a widget specifies an icon by name, the framework resolves it through an
+**icon provider**:
 
-- reinforce meaning alongside text
-- save space in dense interfaces
-- provide quick visual recognition
+- registered providers are searched in priority order
+- the matching provider supplies the raw icon data
+- the framework renders, colors, and caches the result
 
-They are most effective when used consistently and sparingly.
-
----
-
-## Icon usage patterns
-
-Common icon usage patterns include:
-
-- icon-only buttons
-- icon + text buttons
-- menu item icons
-- state indicators (selected, warning, error)
-
-Consistency in these patterns improves usability.
+The built-in provider supplies the bundled icon set. Additional providers can
+be registered to expose icons from third-party libraries or application-specific
+icon sets. All sources are treated uniformly by the capability.
 
 ---
 
-## Icons and state
+## State integration
 
-Icons often respond to widget state.
+Icon-bearing widgets register their icons with the TTK style engine, not as
+static image references. When widget state changes — disabled, hover, pressed,
+selected — the style engine selects the icon image mapped to that state.
 
-Examples:
+This gives icons automatic visual feedback (muted when disabled, emphasized
+when active) without any per-widget handling.
 
-- disabled icons appear muted
-- active icons appear emphasized
-- selected icons reflect current state
+State expressions follow TTK conventions:
 
-ttkbootstrap integrates icon behavior with widget state to ensure visual feedback
-matches interaction.
-
----
-
-## Theming and color
-
-Icons typically derive their color from the active theme.
-
-This allows:
-
-- automatic light/dark adaptation
-- consistent semantic coloring
-- reduced need for manual styling
-
-Icons should avoid hardcoded colors unless required.
+| Expression | Meaning |
+|---|---|
+| `"selected"` | Widget is selected or checked |
+| `"disabled"` | Widget is disabled |
+| `"hover !disabled"` | Mouse over, not disabled |
+| `"pressed !disabled"` | Being clicked |
+| `"focus !disabled"` | Has keyboard focus |
 
 ---
 
-## Icon sources
+## Theme-driven coloring
 
-ttkbootstrap supports multiple icon sources, including:
+Icon color is derived from the active theme's foreground token, not hardcoded
+into the image asset.
 
-- bundled icon sets
-- third-party icon libraries
-- custom application icons
-
-All sources are treated uniformly by the icon capability.
-
----
-
-## Icon sizing
-
-Icon size should be consistent within a context.
-
-Considerations include:
-
-- alignment with text baseline
-- touch target size
-- visual weight relative to surrounding elements
-
-Avoid mixing icon sizes arbitrarily.
+When the theme changes, icon colors are recalculated to match. A single icon
+name renders appropriately in both light and dark themes without application
+code. Color overrides in icon specs bypass this pipeline and use the explicit
+value directly.
 
 ---
 
-## Performance considerations
+## DPI scaling
 
-Icons are reused frequently.
+Icons are sized in logical pixels and scaled to physical pixels at render time.
 
-Best practices include:
+The framework reads the display scale factor and rasterizes the icon at the
+appropriate physical resolution. Application code uses the same logical size on
+all displays — DPI differences are invisible to the caller.
 
-- caching icon images
-- avoiding repeated recoloring
-- sharing icon instances where possible
-
-Centralized management improves performance.
-
----
-
-## ttkbootstrap guidance
-
-ttkbootstrap encourages:
-
-- semantic icon usage
-- theme-driven coloring
-- reuse over recreation
-- documenting icons exposed by widgets
-
-These practices ensure clarity and consistency.
+See [Platform → Images & DPI](../../platform/images-and-dpi.md) for per-OS DPI
+behavior.
 
 ---
 
-## Common pitfalls
+## Caching
 
-- using icons without text where meaning is unclear
-- inconsistent icon sizing
-- hardcoding icon colors
-- recreating icons unnecessarily
+Rendered icons are cached to avoid repeated rasterization and recoloring.
 
-Treating icons as a capability avoids these issues.
+The cache is invalidated on theme change (color update) and on display DPI
+change (size update). Applications that use the same icon across many widgets
+benefit automatically — the icon is rasterized once and reused.
 
 ---
 
-## Next steps
+## Further reading
 
-- See [Images](images.md) for image lifecycle and caching.
-- See [Platform → Images & DPI](../../platform/images-and-dpi.md) for rendering behavior.
-- See [Guides → Icons](../../guides/icons.md) for practical icon usage.
+- [Guides → Icons](../../guides/icons.md) — practical usage: string form, dict
+  form, state overrides, common patterns.
+- [Design System → Icons](../../design-system/icons.md) — icon vocabulary and
+  design intent.
+- [Images](images.md) — image lifecycle and caching.

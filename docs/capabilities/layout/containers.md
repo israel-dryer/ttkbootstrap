@@ -84,39 +84,20 @@ See [Layout Properties](../layout-props.md) for the ttkbootstrap layout convenie
 
 ## Opinionated layout containers: PackFrame and GridFrame
 
-Tk’s geometry managers are powerful, but verbose:
+ttkbootstrap provides two *opinionated* containers that make layout intent
+explicit and consistent:
 
-- you repeat the same spacing and sizing rules across many widgets
-- `pack` and `grid` require different mental models and options
-- small inconsistencies (padding, sticky/anchor, expand/fill) accumulate
+- **PackFrame** — a pack-based container with a `direction` and a `gap`
+- **GridFrame** — a grid-based container with `rows`, `columns`, and `gap` rules
 
-ttkbootstrap provides two *opinionated* containers that make layout intent explicit and consistent:
+These containers sit on top of Tk’s geometry managers rather than replacing
+them. They surface structured defaults and reduce repeated per-widget
+configuration.
 
-- **PackFrame** — an opinionated “row/column” pack container with a `direction` and a `gap`
-- **GridFrame** — an opinionated grid container with `rows`, `columns`, and `gap` rules
-
-The goal is not to replace Tk’s geometry managers — it’s to make **common layouts faster** and more consistent.
-
-See [PackFrame](../../widgets/layout/packframe.md) and [GridFrame](../../widgets/layout/gridframe.md) for the full usage and examples.
-
-### When should you use them?
-
-- **Use PackFrame** for app-level structure and simple stacking:
-  toolbars, sidebars, form sections, button rows, “card” content.
-- **Use GridFrame** for structured alignment:
-  forms, settings panels, label/value rows, responsive column layouts.
-
-### When should you stick to `pack` / `grid` directly?
-
-- when you’re porting an existing Tk layout and don’t want to refactor yet
-- when you need geometry-manager features that are intentionally not surfaced by the opinionated container
-- when you’re doing something highly custom and explicit control is clearer than convenience
-
-A good adoption path is:
-
-1. Start with `Frame` + `pack/grid` (familiar and explicit).
-2. Introduce `PackFrame` / `GridFrame` where repetition appears.
-3. Make them your default for new screens once the team is comfortable.
+See [PackFrame](../../widgets/layout/packframe.md) and
+[GridFrame](../../widgets/layout/gridframe.md) for the API.
+See [Guides → Layout](../../guides/layout.md) for when-to-use guidance and
+practical examples.
 
 ---
 

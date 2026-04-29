@@ -44,7 +44,9 @@ ttk.Label(app, text="Code snippet", font="code").pack()
 app.mainloop()
 ```
 
-Tokens adapt to the platform—using Segoe UI on Windows, SF Pro on macOS, and DejaVu Sans on Linux.
+!!! note "Platform font families"
+    Tokens adapt to the platform: **Segoe UI** on Windows, **SF Pro** on macOS,
+    **DejaVu Sans** on Linux. Use `Typography.set_global_family()` to override.
 
 ---
 

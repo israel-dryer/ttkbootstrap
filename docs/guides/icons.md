@@ -269,7 +269,8 @@ The icon system exists to handle these concerns. Use it.
 
 ## Related resources
 
-- [Design System: Icons](../design-system/icons.md) — design philosophy and principles
+- [Design System: Icons](../design-system/icons.md) — icon vocabulary and design intent
+- [Capabilities: Icons](../capabilities/icons/icons.md) — provider resolution, state integration, DPI pipeline, caching
 - [Styling](styling.md) — color tokens and semantic colors
 - [Theming](theming.md) — theme configuration and switching
 - [Localization](localization.md) — internationalization patterns

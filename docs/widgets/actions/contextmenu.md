@@ -13,25 +13,26 @@ themeable (light/dark), enables icons, and allows richer layout and interaction 
 
 ## Quick start
 
-Create a menu, add items, and show it in response to a right-click.
+Create a menu, add items, and attach it to a target widget with the default portable trigger.
 
 ```python
 import ttkbootstrap as ttk
 
 app = ttk.App()
 
-menu = ttk.ContextMenu(app)
+menu = ttk.ContextMenu(app, target=app)
 menu.add_command(text="Open", icon="folder-open", command=lambda: print("Open"))
 menu.add_command(text="Rename", command=lambda: print("Rename"))
 menu.add_separator()
 menu.add_command(text="Delete", icon="trash", command=lambda: print("Delete"))
 
-def on_right_click(event):
-    menu.show((event.x_root, event.y_root))
-
-app.bind("<Button-3>", on_right_click)
 app.mainloop()
 ```
+
+!!! note "Cross-platform right-click"
+    `target=app` with the default `trigger='right-click'` binds the portable gesture automatically:
+    **Windows / Linux** — `<Button-3>`, **macOS** — `<Button-2>` and `<Control-Button-1>`.
+    Avoid binding `<Button-3>` directly — it does not capture the macOS Ctrl+click gesture.
 
 ---
 
@@ -87,6 +88,11 @@ menu.add_radiobutton(text="Sort by date", value="date", variable=sort_var)
 - `hide()` programmatically closes the menu.
 - The menu hides automatically when the user clicks outside.
 - Item commands fire on click and close the menu.
+
+!!! note "macOS uses a native menu backend"
+    On macOS (Aqua), `ContextMenu` renders as a native NSMenu rather than a themed
+    Toplevel. The public API is identical, but some presentation options (`minwidth`,
+    `width`) are ignored. Do not rely on `item()` returning a Tk widget on macOS.
 
 !!! link "See [State & Interaction](../../capabilities/state-and-interaction.md) for focus, hover, and disabled behavior across widgets."
 

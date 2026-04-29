@@ -74,21 +74,22 @@ ttk.Entry(app, accent="secondary")
 
 Unlike field controls such as `TextEntry`, `Entry` does not define "text vs committed value" semantics on its own.
 
-### `textvariable`
+### `textsignal`
 
-Bind to a Tk variable.
+Bind to a reactive signal.
+
+```python
+name = ttk.Signal("Ada")
+entry = ttk.Entry(app, textsignal=name)
+```
+
+### `textvariable` (compatibility)
+
+Bind to a Tk variable for compatibility with code that already uses `StringVar`.
 
 ```python
 name = ttk.StringVar(value="Ada")
 ttk.Entry(app, textvariable=name).pack()
-```
-
-### `textsignal`
-
-Bind to a reactive signal (no Tk variable needed).
-
-```python
-entry = ttk.Entry(app, textsignal=my_signal)
 ```
 
 ### `show`

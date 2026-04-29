@@ -84,6 +84,14 @@ Toast supports different visual intents through the `accent` parameter:
 
 - Click-to-dismiss is common (if supported)
 
+!!! note "Default position by platform"
+    When `position` is not set, Toast anchors to the platform notification convention:
+
+    - **macOS / Windows** — bottom-right corner (inset 25 px right, 75 px bottom)
+    - **Linux (X11)** — top-right corner (inset 25 px right, 25 px top)
+
+    Pass `position` explicitly to override: `Toast(message="Done", position="-25-75")`
+
 ---
 
 ## Additional resources

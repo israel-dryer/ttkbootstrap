@@ -180,7 +180,7 @@ This is the foundation for Goal 1.
 - [x] **4B.** New page: `platform/platform-differences.md`. Single matrix-style page covering macOS / Windows / Linux differences (Mod key, ContextMenu trigger and backend, Toast position, App quit behavior, window_style, system appearance sync, state directory, native vs themed dialogs). Added to nav.
 - [x] **4C.** New page: `platform/accessibility.md`. Keyboard navigation, tab order, focus rings (visual_focus system), contrast guidance, honest screen reader status per OS, practical checklist. Added to nav.
 - [x] **4D.** Expanded `platform/images-and-dpi.md` with per-OS sections: macOS Retina (OS-handled, @1x assets), Windows DPI manifest (auto via hdpi=True, Image utility for sizing), Linux X11 fractional scaling (explicit scaling param), Wayland note, scaling summary table, image caching and common pitfalls.
-- [ ] **4E.** Expand `platform/build-and-ship.md` with Windows MSI signing, Linux AppImage / `.deb` / Flatpak. (Or explicitly delegate, like the existing Briefcase handoff for macOS.)
+- [x] **4E.** Added "Shipping to Windows" and "Shipping to Linux" sections to `platform/build-and-ship.md`, mirroring the existing macOS pattern: describe what `ttkb build` produces locally, list the additional steps needed for distribution, explain why ttkbootstrap doesn't wrap them, then delegate. Windows: Authenticode signing + MSI via Briefcase. Linux: AppImage / `.deb` via Briefcase, Flatpak via `flatpak-builder` upstream. Resolves open question 4.
 - [x] **4F.** Expanded `platform/debugging.md` with structured logging setup, `report_callback_exception` override, `sys.excepthook`, crash dialog pattern with MessageBox, background-thread caveat, widget tree dump, geometry timing recipe.
 - [x] **4G.** Added "Native vs custom dialogs" section to `docs/widgets/dialogs/index.md` explaining that ttkbootstrap dialogs are themed Tk windows (not OS-native) and directing users to `tkinter.filedialog` / `tkinter.colorchooser` for native behavior.
 
@@ -191,12 +191,12 @@ This is the foundation for Goal 1.
   - `docs/guides/forms.md` — inferred vs. explicit layout, FieldItem/GroupItem/TabsItem grammar, editor types, validation rules, footer buttons, FormDialog handoff.
   - `docs/guides/tables-and-lists.md` — TableView/ListView/TreeView selection matrix, CRUD, filtering/sorting/grouping, custom row factories, DataSource integration.
   - `docs/guides/toolbars.md` — `add_button`/`label`/`separator`/`spacer`/`widget`, spacer-based layout, density, custom titlebars via window controls, AppShell integration.
-- [ ] **5B.** Deduplicate icon documentation. Pick one canonical home per the *what / how / what-it-does* split (suggest: tokens in Design System, usage in Guides, framework behavior in Capabilities). Make the others link rather than restate.
-- [ ] **5C.** Same for typography.
-- [ ] **5D.** Same for theming.
-- [ ] **5E.** Same for layout / spacing.
+- [x] **5B.** Deduplicated icon documentation. `capabilities/icons/icons.md` rewritten as pure mechanics (provider resolution, state integration, theme-driven coloring, DPI scaling, caching). `design-system/icons.md` unchanged (already correct "what" pointer). `guides/icons.md` unchanged as canonical "how" page; added Capabilities link to Related resources.
+- [x] **5C.** Deduplicated typography documentation. `design-system/typography.md` updated with the complete 13-token table and full modifier vocabulary (was stale with 4 generic tokens). `guides/typography.md` unchanged as canonical "how" page (it already linked to design-system).
+- [x] **5D.** Deduplicated theming documentation. `design-system/custom-themes.md` expanded with the theme vocabulary (properties table, shades/spectrum explanation, semantic token table, built-in themes list) — was nearly empty. `guides/theming.md` unchanged as canonical "how" page; added Design System link to its Next Steps section.
+- [x] **5E.** Deduplicated layout/spacing documentation. `capabilities/layout/containers.md` trimmed of "when to use PackFrame vs GridFrame" guide content (was duplicating guides/layout.md); replaced with a pointer to the guide. `guides/layout.md` added link to Capabilities: Layout in Next steps. `guides/spacing-and-alignment.md` and `capabilities/layout/spacing.md` are non-overlapping (different levels of abstraction).
 - [-] **5F.** Deferred. Library will be rebranded; migration story will be handled as part of that effort rather than as a standalone guide.
-- [ ] **5G.** Update widget-page examples to lead with signals; show Tk-vars as a "compatibility" alternative where relevant.
+- [x] **5G.** Updated widget-page examples to lead with signals. Reordered signal-before-textvariable in: `entry.md`, `spinbox.md`, `combobox.md`, `optionmenu.md`. Expanded `selectbox.md` "Binding" section with a `textsignal=` example (was just a tip pointing at textvariable). `calendar.md` already correctly described (no textvariable support). Tk-variable forms labeled "(compatibility)" throughout.
 - [x] **5H.** Standardize the canonical import (`import ttkbootstrap as ttk`) across all examples in guides and widgets. Fixed `scrollbar.md`, `menubutton.md`, and two examples in `localization.md` that used non-existent `set_locale`/`get_locale` functions (replaced with `MessageCatalog.locale()`). All remaining `from ttkbootstrap import X` patterns are intentional named imports (localization helpers `L`, `LV`, `MessageCatalog`, `IntlFormatter`; theming utilities; `Font`).
 - [x] **5I.** Added `tools/check_doc_structure.py` — maps 9 widget categories to their templates, checks every .md for required H2s, reports missing sections. Exit 0/1 for CI. Run: `python tools/check_doc_structure.py [--category NAME]`.
 
@@ -211,7 +211,11 @@ This is the foundation for Goal 1.
 
 ### Phase 7 — Polish
 
-- [ ] **7A.** Add admonitions (`!!! note`, `!!! warning`) for platform-specific callouts in user-guide pages (not docstrings).
+- [x] **7A.** Added platform admonitions to user-guide pages:
+  - `widgets/actions/contextmenu.md` — fixed quick start to use portable `target=app` trigger (was using `<Button-3>` directly, which misses macOS Ctrl+click); added cross-platform right-click note and macOS native NSMenu backend note.
+  - `widgets/overlays/toast.md` — added position-by-platform note (bottom-right on macOS/Windows, top-right on Linux X11).
+  - `widgets/application/app.md` — added macOS quit behavior note (close hides, Cmd+Q quits; how to restore classic destroy-on-close).
+  - `guides/typography.md` — upgraded inline platform-fonts sentence to a `!!! note` admonition.
 - [x] **7B.** Created `docs/reference/deprecated.md` listing all 12 aliases from `_DEPRECATED_ALIASES` with replacement names and migration snippet. Added to nav in `zensical.toml` and `reference/index.md`.
 - [x] **7C.** Final sweep: searched "TODO/TBD/coming soon" — one hit in deprecated.md (stale migration guide link) removed. Fixed 11 broken internal capability links across 8 widget/guide files (icons-and-imagery → icons/index.md, signals.md → signals/index.md, callbacks.md → signals/callbacks.md, virtual-events.md → signals/virtual-events.md). Rendered rebuild deferred (requires display).
 
@@ -300,7 +304,7 @@ Raises:
 1. **`docs/reference/capabilities/` direction (Phase 3F).** Spec for mixins, or move to user-guide? Decision needs to be made before 3F.
 2. **`reference/widgets/` deprecated-alias files (Phase 1D vs 3E).** Rename to canonical, or delete entirely once duplicates are removed?
 3. **`TK_WIDGETS` / `TTK_WIDGETS` (Phase 3D).** Public API or internal? Currently in `_MODULE_EXPORTS["ttkbootstrap.api.widgets"]`.
-4. **Per-OS packaging guidance scope (Phase 4E).** First-party recipes, or "use Briefcase / use PyInstaller" pointers?
+4. ~~**Per-OS packaging guidance scope (Phase 4E).** First-party recipes, or "use Briefcase / use PyInstaller" pointers?~~ Resolved 2026-04-29: delegation pointers, mirroring the existing macOS pattern. `ttkb build` stays scoped to local PyInstaller bundling; signing/installers/sandboxed formats delegate to Briefcase (Windows MSI, Linux AppImage/.deb) and `flatpak-builder` (Flatpak).
 5. **Image policy strictness (Phase 6A).** Mandatory for every widget, or judgment call per page?
 6. **`Tabs` and `TabView` API status.** ~~Both classes exist in `widgets/composites/tabs/` and have reference + user-guide pages, but neither is in `_MODULE_EXPORTS`.~~ Resolved 2026-04-29: per user direction, made consistent with peer layout widgets. Added `Tabs` and `TabView` to `api/widgets.py` exports and to `__init__.py` `_MODULE_EXPORTS` + TYPE_CHECKING block. `import ttkbootstrap as ttk; ttk.Tabs` now resolves.
 

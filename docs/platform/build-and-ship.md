@@ -254,6 +254,91 @@ for the full setup.
 
 ---
 
+## Shipping to Windows
+
+`ttkb build` produces an unsigned `.exe` (and a folder of dependencies)
+on Windows via PyInstaller. That bundle runs locally, but it is **not
+ready for distribution**: when users download an unsigned executable,
+Windows SmartScreen blocks it with a "Windows protected your PC" prompt
+until the binary builds reputation, and most IT-managed environments
+will refuse to run it at all.
+
+To ship a Windows app to other users, you typically need:
+
+1. **A code-signing certificate.** Standard Authenticode certificates
+   (DigiCert, Sectigo, etc.) run roughly $200–500/year and require
+   SmartScreen reputation to build over time. Extended Validation (EV)
+   certificates cost more but skip the reputation phase and pass
+   SmartScreen on first run.
+2. **Sign the binary** with `signtool sign /fd SHA256 /tr <timestamp-url>`.
+3. **Wrap it in an installer** — MSI (via WiX), MSIX, NSIS, or Inno
+   Setup — so users get a familiar install/uninstall flow and Add/Remove
+   Programs registration.
+4. **Sign the installer** as well, with the same certificate.
+
+Code-signing toolchains and certificate vendors change often enough
+that ttkbootstrap intentionally does **not** wrap them into
+`ttkb build`. The recommended path is again
+**[Briefcase](https://briefcase.readthedocs.io/)**, which produces a
+signed MSI via WiX:
+
+```bash
+pip install briefcase
+briefcase create windows
+briefcase build windows
+briefcase package windows --identity <certificate-thumbprint>
+```
+
+See the
+[Briefcase Windows docs](https://briefcase.readthedocs.io/en/stable/reference/platforms/windows.html)
+for certificate setup and signing details.
+
+---
+
+## Shipping to Linux
+
+`ttkb build` produces an executable and a folder of dependencies on
+Linux via PyInstaller. That folder runs on the build machine, but
+distributing it to other Linux systems is non-trivial: glibc versions
+differ across distros, package managers expect distro-specific
+metadata, and increasingly users expect sandboxed formats.
+
+The four common distribution formats are:
+
+- **AppImage** — single self-contained file, runs on most distros
+  without installation. Best when you want one artifact for everyone.
+- **`.deb`** — Debian/Ubuntu package, integrates with `apt` and the
+  system menu.
+- **`.rpm`** — Fedora/RHEL/openSUSE package.
+- **Flatpak** — sandboxed, distro-agnostic, distributed via Flathub.
+  Best for end-user GUI apps on modern desktops.
+
+ttkbootstrap intentionally does **not** produce these formats from
+`ttkb build` — each has its own metadata, dependencies, and review
+process, and most projects only need one or two of them.
+
+For AppImage and `.deb`,
+**[Briefcase](https://briefcase.readthedocs.io/)** handles both:
+
+```bash
+pip install briefcase
+briefcase create linux
+briefcase build linux
+briefcase package linux --target appimage   # or: --target deb
+```
+
+See the
+[Briefcase Linux docs](https://briefcase.readthedocs.io/en/stable/reference/platforms/linux.html)
+for the supported targets and per-distro requirements.
+
+For Flatpak, the canonical path is `flatpak-builder` driven by a
+manifest file, with publication through
+[Flathub](https://flathub.org/). The
+[Flatpak Python guide](https://docs.flatpak.org/en/latest/python.html)
+covers the full setup; this is a separate toolchain from `ttkb build`.
+
+---
+
 ## Next steps
 
 - Read [Platform → CLI](cli.md)

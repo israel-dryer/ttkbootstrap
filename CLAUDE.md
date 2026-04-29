@@ -34,6 +34,30 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
+### Current handoff (2026-04-29)
+
+Phases 1–5 and 7 are complete. The only remaining work is **Phase 6
+(screenshot pipeline)**. See the plan doc for full task status.
+
+**Phase 6 overview.** All tasks require either a judgment call or a
+running Tk display:
+
+- **6A** — image policy decision (one judgment call): mandatory per
+  widget page, or case-by-case?
+- **6B** — manifest design: unify the 7 existing `docs_scripts/*.py`
+  into a single `render.py` driven by a YAML/TOML manifest.
+- **6C** — add `make screenshots` / `ttkb screenshots` command
+  (depends on 6B).
+- **6D** — CI check: every `docs/widgets/**/*.md` that references an
+  image must have that image on disk. Can be done without a display.
+- **6E** — generate screenshots for ~67 widget pages currently without
+  them; replace the 15 `IMAGE:` placeholders (needs display).
+- **6F** — MP4/GIF for animated widgets: Toast, Tooltip, Accordion,
+  Expander, PageStack, FloodGauge, Meter (needs display + recording).
+
+**Model selection.** Use Opus for 6A and 6B (judgment/architecture).
+Sonnet is fine for 6C and 6D. 6E/6F require a display environment.
+
 ---
 
 ## Documentation toolchain

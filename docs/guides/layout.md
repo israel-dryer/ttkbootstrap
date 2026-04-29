@@ -255,9 +255,11 @@ Most layout issues disappear when containers are used intentionally.
 
 ## Next steps
 
-- [Spacing & Alignment](spacing-and-alignment.md) - how padding, margins, `sticky`, and expansion
+- [Spacing & Alignment](spacing-and-alignment.md) — how padding, margins, `sticky`, and expansion
   behave under the hood when using raw `pack` and `grid`.
-- [ScrollView](../widgets/layout/scrollview.md) - how scrolling is handled as a container responsibility.
+- [ScrollView](../widgets/layout/scrollview.md) — how scrolling is handled as a container responsibility.
+- [Capabilities: Layout](../capabilities/layout/index.md) — layout as a framework capability: container
+  mechanics, scrolling, and lifecycle constraints.
 
 If you're new to ttkbootstrap layout, start with **PackFrame** or **GridFrame**, then return to Spacing & Alignment
 only when you need finer control.

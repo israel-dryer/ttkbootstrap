@@ -62,6 +62,17 @@ ttk.set_theme("flatly-dark")
 ttk.toggle_theme()  # switches between light and dark
 ```
 
+!!! note "macOS: window close ≠ quit"
+    On macOS, `App` installs native quit behavior by default: clicking the close
+    button **hides** the app (it stays in the Dock). **Cmd+Q** is the
+    platform-conventional quit gesture.
+
+    To restore cross-platform destroy-on-close behavior:
+    ```python
+    app = ttk.App(settings={"macos_quit_behavior": "classic"})
+    ```
+    See [Platform Differences](../../platform/platform-differences.md) for details.
+
 ---
 
 ## Additional resources

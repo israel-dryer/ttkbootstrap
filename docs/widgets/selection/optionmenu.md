@@ -76,18 +76,6 @@ menu.value = "High"
 
 You can bind selection state in several ways.
 
-### Using a Tk variable
-
-```python
-color = ttk.StringVar(value="Green")
-
-menu = ttk.OptionMenu(
-    app,
-    textvariable=color,
-    options=["Red", "Green", "Blue"],
-)
-```
-
 ### Using a signal
 
 ```python
@@ -100,6 +88,18 @@ menu = ttk.OptionMenu(
 )
 
 selected.subscribe(lambda v: print("changed:", v))
+```
+
+### Using a Tk variable (compatibility)
+
+```python
+color = ttk.StringVar(value="Green")
+
+menu = ttk.OptionMenu(
+    app,
+    textvariable=color,
+    options=["Red", "Green", "Blue"],
+)
 ```
 
 ---

@@ -87,9 +87,9 @@ value = spin.get()
 
 Bind with:
 
-- `textvariable=` (Tk variable), or
+- `textsignal=` (reactive signal), or
 
-- `textsignal=` (reactive signal)
+- `textvariable=` (Tk variable, for compatibility)
 
 ### Common options
 

@@ -127,18 +127,20 @@ The meaning of the text depends on `state`:
 
 ### Binding to signals or variables
 
-#### Tk variables
+#### Reactive signals
+
+```python
+choice = ttk.Signal("Medium")
+
+combo = ttk.Combobox(app, textsignal=choice, values=["Low", "Medium", "High"], state="readonly")
+```
+
+#### Tk variables (compatibility)
 
 ```python
 choice = ttk.StringVar(value="Medium")
 
 combo = ttk.Combobox(app, textvariable=choice, values=["Low", "Medium", "High"], state="readonly")
-```
-
-#### Reactive signals
-
-```python
-combo = ttk.Combobox(app, textsignal=my_signal, values=["Low", "Medium", "High"], state="readonly")
 ```
 
 ### Common options

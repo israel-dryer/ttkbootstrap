@@ -7,54 +7,66 @@ title: Typography
 Typography in ttkbootstrap is defined through **font tokens** rather than
 individual font selections.
 
-Font tokens describe *intent*—such as body text or headings—while the framework
-handles platform-appropriate rendering.
+Font tokens describe *intent* — such as body text or headings — while the
+framework handles platform-appropriate rendering.
 
 ---
 
-## Typography tokens
+## Font tokens
 
-Common typography tokens include:
+Tokens are registered as named Tk fonts. Use them directly as a `font`
+parameter value:
 
-- `body` — standard UI text
-- `heading` — section and view titles
-- `caption` — secondary or supporting text
-- `monospace` — code or aligned data
+| Token | Purpose |
+|-------|---------|
+| `caption` | Small supporting text |
+| `label` | Bold label text (form labels, field labels) |
+| `body-sm` | Compact body text |
+| `body` | Default body text |
+| `body-lg` | Larger body text |
+| `body-xl` | Extra large body text |
+| `heading-md` | Medium heading |
+| `heading-lg` | Large heading |
+| `heading-xl` | Extra large heading |
+| `display-lg` | Large display text |
+| `display-xl` | Extra large display text |
+| `code` | Monospace code text |
+| `hyperlink` | Underlined link text |
 
-Themes determine the concrete font families and sizes for each token.
+Themes map each token to a concrete font family, size, and weight. Tokens
+adapt automatically to the platform (Segoe UI on Windows, SF Pro on macOS,
+DejaVu Sans on Linux).
 
 ---
 
 ## Modifiers
 
-Typography tokens can be modified conceptually:
+Tokens can be modified without breaking consistency. Modifiers are expressed
+in chained brackets after the token name:
 
-- weight (bold)
-- style (italic)
-- size adjustments
+| Modifier | Effect |
+|----------|--------|
+| `bold` | Bold weight |
+| `normal` | Normal weight |
+| `italic` | Italic style |
+| `roman` | Remove italic |
+| `underline` | Underlined |
+| `overstrike` | Strikethrough |
+| `N` | Absolute size in points (e.g. `14`) |
+| `Npx` | Absolute size in pixels (e.g. `16px`) |
 
-Modifiers express emphasis without breaking consistency.
-
----
-
-## Why tokens matter
-
-Using typography tokens ensures:
-
-- consistent text hierarchy
-- predictable scaling across platforms
-- centralized control
-- accessibility-friendly defaults
+Size can also be adjusted relative to the token's base using `+N` or `-N`
+before the brackets (e.g. `body+2`, `caption-1`).
 
 ---
 
 ## Using typography in applications
 
-How typography is applied in widgets and layouts is covered in:
+How font tokens and the `Font` class are applied in widgets and layouts:
 
 - [Guides → Typography](../guides/typography.md)
 
-Typography APIs and implementation details are documented in:
+Font API documentation:
 
 - [API Reference → Font](../reference/utils/Font.md)
 
