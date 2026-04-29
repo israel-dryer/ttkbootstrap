@@ -50,6 +50,7 @@ class WindowPositioning:
         >>> # Ensure coordinates are on screen
         >>> x, y = WindowPositioning.ensure_on_screen(window, 2000, 2000)
         >>> # Returns adjusted coordinates within screen bounds
+
     """
 
     @staticmethod
@@ -64,6 +65,7 @@ class WindowPositioning:
             Tuple of (monitor_x, monitor_y, monitor_width, monitor_height) if
             screeninfo is available and a monitor contains the point.
             Returns None if screeninfo is not installed or point is not on any monitor.
+
         """
         if not HAS_SCREENINFO:
             return None
@@ -108,6 +110,7 @@ class WindowPositioning:
             >>> window.update_idletasks()
             >>> x, y = WindowPositioning.center_on_screen(window)
             >>> window.geometry(f"+{x}+{y}")
+
         """
         window.update_idletasks()
 
@@ -154,12 +157,13 @@ class WindowPositioning:
             to the parent.
 
         Examples:
-import ttkbootstrap.runtime.toplevel            >>> parent = tkinter.Tk()
+        import ttkbootstrap.runtime.toplevel            >>> parent = tkinter.Tk()
             >>> dialog = ttkbootstrap.runtime.toplevel.Toplevel(parent)
             >>> dialog.update_idletasks()
             >>> parent.update_idletasks()
             >>> x, y = WindowPositioning.center_on_parent(dialog, parent)
             >>> dialog.geometry(f"+{x}+{y}")
+
         """
         window.update_idletasks()
         parent.update_idletasks()
@@ -218,6 +222,7 @@ import ttkbootstrap.runtime.toplevel            >>> parent = tkinter.Tk()
             >>> x, y = WindowPositioning.ensure_on_screen(window, 5000, 5000)
             >>> # Returns coordinates that keep window visible
             >>> window.geometry(f"+{x}+{y}")
+
         """
         window.update_idletasks()
 
@@ -282,6 +287,7 @@ import ttkbootstrap.runtime.toplevel            >>> parent = tkinter.Tk()
             >>>
             >>> # Center on screen
             >>> WindowPositioning.position_window(window)
+
         """
         window.update_idletasks()
 
@@ -326,6 +332,7 @@ import ttkbootstrap.runtime.toplevel            >>> parent = tkinter.Tk()
 
         Returns:
             Tuple of (x, y) screen coordinates for the anchor point.
+
         """
         widget.update_idletasks()
 
@@ -379,6 +386,7 @@ import ttkbootstrap.runtime.toplevel            >>> parent = tkinter.Tk()
 
         Returns:
             Tuple of (x, y) screen coordinates for the anchor point.
+
         """
         window.update_idletasks()
 
@@ -434,6 +442,7 @@ import ttkbootstrap.runtime.toplevel            >>> parent = tkinter.Tk()
 
         Returns:
             Tuple of (x, y) screen coordinates of the cursor.
+
         """
         window.update_idletasks()
 
@@ -452,6 +461,7 @@ import ttkbootstrap.runtime.toplevel            >>> parent = tkinter.Tk()
 
         Returns:
             Vertically flipped anchor point.
+
         """
         flip_map = {
             'n': 's', 's': 'n',
@@ -471,6 +481,7 @@ import ttkbootstrap.runtime.toplevel            >>> parent = tkinter.Tk()
 
         Returns:
             Horizontally flipped anchor point.
+
         """
         flip_map = {
             'e': 'w', 'w': 'e',
@@ -501,6 +512,7 @@ import ttkbootstrap.runtime.toplevel            >>> parent = tkinter.Tk()
 
         Returns:
             Tuple of (vertical_offscreen, horizontal_offscreen) booleans.
+
         """
         window.update_idletasks()
 
@@ -585,6 +597,7 @@ import ttkbootstrap.runtime.toplevel            >>> parent = tkinter.Tk()
             ...     anchor_point='sw', window_point='nw',
             ...     auto_flip='vertical'
             ... )
+
         """
         window.update_idletasks()
 
@@ -772,6 +785,7 @@ import ttkbootstrap.runtime.toplevel            >>> parent = tkinter.Tk()
             ...     window_point='s',   # tooltip's bottom-center
             ...     offset=(0, -5)
             ... )
+
         """
         window.update_idletasks()
         anchor_to.update_idletasks()
@@ -836,6 +850,7 @@ import ttkbootstrap.runtime.toplevel            >>> parent = tkinter.Tk()
         Examples:
             >>> # Show context menu at cursor
             >>> WindowPositioning.position_at_cursor(menu, offset=(2, 2))
+
         """
         window.update_idletasks()
 
@@ -882,6 +897,7 @@ import ttkbootstrap.runtime.toplevel            >>> parent = tkinter.Tk()
             ...     prefer_below=True,
             ...     align='left'
             ... )
+
         """
         window.update_idletasks()
         trigger_widget.update_idletasks()
@@ -980,6 +996,7 @@ class WindowSizing:
             >>> window = tkinter.Tk()
             >>> width, height = WindowSizing.get_default_size(window)
             >>> window.geometry(f"{width}x{height}")
+
         """
         window.update_idletasks()
 
@@ -1032,6 +1049,7 @@ class WindowSizing:
             ...     maxsize=(1920, 1080),
             ...     resizable=(True, False)  # Width resizable, height fixed
             ... )
+
         """
         if minsize is not None:
             window.minsize(*minsize)

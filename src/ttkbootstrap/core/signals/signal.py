@@ -1,3 +1,4 @@
+"""Reactive signal implementation for ttkbootstrap."""
 import tkinter as tk
 import weakref
 from itertools import count
@@ -11,28 +12,28 @@ U = TypeVar("U")
 
 
 class _SignalTrace:
-    """
-    Internal helper to manage Tcl variable traces using tkinter's Variable API.
+    """Internal helper to manage Tcl variable traces using tkinter's Variable API.
+
     This class encapsulates low-level `trace_add` and `trace_remove` logic.
     """
 
     def __init__(self, tk_var: tk.Variable):
-        """
-        Initialize a trace manager for a tkinter variable.
+        """Initialize a trace manager for a tkinter variable.
 
         Args:
             tk_var: A tkinter.Variable instance (e.g., StringVar, IntVar).
+
         """
         self._var = tk_var
         # Map trace id -> (operation, callback)
         self._traces: dict[str, tuple[TraceOperation, Callable[..., Any]]] = {}
 
     def callbacks(self) -> tuple[str, ...]:
-        """
-        Return all currently active trace IDs.
+        """Return all currently active trace IDs.
 
         Returns:
             A tuple of trace ID strings.
+
         """
         return tuple(self._traces.keys())
 
@@ -42,9 +43,7 @@ class _SignalTrace:
             callback: Callable[[T], Any],
             get_value: Callable[[], T],
     ) -> str:
-        """
-        Add a new trace that calls a callback when the variable is written.
-        """
+        """Add a new trace that calls a callback when the variable is written."""
 
         def traced_callback(name: str, index: str, mode: str) -> None:
             callback(get_value())
@@ -57,9 +56,7 @@ class _SignalTrace:
         return fid
 
     def remove(self, fid: str) -> None:
-        """
-        Remove a trace by ID. Safe if already removed or variable destroyed.
-        """
+        """Remove a trace by ID. Safe if already removed or variable destroyed."""
         op_cb = self._traces.pop(fid, None)
         if op_cb is None:
             return
@@ -72,8 +69,7 @@ class _SignalTrace:
 
 
 class Signal(Generic[T]):
-    """
-    A reactive signal backed by a tkinter Variable.
+    """A reactive signal backed by a tkinter Variable.
 
     Supports value access, transformation via `.map()`, and subscription
     to change events via `.subscribe()`.
@@ -84,6 +80,14 @@ class Signal(Generic[T]):
     _cnt = count(1)
 
     def __init__(self, value: T, name: str | None = None, master: tk.Misc | None = None):
+        """Create a signal with an initial value.
+
+        Args:
+            value: The initial value; its type determines the backing tkinter Variable.
+            name: Optional Tcl variable name. Auto-generated as "SIG<n>" if omitted.
+            master: Optional tk.Misc master widget. Uses the default root if omitted.
+
+        """
         self._name = name or f"SIG{next(self._cnt)}"
         self._type: Type[T] = type(value)
         self._master: tk.Misc | None = master
@@ -109,11 +113,11 @@ class Signal(Generic[T]):
             return tk.StringVar(master=self._master, name=self._name, value=value)
 
     def __call__(self) -> T:
-        """
-        Get the current value of the signal.
+        """Get the current value of the signal.
 
         Returns:
             The current typed value.
+
         """
         try:
             value = self._var.get()
@@ -139,8 +143,7 @@ class Signal(Generic[T]):
             name: str | None = None,
             coerce: Type[T] | None = None,
     ) -> "Signal[T]":
-        """
-        Wrap an existing tkinter Variable as a Signal.
+        """Wrap an existing tkinter Variable as a Signal.
 
         Args:
             tk_var: An existing tkinter.Variable instance (StringVar, IntVar, etc.).
@@ -150,6 +153,7 @@ class Signal(Generic[T]):
 
         Returns:
             A Signal bound to the provided tk_var.
+
         """
         # Infer Python type from the tk variable if not explicitly provided
         if coerce is None:
@@ -194,14 +198,14 @@ class Signal(Generic[T]):
         return self
 
     def set(self, value: T) -> None:
-        """
-        Set the signal to a new value and notify subscribers.
+        """Set the signal to a new value and notify subscribers.
 
         Args:
             value: The new value. Must match the original type.
 
         Raises:
             TypeError: If the value type does not match the original.
+
         """
         # Enforce exact type to avoid bool being accepted for int, etc.
         if type(value) is not self._type:
@@ -218,14 +222,14 @@ class Signal(Generic[T]):
         self._last = value
 
     def map(self, transform: Callable[[T], U]) -> 'Signal[U]':
-        """
-        Create a derived signal that transforms this signal's value.
+        """Create a derived signal that transforms this signal's value.
 
         Args:
             transform: A function applied to the current and future values.
 
         Returns:
             A new Signal[U] that stays updated with the transformed value.
+
         """
         derived = Signal(transform(self()))
 
@@ -243,14 +247,15 @@ class Signal(Generic[T]):
         return derived
 
     def subscribe(self, callback: Callable[[T], Any], *, immediate: bool = False) -> str:
-        """
-        Subscribe to value changes of this signal.
+        """Subscribe to value changes of this signal.
 
         Args:
             callback: A function that receives the current value (T) when updated.
+            immediate: If True, invoke callback immediately with the current value.
 
         Returns:
             A trace ID that can be used for removal.
+
         """
         fid = self._trace.add("write", callback, self)
         self._subscribers[fid] = callback
@@ -264,19 +269,17 @@ class Signal(Generic[T]):
         return fid
 
     def unsubscribe(self, funcid: str) -> None:
-        """
-        Remove a previously registered subscriber.
+        """Remove a previously registered subscriber.
 
         Args:
             funcid: The function id returned from `subscribe()`.
+
         """
         self._subscribers.pop(funcid, None)
         self._trace.remove(funcid)
 
     def unsubscribe_all(self) -> None:
-        """
-        Remove all currently subscribed callbacks.
-        """
+        """Remove all currently subscribed callbacks."""
         # Copy keys to avoid mutation during iteration
         for fid in list(self._subscribers.keys()):
             self._trace.remove(fid)
@@ -284,34 +287,33 @@ class Signal(Generic[T]):
         self._callback_index.clear()
 
     def __getattr__(self, name: str) -> Any:
-        """
-        Proxy access to the underlying tk.Variable instance.
-        """
+        """Proxy access to the underlying tk.Variable instance."""
         return getattr(self._var, name)
 
     @property
     def name(self) -> str:
-        """
-        Return the Tcl name of the variable (for use in widget `textvariable`).
-        """
+        """Return the Tcl name of the variable (for use in widget `textvariable`)."""
         return self._name
 
     @property
     def type(self) -> Type[T]:
-        """
-        The original type of the signal value.
+        """The original type of the signal value.
 
         Returns:
             A Python type (e.g., int, str).
+
         """
         return self._type
 
     @property
     def var(self) -> tk.Variable:
+        """The underlying tkinter variable backing this signal."""
         return self._var
 
     def __str__(self) -> str:
+        """Return the Tcl variable name for this signal."""
         return self._name
 
     def __repr__(self) -> str:
+        """Return the Tcl variable name for this signal."""
         return self._name
