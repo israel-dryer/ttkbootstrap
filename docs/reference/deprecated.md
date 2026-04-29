@@ -39,4 +39,4 @@ nav = ttk.SideNav(app)
 item = ttk.SideNavItem(nav, key="home", text="Home")
 ```
 
-For a full v1 → v2 migration guide see [Guides → Migrating](../guides/migrating.md) (coming soon).
+Replace the old name with the new one wherever it appears in imports and widget constructors.

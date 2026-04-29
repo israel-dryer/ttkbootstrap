@@ -147,7 +147,7 @@ ttk.Button(app, text="Settings", icon="gear").pack(pady=6)
 ttk.Button(app, icon="gear", icon_only=True).pack(pady=6)
 ```
 
-!!! link "See [Icons & Images](../../capabilities/icons.md) for icon sizing, DPI handling, and recoloring behavior."
+!!! link "See [Icons & Images](../../capabilities/icons/index.md) for icon sizing, DPI handling, and recoloring behavior."
 
 
 !!! tip "Custom Icons"
@@ -211,7 +211,7 @@ ttk.Button(app, textsignal=label).pack()
 label.set("Stop")
 ```
 
-!!! link "See [Signals](../../capabilities/signals.md) for how signal-backed widget values and text updates work."
+!!! link "See [Signals](../../capabilities/signals/index.md) for how signal-backed widget values and text updates work."
 
 ---
 
@@ -231,8 +231,8 @@ label.set("Stop")
 
 - [Design System → Variants](../../design-system/variants.md)
 - [Design System → Icons](../../design-system/icons.md)
-- [Icons & Imagery](../../capabilities/icons-and-imagery.md)
-- [Signals](../../capabilities/signals.md)
+- [Icons & Imagery](../../capabilities/icons/index.md)
+- [Signals](../../capabilities/signals/index.md)
 - [Localization](../../capabilities/localization.md)
 - [State & Interaction](../../capabilities/state-and-interaction.md)
 

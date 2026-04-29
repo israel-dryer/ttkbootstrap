@@ -150,15 +150,15 @@ Switch languages without restarting:
 
 ```python
 import ttkbootstrap as ttk
-from ttkbootstrap import set_locale, get_locale
+from ttkbootstrap import MessageCatalog
 
 app = ttk.App(locale="en")
 
 def switch_to_spanish():
-    set_locale("es")
+    MessageCatalog.locale("es")
 
 def switch_to_english():
-    set_locale("en")
+    MessageCatalog.locale("en")
 
 ttk.Button(app, text="Español", command=switch_to_spanish).pack()
 ttk.Button(app, text="English", command=switch_to_english).pack()
@@ -220,7 +220,7 @@ ttk.NumericEntry(app).pack()
 
 ```python
 import ttkbootstrap as ttk
-from ttkbootstrap import set_locale
+from ttkbootstrap import MessageCatalog
 
 app = ttk.App(locale="en")
 
@@ -229,7 +229,7 @@ languages = [("English", "en"), ("Español", "es"), ("Français", "fr")]
 selector = ttk.OptionMenu(
     app,
     values=[name for name, _ in languages],
-    command=lambda name: set_locale(
+    command=lambda name: MessageCatalog.locale(
         next(code for n, code in languages if n == name)
     ),
 )

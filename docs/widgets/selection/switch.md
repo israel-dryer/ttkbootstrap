@@ -192,7 +192,7 @@ app.mainloop()
 
 You can also bind a Tk variable with `variable=...`.
 
-!!! link "See [Signals](../../capabilities/signals.md) for reactive programming patterns."
+!!! link "See [Signals](../../capabilities/signals/index.md) for reactive programming patterns."
 
 ---
 
@@ -219,7 +219,7 @@ Choose based on the visual context and whether you need tri-state support.
 
 ### Framework concepts
 
-- [Signals](../../capabilities/signals.md) - reactive state management
+- [Signals](../../capabilities/signals/index.md) - reactive state management
 - [Localization](../../capabilities/localization.md) - text translation
 - [Design System](../../design-system/variants.md) - color tokens and variants
 

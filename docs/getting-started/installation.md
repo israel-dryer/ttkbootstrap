@@ -65,7 +65,7 @@ theme-aware icons, DPI scaling, caching, and recoloring.
 
 No additional installation is required.
 
-!!! link "See [Icons & Imagery](../capabilities/icons-and-imagery.md) for details on image handling and icon behavior."
+!!! link "See [Icons & Imagery](../capabilities/icons/index.md) for details on image handling and icon behavior."
 
 ---
 

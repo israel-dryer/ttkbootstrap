@@ -81,7 +81,7 @@ items = [
 ttk.DropdownButton(app, text="More", items=items).pack(pady=10)
 ```
 
-!!! link "See [Icons & Imagery](../../capabilities/icons-and-imagery.md) for icon sizing, DPI handling, and recoloring behavior."
+!!! link "See [Icons & Imagery](../../capabilities/icons/index.md) for icon sizing, DPI handling, and recoloring behavior."
 
 ### Handling item clicks
 
@@ -95,7 +95,7 @@ btn = ttk.DropdownButton(app, text="Actions", items=items).pack(pady=10)
 btn.on_item_click(lambda item: print("Clicked:", item.text))
 ```
 
-!!! link "See [Callbacks](../../capabilities/callbacks.md) for how ttkbootstrap command callbacks are structured."
+!!! link "See [Callbacks](../../capabilities/signals/callbacks.md) for how ttkbootstrap command callbacks are structured."
 
 ---
 
@@ -136,8 +136,8 @@ ttk.DropdownButton(app, text="button.file", items=items).pack()
 
 - [Design System → Variants](../../design-system/variants.md)
 - [Design System → Icons](../../design-system/icons.md)
-- [Icons & Imagery](../../capabilities/icons-and-imagery.md)
-- [Callbacks](../../capabilities/callbacks.md)
+- [Icons & Imagery](../../capabilities/icons/index.md)
+- [Callbacks](../../capabilities/signals/callbacks.md)
 - [State & Interaction](../../capabilities/state-and-interaction.md)
 - [Localization](../../capabilities/localization.md)
 

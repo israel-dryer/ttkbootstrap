@@ -72,7 +72,7 @@ bg.add(icon="redo", icon_only=True, command=lambda: print("Redo"))
 bg.add(icon="trash", icon_only=True, command=lambda: print("Delete"))
 ```
 
-!!! link "See [Icons & Imagery](../../capabilities/icons-and-imagery.md) for icon sizing, DPI handling, and recoloring behavior."
+!!! link "See [Icons & Imagery](../../capabilities/icons/index.md) for icon sizing, DPI handling, and recoloring behavior."
 
 ### Disabling a group
 
@@ -101,7 +101,7 @@ bg.add(text="Disabled", command=lambda: ...)
 
 - [Design System → Variants](../../design-system/variants.md)
 - [Design System → Icons](../../design-system/icons.md)
-- [Icons & Imagery](../../capabilities/icons-and-imagery.md)
+- [Icons & Imagery](../../capabilities/icons/index.md)
 - [State & Interaction](../../capabilities/state-and-interaction.md)
 
 ### API reference

@@ -197,8 +197,8 @@ This is the foundation for Goal 1.
 - [ ] **5E.** Same for layout / spacing.
 - [-] **5F.** Deferred. Library will be rebranded; migration story will be handled as part of that effort rather than as a standalone guide.
 - [ ] **5G.** Update widget-page examples to lead with signals; show Tk-vars as a "compatibility" alternative where relevant.
-- [~] **5H.** Standardize the canonical import (`import ttkbootstrap as ttk`) across all examples in guides and widgets. Fixed `scrollbar.md` (`tk.Text` → `ttk.Text`) and `menubutton.md` (`from tkinter import Menu` → `ttk.Menu`). Remaining `from ttkbootstrap import X` patterns in guides are intentional named imports (localization helpers `L`, `LV`, `MessageCatalog`, `IntlFormatter`; theming utilities; `Font`) — acceptable alongside `import ttkbootstrap as ttk`.
-- [ ] **5I.** Add `tools/check_doc_structure.py` — verifies each `docs/widgets/<category>/<widget>.md` has the required H2s from `docs/_template/widget-<category>-template.md`. Run in CI.
+- [x] **5H.** Standardize the canonical import (`import ttkbootstrap as ttk`) across all examples in guides and widgets. Fixed `scrollbar.md`, `menubutton.md`, and two examples in `localization.md` that used non-existent `set_locale`/`get_locale` functions (replaced with `MessageCatalog.locale()`). All remaining `from ttkbootstrap import X` patterns are intentional named imports (localization helpers `L`, `LV`, `MessageCatalog`, `IntlFormatter`; theming utilities; `Font`).
+- [x] **5I.** Added `tools/check_doc_structure.py` — maps 9 widget categories to their templates, checks every .md for required H2s, reports missing sections. Exit 0/1 for CI. Run: `python tools/check_doc_structure.py [--category NAME]`.
 
 ### Phase 6 — Images & screenshot pipeline (Goal 3)
 
@@ -213,7 +213,7 @@ This is the foundation for Goal 1.
 
 - [ ] **7A.** Add admonitions (`!!! note`, `!!! warning`) for platform-specific callouts in user-guide pages (not docstrings).
 - [x] **7B.** Created `docs/reference/deprecated.md` listing all 12 aliases from `_DEPRECATED_ALIASES` with replacement names and migration snippet. Added to nav in `zensical.toml` and `reference/index.md`.
-- [ ] **7C.** Final sweep: rebuild, click every nav item, search for "TODO" / "TBD" / "coming soon" in `docs/`.
+- [x] **7C.** Final sweep: searched "TODO/TBD/coming soon" — one hit in deprecated.md (stale migration guide link) removed. Fixed 11 broken internal capability links across 8 widget/guide files (icons-and-imagery → icons/index.md, signals.md → signals/index.md, callbacks.md → signals/callbacks.md, virtual-events.md → signals/virtual-events.md). Rendered rebuild deferred (requires display).
 
 ---
 

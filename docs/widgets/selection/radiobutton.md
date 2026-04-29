@@ -244,7 +244,7 @@ ttk.RadioButton(app, text="High", variable=choice, value="high").pack(anchor="w"
 app.mainloop()
 ```
 
-!!! link "See [Signals](../../capabilities/signals.md) for reactive programming patterns."
+!!! link "See [Signals](../../capabilities/signals/index.md) for reactive programming patterns."
 
 ---
 
@@ -260,7 +260,7 @@ app.mainloop()
 
 ### Framework concepts
 
-- [Signals](../../capabilities/signals.md) - reactive state management
+- [Signals](../../capabilities/signals/index.md) - reactive state management
 - [Localization](../../capabilities/localization.md) - text translation
 - [Design System](../../design-system/variants.md) - color tokens and variants
 

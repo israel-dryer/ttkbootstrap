@@ -90,7 +90,7 @@ menu.add_radiobutton(text="Sort by date", value="date", variable=sort_var)
 
 !!! link "See [State & Interaction](../../capabilities/state-and-interaction.md) for focus, hover, and disabled behavior across widgets."
 
-!!! link "See [Virtual Events](../../capabilities/virtual-events.md) for interaction events emitted by ttkbootstrap widgets."
+!!! link "See [Virtual Events](../../capabilities/signals/virtual-events.md) for interaction events emitted by ttkbootstrap widgets."
 
 ---
 
@@ -102,7 +102,7 @@ Menu items use the same icon system as other ttkbootstrap widgets.
 menu.add_command(text="Settings", icon="gear", command=on_settings)
 ```
 
-!!! link "See [Icons & Imagery](../../capabilities/icons.md) for icon sizing, DPI handling, and recoloring behavior."
+!!! link "See [Icons & Imagery](../../capabilities/icons/index.md) for icon sizing, DPI handling, and recoloring behavior."
 
 ---
 
@@ -182,8 +182,8 @@ menu.on_item_click(on_item_click)
 
 ### Framework concepts
 
-- [Icons & Imagery](../../capabilities/icons-and-imagery.md)
-- [Virtual Events](../../capabilities/virtual-events.md)
+- [Icons & Imagery](../../capabilities/icons/index.md)
+- [Virtual Events](../../capabilities/signals/virtual-events.md)
 - [State & Interaction](../../capabilities/state-and-interaction.md)
 - [Localization](../../capabilities/localization.md)
 
