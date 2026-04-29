@@ -58,6 +58,7 @@ class FloodGauge(ConfigureDelegationMixin, Canvas):
                 width if vertical).
             increment (int): Step size for value changes when using `step()` method
                 or during animations.
+            **kwargs: See `Other Parameters` below.
 
         Other Parameters
         ----------------

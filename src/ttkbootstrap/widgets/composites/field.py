@@ -159,6 +159,7 @@ class Field(EntryMixin, Frame):
             kind: Type of entry field to create. Either 'text' for text input
                 (uses TextEntryPart) or 'numeric' for numeric input (uses
                 NumberEntryPart). Default is 'text'.
+            **kwargs: See `Other Parameters` below.
 
         Other Parameters
         ----------------

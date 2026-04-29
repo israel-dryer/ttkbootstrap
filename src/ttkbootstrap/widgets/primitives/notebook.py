@@ -390,6 +390,7 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
         Args:
             tab (Tab): The tab to configure. Can be an index, key, or widget.
             option (str): The option to query.
+            **kwargs: See `Other Parameters` below.
 
         Other Parameters
         ----------------
