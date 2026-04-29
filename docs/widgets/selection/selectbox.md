@@ -10,9 +10,11 @@ It can optionally support **search filtering** and **custom (user-typed) values*
 Use `SelectBox` when you want a modern "select" experience (popup list + optional search) while keeping consistent
 field patterns like labels, messages, and validation.
 
-> _Image placeholder:_
-> `![SelectBox overview](../_img/widgets/selectbox/overview.png)`
-> Suggested shot: closed state + open popup list.
+<!--
+IMAGE: SelectBox overview
+Suggested: closed state + open popup list
+Theme variants: light / dark
+-->
 
 ---
 
@@ -219,9 +221,11 @@ When `enable_search=True`:
 
 - if `allow_custom_values=False`, closing the popup without explicit selection commits the first match
 
-> _Image placeholder:_
-> `![SelectBox filtering](../_img/widgets/selectbox/filtering.png)`
-> Suggested shot: typing "di" filters list to "Diana".
+<!--
+IMAGE: SelectBox filtering
+Suggested: typing "di" filters list to "Diana"
+Theme variants: light / dark
+-->
 
 ### Allowing custom values
 

@@ -125,7 +125,7 @@ Shipping a desktop app usually requires bundling:
 
 If you’re using ttkbootstrap’s built-in asset systems, the CLI/build integration should include the relevant folders.
 
-!!! link "See [Capabilities → Icons & Imagery](../capabilities/icons-and-imagery.md) for how icons and images behave at runtime (DPI, caching, recoloring)."
+!!! link "See [Capabilities → Icons & Images](../capabilities/icons/index.md) for how icons and images behave at runtime (DPI, caching, recoloring)."
 
 ---
 

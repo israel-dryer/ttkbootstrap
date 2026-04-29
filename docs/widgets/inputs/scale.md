@@ -9,9 +9,11 @@ title: Scale
 Unlike `NumericEntry`, which is optimized for precise typing, `Scale` is designed for **gesture-based adjustment** —
 ideal for volume, zoom, thresholds, and any setting where users benefit from immediate visual feedback.
 
-> _Image placeholder:_
-> `![Scale overview](../_img/widgets/scale/overview.png)`
-> Suggested shot: horizontal scale + value label + live update.
+<!--
+IMAGE: Scale overview
+Suggested: horizontal scale + value label + live update
+Theme variants: light / dark
+-->
 
 ---
 
