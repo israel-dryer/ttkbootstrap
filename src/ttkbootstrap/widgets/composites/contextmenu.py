@@ -1628,7 +1628,29 @@ class ContextMenu:
             hide_on_outside_click: bool = True,
             items: list[ContextMenuItem] = None,
             density: str = 'default',
+            trigger: str | None = 'right-click',
     ):
+        """Create a ContextMenu.
+
+        Args mirror the underlying backend; ``trigger`` is a dispatcher-level
+        convenience that auto-binds the menu to ``target``'s click event so
+        callers don't have to wire a ``bind('<Button-3>', show_at)`` handler
+        themselves. Set ``trigger=None`` (or ``'manual'``) to opt out and
+        manage activation in caller code (e.g. when the menu is built lazily).
+
+        Trigger values:
+            - ``'right-click'`` (default): portable right-click via
+              :func:`ttkbootstrap.runtime.utility.bind_right_click` —
+              ``<Button-3>`` on Win/Linux plus ``<Button-2>`` and
+              ``<Control-Button-1>`` on Aqua.
+            - ``'click'`` / ``'left-click'``: ``<Button-1>``.
+            - ``'double-click'``: ``<Double-Button-1>``.
+            - ``'shift-click'``: ``<Shift-Button-1>``.
+            - ``'ctrl-click'`` / ``'control-click'``: ``<Control-Button-1>``
+              (note that on Aqua this is the same as Ctrl+click for context
+              menus, since macOS uses Ctrl+click as a context-menu gesture).
+            - ``None`` or ``'manual'``: no auto-binding.
+        """
         winsys = None
         probe = master if master is not None else target
         if probe is not None:
@@ -1660,6 +1682,37 @@ class ContextMenu:
             items=items,
             density=density,
         )
+
+        # Auto-bind the activation gesture to the target widget. Skip when
+        # there's no target (no widget to bind on) or the caller explicitly
+        # opted out so existing widgets that manage their own triggers
+        # (OptionMenu, DropdownButton, Tableview, SideNav) keep working.
+        if target is not None and trigger not in (None, 'manual', 'none'):
+            self._bind_trigger(target, trigger)
+
+    def _bind_trigger(self, target: Widget, trigger: str) -> None:
+        """Bind ``target``'s activation event to show this menu at the click."""
+        from ttkbootstrap.runtime.utility import bind_right_click
+
+        def show_at(event):
+            self.show(position=(event.x_root, event.y_root))
+
+        normalized = trigger.lower().replace('_', '-')
+        if normalized in ('right-click', 'right'):
+            bind_right_click(target, show_at)
+        elif normalized in ('click', 'left-click', 'left'):
+            target.bind('<Button-1>', show_at, add='+')
+        elif normalized in ('double-click', 'double'):
+            target.bind('<Double-Button-1>', show_at, add='+')
+        elif normalized in ('shift-click', 'shift'):
+            target.bind('<Shift-Button-1>', show_at, add='+')
+        elif normalized in ('ctrl-click', 'control-click', 'ctrl', 'control'):
+            target.bind('<Control-Button-1>', show_at, add='+')
+        else:
+            raise ValueError(
+                f"Unknown trigger {trigger!r}. Use 'right-click', 'click', "
+                f"'double-click', 'shift-click', 'ctrl-click', or 'manual'."
+            )
 
     # Forward every other attribute (methods, configure delegates, etc.)
     # to the active backend. ``_impl`` itself is a real instance attribute

@@ -14,6 +14,7 @@ from ttkbootstrap.widgets.primitives import Button, CheckToggle, Frame, Label, S
 from ttkbootstrap.widgets.types import Master
 from ttkbootstrap.constants import BOTH, CENTER, LEFT, NSEW, PRIMARY, X, Y, YES
 from ttkbootstrap.core.localization import MessageCatalog
+from ttkbootstrap.runtime.utility import bind_right_click
 from ttkbootstrap.widgets.mixins import configure_delegate
 
 ttk = SimpleNamespace(
@@ -340,7 +341,7 @@ class Calendar(ttk.Frame):
             command=self._on_prev_year,
         )
         self._prev_year_btn.grid(row=0, column=0)
-        self._prev_year_btn.bind("<Button-3>", self._on_prev_year, "+")
+        bind_right_click(self._prev_year_btn, self._on_prev_year)
 
         self._prev_month_btn = ttk.Button(
             master=self._header_frame,
@@ -384,7 +385,7 @@ class Calendar(ttk.Frame):
             command=self._on_next_year,
         )
         self._next_year_btn.grid(row=0, column=4)
-        self._next_year_btn.bind("<Button-3>", self._on_next_year, "+")
+        bind_right_click(self._next_year_btn, self._on_next_year)
 
         # Preserve column widths so hiding buttons won't shift the title
         self._header_frame.update_idletasks()

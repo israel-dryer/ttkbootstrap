@@ -210,7 +210,7 @@ class ColorDropperDialog:
         # event binding
         self.toplevel.bind("<Motion>", self._on_mouse_motion, "+")
         self.toplevel.bind("<Button-1>", self._on_left_click, "+")
-        self.toplevel.bind("<Button-3>", self._on_right_click, "+")
+        utility.bind_right_click(self.toplevel, self._on_right_click)
         self.toplevel.bind("<Escape>", self._on_cancel, "+")
 
         if self.toplevel.winsys.lower() == 'x11':
