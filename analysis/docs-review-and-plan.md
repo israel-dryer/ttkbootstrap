@@ -178,8 +178,8 @@ This is the foundation for Goal 1.
 
 - [x] **4A.** New page: `platform/threading-and-async.md`. Covers worker thread + `Queue` pattern, `after_idle`, `after_repeat`, and `asyncio` integration trade-offs. Added to nav under Operations.
 - [x] **4B.** New page: `platform/platform-differences.md`. Single matrix-style page covering macOS / Windows / Linux differences (Mod key, ContextMenu trigger and backend, Toast position, App quit behavior, window_style, system appearance sync, state directory, native vs themed dialogs). Added to nav.
-- [ ] **4C.** New page: `platform/accessibility.md`. Keyboard navigation, focus order, screen reader status per OS, contrast, focus rings.
-- [ ] **4D.** Expand `platform/images-and-dpi.md` with per-OS subsections covering @2x assets, fractional scaling on Linux, Retina on macOS, DPI manifest on Windows.
+- [x] **4C.** New page: `platform/accessibility.md`. Keyboard navigation, tab order, focus rings (visual_focus system), contrast guidance, honest screen reader status per OS, practical checklist. Added to nav.
+- [x] **4D.** Expanded `platform/images-and-dpi.md` with per-OS sections: macOS Retina (OS-handled, @1x assets), Windows DPI manifest (auto via hdpi=True, Image utility for sizing), Linux X11 fractional scaling (explicit scaling param), Wayland note, scaling summary table, image caching and common pitfalls.
 - [ ] **4E.** Expand `platform/build-and-ship.md` with Windows MSI signing, Linux AppImage / `.deb` / Flatpak. (Or explicitly delegate, like the existing Briefcase handoff for macOS.)
 - [ ] **4F.** Expand `platform/debugging.md` with structured logging setup, uncaught exception handler, crash dialog pattern.
 - [x] **4G.** Added "Native vs custom dialogs" section to `docs/widgets/dialogs/index.md` explaining that ttkbootstrap dialogs are themed Tk windows (not OS-native) and directing users to `tkinter.filedialog` / `tkinter.colorchooser` for native behavior.

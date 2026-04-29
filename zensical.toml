@@ -152,6 +152,7 @@ nav = [
         { "Styling Internals" = "platform/ttk-styles-elements.md" },
         { "Images & DPI" = "platform/images-and-dpi.md" },
         { "Platform Differences" = "platform/platform-differences.md" },
+        { "Accessibility" = "platform/accessibility.md" },
         { "Windows" = "platform/windows.md" },
         { "Operations" = [
             { "Threading & Async" = "platform/threading-and-async.md" },
