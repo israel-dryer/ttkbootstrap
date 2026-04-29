@@ -1,4 +1,6 @@
-from tkinter import Toplevel, Widget, Misc
+from tkinter import Widget, Misc
+
+from ttkbootstrap.runtime.toplevel import Toplevel
 from typing import Any, Callable, Literal, Optional, Sequence, Tuple, Union
 
 from typing_extensions import TypedDict, Unpack
@@ -218,12 +220,19 @@ class Toast:
 
         # ------ Toplevel setup ------
 
-        top = Toplevel()
+        # ttkbootstrap.Toplevel applies MacWindowStyle 'help none' on Aqua
+        # via windowtype='tooltip', so toasts render chromeless on Mac
+        # (overrideredirect alone is silently skipped on Aqua per the
+        # project's BaseWindow guard). Win/Linux keep the overrideredirect
+        # path. Topmost + alpha are passed as kwargs so the Toplevel sets
+        # them at the right moment in its setup pipeline.
+        top = Toplevel(
+            overrideredirect=True,
+            topmost=True,
+            alpha=0.97,
+            windowtype='tooltip',
+        )
         top.minsize(400, 30)
-        top.attributes('-topmost', True)
-        top.attributes('-alpha', 0.97)
-        top.overrideredirect(True)
-        top.withdraw()
 
         # ------ Toast Layout ------
 
