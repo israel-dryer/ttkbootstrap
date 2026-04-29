@@ -1651,7 +1651,7 @@ class ContextMenu:
 
         Trigger values:
             - ``'right-click'`` (default): portable right-click via
-              :func:`ttkbootstrap.runtime.utility.bind_right_click` —
+              ``ttkbootstrap.runtime.utility.bind_right_click`` —
               ``<Button-3>`` on Win/Linux plus ``<Button-2>`` and
               ``<Control-Button-1>`` on Aqua.
             - ``'click'`` / ``'left-click'``: ``<Button-1>``.
