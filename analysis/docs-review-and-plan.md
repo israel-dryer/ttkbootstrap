@@ -186,11 +186,11 @@ This is the foundation for Goal 1.
 
 ### Phase 5 — User-guide cleanup
 
-- [ ] **5A.** Fill the four empty guides (or remove them from nav):
-  - `docs/guides/dialogs.md`
-  - `docs/guides/forms.md`
-  - `docs/guides/tables-and-lists.md`
-  - `docs/guides/toolbars.md`
+- [x] **5A.** Filled the four empty guides:
+  - `docs/guides/dialogs.md` — choosing a dialog, `.show()`/`.result` pattern, MessageBox/QueryBox facades, specialized pickers, FormDialog, custom Dialog subclassing.
+  - `docs/guides/forms.md` — inferred vs. explicit layout, FieldItem/GroupItem/TabsItem grammar, editor types, validation rules, footer buttons, FormDialog handoff.
+  - `docs/guides/tables-and-lists.md` — TableView/ListView/TreeView selection matrix, CRUD, filtering/sorting/grouping, custom row factories, DataSource integration.
+  - `docs/guides/toolbars.md` — `add_button`/`label`/`separator`/`spacer`/`widget`, spacer-based layout, density, custom titlebars via window controls, AppShell integration.
 - [ ] **5B.** Deduplicate icon documentation. Pick one canonical home per the *what / how / what-it-does* split (suggest: tokens in Design System, usage in Guides, framework behavior in Capabilities). Make the others link rather than restate.
 - [ ] **5C.** Same for typography.
 - [ ] **5D.** Same for theming.
