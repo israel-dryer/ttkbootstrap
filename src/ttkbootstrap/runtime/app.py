@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import tkinter
 from dataclasses import dataclass
-from typing import Literal, Optional, Sequence, TypedDict, Union
+from typing import Any, Callable, Literal, Optional, Sequence, TypedDict, Union
 
 from babel.core import UnknownLocaleError
 from babel.dates import get_date_format, get_time_format
@@ -549,6 +549,19 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
         if self.winsys == 'aqua' and self.settings.macos_quit_behavior == 'native':
             self._install_macos_quit_handlers()
 
+        # macOS-only polish: sync tk appname so the apple menu's first
+        # entry shows the app name (otherwise Tk uses the interpreter's
+        # name, typically "Python"), and bind Cmd+W to fire the standard
+        # WM_DELETE_WINDOW protocol so the close shortcut behaves like a
+        # close-button click.
+        if self.winsys == 'aqua':
+            if self.settings.app_name:
+                try:
+                    self.tk.call('tk', 'appname', self.settings.app_name)
+                except tkinter.TclError:
+                    pass
+            self.bind('<Command-w>', self._trigger_close, add='+')
+
         # Initialize the localization bridge so MessageCatalog.translate()
         # and <<LocaleChanged>> are available throughout the app.
         MessageCatalog.init(
@@ -687,6 +700,77 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
                 lambda _e: self.deiconify(),
                 add='+',
             )
+        except tkinter.TclError:
+            pass
+
+    def _trigger_close(self, _event=None) -> str:
+        """Invoke the registered WM_DELETE_WINDOW handler for this window.
+
+        Lets ``Cmd+W`` and any other "close this window" gesture flow
+        through the same code path as clicking the close button, so a
+        custom ``app.on_close(handler)`` is honored.
+        """
+        try:
+            handler_script = self.tk.call(
+                'wm', 'protocol', self._w, 'WM_DELETE_WINDOW',
+            )
+        except tkinter.TclError:
+            handler_script = ''
+        if handler_script:
+            try:
+                self.tk.eval(handler_script)
+            except tkinter.TclError:
+                pass
+        else:
+            # No handler registered — fall back to the platform-correct
+            # default for this app: withdraw on native macOS, destroy
+            # otherwise.
+            if (
+                self.winsys == 'aqua'
+                and self.settings.macos_quit_behavior == 'native'
+            ):
+                self.withdraw()
+            else:
+                self.destroy()
+        return 'break'
+
+    # ----- macOS apple menu hooks --------------------------------------------
+
+    def on_about(self, handler: Callable[[], Any]) -> None:
+        """Register a handler for the macOS "About <App>" menu item.
+
+        Tk on Aqua calls ``::tk::mac::standardAboutPanel`` when the user
+        picks About from the application menu. This method overrides
+        that proc with the supplied Python callable. No-op on Win/Linux,
+        where there's no equivalent system menu.
+
+        Args:
+            handler: Zero-argument callable invoked when the user picks
+                About from the apple menu.
+        """
+        if self.winsys != 'aqua':
+            return
+        try:
+            self.tk.createcommand('::tk::mac::standardAboutPanel', handler)
+        except tkinter.TclError:
+            pass
+
+    def on_preferences(self, handler: Callable[[], Any]) -> None:
+        """Register a handler for the macOS "Preferences…" menu item.
+
+        Tk on Aqua calls ``::tk::mac::ShowPreferences`` when the user picks
+        Preferences (Cmd+,) from the application menu. This method
+        overrides that proc with the supplied Python callable. No-op on
+        Win/Linux.
+
+        Args:
+            handler: Zero-argument callable invoked when the user picks
+                Preferences from the apple menu.
+        """
+        if self.winsys != 'aqua':
+            return
+        try:
+            self.tk.createcommand('::tk::mac::ShowPreferences', handler)
         except tkinter.TclError:
             pass
 
