@@ -1,3 +1,4 @@
+"""Style engine and theme management for ttkbootstrap."""
 # """Style engine and theme management for ttkbootstrap.
 #
 # This module provides the core styling system for ttkbootstrap, managing themes,

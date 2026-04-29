@@ -1,5 +1,4 @@
-"""
-Localization integration for ttkbootstrap.
+"""Localization integration for ttkbootstrap.
 
 Exports MessageCatalog, which bridges Tcl msgcat lookups with compiled
 gettext (.mo) catalogs built via Babel.

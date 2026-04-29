@@ -1,3 +1,4 @@
+"""Built-in validation rule implementations."""
 import re
 from typing import Callable
 
@@ -19,6 +20,7 @@ class ValidationRule:
         params (dict): Additional parameters specific to the rule type
             (e.g., `min`/`max` for `'stringLength'`, `pattern` for `'pattern'`,
             `func` for `'custom'`).
+
     """
 
     def __init__(
@@ -27,15 +29,16 @@ class ValidationRule:
             message: str = "",
             **kwargs
     ):
-        """Create a validation rule.
+        r"""Create a validation rule.
 
         Args:
             rule_type: The type of validation to apply.
             message: Custom error message. If empty, a sensible default is used.
             **kwargs: Rule-specific parameters.  Pass `trigger` to override the
                 default trigger policy; all other keys are stored in `params`
-                (e.g., `min=3, max=20` for `'stringLength'`, `pattern=r'\\d+'`
+                (e.g., `min=3, max=20` for `'stringLength'`, `pattern=r'\d+'`
                 for `'pattern'`, `func=callable` for `'custom'`).
+
         """
         self.type = rule_type
         self.message = message
@@ -51,6 +54,7 @@ class ValidationRule:
         Returns:
             A ValidationResult with `is_valid=True` on success or `is_valid=False`
             with an error message on failure.
+
         """
         msg = self.message or self._default_message()
 
