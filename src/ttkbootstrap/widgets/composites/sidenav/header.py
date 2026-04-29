@@ -11,6 +11,8 @@ from ttkbootstrap.widgets.types import Master
 
 
 class SideNavHeaderKwargs(TypedDict, total=False):
+    """Keyword arguments for SideNavHeader."""
+
     text: str
     # Frame options
     padding: Any
@@ -32,6 +34,7 @@ class SideNavHeader(Frame):
         nav.add_item('photos', text='Photos', icon='image')
         nav.add_item('music', text='Music', icon='music-note')
         ```
+
     """
 
     DEFAULT_PADDING = (8, 20, 8, 4)
@@ -50,6 +53,7 @@ class SideNavHeader(Frame):
             master (Master | None): Parent widget.
             text (str): The header text to display.
             **kwargs: Additional arguments passed to Frame.
+
         """
         self._text = text
 

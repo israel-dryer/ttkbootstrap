@@ -1,3 +1,4 @@
+"""LabeledScale widget — a Scale with a live value label."""
 import tkinter as tk
 from typing import Any, Literal
 
@@ -18,6 +19,7 @@ class LabeledScale(Frame):
     Attributes:
         scale (Scale): The underlying Scale widget.
         label (Label): The Label widget displaying the current value.
+
     """
 
     def __init__(
@@ -57,6 +59,7 @@ class LabeledScale(Frame):
             accent: Accent token to apply to the scale.
             **kwargs: Additional keyword arguments passed to the Frame constructor.
                 A padding of 2 is forced to provide minimal spacing.
+
         """
         self._compound = compound
         self._dtype = dtype
@@ -128,6 +131,7 @@ class LabeledScale(Frame):
 
         Returns:
             The current value of the scale as an int or float.
+
         """
         return self._variable.get()
 
@@ -137,6 +141,7 @@ class LabeledScale(Frame):
 
         Args:
             value: The new value to set.
+
         """
         self._variable.set(value)
 

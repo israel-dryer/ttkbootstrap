@@ -1,3 +1,4 @@
+"""ToolTip widget for hover-based contextual help."""
 import tkinter as tk
 from tkinter import Misc
 from types import SimpleNamespace
@@ -18,6 +19,8 @@ ttk = SimpleNamespace(
 
 
 class ToolTip:
+    """A tooltip popup that displays text when hovering over a widget."""
+
     # Position offset from mouse pointer
     _MOUSE_OFFSET_X = 25
     _MOUSE_OFFSET_Y = 10
@@ -89,6 +92,7 @@ class ToolTip:
             **kwargs: Additional keyword arguments passed to the Toplevel window
                 constructor. Common options include alpha, topmost, etc. The arguments
                 overrideredirect, master, and windowtype are set automatically.
+
         """
         # Configuration
         self._widget = widget
@@ -228,6 +232,7 @@ class ToolTip:
 
         Returns:
             Tuple of (x, y) screen coordinates for the tooltip.
+
         """
         x = self._widget.winfo_pointerx() + self._MOUSE_OFFSET_X
         y = self._widget.winfo_pointery() + self._MOUSE_OFFSET_Y

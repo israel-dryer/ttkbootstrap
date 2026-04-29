@@ -20,6 +20,8 @@ from ttkbootstrap.runtime.app import App
 
 
 class AppShellKwargs(TypedDict, total=False):
+    """Keyword arguments for AppShell."""
+
     title: str
     theme: str
     size: tuple[int, int]
@@ -90,6 +92,7 @@ class AppShell(App):
                 ('expanded', 'compact', or 'minimal'). Default 'expanded'.
             nav_accent: Accent color for navigation selection. Default 'primary'.
             **kwargs: Additional arguments passed to App.
+
         """
         # Frameless mode: remove OS chrome and enable toolbar controls
         if frameless:
@@ -254,6 +257,7 @@ class AppShell(App):
         Raises:
             RuntimeError: If `show_nav=False` was set. Use
                 `shell.pages.add()` directly instead.
+
         """
         if self._nav is None:
             raise RuntimeError(
@@ -316,6 +320,7 @@ class AppShell(App):
 
         Returns:
             SideNavGroup: The created group.
+
         """
         if self._nav is None:
             raise RuntimeError("Cannot add groups when show_nav=False.")
@@ -332,6 +337,7 @@ class AppShell(App):
 
         Returns:
             SideNavHeader: The created header.
+
         """
         if self._nav is None:
             raise RuntimeError("Cannot add headers when show_nav=False.")
@@ -347,6 +353,7 @@ class AppShell(App):
 
         Returns:
             SideNavSeparator: The created separator.
+
         """
         if self._nav is None:
             raise RuntimeError("Cannot add separators when show_nav=False.")
@@ -360,6 +367,7 @@ class AppShell(App):
         Args:
             key: The page key to navigate to.
             data: Optional data to pass to the page.
+
         """
         if self._navigating:
             return
@@ -383,6 +391,7 @@ class AppShell(App):
         Args:
             key: The page key to navigate to.
             data: Optional data to pass to the page.
+
         """
         self.navigate(key, data=data)
 
@@ -396,6 +405,7 @@ class AppShell(App):
 
         Returns:
             Binding identifier for use with `off_page_changed()`.
+
         """
         return self._pages.on_page_changed(callback)
 
@@ -404,6 +414,7 @@ class AppShell(App):
 
         Args:
             bind_id: The binding identifier returned by `on_page_changed()`.
+
         """
         self._pages.off_page_changed(bind_id)
 

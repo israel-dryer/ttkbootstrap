@@ -10,6 +10,8 @@ from ttkbootstrap.widgets.types import Master
 
 
 class SideNavSeparatorKwargs(TypedDict, total=False):
+    """Keyword arguments for SideNavSeparator."""
+
     # Frame options
     padding: Any
     width: int
@@ -30,6 +32,7 @@ class SideNavSeparator(Frame):
         nav.add_separator()  # Creates SideNavSeparator
         nav.add_item('settings', text='Settings', icon='gear')
         ```
+
     """
 
     DEFAULT_PADDING = (0, 4, 0, 4)
@@ -40,6 +43,7 @@ class SideNavSeparator(Frame):
         Args:
             master (Master | None): Parent widget.
             **kwargs: Additional arguments passed to Frame.
+
         """
         # Default padding for visual separation
         kwargs.setdefault('padding', self.DEFAULT_PADDING)

@@ -28,6 +28,7 @@ class Accordion(Frame):
     !!! note "Events"
         - `<<AccordionChange>>`: Fired when the expanded section(s) change.
           `event.data = {'expanded': list[Expander]}`
+
     """
 
     def __init__(
@@ -53,8 +54,8 @@ class Accordion(Frame):
             accent (str): Accent token for the expanders (e.g., 'success', 'primary').
             variant (str): Variant for the expanders (e.g., 'solid', 'default').
             **kwargs: Additional arguments passed to Frame.
-        """
 
+        """
         if 'show_border' in kwargs:
             kwargs.setdefault('padding', 3)  # required to avoid clipping corners
 
@@ -97,6 +98,7 @@ class Accordion(Frame):
 
         Raises:
             ValueError: If an expander with the same key already exists.
+
         """
         # Auto-generate key if not provided
         if key is None:
@@ -167,6 +169,7 @@ class Accordion(Frame):
             The expander widget is destroyed. If allow_collapse_all=False and
             removing would leave no expanders, or would remove the only
             open expander, another expander will be expanded automatically.
+
         """
         if key not in self._expanders:
             raise KeyError(f"No expander with key '{key}'")
@@ -255,6 +258,7 @@ class Accordion(Frame):
 
         Raises:
             KeyError: If no expander with the given key exists.
+
         """
         if key not in self._expanders:
             raise KeyError(f"No expander with key '{key}'")
@@ -265,6 +269,7 @@ class Accordion(Frame):
 
         Returns:
             A tuple of all Expander instances in the order they were added.
+
         """
         return tuple(self._expanders[key] for key in self._expander_order)
 
@@ -273,6 +278,7 @@ class Accordion(Frame):
 
         Returns:
             A tuple of all expander keys in the order they were added.
+
         """
         return tuple(self._expander_order)
 
@@ -286,6 +292,7 @@ class Accordion(Frame):
 
         Returns:
             If option is provided, returns the value of that option.
+
         """
         expander = self.item(key)
         if option is not None:
@@ -297,6 +304,7 @@ class Accordion(Frame):
 
         Args:
             key (str): Key of the expander to expand.
+
         """
         if key in self._expanders:
             self._expanders[key].expand()
@@ -310,6 +318,7 @@ class Accordion(Frame):
         Note:
             If allow_collapse_all=False and this is the only open expander,
             this call will be ignored.
+
         """
         if key in self._expanders:
             exp = self._expanders[key]
@@ -373,6 +382,7 @@ class Accordion(Frame):
 
         Returns:
             Bind ID that can be passed to `off_accordion_changed` to remove this callback.
+
         """
         return self.bind('<<AccordionChange>>', callback, add='+')
 
@@ -381,5 +391,6 @@ class Accordion(Frame):
 
         Args:
             bind_id (str | None): Bind ID returned by `on_accordion_changed`. If None, unbinds all.
+
         """
         self.unbind('<<AccordionChange>>', bind_id)
