@@ -202,11 +202,19 @@ This is the foundation for Goal 1.
 
 ### Phase 6 — Images & screenshot pipeline (Goal 3)
 
-- [ ] **6A.** Decide image policy. Recommended: every widget page that renders something visible has at least one screenshot.
-- [ ] **6B.** Generalize `docs_scripts/widgets_*.py` and `widget_*.py` into a single `docs_scripts/render.py` driven by a manifest (YAML or TOML). Replace per-widget scripts with manifest entries.
-- [ ] **6C.** Add a `make screenshots` (or `ttkb screenshots`) command.
+- [x] **6A.** Image policy locked 2026-04-29: every widget page that renders something visible has a light + dark screenshot pair. "Visible" = the widget is the subject of the page (not abstract bases or section indices). Pages whose appearance is trivially derivable from a sibling can reuse with a one-line note. Light/dark map to the canonical `docs-light` / `docs-dark` themes (registered at `src/ttkbootstrap/runtime/app.py:302-303`).
+- [x] **6B.** Done.
+  - Manifest at `docs_scripts/screenshots.toml` (26 entries: button × 7, checkbutton × 5, radiobutton × 2, textentry × 3, dateentry × 3, numericentry × 3, spinnerentry × 3); runner at `docs_scripts/render.py`; per-widget factories under `docs_scripts/shots/<widget>.py`.
+  - Each `[[shots]]` entry = one slug × {light, dark} → `docs/assets/<theme>/<slug>.png`. Themes map `light`/`dark` to canonical `docs-light`/`docs-dark`. Opt-out via `themes = ["light"]`.
+  - Factory contract: `def factory(parent: Widget) -> Optional[Callable]`. `parent` is a renderer-supplied padded `Frame`; the optional return value is a `finalize` hook the renderer invokes right before grab so visual state flags (`state(["focus"])`, `state(["hover"])`) survive WM focus events. Use `widget.focus_set()` for true keyboard focus when a focus ring is desired.
+  - Capture flow per shot: `App(theme=…, hdpi=False)` → build via factory → `geometry("+200+200")` → `deiconify()` → `lift()` → `attributes("-topmost", True)` → 500 ms `after()` → run `finalize` → `update()` → `ImageGrab.grab(bbox=capture_frame.winfo_root*)` → save.
+  - Architecture decisions and rationale: NOT `override_redirect=True` (kills WM focus event propagation, flattens focus/hover visuals); NOT `focus_force()` (steals focus from widgets we manually flagged); ONE subprocess per `(slug, theme)` via internal `--_render-one` flag (Tk multi-instance state leaks named fonts and style registrations across `App.destroy()`/recreate). Single-process runs fail on the 2nd shot.
+  - Validation: ran all 7 button shots (light + 1 dark spot-check) and one shot per other widget type (checkbutton, radiobutton, textentry, dateentry, numericentry, spinnerentry) with clean output, correct theme, no titlebar/bleed-through, state flags applied (verified by reading `widget.state()` at capture time).
+  - Limitation: solid primary `state(["focus"])` produces no visible focus ring in current `docs-light` theme (style builder defines distinct focus images in `style/builders/button.py:69-73`, but the docs-light theme's images don't visually differentiate). State mechanism in renderer is correct; visual is a v2 theme behavior to investigate separately.
+  - Deferred until after 6E parity sweep: deletion of original `docs_scripts/widget*.py` and `widgets_*.py` (kept side-by-side until generated assets are confirmed equivalent), and a `widgets-dateentry-popup.png` factory that programmatically opens the calendar dropdown.
+- [ ] **6C.** Add a `make screenshots` (or `ttkb screenshots`) command. Blocked on 6B completion.
 - [ ] **6D.** Add a CI check: every `docs/widgets/**/*.md` that references an image must have that image on disk. Should have caught the `_img/` breakage.
-- [ ] **6E.** Generate screenshots for the 67 widget pages currently without them. Replace the 15 `IMAGE:` placeholders.
+- [ ] **6E.** Generate screenshots for the 67 widget pages currently without them. Replace the 15 `IMAGE:` placeholders. Blocked on 6B completion.
 - [ ] **6F.** Extend MP4 / GIF use to widgets that animate: Toast, Tooltip, Accordion, Expander, PageStack, FloodGauge, Meter.
 
 ### Phase 7 — Polish
@@ -325,6 +333,8 @@ Date — Decision — Rationale.
 - 2026-04-29 — Phase 2A landed. `ruff` `D` rules with Google convention enforced via `[tool.ruff]` in `pyproject.toml`. Currently-dirty public-surface files use per-file ignores; each entry is removed when that file's docstrings conform. Internal directories (`builders/`, `mixins/`, `internal/`, `parts/`, `capabilities/`, `cli/`, `assets/`) are blanket-ignored. New files in non-ignored directories are linted from day 1.
 - 2026-04-29 — `Tabs` and `TabView` promoted to public API exports per user direction (consistent with peer layout widgets `PageStack`, `Notebook`, `SideNav`, `Toolbar`). Added to `api/widgets.py` and `__init__.py` `_MODULE_EXPORTS` + TYPE_CHECKING block.
 - 2026-04-29 — `TK_WIDGETS` / `TTK_WIDGETS` left public but with no dedicated reference page. Same call applies to Tk re-exports (`Tk`, `Variable`, `StringVar`, etc.) — canonical Python docs already cover them; a redundant page in our reference is editorial work for little value.
+- 2026-04-29 — Phase 6A image policy is mandatory pair: every widget page that renders something visible has a light + dark screenshot. Themes are the canonical `docs-light` / `docs-dark` (already platform defaults). Opt-out (`themes = ["light"]`) only for genuinely theme-agnostic assets.
+- 2026-04-29 — Phase 6B render architecture: manifest-driven `docs_scripts/render.py` with per-widget factory modules. One subprocess per (slug × theme) for clean Tk lifecycle isolation; `App(override_redirect=True)` to drop the titlebar from the bbox; brief mainloop with a 500 ms `after()` capture for reliable Cocoa compositing. Capture target is a renderer-supplied padded `parent` Frame so the bbox never spills into adjacent windows.
 
 ---
 

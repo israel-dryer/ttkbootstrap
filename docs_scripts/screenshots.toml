@@ -1,0 +1,161 @@
+# Screenshot manifest for ttkbootstrap docs.
+#
+# Each [[shots]] entry produces one PNG per requested theme at:
+#   docs/assets/<theme>/<slug>.png
+#
+# Render via:
+#   python -m docs_scripts.render
+#   python -m docs_scripts.render --slug <slug>
+#   python -m docs_scripts.render --page widgets/actions/button.md
+#
+# Fields:
+#   slug    - filename stem; must be unique across the manifest.
+#   page    - docs page that references this image; used by the 6D CI check.
+#   factory - "module:attr" pointing at a callable(app) -> Widget. The
+#             returned widget's bounding box is captured.
+#   themes  - which theme variants to render; default ["light", "dark"].
+#             Use ["light"] (or similar) only for genuinely theme-agnostic
+#             assets such as logos.
+#   padding - px around the returned widget; default 16.
+
+[[shots]]
+slug = "widgets-button-solid"
+page = "widgets/actions/button.md"
+factory = "docs_scripts.shots.button:solid"
+
+[[shots]]
+slug = "widgets-button-outline"
+page = "widgets/actions/button.md"
+factory = "docs_scripts.shots.button:outline"
+
+[[shots]]
+slug = "widgets-button-ghost"
+page = "widgets/actions/button.md"
+factory = "docs_scripts.shots.button:ghost"
+
+[[shots]]
+slug = "widgets-button-link"
+page = "widgets/actions/button.md"
+factory = "docs_scripts.shots.button:link"
+
+[[shots]]
+slug = "widgets-button-text"
+page = "widgets/actions/button.md"
+factory = "docs_scripts.shots.button:text"
+
+[[shots]]
+slug = "widgets-button-icons"
+page = "widgets/actions/button.md"
+factory = "docs_scripts.shots.button:icons"
+
+[[shots]]
+slug = "widgets-button-colors"
+page = "widgets/actions/button.md"
+factory = "docs_scripts.shots.button:colors"
+
+# ----- CheckButton ---------------------------------------------------------
+
+[[shots]]
+slug = "widgets-checkbutton-states"
+page = "widgets/selection/checkbutton.md"
+factory = "docs_scripts.shots.checkbutton:states"
+
+[[shots]]
+slug = "widgets-checkbutton-indeterminate"
+page = "widgets/selection/checkbutton.md"
+factory = "docs_scripts.shots.checkbutton:indeterminate"
+
+[[shots]]
+slug = "widgets-checkbutton-toggle"
+page = "widgets/selection/checkbutton.md"
+factory = "docs_scripts.shots.checkbutton:toggle"
+
+[[shots]]
+slug = "widgets-checkbutton-labeled"
+page = "widgets/selection/checkbutton.md"
+factory = "docs_scripts.shots.checkbutton:labeled"
+
+[[shots]]
+slug = "widgets-checkbutton-colors"
+page = "widgets/selection/checkbutton.md"
+factory = "docs_scripts.shots.checkbutton:colors"
+
+# ----- RadioButton ---------------------------------------------------------
+
+[[shots]]
+slug = "widgets-radiobutton-states"
+page = "widgets/selection/radiobutton.md"
+factory = "docs_scripts.shots.radiobutton:states"
+
+[[shots]]
+slug = "widgets-radiobutton-colors"
+page = "widgets/selection/radiobutton.md"
+factory = "docs_scripts.shots.radiobutton:colors"
+
+# ----- TextEntry -----------------------------------------------------------
+
+[[shots]]
+slug = "widgets-textentry-states"
+page = "widgets/inputs/textentry.md"
+factory = "docs_scripts.shots.textentry:states"
+
+[[shots]]
+slug = "widgets-textentry-addons"
+page = "widgets/inputs/textentry.md"
+factory = "docs_scripts.shots.textentry:addons"
+
+[[shots]]
+slug = "widgets-textentry-localization"
+page = "widgets/inputs/textentry.md"
+factory = "docs_scripts.shots.textentry:localization"
+
+# ----- DateEntry -----------------------------------------------------------
+
+[[shots]]
+slug = "widgets-dateentry-states"
+page = "widgets/inputs/dateentry.md"
+factory = "docs_scripts.shots.dateentry:states"
+
+[[shots]]
+slug = "widgets-dateentry-addons"
+page = "widgets/inputs/dateentry.md"
+factory = "docs_scripts.shots.dateentry:addons"
+
+[[shots]]
+slug = "widgets-dateentry-formats"
+page = "widgets/inputs/dateentry.md"
+factory = "docs_scripts.shots.dateentry:formats"
+
+# ----- NumericEntry --------------------------------------------------------
+
+[[shots]]
+slug = "widgets-numericentry-states"
+page = "widgets/inputs/numericentry.md"
+factory = "docs_scripts.shots.numericentry:states"
+
+[[shots]]
+slug = "widgets-numericentry-addons"
+page = "widgets/inputs/numericentry.md"
+factory = "docs_scripts.shots.numericentry:addons"
+
+[[shots]]
+slug = "widgets-numericentry-formats"
+page = "widgets/inputs/numericentry.md"
+factory = "docs_scripts.shots.numericentry:formats"
+
+# ----- SpinnerEntry --------------------------------------------------------
+
+[[shots]]
+slug = "widgets-spinnerentry-states"
+page = "widgets/inputs/spinnerentry.md"
+factory = "docs_scripts.shots.spinnerentry:states"
+
+[[shots]]
+slug = "widgets-spinnerentry-addons"
+page = "widgets/inputs/spinnerentry.md"
+factory = "docs_scripts.shots.spinnerentry:addons"
+
+[[shots]]
+slug = "widgets-spinnerentry-formats"
+page = "widgets/inputs/spinnerentry.md"
+factory = "docs_scripts.shots.spinnerentry:formats"
