@@ -402,8 +402,7 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
             image (PhotoImage): The image to display in the tab.
             underline (int): Index of character to underline in the label.
 
-        Returns
-        -------
+        Returns:
             Any: The value of option if specified, otherwise None.
 
         """
