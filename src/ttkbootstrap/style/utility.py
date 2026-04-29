@@ -1,3 +1,4 @@
+"""Style utility functions for ttkbootstrap."""
 from colorsys import hls_to_rgb, rgb_to_hls
 from dataclasses import dataclass
 from pathlib import Path
@@ -20,6 +21,7 @@ class ElementMeta:
 
     All values are scaled for the current display DPI.
     """
+
     width: int
     height: int
     border: Union[int, Tuple[int, ...]]
@@ -37,6 +39,7 @@ class ElementMeta:
 @dataclass
 class ElementImageResult:
     """Result of recolor_element_image containing the image and its metadata."""
+
     image: PhotoImage
     meta: ElementMeta
 
@@ -71,6 +74,7 @@ def _get_element_info(key: str) -> dict | None:
 
     Returns:
         Dict with file, width, height, border, padding or None if not found.
+
     """
     manifest = _load_manifest()
     images = manifest.get("images", {})
@@ -82,6 +86,7 @@ LUM = 100
 
 
 def create_box_image(width: int, height: int, color: str):
+    """Create a solid-color rectangular RGBA image."""
     cache_key = f"{width}{height}{color}"
     cached = ImageService.get_cached(cache_key)
     if cached is not None:
@@ -101,6 +106,7 @@ def create_rounded_border_image(*,
         fill='#ffffff',
         stroke='#000000'
 ):
+    """Create a rounded-border RGBA image."""
     cache_key = f"{size}{radius}{thickness}{fill}{stroke}"
     cached = ImageService.get_cached(cache_key)
     if cached is not None:
@@ -223,8 +229,7 @@ def update_hsl_value(
         color, hue=None, sat=None, lum=None,
         in_model: ColorModel = 'hsl',
         out_model: ColorModel = 'hsl'):
-    """Change hue, saturation, or luminosity of the color based on the hue,
-    sat, lum parameters provided.
+    """Change the hue, saturation, or luminosity of a color.
 
     **Parameters**
 
@@ -257,8 +262,7 @@ def update_hsl_value(
 def contrast_color(
         color, model: ColorModel, dark_color='#000',
         light_color='#fff'):
-    """The best matching contrasting light or dark color for the given color.
-    https://stackoverflow.com/questions/1855884/determine-font-color-based-on-background-color
+    """Return the best contrasting light or dark color for the given color.
 
     **Parameters**
 
@@ -284,18 +288,7 @@ def contrast_color(
 
 
 def conform_color_model(color, model: ColorModel):
-    """Conform the color values to a string that can be interpreted by the
-    `PIL.ImageColor.getrgb method`.
-
-    **Parameters**
-
-    - `color` (Any): The color value to conform.
-    - `model` (Literal['rgb', 'hsl', 'hex']): The model of the color to evaluate (rgb, hex, hsl).
-
-    **Returns**
-
-    `str` — A color value string that can be used as a parameter in the PIL.ImageColor.getrgb method.
-    """
+    """Conform a color value to a string interpretable by PIL.ImageColor.getrgb."""
     if model == 'hsl':
         hue = clamp(color[0], 0, HUE)
         sat = clamp(color[1], 0, SAT)
@@ -331,14 +324,14 @@ def make_transparent(alpha, foreground, background='#fff'):
 
 
 def open_image(name: str) -> Image.Image:
-    """
-    Load a white-layout image from file.
+    """Load a white-layout image from file.
 
     Args:
         name: The asset name without extension (e.g. "add" loads "add.png")
 
     Returns:
         A Pillow RGBA Image object.
+
     """
     path = ASSETS_DIR / f"{name}.png"
     return Image.open(path).convert("RGBA")
@@ -352,6 +345,7 @@ def _open_element_image(filename: str) -> Image.Image:
 
     Returns:
         A Pillow RGBA Image object.
+
     """
     path = ELEMENTS_DIR / filename
     return Image.open(path).convert("RGBA")
@@ -369,6 +363,7 @@ def _scale_border_or_padding(
 
     Returns:
         Scaled value(s) as int or tuple
+
     """
     if isinstance(value, int):
         return max(1, int(value * scale + 0.5)) if value > 0 else 0
@@ -426,6 +421,7 @@ def recolor_element_image(
         ...     border=result.meta.border,
         ...     padding=result.meta.padding
         ... )
+
     """
     # Get element info from manifest
     info = _get_element_info(key)
@@ -579,6 +575,7 @@ def mix_colors(color1: str, color2: str, weight: float) -> str:
 
     Returns:
         A hex color string representing the mixed result.
+
     """
     r1, g1, b1 = ImageColor.getrgb(color1)
     r2, g2, b2 = ImageColor.getrgb(color2)
@@ -599,6 +596,7 @@ def tint_color(color: str, base_weight: float) -> str:
 
     Returns:
         A tinted hex color string.
+
     """
     return mix_colors(color, "#ffffff", 1 - base_weight)
 
@@ -612,6 +610,7 @@ def shade_color(color: str, base_weight: float) -> str:
 
     Returns:
         A shaded hex color string.
+
     """
     return mix_colors(color, "#000000", 1 - base_weight)
 
@@ -624,6 +623,7 @@ def relative_luminance(hex_color: str) -> float:
 
     Returns:
         The luminance value from 0 (black) to 1 (white).
+
     """
     r, g, b = [x / 255 for x in ImageColor.getrgb(hex_color)]
 
@@ -635,6 +635,7 @@ def relative_luminance(hex_color: str) -> float:
 
 
 def contrast_ratio(rgb1: tuple[int, int, int], rgb2: tuple[int, int, int]) -> float:
+    """Return the WCAG contrast ratio between two RGB colors."""
     def rel_luminance(r: int, g: int, b: int) -> float:
         def channel(c): return (c / 255.0) ** 2.2
 
@@ -670,6 +671,7 @@ def hsl_to_hex(h: float, s: float, l: float) -> str:
 
     Returns:
         Hex color string (e.g., '#ff0000')
+
     """
     # Normalize to 0-1 range
     h_norm = h / 360.0

@@ -1,3 +1,4 @@
+"""Theme provider and registry for ttkbootstrap."""
 from __future__ import annotations
 
 import json
@@ -41,6 +42,7 @@ SHADE_WEIGHTS = {
 
 
 def register_user_theme(name, path):
+    """Register a user-defined theme from a file path."""
     data = load_user_defined_theme(path)
     _registered_themes[name] = data
 
@@ -150,6 +152,7 @@ def load_user_defined_theme(path):
 
 
 def load_package_theme(filename: str, package="ttkbootstrap.assets.themes"):
+    """Load a theme JSON file from the package assets."""
     with resources.files(package).joinpath(filename).open("r", encoding="utf-8") as f:
         return json.load(f)
 
@@ -168,6 +171,7 @@ def color_spectrum(token, value):
 
     Returns:
         Dict mapping spectrum names to hex colors
+
     """
     result = {}
 
@@ -204,6 +208,7 @@ class ThemeProvider:
         return cls._instance
 
     def __init__(self, name: str = "dark"):
+        """Initialize the ThemeProvider with the named theme."""
         # Prevent reinitialization on subsequent ThemeProvider() calls
         if getattr(self, "_initialized", False):
             if name and name != self.name:
@@ -223,17 +228,7 @@ class ThemeProvider:
     # ----- Theme metadata helpers -------------------------------------------------
 
     def list_themes(self) -> list[dict[str, str]]:
-        """Return a list of available themes with names and display names.
-
-        The result is a list of dictionaries in the form:
-
-        ```python
-        {"name": "cosmo", "display_name": "Cosmo"}
-        ```
-
-        Aliases such as `\"light\"` and `\"dark\"` are not included; only the
-        canonical theme entries loaded into the provider are returned.
-        """
+        """Return a list of available themes with names and display names."""
         themes: list[dict[str, str]] = []
         seen: set[str] = set()
 
@@ -272,15 +267,17 @@ class ThemeProvider:
         return themes
 
     def use(self, name):
+        """Switch to a different theme by name."""
         self._theme = get_theme(name)
         self.build_theme_colors()
 
     @property
     def raw(self):
-        """Return the raw source dictionary"""
+        """Return the raw theme source dictionary."""
         return self._theme
 
     def build_theme_colors(self):
+        """Build and cache the resolved color palette for the active theme."""
         colors = {}
         colors.update(
             foreground=self.raw.get('foreground'),
@@ -407,26 +404,27 @@ class ThemeProvider:
 
     @property
     def name(self):
-        """The name of the theme"""
+        """The name of the theme."""
         return self.raw.get('name')
 
     @property
     def display_name(self):
-        """The display name of the theme"""
+        """The display name of the theme."""
         return self.raw.get('display_name')
 
     @property
     def mode(self):
-        """Returns the color mode 'light' or 'dark'"""
+        """The color mode: 'light' or 'dark'."""
         return self.raw.get('mode')
 
     @property
     def colors(self):
+        """The resolved color palette for the active theme."""
         return self._colors
 
     @property
     def typography(self):
-        """Returns the current typography configuration as FontTokens"""
+        """The current typography configuration as FontTokens."""
         from ttkbootstrap.style.typography import Typography
         return Typography.all()
 
@@ -439,7 +437,7 @@ class ThemeProvider:
         return self.raw.get('semantic')
 
     def __repr__(self):
-        """Return a string representation of the current theme"""
+        """Return a string representation of the current theme."""
         return f"<Theme name={self.name} mode={self.mode}>"
 
 
@@ -454,6 +452,7 @@ def use_theme(name: str = None) -> ThemeProvider:
 
     Returns:
         Global ThemeProvider instance.
+
     """
     # If instance doesn't exist yet, create it with default theme
     if ThemeProvider._instance is None:

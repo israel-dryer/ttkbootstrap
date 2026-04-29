@@ -29,6 +29,7 @@ Example:
     # Get contrasting text color
     fg_color = contrast_color('#FF5733')  # Returns 'white' or 'black'
     ```
+
 """
 from PIL import ImageColor
 from colorsys import rgb_to_hls
@@ -50,18 +51,15 @@ def color_to_rgb(color, model=HEX):
     The value is expected to be a string for "name" and "hex" models and
     a Tuple or List for "rgb" and "hsl" models.
     
-    Parameters:
-        
-        color (Any):
-            The color values for the model being converted.
-            
-        model (str):
-            The color model being converted.
-    
-    Returns:
+    Args:
+        color: The color value to convert.
+        model: The color model of the input value.
 
+    Returns:
+    -------
         tuple[int, int, int]:
             The rgb color values.
+
     """
     color_ = conform_color_model(color, model)
     return ImageColor.getrgb(color_)
@@ -74,18 +72,15 @@ def color_to_hex(color, model=RGB):
     The value is expected to be a string for "name" and "hex" models and
     a Tuple or List for "rgb" and "hsl" models.
     
-    Parameters:
-        
-        color (Any):
-            The color values for the model being converted.
-            
-        model (str):
-            The color model being converted.
-    
+    Args:
+        color: The color value to convert.
+        model: The color model of the input value.
+
     Returns:
-    
+    -------
         str:
             The hexadecimal color value.
+
     """
     r, g, b = color_to_rgb(color, model)
     return f'#{r:02x}{g:02x}{b:02x}'
@@ -97,18 +92,15 @@ def color_to_hsl(color, model=HEX):
     The value is expected to be a string for "name" and "hex" models and
     a Tuple or List for "rgb" and "hsl" models.
     
-    Parameters:
-        
-        color (Any):
-            The color values for the model being converted.
-            
-        model (str):
-            The color model being converted.
-    
-    Returns:
+    Args:
+        color: The color value to convert.
+        model: The color model of the input value.
 
+    Returns:
+    -------
         tuple[int, int, int]:
             The hsl color values.
+
     """
     r, g, b = color_to_rgb(color, model)
     hls = rgb_to_hls(r/255, g/255, b/255)
@@ -118,35 +110,21 @@ def color_to_hsl(color, model=HEX):
     return h, s, l
 
 def update_hsl_value(color, hue=None, sat=None, lum=None, inmodel=HSL, outmodel=HSL):
-    """Change hue, saturation, or lumenosity of the color based on the
-    hue, sat, lum parameters provided.
-    
-    Parameters:
+    """Change the hue, saturation, or luminosity of a color.
 
-        color (Any):
-            The color
-
-        hue (int):
-            A number between 0 and 360.
-
-        sat (int):
-            A number between 0 and 100.
-
-        lum (int):
-            A number between 0 and 100.
-
-        inmodel (str):
-            The color model used by the color to be changed. One of
-            hsl, rgb, hex, name.
-
-        outmodel (str):
-            The color value model to be returned when the color is
-            changed. One of hsl, rgb, hex.
+    Args:
+        color: The color value.
+        hue: Hue (0-360).
+        sat: Saturation (0-100).
+        lum: Luminosity (0-100).
+        inmodel: Color model of the input. One of hsl, rgb, hex, name.
+        outmodel: Color model for the output. One of hsl, rgb, hex.
 
     Returns:
-
+    -------
         Union[tuple[int, int, int], str]:
             The color value based on the selected color model.
+
     """
     h, s, l = color_to_hsl(color, inmodel)
     if hue is not None:
@@ -169,30 +147,19 @@ https://stackoverflow.com/questions/1855884/determine-font-color-based-on-backgr
 """
 
 def contrast_color(color, model=RGB, darkcolor='#000', lightcolor='#fff'):
-    """Returns the best matching contrasting light or dark color for
-    the given color.
-    
-    Parameters:
+    """Return the best contrasting light or dark color for the given color.
 
-        color (Any):
-            The color value to evaluate.
-
-        model (str):
-            The model of the color value to be evaluated. 'rgb' by 
-            default.
-
-        darkcolor (Any):
-            The color value to be returned when the constrasting color 
-            should be dark.
-
-        lightcolor (Any):
-            The color value to be returned when the constrasting color
-            should be light.
+    Args:
+        color: The color value to evaluate.
+        model: The color model of the input.
+        darkcolor: The dark contrast color to return.
+        lightcolor: The light contrast color to return.
 
     Returns:
-
+    -------
         str:
             The matching color value.
+
     """
     if model != RGB:
         r, g, b = color_to_rgb(color, model)
@@ -207,22 +174,18 @@ def contrast_color(color, model=RGB, darkcolor='#000', lightcolor='#fff'):
 
 
 def conform_color_model(color, model):
-    """Conform the color values to a string that can be interpreted
-    by the `PIL.ImageColor.getrgb method`.
+    """Conform a color value to a string interpretable by PIL.ImageColor.getrgb.
 
-    Parameters:
-
-        color (Union[tuple[int, int, int], str]):
-            The color value to conform.
-
-        model (str):
-            One of 'HSL', 'RGB', or 'HEX'
+    Args:
+        color: The color value to conform.
+        model: One of 'HSL', 'RGB', or 'HEX'.
 
     Returns:
-
+    -------
         str:
             A color value string that can be used as a parameter in the
             PIL.ImageColor.getrgb method.
+
     """    
     if model == HSL:
         h, s, l = color

@@ -129,16 +129,3 @@ convention = "google"
 
 # Public-surface files awaiting docstring cleanup.
 # Remove the entry when `ruff check --select D <file>` is clean.
-"src/ttkbootstrap/runtime/app.py" = ["D"]
-"src/ttkbootstrap/runtime/utility.py" = ["D"]
-"src/ttkbootstrap/dialogs/colorchooser.py" = ["D"]
-"src/ttkbootstrap/style/bootstyle_builder_base.py" = ["D"]
-"src/ttkbootstrap/style/bootstyle_builder_tk.py" = ["D"]
-"src/ttkbootstrap/style/bootstyle_builder_ttk.py" = ["D"]
-"src/ttkbootstrap/style/element.py" = ["D"]
-"src/ttkbootstrap/style/theme_provider.py" = ["D"]
-"src/ttkbootstrap/style/typography.py" = ["D"]
-"src/ttkbootstrap/style/utility.py" = ["D"]
-"src/ttkbootstrap/core/colorutils.py" = ["D"]
-"src/ttkbootstrap/core/publisher.py" = ["D"]
-"src/ttkbootstrap/widgets/composites/tableview/tableview.py" = ["D"]

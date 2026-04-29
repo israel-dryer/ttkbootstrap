@@ -1,3 +1,4 @@
+"""Font token system and typography utilities for ttkbootstrap."""
 from __future__ import annotations
 
 import hashlib
@@ -14,6 +15,8 @@ from typing import Any, Literal, NamedTuple
 # =============================================================================
 
 class FontSpec(NamedTuple):
+    """Resolved font specification with family, size, and style attributes."""
+
     font: str
     size: int
     weight: Literal["normal", "bold"]
@@ -23,6 +26,8 @@ class FontSpec(NamedTuple):
 
 
 class FontTokenNames:
+    """String constants for all font token names."""
+
     # Base families
     caption = "caption"
     label = "label"
@@ -44,6 +49,8 @@ class FontTokenNames:
 
 
 class FontTokens(NamedTuple):
+    """Named tuple of FontSpec values for all font tokens."""
+
     caption: FontSpec
     label: FontSpec
     body_sm: FontSpec
@@ -78,9 +85,7 @@ def build_desktop_tokens(
     mono_family: str | None = None,
     base_size: int = 11,
 ) -> FontTokens:
-    """
-    Construct default typography tokens tuned for desktop UI.
-    """
+    """Construct default typography tokens tuned for desktop UI."""
     base = _clamp_base_size(base_size)
 
     system = platform.system().lower()
@@ -149,8 +154,7 @@ TK_FONT_OVERRIDES = {
 # =============================================================================
 
 class Typography:
-    """
-    Named-font registry for tokenized typography.
+    """Named-font registry for tokenized typography.
 
     - Call Typography.init(root) once.
     - Token fonts become named Tk fonts (e.g. "body", "heading-lg"...)
@@ -164,6 +168,7 @@ class Typography:
 
     @classmethod
     def initialize(cls, root: Misc | None = None) -> None:
+        """Initialize the font system, wiring it to the Tk root."""
         if root is not None:
             cls._root = root
         cls._ensure_named_token_fonts()
@@ -171,6 +176,7 @@ class Typography:
 
     @classmethod
     def use_fonts(cls, fonts: FontTokens, *, fallback: bool = False) -> None:
+        """Apply a FontTokens set as the active typography configuration."""
         cls._fonts = fonts
         cls._use_fallback = bool(fallback)
         cls._ensure_named_token_fonts()
@@ -178,9 +184,7 @@ class Typography:
 
     @classmethod
     def set_global_family(cls, family: str) -> None:
-        """
-        Update all font tokens to use a single family (except monospace).
-        """
+        """Update all font tokens to use a single family (except monospace)."""
         updated = {}
         for name, spec in cls._fonts._asdict().items():
             if name == "code":
@@ -198,9 +202,7 @@ class Typography:
 
     @classmethod
     def get_token(cls, name: str) -> FontSpec:
-        """
-        Return the FontSpec for a token name.
-        """
+        """Return the FontSpec for a token name."""
         # allow passing "body-sm" etc.
         # map token string to field name
         field = name.replace("-", "_")
@@ -210,6 +212,7 @@ class Typography:
 
     @classmethod
     def token_names(cls) -> set[str]:
+        """Return the set of all valid font token name strings."""
         return {
             v for k, v in FontTokenNames.__dict__.items()
             if not k.startswith("_") and isinstance(v, str)
@@ -217,9 +220,7 @@ class Typography:
 
     @classmethod
     def get_named_token_font(cls, token_name: str) -> TkFont:
-        """
-        Return the named Tk font for a token.
-        """
+        """Return the named Tk font for a token."""
         if token_name not in cls._named_fonts:
             cls._ensure_named_token_fonts()
         # If it's still missing, try to resolve as Tk named font directly:
@@ -227,9 +228,7 @@ class Typography:
 
     @classmethod
     def update_font_token(cls, name: str, **kwargs: Any) -> None:
-        """
-        Replace the given token with updated fields (NamedTuple-safe).
-        """
+        """Replace the given token with updated fields."""
         field = name.replace("-", "_")
         if not hasattr(cls._fonts, field):
             raise KeyError(f"Unknown font token: {name}")
@@ -243,9 +242,7 @@ class Typography:
 
     @classmethod
     def _ensure_named_token_fonts(cls) -> None:
-        """
-        Create/update named Tk fonts for every token.
-        """
+        """Create or update named Tk fonts for every token."""
         for token_name, spec in cls._iter_tokens():
             fallback = FALLBACK_MONO if token_name == FontTokenNames.code else FALLBACK_FONT
 
@@ -275,9 +272,7 @@ class Typography:
 
     @classmethod
     def _override_tk_fonts(cls) -> None:
-        """
-        Override Tk’s default named fonts to align with tokens.
-        """
+        """Override Tk's default named fonts to align with token specs."""
         for tk_name, token_name in TK_FONT_OVERRIDES.items():
             spec = cls.get_token(token_name)
             fallback = FALLBACK_MONO if token_name == FontTokenNames.code else FALLBACK_FONT
@@ -308,6 +303,8 @@ _BRACKET_RE = re.compile(r"\[([^]]+)]")
 
 @dataclass(frozen=True)
 class FontModifierSpec:
+    """Font modifier spec parsed from a font string expression."""
+
     token: str
     size: int | None = None          # absolute override
     size_delta: int = 0              # "+1"/"-1" after token
@@ -317,6 +314,7 @@ class FontModifierSpec:
     overstrike: bool | None = None
 
     def key(self) -> tuple:
+        """Return a hashable key for cache lookups."""
         return (
             self.token,
             self.size,
@@ -336,8 +334,10 @@ def _hash(parts: Any) -> str:
 
 
 def parse_font(value: str, *, default_token: str = FontTokenNames.body) -> FontModifierSpec:
-    """
-    Parse:
+    """Parse a font string expression into a FontModifierSpec.
+
+    Examples::
+
       "body[bold]"
       "heading-lg+1[italic][underline]"
       "[16][bold]"  -> default token + size/mods
@@ -410,9 +410,7 @@ def parse_font(value: str, *, default_token: str = FontTokenNames.body) -> FontM
 
 
 def resolve_modifier_font(spec: FontModifierSpec) -> TkFont:
-    """
-    Resolve a modifier spec to a named, cached TkFont.
-    """
+    """Resolve a modifier spec to a named, cached TkFont."""
     key = spec.key()
     cached = _DERIVED_FONTS.get(key)
     if cached is not None:
@@ -473,8 +471,7 @@ def resolve_modifier_font(spec: FontModifierSpec) -> TkFont:
 
 
 class Font:
-    """
-    Public, reusable typography primitive.
+    """Public, reusable typography primitive.
 
     Works with the same inline syntax you already allow on widgets:
       Font("body[bold]")
@@ -493,35 +490,39 @@ class Font:
     __slots__ = ("spec", "_tkfont")
 
     def __init__(self, value: str, *, default_token: str = FontTokenNames.body):
+        """Initialize a Font from a string or token name."""
         self.spec = parse_font(value, default_token=default_token)
         self._tkfont: TkFont | None = None
 
     @property
     def tkfont(self) -> TkFont:
+        """The resolved tkinter Font object."""
         if self._tkfont is None:
             self._tkfont = resolve_modifier_font(self.spec)
         return self._tkfont
 
     @property
     def name(self) -> str:
+        """The Tk font name string."""
         return str(self.tkfont)
 
     def measure(self, text: str) -> int:
+        """Return the pixel width of text rendered in this font."""
         return int(self.tkfont.measure(text))
 
     def metrics(self, *args, **kwargs):
+        """Return font metrics from the underlying Tk font."""
         return self.tkfont.metrics(*args, **kwargs)
 
     def actual(self, *args, **kwargs):
+        """Return the actual font attributes from Tk."""
         return self.tkfont.actual(*args, **kwargs)
 
     def __str__(self) -> str:
+        """Return the Tk font name string."""
         return self.name
 
 
 def get_font(value: str, *, default_token: str = FontTokenNames.body) -> Font:
-    """
-    Convenience factory:
-      get_font("body[bold]")
-    """
+    """Create a Font from a string expression, defaulting to the body token."""
     return Font(value, default_token=default_token)
