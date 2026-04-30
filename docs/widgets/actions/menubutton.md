@@ -7,6 +7,11 @@ title: MenuButton
 `MenuButton` is a **menu-first** control: it displays like a button, but its primary purpose is to **open a Tk menu**.
 Use it for classic menu patterns (File/Edit/View), or when the options list is the main interaction.
 
+<figure markdown>
+![menubutton](../../assets/dark/widgets-menubutton.png#only-dark)
+![menubutton](../../assets/light/widgets-menubutton.png#only-light)
+</figure>
+
 ---
 
 ## Quick start

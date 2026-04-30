@@ -7,6 +7,11 @@ title: ButtonGroup
 `ButtonGroup` groups related actions into a connected row or column of buttons.
 It is most common in toolbars, segmented controls, and compact "action clusters" where buttons should read as a unit.
 
+<figure markdown>
+![buttongroup](../../assets/dark/widgets-buttongroup.png#only-dark)
+![buttongroup](../../assets/light/widgets-buttongroup.png#only-light)
+</figure>
+
 ---
 
 ## Quick start

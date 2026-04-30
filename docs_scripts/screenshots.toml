@@ -372,3 +372,20 @@ factory = "docs_scripts.shots.selection:radiogroup"
 slug = "widgets-togglegroup"
 page = "widgets/selection/togglegroup.md"
 factory = "docs_scripts.shots.selection:togglegroup"
+
+# ----- Actions (ButtonGroup, MenuButton, DropdownButton) -----------------
+
+[[shots]]
+slug = "widgets-buttongroup"
+page = "widgets/actions/buttongroup.md"
+factory = "docs_scripts.shots.actions:buttongroup"
+
+[[shots]]
+slug = "widgets-menubutton"
+page = "widgets/actions/menubutton.md"
+factory = "docs_scripts.shots.actions:menubutton"
+
+[[shots]]
+slug = "widgets-dropdownbutton"
+page = "widgets/actions/dropdownbutton.md"
+factory = "docs_scripts.shots.actions:dropdownbutton"

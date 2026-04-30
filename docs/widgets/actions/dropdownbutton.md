@@ -7,6 +7,11 @@ title: DropdownButton
 `DropdownButton` is a **button-first** control that opens a menu of related actions.
 Use it when the primary action is still a button click, but you want a secondary list of choices available on demand.
 
+<figure markdown>
+![dropdownbutton](../../assets/dark/widgets-dropdownbutton.png#only-dark)
+![dropdownbutton](../../assets/light/widgets-dropdownbutton.png#only-light)
+</figure>
+
 ---
 
 ## Quick start
