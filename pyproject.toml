@@ -63,6 +63,14 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+docs = [
+    # Static site generator (reads zensical.toml).
+    "zensical>=0.0.37",
+    # API reference is rendered from source docstrings via the
+    # mkdocstrings handler referenced in zensical.toml.
+    "mkdocstrings>=1.0",
+    "mkdocstrings-python>=2.0",
+]
 
 [project.urls]
 Homepage = "https://github.com/israel-dryer/ttkbootstrap"
