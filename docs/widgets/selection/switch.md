@@ -10,6 +10,11 @@ title: Switch
 Use `Switch` when the control represents a single binary setting that takes effect immediately, such as enabling
 a feature, turning on notifications, or activating a mode.
 
+<figure markdown>
+![switch](../../assets/dark/widgets-switch.png#only-dark)
+![switch](../../assets/light/widgets-switch.png#only-light)
+</figure>
+
 ---
 
 ## Quick start

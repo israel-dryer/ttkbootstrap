@@ -11,6 +11,11 @@ It behaves like `CheckButton`, but uses the Toolbutton variant style by default.
 
 Use `CheckToggle` when you want checkbox semantics in compact UI areas like toolbars, headers, and mode strips.
 
+<figure markdown>
+![checktoggle](../../assets/dark/widgets-checktoggle.png#only-dark)
+![checktoggle](../../assets/light/widgets-checktoggle.png#only-light)
+</figure>
+
 ---
 
 ## Overview

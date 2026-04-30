@@ -13,6 +13,11 @@ and standardized change events. It is best suited for **compact, known option se
 Use `OptionMenu` when the list is small and users already know the available choices.
 For longer lists or search/filtering, prefer [SelectBox](selectbox.md).
 
+<figure markdown>
+![optionmenu](../../assets/dark/widgets-optionmenu.png#only-dark)
+![optionmenu](../../assets/light/widgets-optionmenu.png#only-light)
+</figure>
+
 ---
 
 ## Overview

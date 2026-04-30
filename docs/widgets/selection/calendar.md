@@ -10,6 +10,11 @@ It produces `datetime.date` values and is commonly used for scheduling views, re
 
 If you want a compact, form-friendly input (typed + popup), prefer **DateEntry**. If you want an always-visible picker embedded in a panel, use **Calendar**.
 
+<figure markdown>
+![calendar](../../assets/dark/widgets-calendar.png#only-dark)
+![calendar](../../assets/light/widgets-calendar.png#only-light)
+</figure>
+
 ---
 
 ## Quick start

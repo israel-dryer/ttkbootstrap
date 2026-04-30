@@ -267,3 +267,30 @@ factory = "docs_scripts.shots.data_display:floodgauge"
 slug = "widgets-meter"
 page = "widgets/data-display/meter.md"
 factory = "docs_scripts.shots.data_display:meter"
+
+# ----- Other selection (Switch, CheckToggle, RadioToggle, OptionMenu, Calendar)
+
+[[shots]]
+slug = "widgets-switch"
+page = "widgets/selection/switch.md"
+factory = "docs_scripts.shots.selection:switch"
+
+[[shots]]
+slug = "widgets-checktoggle"
+page = "widgets/selection/checktoggle.md"
+factory = "docs_scripts.shots.selection:checktoggle"
+
+[[shots]]
+slug = "widgets-radiotoggle"
+page = "widgets/selection/radiotoggle.md"
+factory = "docs_scripts.shots.selection:radiotoggle"
+
+[[shots]]
+slug = "widgets-optionmenu"
+page = "widgets/selection/optionmenu.md"
+factory = "docs_scripts.shots.selection:optionmenu"
+
+[[shots]]
+slug = "widgets-calendar"
+page = "widgets/selection/calendar.md"
+factory = "docs_scripts.shots.selection:calendar"

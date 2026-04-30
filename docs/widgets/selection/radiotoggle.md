@@ -9,6 +9,11 @@ title: RadioToggle
 Use `RadioToggle` when you want mutually exclusive choices, but prefer a more "button-like" presentation
 than the classic radio indicator (common in toolbars, view switches, or mode pickers).
 
+<figure markdown>
+![radiotoggle](../../assets/dark/widgets-radiotoggle.png#only-dark)
+![radiotoggle](../../assets/light/widgets-radiotoggle.png#only-light)
+</figure>
+
 ---
 
 ## Quick start
