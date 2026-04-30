@@ -36,33 +36,77 @@ plan doc instead so they survive across sessions.
 
 ### Current handoff (2026-04-29)
 
-Phases 1–5 and 7 are complete. The only remaining work is **Phase 6
-(screenshot pipeline)**. See the plan doc for full task status.
+Phases 1–5 and 7 are complete. **Phase 6 (screenshot pipeline) is in
+progress.** Status:
 
-**Phase 6 overview.** All tasks require either a judgment call or a
-running Tk display:
+- **6A — DONE.** Image policy: every widget page that renders something
+  visible has a light + dark screenshot pair (`docs-light` / `docs-dark`
+  themes). Opt-out only for theme-agnostic assets via
+  `themes = ["light"]`.
+- **6B — DONE.** Renderer scaffold: `docs_scripts/render.py` reads
+  `docs_scripts/screenshots.toml` and runs **one subprocess per
+  `(slug, theme)` pair** for clean Tk lifecycle isolation. Factories
+  live under `docs_scripts/shots/<widget>.py`.
+- **6C — DONE.** `ttkb screenshots [--slug | --page | --theme]` wraps
+  the renderer; lives in `src/ttkbootstrap/cli/screenshots.py`.
+- **6D — DONE.** `tools/check_doc_images.py` verifies every Markdown
+  image reference resolves on disk; surfaces `IMAGE:` placeholders as
+  INFO (or FAIL with `--strict-placeholders`).
+- **6E — IN PROGRESS.** 8 batches landed (~34 widgets done): button,
+  checkbutton, radiobutton, dateentry, numericentry, spinnerentry,
+  textentry, frame, labelframe, separator, sizegrip, accordion,
+  expander, panedwindow, scrollbar, scrollview, scale, scrolledtext,
+  tabs, notebook, pagestack, tabview, label, badge, progressbar,
+  floodgauge, meter, switch, checktoggle, radiotoggle, optionmenu,
+  calendar, entry, combobox, spinbox, text, canvas, labeledscale,
+  passwordentry, pathentry, timeentry. ~31 widget pages still need
+  shots; 4 popup/modal placeholders deferred (`datedialog`,
+  `messagebox`, `selectbox` × 2).
+- **6F — NOT STARTED.** MP4/GIF for animated widgets: Toast, Tooltip,
+  Accordion (animation), Expander, PageStack, FloodGauge, Meter. Needs
+  display + recording tool.
 
-- **6A** — image policy decision (one judgment call): mandatory per
-  widget page, or case-by-case?
-- **6B** — manifest design: unify the 7 existing `docs_scripts/*.py`
-  into a single `render.py` driven by a YAML/TOML manifest.
-- **6C** — add `make screenshots` / `ttkb screenshots` command
-  (depends on 6B).
-- **6D** — CI check: every `docs/widgets/**/*.md` that references an
-  image must have that image on disk. Can be done without a display.
-- **6E** — generate screenshots for ~67 widget pages currently without
-  them; replace the 15 `IMAGE:` placeholders (needs display).
-- **6F** — MP4/GIF for animated widgets: Toast, Tooltip, Accordion,
-  Expander, PageStack, FloodGauge, Meter (needs display + recording).
+**Renderer conventions** (when authoring new factories — read the
+existing `docs_scripts/shots/*.py` for live examples):
 
-**Model selection.** Use Opus for 6A and 6B (judgment/architecture).
-Sonnet is fine for 6C and 6D. 6E/6F require a display environment.
+- Factory signature: `def factory(parent: Widget) -> Optional[Callable]`.
+  `parent` is a renderer-supplied padded `Frame`; build widgets into it.
+- Return a `finalize` callable when the shot needs visual state flags
+  (`state(["focus"])`, `state(["hover"])`) applied at capture time —
+  Tk may otherwise clear them between deiconify and grab.
+- Use `widget.focus_set()` for true focus rings; the state flag alone
+  isn't always honored by ttk styles.
+- **Don't** use `pack_propagate(False)` on a Frame with `width=` but no
+  `height=` — height defaults to 0 and the shot renders blank. Either
+  set both, or drop the propagate call.
+- The renderer deliberately does NOT use `override_redirect=True` or
+  `focus_force()` — both kill WM focus event propagation and flatten
+  focus/hover visuals.
+
+**Authoring loop for a new widget shot:**
+
+1. Read `docs/widgets/<category>/<name>.md` to find the `IMAGE:`
+   placeholder spec or pick a sensible default composition.
+2. Add or extend a factory in `docs_scripts/shots/<category>.py`.
+3. Add a `[[shots]]` entry to `docs_scripts/screenshots.toml`.
+4. Render: `python -m docs_scripts.render --slug widgets-<name>`.
+5. View output at `docs/assets/{light,dark}/widgets-<name>.png`.
+6. Replace the `IMAGE:` block (or insert a new `<figure markdown>`
+   block) in the .md file with the canonical light + dark refs.
+7. Run `python tools/check_doc_images.py` to confirm 0 missing.
+8. Commit factory + manifest + .md + PNGs together; commit message
+   format: `Docs: screenshots for X, Y, Z (6E batch N)`.
+
+The plan doc (`analysis/docs-review-and-plan.md`) has the full
+architecture decisions log.
 
 ---
 
 ## Documentation toolchain
 
-- **MkDocs (Zensical)**, not Sphinx. Configuration: `zensical.toml`.
+- **Zensical** (separate from plain MkDocs), not Sphinx. Configuration:
+  `zensical.toml`. Install via `pip install -e ".[docs]"`. Serve with
+  `.venv/bin/zensical serve -o`.
 - **Plain Markdown only** in docstrings — no reST roles like `:func:`,
   `:param:`, or `.. note::`. The MkDocs `admonition` extension is
   enabled, so `!!! note "Heading"` blocks are allowed in docstrings.
