@@ -9,6 +9,11 @@ title: PasswordEntry
 It builds on `TextEntry`, adding masking, optional reveal behavior, and password-specific validation patterns—while preserving
 the same label/message, localization, and event model used throughout ttkbootstrap v2.
 
+<figure markdown>
+![passwordentry](../../assets/dark/widgets-passwordentry.png#only-dark)
+![passwordentry](../../assets/light/widgets-passwordentry.png#only-light)
+</figure>
+
 ---
 
 ## Quick start

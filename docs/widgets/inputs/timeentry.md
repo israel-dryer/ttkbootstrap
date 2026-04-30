@@ -9,6 +9,11 @@ title: TimeEntry
 It's built on the same field foundation as other v2 inputs, so it supports a label and message region, validation,
 localization/formatting, and consistent events.
 
+<figure markdown>
+![timeentry](../../assets/dark/widgets-timeentry.png#only-dark)
+![timeentry](../../assets/light/widgets-timeentry.png#only-light)
+</figure>
+
 ---
 
 ## Quick start

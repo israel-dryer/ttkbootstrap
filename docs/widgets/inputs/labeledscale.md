@@ -8,6 +8,11 @@ title: LabeledScale
 
 Use `LabeledScale` when users need visual feedback of the exact value as they drag the slider - common for volume controls, opacity settings, or any numeric range where precision matters.
 
+<figure markdown>
+![labeledscale](../../assets/dark/widgets-labeledscale.png#only-dark)
+![labeledscale](../../assets/light/widgets-labeledscale.png#only-light)
+</figure>
+
 ---
 
 ## Quick start

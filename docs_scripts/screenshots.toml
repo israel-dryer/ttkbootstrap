@@ -321,3 +321,25 @@ factory = "docs_scripts.shots.primitives:text"
 slug = "widgets-canvas"
 page = "widgets/primitives/canvas.md"
 factory = "docs_scripts.shots.primitives:canvas"
+
+# ----- Other inputs (LabeledScale, PasswordEntry, PathEntry, TimeEntry) ---
+
+[[shots]]
+slug = "widgets-labeledscale"
+page = "widgets/inputs/labeledscale.md"
+factory = "docs_scripts.shots.inputs:labeledscale"
+
+[[shots]]
+slug = "widgets-passwordentry"
+page = "widgets/inputs/passwordentry.md"
+factory = "docs_scripts.shots.inputs:passwordentry"
+
+[[shots]]
+slug = "widgets-pathentry"
+page = "widgets/inputs/pathentry.md"
+factory = "docs_scripts.shots.inputs:pathentry"
+
+[[shots]]
+slug = "widgets-timeentry"
+page = "widgets/inputs/timeentry.md"
+factory = "docs_scripts.shots.inputs:timeentry"

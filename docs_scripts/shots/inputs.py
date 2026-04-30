@@ -22,6 +22,56 @@ def scale(parent: tkinter.Widget) -> None:
     s.pack(pady=(8, 0))
 
 
+def labeledscale(parent: tkinter.Widget) -> None:
+    """LabeledScale at value 65.
+
+    Note: the initial value label position appears off-center for the
+    rendered thumb; tracked as a widget-side bug to fix separately.
+    """
+    column = ttk.Frame(parent, padding=8)
+    column.pack()
+    ttk.LabeledScale(column, value=65, minvalue=0, maxvalue=100, width=360).pack()
+
+
+def passwordentry(parent: tkinter.Widget) -> None:
+    """PasswordEntry with masked value and helper message."""
+    column = ttk.Frame(parent, padding=8)
+    column.pack()
+    pwd = ttk.PasswordEntry(
+        column,
+        label="Password",
+        required=True,
+        message="Must be at least 8 characters",
+        show_message=True,
+        width=28,
+    )
+    pwd.insert(0, "hunter2hunter2")
+    pwd.pack()
+
+
+def pathentry(parent: tkinter.Widget) -> None:
+    """PathEntry showing a typical file path."""
+    column = ttk.Frame(parent, padding=8)
+    column.pack()
+    path = ttk.PathEntry(
+        column,
+        label="Input file",
+        message="Select a CSV file to import",
+        show_message=True,
+        width=36,
+    )
+    path.insert(0, "~/Documents/quarterly-report.csv")
+    path.pack()
+
+
+def timeentry(parent: tkinter.Widget) -> None:
+    """TimeEntry showing a value."""
+    column = ttk.Frame(parent, padding=8)
+    column.pack()
+    t = ttk.TimeEntry(column, label="Start time", value="08:30", width=20)
+    t.pack()
+
+
 def scrolledtext(parent: tkinter.Widget) -> None:
     """ScrolledText with multi-line content and a visible scroll thumb."""
     box = ttk.Frame(parent, width=420, height=160)

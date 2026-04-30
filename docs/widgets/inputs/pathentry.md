@@ -9,6 +9,11 @@ title: PathEntry
 It combines a text field (type/paste paths) with a browse button (pick visually), while keeping the same label/message,
 validation, and event model as other v2 field controls.
 
+<figure markdown>
+![pathentry](../../assets/dark/widgets-pathentry.png#only-dark)
+![pathentry](../../assets/light/widgets-pathentry.png#only-light)
+</figure>
+
 ---
 
 ## Quick start
