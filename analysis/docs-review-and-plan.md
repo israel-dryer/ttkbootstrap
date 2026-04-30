@@ -257,9 +257,9 @@ These were discovered while authoring screenshot factories — the factories cou
 - [x] **10F-datasource.** `docs/guides/datasource.md` (2026-04-30). Method spelling clarified: `set_filter` (singular), `unselect_*` (not `deselect_*`). Added `FileDataSource` (was undocumented). SQL-injection caveat surfaced. Custom-DataSource section now lists all abstract methods. **Bug noted**: `ListView` internally calls `deselect_all`/`is_selected` on the datasource but `BaseDataSource` only has `unselect_all`/no `is_selected`.
 - [x] **10F-navigation.** `docs/guides/navigation.md` (2026-04-30). Reframed around `TabView` (modern) vs `Tabs` (lower-level) vs `Notebook` (legacy). Added `page=` param to `add_page`; added `navigate(key, data=)`; documented `<<PageWillMount>>`, `<<PageMount>>`, `<<PageUnmount>>`, `<<PageChange>>` lifecycle events with payload table. Confirmed no transition configurability on `PageStack`.
 - [x] **10F-layout.** `docs/guides/layout.md` (2026-04-30). Added full constructor option lists for `PackFrame`/`GridFrame`; column/row size-spec table; `auto_flow` and `configure_row`/`configure_column` documentation. Expanded patterns to 5 concrete examples. `ScrollView.add()` returns a `Frame` for nesting — documented. All API verified against source.
-- [ ] **10G.** Remaining guides (app-settings, icons, typography, theming, spacing-and-alignment).
-- [ ] **10F.** Widget pages (per-category pass).
-- [ ] **10G.** Platform and capabilities pages.
+- [x] **10G.** Remaining guides (2026-04-30): theming, typography, icons, spacing-and-alignment, app-settings. All 14 guides in `docs/guides/` are now editorially reviewed. Drift notes: `AppSettings.light_theme`/`dark_theme` defaults are `"docs-light"`/`"docs-dark"` (surprising for users); 50-step shade spectrum documented as 9-step in design-system pages (inconsistency); `follow_system_appearance` is no-op on Windows/Linux; bare `tk.Menu.add_command` doesn't accept `icon=` (fixed to use `ContextMenu`).
+- [ ] **10H.** Widget pages (per-category pass).
+- [ ] **10I.** Platform and capabilities pages.
 
 ---
 
