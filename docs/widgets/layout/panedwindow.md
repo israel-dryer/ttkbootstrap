@@ -14,10 +14,10 @@ It wraps `ttk.Panedwindow` and is used to build layouts like:
 
 - vertically stacked regions with adjustable heights
 
-<!--
-IMAGE: PanedWindow splitting sidebar/content
-Theme variants: light / dark
--->
+<figure markdown>
+![panedwindow](../../assets/dark/widgets-panedwindow.png#only-dark)
+![panedwindow](../../assets/light/widgets-panedwindow.png#only-light)
+</figure>
 
 ---
 

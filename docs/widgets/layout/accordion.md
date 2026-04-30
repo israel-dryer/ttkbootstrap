@@ -8,11 +8,10 @@ title: Accordion
 
 It manages a group of [Expander](expander.md) widgets, providing mutual exclusion behavior and optional constraints like requiring at least one section to remain open.
 
-<!--
-IMAGE: Accordion with multiple sections, one expanded
-Suggested: Three sections labeled "General", "Advanced", "About" with "General" expanded
-Theme variants: light / dark
--->
+<figure markdown>
+![accordion](../../assets/dark/widgets-accordion.png#only-dark)
+![accordion](../../assets/light/widgets-accordion.png#only-light)
+</figure>
 
 ---
 

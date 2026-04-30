@@ -9,10 +9,10 @@ title: Scrollbar
 
 It wraps `ttk.Scrollbar` and participates in ttkbootstrap styling.
 
-<!--
-IMAGE: Vertical + horizontal scrollbar next to a Text or Canvas
-Theme variants: light / dark
--->
+<figure markdown>
+![scrollbar](../../assets/dark/widgets-scrollbar.png#only-dark)
+![scrollbar](../../assets/light/widgets-scrollbar.png#only-light)
+</figure>
 
 ---
 

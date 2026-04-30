@@ -9,10 +9,10 @@ title: ScrollView
 It provides a framed content area inside a scrolling viewport, handling scrollbars, mousewheel behavior, and sizing so you can
 build scrollable panels and forms without manually wiring a `Canvas` + scrollbars.
 
-<!--
-IMAGE: ScrollView with a long form or a list of cards
-Theme variants: light / dark
--->
+<figure markdown>
+![scrollview](../../assets/dark/widgets-scrollview.png#only-dark)
+![scrollview](../../assets/light/widgets-scrollview.png#only-light)
+</figure>
 
 ---
 

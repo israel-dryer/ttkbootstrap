@@ -8,11 +8,10 @@ title: Expander
 
 It provides a way to show/hide content sections, reducing visual clutter while keeping related controls accessible.
 
-<!--
-IMAGE: Collapsible section with chevron
-Suggested: Expander titled "Settings" with checkboxes inside, shown expanded and collapsed
-Theme variants: light / dark
--->
+<figure markdown>
+![expander](../../assets/dark/widgets-expander.png#only-dark)
+![expander](../../assets/light/widgets-expander.png#only-light)
+</figure>
 
 ---
 

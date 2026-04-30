@@ -181,3 +181,28 @@ factory = "docs_scripts.shots.layout:separator"
 slug = "widgets-sizegrip"
 page = "widgets/layout/sizegrip.md"
 factory = "docs_scripts.shots.layout:sizegrip"
+
+[[shots]]
+slug = "widgets-accordion"
+page = "widgets/layout/accordion.md"
+factory = "docs_scripts.shots.layout:accordion"
+
+[[shots]]
+slug = "widgets-expander"
+page = "widgets/layout/expander.md"
+factory = "docs_scripts.shots.layout:expander"
+
+[[shots]]
+slug = "widgets-panedwindow"
+page = "widgets/layout/panedwindow.md"
+factory = "docs_scripts.shots.layout:panedwindow"
+
+[[shots]]
+slug = "widgets-scrollbar"
+page = "widgets/layout/scrollbar.md"
+factory = "docs_scripts.shots.layout:scrollbar"
+
+[[shots]]
+slug = "widgets-scrollview"
+page = "widgets/layout/scrollview.md"
+factory = "docs_scripts.shots.layout:scrollview"
