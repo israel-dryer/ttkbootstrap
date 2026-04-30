@@ -90,6 +90,17 @@ overview, `Basic usage` (not `Quick start`), merged
 template** than actions — don't carry the actions section names over
 verbatim.
 
+Last session (2026-04-30, two-page batch):
+
+- `scale.md` — restructured to template; corrected event hooks
+  (Scale exposes `command` / `signal.subscribe` / `<ButtonRelease-1>`,
+  *not* `on_input`/`on_changed`); removed non-existent `step` option.
+- `labeledscale.md` — restructured to template; clarified that
+  `accent` only styles the inner scale, that `signal=` is rejected
+  (use `widget.scale.signal` for reactive subs), and that range
+  reconfiguration must go through the inner scale (the
+  `LabeledScale.configure(minvalue=…)` path is broken — see bugs list).
+
 Template: `docs/_template/widget-input-template.md`. Required H2s:
 
 - `Basic usage`
@@ -105,9 +116,8 @@ Template: `docs/_template/widget-input-template.md`. Required H2s:
 
 Pages to review:
 
-- [x] `textentry.md` — **canonical input pattern** (commit pending; use
-      this as the reference for the rest of the inputs sweep, the way
-      `button.md` anchored actions)
+- [x] `textentry.md` — **canonical input pattern**; use this as the
+      reference for the inputs sweep, the way `button.md` anchored actions
 - [x] `numericentry.md`
 - [x] `passwordentry.md`
 - [x] `pathentry.md`
