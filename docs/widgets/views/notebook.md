@@ -22,11 +22,10 @@ ttkbootstrap's `Notebook` extends `ttk.Notebook` with:
 
 - **enriched tab lifecycle events** that describe *what changed* and *why*
 
-<!--
-IMAGE: Notebook overview
-Suggested: Notebook with 3 tabs (Home/Settings/About) in both light and dark themes
-Theme variants: light / dark
--->
+<figure markdown>
+![notebook](../../assets/dark/widgets-notebook.png#only-dark)
+![notebook](../../assets/light/widgets-notebook.png#only-light)
+</figure>
 
 ---
 

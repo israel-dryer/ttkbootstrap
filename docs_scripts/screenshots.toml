@@ -218,3 +218,25 @@ factory = "docs_scripts.shots.inputs:scale"
 slug = "widgets-scrolledtext-states"
 page = "widgets/inputs/scrolledtext.md"
 factory = "docs_scripts.shots.inputs:scrolledtext"
+
+# ----- Tabs / Notebook / PageStack / TabView -------------------------------
+
+[[shots]]
+slug = "widgets-tabs"
+page = "widgets/navigation/tabs.md"
+factory = "docs_scripts.shots.views:tabs"
+
+[[shots]]
+slug = "widgets-notebook"
+page = "widgets/views/notebook.md"
+factory = "docs_scripts.shots.views:notebook"
+
+[[shots]]
+slug = "widgets-pagestack"
+page = "widgets/views/pagestack.md"
+factory = "docs_scripts.shots.views:pagestack"
+
+[[shots]]
+slug = "widgets-tabview"
+page = "widgets/views/tabview.md"
+factory = "docs_scripts.shots.views:tabview"

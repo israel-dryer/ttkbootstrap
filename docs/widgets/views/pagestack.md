@@ -9,11 +9,10 @@ title: PageStack
 It provides **history-based navigation** (push, back, forward), similar to a web browser, making it ideal for wizards,
 multi-step workflows, and task-based navigation inside a single window.
 
-<!--
-IMAGE: PageStack navigation flow
-Suggested: Three pages with forward/back navigation arrows and a visible history stack
-Theme variants: light / dark
--->
+<figure markdown>
+![pagestack](../../assets/dark/widgets-pagestack.png#only-dark)
+![pagestack](../../assets/light/widgets-pagestack.png#only-light)
+</figure>
 
 ---
 

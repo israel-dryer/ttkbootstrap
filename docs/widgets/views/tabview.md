@@ -9,11 +9,10 @@ tab-based content switching.
 
 Each tab corresponds to a page, and selecting a tab automatically navigates to its associated content.
 
-<!--
-IMAGE: TabView with content
-Suggested: Horizontal tabs above content area, vertical tabs beside content
-Theme variants: light / dark
--->
+<figure markdown>
+![tabview](../../assets/dark/widgets-tabview.png#only-dark)
+![tabview](../../assets/light/widgets-tabview.png#only-light)
+</figure>
 
 ---
 

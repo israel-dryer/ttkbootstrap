@@ -9,11 +9,10 @@ title: Tabs
 It manages tab layout, selection state, and optional features like close buttons and an "add" button
 for dynamic tab creation.
 
-<!--
-IMAGE: Tabs variants
-Suggested: Horizontal bar tabs, pill tabs, vertical tabs
-Theme variants: light / dark
--->
+<figure markdown>
+![tabs](../../assets/dark/widgets-tabs.png#only-dark)
+![tabs](../../assets/light/widgets-tabs.png#only-light)
+</figure>
 
 ---
 
