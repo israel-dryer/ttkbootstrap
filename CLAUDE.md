@@ -81,7 +81,11 @@ in progress; platform/capabilities pages still to come.
       follow: `Framework integration` overview, `Basic usage` (not `Quick start`),
       merged `Localization & reactivity`. Use this as the canonical reference
       when reviewing the remaining four.
-- [ ] `buttongroup.md`
+- [x] `buttongroup.md` (2026-04-30) — added `Framework integration`, `Behavior`,
+      and `Localization & reactivity`; renamed `Quick start` → `Basic usage`;
+      documented `orient`, `density`, key-based lookup
+      (`item`/`configure_item`/`remove`), iteration/`len`/`in`, and group-level
+      `state`. Removed two `SegmentedButton` links — that widget doesn't exist.
 - [ ] `contextmenu.md`
 - [ ] `dropdownbutton.md`
 - [ ] `menubutton.md`
