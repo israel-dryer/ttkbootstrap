@@ -34,7 +34,7 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-04-29)
+### Current handoff (2026-04-30)
 
 Phases 1–5 and 7 are complete. **Phase 6 (screenshot pipeline) is in
 progress.** Status:
@@ -52,19 +52,38 @@ progress.** Status:
 - **6D — DONE.** `tools/check_doc_images.py` verifies every Markdown
   image reference resolves on disk; surfaces `IMAGE:` placeholders as
   INFO (or FAIL with `--strict-placeholders`).
-- **6E — IN PROGRESS.** 8 batches landed (~34 widgets done): button,
-  checkbutton, radiobutton, dateentry, numericentry, spinnerentry,
-  textentry, frame, labelframe, separator, sizegrip, accordion,
-  expander, panedwindow, scrollbar, scrollview, scale, scrolledtext,
-  tabs, notebook, pagestack, tabview, label, badge, progressbar,
-  floodgauge, meter, switch, checktoggle, radiotoggle, optionmenu,
-  calendar, entry, combobox, spinbox, text, canvas, labeledscale,
-  passwordentry, pathentry, timeentry. ~31 widget pages still need
-  shots; 4 popup/modal placeholders deferred (`datedialog`,
-  `messagebox`, `selectbox` × 2).
-- **6F — NOT STARTED.** MP4/GIF for animated widgets: Toast, Tooltip,
-  Accordion (animation), Expander, PageStack, FloodGauge, Meter. Needs
-  display + recording tool.
+- **6E — IN-FRAME SHOTS DONE.** 13 batches landed covering every
+  widget page that has visible in-frame content: actions (button,
+  buttongroup, menubutton, dropdownbutton), application (app,
+  appshell, toplevel), data-display (label, badge, progressbar,
+  floodgauge, meter, listview, tableview, treeview), forms (form),
+  inputs (all 10), layout (all 12), navigation (tabs, toolbar,
+  sidenav), overlays — pending 6F (toast, tooltip), primitives (all
+  5), selection (all except selectbox), and views (all 3). Shots were
+  rendered on macOS as a placeholder; **all factories should be
+  re-rendered on Windows for the canonical assets** (per user
+  request, the macOS pass was just to land the manifest + figure
+  blocks).
+- **6F — NOT STARTED.** Popup widgets and animated widgets — needs
+  capture tooling beyond the in-frame model:
+    - Popup-shape widgets that overlay the main window: `ContextMenu`,
+      `SelectBox` (open state), `MessageBox`, `MessageDialog`,
+      `Dialog`, `ColorChooser`, `ColorDropper`, `DateDialog`,
+      `FontDialog`, `FilterDialog`, `FormDialog`, `QueryBox`,
+      `QueryDialog`. Needs a renderer mode that captures a Toplevel
+      bbox after `show()` returns visible, before any `grab_set` /
+      modal blocking.
+    - Animated widgets that need MP4/GIF: `Toast`, `Tooltip`,
+      `Accordion` (animation), `Expander`, `PageStack` transitions,
+      `FloodGauge`, `Meter`. Needs display + recording tool.
+
+**Pending docs bug** (surfaced during batch 10 — flag for a future
+cleanup batch): `docs/widgets/actions/dropdownbutton.md` documents
+`ContextMenuItem(text=..., separator=True)` with item-level
+`accent="danger"`, but the real API requires `type="command"` /
+`type="separator"` (see `examples/demo_menubar.py`) and the macOS
+backend rejects per-item `accent`. The other dialog/dropdown docs may
+have similar drift.
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
