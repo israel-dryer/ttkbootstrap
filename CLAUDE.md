@@ -94,7 +94,15 @@ in progress; platform/capabilities pages still to come.
       `disabled=`/`shortcut=` on `add_command`, `on_item_click` payload
       shape, `items()` setter for runtime replacement, anchor/attach/offset
       positioning model, and the macOS native-backend caveats.
-- [ ] `dropdownbutton.md`
+- [x] `dropdownbutton.md` (2026-04-30) — added `Framework integration`,
+      expanded `Behavior` and `Examples & patterns`, merged
+      `Localization & reactivity`. Corrected the `on_item_click`
+      payload (a `{type, text, value}` dict, not an item object) and
+      documented `command=` running alongside `show_menu` on click.
+      Surfaced `density`, `popdown_options`, `show_dropdown_button`,
+      `dropdown_button_icon`, `textsignal`, runtime-mutation API
+      (`add_command`/`add_separator`/`add_checkbutton`/`add_radiobutton`/
+      `configure_item`/`items()` setter), and shortcut display.
 - [ ] `menubutton.md`
 
 The category template lives at `docs/_template/widget-action-template.md`.
