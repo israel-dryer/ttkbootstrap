@@ -430,3 +430,15 @@ factory = "docs_scripts.shots.navigation:sidenav"
 slug = "widgets-appshell"
 page = "widgets/application/appshell.md"
 factory = "docs_scripts.shots.navigation:appshell"
+
+# ----- Application (App, Toplevel) ---------------------------------------
+
+[[shots]]
+slug = "widgets-app"
+page = "widgets/application/app.md"
+factory = "docs_scripts.shots.application:app"
+
+[[shots]]
+slug = "widgets-toplevel"
+page = "widgets/application/toplevel.md"
+factory = "docs_scripts.shots.application:toplevel"

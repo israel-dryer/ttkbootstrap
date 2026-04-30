@@ -8,6 +8,11 @@ title: App
 
 It wraps Tk with sensible defaults: theme initialization, DPI awareness, window sizing, and shortcut management.
 
+<figure markdown>
+![app](../../assets/dark/widgets-app.png#only-dark)
+![app](../../assets/light/widgets-app.png#only-light)
+</figure>
+
 ---
 
 ## Quick start
