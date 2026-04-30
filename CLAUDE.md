@@ -84,13 +84,24 @@ overview, `Basic usage` (not `Quick start`), merged
 
 `tools/check_doc_structure.py --category actions` → 5/5 pass.
 
-### Now: Widget pages — inputs (`docs/widgets/inputs/`, 10 pages)
+**Widget pages — inputs** (`docs/widgets/inputs/`, 10 pages) — **DONE 2026-04-30.**
 
-9 of 10 done. Remaining: `scrolledtext.md`. Inputs use a **different
-template** than actions — don't carry the actions section names over
-verbatim.
+All 10 pages reviewed against `docs/_template/widget-input-template.md`.
+Inputs use a **different template** than actions — don't carry the
+actions section names over verbatim.
 
-Last session (2026-04-30, two-page batch):
+Last session (2026-04-30):
+
+- `scrolledtext.md` — restructured to template; clarified that
+  `ScrolledText` has **no `value`/signal/variable model** (it wraps
+  `tkinter.Text`), corrected the existing claim that the container
+  themes via `accent` (it's `scrollbar_style`), documented the
+  delegation surface (Text methods copied at construct time, plus
+  `__getattr__` fallback to `self._text`), and replaced the wrong
+  default in the old Quick start (default `scrollbar_visibility` is
+  `'always'`, not `'scroll'`).
+
+Prior session (2026-04-30, two-page batch):
 
 - `scale.md` — restructured to template; corrected event hooks
   (Scale exposes `command` / `signal.subscribe` / `<ButtonRelease-1>`,
@@ -100,6 +111,8 @@ Last session (2026-04-30, two-page batch):
   (use `widget.scale.signal` for reactive subs), and that range
   reconfiguration must go through the inner scale (the
   `LabeledScale.configure(minvalue=…)` path is broken — see bugs list).
+
+`tools/check_doc_structure.py --category inputs` → 10/10 pass.
 
 Template: `docs/_template/widget-input-template.md`. Required H2s:
 
@@ -126,11 +139,23 @@ Pages to review:
 - [x] `spinnerentry.md`
 - [x] `scale.md`
 - [x] `labeledscale.md`
-- [ ] `scrolledtext.md`
+- [x] `scrolledtext.md`
 
-`tools/check_doc_structure.py --category inputs` currently fails on the
-1 remaining page — that's expected and is what this pass fixes. Run it
-before and after each page to confirm structural fit.
+### Next: Widget pages — dialogs and data-display
+
+The inputs sweep is done. Per the priority order
+("actions, inputs, dialogs, and data-display first"), the next
+session should pick up `docs/widgets/dialogs/` or
+`docs/widgets/data-display/`. Use the same one-page-per-session
+discipline:
+
+1. Read the page end-to-end.
+2. Find the right template under `docs/_template/`.
+3. Rewrite in one pass.
+4. `python tools/check_doc_structure.py --category <cat>` and
+   `python tools/check_doc_snippets.py --run --file <page>` — both
+   must pass.
+5. Commit: `Docs: editorial review — <page title>`.
 
 The structure check substitutes the literal `WidgetName` in the
 template's H2s with the page's H1, so a page can use
