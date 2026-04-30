@@ -11,11 +11,10 @@ It's a themed wrapper around `ttk.Frame`, so it participates in ttkbootstrap sty
 !!! tip "Prefer PackFrame or GridFrame for most layouts"
     For building layouts with automatic child management, use [PackFrame](packframe.md) (vertical/horizontal stacks with gap spacing) or [GridFrame](gridframe.md) (CSS Grid-like 2D layouts). These provide a more declarative, less error-prone layout experience.
 
-<!--
-IMAGE: Frame used for layout
-Suggested: A simple form section inside a padded Frame (label + entry + button)
-Theme variants: light / dark
--->
+<figure markdown>
+![frame](../../assets/dark/widgets-frame.png#only-dark)
+![frame](../../assets/light/widgets-frame.png#only-light)
+</figure>
 
 ---
 

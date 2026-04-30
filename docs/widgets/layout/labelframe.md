@@ -9,11 +9,10 @@ title: LabelFrame
 It wraps `ttk.Labelframe`, participates in ttkbootstrap styling, and is ideal for labeled sections (settings groups,
 form clusters, option panels) where the title improves scanability.
 
-<!--
-IMAGE: Labeled group box
-Suggested: LabelFrame titled "Network" containing a few related controls
-Theme variants: light / dark
--->
+<figure markdown>
+![labelframe](../../assets/dark/widgets-labelframe.png#only-dark)
+![labelframe](../../assets/light/widgets-labelframe.png#only-light)
+</figure>
 
 ---
 

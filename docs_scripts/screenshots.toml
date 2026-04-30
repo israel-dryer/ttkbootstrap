@@ -159,3 +159,25 @@ factory = "docs_scripts.shots.spinnerentry:addons"
 slug = "widgets-spinnerentry-formats"
 page = "widgets/inputs/spinnerentry.md"
 factory = "docs_scripts.shots.spinnerentry:formats"
+
+# ----- Layout primitives ---------------------------------------------------
+
+[[shots]]
+slug = "widgets-frame"
+page = "widgets/layout/frame.md"
+factory = "docs_scripts.shots.layout:frame"
+
+[[shots]]
+slug = "widgets-labelframe"
+page = "widgets/layout/labelframe.md"
+factory = "docs_scripts.shots.layout:labelframe"
+
+[[shots]]
+slug = "widgets-separator"
+page = "widgets/layout/separator.md"
+factory = "docs_scripts.shots.layout:separator"
+
+[[shots]]
+slug = "widgets-sizegrip"
+page = "widgets/layout/sizegrip.md"
+factory = "docs_scripts.shots.layout:sizegrip"

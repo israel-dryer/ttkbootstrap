@@ -8,10 +8,10 @@ title: Sizegrip
 
 It wraps `ttk.Sizegrip` and is typically placed in the bottom-right corner of a resizable window, status bar, or footer.
 
-<!--
-IMAGE: Sizegrip in a status bar (bottom-right)
-Theme variants: light / dark
--->
+<figure markdown>
+![sizegrip](../../assets/dark/widgets-sizegrip.png#only-dark)
+![sizegrip](../../assets/light/widgets-sizegrip.png#only-light)
+</figure>
 
 ---
 

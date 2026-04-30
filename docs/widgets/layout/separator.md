@@ -9,11 +9,10 @@ title: Separator
 It wraps `ttk.Separator` and is used to separate content sections without adding heavy visual noise -- common in
 forms, panels, tool areas, and menus.
 
-<!--
-IMAGE: Separator horizontal and vertical
-Suggested: Horizontal separator between form sections; vertical separator between sidebar + content
-Theme variants: light / dark
--->
+<figure markdown>
+![separator](../../assets/dark/widgets-separator.png#only-dark)
+![separator](../../assets/light/widgets-separator.png#only-light)
+</figure>
 
 ---
 
