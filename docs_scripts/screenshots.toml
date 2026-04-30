@@ -206,3 +206,15 @@ factory = "docs_scripts.shots.layout:scrollbar"
 slug = "widgets-scrollview"
 page = "widgets/layout/scrollview.md"
 factory = "docs_scripts.shots.layout:scrollview"
+
+# ----- Other inputs (Scale, ScrolledText) ----------------------------------
+
+[[shots]]
+slug = "widgets-scale"
+page = "widgets/inputs/scale.md"
+factory = "docs_scripts.shots.inputs:scale"
+
+[[shots]]
+slug = "widgets-scrolledtext-states"
+page = "widgets/inputs/scrolledtext.md"
+factory = "docs_scripts.shots.inputs:scrolledtext"

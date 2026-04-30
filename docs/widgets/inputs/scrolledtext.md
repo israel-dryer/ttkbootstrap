@@ -11,7 +11,10 @@ Text widget—just with better scrolling behavior and consistent theming.
 
 Use `ScrolledText` for logs, notes, editors, and any situation where **text content** needs to scroll.
 
-<!-- IMAGE: ScrolledText with multi-line content and visible scrollbar -->
+<figure markdown>
+![scrolledtext](../../assets/dark/widgets-scrolledtext-states.png#only-dark)
+![scrolledtext](../../assets/light/widgets-scrolledtext-states.png#only-light)
+</figure>
 
 ---
 
