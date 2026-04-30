@@ -10,6 +10,11 @@ It extends the ttkbootstrap Frame with automatic grid-based layout management, i
 
 Children simply call the standard `grid()` method and automatically receive the frame's default layout options and auto-placement.
 
+<figure markdown>
+![gridframe](../../assets/dark/widgets-gridframe.png#only-dark)
+![gridframe](../../assets/light/widgets-gridframe.png#only-light)
+</figure>
+
 ---
 
 ## Quick start

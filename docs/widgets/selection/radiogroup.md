@@ -9,6 +9,11 @@ title: RadioGroup
 Use `RadioGroup` when you want a convenient way to build a mutually exclusive choice list without manually wiring
 multiple `RadioButton` instances to the same signal or variable.
 
+<figure markdown>
+![radiogroup](../../assets/dark/widgets-radiogroup.png#only-dark)
+![radiogroup](../../assets/light/widgets-radiogroup.png#only-light)
+</figure>
+
 ---
 
 ## Quick start

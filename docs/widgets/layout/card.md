@@ -8,6 +8,11 @@ title: Card
 
 It is a convenience wrapper around `Frame` with `surface='card'` and `show_border=True` by default.
 
+<figure markdown>
+![card](../../assets/dark/widgets-card.png#only-dark)
+![card](../../assets/light/widgets-card.png#only-light)
+</figure>
+
 ---
 
 ## Quick start

@@ -10,6 +10,11 @@ It extends the ttkbootstrap Frame with automatic pack-based layout management, i
 
 Children simply call the standard `pack()` method and automatically receive the frame's default layout options.
 
+<figure markdown>
+![packframe](../../assets/dark/widgets-packframe.png#only-dark)
+![packframe](../../assets/light/widgets-packframe.png#only-light)
+</figure>
+
 ---
 
 ## Quick start

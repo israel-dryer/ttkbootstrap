@@ -147,3 +147,40 @@ def scrollview(parent: tkinter.Widget) -> None:
     content = sv.add()
     for i in range(1, 21):
         ttk.Label(content, text=f"Item {i:02d}").pack(anchor="w", padx=12, pady=3)
+
+
+def card(parent: tkinter.Widget) -> None:
+    """A Card with a title, body line, and a primary action button."""
+    box = ttk.Card(parent, padding=20)
+    box.pack()
+    ttk.Label(box, text="Project settings", font="heading[14]").pack(anchor="w")
+    ttk.Label(
+        box,
+        text="Configure how this project builds and deploys.",
+        bootstyle="secondary",
+        width=36,
+    ).pack(anchor="w", pady=(4, 12))
+    ttk.Button(box, text="Open settings").pack(anchor="w")
+
+
+def gridframe(parent: tkinter.Widget) -> None:
+    """3-column GridFrame auto-placing six buttons across two rows."""
+    grid = ttk.GridFrame(parent, columns=3, gap=8, padding=12, sticky_items="ew")
+    grid.pack()
+    for label in ["One", "Two", "Three", "Four", "Five", "Six"]:
+        ttk.Button(grid, text=label).grid()
+
+
+def packframe(parent: tkinter.Widget) -> None:
+    """Vertical PackFrame stacking three full-width buttons with a gap."""
+    stack = ttk.PackFrame(
+        parent,
+        direction="vertical",
+        gap=8,
+        padding=12,
+        fill_items="x",
+    )
+    stack.pack()
+    ttk.Button(stack, text="Save", width=20).pack()
+    ttk.Button(stack, text="Discard", bootstyle="secondary").pack()
+    ttk.Button(stack, text="Cancel", bootstyle="ghost").pack()

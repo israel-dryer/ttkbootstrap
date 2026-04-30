@@ -343,3 +343,32 @@ factory = "docs_scripts.shots.inputs:pathentry"
 slug = "widgets-timeentry"
 page = "widgets/inputs/timeentry.md"
 factory = "docs_scripts.shots.inputs:timeentry"
+
+# ----- Layout (Card, GridFrame, PackFrame) -------------------------------
+
+[[shots]]
+slug = "widgets-card"
+page = "widgets/layout/card.md"
+factory = "docs_scripts.shots.layout:card"
+
+[[shots]]
+slug = "widgets-gridframe"
+page = "widgets/layout/gridframe.md"
+factory = "docs_scripts.shots.layout:gridframe"
+
+[[shots]]
+slug = "widgets-packframe"
+page = "widgets/layout/packframe.md"
+factory = "docs_scripts.shots.layout:packframe"
+
+# ----- Selection groups (RadioGroup, ToggleGroup) ------------------------
+
+[[shots]]
+slug = "widgets-radiogroup"
+page = "widgets/selection/radiogroup.md"
+factory = "docs_scripts.shots.selection:radiogroup"
+
+[[shots]]
+slug = "widgets-togglegroup"
+page = "widgets/selection/togglegroup.md"
+factory = "docs_scripts.shots.selection:togglegroup"

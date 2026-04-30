@@ -71,3 +71,25 @@ def calendar(parent: tkinter.Widget) -> None:
     )
     cal.pack()
     cal.set_range(datetime.date(2026, 1, 22), datetime.date(2026, 2, 7))
+
+
+def radiogroup(parent: tkinter.Widget) -> None:
+    """Vertical RadioGroup labeled "Plan" with three options ("Pro" selected)."""
+    box = ttk.Frame(parent, padding=8)
+    box.pack()
+    group = ttk.RadioGroup(box, text="Plan", orient="vertical", value="pro")
+    group.add("Basic", value="basic")
+    group.add("Pro", value="pro")
+    group.add("Enterprise", value="enterprise")
+    group.pack()
+
+
+def togglegroup(parent: tkinter.Widget) -> None:
+    """Horizontal single-mode ToggleGroup acting as a view-mode segmented control."""
+    box = ttk.Frame(parent, padding=8)
+    box.pack()
+    group = ttk.ToggleGroup(box, mode="single", value="grid")
+    group.add("Grid", value="grid")
+    group.add("List", value="list")
+    group.add("Cards", value="cards")
+    group.pack()

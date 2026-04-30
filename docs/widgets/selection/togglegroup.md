@@ -8,6 +8,11 @@ title: ToggleGroup
 
 Use `ToggleGroup` for segmented controls, mode switches, toolbar filters, and compact selection patterns where buttons should read as a connected unit.
 
+<figure markdown>
+![togglegroup](../../assets/dark/widgets-togglegroup.png#only-dark)
+![togglegroup](../../assets/light/widgets-togglegroup.png#only-light)
+</figure>
+
 ---
 
 ## Overview
