@@ -4,8 +4,17 @@ title: MenuButton
 
 # MenuButton
 
-`MenuButton` is a **menu-first** control: it displays like a button, but its primary purpose is to **open a Tk menu**.
-Use it for classic menu patterns (File/Edit/View), or when the options list is the main interaction.
+A `MenuButton` is a button-shaped control whose primary purpose is to
+**open a menu**. Reach for one for classic menu-bar entries — File,
+Edit, View — and any place the menu *is* the interaction rather than
+a side affordance on a primary action.
+
+The attached menu is an ordinary Tk `Menu`, so it integrates with
+platform conventions (the system menu on macOS; the classic Tk menu
+on Windows and Linux) and Tk handles its keyboard navigation. For a
+fully themed widget-backed menu with icons, shortcut hints, and rich
+state semantics, see [DropdownButton](dropdownbutton.md) or
+[ContextMenu](contextmenu.md).
 
 <figure markdown>
 ![menubutton](../../assets/dark/widgets-menubutton.png#only-dark)
@@ -14,9 +23,45 @@ Use it for classic menu patterns (File/Edit/View), or when the options list is t
 
 ---
 
-## Quick start
+## Framework integration
 
-`MenuButton` uses a standard Tk `Menu`.
+**Design system**
+
+- Accents: `primary`, `secondary`, `success`, `info`, `warning`, `danger`, `light`, `dark`.
+- Variants: `solid` (default), `outline`, `ghost`, `text`. There is no `link` variant.
+- Density: `default` or `compact` for tighter content.
+- Surface: optional `surface` token; otherwise inherits from the parent.
+
+**Signals & events**
+
+- `MenuButton` itself does not fire a `command` on click — the
+  attached menu's items do. Pass a `command=` callback to each
+  `m.add_command(...)` entry.
+- `textsignal=` accepts a `Signal[str]` to drive a reactive button label.
+- `textvariable=` accepts a Tk `Variable` for the same purpose.
+
+**Icons**
+
+- `icon=` accepts an icon name or spec, theme- and state-aware.
+- `compound` controls icon placement (defaults to the left of the label).
+- `icon_only=True` strips label-side padding for icon-only controls.
+- A chevron sits to the right of the label as the dropdown affordance.
+
+**Localization**
+
+- The button's `text=` is treated as a message key when localization
+  is enabled, and updates automatically when the active locale
+  changes.
+- Menu item labels go straight through Tk and are *not* re-resolved
+  on locale change. See [Localization & reactivity](#localization-reactivity)
+  for the canonical pattern.
+
+---
+
+## Basic usage
+
+Build a Tk `Menu`, attach it via `menu=`, and let `MenuButton` post it
+when clicked.
 
 ```python
 import ttkbootstrap as ttk
@@ -40,51 +85,235 @@ app.mainloop()
 
 Use `MenuButton` when:
 
-- the control is primarily a **menu entry point**
-- you need native-style menu behavior (keyboard navigation, platform conventions)
-- your menu items map well to Tk’s `Menu` model
+- the control is primarily a **menu entry point** (File, Edit, View),
+- you want native-style menu behavior — Tk-driven keyboard navigation
+  and platform conventions,
+- the menu shape maps cleanly to Tk's `Menu` model
+  (`add_command`, `add_checkbutton`, `add_radiobutton`,
+  `add_cascade`, `add_separator`).
 
 ### Consider a different control when…
 
-- you want a primary action plus a small menu → use [DropdownButton](dropdownbutton.md)
-- you want a fully themed, widget-backed menu with icons/layout → use [ContextMenu](contextmenu.md)
-- you want a single action → use [Button](button.md)
+- A primary action plus a small dropdown of related choices →
+  use [DropdownButton](dropdownbutton.md).
+- The menu should appear on right-click on top of arbitrary content →
+  use [ContextMenu](contextmenu.md).
+- You want a fully themed menu with icons, shortcut hints, and rich
+  state semantics → use [DropdownButton](dropdownbutton.md) or
+  [ContextMenu](contextmenu.md). Those use a themed widget-backed
+  menu; `MenuButton` uses Tk's native `Menu`.
+- A single one-shot action → use [Button](button.md).
 
 ---
 
 ## Appearance
 
-`MenuButton` supports semantic colors and variants through `accent` and `variant`.
+### Accents and variants
 
-!!! link "See [Design System → Variants](../../design-system/variants.md) for how variants map consistently across widgets."
+`accent` and `variant` follow the same conventions as
+[Button](button.md) — the same accent token reads the same way across
+every ttkbootstrap widget. `solid`, `outline`, `ghost`, and `text`
+variants are supported.
 
 ```python
-ttk.MenuButton(app, text="Menu", accent="primary").pack(pady=4)
-ttk.MenuButton(app, text="Menu", accent="primary", variant="outline").pack(pady=4)
+ttk.MenuButton(app, text="File", accent="primary").pack(pady=4)
+ttk.MenuButton(app, text="File", accent="primary", variant="outline").pack(pady=4)
+ttk.MenuButton(app, text="File", accent="primary", variant="ghost").pack(pady=4)
+```
+
+!!! link "See [Design System → Variants](../../design-system/variants.md) for how accents and variants compose across widgets."
+
+### Density
+
+`density="compact"` reduces internal padding and shrinks the chevron
+for menubuttons embedded in dense toolbars.
+
+```python
+ttk.MenuButton(app, text="View", density="compact").pack()
+```
+
+### Direction
+
+`direction=` controls which side of the button the menu pops out from.
+Accepted values are `'below'` (default), `'above'`, `'left'`,
+`'right'`, and `'flush'`. Use it when the button sits near a screen
+edge or inside a panel that would otherwise clip the menu.
+
+```python
+m = ttk.Menu(app, tearoff=0)
+m.add_command(label="Recent")
+ttk.MenuButton(app, text="More", direction="above", menu=m).pack()
+```
+
+---
+
+## Examples & patterns
+
+### Cascading submenus
+
+A Tk `Menu` can nest other menus through `add_cascade`. The
+`MenuButton` hosts the top level; each cascade entry opens its child
+menu.
+
+```python
+import ttkbootstrap as ttk
+
+app = ttk.App()
+
+submenu = ttk.Menu(app, tearoff=0)
+submenu.add_command(label="Recent", command=lambda: print("Recent"))
+submenu.add_command(label="Pinned", command=lambda: print("Pinned"))
+
+main = ttk.Menu(app, tearoff=0)
+main.add_cascade(label="Open", menu=submenu)
+main.add_separator()
+main.add_command(label="Save", command=lambda: print("Save"))
+
+ttk.MenuButton(app, text="File", menu=main).pack(padx=20, pady=20)
+
+app.mainloop()
+```
+
+### Check and radio entries
+
+Tk's `Menu` supports `add_checkbutton` and `add_radiobutton` items
+backed by Tk variables. The variable holds the current value; the
+menu item reads and writes it on activation.
+
+```python
+import ttkbootstrap as ttk
+
+app = ttk.App()
+
+show_grid = ttk.BooleanVar(value=True)
+sort_by = ttk.StringVar(value="name")
+
+m = ttk.Menu(app, tearoff=0)
+m.add_checkbutton(label="Show grid", variable=show_grid)
+m.add_separator()
+m.add_radiobutton(label="Sort by name", value="name", variable=sort_by)
+m.add_radiobutton(label="Sort by date", value="date", variable=sort_by)
+
+ttk.MenuButton(app, text="View", menu=m).pack(padx=20, pady=20)
+
+app.mainloop()
+```
+
+### Icon-only menubutton
+
+For toolbars where the icon already conveys meaning, drop the label
+and let the chevron sit beside it.
+
+```python
+import ttkbootstrap as ttk
+
+app = ttk.App()
+
+m = ttk.Menu(app, tearoff=0)
+m.add_command(label="Rename")
+m.add_command(label="Delete")
+
+ttk.MenuButton(app, icon="three-dots-vertical", icon_only=True, menu=m).pack(pady=10)
+
+app.mainloop()
+```
+
+!!! link "See [Icons & Imagery](../../capabilities/icons/index.md) for icon sizing, DPI handling, and recoloring behavior."
+
+### Rebuilding the menu at runtime
+
+The attached menu is just a `tk.Menu` — mutate it directly with
+`delete` and `add_*`, or build a fresh menu and reattach it via
+`configure(menu=...)`. Use the second form when the entire item set
+changes (e.g., a "Recent files" menu that depends on the selection).
+
+```python
+btn = ttk.MenuButton(app, text="Recent")
+btn.pack()
+
+def refresh(paths):
+    m = ttk.Menu(btn, tearoff=0)
+    for p in paths:
+        m.add_command(label=p, command=lambda p=p: print("open", p))
+    btn.configure(menu=m)
 ```
 
 ---
 
 ## Behavior
 
-- `MenuButton` opens the associated Tk `Menu`.
-- Menu keyboard navigation and platform conventions are handled by Tk.
+- **Click**, **Space**, or **Enter** posts the attached menu.
+- A second click while the menu is visible closes it (Windows/Linux).
+  On macOS, the system menu's state machine drives this gesture.
+- Once the menu is open, **↑** / **↓** move highlight, **Enter**
+  invokes the highlighted item, and **Esc** closes the menu.
+- A disabled `MenuButton` ignores activation entirely and is skipped
+  during focus traversal.
+- Hover, focus, and pressed visuals come from the active theme; no
+  extra wiring is required.
+
+!!! note "macOS uses the native menu backend"
+    On Aqua, Tk's class binding posts the menu through an NSMenu
+    state machine that owns mouse and focus capture. `MenuButton`
+    deliberately defers to that binding rather than posting the menu
+    manually, so the system menu's selection and dismissal behavior
+    is preserved.
 
 !!! link "See [State & Interaction](../../capabilities/state-and-interaction.md) for focus, hover, and disabled behavior across widgets."
 
 ---
 
-## Localization
+## Localization & reactivity
 
-Tk `Menu` labels can be localized by passing message tokens (or resolved strings) when you build the menu.
+### Localized button label
+
+When localization is enabled, the value passed to `text=` is treated
+as a message key and resolved through the active catalog. The button
+label updates automatically when the locale changes at runtime; if the
+key has no translation, the literal string is shown — so `text="File"`
+works whether or not localization is on.
 
 ```python
-m = Menu(app, tearoff=0)
-m.add_command(label="menu.open", command=lambda: ...)
-ttk.MenuButton(app, text="button.file", menu=m).pack()
+ttk.MenuButton(app, text="menu.file", menu=m).pack()
 ```
 
-!!! link "See [Localization](../../capabilities/localization.md) for how message tokens are resolved and how language switching works."
+### Reactive button label
+
+Bind a `Signal[str]` via `textsignal` when the label needs to update
+dynamically.
+
+```python
+label = ttk.Signal("View")
+ttk.MenuButton(app, textsignal=label, menu=m).pack()
+
+label.set("Layout")
+```
+
+### Localizing menu items
+
+Menu item labels are passed straight through to Tk and are *not*
+re-resolved on locale change. To localize them, resolve the messages
+at construction time with `MessageCatalog.translate()` (or its alias),
+and rebuild the affected menus when the locale switches.
+
+```python
+from ttkbootstrap import MessageCatalog
+
+_ = MessageCatalog.translate
+
+m = ttk.Menu(app, tearoff=0)
+m.add_command(label=_("menu.open"), command=lambda: print("open"))
+m.add_command(label=_("menu.save"), command=lambda: print("save"))
+
+ttk.MenuButton(app, text="menu.file", menu=m).pack()
+```
+
+For menus whose item labels participate in the localization lifecycle
+the same way the button does, use [DropdownButton](dropdownbutton.md)
+or [ContextMenu](contextmenu.md) — those resolve every item's `text=`
+through the catalog and refresh on locale change.
+
+!!! link "See [Signals](../../capabilities/signals/index.md) for reactive bindings, and [Localization](../../capabilities/localization.md) for catalogs and locale switching."
 
 ---
 
@@ -92,15 +321,19 @@ ttk.MenuButton(app, text="button.file", menu=m).pack()
 
 ### Related widgets
 
-- [DropdownButton](dropdownbutton.md)
-- [ContextMenu](contextmenu.md)
-- [Button](button.md)
+- [DropdownButton](dropdownbutton.md) — primary action plus a themed dropdown of choices.
+- [ContextMenu](contextmenu.md) — themed pop-up menu, shown on right-click.
+- [Button](button.md) — single-action trigger.
+- [ButtonGroup](buttongroup.md) — connected row of related buttons.
 
 ### Framework concepts
 
 - [Design System → Variants](../../design-system/variants.md)
-- [State & Interaction](../../capabilities/state-and-interaction.md)
+- [Design System → Icons](../../design-system/icons.md)
+- [Icons & Imagery](../../capabilities/icons/index.md)
+- [Signals](../../capabilities/signals/index.md)
 - [Localization](../../capabilities/localization.md)
+- [State & Interaction](../../capabilities/state-and-interaction.md)
 
 ### API reference
 

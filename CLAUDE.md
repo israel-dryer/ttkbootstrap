@@ -103,13 +103,24 @@ in progress; platform/capabilities pages still to come.
       `dropdown_button_icon`, `textsignal`, runtime-mutation API
       (`add_command`/`add_separator`/`add_checkbutton`/`add_radiobutton`/
       `configure_item`/`items()` setter), and shortcut display.
-- [ ] `menubutton.md`
+- [x] `menubutton.md` (2026-04-30) — added `Framework integration`,
+      `Examples & patterns`, and `Localization & reactivity`; renamed
+      `Quick start` → `Basic usage`. Documented the supported variant
+      set (no `link`), `direction=`, cascading submenus, check/radio
+      entries, icon-only menubutton, and runtime menu rebuilding.
+      Clarified that `MenuButton` itself has no `command=` (items do)
+      and that menu item labels are *not* re-resolved on locale
+      change — pattern: `MessageCatalog.translate()` at construction
+      and rebuild on locale switch (link to DropdownButton/ContextMenu
+      for fully reactive items). Captured the macOS NSMenu caveat.
+
+**Actions category complete.** Move on to inputs next (highest user
+traffic remaining): `entry.md`, `combobox.md`, `spinbox.md`, etc. —
+see `docs/widgets/inputs/`.
 
 The category template lives at `docs/_template/widget-action-template.md`.
 Run `python tools/check_doc_structure.py --category actions` to confirm
-required H2s; the existing four un-reviewed pages will fail that check
-until they're reviewed (this is expected and is what the editorial pass
-fixes).
+required H2s.
 
 Run **one page at a time** as a deliberate session. Each session covers:
 
