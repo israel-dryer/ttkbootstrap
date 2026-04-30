@@ -27,7 +27,7 @@ A localized application:
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.App(locale="es")
+app = ttk.App(settings={"locale": "es"})
 
 # Use message keys instead of literal text
 ttk.Label(app, text="greeting.hello").pack(pady=20)
@@ -74,11 +74,12 @@ Each file contains key-value pairs:
 import ttkbootstrap as ttk
 from ttkbootstrap import MessageCatalog
 
-# Load catalog from file
+# App must exist before loading catalogs
+app = ttk.App(settings={"locale": "en"})
+
+# Load catalogs from file
 MessageCatalog.load("locales/en.json")
 MessageCatalog.load("locales/es.json")
-
-app = ttk.App(locale="en")
 ```
 
 ### Using Message Keys
@@ -152,7 +153,7 @@ Switch languages without restarting:
 import ttkbootstrap as ttk
 from ttkbootstrap import MessageCatalog
 
-app = ttk.App(locale="en")
+app = ttk.App(settings={"locale": "en"})
 
 def switch_to_spanish():
     MessageCatalog.locale("es")
@@ -203,7 +204,7 @@ formatted = formatter.format_currency(99.99, "EUR")  # "99,99 €"
 Some widgets format values automatically based on locale:
 
 ```python
-app = ttk.App(locale="de")
+app = ttk.App(settings={"locale": "de"})
 
 # DateEntry displays dates in German format
 ttk.DateEntry(app).pack()
@@ -222,17 +223,21 @@ ttk.NumericEntry(app).pack()
 import ttkbootstrap as ttk
 from ttkbootstrap import MessageCatalog
 
-app = ttk.App(locale="en")
+app = ttk.App(settings={"locale": "en"})
 
 languages = [("English", "en"), ("Español", "es"), ("Français", "fr")]
 
 selector = ttk.OptionMenu(
     app,
-    values=[name for name, _ in languages],
-    command=lambda name: MessageCatalog.locale(
-        next(code for n, code in languages if n == name)
-    ),
+    options=[name for name, _ in languages],
 )
+
+def on_language_change(event):
+    name = event.data["value"]
+    code = next(code for n, code in languages if n == name)
+    MessageCatalog.locale(code)
+
+selector.bind("<<Change>>", on_language_change)
 selector.pack(pady=20)
 
 app.mainloop()
@@ -243,7 +248,7 @@ app.mainloop()
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.App(locale="en")
+app = ttk.App(settings={"locale": "en"})
 
 form = ttk.GridFrame(app, columns=["auto", 1], gap=10, padding=20)
 form.pack(fill="both", expand=True)
@@ -265,23 +270,26 @@ app.mainloop()
 
 ```python
 import ttkbootstrap as ttk
-from ttkbootstrap import LV
+from ttkbootstrap import MessageCatalog
 
 app = ttk.App()
 
-# Reactive count
 count = ttk.Signal(0)
+label = ttk.Label(app)
+label.pack(pady=20)
 
-# Message updates when count changes
-status = LV("items.selected", count=count)
+def update_label(n):
+    # Translate the key and interpolate the count
+    tmpl = MessageCatalog.translate("items.selected")
+    label.configure(text=tmpl.format(n=n) if "{" in tmpl else f"{tmpl}: {n}")
 
-ttk.Label(app, textvariable=status).pack(pady=20)
+count.subscribe(update_label)
+update_label(count.get())
 
 def add_item():
     count.set(count.get() + 1)
 
 ttk.Button(app, text="Add", command=add_item).pack()
-
 app.mainloop()
 ```
 

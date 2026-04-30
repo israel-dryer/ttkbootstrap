@@ -19,13 +19,15 @@ app = ttk.App()
 
 dlg = ttk.FormDialog(
     title="New connection",
-    fields=[
+    items=[
         {"key": "host", "label": "Host", "required": True},
-        {"key": "port", "label": "Port", "value": 5432},
+        {"key": "port", "label": "Port"},
         {"key": "user", "label": "User"},
     ],
+    data={"host": "", "port": 5432, "user": ""},
 )
-result = dlg.show()
+dlg.show()
+result = dlg.result
 
 print("result:", result)  # dict or None (implementation-dependent)
 app.mainloop()

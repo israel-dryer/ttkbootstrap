@@ -19,13 +19,22 @@ import ttkbootstrap as ttk
 
 app = ttk.App()
 
+def build_content(parent):
+    ttk.Label(parent, text="Explain what the user needs to do.").pack(
+        padx=20, pady=20
+    )
+
 dialog = ttk.Dialog(
     title="Dialog title",
-    message="Explain what the user needs to do.",
+    content_builder=build_content,
+    buttons=[
+        {"text": "Cancel", "role": "cancel"},
+        {"text": "OK", "role": "primary"},
+    ],
 )
-result = dialog.show()
+dialog.show()
 
-print("result:", result)
+print("result:", dialog.result)
 app.mainloop()
 ```
 

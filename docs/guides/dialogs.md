@@ -284,7 +284,10 @@ def build_content(parent):
 dialog = ttk.Dialog(
     title="Export",
     content_builder=build_content,
-    buttons=["Cancel", "Export:primary"],
+    buttons=[
+        {"text": "Cancel", "role": "cancel"},
+        {"text": "Export", "role": "primary"},
+    ],
 )
 dialog.show()
 ```
@@ -293,8 +296,8 @@ Common building blocks:
 
 - **`content_builder`** — function that receives a parent frame and adds
   your widgets.
-- **`buttons`** — list of button specs (strings, dicts, or `DialogButton`
-  instances). The first button appears rightmost.
+- **`buttons`** — list of button specs (dicts or `DialogButton` instances).
+  The first button appears rightmost.
 - **`mode="popover"`** — anchor the dialog to a widget instead of centering it.
 - **`dialog.result`** — set inside button commands to communicate back to
   the caller.

@@ -20,7 +20,7 @@ app = ttk.App()
 value = ttk.QueryBox.get_string(
     title="Rename",
     prompt="Enter a new name",
-    initial="Untitled",
+    value="Untitled",
 )
 
 print("value:", value)  # None if cancelled
@@ -62,7 +62,7 @@ pwd = ttk.QueryBox.get_password(
 qty = ttk.QueryBox.get_integer(
     title="Quantity",
     prompt="How many?",
-    initial=1,
+    value=1,
     minvalue=0,
     maxvalue=999,
 )

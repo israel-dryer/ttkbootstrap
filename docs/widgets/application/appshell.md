@@ -131,7 +131,7 @@ import ttkbootstrap as ttk
 
 shell = ttk.AppShell(
     title="Custom Window",
-    theme="cosmo-dark",
+    theme="darkly",
     size=(1000, 650),
     frameless=True,
 )

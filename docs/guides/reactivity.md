@@ -35,7 +35,7 @@ app = ttk.App()
 name = ttk.Signal("")
 
 # Connect an entry to the signal
-entry = ttk.TextEntry(app, signal=name)
+entry = ttk.TextEntry(app, textsignal=name)
 entry.pack(padx=20, pady=10)
 
 # React to signal changes
@@ -107,7 +107,7 @@ Many widgets accept a `signal` parameter:
 name = ttk.Signal("")
 
 # Entry updates the signal
-entry = ttk.TextEntry(app, signal=name)
+entry = ttk.TextEntry(app, textsignal=name)
 
 # Label displays the signal
 label = ttk.Label(app, textvariable=name)
@@ -288,7 +288,7 @@ def on_submit():
     current_name = name.get()
     print(f"Submitting: {current_name}")
 
-entry = ttk.TextEntry(app, signal=name)
+entry = ttk.TextEntry(app, textsignal=name)
 button = ttk.Button(app, text="Submit", command=on_submit)
 ```
 
@@ -451,7 +451,7 @@ item_list.bind("<<ItemSelected>>", on_selected)
 ```python
 # Good: shared username across form
 username = ttk.Signal("")
-entry = ttk.TextEntry(app, signal=username)
+entry = ttk.TextEntry(app, textsignal=username)
 preview = ttk.Label(app, textvariable=username)
 ```
 
@@ -497,10 +497,10 @@ form = ttk.PackFrame(app, direction="vertical", gap=10, padding=20)
 form.pack(fill="both", expand=True)
 
 ttk.Label(form, text="Username:").pack()
-ttk.TextEntry(form, signal=username).pack()
+ttk.TextEntry(form, textsignal=username).pack()
 
 ttk.Label(form, text="Password:").pack()
-ttk.PasswordEntry(form, signal=password).pack()
+ttk.PasswordEntry(form, textsignal=password).pack()
 
 # Submit reads current signal values
 def on_submit():

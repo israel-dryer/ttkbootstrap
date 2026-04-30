@@ -97,7 +97,7 @@ app = ttk.App()
 
 lv = ListView(
     app,
-    items=[{"id": i, "title": f"Item {i}"} for i in range(2000)],
+    items=[{"id": i, "title": f"Item {i}"} for i in range(50)],
     selection_mode="multi",
     show_selection_controls=True,
 )
@@ -106,7 +106,7 @@ lv.pack(fill="both", expand=True, padx=20, pady=20)
 def on_sel(_):
     print("selected:", lv.get_selected())
 
-lv.on_selection_change(on_sel)
+lv.on_selection_changed(on_sel)
 
 app.mainloop()
 ```
@@ -219,7 +219,7 @@ ListView generates virtual events for higher-level behaviors:
 Preferred handlers:
 
 ```python
-lv.on_selection_change(lambda e: print(lv.get_selected()))
+lv.on_selection_changed(lambda e: print(lv.get_selected()))
 lv.on_item_click(lambda e: print("clicked:", e.data))
 ```
 

@@ -61,7 +61,7 @@ Most desktop applications follow the same layout: toolbar at the top, sidebar on
 ```python
 import ttkbootstrap as ttk
 
-shell = ttk.AppShell(title="My App", theme="cosmo-light", size=(1000, 650))
+shell = ttk.AppShell(title="My App", theme="cosmo", size=(1000, 650))
 
 # Each add_page() creates a nav item and returns a Frame for content
 home = shell.add_page("home", text="Home", icon="house")
@@ -257,7 +257,7 @@ app = ttk.App()
 username = ttk.Signal("")
 
 # Input updates the signal
-entry = ttk.TextEntry(app, signal=username)
+entry = ttk.TextEntry(app, textsignal=username)
 entry.pack(padx=20, pady=10)
 
 # Label reacts to the signal
@@ -345,7 +345,7 @@ import ttkbootstrap as ttk
 
 app = ttk.App(
     title="My App",
-    locale="es",  # Spanish locale
+    settings={"locale": "es"},  # Spanish locale
 )
 
 # Widgets use message keys
@@ -364,14 +364,14 @@ A structured application example:
 ```python
 import ttkbootstrap as ttk
 
+# App must be created before signals
+app = ttk.App(title="Counter", size=(300, 200))
+
 # State
 counter = ttk.Signal(0)
 
 def increment():
     counter.set(counter.get() + 1)
-
-# App
-app = ttk.App(title="Counter", size=(300, 200))
 
 # Layout
 main = ttk.PackFrame(app, direction="vertical", gap=10, padding=20)

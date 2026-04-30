@@ -437,14 +437,14 @@ ttk.Label(grid, text="Email:").grid()
 ttk.Entry(grid).grid(sticky="ew")
 
 ttk.Label(grid, text="Role:").grid()
-ttk.OptionMenu(grid, values=["User", "Admin", "Guest"]).grid(sticky="ew")
+ttk.OptionMenu(grid, options=["User", "Admin", "Guest"]).grid(sticky="ew")
 
 # Toggles
 toggles = ttk.PackFrame(form, direction="vertical", gap=5)
 toggles.pack(fill="x", pady=(15, 0))
 
-ttk.CheckButton(toggles, text="Email notifications", variant="toggle").pack()
-ttk.CheckButton(toggles, text="Two-factor auth", accent="success", variant="toggle").pack()
+ttk.CheckToggle(toggles, text="Email notifications").pack()
+ttk.CheckToggle(toggles, text="Two-factor auth", accent="success").pack()
 
 # Actions
 actions = ttk.PackFrame(form, direction="horizontal", gap=10)

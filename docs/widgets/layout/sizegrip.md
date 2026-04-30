@@ -28,7 +28,7 @@ content.pack(fill="both", expand=True)
 status = ttk.Frame(app, padding=(8, 4))
 status.pack(fill="x", side="bottom")
 
-grip = ttk.Sizegrip(status)
+grip = ttk.SizeGrip(status)
 grip.pack(side="right")
 
 app.mainloop()

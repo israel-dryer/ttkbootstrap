@@ -74,7 +74,7 @@ public methods accept lists of dicts:
 
 ```python
 table.set_data(rows)                          # replace all rows
-table.insert_rows([{"name": "Dan", ...}])     # append
+table.insert_rows([{"name": "Dan", "email": "dan@example.com"}])  # append
 table.update_rows([{"id": 3, "name": "Dani"}])  # update by id
 table.delete_rows([3, 5])                     # delete by id (or row dict)
 ```

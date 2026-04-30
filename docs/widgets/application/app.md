@@ -20,7 +20,7 @@ It wraps Tk with sensible defaults: theme initialization, DPI awareness, window 
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.App(title="My App", theme="cosmo-light", size=(800, 600))
+app = ttk.App(title="My App", theme="cosmo", size=(800, 600))
 
 ttk.Label(app, text="Hello, world!").pack(padx=20, pady=20)
 

@@ -17,10 +17,12 @@ import ttkbootstrap as ttk
 
 app = ttk.App()
 
-color = ttk.ColorChooser(
+dialog = ttk.ColorChooserDialog(
     title="Choose a color",
-    initial="#3b82f6",
-).show()
+    initial_color="#3b82f6",
+)
+dialog.show()
+color = dialog.result
 
 print("color:", color)  # hex / rgb / None
 app.mainloop()

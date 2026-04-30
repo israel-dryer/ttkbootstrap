@@ -19,14 +19,17 @@ app = ttk.App()
 
 dlg = ttk.FilterDialog(
     title="Filters",
-    filters=[
-        {"key": "status", "label": "Status", "options": ["New", "In Progress", "Done"]},
-        {"key": "priority", "label": "Priority", "options": ["Low", "Medium", "High"]},
+    items=[
+        {"text": "New", "value": "new"},
+        {"text": "In Progress", "value": "in_progress"},
+        {"text": "Done", "value": "done"},
     ],
+    enable_search=True,
+    enable_select_all=True,
 )
-result = dlg.show()
+dlg.show()
 
-print("filters:", result)  # dict-like or None
+print("selected:", dlg.result)  # list of selected values, or None
 app.mainloop()
 ```
 

@@ -95,7 +95,8 @@ scaling factor to match. The resulting scaling factor drives font and widget siz
 
 Tk does not scale `PhotoImage` objects automatically on Windows. On a 150% display
 (144 DPI), a 32×32 image will appear as 21×21 logical pixels — noticeably small.
-Load a larger image and let the scaling factor inform the size:
+Supply a pre-scaled asset (e.g., a 64×64 version of a 32-point icon for 2× displays)
+and load it with `Image.open`:
 
 ```python
 import ttkbootstrap as ttk
@@ -103,12 +104,12 @@ from ttkbootstrap.api.utils import Image
 
 app = ttk.App()
 
-# Image loads at the right size for the current DPI automatically
-icon = Image.open("icon.png", size=(32, 32))
+# Load image from disk; result is cached by path
+icon = Image.open("icon@2x.png")
 ```
 
-The `Image` utility accounts for the current scaling factor when interpreting
-the `size` argument.
+Scale factor can be read at runtime via `app.tk.call("tk", "scaling")` — multiply
+your design-time pixel dimensions by that value to choose the right asset.
 
 ---
 
@@ -177,9 +178,9 @@ from ttkbootstrap.api.utils import Image
 
 app = ttk.App()
 
-# Cached — second call returns the same object
-logo = Image.open("logo.png", size=(64, 64))
-same_logo = Image.open("logo.png", size=(64, 64))
+# Cached — second call returns the same PhotoImage object
+logo = Image.open("logo.png")
+same_logo = Image.open("logo.png")  # same object, no disk read
 
 label = ttk.Label(app, image=logo)
 label.pack()
@@ -215,7 +216,8 @@ Use the `Image` utility with caching, or create the image once and reuse.
 
 **Ignoring DPI on Windows:** loading a fixed-pixel image without accounting for
 the scaling factor produces icons that look too small on HiDPI displays. Use
-`Image.open(..., size=(w, h))` and let the utility scale to the display.
+DPI-aware asset variants (e.g., `icon.png` at 1× and `icon@2x.png` at 2×)
+and select the right one based on `app.tk.call("tk", "scaling")`.
 
 ---
 

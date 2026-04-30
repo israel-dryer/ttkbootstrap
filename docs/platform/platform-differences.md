@@ -40,6 +40,9 @@ import ttkbootstrap as ttk
 app = ttk.App()
 shortcuts = ttk.get_shortcuts()
 
+def save_file():
+    print("Save triggered")
+
 # Registers as Cmd+S on macOS, Ctrl+S on Windows/Linux
 shortcuts.register("save", "Mod+S", save_file)
 shortcuts.bind_to(app)

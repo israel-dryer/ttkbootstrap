@@ -24,17 +24,16 @@ import ttkbootstrap as ttk
 app = ttk.App()
 
 items = [
-    ttk.ContextMenuItem(text="Open", command=lambda: print("Open")),
-    ttk.ContextMenuItem(text="Rename", command=lambda: print("Rename")),
-    ttk.ContextMenuItem(separator=True),
-    ttk.ContextMenuItem(text="Delete", accent="danger", command=lambda: print("Delete")),
+    ttk.ContextMenuItem("command", text="Open", command=lambda: print("Open")),
+    ttk.ContextMenuItem("command", text="Rename", command=lambda: print("Rename")),
+    ttk.ContextMenuItem("separator"),
+    ttk.ContextMenuItem("command", text="Delete", command=lambda: print("Delete")),
 ]
 
 ttk.DropdownButton(
     app,
     text="File",
     items=items,
-    command=lambda: print("Primary action"),
 ).pack(padx=20, pady=20)
 
 app.mainloop()
@@ -80,8 +79,8 @@ ttk.DropdownButton(app, text="Ghost", accent="primary", variant="ghost", items=[
 
 ```python
 items = [
-    ttk.ContextMenuItem(text="Settings", icon="gear", command=lambda: print("Settings")),
-    ttk.ContextMenuItem(text="Help", icon="circle-help", command=lambda: print("Help")),
+    ttk.ContextMenuItem("command", text="Settings", icon="gear", command=lambda: print("Settings")),
+    ttk.ContextMenuItem("command", text="Help", icon="circle-help", command=lambda: print("Help")),
 ]
 ttk.DropdownButton(app, text="More", items=items).pack(pady=10)
 ```
@@ -119,8 +118,8 @@ If localization is enabled, menu labels can be message tokens just like widget `
 
 ```python
 items = [
-    ttk.ContextMenuItem(text="menu.open", command=lambda: ...),
-    ttk.ContextMenuItem(text="menu.delete", command=lambda: ...),
+    ttk.ContextMenuItem("command", text="menu.open", command=lambda: ...),
+    ttk.ContextMenuItem("command", text="menu.delete", command=lambda: ...),
 ]
 ttk.DropdownButton(app, text="button.file", items=items).pack()
 ```

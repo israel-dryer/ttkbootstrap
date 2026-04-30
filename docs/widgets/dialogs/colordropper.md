@@ -17,7 +17,7 @@ import ttkbootstrap as ttk
 
 app = ttk.App()
 
-color = ttk.ColorDropper().show()
+color = ttk.ColorDropperDialog().show()
 print("color:", color)  # hex / rgb / None
 
 app.mainloop()

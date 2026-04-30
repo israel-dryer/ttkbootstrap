@@ -28,7 +28,7 @@ app = ttk.App()
 btn = ttk.Button(app, text="Refresh")
 btn.pack(padx=20, pady=20)
 
-ttk.Tooltip(btn, text="Reload the current view")
+ttk.ToolTip(btn, text="Reload the current view")
 app.mainloop()
 ```
 

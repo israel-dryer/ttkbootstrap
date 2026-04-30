@@ -18,7 +18,6 @@ import ttkbootstrap as ttk
 app = ttk.App()
 
 ttk.Toast(
-    app,
     title="Saved",
     message="Your changes were saved successfully.",
 ).show()
