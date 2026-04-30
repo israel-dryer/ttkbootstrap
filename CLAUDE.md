@@ -71,7 +71,10 @@ Open items from earlier phases (do not lose track):
 Pass 1 is done; every snippet is known to match the current API. Pass 2 is
 the active work. Goal: each guide is best-in-class for its content type.
 
-Run **one guide at a time** as a deliberate session. Each session covers:
+**All 14 guides in `docs/guides/` are done** (2026-04-30). Next: widget
+pages (`docs/widgets/`), then platform/capabilities pages.
+
+Run **one page at a time** as a deliberate session. Each session covers:
 
 - **Structural fit** — does the page follow the right template for its content
   type? Use `python tools/check_doc_structure.py` (from Phase 5I) to flag
@@ -79,28 +82,31 @@ Run **one guide at a time** as a deliberate session. Each session covers:
 - **Accuracy** — snippets are clean, but does the *narrative* match the API?
   (Methods that no longer exist, options whose semantics changed.)
 - **Completeness** — are concepts a good docs site would cover present?
-  (e.g. forms guide should cover validation, async submission, error display,
-  dirty-state handling.)
 - **Clarity** — framing, ordering, jargon.
 
 Architectural pages (`platform/*`, `capabilities/*`, `design-system/*`,
 `reference/*/index.md`) — same treatment, stronger weight on accuracy.
 
-**Sequencing within a session:**
-1. `python tools/check_doc_structure.py --category <name>` — structural gaps.
-2. Read the page end-to-end. Note accuracy and completeness gaps.
-3. Rewrite in one pass. Don't interleave drift fixes (those belong in a
-   separate commit run through `check_doc_snippets.py --run` first).
-4. Run `check_doc_snippets.py --run --file <page>` to confirm examples still
-   pass after edits.
-5. Commit with message `Docs: editorial review — <page title>`.
+**Session workflow:**
+1. Read the page end-to-end. Note gaps.
+2. Rewrite in one pass.
+3. `python tools/check_doc_snippets.py --run --file <page>` — confirm 0 failures.
+4. Commit: `Docs: editorial review — <page title>`.
 
-**Priority order** (pages with most Pass 1 drift = most editorial debt):
-1. `docs/guides/localization.md`
-2. `docs/guides/dialogs.md`
-3. `docs/guides/app-structure.md`
-4. `docs/guides/reactivity.md`
-5. Then remaining guides, then widget pages, then platform/capabilities.
+**Widget page priority** — do actions, inputs, dialogs, and data-display first
+(highest user traffic); then layout, navigation, overlays, selection, views,
+primitives.
+
+**Bugs surfaced during guide review** (logged in plan, not yet fixed):
+- `AppSettings.light_theme`/`dark_theme` defaults are `docs-light`/`docs-dark`
+  (counterintuitive; should probably be `bootstrap-light`/`bootstrap-dark`)
+- `follow_system_appearance` is silently no-op on Windows/Linux
+- `ListView` calls `deselect_all()`/`is_selected()` on its datasource but
+  `BaseDataSource` exposes `unselect_all()`/no `is_selected` — mismatch
+- `Signal.map()` uses weakref; inline `textvariable=sig.map(fn)` can stop
+  updating after the derived signal is GC'd
+- `MessageDialog._parse_buttons` stores the `:role` suffix into deprecated
+  `bootstyle` field instead of `accent`
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
