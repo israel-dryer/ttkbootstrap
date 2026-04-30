@@ -74,53 +74,52 @@ the active work. Goal: each guide is best-in-class for its content type.
 **All 14 guides in `docs/guides/` are done** (2026-04-30). Widget pages
 in progress; platform/capabilities pages still to come.
 
-**Widget pages — actions** (`docs/widgets/actions/`, 5 pages):
+**Widget pages — actions** (`docs/widgets/actions/`) — **DONE 2026-04-30.**
 
-- [x] `button.md` (2026-04-30, commit `99fc744`) — first widget page reviewed.
-      Establishes the template-conformant pattern other action pages should
-      follow: `Framework integration` overview, `Basic usage` (not `Quick start`),
-      merged `Localization & reactivity`. Use this as the canonical reference
-      when reviewing the remaining four.
-- [x] `buttongroup.md` (2026-04-30) — added `Framework integration`, `Behavior`,
-      and `Localization & reactivity`; renamed `Quick start` → `Basic usage`;
-      documented `orient`, `density`, key-based lookup
-      (`item`/`configure_item`/`remove`), iteration/`len`/`in`, and group-level
-      `state`. Removed two `SegmentedButton` links — that widget doesn't exist.
-- [x] `contextmenu.md` (2026-04-30) — added `Framework integration`,
-      `Appearance`, expanded `Examples & patterns`; renamed `Quick start`
-      → `Basic usage`; documented `trigger=`, `target=` defaulting to
-      master, `density`, `minwidth`/`width`, key-based lookup
-      (`item`/`configure_item`/`remove_item`/`move_item`/`insert_item`/`keys`),
-      `disabled=`/`shortcut=` on `add_command`, `on_item_click` payload
-      shape, `items()` setter for runtime replacement, anchor/attach/offset
-      positioning model, and the macOS native-backend caveats.
-- [x] `dropdownbutton.md` (2026-04-30) — added `Framework integration`,
-      expanded `Behavior` and `Examples & patterns`, merged
-      `Localization & reactivity`. Corrected the `on_item_click`
-      payload (a `{type, text, value}` dict, not an item object) and
-      documented `command=` running alongside `show_menu` on click.
-      Surfaced `density`, `popdown_options`, `show_dropdown_button`,
-      `dropdown_button_icon`, `textsignal`, runtime-mutation API
-      (`add_command`/`add_separator`/`add_checkbutton`/`add_radiobutton`/
-      `configure_item`/`items()` setter), and shortcut display.
-- [x] `menubutton.md` (2026-04-30) — added `Framework integration`,
-      `Examples & patterns`, and `Localization & reactivity`; renamed
-      `Quick start` → `Basic usage`. Documented the supported variant
-      set (no `link`), `direction=`, cascading submenus, check/radio
-      entries, icon-only menubutton, and runtime menu rebuilding.
-      Clarified that `MenuButton` itself has no `command=` (items do)
-      and that menu item labels are *not* re-resolved on locale
-      change — pattern: `MessageCatalog.translate()` at construction
-      and rebuild on locale switch (link to DropdownButton/ContextMenu
-      for fully reactive items). Captured the macOS NSMenu caveat.
+All 5 pages reviewed (`button.md`, `buttongroup.md`, `contextmenu.md`,
+`dropdownbutton.md`, `menubutton.md`). `button.md` (commit `99fc744`)
+is the canonical pattern for action-style pages: `Framework integration`
+overview, `Basic usage` (not `Quick start`), merged
+`Localization & reactivity`. The other four follow it.
 
-**Actions category complete.** Move on to inputs next (highest user
-traffic remaining): `entry.md`, `combobox.md`, `spinbox.md`, etc. —
-see `docs/widgets/inputs/`.
+`tools/check_doc_structure.py --category actions` → 5/5 pass.
 
-The category template lives at `docs/_template/widget-action-template.md`.
-Run `python tools/check_doc_structure.py --category actions` to confirm
-required H2s.
+### Now: Widget pages — inputs (`docs/widgets/inputs/`, 10 pages)
+
+This is the next session's bucket. Inputs use a **different template**
+than actions — don't carry the actions section names over verbatim.
+
+Template: `docs/_template/widget-input-template.md`. Required H2s:
+
+- `Basic usage`
+- `Value model` *(what `value` means, live vs committed changes,
+  empty/none/invalid representation, signal vs variable)*
+- `Common options` *(curated, not an API dump)*
+- `Behavior` *(widget-specific: formatting, filtering, popup, stepping…)*
+- `Events` *(`on_input` for live, `on_changed` for committed)*
+- `Validation and constraints`
+- `When should I use WidgetName?`
+- `Related widgets`
+- `Reference`
+
+Pages to review:
+
+- [ ] `textentry.md` *(start here — likely the canonical input pattern)*
+- [ ] `numericentry.md`
+- [ ] `passwordentry.md`
+- [ ] `pathentry.md`
+- [ ] `dateentry.md`
+- [ ] `timeentry.md`
+- [ ] `spinnerentry.md`
+- [ ] `scale.md`
+- [ ] `labeledscale.md`
+- [ ] `scrolledtext.md`
+
+`tools/check_doc_structure.py --category inputs` currently fails on all
+10 — that's expected and is what this pass fixes. Run it before and
+after each page to confirm structural fit. After the first page is
+done, treat it as the canonical reference for the rest of the inputs
+sweep (the way `button.md` anchored actions).
 
 Run **one page at a time** as a deliberate session. Each session covers:
 
