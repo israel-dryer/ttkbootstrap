@@ -22,6 +22,11 @@ ttkbootstrap exposes `Text` as a first-class widget so you can build editors, lo
     For most form input, prefer [TextEntry](/widgets/inputs/textentry.md), [PasswordEntry](/widgets/inputs/passwordentry.md), [NumericEntry](/widgets/inputs/numericentry.md), etc.
     Use `Text` when you need **multi-line editing** or **tag-based formatting**.
 
+<figure markdown>
+![text](../../assets/dark/widgets-text.png#only-dark)
+![text](../../assets/light/widgets-text.png#only-light)
+</figure>
+
 ---
 
 ## Quick start

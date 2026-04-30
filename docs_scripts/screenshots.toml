@@ -294,3 +294,30 @@ factory = "docs_scripts.shots.selection:optionmenu"
 slug = "widgets-calendar"
 page = "widgets/selection/calendar.md"
 factory = "docs_scripts.shots.selection:calendar"
+
+# ----- Primitives ----------------------------------------------------------
+
+[[shots]]
+slug = "widgets-entry"
+page = "widgets/primitives/entry.md"
+factory = "docs_scripts.shots.primitives:entry"
+
+[[shots]]
+slug = "widgets-combobox"
+page = "widgets/primitives/combobox.md"
+factory = "docs_scripts.shots.primitives:combobox"
+
+[[shots]]
+slug = "widgets-spinbox"
+page = "widgets/primitives/spinbox.md"
+factory = "docs_scripts.shots.primitives:spinbox"
+
+[[shots]]
+slug = "widgets-text"
+page = "widgets/primitives/text.md"
+factory = "docs_scripts.shots.primitives:text"
+
+[[shots]]
+slug = "widgets-canvas"
+page = "widgets/primitives/canvas.md"
+factory = "docs_scripts.shots.primitives:canvas"

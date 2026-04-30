@@ -24,6 +24,11 @@ ttkbootstrap exposes `Canvas` as a first-class widget so you can build high-perf
     If your UI is primarily structured data, prefer **ListView**, **TableView**, or **TreeView**.
     Use `Canvas` when you need **custom drawing**, **freeform layout**, or **interaction** that standard widgets can't express.
 
+<figure markdown>
+![canvas](../../assets/dark/widgets-canvas.png#only-dark)
+![canvas](../../assets/light/widgets-canvas.png#only-light)
+</figure>
+
 ---
 
 ## Quick start

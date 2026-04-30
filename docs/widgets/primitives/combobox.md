@@ -14,6 +14,11 @@ title: Combobox
 It provides a familiar dropdown list with optional typing. Use `Combobox` when you need low-level ttk behavior or direct
 access to `ttk.Combobox` methods. Use [SelectBox](/widgets/selection/selectbox.md) for most selection use cases.
 
+<figure markdown>
+![combobox](../../assets/dark/widgets-combobox.png#only-dark)
+![combobox](../../assets/light/widgets-combobox.png#only-light)
+</figure>
+
 ---
 
 ## Quick start

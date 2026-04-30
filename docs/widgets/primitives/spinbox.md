@@ -10,6 +10,11 @@ It provides low-level spin behavior (range or list stepping) while still allowin
 native ttk options like `format` and `command`. For a form-ready field with labels/messages/validation and standardized events,
 prefer [SpinnerEntry](/widgets/inputs/spinnerentry.md).
 
+<figure markdown>
+![spinbox](../../assets/dark/widgets-spinbox.png#only-dark)
+![spinbox](../../assets/light/widgets-spinbox.png#only-light)
+</figure>
+
 ---
 
 ## Quick start

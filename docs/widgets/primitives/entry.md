@@ -9,6 +9,11 @@ title: Entry
 It wraps `ttk.Entry` and integrates ttkbootstrap styling plus reactive text support. `Entry` is also the building block
 used by higher-level controls like `TextEntry`, `NumericEntry`, `DateEntry`, and `PasswordEntry`.
 
+<figure markdown>
+![entry](../../assets/dark/widgets-entry.png#only-dark)
+![entry](../../assets/light/widgets-entry.png#only-light)
+</figure>
+
 ---
 
 ## Quick start
