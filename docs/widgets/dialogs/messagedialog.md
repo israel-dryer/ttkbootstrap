@@ -4,122 +4,294 @@ title: MessageDialog
 
 # MessageDialog
 
-`MessageDialog` is a **modal dialog class** for displaying messages with customizable buttons.
+`MessageDialog` is a modal popup that shows a message and a row of
+named buttons. Calling `show()` blocks until the user picks a button;
+the chosen button's text is then available on `.result` and is
+broadcast as a `<<DialogResult>>` event.
 
-Use `MessageDialog` when you need a simple message popup with custom button labels, icons, and styling. For common patterns (info, warning, error, yes/no), prefer the convenience methods in [MessageBox](messagebox.md).
+It is the building block underneath
+[`MessageBox`](messagebox.md) — when the canned info/warning/error/
+yes-no patterns aren't quite right, drop down to `MessageDialog` to
+control the icon, the button labels, the default button, and the
+accent.
 
 ---
 
-## Quick start
+## Framework integration
+
+**Application & Windows**
+
+`MessageDialog` is a wrapper around the generic
+[`Dialog`](dialog.md). It opens a `Toplevel` transient to its parent
+and runs in modal mode: the parent window is grabbed, **Escape**
+cancels (when a `cancel`-role button is present), **Enter** triggers
+the default button, and `show()` does not return until the user
+dismisses the dialog. The dialog is centered on the parent unless an
+explicit `position` is passed to `show()`.
+
+**Design System**
+
+Buttons are real [`Button`](../actions/button.md) instances, so they
+participate in the standard accent/variant system. The default button
+gets the `primary` accent and keyboard focus; a leading `cancel`
+button gets the `secondary` outline variant. Pass `"label:accent"` in
+the buttons list (`"Delete:danger"`) to override the accent for an
+individual button.
+
+**Signals & Events**
+
+The dialog has no signal model — its only output is a single
+`.result` value plus the matching `<<DialogResult>>` event, fired
+once when the dialog closes. Use `on_dialog_result(callback)` to
+receive a structured payload (`result`, `confirmed`) without binding
+the virtual event yourself.
+
+**Localization**
+
+When a button label looks like a translation key (e.g. the default
+`"button.cancel"` / `"button.ok"`) and `localize=True` is passed, the
+label is resolved through `MessageCatalog.translate(...)` at
+construction time. The dialog title and message are *not* auto-
+translated — pass them already-translated, or wrap the call yourself.
+
+---
+
+## Basic usage
 
 ```python
 import ttkbootstrap as ttk
-from ttkbootstrap.dialogs import MessageDialog
 
 app = ttk.App()
 
-dialog = MessageDialog(
-    message="Are you sure you want to proceed?",
-    title="Confirm Action",
-    buttons=["Cancel", "Proceed"],
-    icon="question-circle-fill",
-)
-dialog.show()
+def confirm():
+    dialog = ttk.MessageDialog(
+        message="Delete the selected item? This cannot be undone.",
+        title="Confirm delete",
+        buttons=["Cancel", "Delete:danger"],
+        icon="exclamation-triangle-fill",
+    )
+    dialog.show()
+    if dialog.result == "Delete":
+        print("deleting…")
 
-print("User clicked:", dialog.result)
-
+ttk.Button(app, text="Delete…", command=confirm).pack(padx=20, pady=20)
 app.mainloop()
 ```
 
+`show()` blocks the caller. Read `.result` after it returns, or
+register a callback with `on_dialog_result` if you'd rather react
+event-style.
+
 ---
 
-## When to use
+## What problem it solves
 
-Use `MessageDialog` when:
+A simple "ask the user something and branch" interaction needs a
+modal window, a focus grab, sensible Enter/Escape bindings, a default
+button, themed buttons, and a way to recover the user's choice. Doing
+that with raw `Toplevel` and `Button` calls is several dozen lines of
+boilerplate per dialog.
 
-- you need custom button labels or styling
-- you want to display an icon with your message
-- you need programmatic control over the dialog
+`MessageDialog` collapses all of that into one constructor and one
+`show()` call. Compared to the higher-level [`MessageBox`](messagebox.md)
+shortcuts, `MessageDialog` keeps full control of the button labels,
+the default, the icon, and the per-button accent — at the cost of
+one extra line for `.show()` and one for the `.result` check.
 
-### Consider a different control when...
+---
 
-- you want a standard info/warning/error dialog -> use [MessageBox](messagebox.md) static methods
-- you need user input -> use [QueryDialog](querydialog.md)
-- you need a complex form -> use [FormDialog](formdialog.md)
+## Core concepts
+
+### Modal, blocking, single-result
+
+A `MessageDialog` is always modal. While it is open, the parent is
+grabbed and cannot receive input. `show()` is a blocking call — it
+returns only after the user has picked a button or closed the window.
+
+There is exactly one result: the text of the button the user pressed,
+or `None` if the dialog was closed without choosing one (clicking the
+window's close button, or **Escape** with no `cancel`-role binding).
+
+### Buttons drive the result
+
+Every button has a label, an accent, and a `result` value. By default
+the label *is* the result, so reading `.result` and comparing it to
+the label you passed in is the canonical pattern:
+
+```python
+dialog = ttk.MessageDialog(message="Save?", buttons=["No", "Yes"])
+dialog.show()
+if dialog.result == "Yes":
+    save()
+```
+
+For internationalized apps where the label changes per locale, prefer
+checking `confirmed` from the event payload (see
+[Events](#events)) or distinguish buttons by position rather than
+label.
+
+### Default and cancel buttons
+
+The **default button** is the one **Enter** triggers and that gets
+keyboard focus. Specify it explicitly with `default="OK"` (matched by
+text); if omitted, the *last* button in the list is the default.
+
+If the *first* button's label contains the word "cancel"
+(case-insensitive), it is also wired up to **Escape** and gets the
+outline variant. To make any other button the cancel button, build a
+[`Dialog`](dialog.md) directly with explicit `DialogButton(role="cancel")`
+specs.
+
+---
+
+## Result value
+
+`.result` is the **text of the button pressed**, with the leading
+`text:` portion of the spec stripped:
+
+```python
+dialog = ttk.MessageDialog(buttons=["Cancel", "Save:primary"])
+dialog.show()
+
+dialog.result  # "Cancel" or "Save", or None
+```
+
+`None` means the user dismissed the dialog without choosing a button
+— typically by closing the window from the title bar or pressing
+**Escape** when no `cancel`-role button is present.
+
+The `<<DialogResult>>` event payload also carries a `confirmed` flag
+which is `True` whenever `result is not None` — useful when you only
+care about "did the user act?" rather than which button was pressed.
 
 ---
 
 ## Common options
 
-### `message`
-
-The message text to display. Supports multiline strings.
-
-### `title`
-
-The dialog window title.
-
-### `buttons`
-
-List of button labels. Can specify color as `"label:color"`.
-
-```python
-dialog = MessageDialog(
-    message="Choose an action",
-    buttons=["Cancel", "Save:primary", "Delete:danger"],
-)
-```
-
-### `icon`
-
-Optional icon to display. Can be a string (icon name) or dict with `name`, `size`, `color`.
+| Option | Purpose |
+|---|---|
+| `message` | The body text. Wrapped to `width` characters per line. Newlines in the input are preserved. |
+| `title` | Window title shown in the title bar. |
+| `buttons` | List of button labels. `"text:accent"` syntax sets a per-button accent (`"Save:primary"`, `"Delete:danger"`). Default is `["button.cancel", "button.ok"]`. |
+| `default` | Label of the button to mark as default (Enter target, primary accent, focused). Falls back to the last button in the list. |
+| `icon` | A Bootstrap icon name (`"info-circle-fill"`) or a dict `{"name": ..., "size": 32, "color": "danger"}` for a colored or sized icon. |
+| `width` | Maximum line length for message wrapping, in characters. Default `50`. |
+| `padding` | Inner padding around the message body, as `(x, y)` or a single int. Default `(20, 20)`. |
+| `alert` | If `True`, rings the system bell when the dialog opens. Default `False`. |
+| `master` | Parent window. Defaults to the application root. |
+| `command` | Callable invoked once for *any* button press, before the dialog closes. Receives no arguments. |
+| `localize` | Pass via `**kwargs`. When `True`, button labels are resolved through `MessageCatalog.translate` (so the default `"button.cancel"` / `"button.ok"` keys render in the active locale). |
 
 ```python
-MessageDialog(message="Success!", icon="check-circle-fill")
-MessageDialog(message="Error!", icon={"name": "x-circle-fill", "size": 48, "color": "danger"})
+ttk.MessageDialog(
+    message="Sign in failed.",
+    title="Authentication error",
+    icon={"name": "x-circle-fill", "size": 40, "color": "danger"},
+    buttons=["Close", "Retry:primary"],
+    default="Retry",
+    alert=True,
+).show()
 ```
-
-### `default`
-
-The button label to use as default (receives primary color and focus).
-
-### `alert`
-
-If True, rings the system bell when shown.
-
----
-
-## Behavior
-
-- The dialog is modal - blocks interaction with the parent until closed.
-- Clicking any button closes the dialog and sets `result` to the button text.
-- The `result` property returns None if the dialog was closed without clicking a button.
 
 ---
 
 ## Events
 
-`MessageDialog` emits `<<DialogResult>>` when closed.
+`<<DialogResult>>` is fired once on the dialog's `Toplevel` after the
+user picks a button. The payload exposed via `event.data` carries:
+
+| Key | Type | Meaning |
+|---|---|---|
+| `result` | `str` or `None` | The pressed button's text (or `None`). |
+| `confirmed` | `bool` | `result is not None`. |
+
+Use `on_dialog_result(callback)` to register a handler that receives
+the payload directly (no `event.data` unwrap needed). The helper
+returns a binding identifier you can pass back to `off_dialog_result`
+to detach.
 
 ```python
-def on_result(payload):
-    print("Result:", payload["result"])
-    print("Confirmed:", payload["confirmed"])
+def handle(payload):
+    if payload["confirmed"]:
+        print("user picked:", payload["result"])
+    else:
+        print("user dismissed the dialog")
 
-dialog.on_dialog_result(on_result)
+dialog = ttk.MessageDialog(message="Continue?", buttons=["No", "Yes"])
+dialog.on_dialog_result(handle)
 dialog.show()
 ```
+
+The `command` constructor argument is a simpler alternative when you
+only need a side effect on every button press and don't care which
+button was pressed; it runs *before* the dialog closes and receives
+no arguments.
+
+---
+
+## UX guidance
+
+- **Keep the message short.** `MessageDialog` is for a single
+  question or notice. If you need a paragraph of explanation, a form,
+  or a list of options, use [`FormDialog`](formdialog.md) or build
+  your own with [`Dialog`](dialog.md).
+- **Label buttons with verbs**, not "OK" / "Cancel", whenever the
+  action has a name. "Delete", "Discard changes", "Replace file" tell
+  the user what will happen; "OK" doesn't.
+- **Put the destructive option last** and color it with `:danger`,
+  with the safe option first and not styled as primary. The
+  default-button rule (last button is the default) means *make the
+  safer choice the default* — if "Delete" is the destructive action,
+  list buttons as `["Delete:danger", "Cancel"]` so **Enter** cancels.
+- **Reserve `alert=True` for genuinely urgent dialogs.** The bell is
+  a hard interrupt; use it for errors that require attention, not for
+  routine confirmations.
+- **Don't chain dialogs.** If a dialog's button opens another dialog,
+  the user has to dismiss two levels of modal before they can keep
+  working. Restructure into a single dialog or a non-modal flow.
+
+---
+
+## When to use / when not to
+
+**Use `MessageDialog` when:**
+
+- you need a confirmation, notice, or two-/three-way decision with
+  custom button labels.
+- you want an icon or a per-button accent (`:danger`, `:primary`).
+- the canned [`MessageBox`](messagebox.md) shortcuts don't fit.
+
+**Avoid `MessageDialog` when:**
+
+- the message fits a stock pattern (info / warning / error / yes-no /
+  ok-cancel) — use [`MessageBox`](messagebox.md) for less code.
+- you need to collect a value, not just a button choice — use
+  [`QueryDialog`](querydialog.md) or [`QueryBox`](querybox.md).
+- you need multiple inputs — use [`FormDialog`](formdialog.md).
+- you want a non-blocking notification — there is no built-in toast;
+  build a non-modal `Toplevel` with auto-dismiss.
 
 ---
 
 ## Additional resources
 
-### Related widgets
+**Related widgets**
 
-- [MessageBox](messagebox.md) - static convenience methods for common message patterns
-- [QueryDialog](querydialog.md) - dialogs with user input
-- [Dialog](dialog.md) - base dialog class for custom dialogs
+- [`MessageBox`](messagebox.md) — static `show_info` / `yesno` / etc.
+  shortcuts that build a `MessageDialog` for you.
+- [`QueryDialog`](querydialog.md) — modal dialog with a single text
+  input.
+- [`FormDialog`](formdialog.md) — multi-field modal form.
+- [`Dialog`](dialog.md) — the generic builder underneath
+  `MessageDialog`; use it directly when you need full control of
+  layout, footer, or button roles.
 
-### API reference
+**Framework concepts**
 
-- [`ttkbootstrap.dialogs.MessageDialog`](../../reference/dialogs/MessageDialog.md)
+- [Windows](../../platform/windows.md)
+- [Localization](../../capabilities/localization.md)
+
+**API reference**
+
+- **API reference:** [`ttkbootstrap.MessageDialog`](../../reference/dialogs/MessageDialog.md)
+- **Related guides:** Dialogs, Localization
