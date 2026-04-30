@@ -86,9 +86,9 @@ overview, `Basic usage` (not `Quick start`), merged
 
 ### Now: Widget pages — inputs (`docs/widgets/inputs/`, 10 pages)
 
-7 of 10 done. Remaining: `scale.md`, `labeledscale.md`, `scrolledtext.md`
-(the three non-text inputs). Inputs use a **different template** than
-actions — don't carry the actions section names over verbatim.
+8 of 10 done. Remaining: `labeledscale.md`, `scrolledtext.md`. Inputs use
+a **different template** than actions — don't carry the actions section
+names over verbatim.
 
 Template: `docs/_template/widget-input-template.md`. Required H2s:
 
@@ -114,12 +114,12 @@ Pages to review:
 - [x] `dateentry.md`
 - [x] `timeentry.md`
 - [x] `spinnerentry.md`
-- [ ] `scale.md`
+- [x] `scale.md`
 - [ ] `labeledscale.md`
 - [ ] `scrolledtext.md`
 
 `tools/check_doc_structure.py --category inputs` currently fails on the
-3 remaining pages — that's expected and is what this pass fixes. Run it
+2 remaining pages — that's expected and is what this pass fixes. Run it
 before and after each page to confirm structural fit.
 
 The structure check substitutes the literal `WidgetName` in the
