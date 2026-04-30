@@ -8,6 +8,11 @@ title: Toolbar
 
 It optionally supports window control buttons (minimize, maximize, close) and window dragging for custom titlebars.
 
+<figure markdown>
+![toolbar](../../assets/dark/widgets-toolbar.png#only-dark)
+![toolbar](../../assets/light/widgets-toolbar.png#only-light)
+</figure>
+
 ---
 
 ## Quick start

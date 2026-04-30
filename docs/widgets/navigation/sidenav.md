@@ -9,6 +9,11 @@ section headers, and a footer area.
 
 It supports three display modes: expanded (full width with text), compact (icons only), and minimal (hidden until toggled).
 
+<figure markdown>
+![sidenav](../../assets/dark/widgets-sidenav.png#only-dark)
+![sidenav](../../assets/light/widgets-sidenav.png#only-light)
+</figure>
+
 ---
 
 ## Quick start

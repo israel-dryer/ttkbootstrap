@@ -7,6 +7,11 @@ title: AppShell
 `AppShell` is an **application window with built-in navigation** — it extends `App` and wires
 together a `Toolbar`, `SideNav`, and `PageStack` into the standard desktop app layout.
 
+<figure markdown>
+![appshell](../../assets/dark/widgets-appshell.png#only-dark)
+![appshell](../../assets/light/widgets-appshell.png#only-light)
+</figure>
+
 ---
 
 ## Quick start

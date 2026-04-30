@@ -8,6 +8,11 @@ title: Form
 
 It makes it easy to build consistent data-entry UIs by composing the standard v2 input widgets (TextEntry, NumericEntry, SelectBox, DateEntry, etc.) from a single definition.
 
+<figure markdown>
+![form](../../assets/dark/widgets-form.png#only-dark)
+![form](../../assets/light/widgets-form.png#only-light)
+</figure>
+
 ---
 
 ## Quick start

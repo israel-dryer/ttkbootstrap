@@ -406,3 +406,27 @@ factory = "docs_scripts.shots.data_display:tableview"
 slug = "widgets-treeview"
 page = "widgets/data-display/treeview.md"
 factory = "docs_scripts.shots.data_display:treeview"
+
+# ----- Forms (Form) ------------------------------------------------------
+
+[[shots]]
+slug = "widgets-form"
+page = "widgets/forms/form.md"
+factory = "docs_scripts.shots.forms:form"
+
+# ----- Navigation (Toolbar, SideNav, AppShell) ---------------------------
+
+[[shots]]
+slug = "widgets-toolbar"
+page = "widgets/navigation/toolbar.md"
+factory = "docs_scripts.shots.navigation:toolbar"
+
+[[shots]]
+slug = "widgets-sidenav"
+page = "widgets/navigation/sidenav.md"
+factory = "docs_scripts.shots.navigation:sidenav"
+
+[[shots]]
+slug = "widgets-appshell"
+page = "widgets/application/appshell.md"
+factory = "docs_scripts.shots.navigation:appshell"
