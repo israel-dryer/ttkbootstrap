@@ -107,7 +107,7 @@ Pages to review:
 - [x] `textentry.md` — **canonical input pattern** (commit pending; use
       this as the reference for the rest of the inputs sweep, the way
       `button.md` anchored actions)
-- [ ] `numericentry.md`
+- [x] `numericentry.md`
 - [ ] `passwordentry.md`
 - [ ] `pathentry.md`
 - [ ] `dateentry.md`
@@ -118,7 +118,7 @@ Pages to review:
 - [ ] `scrolledtext.md`
 
 `tools/check_doc_structure.py --category inputs` currently fails on the
-9 remaining pages — that's expected and is what this pass fixes. Run it
+8 remaining pages — that's expected and is what this pass fixes. Run it
 before and after each page to confirm structural fit.
 
 The structure check substitutes the literal `WidgetName` in the

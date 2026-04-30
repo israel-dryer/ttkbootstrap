@@ -4,10 +4,18 @@ title: NumericEntry
 
 # NumericEntry
 
-`NumericEntry` is a form-ready numeric input control that combines a **label**, **numeric field**, and **message region**.
+`NumericEntry` is a form-ready numeric input that combines a label, an
+entry field, and a message line into a single composite widget. It
+extends [`TextEntry`](textentry.md) with the behaviors numeric input
+almost always needs: typed values, min/max bounds, stepping via keys
+and mouse wheel, optional spin buttons, and locale-aware formatting on
+commit.
 
-It adds the behavior you almost always need for numeric data: bounds, stepping, formatting, validation, localization, and
-consistent field events. If you are building forms or dialogs, `NumericEntry` is usually your **default numeric input**.
+The committed value is an `int` or a `float` — the type is inferred
+from `value`, `minvalue`, `maxvalue`, and `increment`. Whatever the
+user types is parsed at commit time, clamped (or wrapped) into range,
+and reformatted for display so downstream code sees a clean numeric
+value, never raw text.
 
 <figure markdown>
 ![NumericEntry states](../../assets/dark/widgets-numericentry-states.png#only-dark)
@@ -16,7 +24,7 @@ consistent field events. If you are building forms or dialogs, `NumericEntry` is
 
 ---
 
-## Quick start
+## Basic usage
 
 ```python
 import ttkbootstrap as ttk
@@ -29,7 +37,6 @@ qty = ttk.NumericEntry(
     value=1,
     minvalue=0,
     maxvalue=999,
-    increment=1,
     message="How many items?",
 )
 qty.pack(fill="x", padx=20, pady=10)
@@ -39,98 +46,109 @@ app.mainloop()
 
 ---
 
-## When to use
+## Value model
 
-Use `NumericEntry` when:
+`NumericEntry` separates **what is in the field right now** from **the
+committed numeric value**:
 
-- users type numbers and you want reliable parsing + validation
+| Concept | Meaning | How to read it |
+|---|---|---|
+| Text | The raw editable string in the entry, updated on every keystroke. | `entry.get()` |
+| Value | The parsed, bounded number — produced when the user blurs the field, presses **Enter**, or steps. | `entry.value` |
 
-- bounds and stepping help prevent errors
+Parsing, bounds clamping (or wrapping), and `value_format` are applied
+at commit time only — never on every keystroke.
 
-- you want locale-aware display formatting on commit
+### Numeric type
 
-Consider a different control when:
+The widget chooses `int` or `float` automatically:
 
-- stepping is the primary interaction (visible step buttons matter) — use [SpinnerEntry](spinnerentry.md)
-
-- users adjust by feel and live feedback matters — use [Scale](scale.md)
-
-- you need the lowest-level ttk spinbox behavior and options — use [Spinbox](../primitives/spinbox.md)
-
----
-
-## Appearance
-
-### `accent`
+- if `value`, `minvalue`, `maxvalue`, or `increment` is a `float`, the
+  committed value is `float`.
+- otherwise it is `int`.
 
 ```python
-ttk.NumericEntry(app, label="Quantity")  # primary (default)
-ttk.NumericEntry(app, label="Quantity", accent="secondary")
-ttk.NumericEntry(app, label="Quantity", accent="success")
-ttk.NumericEntry(app, label="Quantity", accent="warning")
+counter = ttk.NumericEntry(app, value=0, increment=1)        # int
+amount  = ttk.NumericEntry(app, value=0.0, increment=0.01)   # float
 ```
 
-!!! link "Design System"
-    For a complete list of available colors and styling options, see the [Design System](../../design-system/index.md) documentation.
+### Empty values
+
+When the field is empty:
+
+- with `allow_blank=True` (the default), the committed value is `None`.
+- with `allow_blank=False`, the previous value is preserved on commit.
+
+### Signals and variables
+
+`entry.signal` and `entry.variable` are bound to the **raw text**, not
+the parsed number — same as [`TextEntry`](textentry.md). Read
+`entry.value` when you need the typed numeric result.
+
+```python
+text = ttk.Signal("")
+qty = ttk.NumericEntry(app, value=10, textsignal=text)
+print(text.get())   # "10"
+print(qty.value)    # 10
+```
 
 ---
 
-## Examples and patterns
+## Common options
 
-### Value model
-
-All Entry-based field controls separate **what the user is typing** from the **committed value**.
-
-| Concept | Meaning |
+| Option | Purpose |
 |---|---|
-| Text | Raw, editable string while focused |
-| Value | Parsed/validated value committed on blur or Enter |
+| `value` | Initial numeric value (default `0`). |
+| `label` | Text shown above the entry. |
+| `message` | Helper text shown below; replaced by validation errors. |
+| `minvalue` / `maxvalue` | Inclusive bounds. Out-of-range values are clamped on commit. |
+| `increment` | Step size for keyboard, wheel, and spin buttons (default `1`). |
+| `wrap` | If `True`, values cycle through the range instead of clamping. |
+| `show_spin_buttons` | Show or hide the inline ± buttons (default `True`). |
+| `value_format` | Locale-aware format spec applied on commit (`'currency'`, `'percent'`, `'fixedPoint'`, ICU patterns, …). |
+| `required` | Adds an asterisk to the label and a `'required'` validation rule. |
+| `allow_blank` | Whether an empty input commits as `None` (default) or preserves the previous value. |
+| `state` | `'normal'`, `'disabled'`, or `'readonly'`. |
+| `accent` | Semantic color token for the focus ring (`primary`, `success`, `danger`, …). |
+| `density` | `'default'` or `'compact'` for tight forms. |
+| `textsignal` / `textvariable` | External signal or Tk variable bound to the raw text. |
 
 ```python
-current = qty.value      # committed value (usually int/float)
-raw = qty.get()          # raw text at any time
-
-qty.value = 42
+ttk.NumericEntry(app, label="Quantity")                 # primary (default)
+ttk.NumericEntry(app, label="Quantity", accent="success")
+ttk.NumericEntry(app, label="Quantity", density="compact")
 ```
 
-!!! tip "Commit semantics"
-    Parsing, validation, and `value_format` are applied **only when the value is committed**
-    (blur/Enter), never on every keystroke.
+!!! link "See [Design System](../../design-system/index.md) for the full set of accent and density tokens."
 
-### Common options
+---
 
-#### Bounds: `minvalue` / `maxvalue`
+## Behavior
+
+### Stepping
+
+Stepping increments or decrements the value by `increment`. The user
+can step by:
+
+- the inline **+** / **−** spin buttons (if `show_spin_buttons=True`).
+- the **Up** and **Down** arrow keys when the field has focus.
+- the mouse wheel over the field.
+
+You can also step programmatically:
 
 ```python
-age = ttk.NumericEntry(app, label="Age", value=25, minvalue=0, maxvalue=120)
+qty.increment()    # +1 step
+qty.decrement()    # -1 step
+qty.step(+5)       # +5 steps
 ```
 
-#### Stepping: `increment`
+Each step emits `<<Change>>` if the value actually changed, after
+clamping or wrapping into range.
 
-Stepping is supported via:
+### Bounds and wrap
 
-- spin buttons (if enabled)
-
-- Up/Down arrow keys
-
-- mouse wheel (platform-dependent)
-
-```python
-price = ttk.NumericEntry(
-    app,
-    label="Unit Price",
-    value=9.99,
-    minvalue=0,
-    maxvalue=10000,
-    increment=0.01,
-)
-```
-
-#### `wrap`
-
-- default behavior clamps at the min/max
-
-- set `wrap=True` to cycle through the range
+`minvalue` / `maxvalue` clamp on commit and on every step. With
+`wrap=True`, values past either end cycle to the other:
 
 ```python
 percent = ttk.NumericEntry(
@@ -144,82 +162,27 @@ percent = ttk.NumericEntry(
 )
 ```
 
-#### Spin buttons: `show_spin_buttons`
+Bounds can be changed at runtime — the current value is re-clamped:
 
 ```python
-field = ttk.NumericEntry(app, label="Quantity", value=1, show_spin_buttons=False)
+qty.configure(maxvalue=10)   # current value > 10 is clamped down
 ```
 
-#### Formatting: `value_format`
+### Spin buttons
 
-Commit-time, locale-aware formatting:
+The increment and decrement buttons are inserted as add-ons after the
+entry. `show_spin_buttons=False` hides them; toggling later via
+`configure(show_spin_buttons=...)` shows or hides without rebuilding.
 
 ```python
-ttk.NumericEntry(app, label="Currency", value=1234.56, value_format="currency").pack()
-ttk.NumericEntry(app, label="Fixed Point", value=15422354, value_format="fixedPoint").pack()
-ttk.NumericEntry(app, label="Percent", value=0.35, value_format="percent").pack()
+field = ttk.NumericEntry(app, label="Quantity", show_spin_buttons=False)
 ```
-
-<figure markdown>
-![numeric formats](../../assets/dark/widgets-numericentry-formats.png#only-dark)
-![numeric formats](../../assets/light/widgets-numericentry-formats.png#only-light)
-</figure>
-
-See [Guides → Formatting](../../guides/formatting.md) for all number presets, precision control, and custom patterns.
-
-### Events
-
-`NumericEntry` emits standard field events:
-
-- `<<Input>>` / `on_input` — live typing
-
-- `<<Changed>>` / `on_changed` — committed value changed
-
-- `<<Valid>>`, `<<Invalid>>`, `<<Validated>>` — validation lifecycle
-
-It also emits step intent events:
-
-- `<<Increment>>` / `on_increment`
-
-- `<<Decrement>>` / `on_decrement`
-
-```python
-def handle_changed(event):
-    print("changed:", event.data)
-
-qty.on_changed(handle_changed)
-
-def handle_increment(event):
-    print("increment requested")
-
-qty.on_increment(handle_increment)
-```
-
-!!! tip "Live typing"
-    Use `on_input(...)` for live UX (previews), and `on_changed(...)` for committed values.
-
-### Validation
-
-Use numeric options for guardrails:
-
-- `minvalue` / `maxvalue` for bounds
-
-- `increment` for step size
-
-Use validation rules for business logic:
-
-```python
-qty = ttk.NumericEntry(app, label="Quantity", minvalue=0, maxvalue=999, required=True)
-qty.add_validation_rule("required", message="Quantity is required")
-```
-
----
-
-## Behavior
 
 ### Add-ons
 
-Like other field controls, `NumericEntry` supports prefix and suffix add-ons.
+Like other field controls, `NumericEntry` accepts prefix and suffix
+add-ons via `insert_addon`. They share the field's disabled state and
+focus styling.
 
 ```python
 salary = ttk.NumericEntry(app, label="Salary")
@@ -234,43 +197,146 @@ size.insert_addon(ttk.Label, position="after", text="cm", font="label[9]")
 ![addons](../../assets/light/widgets-numericentry-addons.png#only-light)
 </figure>
 
+### Disable, enable, readonly
+
+```python
+qty.disable()        # not editable, not focusable; spin buttons disable too
+qty.enable()
+qty.readonly(True)   # focusable, copyable, not editable
+qty.readonly(False)
+```
+
+### Locale-aware formatting
+
+When `value_format` is set, the committed number is formatted using the
+active locale. If the locale changes at runtime, the displayed text is
+reformatted automatically — the underlying numeric value is unchanged.
+
+```python
+ttk.NumericEntry(app, label="Currency",    value=1234.56,   value_format="currency").pack()
+ttk.NumericEntry(app, label="Fixed point", value=15422354,  value_format="fixedPoint").pack()
+ttk.NumericEntry(app, label="Percent",     value=0.35,      value_format="percent").pack()
+```
+
+<figure markdown>
+![numeric formats](../../assets/dark/widgets-numericentry-formats.png#only-dark)
+![numeric formats](../../assets/light/widgets-numericentry-formats.png#only-light)
+</figure>
+
+!!! link "See [Localization](../../capabilities/localization.md) for the available format specs and locale handling."
+
 ---
 
-## Localization
+## Events
 
-`NumericEntry` supports locale-aware number formatting through the `value_format` option. Formatting is applied at commit time, displaying numbers according to the current locale's conventions (decimal separators, grouping, currency symbols).
+`NumericEntry` emits virtual events with structured payloads. Each one
+has a matching `on_*` / `off_*` helper for ergonomic registration.
 
-!!! link "Localization"
-    For complete localization configuration and supported formats, see the [Localization](../../capabilities/localization.md) documentation.
+**Input, value, and step events** (callback receives the raw event;
+read `event.data`):
+
+| Event | Helper | Fires when… | `event.data` |
+|---|---|---|---|
+| `<<Input>>` | `on_input` | every keystroke | `{'text': str}` |
+| `<<Change>>` | `on_changed` | committed value differs from focus-in value | `{'value', 'prev_value', 'text'}` |
+| `<Return>` | `on_enter` | **Enter** pressed in the field | `{'value', 'text'}` |
+| `<<Increment>>` | `on_increment` | step up requested (key, wheel, button) — fires before the step | `{'value': current_value}` |
+| `<<Decrement>>` | `on_decrement` | step down requested — fires before the step | `{'value': current_value}` |
+
+```python
+def show_committed(event):
+    print("committed:", event.data["value"])
+
+def show_step_up(event):
+    print("stepping up from:", event.data["value"])
+
+qty = ttk.NumericEntry(app, value=0, minvalue=0, maxvalue=10)
+qty.on_changed(show_committed)
+qty.on_increment(show_step_up)
+```
+
+**Validation events** (callback receives the payload `dict` directly):
+
+| Event | Helper | Fires when… | Payload |
+|---|---|---|---|
+| `<<Valid>>` | `on_valid` | validation passes | `{'value', 'is_valid': True, 'message': ''}` |
+| `<<Invalid>>` | `on_invalid` | validation fails | `{'value', 'is_valid': False, 'message': str}` |
+| `<<Validate>>` | `on_validated` | after any validation | `{'value', 'is_valid': bool, 'message': str}` |
+
+!!! tip "Live vs committed"
+    Use `on_input` for live previews. Use `on_changed` when you only
+    care about the final number the user settled on. The `<<Change>>`
+    event also fires on every step, so `on_changed` covers spin buttons
+    and arrow-key stepping too.
 
 ---
 
-## Reactivity
+## Validation and constraints
 
-`NumericEntry` integrates with the signals system for reactive data binding. Changes to the field value can automatically propagate to other parts of your application.
+Bounds (`minvalue`, `maxvalue`) and `wrap` are the first line of
+defense — values outside the range are clamped (or cycled) before
+`<<Change>>` fires, so downstream code never sees them.
 
-!!! link "Signals"
-    For details on reactive patterns and data binding, see the [Signals](../../capabilities/signals/signals.md) documentation.
+For app-level rules, use `add_validation_rule(rule_type, **kwargs)`,
+which runs automatically on key release and blur. Built-in rule types
+are `'required'`, `'pattern'`, `'stringLength'`, and `'custom'`.
+
+```python
+qty = ttk.NumericEntry(app, label="Quantity", minvalue=1, maxvalue=999, required=True)
+qty.add_validation_rule("required", message="Quantity is required")
+
+# Custom rule on the parsed numeric value
+qty.add_validation_rule(
+    "custom",
+    func=lambda v: v is not None and v % 5 == 0,
+    message="Must be a multiple of 5",
+)
+```
+
+A failed rule replaces the message line with the rule's error text and
+emits `<<Invalid>>`. A passing rule restores the original message and
+emits `<<Valid>>`.
+
+`add_validation_rules(rules)` replaces the entire rule set — useful
+when constraints depend on another field's value. See
+[`TextEntry`](textentry.md#validation-and-constraints) for the
+cross-field pattern; the rule API is identical.
 
 ---
 
-## Additional resources
+## When should I use NumericEntry?
 
-### Related widgets
+Use `NumericEntry` when:
 
-- [TextEntry](textentry.md) — general field control with validation and formatting
-- [SpinnerEntry](spinnerentry.md) — stepped field control
-- [Spinbox](../primitives/spinbox.md) — low-level stepper primitive
-- [Scale](scale.md) — slider-based numeric adjustment
-- [Form](../forms/form.md) — build forms from field definitions
+- the field collects a number and you want typed values out, not strings.
+- bounds, stepping, or locale-aware formatting matter.
+- you want consistent commit semantics (`<<Change>>` on blur, **Enter**, or step) across the fields in a form.
 
-### Framework concepts
+Prefer a different control when:
 
-- [Formatting](../../guides/formatting.md) — number presets, precision, and custom patterns
-- [Forms](../../guides/forms.md) — working with form controls
-- [Localization](../../capabilities/localization.md) — internationalization and formatting
-- [Signals](../../capabilities/signals/signals.md) — reactive data binding
+- the user adjusts by feel and live feedback matters → use [Scale](scale.md) or [LabeledScale](labeledscale.md).
+- the input is a fixed list of preset values → use [SpinnerEntry](spinnerentry.md).
+- you need raw `ttk.Spinbox` behavior with no chrome → use [Spinbox](../primitives/spinbox.md).
+- the value is text → use [TextEntry](textentry.md).
 
-### API reference
+---
 
-- [`ttkbootstrap.NumericEntry`](../../reference/widgets/NumericEntry.md)
+## Related widgets
+
+- [TextEntry](textentry.md) — base composite text field that `NumericEntry` extends.
+- [SpinnerEntry](spinnerentry.md) — entry that steps through a fixed list of presets.
+- [Scale](scale.md) — slider for live numeric adjustment.
+- [LabeledScale](labeledscale.md) — slider with a value readout.
+- [Spinbox](../primitives/spinbox.md) — low-level numeric stepper primitive.
+- [Form](../forms/form.md) — assemble a full form from field declarations.
+
+---
+
+## Reference
+
+- **API reference:** [`ttkbootstrap.NumericEntry`](../../reference/widgets/NumericEntry.md)
+- **Related guides:**
+    - [Forms](../../guides/forms.md)
+    - [Formatting](../../guides/formatting.md)
+    - [Localization](../../capabilities/localization.md)
+    - [Signals](../../capabilities/signals/signals.md)
