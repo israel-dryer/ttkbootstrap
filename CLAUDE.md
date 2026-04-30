@@ -159,6 +159,14 @@ primitives.
   updating after the derived signal is GC'd
 - `MessageDialog._parse_buttons` stores the `:role` suffix into deprecated
   `bootstyle` field instead of `accent`
+- `ValidationMixin.on_valid`/`on_invalid`/`on_validated` callbacks receive
+  the payload `dict` directly, while `TextEntryPart.on_input`/`on_changed`/
+  `on_enter` callbacks receive a virtual event with `.data`. The two
+  registration paths — direct `bind(...)` vs. `_on_*_command` slots
+  dispatched through `_dispatch_*` — produce inconsistent callback shapes.
+  Either wrap the validation handlers to fire `callback(event)` so all
+  `on_*` helpers are uniform, or document the split prominently. (Surfaced
+  by textentry.md rewrite, 2026-04-30.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
