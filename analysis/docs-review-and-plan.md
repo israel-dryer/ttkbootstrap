@@ -244,6 +244,16 @@ These were discovered while authoring screenshot factories — the factories cou
 - [x] **9C. `OptionMenu(command=)` and `DropdownButton(command=)` not implemented.** Fixed 2026-04-30. Both widgets now pop `command` before calling `super().__init__()` and wire it after construction: OptionMenu via `on_changed` (callback receives new value), DropdownButton via `<Button-1>` binding. Note: OptionMenu fires the callback twice per set() due to a pre-existing double-notification in the textsignal ↔ StringVar interaction — separate issue.
 - [x] **9D. `ListView` not in public API.** Fixed 2026-04-30. Added import in `api/widgets.py` and `__init__.py` (lazy import + `_MODULE_EXPORTS`). Updated `listview.md` and `datasource.md` to use `ttk.ListView`.
 
+### Phase 10 — Pass 2 editorial review (Opus, one guide per session)
+
+- [x] **10A. `docs/guides/localization.md`** (2026-04-30). Rewrote end-to-end. Key fixes: JSON catalog format was fictional (real catalogs are gettext `.po`/`.mo`); `IntlFormatter.format_date/number/currency()` don't exist (real API is `format(value, spec)`); `Label(value=...)` doesn't exist; `set_locale()` doesn't exist. Added: mental-model section with three-layer explanation (locale / translation / formatting), auto-discovery rules, catalog compilation via Babel, `localize=` vs `locale=` distinction, RTL status, testing strategies. 0 snippet failures after rewrite.
+- [ ] **10B. `docs/guides/dialogs.md`**
+- [ ] **10C. `docs/guides/app-structure.md`**
+- [ ] **10D. `docs/guides/reactivity.md`**
+- [ ] **10E.** Remaining guides (forms, tables-and-lists, toolbars, styling, navigation, app-settings, datasource, icons, typography, theming, layout, spacing-and-alignment).
+- [ ] **10F.** Widget pages (per-category pass).
+- [ ] **10G.** Platform and capabilities pages.
+
 ---
 
 ## Docstring Template
