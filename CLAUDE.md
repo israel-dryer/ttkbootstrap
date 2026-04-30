@@ -104,7 +104,9 @@ Template: `docs/_template/widget-input-template.md`. Required H2s:
 
 Pages to review:
 
-- [ ] `textentry.md` *(start here — likely the canonical input pattern)*
+- [x] `textentry.md` — **canonical input pattern** (commit pending; use
+      this as the reference for the rest of the inputs sweep, the way
+      `button.md` anchored actions)
 - [ ] `numericentry.md`
 - [ ] `passwordentry.md`
 - [ ] `pathentry.md`
@@ -115,11 +117,14 @@ Pages to review:
 - [ ] `labeledscale.md`
 - [ ] `scrolledtext.md`
 
-`tools/check_doc_structure.py --category inputs` currently fails on all
-10 — that's expected and is what this pass fixes. Run it before and
-after each page to confirm structural fit. After the first page is
-done, treat it as the canonical reference for the rest of the inputs
-sweep (the way `button.md` anchored actions).
+`tools/check_doc_structure.py --category inputs` currently fails on the
+9 remaining pages — that's expected and is what this pass fixes. Run it
+before and after each page to confirm structural fit.
+
+The structure check substitutes the literal `WidgetName` in the
+template's H2s with the page's H1, so a page can use
+`## When should I use TextEntry?` and still satisfy the template's
+`## When should I use WidgetName?` requirement.
 
 Run **one page at a time** as a deliberate session. Each session covers:
 

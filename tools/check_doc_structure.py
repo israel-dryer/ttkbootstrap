@@ -43,6 +43,12 @@ def extract_h2s(text: str) -> list[str]:
     return re.findall(r"^## (.+)$", text, re.MULTILINE)
 
 
+def extract_h1(text: str) -> str | None:
+    """Return the first H1 heading in markdown text, if any."""
+    m = re.search(r"^# (.+)$", text, re.MULTILINE)
+    return m.group(1).strip() if m else None
+
+
 def load_required_h2s(template_stem: str) -> list[str]:
     """Return the H2 headings from a template file."""
     path = TEMPLATE_DIR / f"{template_stem}.md"
@@ -55,10 +61,17 @@ def check_file(
     md_file: Path,
     required: list[str],
 ) -> list[str]:
-    """Return a list of missing H2 headings for a single file."""
+    """Return a list of missing H2 headings for a single file.
+
+    Templates may use the literal token ``WidgetName`` as a placeholder
+    in their H2s (e.g. ``## When should I use WidgetName?``). For each
+    page, the placeholder is substituted with the page's H1 before
+    comparison so individual pages can use the real widget name.
+    """
     text = md_file.read_text(encoding="utf-8")
     present = set(extract_h2s(text))
-    return [h for h in required if h not in present]
+    widget_name = extract_h1(text) or md_file.stem
+    return [h for h in required if h.replace("WidgetName", widget_name) not in present]
 
 
 def main() -> int:
