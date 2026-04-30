@@ -108,7 +108,7 @@ Pages to review:
       this as the reference for the rest of the inputs sweep, the way
       `button.md` anchored actions)
 - [x] `numericentry.md`
-- [ ] `passwordentry.md`
+- [x] `passwordentry.md`
 - [ ] `pathentry.md`
 - [ ] `dateentry.md`
 - [ ] `timeentry.md`
@@ -118,7 +118,7 @@ Pages to review:
 - [ ] `scrolledtext.md`
 
 `tools/check_doc_structure.py --category inputs` currently fails on the
-8 remaining pages — that's expected and is what this pass fixes. Run it
+7 remaining pages — that's expected and is what this pass fixes. Run it
 before and after each page to confirm structural fit.
 
 The structure check substitutes the literal `WidgetName` in the
