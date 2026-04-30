@@ -247,7 +247,7 @@ These were discovered while authoring screenshot factories — the factories cou
 ### Phase 10 — Pass 2 editorial review (Opus, one guide per session)
 
 - [x] **10A. `docs/guides/localization.md`** (2026-04-30). Rewrote end-to-end. Key fixes: JSON catalog format was fictional (real catalogs are gettext `.po`/`.mo`); `IntlFormatter.format_date/number/currency()` don't exist (real API is `format(value, spec)`); `Label(value=...)` doesn't exist; `set_locale()` doesn't exist. Added: mental-model section with three-layer explanation (locale / translation / formatting), auto-discovery rules, catalog compilation via Babel, `localize=` vs `locale=` distinction, RTL status, testing strategies. 0 snippet failures after rewrite.
-- [ ] **10B. `docs/guides/dialogs.md`**
+- [x] **10B. `docs/guides/dialogs.md`** (2026-04-30). Rewrote as system entry point. Key fixes: mode semantics (`"popover"` is focus-out dismissal, not anchoring — separate from `show(anchor_to=…)`); button role vs. accent vocabulary conflated in prior page; `dialog.result` types never documented; `Dialog` example lacked `result=` on buttons so result was always None. Added: three-layer mental model, result-types table, "sheet" mode, `alert=`, DateDialog `min_date`/`max_date`, `ColorChoice` structure, macOS dropper limitation. **Code-bug note**: `MessageDialog._parse_buttons` stores the post-colon value in deprecated `bootstyle=` rather than `accent=`; low priority but worth cleaning up.
 - [ ] **10C. `docs/guides/app-structure.md`**
 - [ ] **10D. `docs/guides/reactivity.md`**
 - [ ] **10E.** Remaining guides (forms, tables-and-lists, toolbars, styling, navigation, app-settings, datasource, icons, typography, theming, layout, spacing-and-alignment).
