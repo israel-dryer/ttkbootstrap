@@ -34,11 +34,49 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-04-30, dialogs sweep started)
+### Current handoff (2026-04-30, template overhaul + dialogs sweep open)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
-dialogs sweep just opened.**
+templates have been audited and tightened; dialogs sweep is open with the
+anchor page in place.**
+
+### Template arc (apply to every editorial sweep)
+
+The `widget-input-template.md` arc (Basic usage → Value model → API →
+guidance) is now the universal pattern. When opening any new sweep,
+audit the category's template against these principles before
+touching pages:
+
+1. **Lead with `Basic usage` after the intro.** No `Framework
+   integration` lead — its content distributes into Common options,
+   Behavior, Events, and Localization & reactivity.
+2. **A category-appropriate mental-model section sits right after
+   Basic usage** (Value model / Result value / Data model /
+   Lifecycle / Selection model / Navigation model / Form model).
+   Action widgets don't get one — `command` isn't a model.
+3. **API consolidates into `Common options` / `Behavior` / `Events`.**
+   Don't fragment with separate `Styling`, `Localization`, or
+   `Binding to signals` H2s — those go inline or into Common options.
+4. **`What problem it solves` and `Core concepts` are padding by
+   default.** Drop them; bring back per-page only when there's
+   substantive content the other sections can't carry.
+5. **`When should I use X?` sits near the bottom** — readers see the
+   API before the recommendation.
+6. **Optional sections** are marked with `*Optional` italic prose
+   under the heading; `tools/check_doc_structure.py` drops those from
+   the required list.
+
+Templates already restructured to this arc:
+- `widget-input-template.md` (was already correct — anchored on
+  `textentry.md`).
+- `widget-dialog-template.md` (commit `7667e36`).
+- `widget-action-template.md` (commit `7667e36`).
+
+Remaining 6 templates (data-display, form, layout, navigation,
+overlay, selection) still lead with `Framework integration` etc.
+Apply the editorial pass at the start of each category's sweep —
+those categories have 0 pages written, so the template fix is free.
 
 Phase 6 status (for reference):
 
@@ -75,13 +113,19 @@ the active work. Goal: each guide is best-in-class for its content type.
 **All 14 guides in `docs/guides/` are done** (2026-04-30). Widget pages
 in progress; platform/capabilities pages still to come.
 
-**Widget pages — actions** (`docs/widgets/actions/`) — **DONE 2026-04-30.**
+**Widget pages — actions** (`docs/widgets/actions/`) — **DONE 2026-04-30
+(re-reviewed against slim template).**
 
-All 5 pages reviewed (`button.md`, `buttongroup.md`, `contextmenu.md`,
-`dropdownbutton.md`, `menubutton.md`). `button.md` (commit `99fc744`)
-is the canonical pattern for action-style pages: `Framework integration`
-overview, `Basic usage` (not `Quick start`), merged
-`Localization & reactivity`. The other four follow it.
+All 5 pages restructured to the slim action template (commit
+`0fed5b8`): leading `Framework integration` dropped, `Appearance`
+folded into `Common options` (with an option-summary table at the
+top), real `Events` section added per page, `When to use` renamed
+and moved near the bottom as `When should I use WidgetName?`,
+`Additional resources` split into `Related widgets` + `Reference`.
+
+`button.md` is the canonical anchor for the new action-page shape;
+the other four (`buttongroup.md`, `contextmenu.md`,
+`dropdownbutton.md`, `menubutton.md`) follow it.
 
 `tools/check_doc_structure.py --category actions` → 5/5 pass.
 
@@ -144,31 +188,36 @@ Pages to review:
 
 ### Now: Widget pages — dialogs (`docs/widgets/dialogs/`, 11 pages)
 
-Use `docs/_template/widget-dialog-template.md`. Required H2s differ
-from inputs/actions:
+Template: `docs/_template/widget-dialog-template.md` (slim arc).
+Required H2s:
 
-- `Framework integration`
 - `Basic usage`
-- `What problem it solves`
-- `Core concepts`
 - `Result value`
 - `Common options`
+- `Behavior`
 - `Events`
-- `UX guidance`
-- `When to use / when not to`
+- `When should I use WidgetName?`
+- `Additional resources` (with sub-bullets for Related widgets,
+  Framework concepts, API reference)
 
-Last session (2026-04-30):
+Optional (declared via `*Optional` prose under the heading):
 
-- `messagedialog.md` — restructured to template; clarified that
-  `MessageDialog` *wraps* (not subclasses) `Dialog`, that `.result`
-  is the pressed button's text (or `None`), that **Escape** is wired
-  only when the *first* button label contains "cancel"
-  (case-insensitive), and that the default-button rule (last button
-  is the default) means destructive options should be listed first
-  to keep **Enter** safe. Documented that the default
-  `["button.cancel", "button.ok"]` keys only render correctly with
-  `localize=True`. Switched the example to the canonical
-  `import ttkbootstrap as ttk`.
+- `UX guidance` — include when the dialog has real prescriptive
+  advice (button labels, default placement, alert use). Skip for
+  base classes (`Dialog`) and specialty interactions
+  (`ColorDropper`).
+
+Last session (2026-04-30, template overhaul + messagedialog re-review):
+
+- Templates restructured (`7667e36`); `tools/check_doc_structure.py`
+  gained optional-section detection.
+- `messagedialog.md` re-rewritten to the slim template (`942642c`):
+  drops Framework integration / What problem it solves / Core
+  concepts; lifts Result value to be the mental-model section right
+  after Basic usage; consolidates modality / default-button /
+  cancel-binding / `command`-vs-`result` distinctions into a
+  structured Behavior section with sub-headings. Anchor for the
+  rest of the dialogs sweep.
 
 `tools/check_doc_structure.py --category dialogs` → 1/11 passing
 (messagedialog only).
