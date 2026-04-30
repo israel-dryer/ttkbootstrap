@@ -86,7 +86,14 @@ in progress; platform/capabilities pages still to come.
       documented `orient`, `density`, key-based lookup
       (`item`/`configure_item`/`remove`), iteration/`len`/`in`, and group-level
       `state`. Removed two `SegmentedButton` links — that widget doesn't exist.
-- [ ] `contextmenu.md`
+- [x] `contextmenu.md` (2026-04-30) — added `Framework integration`,
+      `Appearance`, expanded `Examples & patterns`; renamed `Quick start`
+      → `Basic usage`; documented `trigger=`, `target=` defaulting to
+      master, `density`, `minwidth`/`width`, key-based lookup
+      (`item`/`configure_item`/`remove_item`/`move_item`/`insert_item`/`keys`),
+      `disabled=`/`shortcut=` on `add_command`, `on_item_click` payload
+      shape, `items()` setter for runtime replacement, anchor/attach/offset
+      positioning model, and the macOS native-backend caveats.
 - [ ] `dropdownbutton.md`
 - [ ] `menubutton.md`
 
