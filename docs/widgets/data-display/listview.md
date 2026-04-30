@@ -8,6 +8,11 @@ title: ListView
 
 It renders only the visible rows (plus a small overscan), making it suitable for thousands of records while still supporting selection, deletion, dragging, and custom row layouts.
 
+<figure markdown>
+![listview](../../assets/dark/widgets-listview.png#only-dark)
+![listview](../../assets/light/widgets-listview.png#only-light)
+</figure>
+
 ---
 
 ## Quick start

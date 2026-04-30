@@ -8,6 +8,11 @@ title: TreeView
 
 It's ideal for representing parent/child relationships like folders, categories, or outlines.
 
+<figure markdown>
+![treeview](../../assets/dark/widgets-treeview.png#only-dark)
+![treeview](../../assets/light/widgets-treeview.png#only-light)
+</figure>
+
 ---
 
 ## Quick start

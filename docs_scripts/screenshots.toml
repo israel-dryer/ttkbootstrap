@@ -389,3 +389,20 @@ factory = "docs_scripts.shots.actions:menubutton"
 slug = "widgets-dropdownbutton"
 page = "widgets/actions/dropdownbutton.md"
 factory = "docs_scripts.shots.actions:dropdownbutton"
+
+# ----- Data display (ListView, TableView, TreeView) ----------------------
+
+[[shots]]
+slug = "widgets-listview"
+page = "widgets/data-display/listview.md"
+factory = "docs_scripts.shots.data_display:listview"
+
+[[shots]]
+slug = "widgets-tableview"
+page = "widgets/data-display/tableview.md"
+factory = "docs_scripts.shots.data_display:tableview"
+
+[[shots]]
+slug = "widgets-treeview"
+page = "widgets/data-display/treeview.md"
+factory = "docs_scripts.shots.data_display:treeview"

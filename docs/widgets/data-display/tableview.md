@@ -8,6 +8,11 @@ title: TableView
 
 It is suitable for datasets where users need to scan, sort, and select structured records.
 
+<figure markdown>
+![tableview](../../assets/dark/widgets-tableview.png#only-dark)
+![tableview](../../assets/light/widgets-tableview.png#only-light)
+</figure>
+
 ---
 
 ## Quick start
