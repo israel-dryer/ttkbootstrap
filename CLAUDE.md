@@ -71,8 +71,16 @@ Open items from earlier phases (do not lose track):
 Pass 1 is done; every snippet is known to match the current API. Pass 2 is
 the active work. Goal: each guide is best-in-class for its content type.
 
-**All 14 guides in `docs/guides/` are done** (2026-04-30). Next: widget
-pages (`docs/widgets/`), then platform/capabilities pages.
+**All 14 guides in `docs/guides/` are done** (2026-04-30). Widget pages
+in progress; platform/capabilities pages still to come.
+
+**Widget pages — actions** (`docs/widgets/actions/`, 5 pages):
+
+- [x] `button.md` (2026-04-30)
+- [ ] `buttongroup.md`
+- [ ] `contextmenu.md`
+- [ ] `dropdownbutton.md`
+- [ ] `menubutton.md`
 
 Run **one page at a time** as a deliberate session. Each session covers:
 
