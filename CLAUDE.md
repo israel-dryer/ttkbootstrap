@@ -207,25 +207,38 @@ Optional (declared via `*Optional` prose under the heading):
   base classes (`Dialog`) and specialty interactions
   (`ColorDropper`).
 
-Last session (2026-04-30, template overhaul + messagedialog re-review):
+Last session (2026-04-30, messagebox sweep):
+
+- `messagebox.md` rewritten to the slim template (`58977e7`).
+  Treats the page as a thin **facade** over `MessageDialog`:
+  documents the per-helper button sets and return-value space in
+  one table (Result value), the single-line call shape (Basic
+  usage), the kwargs forwarded to MessageDialog (Common options),
+  and the on_result callback as the only event hook (Events).
+  Corrects three API errors from the old page: every helper takes
+  positional `message` first then `title` (not keyword `title=`),
+  the parent argument is `master=` (not `parent=`), and there is
+  no `MessageBox.show(...)` static method.
+  Surfaces two non-obvious behaviors worth flagging in narrative:
+  `MessageBox` always passes `localize=True` (so returned strings
+  reflect the active locale — branching on `result == "Yes"` will
+  break under translation), and `yesno` has no Escape binding
+  because its first label is "No" not "Cancel" (use `yesnocancel`
+  if you need keyboard dismissal).
+
+Prior session (2026-04-30, template overhaul + messagedialog re-review):
 
 - Templates restructured (`7667e36`); `tools/check_doc_structure.py`
   gained optional-section detection.
-- `messagedialog.md` re-rewritten to the slim template (`942642c`):
-  drops Framework integration / What problem it solves / Core
-  concepts; lifts Result value to be the mental-model section right
-  after Basic usage; consolidates modality / default-button /
-  cancel-binding / `command`-vs-`result` distinctions into a
-  structured Behavior section with sub-headings. Anchor for the
-  rest of the dialogs sweep.
+- `messagedialog.md` re-rewritten to the slim template (`942642c`).
 
-`tools/check_doc_structure.py --category dialogs` → 1/11 passing
-(messagedialog only).
+`tools/check_doc_structure.py --category dialogs` → 2/11 passing
+(messagedialog, messagebox).
 
 Pages to review (canonical anchor pattern: `messagedialog.md`):
 
 - [x] `messagedialog.md` — anchor for the dialogs sweep
-- [ ] `messagebox.md` — facade over MessageDialog
+- [x] `messagebox.md` — facade over MessageDialog
 - [ ] `querydialog.md`
 - [ ] `querybox.md`
 - [ ] `formdialog.md`
