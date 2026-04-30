@@ -18,50 +18,6 @@ menu attached to a button label, see [MenuButton](menubutton.md).
 
 ---
 
-## Framework integration
-
-**Design system**
-
-- `density="default"` (default) or `density="compact"` controls item
-  typography so menus match the trigger widget's font size.
-- Items render with internal `context-item`, `context-check`, and
-  `context-radio` variants — the menu picks them automatically and
-  they are not configurable per item.
-
-**Signals & events**
-
-- Per-item `command=` runs on activation and the menu closes
-  automatically.
-- `on_item_click(callback)` registers a single handler that fires for
-  every item activation; the callback receives a dict with `type`,
-  `text`, and `value` keys. Useful when item handling is centralized.
-
-**Icons**
-
-- Each item accepts an `icon=` name. Items without icons reserve the
-  icon column with an `'empty'` placeholder so labels stay aligned.
-- Icons re-render on theme change and follow the same recoloring
-  rules as the rest of the icon system.
-
-**Localization**
-
-- Each item's `text=` is treated as a message key when localization
-  is enabled and updates automatically on locale change. Literal
-  strings without a translation pass through unchanged.
-
-**Positioning and triggering**
-
-- `target=` selects the widget the menu attaches to (defaults to
-  `master`; pass `target=None` to opt out).
-- `trigger=` chooses the activation gesture and auto-binds it to
-  `target`. The default `'right-click'` binds the portable gesture:
-  `<Button-3>` on Windows/Linux, `<Button-2>` and
-  `<Control-Button-1>` on macOS.
-- `anchor=`, `attach=`, and `offset=` control alignment when `show()`
-  is called without an explicit position.
-
----
-
 ## Basic usage
 
 Create the menu, add items, and let the default
@@ -92,30 +48,23 @@ the gesture to a single widget instead.
 
 ---
 
-## When to use
+## Common options
 
-Use `ContextMenu` when:
+| Option | Purpose |
+|---|---|
+| `target` | Widget the trigger gesture binds to. Defaults to `master`; pass `target=None` to opt out. |
+| `trigger` | Activation gesture. Default `'right-click'` is portable across platforms; pass `trigger=None` to bind your own. |
+| `anchor` | Alignment point on the menu when `show()` is called without a position. |
+| `attach` | Alignment point on the target widget. |
+| `offset` | `(x, y)` offset between `anchor` and `attach`. Default `(10, 0)`. |
+| `density` | `default` or `compact` — controls item typography. |
+| `minwidth` | Minimum pixel width on the themed backend. Default `150`. |
+| `width` / `minheight` / `height` | Optional fixed sizing. macOS native backend ignores these. |
+| `hide_on_outside_click` | If `True` (default), an outside click closes the menu. |
 
-- actions are contextual to a widget, list row, or region
-- the menu should follow the app's theme (light/dark, density)
-- items need icons, keyboard-shortcut hints, or rich state semantics
-
-### Consider a different control when…
-
-- A button-first action with a small dropdown of choices →
-  [DropdownButton](dropdownbutton.md).
-- A persistent menu attached to a button label →
-  [MenuButton](menubutton.md).
-- A primary action that triggers a one-shot operation →
-  [Button](button.md).
-
----
-
-## Appearance
-
-A `ContextMenu` has a single visual silhouette — a bordered,
-overlay-surface frame on Win/Linux, the system menu on macOS. The
-options that affect appearance are deliberately limited.
+Items are added with `add_command`, `add_checkbutton`, `add_radiobutton`,
+and `add_separator`. Item-level options include `text`, `icon`,
+`command`, `key`, `shortcut`, `disabled`, `value`, and `variable`.
 
 ### Density
 
@@ -140,10 +89,6 @@ menu = ttk.ContextMenu(app, minwidth=200)
 
 These options are stored but have no effect on the macOS native
 backend — system menus size themselves.
-
----
-
-## Examples & patterns
 
 ### Item types
 
@@ -223,12 +168,42 @@ menu.remove_item("discard")
     `configure_item()` works the same way on both backends through
     the underlying widget or `entryconfigure` call.
 
-### Centralized item handling
+---
+
+## Behavior
+
+- The default `trigger='right-click'` binds `<Button-3>` on
+  Windows/Linux and `<Button-2>` plus `<Control-Button-1>` on macOS.
+- **Down / Up** moves the highlight between actionable items
+  (separators are skipped).
+- **Enter** activates the highlighted item.
+- **Escape** closes the menu without firing a command.
+- The menu hides automatically when the user clicks outside, unless
+  `hide_on_outside_click=False` is set at construction.
+- Item commands fire on click and close the menu; the
+  `on_item_click` callback fires too.
+
+!!! note "macOS uses a native menu backend"
+    On macOS (Aqua), `ContextMenu` renders as a native NSMenu rather
+    than a themed Toplevel. Sizing options (`minwidth`, `width`,
+    `minheight`, `height`, `density`) are stored for `cget` parity
+    but have no visual effect — system menus control sizing and
+    typography. `item()` returns a spec dict, not a widget.
+
+!!! link "See [State & Interaction](../../capabilities/state-and-interaction.md) for focus, hover, and disabled behavior across widgets."
+
+---
+
+## Events
+
+Per-item `command=` runs on activation and the menu closes
+automatically.
 
 `on_item_click(callback)` registers a single handler that fires for
-every item activation. The callback receives a dict with `type`,
-`text`, and `value` (the toggled bool for checkbuttons, the radio
-value for radiobuttons, `None` for commands).
+every item activation. The callback receives a dict with `type`
+(`'command'` / `'checkbutton'` / `'radiobutton'`), `text`, and
+`value` (the toggled bool for checkbuttons, the radio value for
+radiobuttons, `None` for commands).
 
 ```python
 def handle_click(info):
@@ -236,6 +211,14 @@ def handle_click(info):
 
 menu.on_item_click(handle_click)
 ```
+
+Use the centralized handler when items share logic (telemetry,
+selection-driven dispatch); use per-item `command=` when each item
+runs its own callback.
+
+---
+
+## Patterns
 
 ### Replacing items at runtime
 
@@ -278,30 +261,6 @@ flush against the target.
 
 ---
 
-## Behavior
-
-- The default `trigger='right-click'` binds `<Button-3>` on
-  Windows/Linux and `<Button-2>` plus `<Control-Button-1>` on macOS.
-- **Down / Up** moves the highlight between actionable items
-  (separators are skipped).
-- **Enter** activates the highlighted item.
-- **Escape** closes the menu without firing a command.
-- The menu hides automatically when the user clicks outside, unless
-  `hide_on_outside_click=False` is set at construction.
-- Item commands fire on click and close the menu; the
-  `on_item_click` callback fires too.
-
-!!! note "macOS uses a native menu backend"
-    On macOS (Aqua), `ContextMenu` renders as a native NSMenu rather
-    than a themed Toplevel. Sizing options (`minwidth`, `width`,
-    `minheight`, `height`, `density`) are stored for `cget` parity
-    but have no visual effect — system menus control sizing and
-    typography. `item()` returns a spec dict, not a widget.
-
-!!! link "See [State & Interaction](../../capabilities/state-and-interaction.md) for focus, hover, and disabled behavior across widgets."
-
----
-
 ## Localization & reactivity
 
 When localization is enabled, every item's `text=` is treated as a
@@ -324,22 +283,40 @@ For dynamic labels, rebuild the affected items via `items()` or
 
 ---
 
-## Additional resources
+## When should I use ContextMenu?
 
-### Related widgets
+Use `ContextMenu` when:
+
+- actions are contextual to a widget, list row, or region.
+- the menu should follow the app's theme (light/dark, density).
+- items need icons, keyboard-shortcut hints, or rich state semantics.
+
+Prefer a different control when:
+
+- a button-first action with a small dropdown of choices →
+  [DropdownButton](dropdownbutton.md).
+- a persistent menu attached to a button label →
+  [MenuButton](menubutton.md).
+- a primary action that triggers a one-shot operation →
+  [Button](button.md).
+
+---
+
+## Related widgets
 
 - [DropdownButton](dropdownbutton.md) — primary action plus a menu of choices.
 - [MenuButton](menubutton.md) — a button that opens a Tk menu.
 - [Button](button.md) — single-action trigger.
 
-### Framework concepts
+---
 
-- [Icons & Imagery](../../capabilities/icons/index.md)
-- [Localization](../../capabilities/localization.md)
-- [State & Interaction](../../capabilities/state-and-interaction.md)
+## Reference
 
-### API reference
-
-- [`ttkbootstrap.ContextMenu`](../../reference/widgets/ContextMenu.md)
-- [`ttkbootstrap.ContextMenuItem`](../../reference/widgets/ContextMenuItem.md)
-- [`ttkbootstrap.Shortcuts`](../../reference/app/Shortcuts.md) — keyboard-shortcut display lookup.
+- **API reference:**
+    - [`ttkbootstrap.ContextMenu`](../../reference/widgets/ContextMenu.md)
+    - [`ttkbootstrap.ContextMenuItem`](../../reference/widgets/ContextMenuItem.md)
+    - [`ttkbootstrap.Shortcuts`](../../reference/app/Shortcuts.md) — keyboard-shortcut display lookup.
+- **Related guides:**
+    - [Icons & Imagery](../../capabilities/icons/index.md)
+    - [Localization](../../capabilities/localization.md)
+    - [State & Interaction](../../capabilities/state-and-interaction.md)

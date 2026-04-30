@@ -15,33 +15,6 @@ see [ButtonGroup](buttongroup.md). For a button that opens a menu, see
 
 ---
 
-## Framework integration
-
-**Design system**
-
-- Accents: `primary`, `secondary`, `success`, `info`, `warning`, `danger`, `light`, `dark`.
-- Variants: `solid` (default), `outline`, `ghost`, `link`, `text`.
-- Density: `default` or `compact` for tighter content.
-- Surface: optional `surface` token; otherwise inherits from the parent.
-
-**Signals & events**
-
-- `command=` runs on activation (click, Space, Enter).
-- `textsignal=` accepts a `Signal[str]` to drive a reactive label.
-
-**Icons**
-
-- `icon=` accepts an icon name or spec, theme- and state-aware.
-- `compound` controls icon placement (defaults to the left of the label).
-- `icon_only=True` removes label-side padding for icon-only buttons.
-
-**Localization**
-
-- `text=` is treated as a message key when localization is enabled,
-  and updates automatically when the active locale changes.
-
----
-
 ## Basic usage
 
 A button needs `text` and a `command` callback.
@@ -61,22 +34,23 @@ app.mainloop()
 
 ---
 
-## When to use
+## Common options
 
-Use a button when the user needs to **trigger an action immediately** —
-submitting a form, saving a change, opening a dialog, navigating to a
-new view.
-
-### Consider a different control when…
-
-- The action toggles persistent state → use [CheckButton](../selection/checkbutton.md), [CheckToggle](../selection/checktoggle.md), or [Switch](../selection/switch.md).
-- The user picks one option from a small set → use [RadioButton](../selection/radiobutton.md), [RadioGroup](../selection/radiogroup.md), or [ToggleGroup](../selection/togglegroup.md).
-- The action reveals a menu of choices → use [DropdownButton](dropdownbutton.md) or [MenuButton](menubutton.md).
-- You want a connected row of related actions → use [ButtonGroup](buttongroup.md).
-
----
-
-## Appearance
+| Option | Purpose |
+|---|---|
+| `text` | Label string. Treated as a localization key when localization is enabled. |
+| `command` | Callback fired on activation (click, Space, Enter). |
+| `accent` | Semantic color: `primary`, `secondary`, `success`, `info`, `warning`, `danger`, `light`, `dark`. |
+| `variant` | Visual weight: `solid` (default), `outline`, `ghost`, `link`, `text`. |
+| `density` | `default` or `compact` — `compact` reduces internal padding. |
+| `icon` | Icon name or spec; theme- and state-aware. |
+| `compound` | Icon placement (`left`, `right`, `top`, `bottom`, `center`). Default `left`. |
+| `icon_only` | If `True`, strips label-side padding for icon-only buttons. |
+| `width` | Width in characters. |
+| `padding` | Internal padding as int or `(x, y)` tuple of pixels. |
+| `state` | `normal` or `disabled`. |
+| `underline` | Index of the character to mark as a keyboard mnemonic (Alt+letter on Windows/Linux). |
+| `textsignal` | `Signal[str]` driving a reactive label (see [Localization & reactivity](#localization--reactivity)). |
 
 ### Accents
 
@@ -172,10 +146,6 @@ forms. The default is taller and more comfortable for primary content.
 ttk.Button(app, text="Compact", density="compact").pack()
 ```
 
----
-
-## Examples & patterns
-
 ### Icons
 
 Icons are integrated through the style system, so they pick up the
@@ -200,18 +170,6 @@ ttk.Button(app, icon="gear", icon_only=True).pack(pady=6)
     appearance. See [Design System → Icons](../../design-system/icons.md).
 
 !!! link "See [Icons & Imagery](../../capabilities/icons/index.md) for sizing, DPI handling, and recoloring behavior."
-
-### Disable until ready
-
-Disable a button until a precondition is met, then re-enable it.
-
-```python
-btn = ttk.Button(app, text="Continue", accent="primary", state="disabled")
-btn.pack()
-
-# later, after validation succeeds…
-btn.configure(state="normal")
-```
 
 ### Sizing
 
@@ -245,7 +203,42 @@ ttk.Button(app, text="Exit", underline=1).pack()
 - Hover, focus, and pressed visuals are produced by the active theme;
   no extra wiring is required.
 
+### Disable until ready
+
+Disable a button until a precondition is met, then re-enable it.
+
+```python
+btn = ttk.Button(app, text="Continue", accent="primary", state="disabled")
+btn.pack()
+
+# later, after validation succeeds…
+btn.configure(state="normal")
+```
+
 !!! link "See [State & Interaction](../../capabilities/state-and-interaction.md) for focus, hover, and disabled behavior across widgets."
+
+---
+
+## Events
+
+`Button` exposes a single primary hook, the **`command`** callback,
+fired on every activation (click, Space, or Enter):
+
+```python
+def on_save():
+    ...
+
+ttk.Button(app, text="Save", command=on_save)
+```
+
+For lower-level interactions — distinguishing single vs double-click,
+right-click, or modifier keys — bind Tk events directly:
+
+```python
+btn = ttk.Button(app, text="Open")
+btn.bind("<Double-Button-1>", lambda e: open_in_new_window())
+btn.bind("<Control-Button-1>", lambda e: open_with_modifier())
+```
 
 ---
 
@@ -279,9 +272,22 @@ label.set("Stop")
 
 ---
 
-## Additional resources
+## When should I use Button?
 
-### Related widgets
+Use `Button` when the user needs to **trigger an action immediately** —
+submitting a form, saving a change, opening a dialog, navigating to a
+new view.
+
+Prefer a different control when:
+
+- the action toggles persistent state → use [CheckButton](../selection/checkbutton.md), [CheckToggle](../selection/checktoggle.md), or [Switch](../selection/switch.md).
+- the user picks one option from a small set → use [RadioButton](../selection/radiobutton.md), [RadioGroup](../selection/radiogroup.md), or [ToggleGroup](../selection/togglegroup.md).
+- the action reveals a menu of choices → use [DropdownButton](dropdownbutton.md) or [MenuButton](menubutton.md).
+- you want a connected row of related actions → use [ButtonGroup](buttongroup.md).
+
+---
+
+## Related widgets
 
 - [ButtonGroup](buttongroup.md) — connected row of related buttons.
 - [MenuButton](menubutton.md) — opens a Tk menu.
@@ -289,15 +295,15 @@ label.set("Stop")
 - [CheckButton](../selection/checkbutton.md), [Switch](../selection/switch.md) — persistent on/off state.
 - [RadioButton](../selection/radiobutton.md), [ToggleGroup](../selection/togglegroup.md) — single-choice selection.
 
-### Framework concepts
+---
 
-- [Design System → Variants](../../design-system/variants.md)
-- [Design System → Icons](../../design-system/icons.md)
-- [Icons & Imagery](../../capabilities/icons/index.md)
-- [Signals](../../capabilities/signals/index.md)
-- [Localization](../../capabilities/localization.md)
-- [State & Interaction](../../capabilities/state-and-interaction.md)
+## Reference
 
-### API reference
-
-- [`ttkbootstrap.Button`](../../reference/widgets/Button.md)
+- **API reference:** [`ttkbootstrap.Button`](../../reference/widgets/Button.md)
+- **Related guides:**
+    - [Design System → Variants](../../design-system/variants.md)
+    - [Design System → Icons](../../design-system/icons.md)
+    - [Icons & Imagery](../../capabilities/icons/index.md)
+    - [Signals](../../capabilities/signals/index.md)
+    - [Localization](../../capabilities/localization.md)
+    - [State & Interaction](../../capabilities/state-and-interaction.md)

@@ -21,47 +21,6 @@ instead.
 
 ---
 
-## Framework integration
-
-**Design system**
-
-- `accent`, `variant`, `density`, and `surface` set defaults for every
-  child added through `add()`. Children inherit these unless they pass
-  their own override.
-- The group enforces a single `density` across all children, so
-  buttons stay visually uniform even if a caller forgets to set it on
-  one.
-- Position styling (rounded ends on first/last, square middles) is
-  managed automatically as buttons are added or removed.
-
-**Signals & events**
-
-- `ButtonGroup` itself has no `command` or signal binding — those live
-  on the individual buttons you add.
-- Each child remains a fully featured widget: `command=`, `textsignal=`,
-  and any other [Button](button.md) options work exactly as they would
-  on a standalone button.
-
-**Icons**
-
-- Children added via `add()` accept the same `icon=` / `icon_only=` /
-  `compound=` options as a regular [Button](button.md).
-
-**Localization**
-
-- Localization is per-child. Each button's `text=` is resolved through
-  the active catalog independently, so a group can mix localized and
-  literal labels.
-
-**Layout**
-
-- `orient="horizontal"` (default) or `orient="vertical"` controls how
-  children stack.
-- `padding=` defaults to `1`. Set `width=` or `height=` to give the
-  group a fixed footprint.
-
----
-
 ## Basic usage
 
 Create a group, then call `add()` for each action.
@@ -90,25 +49,23 @@ save_btn = bg.add(text="Save", command=on_save)
 
 ---
 
-## When to use
+## Common options
 
-Use `ButtonGroup` when the actions are conceptually a set —
-**Cut/Copy/Paste**, **Bold/Italic/Underline**, **Previous/Next**,
-**Zoom in/out** — and the visual grouping reinforces that they belong
-together.
+| Option | Purpose |
+|---|---|
+| `accent` | Default accent for every child. Children inherit unless they override at `add()` time. |
+| `variant` | Default variant (`solid` / `outline` / `ghost` / `link` / `text`). |
+| `density` | `default` or `compact`. Enforced uniformly across children. |
+| `surface` | Optional surface token; otherwise inherits from the parent. |
+| `orient` | `horizontal` (default) or `vertical`. |
+| `padding` | Padding around the group; default `1`. |
+| `width` / `height` | Optional fixed footprint. |
+| `state` | Setting `state="disabled"` on the group disables every child at once. |
 
-### Consider a different control when…
-
-- Users need to pick one or more options that persist as state → use
-  [ToggleGroup](../selection/togglegroup.md) or [RadioGroup](../selection/radiogroup.md).
-- The actions are unrelated and should not look connected → use
-  separate [Button](button.md) widgets with normal spacing.
-- One action has a primary label plus a menu of related variants →
-  use [DropdownButton](dropdownbutton.md).
-
----
-
-## Appearance
+`ButtonGroup` itself has no `command` or `textsignal` — those live on
+the individual children. Position styling (rounded ends on first/last,
+square middles) is managed automatically as buttons are added or
+removed.
 
 ### Accent and variant
 
@@ -143,26 +100,6 @@ gets rounded bottom corners.
 ttk.ButtonGroup(app, accent="primary", orient="vertical").pack()
 ```
 
----
-
-## Examples & patterns
-
-### Icon-only toolbar
-
-Combine `variant="ghost"` with `icon_only=True` for an unobtrusive
-icon toolbar.
-
-```python
-bg = ttk.ButtonGroup(app, accent="secondary", variant="ghost")
-bg.pack(pady=10)
-
-bg.add(icon="undo", icon_only=True, command=lambda: print("Undo"))
-bg.add(icon="redo", icon_only=True, command=lambda: print("Redo"))
-bg.add(icon="trash", icon_only=True, command=lambda: print("Delete"))
-```
-
-!!! link "See [Icons & Imagery](../../capabilities/icons/index.md) for icon sizing, DPI handling, and recoloring behavior."
-
 ### Looking up children by key
 
 Pass `key=` to give a child a stable identifier; otherwise one is
@@ -192,23 +129,6 @@ for btn in bg:
 if "save" in bg:
     ...
 ```
-
-### Disabling the whole group
-
-Set `state="disabled"` on the group to disable every child at once.
-Re-enable by setting it back to `"normal"`.
-
-```python
-bg = ttk.ButtonGroup(app, accent="primary")
-bg.pack(pady=10)
-bg.add(text="Apply")
-bg.add(text="Reset")
-
-bg.configure(state="disabled")  # disables every child
-bg.configure(state="normal")    # re-enables them
-```
-
-!!! link "See [State & Interaction](../../capabilities/state-and-interaction.md) for focus, hover, and disabled behavior across widgets."
 
 ### Mixing widget types
 
@@ -242,6 +162,59 @@ bg.add(text="Underline", widget_type=ttk.CheckButton)
 - Removing a child via `remove(key)` re-runs position styling so the
   remaining children keep correct end-cap visuals.
 
+### Disabling the whole group
+
+Set `state="disabled"` on the group to disable every child at once.
+Re-enable by setting it back to `"normal"`.
+
+```python
+bg = ttk.ButtonGroup(app, accent="primary")
+bg.pack(pady=10)
+bg.add(text="Apply")
+bg.add(text="Reset")
+
+bg.configure(state="disabled")  # disables every child
+bg.configure(state="normal")    # re-enables them
+```
+
+!!! link "See [State & Interaction](../../capabilities/state-and-interaction.md) for focus, hover, and disabled behavior across widgets."
+
+---
+
+## Events
+
+`ButtonGroup` is a container — it has no events of its own. Each child
+behaves like a standalone [Button](button.md): pass `command=` per
+child, or bind Tk events on `bg.item(key)` for lower-level interactions.
+
+```python
+bg = ttk.ButtonGroup(app, accent="primary")
+bg.pack()
+
+bg.add(text="Save", key="save", command=on_save)
+bg.item("save").bind("<Double-Button-1>", on_save_doubleclick)
+```
+
+---
+
+## Patterns
+
+### Icon-only toolbar
+
+Combine `variant="ghost"` with `icon_only=True` for an unobtrusive
+icon toolbar.
+
+```python
+bg = ttk.ButtonGroup(app, accent="secondary", variant="ghost")
+bg.pack(pady=10)
+
+bg.add(icon="undo", icon_only=True, command=lambda: print("Undo"))
+bg.add(icon="redo", icon_only=True, command=lambda: print("Redo"))
+bg.add(icon="trash", icon_only=True, command=lambda: print("Delete"))
+```
+
+!!! link "See [Icons & Imagery](../../capabilities/icons/index.md) for icon sizing, DPI handling, and recoloring behavior."
+
 ---
 
 ## Localization & reactivity
@@ -266,23 +239,39 @@ bg.add(text="action.cancel", command=app.destroy)
 
 ---
 
-## Additional resources
+## When should I use ButtonGroup?
 
-### Related widgets
+Use `ButtonGroup` when the actions are conceptually a set —
+**Cut/Copy/Paste**, **Bold/Italic/Underline**, **Previous/Next**,
+**Zoom in/out** — and the visual grouping reinforces that they belong
+together.
+
+Prefer a different control when:
+
+- users need to pick one or more options that persist as state → use
+  [ToggleGroup](../selection/togglegroup.md) or [RadioGroup](../selection/radiogroup.md).
+- the actions are unrelated and should not look connected → use
+  separate [Button](button.md) widgets with normal spacing.
+- one action has a primary label plus a menu of related variants →
+  use [DropdownButton](dropdownbutton.md).
+
+---
+
+## Related widgets
 
 - [Button](button.md) — the standalone widget that lives inside the group.
 - [DropdownButton](dropdownbutton.md) — primary action plus a dropdown of related variants.
 - [ToggleGroup](../selection/togglegroup.md), [RadioGroup](../selection/radiogroup.md) — connected groups *with* selection state.
 
-### Framework concepts
+---
 
-- [Design System → Variants](../../design-system/variants.md)
-- [Design System → Icons](../../design-system/icons.md)
-- [Icons & Imagery](../../capabilities/icons/index.md)
-- [Signals](../../capabilities/signals/index.md)
-- [Localization](../../capabilities/localization.md)
-- [State & Interaction](../../capabilities/state-and-interaction.md)
+## Reference
 
-### API reference
-
-- [`ttkbootstrap.ButtonGroup`](../../reference/widgets/ButtonGroup.md)
+- **API reference:** [`ttkbootstrap.ButtonGroup`](../../reference/widgets/ButtonGroup.md)
+- **Related guides:**
+    - [Design System → Variants](../../design-system/variants.md)
+    - [Design System → Icons](../../design-system/icons.md)
+    - [Icons & Imagery](../../capabilities/icons/index.md)
+    - [Signals](../../capabilities/signals/index.md)
+    - [Localization](../../capabilities/localization.md)
+    - [State & Interaction](../../capabilities/state-and-interaction.md)
