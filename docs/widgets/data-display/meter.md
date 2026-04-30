@@ -8,6 +8,11 @@ title: Meter
 
 It's ideal for dashboards, summaries, and status panels where visual emphasis matters more than precision.
 
+<figure markdown>
+![meter](../../assets/dark/widgets-meter.png#only-dark)
+![meter](../../assets/light/widgets-meter.png#only-light)
+</figure>
+
 ---
 
 ## Quick start

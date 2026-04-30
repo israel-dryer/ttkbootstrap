@@ -8,6 +8,11 @@ title: Badge
 
 It's designed for short, scannable values like **counts**, **statuses**, and **tags** — for example: "New", "Beta", "3", "Offline".
 
+<figure markdown>
+![badge](../../assets/dark/widgets-badge.png#only-dark)
+![badge](../../assets/light/widgets-badge.png#only-light)
+</figure>
+
 ---
 
 ## Quick start

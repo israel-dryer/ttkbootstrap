@@ -8,6 +8,11 @@ title: Progressbar
 
 It communicates how much work has completed (determinate) or that work is ongoing (indeterminate), without requiring user interaction.
 
+<figure markdown>
+![progressbar](../../assets/dark/widgets-progressbar.png#only-dark)
+![progressbar](../../assets/light/widgets-progressbar.png#only-light)
+</figure>
+
 ---
 
 ## Quick start

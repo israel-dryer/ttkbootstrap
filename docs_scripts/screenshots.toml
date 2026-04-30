@@ -240,3 +240,30 @@ factory = "docs_scripts.shots.views:pagestack"
 slug = "widgets-tabview"
 page = "widgets/views/tabview.md"
 factory = "docs_scripts.shots.views:tabview"
+
+# ----- Data display --------------------------------------------------------
+
+[[shots]]
+slug = "widgets-label"
+page = "widgets/data-display/label.md"
+factory = "docs_scripts.shots.data_display:label"
+
+[[shots]]
+slug = "widgets-badge"
+page = "widgets/data-display/badge.md"
+factory = "docs_scripts.shots.data_display:badge"
+
+[[shots]]
+slug = "widgets-progressbar"
+page = "widgets/data-display/progressbar.md"
+factory = "docs_scripts.shots.data_display:progressbar"
+
+[[shots]]
+slug = "widgets-floodgauge"
+page = "widgets/data-display/floodgauge.md"
+factory = "docs_scripts.shots.data_display:floodgauge"
+
+[[shots]]
+slug = "widgets-meter"
+page = "widgets/data-display/meter.md"
+factory = "docs_scripts.shots.data_display:meter"

@@ -8,6 +8,11 @@ title: FloodGauge
 
 It's especially useful for capacity, utilization, or threshold-based indicators.
 
+<figure markdown>
+![floodgauge](../../assets/dark/widgets-floodgauge.png#only-dark)
+![floodgauge](../../assets/light/widgets-floodgauge.png#only-light)
+</figure>
+
 ---
 
 ## Quick start

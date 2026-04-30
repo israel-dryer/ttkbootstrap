@@ -8,6 +8,11 @@ title: Label
 
 It's a fundamental building block used for headings, captions, instructions, and status text throughout an interface.
 
+<figure markdown>
+![label](../../assets/dark/widgets-label.png#only-dark)
+![label](../../assets/light/widgets-label.png#only-light)
+</figure>
+
 ---
 
 ## Quick start
