@@ -86,9 +86,9 @@ overview, `Basic usage` (not `Quick start`), merged
 
 ### Now: Widget pages — inputs (`docs/widgets/inputs/`, 10 pages)
 
-8 of 10 done. Remaining: `labeledscale.md`, `scrolledtext.md`. Inputs use
-a **different template** than actions — don't carry the actions section
-names over verbatim.
+9 of 10 done. Remaining: `scrolledtext.md`. Inputs use a **different
+template** than actions — don't carry the actions section names over
+verbatim.
 
 Template: `docs/_template/widget-input-template.md`. Required H2s:
 
@@ -115,11 +115,11 @@ Pages to review:
 - [x] `timeentry.md`
 - [x] `spinnerentry.md`
 - [x] `scale.md`
-- [ ] `labeledscale.md`
+- [x] `labeledscale.md`
 - [ ] `scrolledtext.md`
 
 `tools/check_doc_structure.py --category inputs` currently fails on the
-2 remaining pages — that's expected and is what this pass fixes. Run it
+1 remaining page — that's expected and is what this pass fixes. Run it
 before and after each page to confirm structural fit.
 
 The structure check substitutes the literal `WidgetName` in the
@@ -177,6 +177,17 @@ primitives.
   `IntlFormatter.DatePreset`. Source-only typo — `shortTime`/`longTime`
   are the real medium/long pair. (Surfaced by timeentry.md rewrite,
   2026-04-30.)
+- `LabeledScale` configure delegators have inverted query/set branches:
+  `_delegate_value`, `_delegate_minvalue`, `_delegate_maxvalue` (and
+  `_delegate_dtype`) at `composites/labeledscale.py:148-177` all check
+  `if value is not None: return …` (set path returns the current value
+  instead of writing) `else: self.configure(from_=value)` (query path
+  attempts to write `None`). Net effect: `widget.configure(value=…)`,
+  `widget.configure(minvalue=…)`, `widget.configure(maxvalue=…)`, and
+  `widget.cget("minvalue"/"maxvalue"/"value")` are all broken. Workarounds:
+  set the property (`widget.value = …`) and reconfigure the inner scale
+  (`widget.scale.configure(from_=…, to=…)`). Source bug. (Surfaced by
+  labeledscale.md rewrite, 2026-04-30.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
