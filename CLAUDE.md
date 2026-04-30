@@ -36,110 +36,71 @@ plan doc instead so they survive across sessions.
 
 ### Current handoff (2026-04-30)
 
-Phases 1–5 and 7 are complete. **Phase 6 (screenshot pipeline) is in
-progress.** Status:
+Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
+complete; 6F not started. Pass 2 (editorial review) is the active work.**
 
-- **6A — DONE.** Image policy: every widget page that renders something
-  visible has a light + dark screenshot pair (`docs-light` / `docs-dark`
-  themes). Opt-out only for theme-agnostic assets via
-  `themes = ["light"]`.
-- **6B — DONE.** Renderer scaffold: `docs_scripts/render.py` reads
-  `docs_scripts/screenshots.toml` and runs **one subprocess per
-  `(slug, theme)` pair** for clean Tk lifecycle isolation. Factories
-  live under `docs_scripts/shots/<widget>.py`.
-- **6C — DONE.** `ttkb screenshots [--slug | --page | --theme]` wraps
-  the renderer; lives in `src/ttkbootstrap/cli/screenshots.py`.
-- **6D — DONE.** `tools/check_doc_images.py` verifies every Markdown
-  image reference resolves on disk; surfaces `IMAGE:` placeholders as
-  INFO (or FAIL with `--strict-placeholders`).
-- **6E — IN-FRAME SHOTS DONE.** 13 batches landed covering every
-  widget page that has visible in-frame content: actions (button,
-  buttongroup, menubutton, dropdownbutton), application (app,
-  appshell, toplevel), data-display (label, badge, progressbar,
-  floodgauge, meter, listview, tableview, treeview), forms (form),
-  inputs (all 10), layout (all 12), navigation (tabs, toolbar,
-  sidenav), overlays — pending 6F (toast, tooltip), primitives (all
-  5), selection (all except selectbox), and views (all 3). Shots were
-  rendered on macOS as a placeholder; **all factories should be
-  re-rendered on Windows for the canonical assets** (per user
-  request, the macOS pass was just to land the manifest + figure
-  blocks).
-- **6F — NOT STARTED.** Popup widgets and animated widgets — needs
-  capture tooling beyond the in-frame model:
-    - Popup-shape widgets that overlay the main window: `ContextMenu`,
-      `SelectBox` (open state), `MessageBox`, `MessageDialog`,
-      `Dialog`, `ColorChooser`, `ColorDropper`, `DateDialog`,
-      `FontDialog`, `FilterDialog`, `FormDialog`, `QueryBox`,
-      `QueryDialog`. Needs a renderer mode that captures a Toplevel
-      bbox after `show()` returns visible, before any `grab_set` /
-      modal blocking.
-    - Animated widgets that need MP4/GIF: `Toast`, `Tooltip`,
-      `Accordion` (animation), `Expander`, `PageStack` transitions,
-      `FloodGauge`, `Meter`. Needs display + recording tool.
+Phase 6 status (for reference):
 
-**Pending docs bug** (surfaced during batch 10 — flag for a future
-cleanup batch): `docs/widgets/actions/dropdownbutton.md` documents
-`ContextMenuItem(text=..., separator=True)` with item-level
-`accent="danger"`, but the real API requires `type="command"` /
-`type="separator"` (see `examples/demo_menubar.py`) and the macOS
-backend rejects per-item `accent`. The other dialog/dropdown docs may
-have similar drift.
+- **6A–6E — DONE.** Image policy locked, renderer scaffold built, CLI wired,
+  image-check tool added, in-frame shots rendered for all visible widget pages
+  (13 batches). Shots are macOS placeholders; re-render on Windows for canonical
+  assets (`python -m docs_scripts.render` on a Windows host overwrites every asset).
+- **6F — NOT STARTED.** Popup and animated widgets need capture tooling beyond
+  the in-frame model. See `analysis/docs-review-and-plan.md` § Phase 6F for the
+  full list and the renderer mode needed.
 
-### Next: API drift sweep, then editorial review
+Phase 9 (drift sweep) — DONE:
 
-Two distinct passes, **drift first, editorial second**. They are
-sequenced — don't bundle them. Drift is mechanical and finite;
-editorial is judgmental and open-ended. Mixing them dilutes both.
+- `tools/check_doc_snippets.py` validates all 833 `python` blocks across 107
+  docs files (compile check always; runtime check with `--run`). Currently 0
+  failures. Run this before and after any docs edit to guard against regression.
+- 22 doc files were fixed in Pass 1 (wrong class names, constructor kwargs,
+  option names, theme names). See plan doc § Phase 9 for the full list.
+- `OptionMenu(command=)` and `DropdownButton(command=)` now work (9C).
+- `ttk.ListView` is now a public export (9D).
 
-**Pass 1 — API drift sweep (Sonnet).** Authoring runnable factories
-during 6E surfaced docs-vs-code drift far better than reading the
-docs (Phase 8A and 8B in `analysis/docs-review-and-plan.md` are
-examples). Generalize that approach across all of `docs/`:
+Open items from earlier phases (do not lose track):
 
-1. Build a snippet-extraction tool: pull every fenced ```python
-   block from each `.md` under `docs/`, try to `compile()` each in
-   isolation, and run the self-contained ones in a fresh subprocess.
-   Report failures with file path + block index. Half-day of work.
-2. Run it; produce a punch list of broken examples.
-3. Fix each: usually a docs change, sometimes a code change (e.g.
-   8B is a real code bug). Commit per-page or per-cluster.
-4. Phase 8A/8B fold into this pass automatically — they stop being
-   tracked as one-offs.
+- **8B** — `ListView.badge` field silently dropped in `update_data`
+  (`listitem.py:725`). Code fix: add `"badge": self._update_badge` to the
+  dispatch map.
+- **8C** — Rendered docstring review for 22 priority symbols (needs display).
 
-After this pass, every snippet in the docs is known to match the
-current API. That's the foundation the editorial pass needs.
+### Now: Pass 2 — Editorial review (Opus, one guide per session)
 
-**Pass 2 — Editorial review (Opus, per guide).** Goal: each guide is
-best-in-class for its content type (input widget, action widget,
-layout primitive, application scaffold, capability page, platform
-note, etc.). Run **one guide at a time** as a deliberate session,
-not as a sweep. Each session reviews:
+Pass 1 is done; every snippet is known to match the current API. Pass 2 is
+the active work. Goal: each guide is best-in-class for its content type.
 
-- **Structural fit** — does the page follow the right template for
-  its content type? Inputs need a different shape than layouts than
-  capabilities. Use `tools/check_doc_structure.py` (exists, from 5I)
-  to flag missing required H2s, then judge the rest.
-- **Accuracy** — examples were validated by Pass 1, but does the
-  *narrative* match the API? (e.g. mentions of methods that no
-  longer exist, options whose semantics changed.)
-- **Completeness** — are concepts a good docs site for this domain
-  would cover actually present? (e.g. forms guide should cover
-  validation, async submission, error display, dirty-state handling
-  — does it?)
-- **Clarity** — is the framing right? Is the order right? Is jargon
-  defined or assumed?
+Run **one guide at a time** as a deliberate session. Each session covers:
 
-Architectural / informational pages (`platform/*`, `capabilities/*`,
-`design-system/*`, `reference/*/index.md`) get the same treatment but
-with stronger weight on accuracy-vs-current-library-shape — they're
-more likely to drift as the API evolves than widget pages are.
+- **Structural fit** — does the page follow the right template for its content
+  type? Use `python tools/check_doc_structure.py` (from Phase 5I) to flag
+  missing required H2s, then judge the rest.
+- **Accuracy** — snippets are clean, but does the *narrative* match the API?
+  (Methods that no longer exist, options whose semantics changed.)
+- **Completeness** — are concepts a good docs site would cover present?
+  (e.g. forms guide should cover validation, async submission, error display,
+  dirty-state handling.)
+- **Clarity** — framing, ordering, jargon.
 
-Sequencing rationale: editorial work fights against broken examples
-if Pass 1 isn't done first; you end up half-rewriting code in the
-middle of a clarity pass. Drift sweep is also a useful signal for
-*where* editorial work has the highest payoff — pages with the most
-drift are usually the pages that have been least maintained, which
-correlates with stale framing.
+Architectural pages (`platform/*`, `capabilities/*`, `design-system/*`,
+`reference/*/index.md`) — same treatment, stronger weight on accuracy.
+
+**Sequencing within a session:**
+1. `python tools/check_doc_structure.py --category <name>` — structural gaps.
+2. Read the page end-to-end. Note accuracy and completeness gaps.
+3. Rewrite in one pass. Don't interleave drift fixes (those belong in a
+   separate commit run through `check_doc_snippets.py --run` first).
+4. Run `check_doc_snippets.py --run --file <page>` to confirm examples still
+   pass after edits.
+5. Commit with message `Docs: editorial review — <page title>`.
+
+**Priority order** (pages with most Pass 1 drift = most editorial debt):
+1. `docs/guides/localization.md`
+2. `docs/guides/dialogs.md`
+3. `docs/guides/app-structure.md`
+4. `docs/guides/reactivity.md`
+5. Then remaining guides, then widget pages, then platform/capabilities.
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
