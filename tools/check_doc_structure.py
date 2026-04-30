@@ -50,11 +50,34 @@ def extract_h1(text: str) -> str | None:
 
 
 def load_required_h2s(template_stem: str) -> list[str]:
-    """Return the H2 headings from a template file."""
+    """Return the H2 headings from a template file that pages must include.
+
+    Templates may mark a section as optional by placing italic prose
+    starting with ``*Optional`` as the first non-empty line under the
+    heading. Such sections are dropped from the required list — pages
+    may include them, but pages without them still pass.
+    """
     path = TEMPLATE_DIR / f"{template_stem}.md"
     if not path.exists():
         raise FileNotFoundError(f"Template not found: {path}")
-    return extract_h2s(path.read_text(encoding="utf-8"))
+    text = path.read_text(encoding="utf-8")
+    lines = text.split("\n")
+
+    required: list[str] = []
+    for i, line in enumerate(lines):
+        m = re.match(r"^## (.+)$", line)
+        if not m:
+            continue
+        heading = m.group(1)
+        # Find the first non-empty line under this heading.
+        j = i + 1
+        while j < len(lines) and not lines[j].strip():
+            j += 1
+        first = lines[j].strip().lower() if j < len(lines) else ""
+        if first.startswith("*optional"):
+            continue
+        required.append(heading)
+    return required
 
 
 def check_file(
