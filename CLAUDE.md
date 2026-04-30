@@ -207,7 +207,26 @@ Optional (declared via `*Optional` prose under the heading):
   base classes (`Dialog`) and specialty interactions
   (`ColorDropper`).
 
-Last session (2026-04-30, messagebox sweep):
+Last session (2026-04-30, querydialog sweep):
+
+- `querydialog.md` rewritten to the slim template (`f21e913`).
+  Frames the dialog as "prompt for one value" — the input widget
+  swaps based on `datatype` (`TextEntry` / `NumericEntry` /
+  `DateEntry`) or on `items` (filterable `Combobox`). One Result-
+  value table maps `datatype` → `.result` type, one Common-options
+  table covers all twelve constructor args (the old page was
+  missing `width`, `padding`, `master`, `increment`).
+  Corrects two errors from the old page: `command=` is not a
+  constructor kwarg (no such option exists), and "invalid input
+  shows an error message" is only true for the `Combobox` and
+  old-style numeric paths — the Field widgets keep the dialog open
+  silently with their own inline error feedback. The new page
+  documents both validation branches and adds explicit guidance to
+  test `result is not None` (since `""` and `0` are valid answers)
+  and to pass `master=` if registering `on_dialog_result` before
+  `show()`.
+
+Prior session (2026-04-30, messagebox sweep):
 
 - `messagebox.md` rewritten to the slim template (`58977e7`).
   Treats the page as a thin **facade** over `MessageDialog`:
@@ -226,20 +245,20 @@ Last session (2026-04-30, messagebox sweep):
   because its first label is "No" not "Cancel" (use `yesnocancel`
   if you need keyboard dismissal).
 
-Prior session (2026-04-30, template overhaul + messagedialog re-review):
+Earlier session (2026-04-30, template overhaul + messagedialog re-review):
 
 - Templates restructured (`7667e36`); `tools/check_doc_structure.py`
   gained optional-section detection.
 - `messagedialog.md` re-rewritten to the slim template (`942642c`).
 
-`tools/check_doc_structure.py --category dialogs` → 2/11 passing
-(messagedialog, messagebox).
+`tools/check_doc_structure.py --category dialogs` → 3/11 passing
+(messagedialog, messagebox, querydialog).
 
 Pages to review (canonical anchor pattern: `messagedialog.md`):
 
 - [x] `messagedialog.md` — anchor for the dialogs sweep
 - [x] `messagebox.md` — facade over MessageDialog
-- [ ] `querydialog.md`
+- [x] `querydialog.md`
 - [ ] `querybox.md`
 - [ ] `formdialog.md`
 - [ ] `dialog.md` — base class
