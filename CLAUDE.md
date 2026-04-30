@@ -34,10 +34,11 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-04-30)
+### Current handoff (2026-04-30, dialogs sweep started)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
-complete; 6F not started. Pass 2 (editorial review) is the active work.**
+complete; 6F not started. Pass 2 (editorial review) is the active work —
+dialogs sweep just opened.**
 
 Phase 6 status (for reference):
 
@@ -141,13 +142,52 @@ Pages to review:
 - [x] `labeledscale.md`
 - [x] `scrolledtext.md`
 
-### Next: Widget pages — dialogs and data-display
+### Now: Widget pages — dialogs (`docs/widgets/dialogs/`, 11 pages)
 
-The inputs sweep is done. Per the priority order
-("actions, inputs, dialogs, and data-display first"), the next
-session should pick up `docs/widgets/dialogs/` or
-`docs/widgets/data-display/`. Use the same one-page-per-session
-discipline:
+Use `docs/_template/widget-dialog-template.md`. Required H2s differ
+from inputs/actions:
+
+- `Framework integration`
+- `Basic usage`
+- `What problem it solves`
+- `Core concepts`
+- `Result value`
+- `Common options`
+- `Events`
+- `UX guidance`
+- `When to use / when not to`
+
+Last session (2026-04-30):
+
+- `messagedialog.md` — restructured to template; clarified that
+  `MessageDialog` *wraps* (not subclasses) `Dialog`, that `.result`
+  is the pressed button's text (or `None`), that **Escape** is wired
+  only when the *first* button label contains "cancel"
+  (case-insensitive), and that the default-button rule (last button
+  is the default) means destructive options should be listed first
+  to keep **Enter** safe. Documented that the default
+  `["button.cancel", "button.ok"]` keys only render correctly with
+  `localize=True`. Switched the example to the canonical
+  `import ttkbootstrap as ttk`.
+
+`tools/check_doc_structure.py --category dialogs` → 1/11 passing
+(messagedialog only).
+
+Pages to review (canonical anchor pattern: `messagedialog.md`):
+
+- [x] `messagedialog.md` — anchor for the dialogs sweep
+- [ ] `messagebox.md` — facade over MessageDialog
+- [ ] `querydialog.md`
+- [ ] `querybox.md`
+- [ ] `formdialog.md`
+- [ ] `dialog.md` — base class
+- [ ] `datedialog.md`
+- [ ] `colorchooser.md`
+- [ ] `colordropper.md`
+- [ ] `fontdialog.md`
+- [ ] `filterdialog.md`
+
+### Workflow (one page per session)
 
 1. Read the page end-to-end.
 2. Find the right template under `docs/_template/`.
@@ -223,6 +263,19 @@ primitives.
   set the property (`widget.value = …`) and reconfigure the inner scale
   (`widget.scale.configure(from_=…, to=…)`). Source bug. (Surfaced by
   labeledscale.md rewrite, 2026-04-30.)
+- `MessageDialog` class docstring (`dialogs/message.py:27-28`) claims
+  `show_info` / `show_warning` / `show_error` / `show_question` are
+  static methods on `MessageDialog` itself, but those methods live on
+  `MessageBox`. Source-only docstring error. (Surfaced by
+  messagedialog.md rewrite, 2026-04-30.)
+- `MessageDialog` default `buttons=None` resolves to the translation
+  keys `["button.cancel", "button.ok"]` (`dialogs/message.py:75-82`),
+  but `localize` is also off by default. A vanilla `MessageDialog()`
+  therefore displays the literal strings `button.cancel` /
+  `button.ok` to the end user. Either default `localize=True` or
+  resolve through `MessageCatalog.translate` unconditionally for the
+  built-in semantic keys. (Surfaced by messagedialog.md rewrite,
+  2026-04-30.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
