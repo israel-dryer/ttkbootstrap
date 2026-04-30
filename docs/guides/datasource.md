@@ -286,7 +286,6 @@ DataSources integrate with data-aware widgets like ListView:
 ```python
 import ttkbootstrap as ttk
 from ttkbootstrap.datasource import MemoryDataSource
-from ttkbootstrap.widgets.composites.list import ListView
 
 app = ttk.App()
 
@@ -298,7 +297,7 @@ ds.set_data([
 ])
 
 # Use with ListView
-listview = ListView(app, datasource=ds)
+listview = ttk.ListView(app, datasource=ds)
 listview.pack(fill="both", expand=True)
 
 app.mainloop()

@@ -99,6 +99,7 @@ class DropdownButton(MenuButton):
         self._item_click_callback = None
         self._items = items if items else []
         self._popdown_options = kwargs.pop('popdown_options', {})
+        self._command = kwargs.pop('command', None)
 
         # Store the textvariable if provided, or create a new one
         super().__init__(master, text=text, **kwargs)
@@ -110,6 +111,9 @@ class DropdownButton(MenuButton):
         self.bind('<Button-1>', lambda _: self.show_menu(), add="+")
         self.bind('<Return>', lambda _: self.show_menu(), add="+")
         self.bind('<KP_Enter>', lambda _: self.show_menu(), add="+")
+
+        if self._command is not None:
+            self.bind('<Button-1>', lambda _: self._command(), add="+")
 
         # passthrough methods
         self.on_item_click = self._context_menu.on_item_click

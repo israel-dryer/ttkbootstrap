@@ -19,7 +19,6 @@ It renders only the visible rows (plus a small overscan), making it suitable for
 
 ```python
 import ttkbootstrap as ttk
-from ttkbootstrap.widgets.composites.list import ListView
 
 app = ttk.App()
 
@@ -28,7 +27,7 @@ items = [
     {"id": 2, "title": "Item 2", "text": "Description 2"},
 ]
 
-lv = ListView(app, items=items)
+lv = ttk.ListView(app, items=items)
 lv.pack(fill="both", expand=True, padx=20, pady=20)
 
 app.mainloop()
@@ -71,7 +70,7 @@ Common presentation options:
 - `scrollbar_visibility='always'`
 
 ```python
-lv = ListView(
+lv = ttk.ListView(
     app,
     items=data,
     striped=True,
@@ -91,11 +90,10 @@ lv = ListView(
 
 ```python
 import ttkbootstrap as ttk
-from ttkbootstrap.widgets.composites.list import ListView
 
 app = ttk.App()
 
-lv = ListView(
+lv = ttk.ListView(
     app,
     items=[{"id": i, "title": f"Item {i}"} for i in range(50)],
     selection_mode="multi",
@@ -154,7 +152,7 @@ Optional selection UI:
 - `select_on_click` controls whether clicking the row selects it
 
 ```python
-lv = ListView(app, items=data, selection_mode="single", select_on_click=True)
+lv = ttk.ListView(app, items=data, selection_mode="single", select_on_click=True)
 ```
 
 ### Removing and dragging
@@ -162,7 +160,7 @@ lv = ListView(app, items=data, selection_mode="single", select_on_click=True)
 Enable item actions:
 
 ```python
-lv = ListView(
+lv = ttk.ListView(
     app,
     items=data,
     enable_removing=True,
@@ -178,7 +176,7 @@ Use `row_factory` to supply your own `ListItem`-compatible row widget.
 def make_row(master, **kwargs):
     return ttk.ListItem(master, **kwargs)  # or your custom widget
 
-lv = ListView(app, datasource=my_source, row_factory=make_row)
+lv = ttk.ListView(app, datasource=my_source, row_factory=make_row)
 ```
 
 !!! tip "Row factory"
@@ -253,7 +251,7 @@ ListView can work with reactive data sources:
 
 ```python
 items = ttk.Signal([{"id": 1, "title": "Item 1"}])
-lv = ListView(app, items=items)
+lv = ttk.ListView(app, items=items)
 
 # Add new item
 items.set([*items.get(), {"id": 2, "title": "Item 2"}])

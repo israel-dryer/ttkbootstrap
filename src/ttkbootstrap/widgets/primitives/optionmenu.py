@@ -103,6 +103,7 @@ class OptionMenu(MenuButton):
 
         self._bind_id = None
         self._menu_options = options if options is not None else []
+        self._command = kwargs.pop('command', None)
 
         # Store the textvariable if provided, or create a new one
         self._textvariable = kwargs.pop('textvariable', None)
@@ -116,6 +117,9 @@ class OptionMenu(MenuButton):
 
         # Bind signal to change event
         self._bind_id = self._bind_change_event()
+
+        if self._command is not None:
+            self.on_changed(lambda e: self._command(e.data['value']))
 
         # Create menu items that update the shared variable
         self._context_menu = self._build_context_menu()
