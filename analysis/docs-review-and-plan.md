@@ -214,8 +214,10 @@ This is the foundation for Goal 1.
   - Deferred until after 6E parity sweep: deletion of original `docs_scripts/widget*.py` and `widgets_*.py` (kept side-by-side until generated assets are confirmed equivalent), and a `widgets-dateentry-popup.png` factory that programmatically opens the calendar dropdown.
 - [x] **6C.** Done. `ttkb screenshots` registered in `src/ttkbootstrap/cli/screenshots.py` as a thin wrapper over `python -m docs_scripts.render` with `--slug`, `--page`, `--theme` passthrough. Walks up from cwd to find `docs_scripts/screenshots.toml`; errors out cleanly when run outside a source checkout.
 - [x] **6D.** Done. `tools/check_doc_images.py` scans `docs/widgets/**/*.md`, resolves every Markdown image reference relative to its file, and verifies the on-disk asset exists. Strips `#fragment` and `?query` (so `#only-light` references resolve correctly) and skips `http(s)://` / `data:` URLs. Surfaces `IMAGE: ...` placeholders separately as INFO; `--strict-placeholders` upgrades them to failures. First run flagged 2 pre-existing broken refs in `docs/widgets/inputs/scrolledtext.md` (now converted to placeholders for 6E pickup) and reports 19 outstanding `IMAGE:` placeholders for 6E to clear.
-- [ ] **6E.** Generate screenshots for the 67 widget pages currently without them. Replace the 15 `IMAGE:` placeholders. Blocked on 6B completion.
-- [ ] **6F.** Extend MP4 / GIF use to widgets that animate: Toast, Tooltip, Accordion, Expander, PageStack, FloodGauge, Meter.
+- [x] **6E.** In-frame shots done across 13 batches (2026-04-29 → 2026-04-30). Every widget page that renders inline content has a light + dark pair: actions (button, buttongroup, menubutton, dropdownbutton), application (app, appshell, toplevel), data-display (label, badge, progressbar, floodgauge, meter, listview, tableview, treeview), forms (form), inputs (all 10), layout (all 12), navigation (tabs, toolbar, sidenav), primitives (all 5), selection (all except selectbox), views (all 3). 4 popup placeholders intentionally remain in the manifest (`datedialog`, `messagebox`, `selectbox` × 2) and roll forward to 6F. **Caveat:** the macOS pass landed the manifest, factories, and figure blocks, but per user direction the canonical PNGs will be re-rendered on Windows — a single `python -m docs_scripts.render` pass on a Windows host overwrites every asset.
+- [ ] **6F.** Two distinct asset classes need capture tooling beyond the in-frame model:
+  - **Popup-shape widgets** (overlay the main window): `ContextMenu`, `SelectBox` open state, and all 11 dialog pages (`Dialog`, `MessageBox`, `MessageDialog`, `ColorChooser`, `ColorDropper`, `DateDialog`, `FontDialog`, `FilterDialog`, `FormDialog`, `QueryBox`, `QueryDialog`). Needs a renderer mode that captures a Toplevel bbox after the popup is realized but before any modal `grab_set` blocks the parent loop. The 4 `IMAGE:` placeholders remaining in the manifest belong to this group.
+  - **Animated widgets** (need MP4 / GIF): `Toast`, `Tooltip`, `Accordion` (collapse animation), `Expander`, `PageStack` transitions, `FloodGauge`, `Meter`. Needs a display + recording tool (e.g. `ffmpeg` screen capture or `xvfb-run` on Linux CI).
 
 ### Phase 7 — Polish
 
@@ -226,6 +228,14 @@ This is the foundation for Goal 1.
   - `guides/typography.md` — upgraded inline platform-fonts sentence to a `!!! note` admonition.
 - [x] **7B.** Created `docs/reference/deprecated.md` listing all 12 aliases from `_DEPRECATED_ALIASES` with replacement names and migration snippet. Added to nav in `zensical.toml` and `reference/index.md`.
 - [x] **7C.** Final sweep: searched "TODO/TBD/coming soon" — one hit in deprecated.md (stale migration guide link) removed. Fixed 11 broken internal capability links across 8 widget/guide files (icons-and-imagery → icons/index.md, signals.md → signals/index.md, callbacks.md → signals/callbacks.md, virtual-events.md → signals/virtual-events.md). Rendered rebuild deferred (requires display).
+
+### Phase 8 — Follow-ups surfaced during 6E
+
+These were discovered while authoring screenshot factories — the factories couldn't run the documented snippets verbatim, which exposed live drift between the docs and the implementation. Each item is a concrete docs-or-code fix.
+
+- [ ] **8A. `dropdownbutton.md` API drift.** `docs/widgets/actions/dropdownbutton.md` documents `ttk.ContextMenuItem(text=..., separator=True)` and item-level `accent="danger"`. The actual `ContextMenuItem.__init__` (`widgets/composites/contextmenu.py:71`) requires `type: str` as the first positional, with `type="separator"` for separators (see `examples/demo_menubar.py:69-74` for canonical usage). The macOS `_NativeContextMenu.add_command` also rejects per-item `accent`. Rewrite the doc snippets, then sweep sibling pages (`menubutton.md`, `contextmenu.md`, dialogs that route through `ContextMenu`) for the same pattern.
+- [ ] **8B. ListView `badge` field is documented but not dispatched.** `ListItem` (`widgets/composites/list/listitem.py:34-44`) lists `badge` as a recognized field, but `update_data` (`listitem.py:725-734`) only dispatches `title`/`text`/`caption`/`icon` — `badge` is silently dropped. Either add `"badge": self._update_badge` to that mapping, or remove the field from the docstring. Code fix is preferable since `_update_badge` (`listitem.py:428-453`) is fully implemented.
+- [ ] **8C. Phase 2C/2D rendered review.** Originally deferred to a session with a running Tk display. Now that `python -m docs_scripts.render` works end-to-end, the same display can drive `zensical serve -o` for the 22 priority symbols listed in the per-symbol tracker. Goal: verify the rendered output of `App`, `AppShell`, `Form`, `TableView`, `MessageDialog`, `BaseDataSource`, etc. matches the spec model in practice (no orphan `Examples:`, no broken cross-links, `Attributes:` and `Args:` both showing).
 
 ---
 
@@ -309,12 +319,14 @@ Raises:
 
 ## Open Questions
 
-1. **`docs/reference/capabilities/` direction (Phase 3F).** Spec for mixins, or move to user-guide? Decision needs to be made before 3F.
-2. **`reference/widgets/` deprecated-alias files (Phase 1D vs 3E).** Rename to canonical, or delete entirely once duplicates are removed?
-3. **`TK_WIDGETS` / `TTK_WIDGETS` (Phase 3D).** Public API or internal? Currently in `_MODULE_EXPORTS["ttkbootstrap.api.widgets"]`.
+All resolved as of 2026-04-30. Kept here as a record of what was actually decided versus what was deferred without resolution.
+
+1. ~~**`docs/reference/capabilities/` direction (Phase 3F).** Spec for mixins, or move to user-guide?~~ Resolved 2026-04-29: kept as spec. Each page renders the relevant mixin via `::: ...YMixin`; the brief intro is mechanical, not editorial. No move.
+2. ~~**`reference/widgets/` deprecated-alias files (Phase 1D vs 3E).** Rename to canonical, or delete entirely?~~ Resolved 2026-04-29: deleted the 16 duplicate files via `git rm` (Phase 3E); a single canonical `docs/reference/deprecated.md` replaces them (Phase 7B).
+3. ~~**`TK_WIDGETS` / `TTK_WIDGETS` (Phase 3D).** Public API or internal?~~ Resolved 2026-04-29: left public (intended for `isinstance()` use) but no dedicated reference page. Same call applies to the Tk re-exports — canonical docs are at python.org.
 4. ~~**Per-OS packaging guidance scope (Phase 4E).** First-party recipes, or "use Briefcase / use PyInstaller" pointers?~~ Resolved 2026-04-29: delegation pointers, mirroring the existing macOS pattern. `ttkb build` stays scoped to local PyInstaller bundling; signing/installers/sandboxed formats delegate to Briefcase (Windows MSI, Linux AppImage/.deb) and `flatpak-builder` (Flatpak).
-5. **Image policy strictness (Phase 6A).** Mandatory for every widget, or judgment call per page?
-6. **`Tabs` and `TabView` API status.** ~~Both classes exist in `widgets/composites/tabs/` and have reference + user-guide pages, but neither is in `_MODULE_EXPORTS`.~~ Resolved 2026-04-29: per user direction, made consistent with peer layout widgets. Added `Tabs` and `TabView` to `api/widgets.py` exports and to `__init__.py` `_MODULE_EXPORTS` + TYPE_CHECKING block. `import ttkbootstrap as ttk; ttk.Tabs` now resolves.
+5. ~~**Image policy strictness (Phase 6A).** Mandatory for every widget, or judgment call per page?~~ Resolved 2026-04-29: mandatory pair. Every widget page that renders something visible gets a light + dark pair using the canonical `docs-light` / `docs-dark` themes; opt-out (`themes = ["light"]`) only for genuinely theme-agnostic assets.
+6. ~~**`Tabs` and `TabView` API status.** Neither was in `_MODULE_EXPORTS`.~~ Resolved 2026-04-29: per user direction, both promoted to public exports for consistency with peer layout widgets (`PageStack`, `Notebook`, `SideNav`, `Toolbar`).
 
 ---
 
@@ -335,6 +347,9 @@ Date — Decision — Rationale.
 - 2026-04-29 — `TK_WIDGETS` / `TTK_WIDGETS` left public but with no dedicated reference page. Same call applies to Tk re-exports (`Tk`, `Variable`, `StringVar`, etc.) — canonical Python docs already cover them; a redundant page in our reference is editorial work for little value.
 - 2026-04-29 — Phase 6A image policy is mandatory pair: every widget page that renders something visible has a light + dark screenshot. Themes are the canonical `docs-light` / `docs-dark` (already platform defaults). Opt-out (`themes = ["light"]`) only for genuinely theme-agnostic assets.
 - 2026-04-29 — Phase 6B render architecture: manifest-driven `docs_scripts/render.py` with per-widget factory modules. One subprocess per (slug × theme) for clean Tk lifecycle isolation; `App(override_redirect=True)` to drop the titlebar from the bbox; brief mainloop with a 500 ms `after()` capture for reliable Cocoa compositing. Capture target is a renderer-supplied padded `parent` Frame so the bbox never spills into adjacent windows.
+- 2026-04-30 — Phase 6E in-frame screenshots complete (13 batches). Popup-shape widgets (ContextMenu, SelectBox open state, all dialogs) and animated widgets (Toast, Tooltip, Accordion, Expander, PageStack, FloodGauge, Meter) explicitly rolled into 6F since both need capture tooling beyond the in-frame model. The macOS pass landed manifest + factories + figure blocks; canonical PNGs will be re-rendered on Windows in a single `render` invocation.
+- 2026-04-30 — App and Toplevel get representative interior shots even though they're window classes. The renderer captures the interior `capture_frame` — which is exactly what these widgets host — so a "Hello world" / settings-dialog composition is the honest visual, not a misleading mock of OS chrome.
+- 2026-04-30 — Phase 8 created to track docs-vs-implementation drift discovered while authoring screenshot factories. Authoring runnable factories proved more effective than reading docs at surfacing API drift, since the factory has to actually execute. Future docs work should consider similar "load-bearing example" passes.
 
 ---
 
