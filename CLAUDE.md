@@ -76,11 +76,21 @@ in progress; platform/capabilities pages still to come.
 
 **Widget pages — actions** (`docs/widgets/actions/`, 5 pages):
 
-- [x] `button.md` (2026-04-30)
+- [x] `button.md` (2026-04-30, commit `99fc744`) — first widget page reviewed.
+      Establishes the template-conformant pattern other action pages should
+      follow: `Framework integration` overview, `Basic usage` (not `Quick start`),
+      merged `Localization & reactivity`. Use this as the canonical reference
+      when reviewing the remaining four.
 - [ ] `buttongroup.md`
 - [ ] `contextmenu.md`
 - [ ] `dropdownbutton.md`
 - [ ] `menubutton.md`
+
+The category template lives at `docs/_template/widget-action-template.md`.
+Run `python tools/check_doc_structure.py --category actions` to confirm
+required H2s; the existing four un-reviewed pages will fail that check
+until they're reviewed (this is expected and is what the editorial pass
+fixes).
 
 Run **one page at a time** as a deliberate session. Each session covers:
 
