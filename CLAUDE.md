@@ -86,8 +86,9 @@ overview, `Basic usage` (not `Quick start`), merged
 
 ### Now: Widget pages — inputs (`docs/widgets/inputs/`, 10 pages)
 
-This is the next session's bucket. Inputs use a **different template**
-than actions — don't carry the actions section names over verbatim.
+7 of 10 done. Remaining: `scale.md`, `labeledscale.md`, `scrolledtext.md`
+(the three non-text inputs). Inputs use a **different template** than
+actions — don't carry the actions section names over verbatim.
 
 Template: `docs/_template/widget-input-template.md`. Required H2s:
 
@@ -109,16 +110,16 @@ Pages to review:
       `button.md` anchored actions)
 - [x] `numericentry.md`
 - [x] `passwordentry.md`
-- [ ] `pathentry.md`
-- [ ] `dateentry.md`
-- [ ] `timeentry.md`
-- [ ] `spinnerentry.md`
+- [x] `pathentry.md`
+- [x] `dateentry.md`
+- [x] `timeentry.md`
+- [x] `spinnerentry.md`
 - [ ] `scale.md`
 - [ ] `labeledscale.md`
 - [ ] `scrolledtext.md`
 
 `tools/check_doc_structure.py --category inputs` currently fails on the
-7 remaining pages — that's expected and is what this pass fixes. Run it
+3 remaining pages — that's expected and is what this pass fixes. Run it
 before and after each page to confirm structural fit.
 
 The structure check substitutes the literal `WidgetName` in the
@@ -167,6 +168,15 @@ primitives.
   Either wrap the validation handlers to fire `callback(event)` so all
   `on_*` helpers are uniform, or document the split prominently. (Surfaced
   by textentry.md rewrite, 2026-04-30.)
+- `DateEntry` class docstring (`composites/dateentry.py:30`) lists
+  `monthAndDate` as a preset; the actual `IntlFormatter` preset is
+  `monthAndDay`. Source-only typo. (Surfaced by dateentry.md rewrite,
+  2026-04-30.)
+- `TimeEntry.__init__` docstring (`composites/timeentry.py:67`) lists
+  `"mediumTime"` as a value-format preset, but it isn't defined in
+  `IntlFormatter.DatePreset`. Source-only typo — `shortTime`/`longTime`
+  are the real medium/long pair. (Surfaced by timeentry.md rewrite,
+  2026-04-30.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
