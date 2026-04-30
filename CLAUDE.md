@@ -85,6 +85,62 @@ cleanup batch): `docs/widgets/actions/dropdownbutton.md` documents
 backend rejects per-item `accent`. The other dialog/dropdown docs may
 have similar drift.
 
+### Next: API drift sweep, then editorial review
+
+Two distinct passes, **drift first, editorial second**. They are
+sequenced — don't bundle them. Drift is mechanical and finite;
+editorial is judgmental and open-ended. Mixing them dilutes both.
+
+**Pass 1 — API drift sweep (Sonnet).** Authoring runnable factories
+during 6E surfaced docs-vs-code drift far better than reading the
+docs (Phase 8A and 8B in `analysis/docs-review-and-plan.md` are
+examples). Generalize that approach across all of `docs/`:
+
+1. Build a snippet-extraction tool: pull every fenced ```python
+   block from each `.md` under `docs/`, try to `compile()` each in
+   isolation, and run the self-contained ones in a fresh subprocess.
+   Report failures with file path + block index. Half-day of work.
+2. Run it; produce a punch list of broken examples.
+3. Fix each: usually a docs change, sometimes a code change (e.g.
+   8B is a real code bug). Commit per-page or per-cluster.
+4. Phase 8A/8B fold into this pass automatically — they stop being
+   tracked as one-offs.
+
+After this pass, every snippet in the docs is known to match the
+current API. That's the foundation the editorial pass needs.
+
+**Pass 2 — Editorial review (Opus, per guide).** Goal: each guide is
+best-in-class for its content type (input widget, action widget,
+layout primitive, application scaffold, capability page, platform
+note, etc.). Run **one guide at a time** as a deliberate session,
+not as a sweep. Each session reviews:
+
+- **Structural fit** — does the page follow the right template for
+  its content type? Inputs need a different shape than layouts than
+  capabilities. Use `tools/check_doc_structure.py` (exists, from 5I)
+  to flag missing required H2s, then judge the rest.
+- **Accuracy** — examples were validated by Pass 1, but does the
+  *narrative* match the API? (e.g. mentions of methods that no
+  longer exist, options whose semantics changed.)
+- **Completeness** — are concepts a good docs site for this domain
+  would cover actually present? (e.g. forms guide should cover
+  validation, async submission, error display, dirty-state handling
+  — does it?)
+- **Clarity** — is the framing right? Is the order right? Is jargon
+  defined or assumed?
+
+Architectural / informational pages (`platform/*`, `capabilities/*`,
+`design-system/*`, `reference/*/index.md`) get the same treatment but
+with stronger weight on accuracy-vs-current-library-shape — they're
+more likely to drift as the API evolves than widget pages are.
+
+Sequencing rationale: editorial work fights against broken examples
+if Pass 1 isn't done first; you end up half-rewriting code in the
+middle of a clarity pass. Drift sweep is also a useful signal for
+*where* editorial work has the highest payoff — pages with the most
+drift are usually the pages that have been least maintained, which
+correlates with stale framing.
+
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
 
