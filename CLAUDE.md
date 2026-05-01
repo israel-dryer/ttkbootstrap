@@ -34,15 +34,15 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-04-30, layout sweep — 4/12, anchor + LabelFrame + Card + PackFrame)
+### Current handoff (2026-04-30, layout sweep — 5/12, anchor + LabelFrame + Card + PackFrame + GridFrame)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 the dialogs sweep (11/11) and data-display sweep (8/8) are complete. The
 **layout sweep** is now the active sweep: the layout template was
 restructured to the slim arc in commit `997a5b7`, with `frame.md` rewritten
-as the canonical anchor. `labelframe.md`, `card.md`, and `packframe.md`
-are done. Remaining 8 pages: `accordion.md`, `expander.md`, `gridframe.md`,
+as the canonical anchor. `labelframe.md`, `card.md`, `packframe.md`, and
+`gridframe.md` are done. Remaining 7 pages: `accordion.md`, `expander.md`,
 `panedwindow.md`, `scrollbar.md`, `scrollview.md`, `separator.md`,
 `sizegrip.md`. Then move to one of navigation / overlays / selection /
 forms / views / primitives. The remaining 4 templates (form, navigation,
@@ -556,7 +556,54 @@ LabelFrame, Separator, Sizegrip).
 `button.md` / `textentry.md` / `messagedialog.md` / `label.md`
 anchored their respective categories.
 
-Last session (2026-04-30, packframe sweep):
+Last session (2026-04-30, gridframe sweep):
+
+- `gridframe.md` was already structurally aligned with the slim
+  layout template (commit `997a5b7`); this pass was an accuracy
+  cleanup against `widgets/primitives/gridframe.py`. Five fixes:
+  (1) the Gap subsection's `padx=4` example claimed
+  `padx=(14, 4)` for a single button, but cell (0, 0) gets no
+  gap injection — only column ≥ 1 cells do. Verified at runtime:
+  with `gap=10, padx=4` on a 3-button row, A→`4`, B→`(14, 4)`,
+  C→`(14, 4)`. Replaced the example accordingly.
+  (2) the `auto_flow` table mischaracterized dense modes as
+  "search for the smallest free area"; the implementation
+  iterates row-major (or column-major) from `(0, 0)` and returns
+  the first cell where the rectangle fits — correct CSS-Grid
+  `dense` semantics ("earlier holes get filled in") but not
+  "smallest area". Reworded.
+  (3) added the explicit-row-or-column footgun: passing only
+  `row=` (or only `column=`) to `grid()` is silently ignored,
+  since the explicit branch in `_on_child_grid` (`gridframe.py:
+  407-408`) requires both. Auto-placement still runs and the
+  cursor's next free cell wins. Verified at runtime: with
+  `columns=3`, `Button.grid(row=5)` lands at `(0, 1)`, not
+  `(5, 0)`.
+  (4) added the column-major mirror caveat: just as
+  `auto_flow="row"` without `columns=` stacks along a single
+  row (the `_num_columns=100` placeholder), `auto_flow="column"`
+  without `rows=` stacks along a single column.
+  (5) tightened the `auto_flow="none"` row to call out that the
+  second implicit child overlaps the first at `(0, 0)` —
+  `_find_next_position` returns `(0, 0)` unconditionally in
+  this mode, ignoring the `_occupied` set.
+  Other key facts on the page (kept from the prior version, all
+  verified): `int n` → `(weight=n, minsize=0)`; `"auto"` →
+  `(0, 0)`; `"Npx"` → `(0, N)` (not a hard cap); `gap` is the
+  only GridFrame-specific option wired through configure-delegate
+  (`configure(gap=…)` triggers `_regrid_all`); `rows`/`columns`/
+  `sticky_items`/`auto_flow` are construction-only; `propagate=
+  False` only calls `grid_propagate(False)` (inverse of
+  PackFrame's `pack_propagate(False)`); `grid_remove()` keeps
+  the widget tracked, `grid_forget()` discards tracking.
+
+`tools/check_doc_structure.py --category layout` → gridframe.md
+not in the failing list (7/12 pages still pending).
+`tools/check_doc_snippets.py --run --file
+docs/widgets/layout/gridframe.md` → 0 failures (11 snippets,
+1 executed).
+
+Prior session (2026-04-30, packframe sweep):
 
 - `packframe.md` rewritten to the slim layout template. PackFrame is
   the fourth page in the sweep — a `Frame` subclass that intercepts
@@ -680,7 +727,7 @@ Pages to review (canonical anchor: `frame.md`):
 - [x] `labelframe.md` — titled bordered Frame variant
 - [x] `card.md` — Frame subclass with `accent='card'` + border preset
 - [x] `packframe.md` — Frame subclass with auto-pack + `gap`
-- [ ] `gridframe.md` — Frame subclass with declarative rows/columns
+- [x] `gridframe.md` — Frame subclass with declarative rows/columns
 - [ ] `panedwindow.md` — resizable split regions
 - [ ] `scrollview.md` — scrollable viewport over a content frame
 - [ ] `scrollbar.md` — themed ttk.Scrollbar wrapper
