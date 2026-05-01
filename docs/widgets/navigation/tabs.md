@@ -4,10 +4,20 @@ title: Tabs
 
 # Tabs
 
-`Tabs` is a **tab bar container** that groups `TabItem` widgets into a horizontal or vertical navigation strip.
+`Tabs` is a themed **tab bar** — a horizontal or vertical strip of
+clickable items that drives selection state. It is pure navigation
+chrome: it does not own a page-stack and does not switch content
+panes. Its only output is the **selected value**, exposed as a
+`Signal` / `tk.Variable` and emitted as a `<<TabSelect>>` event on
+the active tab. Pair it with a `PageStack`, a `Notebook`, or any
+content widget you observe via the same signal.
 
-It manages tab layout, selection state, and optional features like close buttons and an "add" button
-for dynamic tab creation.
+If you want tabs that automatically swap content panes, use
+[`TabView`](../views/tabview.md) — it composes `Tabs` with a
+`PageStack`. Reach for `Tabs` directly when the content lives in a
+custom layout, when you want to drive a non-page concern (tool mode,
+filter set, view preset), or when you need fine-grained control over
+each tab's lifecycle.
 
 <figure markdown>
 ![tabs](../../assets/dark/widgets-tabs.png#only-dark)
@@ -16,9 +26,9 @@ for dynamic tab creation.
 
 ---
 
-## Quick start
+## Basic usage
 
-Create a tab bar with selectable tabs:
+Create a tab bar, add tabs by key, and observe the selection.
 
 ```python
 import ttkbootstrap as ttk
@@ -28,214 +38,242 @@ app = ttk.App()
 tabs = ttk.Tabs(app)
 tabs.pack(fill="x", padx=10, pady=10)
 
-tabs.add(text="Home", icon="house")
-tabs.add(text="Files", icon="folder2")
-tabs.add(text="Settings", icon="gear")
+tabs.add(text="Home", icon="house", key="home")
+tabs.add(text="Files", icon="folder2", key="files")
+tabs.add(text="Settings", icon="gear", key="settings")
 
-def on_tab_changed(value):
-    print(f"Selected: {value}")
-
-tabs.on_tab_changed(on_tab_changed)
+tabs.on_tab_changed(lambda value: print(f"Selected: {value}"))
 
 app.mainloop()
 ```
 
----
-
-## When to use
-
-Use `Tabs` when:
-
-- you need a standalone tab bar without content switching
-
-- you're building custom navigation where tabs control external content
-
-- you want fine-grained control over tab behavior
-
-Consider a different control when:
-
-- you need tabs with integrated content panels - use [TabView](../views/tabview.md) instead
-
-- navigation is sequential/flow-based - use [PageStack](../views/pagestack.md) instead
+The first tab added is selected automatically (the underlying
+variable is set to that tab's value on the first `add()` call).
 
 ---
 
-## Appearance
+## Navigation model
 
-### Variants
-
-Tabs supports two visual variants:
-
-| Variant | Description |
-|---------|-------------|
-| `bar` | Default style with underline indicator and divider |
-| `pill` | Rounded pill-style tabs without divider |
+`Tabs` is a **random-access selection surface**. Every tab carries a
+`key` (the unique identifier within the bar) and a `value` (what gets
+written to the variable / signal when the tab is clicked). When
+`value` is omitted, it defaults to `key`, so the simplest setup
+treats keys as the public selection identifier:
 
 ```python
-# Bar variant (default)
-tabs = ttk.Tabs(app, variant="bar")
+tabs.add(text="Home", key="home")
+tabs.add(text="Files", key="files")
 
-# Pill variant
-tabs = ttk.Tabs(app, variant="pill")
+tabs.set("files")          # programmatic selection
+print(tabs.get())          # "files"
 ```
 
-### Orientation
+The selection writes flow through one channel:
 
-Tabs can be horizontal or vertical:
+| Channel | Read | Write | Reactivity |
+|---|---|---|---|
+| `Signal` (preferred) | `tabs.signal.get()` | `tabs.signal.set(v)` | `tabs.signal.subscribe(cb)` → `cb(value)` |
+| `tk.Variable` | `tabs.variable.get()` | `tabs.variable.set(v)` | `tabs.variable.trace_add("write", cb)` |
+| Convenience | `tabs.get()` / `tabs.value` | `tabs.set(v)` / `tabs.value = v` / `tabs.configure(value=v)` | `tabs.on_tab_changed(cb)` → `cb(value)` |
 
-```python
-# Horizontal (default)
-tabs = ttk.Tabs(app, orient="horizontal")
+Pass an existing `signal=` (or `variable=`) at construction to share
+state with another widget. If neither is provided, `Tabs` creates an
+internal `StringVar` + `Signal` pair.
 
-# Vertical
-tabs = ttk.Tabs(app, orient="vertical")
-```
+!!! warning "Auto-select clobbers external state"
+    The first call to `add()` writes that tab's value to the
+    variable unconditionally — even if the variable already held a
+    meaningful value. If you pass `signal=external_signal` with a
+    pre-set value, that value is replaced when the first tab is
+    added. Add tabs first, then write the desired initial value, or
+    call `tabs.set(...)` after `add()`.
 
-### Tab width
-
-Control how tabs size themselves:
-
-```python
-# Auto-size to content (default)
-tabs = ttk.Tabs(app, tab_width=None)
-
-# Fixed character width
-tabs = ttk.Tabs(app, tab_width=12)
-
-# Stretch to fill available space
-tabs = ttk.Tabs(app, tab_width="stretch")
-```
-
-!!! link "Design System"
-    See [Colors & Themes](../../design-system/colors.md) for color customization.
+`Tabs` does not own pages. Tab keys are scoped to the bar; if you
+want to drive a content pane, observe `tabs.signal` and switch the
+pane yourself (or use [`TabView`](../views/tabview.md), which does
+this for you).
 
 ---
 
-## Examples and patterns
+## Common options
 
-### Adding tabs
+| Option | Default | Effect |
+|---|---|---|
+| `orient` | `"horizontal"` | Tab strip axis. **Construction-only** — `configure(orient=…)` raises `ValueError`. |
+| `variant` | `"bar"` | Visual style. Only `"bar"` is registered (the underline-and-divider look); see the warning below. **Construction-only**. |
+| `show_divider` | depends on `variant` | Thin separator below (or beside) the bar. Defaults to `True` for `"bar"`, `False` otherwise. Reconfigurable live. |
+| `compound` | `"left"` | Icon position relative to text in every tab (forwarded to each `TabItem`). |
+| `tab_width` | `None` | `None` auto-sizes; an `int` gives a fixed character width; `"stretch"` expands tabs to fill the bar. **`"stretch"` is honored only for horizontal orientation** — vertical packs have `expand=False` regardless. |
+| `tab_padding` | `(12, 8)` | `(horizontal, vertical)` padding inside each tab. |
+| `tab_anchor` | orient-dependent | Default text/icon alignment per tab. `None` resolves to `"w"` for vertical, `"center"` for horizontal. |
+| `enable_closing` | `False` | Close-button affordance for newly added tabs: `True` (always visible), `False` (no button), `"hover"` (visible on hover only — space is reserved either way). Per-tab `closable=` on `add()` overrides. |
+| `enable_adding` | `False` | Show a `+` button at the trailing edge that fires `<<TabAdd>>`. |
+| `signal` | internal | Shared `Signal` for selection state. Mutually substitutes for `variable=`. |
+| `variable` | internal | Shared `tk.Variable` for selection state. Wrapped into a `Signal` internally. |
+| `accent` | `None` | Theme token for the active-tab indicator (the underline in the `bar` variant). Defaults to `primary` when omitted. |
 
-Use `add()` to create tabs:
+!!! warning "`variant='pill'` is not implemented"
+    The constructor accepts `"pill"` and the docstring lists it, but
+    no `pill` builder is registered for `TabItem.TFrame`. Passing
+    `variant="pill"` raises
+    `BootstyleBuilderError: Builder 'pill' not found for widget
+    class 'TabItem.TFrame'. Available variants: default, bar`. Use
+    `"bar"` (or omit `variant`) until the builder ships.
 
-```python
-tabs.add(text="Documents", icon="file-text")
-tabs.add(text="Settings", icon="gear")
-```
-
-For advanced use cases like programmatic lookups or removal, supply an explicit `key`:
-
-```python
-tabs.add(key="docs", text="Documents", icon="file-text")
-tabs.add(key="settings", text="Settings", icon="gear")
-
-# Later: lookup, configure, or remove by key
-tabs.item("docs").configure(text="My Documents")
-tabs.configure_item("settings", state="disabled")
-tabs.remove("docs")
-```
-
-### Selection state
-
-Track selection via the `on_tab_changed` callback:
-
-```python
-def handle_change(value):
-    print(f"Now selected: {value}")
-
-tabs.on_tab_changed(handle_change)
-```
-
-Or use the Signal API:
-
-```python
-tabs.signal.subscribe(lambda v: print(v))
-```
-
-Get/set selection programmatically:
-
-```python
-current = tabs.get()
-tabs.set("settings")
-```
-
-### Closable tabs
-
-Enable close buttons on tabs:
-
-```python
-# Always visible close buttons
-tabs = ttk.Tabs(app, enable_closing=True)
-
-# Close buttons visible on hover only
-tabs = ttk.Tabs(app, enable_closing="hover")
-```
-
-Handle close events:
-
-```python
-def on_close():
-    print("Tab closed")
-
-tabs.add(text="Document", close_command=on_close)
-```
-
-### Add button
-
-Show an "add" button for dynamic tab creation:
-
-```python
-tabs = ttk.Tabs(app, enable_adding=True)
-
-def on_add(event):
-    tabs.add(text="New Tab")
-
-tabs.on_tab_added(on_add)
-```
-
-### Events
-
-Tabs emits virtual events:
-
-- `<<TabSelect>>` - when a tab is selected
-- `<<TabClose>>` - when a tab's close button is clicked
-- `<<TabAdd>>` - when the add button is clicked
-
-```python
-tabs.bind("<<TabSelect>>", lambda e: print("Tab selected"))
-```
+The bar inherits standard `Frame` chrome (`surface`, `padding`,
+`show_border`, `density`); the active-tab underline color is driven
+by `accent`. To restyle individual tabs after construction, use
+`tabs.configure_item(key, …)` or `tabs.item(key).configure(…)` and
+target the same options that `TabItem` accepts (`text`, `icon`,
+`compound`, `value`, `closable`, `command`, `close_command`).
 
 ---
 
 ## Behavior
 
-### UX guidance
+**Selection.** Clicking a tab writes its `value` to the bound
+variable, fires that tab's `command` callback, and emits
+`<<TabSelect>>` on the tab. The bar itself observes the variable and
+re-paints whichever tab matches the current value as `selected`. The
+pattern means programmatic writes (`tabs.set(value)`,
+`tabs.signal.set(value)`, or even `tabs.variable.set(value)` from a
+peer widget) all round-trip through the same code path and re-paint
+the active tab.
 
-- Use consistent tab styling within a region
+**Adding and removing.** `tabs.add(...)` appends a tab; `key` is
+auto-generated as `tab_<n>` if omitted. `tabs.remove(key)` destroys
+the tab; you can also iterate via `tabs.keys()` or `tabs.items()`.
+`tabs.add(key=...)` raises `ValueError` on duplicate keys.
 
-- Limit horizontal tabs to 5-7 items for scannability
+!!! warning "`remove()` does not reset selection"
+    Removing the currently-selected tab leaves the variable holding
+    an orphan value that no longer matches any tab. The bar paints
+    nothing as selected, but `tabs.get()` still returns the stale
+    key. Call `tabs.set(...)` (or read `tabs.keys()` and pick a
+    fallback) after removing the active tab.
 
-- Use icons with text for better recognition
+**Per-tab control.** `tabs.item(key)` returns the underlying
+`TabItem` (which is not a publicly-constructable type — you only ever
+get one back from `add()`). It exposes its own properties
+(`is_selected`, `value`) and `configure` keys for `text`, `icon`,
+`compound`, `closable`, `command`, `close_command`. `tabs.item(key)
+.select()` is equivalent to `tabs.set(value)`.
 
-- Vertical tabs work well for settings-style navigation
+**Closing.** When `closable` is set on a tab, clicking the close
+button emits `<<TabClose>>` on the tab and invokes its
+`close_command` callback (if any). The widget does **not**
+auto-`remove()` — your handler decides whether to remove, hide, or
+reuse.
 
-!!! tip "Pair with content"
-    For tabs that switch content, use [TabView](../views/tabview.md) which combines
-    Tabs with a PageStack automatically.
+**Adding (the +-button).** With `enable_adding=True`, the bar shows
+a `+` button (horizontal) or a `New` button (vertical) at the
+trailing edge. Clicking it fires `<<TabAdd>>` on the bar. Your
+handler typically calls `tabs.add(...)` to insert a new tab.
+
+**Hover-only close.** With `closable="hover"`, the close button is
+laid out (so spacing is stable) but its glyph foreground matches the
+tab background; on hover, the glyph fades in via the ttk state map.
+
+**Construction-only options.** `orient` and `variant` cannot be
+changed after construction — both raise `ValueError`. `tab_width`,
+`tab_padding`, and `tab_anchor` are baked into newly-added tabs;
+existing tabs keep their original layout.
 
 ---
 
-## Additional resources
+## Events
 
-### Related widgets
+The event surface splits across two widgets — `Tabs` and the
+individual `TabItem` returned by `add()`.
 
-- [TabView](../views/tabview.md) - tabs with integrated content switching
+| Event | Fired on | When | `event.data` |
+|---|---|---|---|
+| `<<TabSelect>>` | the **TabItem** clicked | tab is clicked or `tab.select()` is called | `{"value": <tab.value>}` |
+| `<<TabClose>>` | the **TabItem** | close button is clicked | `{"value": <tab.value>}` |
+| `<<TabAdd>>` | the **Tabs** widget | the `+` / `New` button is clicked (with `enable_adding=True`) | *none* |
 
-- [PageStack](../views/pagestack.md) - stack-based navigation
+!!! warning "`<<TabSelect>>` does not bubble to `Tabs`"
+    Tk virtual events do not propagate through the parent chain, and
+    `Tabs` does not forward them. `tabs.bind("<<TabSelect>>", ...)`
+    silently registers a callback that never fires. To observe
+    selection at the bar level, use `tabs.on_tab_changed(...)` or
+    `tabs.signal.subscribe(...)`. To observe a single tab, bind on
+    that `TabItem`:
 
-- [Notebook](../views/notebook.md) - traditional tabbed container
+    ```python
+    home = tabs.add(text="Home", key="home")
+    home.bind("<<TabSelect>>", lambda e: print("home clicked", e.data))
+    ```
 
-- [SideNav](sidenav.md) - vertical navigation list
+`Tabs` exposes two `on_*` helpers, each with a different callback
+shape — choose by what you want delivered:
 
-### API reference
+| Helper | Backed by | Callback receives | Unbind |
+|---|---|---|---|
+| `tabs.on_tab_changed(cb)` | `signal.subscribe` | `cb(value)` — the new selected value | `tabs.off_tab_changed(sub_id)` |
+| `tabs.on_tab_added(cb)` | `bind("<<TabAdd>>")` | `cb(event)` — a Tk event | `tabs.off_tab_added(bind_id)` |
 
-- [`ttkbootstrap.Tabs`](../../reference/widgets/Tabs.md)
+`on_tab_changed` is the right hook for "do something with the new
+selection" — it fires for both user clicks and programmatic writes.
+`on_tab_added` is a thin alias for the underlying virtual event;
+prefer it when you also need the event object (e.g. to read
+`event.widget`).
+
+```python
+def handle_change(value):
+    print(f"Now showing: {value}")
+
+sub_id = tabs.on_tab_changed(handle_change)
+# tabs.off_tab_changed(sub_id)  # later
+```
+
+---
+
+## When should I use Tabs?
+
+Use `Tabs` when:
+
+- you want a tab strip that drives **external** state — a content
+  pane in a custom layout, a tool-mode switch, a filter preset
+- you need fine-grained control over each tab (per-tab `command`,
+  `close_command`, `closable`, custom keys)
+- you want closable tabs or an add affordance and you'll handle the
+  side effects yourself
+
+Prefer [`TabView`](../views/tabview.md) when:
+
+- you want tabs that automatically swap a content pane — `TabView`
+  composes `Tabs` with a `PageStack` and wires the selection through
+  for you
+
+Prefer [`SideNav`](sidenav.md) when:
+
+- the navigation is the primary structural element of an app shell
+  (a vertical destination list with sections / icons), not a
+  contextual tab strip
+
+Prefer [`Notebook`](../views/notebook.md) when:
+
+- you specifically need the platform's native ttk `Notebook` widget
+  (e.g. tab-drag-rearrange that the OS provides for free)
+
+---
+
+## Related widgets
+
+- [`TabView`](../views/tabview.md) — `Tabs` plus a `PageStack` with
+  the selection wired through; reach for this when each tab maps
+  one-to-one to a content pane.
+- [`PageStack`](../views/pagestack.md) — the content half of
+  `TabView`; pair with `Tabs` directly if you want bespoke chrome.
+- [`SideNav`](sidenav.md) — vertical destination list for top-level
+  navigation in an app shell.
+- [`Notebook`](../views/notebook.md) — thin themed wrapper over
+  `ttk.Notebook` if you need the platform-native tab control.
+
+---
+
+## Reference
+
+- **API reference:** `ttkbootstrap.Tabs`
+- **Related guides:** Navigation, Signals & Events, Design System
