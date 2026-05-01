@@ -34,7 +34,7 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, layout sweep — 9/12, anchor + LabelFrame + Card + PackFrame + GridFrame + PanedWindow + Scrollbar + ScrollView + Accordion)
+### Current handoff (2026-05-01, layout sweep — 10/12, anchor + LabelFrame + Card + PackFrame + GridFrame + PanedWindow + Scrollbar + ScrollView + Accordion + Expander)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
@@ -42,12 +42,12 @@ the dialogs sweep (11/11) and data-display sweep (8/8) are complete. The
 **layout sweep** is now the active sweep: the layout template was
 restructured to the slim arc in commit `997a5b7`, with `frame.md` rewritten
 as the canonical anchor. `labelframe.md`, `card.md`, `packframe.md`,
-`gridframe.md`, `panedwindow.md`, `scrollbar.md`, `scrollview.md`, and
-`accordion.md` are done. Remaining 3 pages: `expander.md`, `separator.md`,
-`sizegrip.md`. Then move to one of navigation / overlays / selection /
-forms / views / primitives. The remaining 4 templates (form, navigation,
-overlay, selection) still need the editorial pass at the start of each
-sweep (see "Template arc" below).**
+`gridframe.md`, `panedwindow.md`, `scrollbar.md`, `scrollview.md`,
+`accordion.md`, and `expander.md` are done. Remaining 2 pages:
+`separator.md`, `sizegrip.md`. Then move to one of navigation / overlays /
+selection / forms / views / primitives. The remaining 4 templates (form,
+navigation, overlay, selection) still need the editorial pass at the
+start of each sweep (see "Template arc" below).**
 
 ### Template arc (apply to every editorial sweep)
 
@@ -556,7 +556,71 @@ LabelFrame, Separator, Sizegrip).
 `button.md` / `textentry.md` / `messagedialog.md` / `label.md`
 anchored their respective categories.
 
-Last session (2026-05-01, accordion sweep):
+Last session (2026-05-01, expander sweep):
+
+- `expander.md` rewritten to the slim layout template. Expander is
+  the tenth page in the sweep — a `Frame` subclass with a clickable
+  header region (icon + title + chevron) on top of a permanent
+  content frame that toggles via `pack()` / `pack_forget()`. Filled
+  in the optional `Layout model` (header / content frame / content
+  widget three-region stack) and documented the previously-undoc
+  selection model. Four things the old page got wrong or omitted,
+  one of which became a new bug:
+  (1) the old "Programmatic control" example showed `if exp.expanded:`
+  and `exp.expanded = False`. Verified at runtime that Expander has
+  no `expanded` Python property (`AttributeError`); access is via
+  `cget("expanded")` / `configure(expanded=...)` / `expand()` /
+  `collapse()` / `toggle()`. Documented `is_selected` and `content`
+  as the only true properties.
+  (2) the old "Responding to toggle events" snippet used
+  `exp.on_toggle(...)`. The actual helper is `on_toggled` (and
+  `off_toggled`, `on_selected`, `off_selected`). Fixed and added
+  the bind-id pattern. (Same `<<Toggle>>` payload `{"expanded":
+  bool}` confirmed at runtime.)
+  (3) the old page never described the **header vs container**
+  styling split. `accent` and `variant` are intercepted in
+  `Expander.__init__` (`composites/expander.py:74-75`) before the
+  Frame bootstyle wrapper, so they style the inner CompositeFrame
+  header — not the outer Frame. Verified:
+  `Expander(accent="primary")` produces `_surface="content"`,
+  `style_options={}`, rendered style `Default.TFrame` (the outer
+  container is unstyled). To tint the container itself, use
+  `surface=` independently from `accent`.
+  (4) the old page omitted the **selection model** (signal /
+  variable / value). Expander accepts `signal=` (preferred) or
+  `variable=` plus `value=`, fires `<<Selected>>` with `{"value":
+  ...}` on header click, and exposes the `is_selected` property
+  for radio-group reads. Documented the full surface and noted
+  that `_update_selection_state` (`expander.py:140-144`) is a
+  deliberate placeholder — selection state is tracked but does
+  **not** auto-apply the `selected` ttk state to the header
+  today; pair `signal=` with `highlight=True` and call
+  `expand()` from the listener, or drive
+  `expander._header_frame.set_selected(True)` manually.
+  Also documented: `add()` semantics (idempotent on the no-arg
+  path, raises `ValueError` if a widget is passed after content
+  exists), the `compact` mode (hides title, centers icon — undoc
+  in old page), the `show_border=True` auto-injection of
+  `padding=3` (verified: `cget('padding') == (3,)`), the keyboard
+  contract (`<Tab>` walks header focus, `<Return>` / `<space>`
+  toggle), and the construction-only nature of `icon_position`.
+  Logged one new bug: `collapsible=False` only hides the chevron
+  and gates `toggle()`. The programmatic paths `expand()` /
+  `collapse()` / `configure(expanded=...)` ignore `_collapsible`
+  entirely (`composites/expander.py:261-283`). Verified:
+  `Expander(collapsible=False).collapse()` collapses the content
+  with no warning. Either treat `collapsible=False` as a hard
+  invariant or rename it to reflect that it controls only
+  user-facing affordances.
+
+`tools/check_doc_structure.py --category layout` → expander.md no
+longer in the missing-sections list (2/12 pages still pending:
+separator, sizegrip).
+`tools/check_doc_snippets.py --run --file
+docs/widgets/layout/expander.md` → 0 failures (10 snippets, 1
+executed).
+
+Prior session (2026-05-01, accordion sweep):
 
 - `accordion.md` rewritten to the slim layout template. Accordion is
   the ninth page in the sweep — a `Frame` subclass that owns a stack
@@ -909,7 +973,7 @@ Pages to review (canonical anchor: `frame.md`):
 - [x] `scrollbar.md` — themed ttk.Scrollbar wrapper
 - [x] `scrollview.md` — scrollable viewport over a content frame
 - [x] `accordion.md` — mutual-exclusion stack of Expanders
-- [ ] `expander.md` — single collapsible region
+- [x] `expander.md` — single collapsible region
 - [ ] `separator.md` — visual divider
 - [ ] `sizegrip.md` — bottom-right resize handle
 
@@ -1327,6 +1391,23 @@ primitives.
   separator strip on configure, or document as
   construction-time-effective. (Surfaced by accordion.md rewrite,
   2026-05-01.)
+- `Expander.collapsible=False` only hides the chevron and gates
+  `toggle()`; the programmatic paths `expand()` / `collapse()` /
+  `configure(expanded=...)` ignore `self._collapsible` entirely.
+  `Expander.collapse()` (`composites/expander.py:273-283`) doesn't
+  consult the flag, and `_delegate_expanded`
+  (`composites/expander.py:483-492`) calls `expand()` /
+  `collapse()` directly. Verified at runtime:
+  `Expander(collapsible=False).collapse()` collapses the content
+  with no warning. Either treat `collapsible=False` as a hard
+  invariant (no programmatic collapse either) or rename it to
+  reflect that it only controls user-facing affordances. Also,
+  `_update_selection_state` (`composites/expander.py:140-144`) is
+  a deliberate placeholder — `signal=` / `variable=` selection
+  fires `<<Selected>>` and updates `is_selected`, but does not
+  apply the `selected` ttk state to the header. Pair with
+  `highlight=True` + `expand()` from a listener for visual
+  feedback today. (Surfaced by expander.md rewrite, 2026-05-01.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
