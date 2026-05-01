@@ -34,15 +34,14 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-04-30, data-display sweep — 1/8 + template restructure)
+### Current handoff (2026-04-30, data-display sweep — 2/8)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 the dialogs sweep is now complete (11/11), and the data-display sweep
-has begun: the data-display template has been restructured to the slim
-arc and `label.md` is the canonical anchor. Remaining 7 pages (badge,
-floodgauge, listview, meter, progressbar, tableview, treeview) still
-need rewriting.**
+is in progress (2/8): `label.md` (anchor) and `badge.md` are rewritten
+to the slim template. Remaining 6 pages (floodgauge, listview, meter,
+progressbar, tableview, treeview) still need rewriting.**
 
 ### Template arc (apply to every editorial sweep)
 
@@ -261,52 +260,47 @@ Optional (declared via `*Optional` prose under the heading):
 - `Performance guidance` — include for widgets that scale with
   row count. Skip for lightweight status/progress widgets.
 
-Last session (2026-04-30, label sweep — anchor):
+Last session (2026-04-30, badge sweep):
 
-- `label.md` rewritten to the slim template as the canonical
-  anchor for the data-display sweep. Frames Label as the
-  foundational read-only display widget that Badge, Field
-  labels, and several composites are built on. Contrasts
-  against `Button` (no `command`, `takefocus=False` by default)
-  and `Entry` (no value model — Label displays whatever is
-  bound to its `text`).
-  Common-options consolidates into a single 16-row table
-  covering the everyday surface: text content (`text` /
-  `textvariable` / `textsignal` are equivalent input slots —
-  framework normalizes a Signal passed to `text=` into the
-  `textsignal` slot), images (`image` / `icon` / `icon_only` /
-  `compound`), layout (`anchor` / `justify` / `wraplength`),
-  theming (`accent` / `surface` / `font` / `padding`),
-  localization (`localize` / `value_format`), and `state`. The
-  old page split these across Quick start, Appearance,
-  Examples & patterns, and Localization.
-  Three subtleties surfaced in narrative: (1) `accent` controls
-  the **foreground** color, NOT a chip background — readers
-  expecting a high-contrast pill are routed to Badge;
-  (2) Label has no `on_*` event helpers and emits no virtual
-  events — reactivity goes the other direction (bind a
-  `Signal`/`Variable` to `text`); click handling needs a manual
-  `bind("<Button-1>", ...)` or `Button` with a borderless
-  variant; (3) `accent` overrides foreground via
-  `b.color(accent)` while `surface` drives background, so
-  `surface=` is the right knob if you need a colored background
-  on a Label.
-  Behavior section documents the `state` semantics from
-  `TtkStateMixin` (`disabled` dims, other states accepted but
-  rarely visually distinct on a label), the wraplength/anchor
-  sizing rules, and the `<<LocaleChanged>>` re-translation
-  behavior with `value_format` formatting hooked through
-  `IntlFormatter`.
+- `badge.md` rewritten to the slim template. Corrects the
+  framing the old page papered over: Badge is **not** a Label
+  with "badge styling" applied — it's a Label whose `accent`
+  drives the chip *fill* (background) and whose foreground is
+  auto-selected as the readable contrast color via
+  `b.on_color(accent)`. This is the inverse of Label, where
+  `accent` only tints foreground. Documented the `variant` axis
+  (`square` default, `pill` opt-in), the actual Badge defaults
+  from `widgets/primitives/badge.py` (`anchor="center"`,
+  `font="-size 8"`, `variant="square"`), and the `accent or
+  'primary'` fallback in the builder.
+  Common-options consolidates into a 17-row table; `bootstyle`
+  references and the raw-Tk `foreground`/`background` options
+  removed from the surface (Badge's chip color goes through
+  `accent` + `surface`).
+  Added a deliberate negative `Events` section so readers don't
+  hunt for `on_*` helpers Badge doesn't expose.
 
-`tools/check_doc_structure.py --category data-display` → 1/8
-passing (label only). 7 remaining pages (badge, floodgauge,
-listview, meter, progressbar, tableview, treeview) are still on
-the old scaffold.
+Prior session (2026-04-30, label sweep — anchor):
+
+- `label.md` rewritten as the canonical anchor for the
+  data-display sweep. Frames Label as the foundational read-only
+  display widget that Badge, Field labels, and several
+  composites are built on. Three subtleties surfaced in
+  narrative: (1) `accent` controls the **foreground** color, NOT
+  a chip background — readers expecting a high-contrast pill are
+  routed to Badge; (2) Label has no `on_*` event helpers and
+  emits no virtual events; (3) `surface=` is the right knob if
+  you need a colored background on a Label.
+
+`tools/check_doc_structure.py --category data-display` → 2/8
+passing (label, badge). 6 remaining pages (floodgauge, listview,
+meter, progressbar, tableview, treeview) are still on the old
+scaffold.
 
 Pages to review (canonical anchor: `label.md`):
 
 - [x] `label.md` — anchor for the data-display sweep
-- [ ] `badge.md` — extends Label; compact pill chip
+- [x] `badge.md` — extends Label; compact pill chip
 - [ ] `progressbar.md`
 - [ ] `floodgauge.md`
 - [ ] `meter.md`
