@@ -4,23 +4,22 @@ title: Text
 
 # Text
 
-`Text` is Tkinter's **multi-line text editor** widget (`tk.Text`).
+`Text` is the multi-line text-editor primitive in ttkbootstrap. It is
+not a custom subclass — `ttkbootstrap.Text` is `tkinter.Text`
+re-exported from the top-level namespace. The integration ttkbootstrap
+adds is an install-time wrapper around `tk.Text.__init__` that paints
+theme colors (background, foreground, caret, selection, focus border)
+on construction and re-applies them on `<<ThemeChanged>>`. Beyond that,
+every option, method, and event behaves exactly like the underlying
+`tk.Text` widget.
 
-It supports rich behavior that typical entry widgets don't:
-
-- multiple lines with wrapping and indentation
-
-- **tags** for styling and interaction (links, highlights, code blocks)
-
-- embedded **images** and **widgets**
-
-- undo/redo, search, marks, and selections
-
-ttkbootstrap exposes `Text` as a first-class widget so you can build editors, logs, and rich text UIs with a consistent theme and a clear set of usage patterns.
-
-!!! tip "Prefer Field-based inputs when possible"
-    For most form input, prefer [TextEntry](/widgets/inputs/textentry.md), [PasswordEntry](/widgets/inputs/passwordentry.md), [NumericEntry](/widgets/inputs/numericentry.md), etc.
-    Use `Text` when you need **multi-line editing** or **tag-based formatting**.
+For the standard "text plus scrollbar" composite, prefer
+[`ScrolledText`](../inputs/scrolledtext.md) — it wires the scrollbar
+for you and handles visibility modes. For single-line input, prefer
+[`TextEntry`](../inputs/textentry.md) (or one of the typed Field
+inputs). Reach for `Text` directly when you need multi-line editing
+with tag styling, embedded widgets/images, search, or undo/redo, and
+want full access to the raw Tk option surface.
 
 <figure markdown>
 ![text](../../assets/dark/widgets-text.png#only-dark)
@@ -29,9 +28,7 @@ ttkbootstrap exposes `Text` as a first-class widget so you can build editors, lo
 
 ---
 
-## Quick start
-
-Create a text widget, insert content, and read it back:
+## Basic usage
 
 ```python
 import ttkbootstrap as ttk
@@ -44,149 +41,291 @@ text.pack(fill="both", expand=True, padx=20, pady=20)
 text.insert("end", "Hello from Text\n")
 text.insert("end", "This is a multi-line widget.")
 
-print(text.get("1.0", "end-1c"))  # get all text, excluding trailing newline
+print(text.get("1.0", "end-1c"))  # all text without trailing newline
 
 app.mainloop()
 ```
 
 ---
 
-## When to use
+## Content model
 
-Use `Text` when:
+`Text` does not hold a single string. Its content is a sequence of
+characters, addressed by **index strings**, with three orthogonal
+overlays: **tags** (named ranges), **marks** (named indices that move
+with edits), and **embedded objects** (widgets and images). There is
+no `textvariable` and no reactive signal — observers either bind to
+events or read the widget directly.
 
-- you need multi-line editing or display
+### Indices
 
-- you need tags (highlighting, link-like behavior, syntax coloring)
+A character position is a string of the form `"line.column"`,
+1-indexed for lines and 0-indexed for columns:
 
-- you need embedded images/widgets
+| Index | Meaning |
+|---|---|
+| `"1.0"` | Start of content (line 1, column 0). |
+| `"end"` | End of content (always one position past the last newline). |
+| `"end-1c"` | Last real character — the form to use for "all text". |
+| `"insert"` | Current caret position. |
+| `"current"` | Position under the mouse. |
+| `"sel.first"` / `"sel.last"` | Selection range, when a selection exists. |
+| `"<line>.<col>"` | Explicit numeric position. |
 
-### Consider a different control when...
+Indices accept arithmetic and modifier suffixes:
 
-- **you want the standard "Text + scrollbar" composite with less wiring** - prefer [ScrolledText](/widgets/inputs/scrolledtext.md)
+| Form | Meaning |
+|---|---|
+| `"1.0 + 5c"` | Five characters past start. |
+| `"end - 1l"` | One line before the end. |
+| `"insert linestart"` | Start of the cursor's line. |
+| `"insert lineend"` | End of the cursor's line. |
+| `"insert wordstart"` / `"wordend"` | Word boundary at the cursor. |
 
-- **input is part of a form and you want label/message/validation and `on_input/on_changed`** - prefer [TextEntry](/widgets/inputs/textentry.md) (and other Field widgets)
+### Tags
+
+Tags are named ranges with style and event bindings. The same tag can
+cover multiple disjoint ranges; styling and bindings apply to all of
+them. Tags are the primary tool for syntax highlighting, link
+behavior, error markers, and any visual or interactive overlay.
+
+```python
+# style a range
+text.tag_add("warn", "2.0", "2.end")
+text.tag_configure("warn", background="#fff3cd", foreground="#665")
+
+# event-bind a range (link-like behavior)
+text.tag_bind("warn", "<Button-1>", lambda e: print("clicked warn"))
+```
+
+Useful tag methods: `tag_add` / `tag_remove` / `tag_delete` /
+`tag_configure` / `tag_bind` / `tag_ranges` / `tag_names` /
+`tag_raise` / `tag_lower`. Stacking order matters when tags overlap —
+the most recently raised tag wins for conflicting style options.
+
+### Marks
+
+A mark is a named index that moves with surrounding edits, so the
+position you stored stays anchored to *content* even as text is
+inserted or deleted before it. The widget keeps three special marks
+internally — `"insert"` (caret), `"current"` (mouse), and
+`"anchor"` (selection origin) — and you can add your own.
+
+```python
+text.mark_set("checkpoint", "insert")
+text.insert("1.0", "prepended text\n")
+print(text.index("checkpoint"))   # still points to the original spot
+```
+
+Marks have a `gravity` (`"left"` or `"right"`) controlling which side
+text inserted *at* the mark goes on; `mark_gravity()` reads or sets
+it.
+
+### Embedded objects
+
+Use `text.window_create(index, window=widget)` to embed a child
+widget at an index, and `text.image_create(index, image=photo)` to
+embed an image. Both behave like single characters for indexing and
+selection. Embedded objects are useful for inline buttons, mini
+forms, and richtext-style decorations.
 
 ---
 
-## Appearance
+## Common options
 
-`Text` has a large option surface. These are the ones you'll use most.
+`tk.Text` exposes a large option surface; the most-used options are
+below. The autostyle wrapper adds three additional construction
+keywords on top — `surface`, `inherit_surface`, and `autostyle` — but
+none of them produces a per-widget surface tint (see *Behavior*).
 
-### Size and wrapping
+### Layout and editing
 
-- `width` - number of **characters** (int)
+| Option | Type | Description |
+|---|---|---|
+| `width` | `int` | Width in **characters** of the configured font. |
+| `height` | `int` | Height in **lines**. |
+| `wrap` | `'none' \| 'char' \| 'word'` | Line-wrap mode. `'none'` enables horizontal scrolling. |
+| `state` | `'normal' \| 'disabled'` | `'disabled'` blocks both user typing and programmatic `insert`/`delete` — see *Behavior*. |
+| `padx` / `pady` | `int` | Internal padding on each side. The autostyle wrapper sets `padx=5, pady=5` by default. |
+| `spacing1` / `spacing2` / `spacing3` | `int` | Pixel spacing above each paragraph / between wrapped lines / below each paragraph. |
+| `cursor` | `str` | Mouse-cursor name (e.g. `"hand2"`). |
+| `font` | `str \| Font` | Display font; defaults to `TkDefaultFont`. |
 
-- `height` - number of **lines** (int)
+### Undo and editing model
 
-- `wrap` - `"none"`, `"char"`, `"word"`
+| Option | Type | Description |
+|---|---|---|
+| `undo` | `bool` | Enable the undo/redo stack. Off by default. |
+| `maxundo` | `int` | Cap on undo entries; `-1` for unlimited. |
+| `autoseparators` | `bool` | Auto-insert undo separators between independent edits. |
 
-```python
-ttk.Text(app, width=80, height=24, wrap="word")
-```
-
-!!! note "Width/height are character/line counts"
-    Some type stubs allow "screen units" for `height`, but Tk's Text widget is documented in terms of
-    **characters (width)** and **lines (height)**. Prefer integers for portable behavior.
-
-### Editing and undo
-
-- `state` - `"normal"` or `"disabled"`
-
-- `undo` - enable undo/redo
-
-- `maxundo` - undo stack limit
-
-- `autoseparators` - automatically insert undo separators
-
-```python
-text = ttk.Text(app, undo=True, maxundo=200, autoseparators=True)
-```
-
-### Padding and paragraph spacing
-
-- `padx`, `pady` - internal padding
-
-- `spacing1`, `spacing2`, `spacing3` - spacing above/between/below lines
-
-```python
-ttk.Text(app, padx=10, pady=8, spacing1=2, spacing2=2, spacing3=2)
-```
+When `undo=True`, the methods `edit_undo()` / `edit_redo()` /
+`edit_separator()` / `edit_reset()` become useful. `edit_modified()`
+reads or sets the modification flag — see [Events](#events).
 
 ### Theme-critical colors
 
-These options matter most for light/dark theme consistency:
+| Option | Description |
+|---|---|
+| `background`, `foreground` | Page background and main text color. |
+| `insertbackground` | Caret color. |
+| `selectbackground`, `selectforeground` | Active selection. |
+| `inactiveselectbackground` | Selection color when widget loses focus. |
+| `highlightbackground`, `highlightcolor` | Border color when unfocused / focused. |
+| `highlightthickness` | Border thickness; the autostyle builder sets this to `0` by default. |
 
-- `background`, `foreground`
+The autostyle wrapper sets every entry in this group from the active
+theme tokens at construction and on every `<<ThemeChanged>>`. If you
+override one of them manually, the override sticks until the next
+theme change, which then resets it. Pass `autostyle=False` if you
+want a Text widget that the framework leaves alone — see *Behavior*.
 
-- `insertbackground` (caret)
+### Autostyle keywords
 
-- `selectbackground`, `selectforeground`
+The install-time wrapper around `tk.Text.__init__` accepts three
+additional kwargs that are not real Tk options:
 
-- `inactiveselectbackground`
+| Option | Type | Description |
+|---|---|---|
+| `autostyle` | `bool` | Default `True`. Pass `False` to skip the theme-color paint and the `<<ThemeChanged>>` registration entirely. |
+| `inherit_surface` | `bool` | Default `True`. Captures the parent's `_surface` token onto the new widget, mirroring how container widgets cascade `surface`. |
+| `surface` | `str` | Override the inherited surface token on this widget. |
 
-If ttkbootstrap applies defaults, you can usually rely on them. If you manually override, set the full set so the control stays readable in both themes.
+!!! warning "`surface=` does not tint the Text widget"
+    Both `surface=` and `inherit_surface=` write `_surface` on the
+    widget, but the registered Text builder paints the widget with
+    the theme's `background` token (the page-level background),
+    ignoring the surface argument. So a `Text` inside a
+    `Frame(surface="card")` paints with the page background, not
+    the card background — by design, so input chrome is visually
+    distinct from container chrome. To paint a custom background
+    color, configure `background=` directly.
+
+`accent`, `variant`, and `density` are **not** valid kwargs on
+`Text` — passing any of them raises
+`TclError: unknown option "-accent"` (or `-variant` / `-density`).
 
 ---
 
-## Examples and patterns
+## Behavior
 
-### The Text index model
-
-Many `Text` methods use **indices** instead of numeric positions.
-
-Common indices:
-
-- `"1.0"` - line 1, character 0 (start of content)
-
-- `"end"` - end of content (includes the trailing newline)
-
-- `"end-1c"` - end minus 1 character (commonly "real end")
-
-- `"insert"` - current cursor position
-
-- `"sel.first"` / `"sel.last"` - selection range (when selection exists)
-
-Examples:
+**`state="disabled"` blocks programmatic edits too, silently.** Unlike
+ttk Entry — where `state="readonly"` blocks user typing but
+`insert()`/`delete()` still work — Tk Text's `disabled` state rejects
+both user input *and* programmatic mutation, with no exception. The
+canonical read-only-with-occasional-update idiom is to flip back to
+`"normal"` for the duration of the write:
 
 ```python
-# insert at cursor
-text.insert("insert", "typed here")
-
-# delete current selection (if any)
-if text.tag_ranges("sel"):
-    text.delete("sel.first", "sel.last")
-
-# ensure a specific index is visible
-text.see("end")
-```
-
-### Read-only text (log viewer)
-
-`Text` doesn't have a "readonly" state like ttk entries. Use `state="disabled"` and temporarily enable when updating:
-
-```python
-def append_line(s: str):
+def append_line(s: str) -> None:
     text.configure(state="normal")
     text.insert("end", s + "\n")
     text.see("end")
     text.configure(state="disabled")
 ```
 
-### Clear content
+`<<Modified>>` does not fire while disabled because nothing changed —
+the silent no-op extends to event emission as well.
+
+**Default font is `TkDefaultFont`.** The autostyle wrapper sets
+`option_add('*Text*Font', 'TkDefaultFont')` on the root window so
+every Text widget picks up the framework's default text font. Pass
+`font=...` to override per widget; the override survives theme
+changes since the Text builder does not reconfigure `font`.
+
+**Theme reapplication.** The widget is registered with the global
+style on construction; on `<<ThemeChanged>>` the builder runs again
+and resets every theme-driven option (background, foreground, caret,
+selection colors, padx/pady, relief, highlightthickness). User
+overrides on those options revert at the theme switch.
+
+**Theme tokens vs. parent surface.** As noted under *Common options*,
+the painted `background` always resolves to the theme's `background`
+token, regardless of the parent's surface. The widget's `_surface`
+attribute is set (so child layout queries can read it) but never
+applied. If you need the Text to match a tinted container, set
+`background=` explicitly with the matching theme color and accept
+that it will reset across theme changes (or pass `autostyle=False`
+and own the styling yourself).
+
+---
+
+## Events
+
+`Text` does **not** emit any framework virtual events
+(`<<Change>>`, `<<Input>>`, `<<Changed>>`) and exposes no `on_*`
+helpers. There is no `textvariable` and no reactive `signal=`
+channel. To observe edits, use one of the patterns below:
+
+### `<<Modified>>` — Tk's edit flag
+
+`tk.Text` maintains a one-shot **modification flag**. The widget
+fires `<<Modified>>` exactly once when the flag transitions from
+clear to set; subsequent edits do not fire the event again until the
+flag is reset. The intended pattern is to reset the flag inside the
+handler so each subsequent edit re-arms it:
 
 ```python
-text.delete("1.0", "end")
+def on_modified(event):
+    text.edit_modified(False)   # re-arm
+    print("text changed")
+
+text.bind("<<Modified>>", on_modified)
+text.edit_modified(False)       # initial arm
 ```
+
+This event covers programmatic and user edits, but does **not** fire
+while `state="disabled"` (because edits are no-ops in that state).
+
+### Direct key/mouse bindings
+
+For keystroke-level reactivity (autocomplete, live previews,
+character counters), bind the underlying input events:
+
+```python
+text.bind("<KeyRelease>", lambda e: count.set(text.count("1.0", "end", "chars")))
+text.bind("<<Selection>>", lambda e: print(text.tag_ranges("sel")))
+```
+
+`<<Selection>>` fires when the selection changes (including on
+deselection).
+
+### Tag-bound events
+
+`tag_bind(tag, sequence, callback)` attaches handlers that fire when
+the matching event happens *inside* a tagged range. This is the
+canonical way to implement clickable text:
+
+```python
+text.tag_configure("link", underline=True, foreground="#0d6efd")
+text.tag_bind("link", "<Button-1>", lambda e: open_url())
+text.tag_bind("link", "<Enter>",    lambda e: text.configure(cursor="hand2"))
+text.tag_bind("link", "<Leave>",    lambda e: text.configure(cursor="xterm"))
+```
+
+---
+
+## Patterns
+
+### Read-only viewer
+
+```python
+text = ttk.Text(app, width=80, height=20, wrap="word")
+text.pack(fill="both", expand=True)
+text.insert("1.0", load_log())
+text.configure(state="disabled")
+```
+
+Wrap any later append in a `state="normal"` / `state="disabled"`
+flip — see *Behavior*.
 
 ### Search and highlight
 
 ```python
-def highlight(term: str):
+def highlight(term: str) -> None:
     text.tag_remove("hit", "1.0", "end")
     if not term:
         return
-
     start = "1.0"
     while True:
         pos = text.search(term, start, stopindex="end", nocase=True)
@@ -195,129 +334,81 @@ def highlight(term: str):
         end = f"{pos}+{len(term)}c"
         text.tag_add("hit", pos, end)
         start = end
-
-    text.tag_configure("hit", background="#fff3cd")  # example highlight
+    text.tag_configure("hit", background="#fff3cd")
 ```
 
-### Tags
+`text.search(...)` accepts `regexp=True`, `count=ttk.IntVar()` for
+match length capture, and `forwards=False` for reverse search.
 
-Tags are the most powerful feature of `Text`. They let you style and interact with *ranges* of text.
-
-#### Style a range
-
-```python
-text.insert("end", "Normal\n")
-start = text.index("end-1c linestart")
-text.insert("end", "Bold line\n")
-
-text.tag_add("bold", start, "end-1c")
-text.tag_configure("bold", font="body[bold]")
-```
-
-#### Link-like text
+### Pair with a scrollbar
 
 ```python
-def open_link(_):
-    print("clicked")
+container = ttk.Frame(app)
+container.pack(fill="both", expand=True)
 
-text.insert("end", "Open settings")
-start = "1.0"
-end = "1.0 lineend"
-
-text.tag_add("link", start, end)
-text.tag_configure("link", underline=True)
-text.tag_bind("link", "<Button-1>", open_link)
-text.tag_bind("link", "<Enter>", lambda e: text.configure(cursor="hand2"))
-text.tag_bind("link", "<Leave>", lambda e: text.configure(cursor="xterm"))
-```
-
-!!! tip "Tag names are your API"
-    Use stable tag names like `"error"`, `"warning"`, `"link"`, `"code"` so your app can update styling globally.
-
-### Scrolling
-
-Text uses `yscrollcommand` / `yview` to connect a scrollbar.
-
-```python
-import ttkbootstrap as ttk
-
-app = ttk.App()
-
-frame = ttk.Frame(app)
-frame.pack(fill="both", expand=True, padx=20, pady=20)
-
-text = ttk.Text(frame, wrap="word")
+text = ttk.Text(container, wrap="word")
 text.pack(side="left", fill="both", expand=True)
 
-sb = ttk.Scrollbar(frame, orient="vertical", command=text.yview)
-sb.pack(side="right", fill="y")
+bar = ttk.Scrollbar(container, orient="vertical", command=text.yview)
+bar.pack(side="right", fill="y")
 
-text.configure(yscrollcommand=sb.set)
-
-app.mainloop()
+text.configure(yscrollcommand=bar.set)
 ```
 
-### Events and change detection
+For the same effect with one widget, use
+[`ScrolledText`](../inputs/scrolledtext.md).
 
-A common "gotcha" is that `Text` does not emit a simple `<<Changed>>` event like your Field-based widgets.
-
-Two common approaches:
-
-- Bind key/mouse events (simple, but noisy)
-
-- Use the modified flag (`edit_modified`) and `<<Modified>>` pattern (more controlled)
-
-Example pattern:
-
-```python
-def on_modified(_):
-    # Reset the modified flag so the event can fire again
-    text.edit_modified(False)
-    print("text changed")
-
-text.bind("<<Modified>>", on_modified)
-text.edit_modified(False)
-```
-
----
-
-## Behavior
-
-### Performance tips
-
-- Prefer **batch inserts** (insert a full chunk) over many tiny inserts.
-
-- Use tags to style ranges rather than rebuilding the widget contents.
-
-- For very large logs, consider truncating older content:
+### Trim long logs
 
 ```python
 MAX_CHARS = 200_000
 
-def trim():
-    # Tk < 3.13 returns a tuple from count()
+def trim() -> None:
     n = text.count("1.0", "end", "chars")
     chars = n[0] if isinstance(n, (tuple, list)) else int(n)
     if chars > MAX_CHARS:
-        text.delete("1.0", "1.0+20000c")
+        text.delete("1.0", f"1.0+{chars - MAX_CHARS}c")
 ```
+
+Performance note: prefer batched inserts (one big chunk) over many
+small inserts, and prefer tags for visual styling over rebuilding
+the widget contents.
 
 ---
 
-## Additional resources
+## When should I use Text?
 
-### Related widgets
+Reach for `Text` when:
 
-- [ScrolledText](/widgets/inputs/scrolledtext.md) - Text with built-in scrolling
+- you need **multi-line editing or display**, with wrapping,
+  selection, undo, and the full Tk Text option surface;
+- you need **tags** for styling, search highlighting, link behavior,
+  syntax coloring, or error markers;
+- you need to **embed widgets or images** inline with text;
+- you are building a custom log viewer, code editor, or richtext
+  surface and want raw access to indices, marks, and tag bindings.
 
-- [TextEntry](/widgets/inputs/textentry.md) - Field-based single-line input
+For the standard "text plus scrollbar" composite, use
+[`ScrolledText`](../inputs/scrolledtext.md). For form-style
+single-line input, use [`TextEntry`](../inputs/textentry.md) (or a
+typed Field input). For free-form drawing or virtualization, use
+[`Canvas`](canvas.md).
 
-- [Form](/widgets/forms/form.md) - spec-driven form builder (usually uses Field-based inputs)
+## Related widgets
 
-- [Scrollbar](/widgets/layout/scrollbar.md) / [ScrollView](/widgets/layout/scrollview.md) - scrolling primitives
+- [ScrolledText](../inputs/scrolledtext.md) — Text wired to a
+  scrollbar with hover / always / never visibility modes.
+- [TextEntry](../inputs/textentry.md) — single-line form input with
+  label, helper text, validation messages, and `on_input` /
+  `on_changed` events.
+- [Entry](entry.md) — sibling primitive for raw single-line input.
+- [Scrollbar](../layout/scrollbar.md) /
+  [ScrollView](../layout/scrollview.md) — scrolling primitives.
+- [Canvas](canvas.md) — drawing primitive for custom rendering.
 
-- [Canvas](/widgets/primitives/canvas.md) - drawing/virtualization primitive (often used for custom editors)
+## Reference
 
-### API reference
-
-- [`ttkbootstrap.Text`](../../reference/widgets/Text.md)
+- The [Tk text manual](https://www.tcl.tk/man/tcl/TkCmd/text.htm) —
+  authoritative for every option, method, and index syntax.
+- Python's [`tkinter.Text`](https://docs.python.org/3/library/tkinter.html#tkinter.Text)
+  bindings.
