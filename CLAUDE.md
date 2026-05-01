@@ -34,7 +34,7 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-04-30, layout sweep — 7/12, anchor + LabelFrame + Card + PackFrame + GridFrame + PanedWindow + Scrollbar)
+### Current handoff (2026-05-01, layout sweep — 8/12, anchor + LabelFrame + Card + PackFrame + GridFrame + PanedWindow + Scrollbar + ScrollView)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
@@ -42,8 +42,8 @@ the dialogs sweep (11/11) and data-display sweep (8/8) are complete. The
 **layout sweep** is now the active sweep: the layout template was
 restructured to the slim arc in commit `997a5b7`, with `frame.md` rewritten
 as the canonical anchor. `labelframe.md`, `card.md`, `packframe.md`,
-`gridframe.md`, `panedwindow.md`, and `scrollbar.md` are done. Remaining
-5 pages: `accordion.md`, `expander.md`, `scrollview.md`, `separator.md`,
+`gridframe.md`, `panedwindow.md`, `scrollbar.md`, and `scrollview.md` are
+done. Remaining 4 pages: `accordion.md`, `expander.md`, `separator.md`,
 `sizegrip.md`. Then move to one of navigation / overlays / selection /
 forms / views / primitives. The remaining 4 templates (form, navigation,
 overlay, selection) still need the editorial pass at the start of each
@@ -556,7 +556,59 @@ LabelFrame, Separator, Sizegrip).
 `button.md` / `textentry.md` / `messagedialog.md` / `label.md`
 anchored their respective categories.
 
-Last session (2026-04-30, scrollbar sweep):
+Last session (2026-05-01, scrollview sweep):
+
+- `scrollview.md` was already structurally aligned with the slim
+  layout template; this pass was an accuracy cleanup against
+  `widgets/composites/scrollview.py`. Three fixes:
+  (1) the `Scrollbar variant` subsection listed only `"default"`
+  and `"square"` as valid values. The Scrollbar style builder
+  registers four variant keys: `"default"`, `"round"`, and
+  `"rounded"` are aliases for the image-based rounded thumb;
+  `"square"` is the flat solid-color path
+  (`style/builders/scrollbar.py:11,177-179`). Updated the option
+  list to reflect all four.
+  (2) the inherited-options section claimed "ScrollView is in
+  `CONTAINER_CLASSES`". The actual contents of `CONTAINER_CLASSES`
+  is `{'TFrame', 'TLabelframe'}` (`style/token_maps.py:41`); what
+  matters here is that `ScrollView` inherits `Frame`, so its style
+  class is `TFrame` — which is what the bootstyle constructor
+  wrapper checks at `style/bootstyle.py:464`. Reworded.
+  (3) the **`Reconfiguration is live`** paragraph claimed that
+  `configure(scroll_direction=...)` "rewires the canvas scroll
+  commands, regrids the bars, and updates visibility". Verified
+  at runtime that the bars are **not** regridded:
+  `_delegate_scroll_direction` (`scrollview.py:121-145`) only
+  rewires `xscrollcommand` / `yscrollcommand` and calls
+  `_update_scrollbar_visibility()`, which in turn calls
+  `_show_scrollbars()` — `self.horizontal_scrollbar.grid()`
+  (no args). Test: `ScrollView(scroll_direction='vertical')` then
+  `.configure(scroll_direction='both')` with content overflowing
+  both axes ends up with the horizontal bar at row=1 col=0 (by
+  Tk auto-placement coincidence) but `sticky=''` instead of
+  `'ew'`, so it renders as a stub at the left edge of its row
+  rather than spanning the canvas width. Documented as a
+  construction-time-only axiom and added to the bugs list.
+  Other facts already on the page were verified and kept:
+  per-instance bind-tag (`ScrollView_<id>`) for mousewheel; bars
+  always constructed but only initially-direction-matching ones
+  gridded; gutter reservation only in `hover` and `scroll` modes
+  (`_set_scrollbar_gutter` reads `winfo_reqwidth/height`
+  post-`after_idle`); content widgets parented on `sv.canvas` (not
+  `sv`) — `add()` defaults to a `Frame(self.canvas)`; `<Configure>`
+  on the content widget drives `scrollregion` updates and is
+  bound by `add()` directly (replacing any pre-existing handler
+  on the content); wheel events no-op when content fits on that
+  axis (so nested ScrollViews chain correctly); `grid_remove`
+  auto-hide even in `'always'` mode when content fits.
+
+`tools/check_doc_structure.py --category layout` → scrollview.md
+no longer in the missing-sections list (4/12 pages still pending).
+`tools/check_doc_snippets.py --run --file
+docs/widgets/layout/scrollview.md` → 0 failures (9 snippets, 1
+executed).
+
+Prior session (2026-04-30, scrollbar sweep):
 
 - `scrollbar.md` rewritten to the slim layout template. Scrollbar
   is the seventh page in the sweep — a thin themed wrapper over
@@ -782,7 +834,7 @@ Pages to review (canonical anchor: `frame.md`):
 - [x] `gridframe.md` — Frame subclass with declarative rows/columns
 - [x] `panedwindow.md` — resizable split regions
 - [x] `scrollbar.md` — themed ttk.Scrollbar wrapper
-- [ ] `scrollview.md` — scrollable viewport over a content frame
+- [x] `scrollview.md` — scrollable viewport over a content frame
 - [ ] `accordion.md` — expandable sections
 - [ ] `expander.md` — single collapsible region
 - [ ] `separator.md` — visual divider
@@ -1144,6 +1196,26 @@ primitives.
   rebuild the style on `orient` writes (matching what construction
   does), or document `orient` as construction-only and reject
   reconfiguration. (Surfaced by scrollbar.md rewrite, 2026-04-30.)
+- `ScrollView.configure(scroll_direction=...)` does **not** regrid
+  the scrollbars. `_delegate_scroll_direction`
+  (`widgets/composites/scrollview.py:121-145`) only rewires the
+  canvas's `xscrollcommand` / `yscrollcommand` and calls
+  `_update_scrollbar_visibility()`, which calls
+  `self.horizontal_scrollbar.grid()` / `.vertical_scrollbar.grid()`
+  with no args. Initial grid placement uses `sticky='ns'` /
+  `'ew'` (`_layout_widgets`, `:233-237`), but a bar that was
+  *never* gridded at construction (because the initial
+  `scroll_direction` excluded its axis) gets default Tk
+  auto-placement on the post-reconfigure `.grid()` call — landing
+  at the next free cell with `sticky=''`. Verified: `ScrollView
+  (scroll_direction='vertical').configure(scroll_direction='both')`
+  with content overflowing both axes lands the horizontal bar at
+  `row=1, column=0, sticky=''`, so it renders as a stub at the
+  left edge instead of spanning the canvas width. Either rebuild
+  the layout (re-running `_layout_widgets` for newly-relevant
+  bars) on direction change, or document `scroll_direction` as
+  construction-only. (Surfaced by scrollview.md rewrite,
+  2026-05-01.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):

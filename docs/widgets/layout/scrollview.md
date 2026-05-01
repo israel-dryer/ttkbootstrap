@@ -133,11 +133,13 @@ Inherited from [Frame](frame.md):
   outer frame *only*; the canvas-window content widget is reached
   via the cascade from `sv.canvas`'s parent (the ScrollView), so
   inputs inside the scroll content do pick up the token.
-- `accent` is rerouted to a `surface` override on the outer frame
-  (ScrollView is in `CONTAINER_CLASSES`), so `accent="primary"`
-  paints the outer container — *not* the scrollbars. To tint the
-  scrollbars themselves, pass `accent` to a custom `Scrollbar`
-  built on `sv.canvas` and replace the bundled bars.
+- `accent` is rerouted to a `surface` override on the outer frame.
+  `ScrollView` inherits `Frame`, so its style class is `TFrame`,
+  which is in `CONTAINER_CLASSES`; the bootstyle constructor wrapper
+  rewrites `accent="primary"` as `surface="primary"` and paints the
+  outer container — *not* the scrollbars. To tint the scrollbars
+  themselves, pass `accent` to a custom `Scrollbar` built on
+  `sv.canvas` and replace the bundled bars.
 
 ### Visibility modes
 
@@ -185,9 +187,10 @@ ttk.ScrollView(app, scrollbar_variant="square")
 ```
 
 Passed straight through to both inner `Scrollbar` widgets. Valid
-values follow [Scrollbar](scrollbar.md): `"default"` (image-based
-rounded thumb) and `"square"` (flat solid-color thumb). Other
-values raise `BootstyleBuilderError` from the scrollbar builder.
+values follow [Scrollbar](scrollbar.md): `"default"`, `"round"`,
+and `"rounded"` are aliases for the image-based rounded thumb;
+`"square"` is the flat solid-color thumb. Any other value raises
+`BootstyleBuilderError` from the scrollbar builder.
 
 ---
 
@@ -245,12 +248,20 @@ sv.yview("scroll", 1, "units")
 sv.xview_moveto(0.0)
 ```
 
-**Reconfiguration is live.** `configure(scroll_direction=...)`
-rewires the canvas scroll commands, regrids the bars, and updates
-visibility. `configure(scrollbar_visibility=...)` rebinds the
-hover handlers, syncs the gutter, and re-evaluates which bar
-should be shown right now. `configure(scrollbar_variant=...)`
-forwards to both bars.
+**Reconfiguration is live, with one caveat.**
+`configure(scrollbar_visibility=...)` rebinds the hover handlers,
+syncs the gutter, and re-evaluates which bar should be shown right
+now. `configure(scrollbar_variant=...)` forwards to both bars.
+`configure(scroll_direction=...)` rewires the canvas
+`xscrollcommand` / `yscrollcommand` and re-runs the visibility
+check, but it does **not** regrid the scrollbars — only the bar(s)
+matching the *initial* `scroll_direction` are placed in the layout
+with the correct row, column, and `sticky`. Reconfiguring from
+`"vertical"` to `"both"` (or `"horizontal"` to `"both"`) leaves the
+new bar without `sticky="ew"` / `"ns"`, so it renders as a stub
+instead of spanning its row or column. Pick the final
+`scroll_direction` at construction time, or rebuild the
+`ScrollView` if you need to switch.
 
 ---
 
