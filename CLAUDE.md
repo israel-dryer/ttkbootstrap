@@ -34,14 +34,15 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-04-30, dialogs sweep — DONE 11/11)
+### Current handoff (2026-04-30, data-display sweep — 1/8 + template restructure)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
-the dialogs sweep is now complete: messagedialog, messagebox, querydialog,
-querybox, formdialog, dialog (base), datedialog, colorchooser,
-colordropper, fontdialog, and filterdialog are all done. The next sweep
-target is data-display widgets (`docs/widgets/data-display/`).**
+the dialogs sweep is now complete (11/11), and the data-display sweep
+has begun: the data-display template has been restructured to the slim
+arc and `label.md` is the canonical anchor. Remaining 7 pages (badge,
+floodgauge, listview, meter, progressbar, tableview, treeview) still
+need rewriting.**
 
 ### Template arc (apply to every editorial sweep)
 
@@ -74,11 +75,16 @@ Templates already restructured to this arc:
   `textentry.md`).
 - `widget-dialog-template.md` (commit `7667e36`).
 - `widget-action-template.md` (commit `7667e36`).
+- `widget-data-display-template.md` (commit `6dae13a`, anchored on
+  `label.md`). `Data model` and `Performance guidance` are
+  `*Optional` so simple display widgets (Label, Badge, Progressbar,
+  Floodgauge, Meter) skip them while data-bound widgets (TableView,
+  TreeView, ListView) fill them in.
 
-Remaining 6 templates (data-display, form, layout, navigation,
-overlay, selection) still lead with `Framework integration` etc.
-Apply the editorial pass at the start of each category's sweep —
-those categories have 0 pages written, so the template fix is free.
+Remaining 5 templates (form, layout, navigation, overlay,
+selection) still lead with `Framework integration` etc. Apply the
+editorial pass at the start of each category's sweep — those
+categories have 0 pages written, so the template fix is free.
 
 Phase 6 status (for reference):
 
@@ -188,440 +194,125 @@ Pages to review:
 - [x] `labeledscale.md`
 - [x] `scrolledtext.md`
 
-### Now: Widget pages — dialogs (`docs/widgets/dialogs/`, 11 pages)
+**Widget pages — dialogs** (`docs/widgets/dialogs/`, 11 pages) —
+**DONE 2026-04-30 (11/11).**
 
-Template: `docs/_template/widget-dialog-template.md` (slim arc).
-Required H2s:
+Template: `docs/_template/widget-dialog-template.md` (slim arc,
+restructured commit `7667e36`). Required H2s: `Basic usage`,
+`Result value`, `Common options`, `Behavior`, `Events`,
+`When should I use WidgetName?`, `Additional resources` (with
+sub-bullets for Related widgets / Framework concepts / API
+reference). Optional via `*Optional` prose: `UX guidance`.
+
+`messagedialog.md` is the canonical anchor for the dialogs sweep.
+The other 10 (`messagebox.md`, `querydialog.md`, `querybox.md`,
+`formdialog.md`, `dialog.md`, `datedialog.md`, `colorchooser.md`,
+`colordropper.md`, `fontdialog.md`, `filterdialog.md`) follow it.
+
+`tools/check_doc_structure.py --category dialogs` → 11/11 pass.
+
+Patterns / non-obvious behavior worth remembering across the
+dialogs surface (full per-session detail lives in commit messages):
+
+- `MessageDialog`, `FormDialog`, `FilterDialog` all default to
+  translation-key button labels (`button.ok` / `button.cancel`)
+  but have **no `localize` flag** — vanilla construction shows
+  literal key strings. (Bugs list.)
+- `<<DialogResult>>` event payload is `{"result": ..., "confirmed":
+  bool}`; `on_dialog_result` helper passes the **full payload
+  dict**, not the unwrapped result.
+- `Dialog` (base) does NOT fire `<<DialogResult>>` and has no
+  `on_dialog_result` helper — those are added by subclasses.
+- `ColorDropperDialog.show()` is **non-blocking** (no
+  `wait_window()`) — unlike every other dialog. Callers must
+  trace the `result` Variable, register `on_dialog_result` after
+  `show()`, or use `wait_variable()` manually.
+- `FilterDialog` is a `Frame` subclass that *composes* a Dialog
+  on `show()`, not a Dialog subclass — events fire on the frame,
+  the event surface uses `<<SelectionChange>>` with payload
+  `{"selected": list}` instead of the framework-standard
+  `<<DialogResult>>`. (Bugs list.)
+- `FontDialog.default_font` is a **named-font name string**
+  (`"TkDefaultFont"`), NOT a `Font` instance.
+
+(Per-session detail for each dialog rewrite — including the
+specific old-page errors corrected and bug numbers surfaced — is
+captured in the commit messages on `docs/review-and-cleanup`. See
+`Docs: editorial review — <DialogName> ...` from 2026-04-30.)
+
+### Now: Widget pages — data-display (`docs/widgets/data-display/`, 8 pages)
+
+Template: `docs/_template/widget-data-display-template.md`
+(restructured to slim arc commit `6dae13a`). Required H2s:
 
 - `Basic usage`
-- `Result value`
 - `Common options`
 - `Behavior`
 - `Events`
 - `When should I use WidgetName?`
-- `Additional resources` (with sub-bullets for Related widgets,
-  Framework concepts, API reference)
+- `Related widgets`
+- `Reference`
 
 Optional (declared via `*Optional` prose under the heading):
 
-- `UX guidance` — include when the dialog has real prescriptive
-  advice (button labels, default placement, alert use). Skip for
-  base classes (`Dialog`) and specialty interactions
-  (`ColorDropper`).
+- `Data model` — required for data-bound widgets (TableView,
+  TreeView, ListView). Skip for read-only status/progress
+  widgets (Label, Badge, Progressbar, Floodgauge, Meter).
+- `Performance guidance` — include for widgets that scale with
+  row count. Skip for lightweight status/progress widgets.
 
-Last session (2026-04-30, filterdialog sweep — dialogs sweep complete):
+Last session (2026-04-30, label sweep — anchor):
 
-- `filterdialog.md` rewritten to the slim template. Frames the page
-  as a modal **multi-select picker** built on `Dialog` —
-  scrollable checkbox list with optional top search box and Select
-  All toggle. Returns `list[Any]` of selected `value` fields on
-  OK, `None` on cancel/escape/window-close/outside-click.
-  Intro flags an architectural oddity worth knowing: unlike every
-  other dialog in the sweep, `FilterDialog` is a **`Frame`
-  subclass** that *composes* a `Dialog` on `show()` rather than
-  extending it. That's why events fire on the FilterDialog frame
-  instance (not the dialog's toplevel) and why pre-`show()`
-  subscription survives across multiple `show()` calls.
-  Result-value section flags four non-obvious points: empty list
-  `[]` is a valid OK outcome (user clicked OK with nothing
-  checked), the list contains `value` fields not display `text`,
-  ordering reflects user click order not source-list order, and a
-  **stale-result bug** — `FilterDialog.show()` does NOT reset
-  `self.result` to `None` at the start of each call (only the
-  underlying `Dialog`'s own result is reset). Re-`show()` after an
-  OK and then cancelling returns the previous list.
-  Common-options table covers all six constructor args. Items can
-  be plain strings (text==value) or dicts with text/value/selected.
-  Localization caveat called out: `FilterDialog` has no `localize`
-  flag, default button labels are translation keys
-  (`"button.ok"`/`"button.cancel"`) so a vanilla `FilterDialog()`
-  shows literal `button.ok`/`button.cancel` strings — same gotcha
-  as MessageDialog/FormDialog. The Select All label
-  `"edit.select_all"` has the same issue. The default `title="Filter"`
-  is the only literal English string.
-  Behavior section documents: modal-only (hard-coded
-  `mode="modal"`), fixed width 250px with vertical resize 200–380,
-  Enter→OK / Escape→Cancel both registered correctly (unlike
-  ColorChooserDialog), search is per-keystroke case-insensitive
-  substring match (no debounce), **Select All ignores the search
-  filter** (selects ALL items, not just visible ones — UX gotcha),
-  Select All checkbox does NOT auto-update in response to manual
-  toggles, frameless mode adds outside-click dismiss bound to root
-  window globally, and items with duplicate `text` silently
-  overwrite each other in the internal registry.
-  Events section documents the non-standard event surface: emits
-  **`<<SelectionChange>>`** (not `<<DialogResult>>`) with payload
-  **`{"selected": list}`** (not `{"result": ..., "confirmed": bool}`),
-  the helper is **`on_selection_changed`** (not
-  `on_dialog_result`), the event fires on the **FilterDialog
-  frame** (not the toplevel), and the event **only fires on OK**
-  (cancel paths leave `.result` as None and emit no event).
-  Per the slim template, includes the optional UX-guidance
-  section: pre-select sensible defaults via `selected: True`, use
-  `frameless=True + anchor_to=` for popover-style filter panels,
-  pair search with longer lists (>10 items), don't mix Select All
-  with active search filters (collateral selection surprise),
-  don't reach for FilterDialog for single-select.
-  Corrects four issues from the old page: old "Quick start"
-  showed the dict-only items syntax (real shape supports plain
-  strings too); old "Value model" hedged "dict-like filter state
-  (selected values)" — it's specifically `list[Any]`; old
-  "Behavior" mentioned "Popover mode (if supported)" without
-  documenting the actual `frameless=True` mechanism; old page had
-  no Events section at all (the dialog has a non-standard event
-  surface that needed first-class documentation).
+- `label.md` rewritten to the slim template as the canonical
+  anchor for the data-display sweep. Frames Label as the
+  foundational read-only display widget that Badge, Field
+  labels, and several composites are built on. Contrasts
+  against `Button` (no `command`, `takefocus=False` by default)
+  and `Entry` (no value model — Label displays whatever is
+  bound to its `text`).
+  Common-options consolidates into a single 16-row table
+  covering the everyday surface: text content (`text` /
+  `textvariable` / `textsignal` are equivalent input slots —
+  framework normalizes a Signal passed to `text=` into the
+  `textsignal` slot), images (`image` / `icon` / `icon_only` /
+  `compound`), layout (`anchor` / `justify` / `wraplength`),
+  theming (`accent` / `surface` / `font` / `padding`),
+  localization (`localize` / `value_format`), and `state`. The
+  old page split these across Quick start, Appearance,
+  Examples & patterns, and Localization.
+  Three subtleties surfaced in narrative: (1) `accent` controls
+  the **foreground** color, NOT a chip background — readers
+  expecting a high-contrast pill are routed to Badge;
+  (2) Label has no `on_*` event helpers and emits no virtual
+  events — reactivity goes the other direction (bind a
+  `Signal`/`Variable` to `text`); click handling needs a manual
+  `bind("<Button-1>", ...)` or `Button` with a borderless
+  variant; (3) `accent` overrides foreground via
+  `b.color(accent)` while `surface` drives background, so
+  `surface=` is the right knob if you need a colored background
+  on a Label.
+  Behavior section documents the `state` semantics from
+  `TtkStateMixin` (`disabled` dims, other states accepted but
+  rarely visually distinct on a label), the wraplength/anchor
+  sizing rules, and the `<<LocaleChanged>>` re-translation
+  behavior with `value_format` formatting hooked through
+  `IntlFormatter`.
 
-Prior session (2026-04-30, fontdialog sweep):
+`tools/check_doc_structure.py --category data-display` → 1/8
+passing (label only). 7 remaining pages (badge, floodgauge,
+listview, meter, progressbar, tableview, treeview) are still on
+the old scaffold.
 
-- `fontdialog.md` rewritten to the slim template. Frames the page
-  as a modal font picker built on `Dialog` — family list + size
-  list + weight/slant radios + underline/overstrike checks + live
-  preview pane — that returns a `tkinter.font.Font` object on OK.
-  Result-value section flags two non-obvious facts: `.result` is
-  the **same `Font` object** the dialog used internally as its
-  preview font (mutated live as the user picks options), and the
-  font remains valid after destruction because Tk keeps the named-
-  font registration alive. Callers who need an immutable snapshot
-  must clone via `font.Font(**dlg.result.actual())` — otherwise a
-  second `show()` will retroactively change the previously-stored
-  reference.
-  Common-options table documents only the three constructor args
-  that exist (`title`, `master`, `default_font`) and explicitly
-  flags that `default_font` is a **named-font name string**
-  (`"TkDefaultFont"`, `"TkFixedFont"`, etc.), **not** a `Font`
-  instance and **not** a family name — passing a `Font` directly
-  fails inside `font.nametofont(default_font)`. Documents the
-  workaround: register the seed Font under a name first
-  (`font.Font(..., name="UserDefault")`) and pass the name.
-  Behavior section calls out three deviations from the dialogs
-  documented earlier in the sweep: (1) **default `anchor_to` is
-  `"screen"`**, not parent — the 800×600 window centers on screen
-  rather than on the parent app; (2) unlike `ColorChooserDialog`,
-  `FontDialog` DOES register both `default=True` on OK and
-  `role="cancel"` on Cancel, so Enter/Escape behave correctly at
-  the dialog level (caveat: `<Return>` inside the family/size
-  Treeview lists is captured by the tree and won't propagate);
-  (3) the family list filters out empty names, names starting
-  with `@` (Tk vertical-text aliases), and any family containing
-  `"emoji"` (case-insensitive) — the currently-selected family
-  is force-included even if filtered.
-  Events section is a deliberate **negative** — `FontDialog`
-  does NOT emit `<<DialogResult>>` and has NO `on_dialog_result`
-  helper (unlike MessageDialog / DateDialog / ColorChooserDialog,
-  all called out by name). The blocking `show()` is the only
-  result-handoff mechanism — the canonical pattern is
-  `dlg.show(); if dlg.result is not None: ...`. Readers who need
-  event-driven shape are pointed at `Dialog` directly with a
-  custom `content_builder`.
-  UX guidance prescribes pre-seeding `default_font` to the user's
-  current font, scoping the result reference to the use site
-  (because of the live-preview-object aliasing), not opening the
-  modal on every interaction (use inline Combobox+SpinnerEntry+
-  CheckButton for toolbars), and translating the catalog keys
-  before shipping localized builds.
-  Corrects two errors from the old page: old "Common options"
-  listed an `initial_font` option that doesn't exist (the real
-  arg is `default_font`, takes a name not a Font), and described
-  the result as "font string/object or None" — it's specifically
-  a `tkinter.font.Font` instance.
+Pages to review (canonical anchor: `label.md`):
 
-Prior session (2026-04-30, colordropper sweep):
-
-- `colordropper.md` rewritten to the slim template. Frames the page
-  as the **fullscreen screen-pixel sampler** that powers the
-  eyedropper button on `ColorChooserDialog` (Windows/Linux only) —
-  on `show()` it grabs the desktop with `PIL.ImageGrab.grab()`,
-  paints the screenshot onto a fullscreen `Toplevel`, and floats a
-  100×100 zoom-magnifier next to the cursor. Left-click commits,
-  right-click / Escape cancels, mousewheel zooms.
-  Result-value section explains that `dlg.result` is a
-  `tk.Variable` (not a plain attribute) — read with `.get()`. On
-  commit, the Variable is set to the same `ColorChoice(rgb, hsl,
-  hex)` namedtuple shape produced by `ColorChooserDialog`. The
-  Variable is exposed deliberately so the result is reactive —
-  `ColorChooserDialog` itself uses `result.trace_add('write', …)`
-  to mirror the sampled pixel into its hex spinbox in real time.
-  Critical behavior callout: **`show()` is non-blocking** on
-  `ColorDropperDialog` — unlike every other dialog in the section,
-  it does NOT call `wait_window()`. Three patterns to read the
-  result: register `on_dialog_result` *after* `show()`, trace the
-  `result` Variable, or call `app.wait_variable(dlg.result)` to
-  block manually.
-  Common-options section documents that `__init__()` takes **no
-  arguments at all** — no title, no master, no initial_color, no
-  buttons. The dialog is a fixed fullscreen tool. Behavior section
-  splits the picking interactions into a table (motion / wheel /
-  left-click / right-click / Escape), flags that the screenshot is
-  captured **once** at `show()` time (windows that move during the
-  picking session still show the original frame), and breaks down
-  the platform support matrix: Windows fully supported (use HiDPI
-  awareness), Linux uses the `'-type tooltip'` X11 hint instead of
-  override_redirect for the zoom toplevel, **macOS not supported
-  at all** because PIL's `ImageGrab.grab()` has no aqua backend.
-  Events section documents `<<DialogResult>>` payload (`{"result":
-  ColorChoice|None, "confirmed": bool}`), the `on_dialog_result`
-  helper that passes the **payload dict**, and a stronger version
-  of the register-after-show gotcha already documented for
-  `DateDialog` / `QueryDialog` / `ColorChooserDialog`: those
-  dialogs at least have a `master` fallback, but
-  `ColorDropperDialog` doesn't — calling `on_dialog_result` before
-  `show()` returns `None` silently and the callback never fires.
-  Per the slim template, omits the optional UX-guidance section
-  (specialty interaction; UX advice belongs on
-  `ColorChooserDialog`).
-  Corrects three issues from the old page: the old "Quick start"
-  wrote `color = ttk.ColorDropperDialog().show()` and printed
-  `color` — but `show()` returns None and is non-blocking, so that
-  pattern silently never produces output; the old page described
-  `result` as "hex / rgb / None" — it's actually the
-  `ColorChoice(rgb, hsl, hex)` namedtuple wrapped in a Variable;
-  the old page glossed mousewheel zoom and right-click cancel as
-  "implementation-dependent" — both are concrete bindings.
-
-Prior session (2026-04-30, colorchooser sweep):
-
-- `colorchooser.md` rewritten to the slim template (`86a0ced`).
-  Frames the page as the modal wrapping `ColorChooser` — three-tab
-  notebook (Advanced spectrum, Themed swatches, Standard swatches)
-  + synchronized RGB/HSL/Hex spinners + the Windows/Linux-only
-  eyedropper that opens a `ColorDropperDialog` and traces the
-  sampled hex back into the chooser. Intro disambiguates the
-  page-slug-vs-class-name mismatch (slug is `ColorChooser`, class
-  is `ColorChooserDialog`; bare `ColorChooser` is the inline
-  widget).
-  Result-value section documents the actual `ColorChoice` namedtuple
-  shape — `(rgb=(r,g,b), hsl=(h,s,l), hex='#rrggbb')` — instead of
-  the old "hex string or rgb tuple" hedge. All three representations
-  are exposed simultaneously.
-  Common-options table lists only the three constructor args that
-  exist (`master`, `title`, `initial_color`); the old page listed
-  a fictitious `format` (hex/rgb) option which doesn't exist.
-  Title default `"color.chooser"` is flagged as a translation key
-  auto-resolved by `BaseWindow._setup_window`. Internal labels
-  (tab names, field labels, preview captions) are also translation
-  keys against `MessageCatalog` — a locale that doesn't supply them
-  will display literal `color.advanced` / `color.hue:` strings.
-  Behavior section calls out two non-obvious bindings inherited
-  from the footer-builder Dialog shape: **no Enter binding** (no
-  button is registered as `default=True`, so the OK button styled
-  `accent=PRIMARY` doesn't get the Enter accelerator) and **Escape
-  destroys directly without invoking `_on_cancel`** (since no
-  button has `role="cancel"`, Dialog's fallback path runs
-  `toplevel.destroy()` and skips the cancel callback — `.result`
-  ends up as None either way because `show()` resets it at start).
-  The macOS-only omission of the eyedropper button is documented
-  explicitly (Tk on aqua doesn't support the underlying screen-grab
-  mechanism, so the dropper widget is never built into the footer).
-  Events section documents the `<<DialogResult>>` payload
-  (`{"result": ColorChoice|None, "confirmed": bool}`), the
-  `on_dialog_result(callback)` helper that receives the **payload
-  dict** (matching DateDialog's behavior — same payload-vs-unwrap
-  ambiguity, but ColorChooserDialog's docstring doesn't make the
-  same mis-claim DateDialog's does), and the same
-  register-after-master gotcha already documented for DateDialog
-  and QueryDialog: registering before `show()` with no `master=`
-  binds against `self._master or self._dialog.toplevel` which is
-  None pre-show, so the helper returns None silently.
-  Corrects three errors from the old page: result-value
-  oversimplified to "hex string or rgb tuple" (it's a namedtuple
-  with all three), "Enter confirms / Escape cancels (typical)"
-  (Enter does nothing on the dialog level; Escape destroys without
-  calling `_on_cancel`), and the bogus `format` constructor option.
-
-Prior session (2026-04-30, datedialog sweep):
-
-- `datedialog.md` rewritten to the slim template.
-  Frames the page around the dialog's actual commit semantics —
-  there is **no OK/Cancel footer** (`buttons=[]` in source); a
-  click on a non-disabled day commits and closes. Result-value
-  section explains that `<<DialogResult>>` fires only on commit
-  (with `event.data = {"result": date, "confirmed": True}`),
-  navigation/reset clicks are filtered out by
-  `_DialogCalendar._last_trigger_reason`, and cancel paths
-  (Escape, WM close, popover outside-click) leave `.result` as
-  None and emit no event.
-  Common-options table covers all twelve constructor args, with
-  the calendar-side options (min/max, disabled_dates,
-  show_outside_days, show_week_numbers, first_weekday) noted as
-  forwarded through to the embedded Calendar. Behavior section
-  splits modal/popover modes (popover = `close_on_click_outside`),
-  documents the click-to-commit shape, the default positioning
-  fallback (parent's bottom-right rather than centering — unlike
-  most dialogs), and the override-redirect macOS caveat.
-  UX guidance prescribes anchoring popovers to triggers,
-  pre-disabling impossible dates instead of post-validating,
-  setting `first_weekday` from locale, and not trying to do
-  ranges with `DateDialog` (it commits on first click).
-  Corrects four issues in the old page: it described OK/Cancel
-  buttons (none exist), listed `<<Changed>>` / `<<Accepted>>` /
-  `<<Cancelled>>` events (only `<<DialogResult>>` exists, only on
-  commit), hedged `min_date`/`max_date` as "(if supported)" (they
-  are), and described business-rule validation paths that don't
-  exist (validation is by `disabled_dates` + bounds only).
-
-Prior session (2026-04-30, dialog (base) sweep):
-
-- `dialog.md` rewritten to the slim template (`644e5a0`).
-  Frames the page as the **builder-pattern base class** — composition
-  via `content_builder` / `footer_builder` callbacks plus a button
-  list, not inheritance — and the place readers drop down to when
-  the specialized subclasses don't fit. The intro now lists every
-  specialized subclass it underpins (MessageDialog, QueryDialog,
-  FormDialog, FontDialog, ColorChooserDialog, DateDialog,
-  FilterDialog) so readers entering from any of them can route
-  back here.
-  Result-value section flags the central distinction from the
-  subclasses: base `Dialog` does **not** fire `<<DialogResult>>`
-  and has no `on_dialog_result` helper — those are added by
-  subclasses that generate the event themselves. Readers needing
-  an event-style hook on the base class are pointed at button
-  `command` callbacks (which receive the Dialog instance and run
-  before `result` is assigned and the toplevel is destroyed). Also
-  documents the `closes=False` button behavior (runs `command` but
-  does not close or assign `.result`) — useful for "Apply" buttons.
-  One Common-options table covers all twelve constructor args plus
-  a second table for the eight `DialogButton` fields. Behavior
-  section adds: a modes table (modal / popover / sheet) clarifying
-  that sheet mode is macOS-only and falls back to plain modal
-  elsewhere; the **default-button rule difference** from
-  MessageDialog (Dialog does NOT auto-promote the last button —
-  you must set `default=True` explicitly or there's no Enter
-  binding); the Escape fallback (no cancel-role button → Escape
-  destroys the dialog directly with `result=None`); the
-  positioning priority for `show()` (position → anchor_to → center
-  on parent); and the frameless option's recommended use
-  (popover-anchored menus).
-  Per the slim-dialog template, omits the optional UX-guidance
-  section (this is a base class — prescriptive advice belongs on
-  the specialized subclasses).
-  Corrects two errors from the old page: it described buttons as
-  plain strings (`"OK"`, `"Cancel"`) — that syntax works on
-  MessageDialog (which has its own `_parse_buttons`), not on
-  `Dialog`. Base `Dialog._normalize_buttons` only accepts
-  `DialogButton` instances or dicts. The old page also listed
-  `message` and `default` as Dialog options — neither exists on
-  the base class (those are MessageDialog options).
-
-Prior session (2026-04-30, formdialog sweep):
-
-- `formdialog.md` rewritten to the slim template (`a326698`).
-  Frames the dialog as a thin Dialog shell wrapping a Form
-  composite. One Result-value paragraph documents that
-  `.result` is `form.data` on submit / `None` on cancel, that
-  values are coerced by `dtype` before return, and — critically
-  — that FormDialog does **not** fire `<<DialogResult>>`
-  (unlike MessageDialog and QueryDialog). One Common-options
-  table covers all twelve constructor args, plus the
-  localization caveat shared with MessageDialog (default
-  buttons are translation keys, not strings). Behavior splits
-  validation-on-submit (form stays open and focuses the first
-  invalid field) from the custom-button command convention
-  (callbacks receive the FormDialog instance and can return
-  `False` to keep the dialog open).
-  Corrects three issues from the old page: the old "Common
-  options" listed `fields`, `initial`, and `validate_on_submit`
-  — none exist (the real options are `data`, `items`, and
-  automatic validation on every non-cancel button); the old
-  page hedged the result type as "implementation-dependent"
-  (it isn't — it's `dict[str, Any]` on submit, `None` on
-  cancel); and the old page implied `.result` might be a
-  custom button-result value (in practice, FormDialog.show()
-  overwrites `.result` with `form.data` on commit regardless
-  of the button's `result=` setting).
-  Surfaces three non-obvious behaviors worth flagging:
-  `on_data_changed` fires on every keystroke (it is **not**
-  the submission callback), button `command` callbacks
-  receive the FormDialog and can abort the close by returning
-  `False`, and the dialog always wraps the form in a vertical
-  ScrollView with the scrollbar visible by default to prevent
-  layout jumps.
-
-Earlier session (2026-04-30, querybox sweep):
-
-- `querybox.md` rewritten to the slim template (`fc5484d`).
-  Treats the page as the umbrella **facade** over the framework's
-  input dialogs: one Result-value table maps each of the seven
-  helpers to its underlying dialog (QueryDialog for `get_string`
-  / `get_integer` / `get_float` / `get_item`; DateDialog for
-  `get_date`; ColorChooserDialog for `get_color`; FontDialog for
-  `get_font`) and the typed return value, one Common-options
-  table covers the shared shape and per-helper extras, Behavior
-  splits the QueryDialog-backed validation rules from the
-  delegating helpers.
-  Corrects three errors from the old page: there is **no
-  `get_password` helper** (the old page documented one), the old
-  page was missing three of the seven helpers (`get_color`,
-  `get_font`, `get_date`/`get_item` not called out), and the
-  scaffolding was the pre-overhaul `Quick start` / `When to use`
-  / `Examples & patterns` shape.
-  Surfaces three non-obvious behaviors: `on_result` is supported
-  on the QueryDialog-backed helpers and `get_date` but **not** on
-  `get_color` or `get_font` (their helper signatures don't expose
-  it); `get_string` accepts `value_format` (forwarded to
-  TextEntry's ICU parser); the QueryDialog-backed helpers forward
-  extra kwargs (`width`, `padding`) into QueryDialog.
-
-Even earlier session (2026-04-30, querydialog sweep):
-
-- `querydialog.md` rewritten to the slim template (`f21e913`).
-  Frames the dialog as "prompt for one value" — the input widget
-  swaps based on `datatype` (`TextEntry` / `NumericEntry` /
-  `DateEntry`) or on `items` (filterable `Combobox`). One Result-
-  value table maps `datatype` → `.result` type, one Common-options
-  table covers all twelve constructor args (the old page was
-  missing `width`, `padding`, `master`, `increment`).
-  Corrects two errors from the old page: `command=` is not a
-  constructor kwarg (no such option exists), and "invalid input
-  shows an error message" is only true for the `Combobox` and
-  old-style numeric paths — the Field widgets keep the dialog open
-  silently with their own inline error feedback. The new page
-  documents both validation branches and adds explicit guidance to
-  test `result is not None` (since `""` and `0` are valid answers)
-  and to pass `master=` if registering `on_dialog_result` before
-  `show()`.
-
-Earliest session (2026-04-30, messagebox sweep):
-
-- `messagebox.md` rewritten to the slim template (`58977e7`).
-  Treats the page as a thin **facade** over `MessageDialog`:
-  documents the per-helper button sets and return-value space in
-  one table (Result value), the single-line call shape (Basic
-  usage), the kwargs forwarded to MessageDialog (Common options),
-  and the on_result callback as the only event hook (Events).
-  Corrects three API errors from the old page: every helper takes
-  positional `message` first then `title` (not keyword `title=`),
-  the parent argument is `master=` (not `parent=`), and there is
-  no `MessageBox.show(...)` static method.
-  Surfaces two non-obvious behaviors worth flagging in narrative:
-  `MessageBox` always passes `localize=True` (so returned strings
-  reflect the active locale — branching on `result == "Yes"` will
-  break under translation), and `yesno` has no Escape binding
-  because its first label is "No" not "Cancel" (use `yesnocancel`
-  if you need keyboard dismissal).
-
-(Earlier dialogs-sweep history — template restructure `7667e36`,
-messagedialog re-review `942642c` — is captured in the "Templates
-already restructured" block at the top of this handoff and in the
-checked rows of the page checklist below.)
-
-`tools/check_doc_structure.py --category dialogs` → 11/11 passing
-(messagedialog, messagebox, querydialog, querybox, formdialog,
-dialog, datedialog, colorchooser, colordropper, fontdialog,
-filterdialog).
-
-Pages reviewed (canonical anchor pattern: `messagedialog.md`):
-
-- [x] `messagedialog.md` — anchor for the dialogs sweep
-- [x] `messagebox.md` — facade over MessageDialog
-- [x] `querydialog.md`
-- [x] `querybox.md` — umbrella facade over QueryDialog/DateDialog/ColorChooserDialog/FontDialog
-- [x] `formdialog.md`
-- [x] `dialog.md` — base class
-- [x] `datedialog.md`
-- [x] `colorchooser.md`
-- [x] `colordropper.md`
-- [x] `fontdialog.md`
-- [x] `filterdialog.md`
+- [x] `label.md` — anchor for the data-display sweep
+- [ ] `badge.md` — extends Label; compact pill chip
+- [ ] `progressbar.md`
+- [ ] `floodgauge.md`
+- [ ] `meter.md`
+- [ ] `listview.md` — first data-bound widget; uses Data model
+- [ ] `tableview.md`
+- [ ] `treeview.md`
 
 ### Workflow (one page per session)
 
