@@ -34,13 +34,13 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-04-30, dialogs sweep — 9/11 done)
+### Current handoff (2026-04-30, dialogs sweep — 10/11 done)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 dialogs sweep is in progress: messagedialog, messagebox, querydialog,
-querybox, formdialog, dialog (base), datedialog, colorchooser, and
-colordropper are done; fontdialog and filterdialog remain.**
+querybox, formdialog, dialog (base), datedialog, colorchooser,
+colordropper, and fontdialog are done; filterdialog remains.**
 
 ### Template arc (apply to every editorial sweep)
 
@@ -208,7 +208,61 @@ Optional (declared via `*Optional` prose under the heading):
   base classes (`Dialog`) and specialty interactions
   (`ColorDropper`).
 
-Last session (2026-04-30, colordropper sweep):
+Last session (2026-04-30, fontdialog sweep):
+
+- `fontdialog.md` rewritten to the slim template. Frames the page
+  as a modal font picker built on `Dialog` — family list + size
+  list + weight/slant radios + underline/overstrike checks + live
+  preview pane — that returns a `tkinter.font.Font` object on OK.
+  Result-value section flags two non-obvious facts: `.result` is
+  the **same `Font` object** the dialog used internally as its
+  preview font (mutated live as the user picks options), and the
+  font remains valid after destruction because Tk keeps the named-
+  font registration alive. Callers who need an immutable snapshot
+  must clone via `font.Font(**dlg.result.actual())` — otherwise a
+  second `show()` will retroactively change the previously-stored
+  reference.
+  Common-options table documents only the three constructor args
+  that exist (`title`, `master`, `default_font`) and explicitly
+  flags that `default_font` is a **named-font name string**
+  (`"TkDefaultFont"`, `"TkFixedFont"`, etc.), **not** a `Font`
+  instance and **not** a family name — passing a `Font` directly
+  fails inside `font.nametofont(default_font)`. Documents the
+  workaround: register the seed Font under a name first
+  (`font.Font(..., name="UserDefault")`) and pass the name.
+  Behavior section calls out three deviations from the dialogs
+  documented earlier in the sweep: (1) **default `anchor_to` is
+  `"screen"`**, not parent — the 800×600 window centers on screen
+  rather than on the parent app; (2) unlike `ColorChooserDialog`,
+  `FontDialog` DOES register both `default=True` on OK and
+  `role="cancel"` on Cancel, so Enter/Escape behave correctly at
+  the dialog level (caveat: `<Return>` inside the family/size
+  Treeview lists is captured by the tree and won't propagate);
+  (3) the family list filters out empty names, names starting
+  with `@` (Tk vertical-text aliases), and any family containing
+  `"emoji"` (case-insensitive) — the currently-selected family
+  is force-included even if filtered.
+  Events section is a deliberate **negative** — `FontDialog`
+  does NOT emit `<<DialogResult>>` and has NO `on_dialog_result`
+  helper (unlike MessageDialog / DateDialog / ColorChooserDialog,
+  all called out by name). The blocking `show()` is the only
+  result-handoff mechanism — the canonical pattern is
+  `dlg.show(); if dlg.result is not None: ...`. Readers who need
+  event-driven shape are pointed at `Dialog` directly with a
+  custom `content_builder`.
+  UX guidance prescribes pre-seeding `default_font` to the user's
+  current font, scoping the result reference to the use site
+  (because of the live-preview-object aliasing), not opening the
+  modal on every interaction (use inline Combobox+SpinnerEntry+
+  CheckButton for toolbars), and translating the catalog keys
+  before shipping localized builds.
+  Corrects two errors from the old page: old "Common options"
+  listed an `initial_font` option that doesn't exist (the real
+  arg is `default_font`, takes a name not a Font), and described
+  the result as "font string/object or None" — it's specifically
+  a `tkinter.font.Font` instance.
+
+Prior session (2026-04-30, colordropper sweep):
 
 - `colordropper.md` rewritten to the slim template. Frames the page
   as the **fullscreen screen-pixel sampler** that powers the
@@ -487,9 +541,9 @@ messagedialog re-review `942642c` — is captured in the "Templates
 already restructured" block at the top of this handoff and in the
 checked rows of the page checklist below.)
 
-`tools/check_doc_structure.py --category dialogs` → 9/11 passing
+`tools/check_doc_structure.py --category dialogs` → 10/11 passing
 (messagedialog, messagebox, querydialog, querybox, formdialog,
-dialog, datedialog, colorchooser, colordropper).
+dialog, datedialog, colorchooser, colordropper, fontdialog).
 
 Pages to review (canonical anchor pattern: `messagedialog.md`):
 
@@ -502,7 +556,7 @@ Pages to review (canonical anchor pattern: `messagedialog.md`):
 - [x] `datedialog.md`
 - [x] `colorchooser.md`
 - [x] `colordropper.md`
-- [ ] `fontdialog.md`
+- [x] `fontdialog.md`
 - [ ] `filterdialog.md`
 
 ### Workflow (one page per session)
