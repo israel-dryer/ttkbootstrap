@@ -34,19 +34,20 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, selection sweep 8/9 — calendar remains; inputs reopened 10/11 — selectbox pending)
+### Current handoff (2026-05-01, inputs sweep 11/11 done; selection sweep 8/9 — calendar remains)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
-the dialogs sweep (11/11), data-display sweep (8/8), layout sweep
-(12/12), navigation sweep (5/5), and overlays sweep (2/2) are
-complete. The selection sweep is now 8/9 — `checkbutton`, `switch`,
-`checktoggle`, `radiobutton`, `radiogroup`, `radiotoggle`,
-`togglegroup`, `optionmenu` rewritten; `calendar` remains. The
-inputs sweep is reopened at 10/11 — `selectbox.md` was relocated
-from `widgets/selection/` to `widgets/inputs/` (see "SelectBox
-relocation" below) and still needs the editorial pass under the
-inputs template.**
+the dialogs sweep (11/11), inputs sweep (11/11), data-display sweep
+(8/8), layout sweep (12/12), navigation sweep (5/5), and overlays
+sweep (2/2) are complete. The selection sweep is at 8/9 —
+`checkbutton`, `switch`, `checktoggle`, `radiobutton`, `radiogroup`,
+`radiotoggle`, `togglegroup`, `optionmenu` rewritten; `calendar`
+remains. The inputs sweep was briefly reopened on 2026-05-01 when
+`selectbox.md` was relocated from `widgets/selection/` to
+`widgets/inputs/` (see "SelectBox relocation" below); it has now
+been rewritten under the inputs template (commit `d495951`,
+2026-05-01) and the sweep is closed at 11/11.**
 
 **SelectBox relocation (2026-05-01).** The `selectbox.md` page was
 moved from `widgets/selection/` to `widgets/inputs/`. Rationale: a
@@ -186,19 +187,76 @@ the other four (`buttongroup.md`, `contextmenu.md`,
 
 `tools/check_doc_structure.py --category actions` → 5/5 pass.
 
-**Widget pages — inputs** (`docs/widgets/inputs/`, 11 pages) — **REOPENED 2026-05-01: 10/11 done; selectbox.md pending.**
+**Widget pages — inputs** (`docs/widgets/inputs/`, 11 pages) — **DONE 11/11 (2026-05-01).**
 
-The original 10 pages all passed the editorial pass on 2026-04-30
-and remain done. `selectbox.md` was relocated here from
-`widgets/selection/` on 2026-05-01 (see the "SelectBox relocation"
-callout in the current handoff) and still needs the editorial
-pass under the inputs template.
+The original 10 pages passed the editorial pass on 2026-04-30.
+`selectbox.md` was relocated here from `widgets/selection/` on
+2026-05-01 (see the "SelectBox relocation" callout in the current
+handoff) and rewritten under the inputs template the same day
+(commit `d495951`).
 
-All 10 pages reviewed against `docs/_template/widget-input-template.md`.
+All 11 pages reviewed against `docs/_template/widget-input-template.md`.
 Inputs use a **different template** than actions — don't carry the
 actions section names over verbatim.
 
-Last session (2026-04-30):
+Last session (2026-05-01, selectbox sweep — final inputs page):
+
+- `selectbox.md` rewritten to the slim inputs template at its new
+  location. SelectBox is the eleventh and final page in the sweep
+  — a `Field` subclass that renders a label + entry + message line
+  + chevron button, with a popup list of `items` opened on click.
+  Three modes (read-only default; editable + filter via
+  `enable_search`; editable + free-form via `allow_custom_values`)
+  and four behavioral combinations of those flags. Restructured
+  around `Value model` (the core selection-string framing) and
+  surfaced four runtime-verified bugs:
+  (1) `<<Change>>` is fired on `entry_widget`, not on the SelectBox
+  itself (`composites/selectbox.py:536`). Tk virtual events do not
+  propagate up the parent chain, so `sb.bind('<<Change>>', cb)`
+  silently no-ops. The `on_changed` helper still works because
+  `Field.__init__` forwards it (`field.py:263` —
+  `self.on_changed = self._entry.on_changed`). Same shape as the
+  Tabs `<<TabSelect>>` bug already on the bugs list.
+  (2) `sb.value = "not_in_items"` is silently accepted even when
+  `allow_custom_values=False`. The setter writes through to the
+  Field's value, the entry shows the orphan as plain text,
+  `selected_index` returns `-1`, and `<<Change>>` fires as if it
+  were a normal selection. Same shape as OptionMenu /
+  ToggleGroup orphan-value bugs already on the bugs list.
+  (3) `sb.configure(value=X)` is broken — `_delegate_value`
+  (`composites/selectbox.py:493-499`) has the same inverted query
+  /set branches as LabeledScale's broken delegators: the set
+  path returns the current value, the query path attempts to
+  write `None`. Workaround: use the property setter
+  (`sb.value = X`).
+  (4) `sb.configure(dropdown_button_icon=...)` raises
+  `TclError: unknown option`. The icon is captured at
+  construction into the addon and there's no delegate to lift
+  it back into the configure surface.
+  Also documented: the four behavioral modes (`enable_search` ×
+  `allow_custom_values`) as a 4-row table; Tk's combobox-style
+  popup positioning (below the entry by default, flips above
+  when there isn't enough room — matches `PlacePopdown`); the
+  implicit "first filtered item commits on close" rule for
+  `enable_search=True, allow_custom_values=False` (popup close
+  via Escape / Tab / click-outside still selects the first
+  filter match, supporting type-prefix-then-Tab UX); the keyboard
+  contract (Down / Up move the highlight, Enter / Tab commit,
+  Escape closes); reconfiguration semantics (`items`,
+  `allow_custom_values`, `enable_search` are live-reconfigurable;
+  `value` and `dropdown_button_icon` are construction-only —
+  but for different reasons).
+  Also fixed broken sibling links (the old page used relative
+  paths `optionmenu.md` / `radiogroup.md` / `checkbutton.md`
+  that no longer resolve from `widgets/inputs/`); rewritten with
+  `../selection/` prefixes.
+
+`tools/check_doc_structure.py --category inputs` → 11/11 pass.
+`tools/check_doc_snippets.py --run --file
+docs/widgets/inputs/selectbox.md` → 0 failures (6 snippets, 1
+executed).
+
+Earlier session (2026-04-30):
 
 - `scrolledtext.md` — restructured to template; clarified that
   `ScrolledText` has **no `value`/signal/variable model** (it wraps
@@ -209,7 +267,7 @@ Last session (2026-04-30):
   default in the old Quick start (default `scrollbar_visibility` is
   `'always'`, not `'scroll'`).
 
-Prior session (2026-04-30, two-page batch):
+Older session (2026-04-30, two-page batch):
 
 - `scale.md` — restructured to template; corrected event hooks
   (Scale exposes `command` / `signal.subscribe` / `<ButtonRelease-1>`,
@@ -248,8 +306,8 @@ Pages to review:
 - [x] `scale.md`
 - [x] `labeledscale.md`
 - [x] `scrolledtext.md`
-- [ ] `selectbox.md` — **relocated from `widgets/selection/`
-      2026-05-01; needs editorial pass under the inputs template**
+- [x] `selectbox.md` — relocated from `widgets/selection/`
+      2026-05-01; rewritten under the inputs template the same day
 
 **Widget pages — dialogs** (`docs/widgets/dialogs/`, 11 pages) —
 **DONE 2026-04-30 (11/11).**
@@ -2713,6 +2771,55 @@ primitives.
   (where the signal value wins). Workaround: omit `value=` when
   binding a pre-existing signal. (Surfaced by optionmenu.md
   rewrite, 2026-05-01.)
+- `SelectBox.<<Change>>` is fired on `entry_widget`, **not** on the
+  SelectBox itself. The `.value` setter calls
+  `self.entry_widget.event_generate('<<Change>>', ...)` at
+  `composites/selectbox.py:536`. Tk virtual events do not propagate
+  up the parent chain, so `sb.bind('<<Change>>', cb)` silently
+  no-ops. The `on_changed` helper still works because Field forwards
+  it (`composites/field.py:263` —
+  `self.on_changed = self._entry.on_changed`), but users binding
+  the event directly hit a silent failure. Same shape as the Tabs
+  `<<TabSelect>>` bug already on this list — fix is to forward via
+  `self.event_generate('<<Change>>', ...)` after the inner emit.
+  (Surfaced by selectbox.md rewrite, 2026-05-01.)
+- `SelectBox.value = "not_in_items"` is silently accepted even when
+  `allow_custom_values=False`. The setter writes through the
+  Field's `value` property unconditionally, the entry widget shows
+  the orphan as plain text, `selected_index` returns `-1`, and
+  `<<Change>>` fires as if it were a normal selection.
+  Constructor-time `value=Z` (Z not in items) has the same shape.
+  Same family as the OptionMenu / ToggleGroup orphan-value bugs
+  already on this list. Either validate against `items` and raise
+  on miss when `allow_custom_values=False`, or document the
+  permissive contract loudly. (Surfaced by selectbox.md rewrite,
+  2026-05-01.)
+- `SelectBox.configure(value=X)` is broken — same inverted-delegate
+  pattern as LabeledScale's broken delegators already on this list.
+  `_delegate_value` (`composites/selectbox.py:493-499`) returns
+  `self.value` from the set path and tries to write `None` from the
+  query path:
+  ```python
+  if value is not None:
+      return self.value
+  else:
+      self.value = value
+      return None
+  ```
+  Net effect: `sb.configure(value='B')` returns the raw widget
+  config dict instead of writing; `sb.cget('value')` returns
+  `None`. Workaround: use the property setter (`sb.value = X`).
+  Fix: invert the branches to match every other `_delegate_*`
+  on the page. (Surfaced by selectbox.md rewrite, 2026-05-01.)
+- `SelectBox.configure(dropdown_button_icon=...)` raises
+  `TclError: unknown option "-dropdown_button_icon"`. The icon
+  is captured into the `dropdown` addon at construction
+  (`composites/selectbox.py:87,97`) and there is no configure
+  delegate to lift it back into the configure surface. Either
+  add a `_delegate_dropdown_button_icon` that calls
+  `self.addons['dropdown'].configure(icon=...)`, or document
+  the option as construction-time only. (Surfaced by
+  selectbox.md rewrite, 2026-05-01.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
