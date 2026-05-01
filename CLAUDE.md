@@ -34,15 +34,18 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-04-30, data-display sweep — 7/8)
+### Current handoff (2026-04-30, data-display sweep — 8/8 DONE)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
-the dialogs sweep is now complete (11/11), and the data-display sweep
-is in progress (7/8): `label.md` (anchor), `badge.md`, `progressbar.md`,
-`floodgauge.md`, `meter.md`, `listview.md`, and `tableview.md` are
-rewritten to the slim template. Remaining 1 page (treeview) still
-needs rewriting.**
+the dialogs sweep is complete (11/11), and the data-display sweep is now
+also complete (8/8): `label.md` (anchor), `badge.md`, `progressbar.md`,
+`floodgauge.md`, `meter.md`, `listview.md`, `tableview.md`, and
+`treeview.md` are rewritten to the slim template. Next sweep — pick one
+of layout / navigation / overlays / selection / forms / views /
+primitives. None of those category templates have been restructured to
+the slim arc yet, so apply the editorial pass to the template at the
+start of the sweep (see "Template arc" below).**
 
 ### Template arc (apply to every editorial sweep)
 
@@ -240,7 +243,7 @@ specific old-page errors corrected and bug numbers surfaced — is
 captured in the commit messages on `docs/review-and-cleanup`. See
 `Docs: editorial review — <DialogName> ...` from 2026-04-30.)
 
-### Now: Widget pages — data-display (`docs/widgets/data-display/`, 8 pages)
+### Widget pages — data-display (`docs/widgets/data-display/`, 8 pages) — DONE 2026-04-30
 
 Template: `docs/_template/widget-data-display-template.md`
 (restructured to slim arc commit `6dae13a`). Required H2s:
@@ -261,7 +264,56 @@ Optional (declared via `*Optional` prose under the heading):
 - `Performance guidance` — include for widgets that scale with
   row count. Skip for lightweight status/progress widgets.
 
-Last session (2026-04-30, tableview sweep):
+Last session (2026-04-30, treeview sweep — final data-display page):
+
+- `treeview.md` rewritten to the slim data-display template.
+  TreeView is **not** a data-bound widget (despite its position
+  alongside ListView and TableView): it's a thin themed wrapper
+  over `ttk.Treeview` that exposes the full ttk API
+  (`insert` / `delete` / `move` / `item` / `set` /
+  `selection_*` / `tag_configure` / etc.) with no datasource
+  binding and no `signal=` channel. The rewrite still includes
+  `Data model` and `Performance guidance` because the
+  hierarchical-iid item model and the lack of virtualization
+  are both first-class facts the page needs to surface. Three
+  things the old page got wrong or omitted:
+  (1) the old `Appearance` example showed
+  `ttk.Treeview(app, accent="primary")`; the TreeView style
+  builder (`style/builders/treeview.py`) does **not** consume
+  `accent` at all — the actual styling tokens are
+  `surface`, `select_background` (default `"primary"`),
+  `header_background`, `border_color`, and `show_border`.
+  Documented these in `Common options` and called out that
+  `accent` is silently ignored.
+  (2) the old page didn't mention the `Treeview` (lowercase)
+  back-compat alias — both `ttk.Treeview` and `ttk.TreeView`
+  construct the same class via `__init__.py:135`.
+  (3) the old `Events` section listed `<<TreeviewSelect>>` /
+  `<<TreeviewOpen>>` / `<<TreeviewClose>>` without naming
+  them as ttk-emitted (no `on_*` helpers exist on TreeView)
+  and without explaining how to identify the affected row
+  (read `tv.selection()` / `tv.focus()` from the widget;
+  `event.data` is empty for these). Replaced with a payload
+  table and an example using `tv.identify_row(event.y)` for
+  raw click handling.
+  Also surfaced display-mode semantics (`"tree"` vs
+  `"headings"` vs `"tree headings"` vs `""`), the four
+  per-row item fields (`iid` / `parent` / `text` / `values` /
+  `open` / `tags` / `image`), tag-based styling and
+  `tag_bind`, the indicator-rendering Tk 8.6.13+ regression
+  workaround, density semantics, lazy-expansion patterns for
+  large hierarchies, and the `detach`/`reattach` vs
+  `delete`/re-insert performance trade-off. Common options
+  consolidates into a 13-row table; deliberate negative
+  framing kept around the no-virtualization /
+  no-datasource-binding facts.
+
+`tools/check_doc_structure.py --category data-display` →
+8/8 passing.
+`tools/check_doc_snippets.py --run --file
+docs/widgets/data-display/treeview.md` → 0 failures.
+
+Earlier session (2026-04-30, tableview sweep):
 
 - `tableview.md` rewritten to the slim data-display template.
   TableView is the **second data-bound** page in the sweep, so it
@@ -466,10 +518,9 @@ Earliest session (2026-04-30, label sweep — anchor):
   emits no virtual events; (3) `surface=` is the right knob if
   you need a colored background on a Label.
 
-`tools/check_doc_structure.py --category data-display` → 7/8
+`tools/check_doc_structure.py --category data-display` → 8/8
 passing (label, badge, progressbar, floodgauge, meter, listview,
-tableview). 1 remaining page (treeview) is still on the old
-scaffold.
+tableview, treeview). Sweep complete.
 
 Pages to review (canonical anchor: `label.md`):
 
@@ -480,7 +531,7 @@ Pages to review (canonical anchor: `label.md`):
 - [x] `meter.md` — radial gauge with central readout
 - [x] `listview.md` — first data-bound widget; uses Data model
 - [x] `tableview.md` — second data-bound widget; SQLite-backed
-- [ ] `treeview.md`
+- [x] `treeview.md` — thin themed wrapper over ttk.Treeview
 
 ### Workflow (one page per session)
 
