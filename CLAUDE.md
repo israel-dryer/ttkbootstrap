@@ -34,15 +34,15 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-04-30, layout sweep — 3/12, anchor + LabelFrame + Card)
+### Current handoff (2026-04-30, layout sweep — 4/12, anchor + LabelFrame + Card + PackFrame)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 the dialogs sweep (11/11) and data-display sweep (8/8) are complete. The
 **layout sweep** is now the active sweep: the layout template was
 restructured to the slim arc in commit `997a5b7`, with `frame.md` rewritten
-as the canonical anchor. `labelframe.md` and `card.md` are done. Remaining
-9 pages: `accordion.md`, `expander.md`, `gridframe.md`, `packframe.md`,
+as the canonical anchor. `labelframe.md`, `card.md`, and `packframe.md`
+are done. Remaining 8 pages: `accordion.md`, `expander.md`, `gridframe.md`,
 `panedwindow.md`, `scrollbar.md`, `scrollview.md`, `separator.md`,
 `sizegrip.md`. Then move to one of navigation / overlays / selection /
 forms / views / primitives. The remaining 4 templates (form, navigation,
@@ -556,7 +556,51 @@ LabelFrame, Separator, Sizegrip).
 `button.md` / `textentry.md` / `messagedialog.md` / `label.md`
 anchored their respective categories.
 
-Last session (2026-04-30, card sweep):
+Last session (2026-04-30, packframe sweep):
+
+- `packframe.md` rewritten to the slim layout template. PackFrame is
+  the fourth page in the sweep — a `Frame` subclass that intercepts
+  child `pack()` calls via `_on_child_pack` to inject a default
+  `side` (from `direction`), a leading-edge `padx`/`pady` for `gap`,
+  and optional `fill_items`/`expand_items`/`anchor_items` defaults.
+  Restructured around the optional `Layout model` section (filled in
+  for the first time in this sweep — Frame, LabelFrame, and Card all
+  skipped it). Two narrative fixes vs the old page:
+  (1) the old `Appearance` example used `accent="secondary"` and
+  framed it as a styling shortcut, but didn't note that on container
+  classes the bootstyle constructor wrapper rewrites `accent` as a
+  `surface` override (`style/bootstyle.py:464`). Verified at runtime:
+  `PackFrame(app, accent='primary')` produces `_surface='primary'`,
+  `style_options={'surface': 'primary'}`, rendered style
+  `bs[…].primary.TFrame`. Documented as a Common-options table row
+  rather than a separate Appearance section.
+  (2) the old "Behavior" bullet list never named the **direction →
+  side mapping** (which is the only thing PackFrame actually does
+  beyond Frame). Promoted to a 6-row table in `Layout model`:
+  `vertical`/`column` → `top`, `column-reverse` → `bottom`,
+  `horizontal`/`row` → `left`, `row-reverse` → `right`. Surfaced
+  the gotcha that overriding `side=` per-call breaks the gap math
+  because `_compute_gap` assumes every managed child uses the
+  direction's side.
+  Other additions: gap is implemented as a **leading** `padx`/`pady`
+  on second-and-later items (verified via `pack_info`: first item
+  `pady=0`, others `pady=(8, 0)` for `gap=8`); reconfiguring
+  `direction`/`gap` triggers a full `_repack_all` (verified — items
+  switch from `pady=(8,0), side="top"` to `padx=(12,0), side="left"`
+  cleanly); `propagate=False` only sets `pack_propagate` (not
+  `grid_propagate`); `before=`/`after=` reference widgets must
+  already be managed by this PackFrame; raw `tkinter` widgets
+  without `PackMixin` skip the hooks; `fill_items`/`expand_items`/
+  `anchor_items` are read at each `pack()` call so changing them
+  later only affects subsequently-added widgets.
+
+`tools/check_doc_structure.py --category layout` → packframe.md no
+longer in the missing-sections list (8/12 pages still pending).
+`tools/check_doc_snippets.py --run --file
+docs/widgets/layout/packframe.md` → 0 failures (6 snippets, 1
+executed).
+
+Prior session (2026-04-30, card sweep):
 
 - `card.md` rewritten to the slim layout template. Card is the third
   page in the sweep — a `Frame` subclass with three constructor
@@ -586,7 +630,7 @@ Last session (2026-04-30, card sweep):
   section so readers don't hunt for `on_*` helpers Card doesn't
   expose.
 
-Prior session (2026-04-30, labelframe sweep):
+Earlier session (2026-04-30, labelframe sweep):
 
 - `labelframe.md` rewritten to the slim layout template. LabelFrame
   is the second page in the sweep — a thin themed wrapper over
@@ -635,7 +679,7 @@ Pages to review (canonical anchor: `frame.md`):
 - [x] `frame.md` — anchor for the layout sweep
 - [x] `labelframe.md` — titled bordered Frame variant
 - [x] `card.md` — Frame subclass with `accent='card'` + border preset
-- [ ] `packframe.md` — Frame subclass with auto-pack + `gap`
+- [x] `packframe.md` — Frame subclass with auto-pack + `gap`
 - [ ] `gridframe.md` — Frame subclass with declarative rows/columns
 - [ ] `panedwindow.md` — resizable split regions
 - [ ] `scrollview.md` — scrollable viewport over a content frame
