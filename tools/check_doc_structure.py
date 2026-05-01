@@ -34,8 +34,12 @@ CATEGORY_TEMPLATE_MAP: dict[str, str] = {
     "selection": "widget-selection-template",
 }
 
-# Files to skip within a category (index pages, sub-indexes, etc.)
-SKIP_FILES = {"index.md"}
+# Files to skip within a category (index pages, deprecation stubs, etc.)
+# - navigationview.md is a 6-line deprecation redirect for SideNav
+#   (NavigationView is a back-compat alias; see widgets/composites/sidenav/__init__.py).
+#   Holding it to the navigation template would force template content into a
+#   page whose only job is to point readers at the new name.
+SKIP_FILES = {"index.md", "navigationview.md"}
 
 
 def extract_h2s(text: str) -> list[str]:

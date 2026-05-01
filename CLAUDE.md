@@ -34,7 +34,7 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, navigation sweep — 2/5; AppShell rewritten, navigation directory split into per-page templates)
+### Current handoff (2026-05-01, navigation sweep — 4/5; SideNav rewritten to nav template, NavigationView added to SKIP_FILES; only toolbar.md remains)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
@@ -1110,9 +1110,9 @@ template doesn't fit all five pages. Per-page assignment:
 |---|---|---|---|
 | `tabs.md` | `widgets/navigation/tabs.md` | `widget-navigation-template.md` | done (anchor) |
 | `appshell.md` | `widgets/application/appshell.md` | bespoke app-shell arc | **done 2026-05-01** |
-| `sidenav.md` | `widgets/navigation/sidenav.md` | `widget-navigation-template.md` | pending |
+| `sidenav.md` | `widgets/navigation/sidenav.md` | `widget-navigation-template.md` | **done 2026-05-01** |
 | `toolbar.md` | `widgets/navigation/toolbar.md` | **`widget-action-template.md`** (no nav model) | pending |
-| `navigationview.md` | `widgets/navigation/navigationview.md` | none — deprecation stub | add to `SKIP_FILES` in `tools/check_doc_structure.py` |
+| `navigationview.md` | `widgets/navigation/navigationview.md` | none — deprecation stub | **done 2026-05-01** — added to `SKIP_FILES` in `tools/check_doc_structure.py` |
 
 Rationale for the split: AppShell extends `App` and owns the window
 (not a child widget — its surface is windowing + composition, not
@@ -1304,13 +1304,121 @@ docs/widgets/application/appshell.md` → 0 failures (9 snippets,
 `widgets/application/`, not under any template-enforced
 category).
 
+Last session (2026-05-01, SideNav sweep + NavigationView SKIP_FILES):
+
+- `sidenav.md` rewritten to the slim navigation template. SideNav is
+  the second page using the nav template (after Tabs) — primary
+  navigation chrome with three display modes, scrollable items,
+  collapsible groups, and a footer area; selection drives a single
+  shared variable (no page coupling). Restructured around the slim
+  arc: intro → Basic usage → Navigation model (channels table + item
+  types table + lookup/removal) → Common options (single 11-row
+  table) → Behavior (display modes, pane state vs display mode,
+  groups, header layout, reconfiguration) → Events (combined
+  SideNav-level and item/group-level table) → When → Related →
+  Reference. Four runtime-verified bugs surfaced; all four are real
+  API gotchas, not just doc gaps:
+  (1) `nav.select(key)` does **not** validate `key`. The variable
+  gets the orphan key, `<<SelectionChanged>>` fires with that key
+  in `event.data`, and `selected_key` returns it — but no item
+  paints as selected because the indicator update gates on `key in
+  self._items` / `self._footer_items` (`view.py:402-410`). Verified
+  at runtime: `nav.select('phantom')` → `nav.selected_key ==
+  'phantom'`. Same shape as the Tabs orphan-key bug. Documented as
+  a `!!! warning` in Navigation model.
+  (2) `display_mode='minimal'` does **not** start hidden. Despite
+  the conceptual framing ("hidden until toggled" — claimed in the
+  old page and weakly suggested by `_apply_display_mode`'s
+  `if self._is_pane_open` branch at `view.py:312`), the constructor
+  default for `is_pane_open` is `True`
+  (`view.py:110`). So a vanilla
+  `SideNav(display_mode='minimal')` shows the pane in full; the
+  user has to pass both `display_mode='minimal',
+  is_pane_open=False` to get the hidden-until-toggled behavior the
+  name implies. Documented as a `!!! warning` in Behavior.
+  (3) `toggle_pane()` semantics depend on the current mode and
+  trip up the obvious "hamburger toggles visibility" mental model.
+  In `expanded` mode it switches to `compact` (and vice versa),
+  emitting `<<DisplayModeChanged>>` (`view.py:797-799`). Only in
+  `minimal` mode does it actually toggle visibility, emitting
+  `<<PaneToggled>>` (`view.py:791-795`). Verified at runtime:
+  starting from `expanded`, `toggle_pane()` → `display_mode ==
+  'compact'`, `is_pane_open` still `True`. So the hamburger button
+  AppShell wires up does **not** show / hide the sidebar in
+  expanded mode — it shrinks it. Documented as a `!!! warning` in
+  Behavior with the visual axis-table; surfaced the workarounds
+  (use `minimal` mode for true show / hide, or wire the hamburger
+  to `nav.close_pane()` / `nav.open_pane()` directly).
+  (4) `pane_width` is silently ignored in `compact` mode. The
+  `compact` branch of `_apply_display_mode` (`view.py:308-310`)
+  hard-codes `width=self.PANE_WIDTH_COMPACT` (52 px) regardless of
+  the constructor's `pane_width=` argument. Verified at runtime:
+  `SideNav(display_mode='compact', pane_width=400)` ends up with
+  `_pane_frame.cget('width') == 52`. Documented in the Common
+  options table.
+  Also documented (some new, some restated): `select()` writes
+  through the same code path as user clicks (so observers see one
+  event for both); `accent` is **read-only after construction**
+  (verified — `_delegate_accent` at `view.py:887-893` returns
+  early on writes, no rebuild); `remove_item(missing_key)` is a
+  silent no-op while `add_item` raises `ValueError` on duplicate
+  keys (asymmetric); footer items participate in the **same
+  selection group** as main items (single `_selection_var`); the
+  `node()` lookup checks both main and footer items but raises
+  `KeyError` on miss; `<<ItemInvoked>>` fires on the
+  `SideNavItem`, `<<GroupExpanding>>` / `<<GroupCollapsed>>` fire
+  on the `SideNavGroup` (Tk virtual events do not bubble — same
+  pattern as Tabs / TabItem); `compact` groups render a
+  `ContextMenu` flyout to the right (`group.py:325`) instead of
+  expanding inline, and `group.expand()` / `collapse()` are no-ops
+  in compact (`group.py:376-388`); the pane chrome lives on a
+  `surface='chrome'` Frame internally (`view.py:201`); the visual
+  order in the pane (top → bottom) is hamburger → separator →
+  toolbar header → scrollable items → footer separator → footer
+  items.
+- `tools/check_doc_structure.py` — added `"navigationview.md"` to
+  `SKIP_FILES` (with a comment explaining why: it's a 6-line
+  deprecation redirect that points at SideNav). The
+  `NavigationView`/`NavigationViewItem`/`NavigationViewGroup`/
+  `NavigationViewHeader`/`NavigationViewSeparator` symbols are still
+  exported from `widgets/composites/sidenav/__init__.py:18-23` as
+  back-compat aliases, but the page itself is just a redirect.
+  Holding it to the navigation template would force template
+  content into a page whose only job is "use the new name".
+
+`tools/check_doc_structure.py --category navigation` →
+3 files checked, 1 failed (only toolbar.md remains, and it's
+failing against the **navigation** template — which it isn't
+supposed to follow per the per-page assignment table above).
+`tools/check_doc_snippets.py --run --file
+docs/widgets/navigation/sidenav.md` → 0 failures (4 snippets,
+1 executed).
+
+**Open question for the toolbar.md session:** the file lives at
+`docs/widgets/navigation/toolbar.md` but should follow
+`widget-action-template.md`. Two paths to make the structure
+check happy:
+(a) move the file to `docs/widgets/actions/toolbar.md` and update
+    cross-refs (zensical.toml line 99, plus the relative links in
+    sidenav.md / appshell.md / guides/toolbars.md / etc.). Cleanest
+    long-term; mechanical.
+(b) add a `FILE_TEMPLATE_OVERRIDES` map in
+    `tools/check_doc_structure.py` keyed by `category/file.md`
+    pointing at a template stem. Less churn, preserves the menu
+    position semantics.
+The zensical menu lists Toolbar under "Navigation" today
+(`zensical.toml:98`). If we keep that menu placement, (b) is the
+right answer; if Toolbar belongs under "Actions" alongside Button
+/ ButtonGroup / ContextMenu, (a) is. Decide first thing in the
+toolbar session.
+
 Pages to review:
 
 - [x] `tabs.md` — navigation template (anchor)
 - [x] `appshell.md` — bespoke app-shell arc (at `widgets/application/`)
-- [ ] `sidenav.md` — navigation template
+- [x] `sidenav.md` — navigation template
 - [ ] `toolbar.md` — **action template** (no selection state)
-- [ ] `navigationview.md` — deprecation stub; add to `SKIP_FILES`
+- [x] `navigationview.md` — deprecation stub; SKIP_FILES'd
 
 ### Workflow (one page per session)
 
@@ -1865,6 +1973,56 @@ primitives.
   `show_header=True` to the inner SideNav when `show_toolbar=False`,
   or add a fallback toggle somewhere the user can see (e.g. inside
   the body frame). (Surfaced by appshell.md rewrite, 2026-05-01.)
+- `SideNav.select(key)` does **not** validate `key`. The bound
+  variable is set unconditionally, the `<<SelectionChanged>>` event
+  fires with `event.data = {"key": key}`, and `selected_key`
+  returns the orphan key — but no item paints as selected because
+  `_on_selection_changed` (`composites/sidenav/view.py:402-410`)
+  gates the visual update on `key in self._items` /
+  `self._footer_items`. Verified at runtime:
+  `nav.select('phantom')` → `nav.selected_key == 'phantom'` and
+  the bar paints nothing as active. Either validate against
+  `node_keys()` / `footer_node_keys()` and raise on miss, or no-op
+  silently. Same shape as the Tabs orphan-key bug already on this
+  list. (Surfaced by sidenav.md rewrite, 2026-05-01.)
+- `SideNav(display_mode='minimal')` does **not** start hidden. The
+  conceptual framing of `minimal` is "hidden until toggled" (and
+  `_apply_display_mode` at `composites/sidenav/view.py:311-317`
+  hides the pane only when `is_pane_open=False`), but the
+  constructor default for `is_pane_open` is `True`
+  (`view.py:110`). So a vanilla
+  `SideNav(display_mode='minimal')` shows the pane in full at
+  startup, identical to `expanded` mode. Either default
+  `is_pane_open=False` when `display_mode='minimal'`, or rename
+  the mode to better reflect that the visibility is independently
+  controlled. (Surfaced by sidenav.md rewrite, 2026-05-01.)
+- `SideNav.toggle_pane()` does **different things** depending on
+  `display_mode`. In `expanded` mode it switches to `compact` (and
+  vice versa) emitting `<<DisplayModeChanged>>`
+  (`composites/sidenav/view.py:796-799`). Only in `minimal` mode
+  does it toggle pane visibility, emitting `<<PaneToggled>>`
+  (`view.py:791-795`). Verified at runtime: starting from
+  `expanded`, `toggle_pane()` → `display_mode == 'compact'`,
+  `is_pane_open` still `True`. The default hamburger button
+  AppShell wires up calls `toggle_pane()` directly
+  (`appshell.py:165` → `appshell._toggle_nav` →
+  `nav.toggle_pane()`), so users in `expanded` mode who click the
+  hamburger expecting "hide the sidebar" get a shrink to icon-only
+  instead. Either rename / split the method (e.g. `cycle_mode()`
+  for the expanded↔compact dance and `toggle_visibility()` for
+  open / close), or document the dual semantics prominently and
+  rewire AppShell's hamburger to use `open_pane()` / `close_pane()`.
+  (Surfaced by sidenav.md rewrite, 2026-05-01.)
+- `SideNav(display_mode='compact', pane_width=N)` silently ignores
+  `pane_width=N`. The `compact` branch of `_apply_display_mode`
+  (`composites/sidenav/view.py:308-310`) hard-codes
+  `width=self.PANE_WIDTH_COMPACT` (52 px) and writes that into the
+  pane frame regardless of the constructor's `pane_width`
+  argument. Verified at runtime: pane width is 52 px even when
+  `pane_width=400`. Either honor `pane_width` in compact mode (so
+  callers can build a wider icon strip), or accept a separate
+  `compact_pane_width=` argument. (Surfaced by sidenav.md rewrite,
+  2026-05-01.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
