@@ -34,7 +34,7 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, layout sweep — 8/12, anchor + LabelFrame + Card + PackFrame + GridFrame + PanedWindow + Scrollbar + ScrollView)
+### Current handoff (2026-05-01, layout sweep — 9/12, anchor + LabelFrame + Card + PackFrame + GridFrame + PanedWindow + Scrollbar + ScrollView + Accordion)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
@@ -42,8 +42,8 @@ the dialogs sweep (11/11) and data-display sweep (8/8) are complete. The
 **layout sweep** is now the active sweep: the layout template was
 restructured to the slim arc in commit `997a5b7`, with `frame.md` rewritten
 as the canonical anchor. `labelframe.md`, `card.md`, `packframe.md`,
-`gridframe.md`, `panedwindow.md`, `scrollbar.md`, and `scrollview.md` are
-done. Remaining 4 pages: `accordion.md`, `expander.md`, `separator.md`,
+`gridframe.md`, `panedwindow.md`, `scrollbar.md`, `scrollview.md`, and
+`accordion.md` are done. Remaining 3 pages: `expander.md`, `separator.md`,
 `sizegrip.md`. Then move to one of navigation / overlays / selection /
 forms / views / primitives. The remaining 4 templates (form, navigation,
 overlay, selection) still need the editorial pass at the start of each
@@ -556,7 +556,80 @@ LabelFrame, Separator, Sizegrip).
 `button.md` / `textentry.md` / `messagedialog.md` / `label.md`
 anchored their respective categories.
 
-Last session (2026-05-01, scrollview sweep):
+Last session (2026-05-01, accordion sweep):
+
+- `accordion.md` rewritten to the slim layout template. Accordion is
+  the ninth page in the sweep — a `Frame` subclass that owns a stack
+  of `Expander` widgets and enforces a mutual-exclusion policy via
+  `<<Toggle>>` listeners. Filled in the optional `Layout model`
+  section (key-addressed sections, optional inter-section separators,
+  always-vertical stack — no horizontal mode). Five things the old
+  page got wrong or omitted, three of which became new bugs:
+  (1) the old `Appearance` section showed
+  `ttk.Accordion(app, accent="success", variant="solid")` and treated
+  `accent` as a styling shortcut for the accordion itself. Verified
+  at runtime that Accordion captures `accent` and `variant` in its
+  own `__init__` (they never reach `super().__init__()`), so they
+  do **not** flow through the bootstyle wrapper's container reroute
+  the way Frame's do — `_surface` stays at `'content'` and the
+  rendered style is `Default.TFrame`. The accent is purely a
+  forwarded default for child Expanders created via `add()`.
+  Documented as `Accent forwarding` under Common options and noted
+  that tinting the accordion's container needs `surface=…`, not
+  `accent=…`.
+  (2) the old `Examples & patterns / Adding sections` example
+  showed `accordion.add(title="…", icon={...})` and never noted
+  that **passing `accent=` (or `variant=`) to `add()` when the
+  accordion has its own `accent` raises `TypeError: got multiple
+  values for keyword argument 'accent'`**. Cause: the precedence
+  resolution at `composites/accordion.py:128-129` is
+  `accent = self._accent or kwargs.pop('accent', None)`. When
+  `self._accent` is truthy, the `or` short-circuits before `pop`,
+  so the per-call accent stays in `**kwargs` and collides with the
+  explicit `accent=accent` passed to the Expander constructor.
+  Verified at runtime
+  (`Accordion(accent='primary').add(accent='success')` →
+  `TypeError`). Documented as a `!!! warning` block; added to the
+  bugs list.
+  (3) the old `Behavior` section claimed the accordion's
+  `<<AccordionChange>>` event fires whenever the expanded set
+  changes. Verified at runtime that `remove(key)` does **not** fire
+  the event when the removed expander was the last one — the
+  `if self._expanders:` guard at
+  `composites/accordion.py:210-214` suppresses the emission. Now
+  documented in `Events`; added to the bugs list.
+  (4) the old page never noted that `configure(show_separators=…)`
+  does **not** retroactively add or remove separators between
+  existing expanders. Verified: starting from `show_separators=False`
+  with three expanders, calling `configure(show_separators=True)`
+  leaves separator count at 0; only the next `add()` call inserts a
+  separator. Documented as a runtime caveat in Layout model and
+  Behavior; added to the bugs list.
+  (5) the old page never noted that `expand_all()` is a no-op when
+  `allow_multiple=False` and `collapse_all()` is a no-op when
+  `allow_collapse_all=False` — both return silently with no
+  exception. Verified: `Accordion(allow_multiple=False).expand_all()`
+  leaves `accordion.expanded == []`. Documented in Behavior under
+  "mode-gated".
+  Also documented: the auto-keying scheme (`expander_<n>`, never
+  reused), the auto-`padding=3` injection when `show_border=True`
+  (verified: `cget('padding') == (3,)`), the `add(expander=existing)`
+  path that *does* set `highlight=True` on the existing expander
+  but does **not** apply the accordion's accent/variant, the
+  keyboard-navigation contract (Tab walks headers via
+  `takefocus=True` on the inner header frame; `<Return>`/`<space>`
+  toggle), and the `allow_collapse_all=False` enforcement path
+  (auto-expand first section at `add()` time; revert
+  collapse-of-last via `expander.expand()`).
+
+`tools/check_doc_structure.py --category layout` → accordion.md no
+longer in the missing-sections list (3/12 pages still pending:
+expander, separator, sizegrip).
+`tools/check_doc_snippets.py --run --file
+docs/widgets/layout/accordion.md` → 0 failures (6 snippets, 1
+executed).
+
+Prior session (2026-05-01, scrollview sweep):
 
 - `scrollview.md` was already structurally aligned with the slim
   layout template; this pass was an accuracy cleanup against
@@ -835,7 +908,7 @@ Pages to review (canonical anchor: `frame.md`):
 - [x] `panedwindow.md` — resizable split regions
 - [x] `scrollbar.md` — themed ttk.Scrollbar wrapper
 - [x] `scrollview.md` — scrollable viewport over a content frame
-- [ ] `accordion.md` — expandable sections
+- [x] `accordion.md` — mutual-exclusion stack of Expanders
 - [ ] `expander.md` — single collapsible region
 - [ ] `separator.md` — visual divider
 - [ ] `sizegrip.md` — bottom-right resize handle
@@ -1215,6 +1288,44 @@ primitives.
   the layout (re-running `_layout_widgets` for newly-relevant
   bars) on direction change, or document `scroll_direction` as
   construction-only. (Surfaced by scrollview.md rewrite,
+  2026-05-01.)
+- `Accordion.add()` raises `TypeError: got multiple values for
+  keyword argument 'accent'` when the accordion was constructed
+  with its own `accent` and the per-call `add()` also passes
+  `accent=` (same for `variant=`). Cause: the precedence resolution
+  at `composites/accordion.py:128-129` — `accent = self._accent or
+  kwargs.pop('accent', None)` — short-circuits before popping when
+  `self._accent` is truthy, so the per-call accent stays in
+  `**kwargs` and collides with the explicit `accent=accent` passed
+  to the Expander constructor on the next line. Verified at runtime:
+  `Accordion(accent='primary').add(accent='success')` →
+  `TypeError`. Fix: always pop both keys first, then resolve
+  precedence (`per_call = kwargs.pop('accent', None); accent =
+  self._accent or per_call`). Decide intentionally whether
+  per-call should win over accordion default or vice versa; either
+  way, the collision must not crash. (Surfaced by accordion.md
+  rewrite, 2026-05-01.)
+- `Accordion.remove(key)` does **not** fire `<<AccordionChange>>`
+  when the removed expander was the last one. The `if
+  self._expanders:` guard at `composites/accordion.py:210-214`
+  conditions the `event_generate(...)` call on at least one
+  expander remaining. Net effect: a listener tracking "what is
+  open" sees every transition except the empty → still-empty
+  reset that follows the final removal — and any state derived
+  from the listener (e.g. enabling a "hide all" toggle) silently
+  desyncs. Either drop the guard (the empty event payload is fine
+  — `expanded=[]`) or document the suppression as deliberate.
+  (Surfaced by accordion.md rewrite, 2026-05-01.)
+- `Accordion.configure(show_separators=True)` does **not**
+  retroactively insert separators between existing expanders, and
+  `configure(show_separators=False)` does not remove them. The
+  delegator at `composites/accordion.py:368-374` only writes the
+  flag; only future `add()` calls inject separators (they check
+  `self._show_separators` at insert time, line 112). Net effect:
+  a UI that toggles a "compact" preset post-construction sees the
+  flag flip but the layout doesn't change. Either rebuild the
+  separator strip on configure, or document as
+  construction-time-effective. (Surfaced by accordion.md rewrite,
   2026-05-01.)
 
 **Renderer conventions** (when authoring new factories — read the
