@@ -34,16 +34,16 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-04-30, layout sweep — 5/12, anchor + LabelFrame + Card + PackFrame + GridFrame)
+### Current handoff (2026-04-30, layout sweep — 7/12, anchor + LabelFrame + Card + PackFrame + GridFrame + PanedWindow + Scrollbar)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 the dialogs sweep (11/11) and data-display sweep (8/8) are complete. The
 **layout sweep** is now the active sweep: the layout template was
 restructured to the slim arc in commit `997a5b7`, with `frame.md` rewritten
-as the canonical anchor. `labelframe.md`, `card.md`, `packframe.md`, and
-`gridframe.md` are done. Remaining 7 pages: `accordion.md`, `expander.md`,
-`panedwindow.md`, `scrollbar.md`, `scrollview.md`, `separator.md`,
+as the canonical anchor. `labelframe.md`, `card.md`, `packframe.md`,
+`gridframe.md`, `panedwindow.md`, and `scrollbar.md` are done. Remaining
+5 pages: `accordion.md`, `expander.md`, `scrollview.md`, `separator.md`,
 `sizegrip.md`. Then move to one of navigation / overlays / selection /
 forms / views / primitives. The remaining 4 templates (form, navigation,
 overlay, selection) still need the editorial pass at the start of each
@@ -556,7 +556,59 @@ LabelFrame, Separator, Sizegrip).
 `button.md` / `textentry.md` / `messagedialog.md` / `label.md`
 anchored their respective categories.
 
-Last session (2026-04-30, gridframe sweep):
+Last session (2026-04-30, scrollbar sweep):
+
+- `scrollbar.md` rewritten to the slim layout template. Scrollbar
+  is the seventh page in the sweep — a thin themed wrapper over
+  `ttk.Scrollbar` (no SignalMixin, no `on_*` helpers) whose only
+  ttkbootstrap-specific surface is `accent` (thumb tint), `surface`
+  (trough fill), `variant` (`default`/`round`/`rounded` →
+  image-based rounded thumb; `square` → flat solid-color thumb),
+  and `style_options.show_arrows`. Layout model section skipped —
+  Scrollbar is a control, not a layout container; geometry is
+  decided by the parent. Three things the old page got wrong or
+  omitted:
+  (1) the old `Quick start` framed Scrollbar as a one-way driver
+  ("scroll content"). The actual contract is **two-way and
+  symmetric**: `command=text.yview` lets the scrollbar drive the
+  target, and `text.configure(yscrollcommand=ys.set)` lets the
+  target drive the scrollbar. Wiring only one half breaks one
+  direction silently. Documented as the central concept after
+  the basic-usage example.
+  (2) the old `Appearance` example showed
+  `ttk.Scrollbar(app, accent="secondary")` and stopped there. It
+  never named the **`square` vs `default` variant axis**, never
+  surfaced the `show_arrows` builder option, and never explained
+  that `accent` defaults to **the surface's border color** (not
+  to a theme primary) — so a default scrollbar reads as a muted
+  bar by design. Documented all three in `Common options` and
+  added a Variants subsection.
+  (3) the old `Behavior` section listed three loose facts and
+  stopped. Replaced with a structured walkthrough of the view
+  protocol (`xview`/`yview` command forms, `set(first, last)`
+  reporting), the inherited ttk methods (`set`/`get`/`delta`/
+  `fraction`/`identify`/`activate`/`state`/`instate`), and the
+  **disabled state** path (`sb.state(["disabled"])` mutes the
+  bar but the target keeps calling `sb.set(...)`).
+  Surfaced one new bug: **reconfiguring `orient` after construction
+  does not rebuild the resolved ttk style**. Verified at runtime:
+  `Scrollbar(orient='vertical', accent='primary').configure(
+  orient='horizontal')` keeps style
+  `bs[…].primary.Vertical.TScrollbar` — up/down arrows in a
+  horizontal layout. Documented as a construction-time-only
+  axiom and added to the bugs list.
+  Common options consolidates into a 10-row table; deliberate
+  negative `Events` section (no `on_*` helpers, no virtual
+  events, data flow is `command` + `set` callbacks).
+
+`tools/check_doc_structure.py --category layout` →
+scrollbar.md no longer in the missing-sections list (5/12
+pages still pending).
+`tools/check_doc_snippets.py --run --file
+docs/widgets/layout/scrollbar.md` → 0 failures (7 snippets, 1
+executed).
+
+Prior session (2026-04-30, gridframe sweep):
 
 - `gridframe.md` was already structurally aligned with the slim
   layout template (commit `997a5b7`); this pass was an accuracy
@@ -728,9 +780,9 @@ Pages to review (canonical anchor: `frame.md`):
 - [x] `card.md` — Frame subclass with `accent='card'` + border preset
 - [x] `packframe.md` — Frame subclass with auto-pack + `gap`
 - [x] `gridframe.md` — Frame subclass with declarative rows/columns
-- [ ] `panedwindow.md` — resizable split regions
+- [x] `panedwindow.md` — resizable split regions
+- [x] `scrollbar.md` — themed ttk.Scrollbar wrapper
 - [ ] `scrollview.md` — scrollable viewport over a content frame
-- [ ] `scrollbar.md` — themed ttk.Scrollbar wrapper
 - [ ] `accordion.md` — expandable sections
 - [ ] `expander.md` — single collapsible region
 - [ ] `separator.md` — visual divider
@@ -1079,6 +1131,19 @@ primitives.
   which Frame overrides with the descendant-refresh hook.
   Both points warrant a frame.md fixup pass. (Surfaced by
   labelframe.md rewrite, 2026-04-30.)
+- `Scrollbar` reconfiguration of `orient` after construction does
+  **not** rebuild the resolved ttk style. `Scrollbar.__init__`
+  resolves the style once (e.g. `bs[…].primary.Vertical.TScrollbar`
+  via the bootstyle builder's `ORIENT_CLASSES` path), but
+  `configure(orient='horizontal')` only writes the Tk `-orient`
+  option — the cached `style=` string is never invalidated, so the
+  widget renders up/down arrows in a horizontal layout. Verified at
+  runtime: `Scrollbar(orient='vertical', accent='primary')
+  .configure(orient='horizontal')` → `cget('style') ==
+  'bs[…].primary.Vertical.TScrollbar'`. Either invalidate and
+  rebuild the style on `orient` writes (matching what construction
+  does), or document `orient` as construction-only and reject
+  reconfiguration. (Surfaced by scrollbar.md rewrite, 2026-04-30.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
