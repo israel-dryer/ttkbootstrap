@@ -34,20 +34,16 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, layout sweep — 11/12, anchor + LabelFrame + Card + PackFrame + GridFrame + PanedWindow + Scrollbar + ScrollView + Accordion + Expander + Separator)
+### Current handoff (2026-05-01, layout sweep — 12/12 DONE, last page: SizeGrip)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
-the dialogs sweep (11/11) and data-display sweep (8/8) are complete. The
-**layout sweep** is now the active sweep: the layout template was
-restructured to the slim arc in commit `997a5b7`, with `frame.md` rewritten
-as the canonical anchor. `labelframe.md`, `card.md`, `packframe.md`,
-`gridframe.md`, `panedwindow.md`, `scrollbar.md`, `scrollview.md`,
-`accordion.md`, `expander.md`, and `separator.md` are done. Remaining 1
-page: `sizegrip.md`. Then move to one of navigation / overlays /
-selection / forms / views / primitives. The remaining 4 templates (form,
-navigation, overlay, selection) still need the editorial pass at the
-start of each sweep (see "Template arc" below).**
+the dialogs sweep (11/11), data-display sweep (8/8), and **layout sweep
+(12/12)** are now complete. Last layout page rewritten this session:
+`sizegrip.md`. Next: pick one of navigation / overlays / selection /
+forms / views / primitives. The remaining 4 templates (form, navigation,
+overlay, selection) still need the editorial pass at the start of each
+sweep (see "Template arc" below).**
 
 ### Template arc (apply to every editorial sweep)
 
@@ -556,7 +552,59 @@ LabelFrame, Separator, Sizegrip).
 `button.md` / `textentry.md` / `messagedialog.md` / `label.md`
 anchored their respective categories.
 
-Last session (2026-05-01, separator sweep):
+Last session (2026-05-01, sizegrip sweep — final layout page):
+
+- `sizegrip.md` rewritten to the slim layout template. SizeGrip is
+  the twelfth and final page in the sweep — a thin themed wrapper
+  over `ttk.Sizegrip` (the dotted-triangle drag handle in the
+  bottom-right of a Toplevel). Layout model section skipped (SizeGrip
+  is a structural primitive, like Frame / Card / LabelFrame /
+  Separator). Four things the old page got wrong or omitted, three
+  of which became new bugs:
+  (1) the old `Appearance` section said "For theming details and
+  color tokens, see Design System." That implied SizeGrip honors the
+  standard theming axes. Verified at runtime: the SizeGrip style
+  builder (`style/builders/sizegrip.py:11-16`) reads only `surface`
+  and writes `background`. `accent` is captured into `_accent` and
+  flows into a unique resolved style name (e.g.
+  `bs[…].primary.TSizegrip`) but produces an *identical* configured
+  background to the default — the dot pattern is drawn by the
+  platform's `Sizegrip.sizegrip` element which the builder does not
+  tint. Documented as a silent no-op in Common options.
+  (2) the old `Quick start` showed `ttk.SizeGrip(status).pack(side=
+  "right")` without `app.resizable(True, True)`. With the toplevel
+  fixed-size (the Tk default for some platforms), the drag has no
+  visible effect — Tk still tracks the cursor but the toplevel
+  ignores the geometry write. Documented `resizable(True, True)` as
+  a precondition in Basic usage.
+  (3) the old `Behavior` section claimed "the sizegrip is not
+  focusable and is not intended for keyboard interaction" but never
+  named the **mouse-only** interaction surface. Verified at runtime
+  that `TSizegrip` binds `<Button-1>`, `<B1-Motion>`, and
+  `<ButtonRelease-1>` at the bind-class level — those drive Tk's
+  internal toplevel resize logic. Documented as the only interaction
+  path; warned readers not to override the mouse bindings.
+  (4) the old page never noted that `configure(surface=...)` raises
+  `TclError`. Verified: SizeGrip is **not** in `CONTAINER_CLASSES`
+  (only `TFrame` / `TLabelframe` are), so the bootstyle-wrapper's
+  surface-as-accent-override path doesn't apply, and SizeGrip's
+  `__init__` doesn't lift `surface` into a `_delegate_*` map.
+  `sizegrip.configure(surface='primary')` →
+  `TclError: unknown option "-surface"`. The
+  `configure_style_options(surface=...)` escape hatch also misbehaves:
+  it sets the resolved style to `Default.TSizegrip` (no hash prefix),
+  silently reverting to the platform default. Documented `surface` as
+  construction-time only and added to the bugs list.
+  Common options consolidates into a 6-row table; deliberate negative
+  `Events` section (no `on_*` helpers, no virtual events; pointed
+  readers at toplevel `<Configure>` for resize tracking).
+
+`tools/check_doc_structure.py --category layout` → 12/12 passing.
+`tools/check_doc_snippets.py --run --file
+docs/widgets/layout/sizegrip.md` → 0 failures (4 snippets, 1
+executed). Layout sweep complete.
+
+Earlier session (2026-05-01, separator sweep):
 
 - `separator.md` rewritten to the slim layout template. Separator is
   the eleventh page in the sweep — a thin themed wrapper over
@@ -1026,7 +1074,7 @@ Pages to review (canonical anchor: `frame.md`):
 - [x] `accordion.md` — mutual-exclusion stack of Expanders
 - [x] `expander.md` — single collapsible region
 - [x] `separator.md` — visual divider
-- [ ] `sizegrip.md` — bottom-right resize handle
+- [x] `sizegrip.md` — bottom-right resize handle
 
 ### Workflow (one page per session)
 
@@ -1476,6 +1524,31 @@ primitives.
   unread-by-`__init__` issue; here the option round-trips correctly
   but the cached style does not. (Surfaced by separator.md rewrite,
   2026-05-01.)
+- `SizeGrip` `accent` is **silently ignored** by the style builder.
+  `SizeGrip.__init__` captures `accent` into `_accent` and the
+  bootstyle wrapper resolves a unique style key (e.g.
+  `bs[…].primary.TSizegrip`), but the SizeGrip style builder
+  (`style/builders/sizegrip.py:11-16`) reads only `surface` and
+  writes `background` — there's no path that recolors the
+  platform-drawn `Sizegrip.sizegrip` element. Net effect: every
+  accent renders identically to the default, with the same
+  configured tokens. Either (a) drop `accent` from the SizeGrip
+  TypedDict and document the dot color as platform-determined, or
+  (b) extend the builder to draw a custom dot pattern that honors
+  accent. (Surfaced by sizegrip.md rewrite, 2026-05-01.)
+- `SizeGrip.configure(surface=...)` raises `TclError: unknown option
+  "-surface"`. SizeGrip is not in `CONTAINER_CLASSES`, so the
+  bootstyle wrapper's surface-as-accent-override path doesn't apply,
+  and `SizeGrip.__init__` doesn't add a `_delegate_surface` to lift
+  the option into a Python-side configure delegator (the way Frame
+  does). The escape hatch
+  `sizegrip.configure_style_options(surface='primary')` does not
+  raise but produces an unstyled `Default.TSizegrip` style without
+  the hash prefix — silently reverting to the platform default.
+  Either lift `surface` into a configure delegator (matching the
+  read path that the construction wrapper already exercises) or
+  document `surface` as construction-time only. (Surfaced by
+  sizegrip.md rewrite, 2026-05-01.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
