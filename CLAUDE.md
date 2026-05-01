@@ -34,14 +34,14 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-04-30, data-display sweep — 2/8)
+### Current handoff (2026-04-30, data-display sweep — 3/8)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 the dialogs sweep is now complete (11/11), and the data-display sweep
-is in progress (2/8): `label.md` (anchor) and `badge.md` are rewritten
-to the slim template. Remaining 6 pages (floodgauge, listview, meter,
-progressbar, tableview, treeview) still need rewriting.**
+is in progress (3/8): `label.md` (anchor), `badge.md`, and
+`progressbar.md` are rewritten to the slim template. Remaining 5 pages
+(floodgauge, listview, meter, tableview, treeview) still need rewriting.**
 
 ### Template arc (apply to every editorial sweep)
 
@@ -260,7 +260,30 @@ Optional (declared via `*Optional` prose under the heading):
 - `Performance guidance` — include for widgets that scale with
   row count. Skip for lightweight status/progress widgets.
 
-Last session (2026-04-30, badge sweep):
+Last session (2026-04-30, progressbar sweep):
+
+- `progressbar.md` rewritten to the slim template. Corrects
+  three things the old page got wrong or omitted:
+  (1) the old "Reactivity" section showed
+  `ttk.Progressbar(app, value=progress)` as the way to bind a
+  Signal — that path does **not** create a binding, it sets
+  `value` once to the signal's stringified repr; the right
+  hook is `signal=` (or `variable=`), routed through
+  `SignalMixin` to the Tcl `variable=` option ttk.Progressbar
+  exposes natively.
+  (2) the old page never named the `variant` axis
+  (`default` / `striped` / `thin`) — it's first-class on
+  ttkbootstrap Progressbar and registered in
+  `style/builders/progressbar.py`.
+  (3) `start(interval=10)` was wrong-by-trivia; the
+  ttk default is 50 ms. Documented it as such.
+  Added a deliberate negative `Events` section: Progressbar
+  has no `on_*` helpers and emits no virtual events — observe
+  changes via `widget.signal.subscribe(...)`. Common-options
+  consolidates into a 12-row table; `length` clarified as
+  along-orientation (height for vertical bars).
+
+Prior session (2026-04-30, badge sweep):
 
 - `badge.md` rewritten to the slim template. Corrects the
   framing the old page papered over: Badge is **not** a Label
@@ -280,7 +303,7 @@ Last session (2026-04-30, badge sweep):
   Added a deliberate negative `Events` section so readers don't
   hunt for `on_*` helpers Badge doesn't expose.
 
-Prior session (2026-04-30, label sweep — anchor):
+Earliest session (2026-04-30, label sweep — anchor):
 
 - `label.md` rewritten as the canonical anchor for the
   data-display sweep. Frames Label as the foundational read-only
@@ -292,16 +315,16 @@ Prior session (2026-04-30, label sweep — anchor):
   emits no virtual events; (3) `surface=` is the right knob if
   you need a colored background on a Label.
 
-`tools/check_doc_structure.py --category data-display` → 2/8
-passing (label, badge). 6 remaining pages (floodgauge, listview,
-meter, progressbar, tableview, treeview) are still on the old
-scaffold.
+`tools/check_doc_structure.py --category data-display` → 3/8
+passing (label, badge, progressbar). 5 remaining pages
+(floodgauge, listview, meter, tableview, treeview) are still on
+the old scaffold.
 
 Pages to review (canonical anchor: `label.md`):
 
 - [x] `label.md` — anchor for the data-display sweep
 - [x] `badge.md` — extends Label; compact pill chip
-- [ ] `progressbar.md`
+- [x] `progressbar.md` — linear determinate/indeterminate progress
 - [ ] `floodgauge.md`
 - [ ] `meter.md`
 - [ ] `listview.md` — first data-bound widget; uses Data model
