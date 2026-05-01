@@ -34,12 +34,12 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-04-30, dialogs sweep — 4/11 done)
+### Current handoff (2026-04-30, dialogs sweep — 5/11 done)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
-dialogs sweep is in progress: messagedialog, messagebox, querydialog, and
-querybox are done; formdialog, dialog (base), datedialog, colorchooser,
+dialogs sweep is in progress: messagedialog, messagebox, querydialog,
+querybox, and formdialog are done; dialog (base), datedialog, colorchooser,
 colordropper, fontdialog, and filterdialog remain.**
 
 ### Template arc (apply to every editorial sweep)
@@ -208,7 +208,41 @@ Optional (declared via `*Optional` prose under the heading):
   base classes (`Dialog`) and specialty interactions
   (`ColorDropper`).
 
-Last session (2026-04-30, querybox sweep):
+Last session (2026-04-30, formdialog sweep):
+
+- `formdialog.md` rewritten to the slim template (`a326698`).
+  Frames the dialog as a thin Dialog shell wrapping a Form
+  composite. One Result-value paragraph documents that
+  `.result` is `form.data` on submit / `None` on cancel, that
+  values are coerced by `dtype` before return, and — critically
+  — that FormDialog does **not** fire `<<DialogResult>>`
+  (unlike MessageDialog and QueryDialog). One Common-options
+  table covers all twelve constructor args, plus the
+  localization caveat shared with MessageDialog (default
+  buttons are translation keys, not strings). Behavior splits
+  validation-on-submit (form stays open and focuses the first
+  invalid field) from the custom-button command convention
+  (callbacks receive the FormDialog instance and can return
+  `False` to keep the dialog open).
+  Corrects three issues from the old page: the old "Common
+  options" listed `fields`, `initial`, and `validate_on_submit`
+  — none exist (the real options are `data`, `items`, and
+  automatic validation on every non-cancel button); the old
+  page hedged the result type as "implementation-dependent"
+  (it isn't — it's `dict[str, Any]` on submit, `None` on
+  cancel); and the old page implied `.result` might be a
+  custom button-result value (in practice, FormDialog.show()
+  overwrites `.result` with `form.data` on commit regardless
+  of the button's `result=` setting).
+  Surfaces three non-obvious behaviors worth flagging:
+  `on_data_changed` fires on every keystroke (it is **not**
+  the submission callback), button `command` callbacks
+  receive the FormDialog and can abort the close by returning
+  `False`, and the dialog always wraps the form in a vertical
+  ScrollView with the scrollbar visible by default to prevent
+  layout jumps.
+
+Prior session (2026-04-30, querybox sweep):
 
 - `querybox.md` rewritten to the slim template (`fc5484d`).
   Treats the page as the umbrella **facade** over the framework's
@@ -233,7 +267,7 @@ Last session (2026-04-30, querybox sweep):
   TextEntry's ICU parser); the QueryDialog-backed helpers forward
   extra kwargs (`width`, `padding`) into QueryDialog.
 
-Prior session (2026-04-30, querydialog sweep):
+Earlier session (2026-04-30, querydialog sweep):
 
 - `querydialog.md` rewritten to the slim template (`f21e913`).
   Frames the dialog as "prompt for one value" — the input widget
@@ -252,7 +286,7 @@ Prior session (2026-04-30, querydialog sweep):
   and to pass `master=` if registering `on_dialog_result` before
   `show()`.
 
-Earlier session (2026-04-30, messagebox sweep):
+Even earlier session (2026-04-30, messagebox sweep):
 
 - `messagebox.md` rewritten to the slim template (`58977e7`).
   Treats the page as a thin **facade** over `MessageDialog`:
@@ -271,14 +305,14 @@ Earlier session (2026-04-30, messagebox sweep):
   because its first label is "No" not "Cancel" (use `yesnocancel`
   if you need keyboard dismissal).
 
-Even earlier session (2026-04-30, template overhaul + messagedialog re-review):
+Earliest session (2026-04-30, template overhaul + messagedialog re-review):
 
 - Templates restructured (`7667e36`); `tools/check_doc_structure.py`
   gained optional-section detection.
 - `messagedialog.md` re-rewritten to the slim template (`942642c`).
 
-`tools/check_doc_structure.py --category dialogs` → 4/11 passing
-(messagedialog, messagebox, querydialog, querybox).
+`tools/check_doc_structure.py --category dialogs` → 5/11 passing
+(messagedialog, messagebox, querydialog, querybox, formdialog).
 
 Pages to review (canonical anchor pattern: `messagedialog.md`):
 
@@ -286,7 +320,7 @@ Pages to review (canonical anchor pattern: `messagedialog.md`):
 - [x] `messagebox.md` — facade over MessageDialog
 - [x] `querydialog.md`
 - [x] `querybox.md` — umbrella facade over QueryDialog/DateDialog/ColorChooserDialog/FontDialog
-- [ ] `formdialog.md`
+- [x] `formdialog.md`
 - [ ] `dialog.md` — base class
 - [ ] `datedialog.md`
 - [ ] `colorchooser.md`
@@ -383,6 +417,31 @@ primitives.
   resolve through `MessageCatalog.translate` unconditionally for the
   built-in semantic keys. (Surfaced by messagedialog.md rewrite,
   2026-04-30.)
+- `FormDialog` class docstring (`dialogs/formdialog.py:55`) says
+  `resizable` defaults to `(True, True)`, but the signature default
+  (`formdialog.py:77`) is `False` — which gets normalized to
+  `(False, False)`. So a vanilla `FormDialog()` is non-resizable,
+  contrary to the class docstring. Source-only docstring/signature
+  mismatch — fix the docstring to match the signature, or change
+  the default. (Surfaced by formdialog.md rewrite, 2026-04-30.)
+- `FormDialog` shares the same default-button localization gotcha as
+  `MessageDialog`: `dialogs/formdialog.py:507-509` defaults to
+  `["button.cancel", "button.ok"]` translation keys, and there is
+  no `localize` flag on `FormDialog` at all. The vanilla
+  `FormDialog()` therefore shows literal `button.cancel` /
+  `button.ok` strings to the user. Plumb a `localize` argument
+  through (or resolve the built-in semantic keys
+  unconditionally). (Surfaced by formdialog.md rewrite,
+  2026-04-30.)
+- `FormDialog.show()` always overwrites `self.result` with
+  `form.data` whenever the underlying `_dialog.result` is not None
+  (`dialogs/formdialog.py:204-208`). This means a custom button's
+  `result=` value is silently ignored — callers who want to route
+  on which submit button was pressed (e.g. "Save" vs "Save and
+  close") have no way to read it back from `.result`. Either honor
+  button `result=` overrides, or document that custom button-result
+  routing isn't supported on FormDialog. (Surfaced by formdialog.md
+  rewrite, 2026-04-30.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
