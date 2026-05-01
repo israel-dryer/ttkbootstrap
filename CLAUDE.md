@@ -34,13 +34,13 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-04-30, dialogs sweep — 7/11 done)
+### Current handoff (2026-04-30, dialogs sweep — 8/11 done)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 dialogs sweep is in progress: messagedialog, messagebox, querydialog,
-querybox, formdialog, dialog (base), and datedialog are done; colorchooser,
-colordropper, fontdialog, and filterdialog remain.**
+querybox, formdialog, dialog (base), datedialog, and colorchooser are
+done; colordropper, fontdialog, and filterdialog remain.**
 
 ### Template arc (apply to every editorial sweep)
 
@@ -208,7 +208,57 @@ Optional (declared via `*Optional` prose under the heading):
   base classes (`Dialog`) and specialty interactions
   (`ColorDropper`).
 
-Last session (2026-04-30, datedialog sweep):
+Last session (2026-04-30, colorchooser sweep):
+
+- `colorchooser.md` rewritten to the slim template (`86a0ced`).
+  Frames the page as the modal wrapping `ColorChooser` — three-tab
+  notebook (Advanced spectrum, Themed swatches, Standard swatches)
+  + synchronized RGB/HSL/Hex spinners + the Windows/Linux-only
+  eyedropper that opens a `ColorDropperDialog` and traces the
+  sampled hex back into the chooser. Intro disambiguates the
+  page-slug-vs-class-name mismatch (slug is `ColorChooser`, class
+  is `ColorChooserDialog`; bare `ColorChooser` is the inline
+  widget).
+  Result-value section documents the actual `ColorChoice` namedtuple
+  shape — `(rgb=(r,g,b), hsl=(h,s,l), hex='#rrggbb')` — instead of
+  the old "hex string or rgb tuple" hedge. All three representations
+  are exposed simultaneously.
+  Common-options table lists only the three constructor args that
+  exist (`master`, `title`, `initial_color`); the old page listed
+  a fictitious `format` (hex/rgb) option which doesn't exist.
+  Title default `"color.chooser"` is flagged as a translation key
+  auto-resolved by `BaseWindow._setup_window`. Internal labels
+  (tab names, field labels, preview captions) are also translation
+  keys against `MessageCatalog` — a locale that doesn't supply them
+  will display literal `color.advanced` / `color.hue:` strings.
+  Behavior section calls out two non-obvious bindings inherited
+  from the footer-builder Dialog shape: **no Enter binding** (no
+  button is registered as `default=True`, so the OK button styled
+  `accent=PRIMARY` doesn't get the Enter accelerator) and **Escape
+  destroys directly without invoking `_on_cancel`** (since no
+  button has `role="cancel"`, Dialog's fallback path runs
+  `toplevel.destroy()` and skips the cancel callback — `.result`
+  ends up as None either way because `show()` resets it at start).
+  The macOS-only omission of the eyedropper button is documented
+  explicitly (Tk on aqua doesn't support the underlying screen-grab
+  mechanism, so the dropper widget is never built into the footer).
+  Events section documents the `<<DialogResult>>` payload
+  (`{"result": ColorChoice|None, "confirmed": bool}`), the
+  `on_dialog_result(callback)` helper that receives the **payload
+  dict** (matching DateDialog's behavior — same payload-vs-unwrap
+  ambiguity, but ColorChooserDialog's docstring doesn't make the
+  same mis-claim DateDialog's does), and the same
+  register-after-master gotcha already documented for DateDialog
+  and QueryDialog: registering before `show()` with no `master=`
+  binds against `self._master or self._dialog.toplevel` which is
+  None pre-show, so the helper returns None silently.
+  Corrects three errors from the old page: result-value
+  oversimplified to "hex string or rgb tuple" (it's a namedtuple
+  with all three), "Enter confirms / Escape cancels (typical)"
+  (Enter does nothing on the dialog level; Escape destroys without
+  calling `_on_cancel`), and the bogus `format` constructor option.
+
+Prior session (2026-04-30, datedialog sweep):
 
 - `datedialog.md` rewritten to the slim template.
   Frames the page around the dialog's actual commit semantics —
@@ -384,9 +434,9 @@ messagedialog re-review `942642c` — is captured in the "Templates
 already restructured" block at the top of this handoff and in the
 checked rows of the page checklist below.)
 
-`tools/check_doc_structure.py --category dialogs` → 7/11 passing
+`tools/check_doc_structure.py --category dialogs` → 8/11 passing
 (messagedialog, messagebox, querydialog, querybox, formdialog,
-dialog, datedialog).
+dialog, datedialog, colorchooser).
 
 Pages to review (canonical anchor pattern: `messagedialog.md`):
 
@@ -397,7 +447,7 @@ Pages to review (canonical anchor pattern: `messagedialog.md`):
 - [x] `formdialog.md`
 - [x] `dialog.md` — base class
 - [x] `datedialog.md`
-- [ ] `colorchooser.md`
+- [x] `colorchooser.md`
 - [ ] `colordropper.md`
 - [ ] `fontdialog.md`
 - [ ] `filterdialog.md`
