@@ -61,7 +61,7 @@ Use `Spinbox` when:
 
 - **you want a form-ready field (labels/messages/validation/events)** - prefer [SpinnerEntry](/widgets/inputs/spinnerentry.md)
 
-- **the choices are better expressed as a dropdown list** - prefer [SelectBox](/widgets/selection/selectbox.md)
+- **the choices are better expressed as a dropdown list** - prefer [SelectBox](/widgets/inputs/selectbox.md)
 
 ---
 

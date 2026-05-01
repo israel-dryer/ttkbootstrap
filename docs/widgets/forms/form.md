@@ -333,7 +333,7 @@ Form data can be bound to reactive signals for automatic UI updates when values 
 
 ### Related widgets
 
-- [TextEntry](../inputs/textentry.md) / [NumericEntry](../inputs/numericentry.md) / [DateEntry](../inputs/dateentry.md) / [SelectBox](../selection/selectbox.md) — the underlying field widgets
+- [TextEntry](../inputs/textentry.md) / [NumericEntry](../inputs/numericentry.md) / [DateEntry](../inputs/dateentry.md) / [SelectBox](../inputs/selectbox.md) — the underlying field widgets
 
 - [FormDialog](../dialogs/formdialog.md) — modal form flow
 

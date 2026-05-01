@@ -51,6 +51,7 @@ nav = [
             { "PasswordEntry" = "widgets/inputs/passwordentry.md" },
             { "PathEntry" = "widgets/inputs/pathentry.md" },
             { "ScrolledText" = "widgets/inputs/scrolledtext.md" },
+            { "SelectBox" = "widgets/inputs/selectbox.md" },
             { "SpinnerEntry" = "widgets/inputs/spinnerentry.md" },
             { "NumericEntry" = "widgets/inputs/numericentry.md" },
             { "Scale" = "widgets/inputs/scale.md" },
@@ -68,7 +69,6 @@ nav = [
             { "RadioGroup" = "widgets/selection/radiogroup.md" },
             { "ToggleGroup" = "widgets/selection/togglegroup.md" },
             { "OptionMenu" = "widgets/selection/optionmenu.md" },
-            { "SelectBox" = "widgets/selection/selectbox.md" },
         ] },
         { "Data Display" = [
             { "Label" = "widgets/data-display/label.md" },

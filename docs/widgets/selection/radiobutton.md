@@ -255,7 +255,7 @@ Prefer:
   affordance fits better than a radio indicator
 - **[OptionMenu](optionmenu.md)** — for medium-length lists (~5–20)
   where space is tight; a button + popup menu
-- **[SelectBox](selectbox.md)** — for longer lists or when the user
+- **[SelectBox](../inputs/selectbox.md)** — for longer lists or when the user
   needs search / filtering
 - **[CheckButton](checkbutton.md)** — when **multiple** independent
   options are allowed (RadioButton is *exactly one*)
@@ -272,7 +272,7 @@ Prefer:
   RadioToggle children
 - **[CheckButton](checkbutton.md)** — independent boolean siblings
   (multi-select)
-- **[SelectBox](selectbox.md)** / **[OptionMenu](optionmenu.md)** —
+- **[SelectBox](../inputs/selectbox.md)** / **[OptionMenu](optionmenu.md)** —
   dropdown selection alternatives
 
 ---

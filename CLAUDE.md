@@ -34,16 +34,48 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, selection sweep started — CheckButton anchor)
+### Current handoff (2026-05-01, selection sweep 8/9 — calendar remains; inputs reopened 10/11 — selectbox pending)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 the dialogs sweep (11/11), data-display sweep (8/8), layout sweep
 (12/12), navigation sweep (5/5), and overlays sweep (2/2) are
-complete. The selection sweep is in progress (1/10 — `checkbutton.md`
-rewritten as the canonical anchor; the selection template was
-restructured to the slim arc at the start of the session). The other
-9 selection pages still need the editorial pass.**
+complete. The selection sweep is now 8/9 — `checkbutton`, `switch`,
+`checktoggle`, `radiobutton`, `radiogroup`, `radiotoggle`,
+`togglegroup`, `optionmenu` rewritten; `calendar` remains. The
+inputs sweep is reopened at 10/11 — `selectbox.md` was relocated
+from `widgets/selection/` to `widgets/inputs/` (see "SelectBox
+relocation" below) and still needs the editorial pass under the
+inputs template.**
+
+**SelectBox relocation (2026-05-01).** The `selectbox.md` page was
+moved from `widgets/selection/` to `widgets/inputs/`. Rationale: a
+combobox-style widget shares the entry-style chrome (border, focus
+ring, type-ahead text field when `allow_custom_values=True`) of
+TextEntry/NumericEntry/DateEntry — the look-and-feel argument
+beats the "produces a chosen value" classification. Same precedent
+as `toolbar.md` (navigation → application). Logistics done in the
+move commit:
+- `git mv docs/widgets/selection/selectbox.md docs/widgets/inputs/selectbox.md`
+- `zensical.toml` — moved from Selection menu to Inputs menu (between
+  ScrolledText and SpinnerEntry, near the text-based inputs)
+- 14 files / 31 inbound link updates
+- when reviewing, use the **inputs template**
+  (`docs/_template/widget-input-template.md`) and lead with
+  `Value model`, not `Selection model`. The selection-template
+  framing (independent-vs-mutex / shared-variable) is the wrong fit
+  for a single-cell text-input-with-dropdown.
+
+**Cross-cutting commit shipped this session:** the appearance
+subsection heading is now consistently **`Colors & Styling`** (with
+ampersand and capital S) across all widget pages — replacing both
+`Theming` (used by 3 freshly-reviewed selection pages) and
+`Colors and styling` (the older form, used by 8 pre-review selection
++ primitives pages). Apply this convention to every subsequent
+sweep. One inline `**Theming.**` lead-in on `data-display/label.md`
+was also normalized for consistency. "Theming" mentions that point
+at the user-guide `Theming` page (Related-guides bullets etc.) were
+left alone — those are guide names, not section labels.
 
 ### Template arc (apply to every editorial sweep)
 
@@ -154,7 +186,13 @@ the other four (`buttongroup.md`, `contextmenu.md`,
 
 `tools/check_doc_structure.py --category actions` → 5/5 pass.
 
-**Widget pages — inputs** (`docs/widgets/inputs/`, 10 pages) — **DONE 2026-04-30.**
+**Widget pages — inputs** (`docs/widgets/inputs/`, 11 pages) — **REOPENED 2026-05-01: 10/11 done; selectbox.md pending.**
+
+The original 10 pages all passed the editorial pass on 2026-04-30
+and remain done. `selectbox.md` was relocated here from
+`widgets/selection/` on 2026-05-01 (see the "SelectBox relocation"
+callout in the current handoff) and still needs the editorial
+pass under the inputs template.
 
 All 10 pages reviewed against `docs/_template/widget-input-template.md`.
 Inputs use a **different template** than actions — don't carry the
@@ -210,6 +248,8 @@ Pages to review:
 - [x] `scale.md`
 - [x] `labeledscale.md`
 - [x] `scrolledtext.md`
+- [ ] `selectbox.md` — **relocated from `widgets/selection/`
+      2026-05-01; needs editorial pass under the inputs template**
 
 **Widget pages — dialogs** (`docs/widgets/dialogs/`, 11 pages) —
 **DONE 2026-04-30 (11/11).**
@@ -1613,7 +1653,12 @@ Pages to review (canonical anchor: `tooltip.md`):
 - [x] `tooltip.md` — anchor for the overlays sweep
 - [x] `toast.md`
 
-### Widget pages — selection (`docs/widgets/selection/`, 10 pages) — IN PROGRESS 1/10 (2026-05-01)
+### Widget pages — selection (`docs/widgets/selection/`, 9 pages) — IN PROGRESS 8/9 (2026-05-01)
+
+**Note:** `selectbox.md` was moved out of this category on
+2026-05-01 (now lives at `widgets/inputs/selectbox.md`). The page
+count was 10 originally; it's now 9. See the
+"SelectBox relocation" callout in the current handoff for context.
 
 Template: `docs/_template/widget-selection-template.md` (slim arc,
 restructured this session). Required H2s: `Basic usage`,
@@ -1691,18 +1736,160 @@ still pending).
 docs/widgets/selection/checkbutton.md` → 0 failures (5 snippets, 3
 executed).
 
+Mid-session (2026-05-01, switch + checkbutton anchor cleanup):
+
+- `switch.md` rewritten to the slim selection template. As a
+  CheckButton subclass with `variant='switch'` baked in
+  (`widgets/primitives/switch.py:43-44`), the rewrite focuses on
+  the divergences from the parent: no indeterminate state (the
+  switch style builder has no `alternate` mapping; forcing
+  `state(['alternate'])` is visually invisible); `density` is not
+  valid (raises TclError; the CheckButton builder reads only
+  `accent` and `surface`); the constructor unconditionally writes
+  `variant='switch'` when `bootstyle` is not in kwargs (passing
+  `variant='default'` to a Switch is silently overridden); the
+  deprecated `bootstyle=` path bypasses the variant assignment
+  entirely, so `Switch(bootstyle='primary')` renders as a regular
+  CheckButton with a check-box indicator (different widget shape).
+  Surfaced 3 new bugs (see bugs list).
+- `checkbutton.md` cleanup pass — dropped the misleading `variant`
+  row from the common-options table and renamed `Theming and
+  variants` → `Theming` (later renamed to `Colors & Styling` in the
+  cross-cutting commit). CheckButton has effectively one variant —
+  the `switch` registration exists solely to back the dedicated
+  `Switch` class.
+
+Mid-session (2026-05-01, checktoggle):
+
+- `checktoggle.md` rewritten. CheckToggle is a CheckButton subclass
+  with `class_='Toolbutton'` (different ttk style class entirely,
+  not a CheckButton variant). Three real divergences from the
+  parent surfaced:
+  (1) **the default variable is a `StringVar`** with `onvalue='1'`
+  / `offvalue='0'`, NOT a `BooleanVar` (different from CheckButton
+  and Switch). Net effect: `ct.set(None)` does NOT raise — it
+  writes the string `'None'` silently, and the widget paints
+  unpressed because the value matches neither onvalue nor offvalue.
+  Callers relying on the BooleanVar guard must special-case
+  CheckToggle.
+  (2) there is a real **3-variant axis** here (`default` aliasing
+  `solid`, `outline`, `ghost`) that CheckButton lacks. No `link` /
+  `text` variants — those exist on Button but not on Toolbutton.
+  (3) **`density='compact'` works** (captured into `style_options`
+  by `_capture_density_option`); CheckButton itself doesn't accept
+  `density=` at all.
+
+Mid-session (2026-05-01, radiobutton + radiogroup):
+
+- `radiobutton.md` rewritten as the mutually-exclusive sibling of
+  CheckButton. The shared-variable selection model is the central
+  framing. Three things the old page got wrong or omitted:
+  (1) `widget.value` reads the **shared selection**, not the
+  radio's own constructor `value=`. With three radios sharing a
+  signal, all three return the same `.value`. Documented with an
+  explicit example.
+  (2) "group" is purely emergent from sharing `signal=` /
+  `variable=` — not a class-level concept. Forgetting to share
+  makes each radio its own independent group of one.
+  (3) the default variable type is `IntVar` (initial `0`) —
+  different from CheckButton/Switch (`BooleanVar`) and CheckToggle
+  (`StringVar`).
+  Also: only one variant (`default` for `TRadiobutton`); `density=`
+  not valid (raises TclError); reconfiguring `value=` changes the
+  constant this radio writes when clicked, NOT the current
+  selection.
+- `radiogroup.md` rewritten. Frames the group as "owns the shared
+  variable; `add()` wires children automatically." Surfaced 2 new
+  bugs (constructor `accent=` doesn't reach children;
+  `RadioGroup.values()` returns keys not values).
+- **radiobutton.md regression caught and fixed** while reviewing
+  RadioGroup: the original claim that arrow keys don't auto-cycle
+  was wrong. Tk's stock `TRadiobutton` class binding `<Up>` /
+  `<Down>` is `ttk::button::RadioTraverse`, which IS the auto-cycle
+  behavior. RadioGroup adds NO extra bindings (verified in source).
+  Replaced the claim with the truth (Up/Down traverse via the ttk
+  class binding; Left/Right not bound) and dropped the false
+  "arrow-key navigation" RadioGroup feature claim from the
+  related-widgets bullet.
+
+Mid-session (2026-05-01, radiotoggle + togglegroup):
+
+- `radiotoggle.md` rewritten. RadioToggle is a RadioButton subclass
+  with `ttk_class='Toolbutton'` (NOT `class_='Toolbutton'` like
+  CheckToggle). The bindtag distinction matters: RadioToggle keeps
+  the `TRadiobutton` bindtag (and therefore the stock `<Up>`/
+  `<Down>` arrow traversal via `ttk::button::RadioTraverse`),
+  while CheckToggle changes its actual `class_` and loses the
+  `TCheckbutton` bindtag (no arrow traversal). 3 real Toolbutton
+  variants (default/solid/outline/ghost) — same as CheckToggle.
+- `togglegroup.md` rewritten. ToggleGroup is the segmented-strip
+  companion to RadioGroup, but mode-driven: `mode='single'` builds
+  RadioToggle children sharing a StringVar; `mode='multi'` builds
+  CheckToggle children sharing a SetVar. Position-aware ButtonGroup
+  styling (`before`/`center`/`after`) gives the strip rounded outer
+  corners and square inner edges — `_update_button_positions()`
+  re-segments after every add/remove.
+  Several differences from RadioGroup: no `text=`/`labelanchor=`
+  group label (raises TclError); no `state=` configure at the group
+  level (per-child via `configure_item`); `remove(key)` is silent
+  on miss (RadioGroup raises KeyError); ToggleGroup correctly
+  forwards `accent` at construction because the implementation
+  explicitly restores `self._accent` after `super().__init__()`
+  (lines 96-98 of the source) — RadioGroup is missing that fix
+  today and the bug there remains; `mode` is construction-only.
+  Surfaced 1 new bug (`set(...)` doesn't validate against known
+  keys — str-type check only; `g.set('unknown')` writes the orphan
+  value through and no child paints selected).
+
+Mid-session (2026-05-01, optionmenu):
+
+- `optionmenu.md` rewritten. OptionMenu is a MenuButton subclass
+  that opens a ContextMenu of radiobutton items sharing one
+  StringVar. Frames it as "button + popup menu, simpler than
+  SelectBox." Surfaced 3 new bugs:
+  (1) `<<Change>>` and `command=` fire **twice** per write —
+  `_bind_change_event` is called twice during `__init__` (once
+  indirectly via `self.configure(textvariable=self._textvariable)`
+  → `_delegate_textsignal`, and once explicitly at the end of
+  `__init__`). The `if self._bind_id is not None` guard runs
+  against `self._bind_id`, but only the second call assigns the
+  result — so the first call's bind_id is never tracked or
+  unsubscribed. Net effect: 2 subscribers on the textsignal,
+  every variable write fires `<<Change>>` twice, and any
+  `command=` callback runs twice per change. `on_changed`
+  listeners must be idempotent until fixed.
+  (2) `set(...)` does not validate against `options=` — same
+  shape as the ToggleGroup bug. `m.set('not_in_list')` succeeds,
+  writes the orphan value, no menu radiobutton paints selected,
+  and `<<Change>>` still fires.
+  (3) `value=` clobbers `textsignal=` / `textvariable=` initial
+  value. When both are passed, the constructor's `value=` arg
+  wins and is written into the bound variable — opposite of
+  RadioButton (where signal value wins). Workaround: omit
+  `value=` when binding a signal.
+  Also documents: variants from MenuButton (solid/outline/ghost/
+  text — no link or pill); `density` not exposed at OptionMenu
+  level (the underlying MenuButton accepts it but OptionMenu
+  doesn't capture it from kwargs); popup positioning (anchor=nw,
+  attach=sw, scaled offset; minwidth bumped to button width on
+  show); keyboard contract (Return/KP_Enter open the menu; arrow/
+  Return/Escape live on the ContextMenu); `set()` always coerces
+  to string via `str(value)`.
+
 Pages to review (canonical anchor: `checkbutton.md`):
 
 - [x] `checkbutton.md` — anchor for the selection sweep
-- [ ] `switch.md` — CheckButton subclass with slider indicator
-- [ ] `checktoggle.md` — CheckButton subclass with toolbutton chrome
-- [ ] `radiobutton.md` — mutually-exclusive selection primitive
-- [ ] `radiogroup.md` — manages a group of radios as one control
-- [ ] `radiotoggle.md` — RadioButton subclass with toolbutton chrome
-- [ ] `togglegroup.md` — RadioGroup using toolbutton-style children
-- [ ] `optionmenu.md` — list-based selection (button + dropdown menu)
-- [ ] `selectbox.md` — combobox-style list selection with search
+- [x] `switch.md` — CheckButton subclass with slider indicator
+- [x] `checktoggle.md` — CheckButton subclass with toolbutton chrome
+- [x] `radiobutton.md` — mutually-exclusive selection primitive
+- [x] `radiogroup.md` — manages a group of radios as one control
+- [x] `radiotoggle.md` — RadioButton subclass with toolbutton chrome
+- [x] `togglegroup.md` — RadioGroup using toolbutton-style children
+- [x] `optionmenu.md` — list-based selection (button + dropdown menu)
 - [ ] `calendar.md` — date selection grid
+
+(`selectbox.md` was moved to `widgets/inputs/`; it is now tracked
+under the inputs sweep, not selection.)
 
 ### Workflow (one page per session)
 
@@ -2428,6 +2615,103 @@ primitives.
   through a Tcl-level unset of the variable. As-is, the
   documented "indeterminate" semantics are construction-only and
   not addressable post-construction. (Surfaced by checkbutton.md
+  rewrite, 2026-05-01.)
+- `Switch(bootstyle='primary')` **bypasses the `variant='switch'`
+  assignment** and renders as a regular CheckButton with a check-box
+  indicator, NOT a switch. Cause: `widgets/primitives/switch.py:43-44`
+  reads `if 'bootstyle' not in kwargs: kwargs['variant'] = 'switch'`
+  — the deprecated `bootstyle=` path skips the variant assignment
+  entirely. Verified at runtime: `Switch(bootstyle='primary')` →
+  `style='bs[…].primary.TCheckbutton'` (a CheckButton style), while
+  `Switch(accent='primary')` → `style='bs[…].primary.Switch.TCheckbutton'`
+  (the slider). Either always force `variant='switch'` regardless
+  of bootstyle, or document loudly that `bootstyle=` on Switch is
+  unsafe. (Surfaced by switch.md rewrite, 2026-05-01.)
+- `Switch.variant=` is **silently overridden** in `__init__`. Same
+  source line — when `bootstyle` is not in kwargs, the constructor
+  unconditionally writes `kwargs['variant'] = 'switch'`, clobbering
+  any user-supplied `variant=` arg. Net effect: `Switch(variant=
+  'default')` is silently treated as `variant='switch'`. Either
+  raise on incompatible variants or preserve user-supplied values.
+  (Surfaced by switch.md rewrite, 2026-05-01.)
+- `CheckToggle.set(None)` **does NOT raise** (different from
+  CheckButton and Switch). The default variable is a `StringVar`
+  (because CheckToggle uses `class_='Toolbutton'` instead of
+  `TCheckbutton`), so `set(None)` coerces `None` to the string
+  `'None'` and silently writes it. The widget paints unpressed
+  because `'None'` matches neither `onvalue` ('1') nor `offvalue`
+  ('0'). Callers relying on the BooleanVar guard for tri-state
+  behavior must special-case CheckToggle. (Surfaced by
+  checktoggle.md rewrite, 2026-05-01.)
+- `RadioGroup(accent='success')` **at construction does NOT reach
+  child radios.** `RadioGroup.__init__` correctly captures
+  `kwargs.pop('accent', None)` into `self._accent`, but
+  `super().__init__()` (the Frame init path) then resets
+  `self._accent` to `None` before the constructor returns —
+  verified at runtime by patched tracing. As a result, child
+  radios added via `add()` are constructed with `accent=None` and
+  paint with the default style. **Workarounds:** call
+  `g.configure(accent='...')` AFTER construction (the
+  `_delegate_accent` path forwards correctly), or pass `accent=...`
+  per-call via `add('A', 'a', accent='...')`. ToggleGroup has the
+  fix in source (`composites/togglegroup.py:96-98` — explicitly
+  restores `self._accent` after `super().__init__()`); RadioGroup
+  needs the same patch. (Surfaced by radiogroup.md rewrite,
+  2026-05-01.)
+- `RadioGroup.values()` **returns keys, not values.** The
+  implementation at `composites/radiogroup.py:465-472` is
+  `return tuple(self._buttons.keys())`. When `key` defaults to
+  `value` (the common path), this is a tautology and works by
+  accident. When `key='foo', value='bar'` is passed, `g.keys()` and
+  `g.values()` both return `('foo',)` — `g.values()` does not
+  surface `'bar'`. Walk `g.items()` and read each radio's
+  `cget('value')` if you need the actual values. Either fix to
+  return per-button `value`s, or remove the method to avoid the
+  confusing duplication. (Surfaced by radiogroup.md rewrite,
+  2026-05-01.)
+- `ToggleGroup.set(value)` **does NOT validate against known
+  keys.** The implementation at `composites/togglegroup.py:267-272`
+  enforces only the type (str for single, set for multi); there's
+  no membership check. Verified at runtime: with `g.add('A','a')`,
+  `g.set('unknown')` succeeds — `g.value == 'unknown'`, no child
+  paints selected, and the unsubscribed value silently writes
+  through to the underlying variable. Inconsistent with
+  RadioGroup's `set(...)`, which raises `ValueError` on unknown
+  keys. (Surfaced by togglegroup.md rewrite, 2026-05-01.)
+- `OptionMenu.<<Change>>` (and `command=`) **fires twice per
+  write.** The constructor calls `_bind_change_event()` twice
+  during `__init__`: once indirectly via `self.configure(
+  textvariable=self._textvariable)` at
+  `widgets/primitives/optionmenu.py:116` (which routes through
+  `_delegate_textsignal` → `_bind_change_event`), and once
+  explicitly at line 119. The `if self._bind_id is not None`
+  guard inside `_bind_change_event` runs against `self._bind_id`,
+  but only the second call assigns the result to it — so the
+  first call's bind_id is never tracked, never unsubscribed, and
+  the second call adds another subscription on top. Verified at
+  runtime: `len(m.textsignal._subscribers) == 2` immediately
+  after construction. Net effect: every variable write fires
+  `<<Change>>` twice, and any `command=` callback runs twice per
+  change. `on_changed` listeners and `command=` callbacks must
+  be idempotent until fixed. Likely fix: the explicit line 119
+  call is redundant (the configure path already wires up the
+  emitter); remove it, or assign self._bind_id from the first
+  call so the guard short-circuits the second. (Surfaced by
+  optionmenu.md rewrite, 2026-05-01.)
+- `OptionMenu.set(value)` **does NOT validate against `options=`.**
+  Same shape as the ToggleGroup bug — `m.set('not_in_list')`
+  succeeds, writes the orphan value to the variable, no menu
+  radiobutton paints selected, and `<<Change>>` still fires.
+  Either validate against `options` and raise on miss (matching
+  RadioGroup's behavior), or document the permissive contract
+  loudly. (Surfaced by optionmenu.md rewrite, 2026-05-01.)
+- `OptionMenu(value='A', textsignal=Signal('B'))` — **`value=`
+  clobbers the signal's pre-existing value.** When both are
+  passed, the constructor's `value=` arg wins and is written
+  into the bound variable, replacing whatever the signal held.
+  This is opposite of how RadioButton handles `signal=` + `value=`
+  (where the signal value wins). Workaround: omit `value=` when
+  binding a pre-existing signal. (Surfaced by optionmenu.md
   rewrite, 2026-05-01.)
 
 **Renderer conventions** (when authoring new factories — read the

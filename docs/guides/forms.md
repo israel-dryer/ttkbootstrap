@@ -153,7 +153,7 @@ quick start.
 | `numericentry` | [NumericEntry](../widgets/inputs/numericentry.md) | `int` / `float` with bounds |
 | `passwordentry` | `PasswordEntry` | Masked text input |
 | `dateentry` | [DateEntry](../widgets/inputs/dateentry.md) | Date / datetime picker |
-| `selectbox` | [SelectBox](../widgets/selection/selectbox.md) | Pick one of N items |
+| `selectbox` | [SelectBox](../widgets/inputs/selectbox.md) | Pick one of N items |
 | `combobox` | [Combobox](../widgets/primitives/combobox.md) | Same, with free-text fallback |
 | `spinbox` | `Spinbox` | Stepper for small numeric ranges |
 | `text` | Multi-line `Text` | Long-form text |
@@ -542,4 +542,4 @@ on `FieldItem` is honored at construction time only.
 - [TextEntry](../widgets/inputs/textentry.md),
   [NumericEntry](../widgets/inputs/numericentry.md),
   [DateEntry](../widgets/inputs/dateentry.md),
-  [SelectBox](../widgets/selection/selectbox.md) — underlying field widgets
+  [SelectBox](../widgets/inputs/selectbox.md) — underlying field widgets

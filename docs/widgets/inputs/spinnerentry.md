@@ -289,7 +289,7 @@ Prefer a different control when:
 
 - users primarily type numbers and want bounds enforced on typing → use [NumericEntry](numericentry.md).
 - the value is continuous and benefits from a slider → use [Scale](scale.md).
-- the list is large or selection is the main interaction → use [SelectBox](../selection/selectbox.md).
+- the list is large or selection is the main interaction → use [SelectBox](../inputs/selectbox.md).
 - the field is plain text → use [TextEntry](textentry.md).
 
 ---
@@ -299,7 +299,7 @@ Prefer a different control when:
 - [NumericEntry](numericentry.md) — numeric input with bounds clamping on typing.
 - [Spinbox](../primitives/spinbox.md) — low-level stepper primitive (no label, message, or validation).
 - [Scale](scale.md) — slider-based numeric adjustment.
-- [SelectBox](../selection/selectbox.md) — dropdown picker for larger lists.
+- [SelectBox](../inputs/selectbox.md) — dropdown picker for larger lists.
 - [TextEntry](textentry.md) — base composite text field; `SpinnerEntry` shares its formatting/validation/signal machinery.
 - [Form](../forms/form.md) — assemble a full form from field declarations.
 

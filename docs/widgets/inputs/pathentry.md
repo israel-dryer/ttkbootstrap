@@ -324,7 +324,7 @@ Use `PathEntry` when:
 Prefer a different control when:
 
 - the field collects free-form text or a URL → use [TextEntry](textentry.md).
-- the value comes from a fixed list of known paths → use [SelectBox](../selection/selectbox.md).
+- the value comes from a fixed list of known paths → use [SelectBox](../inputs/selectbox.md).
 - you only need a single one-off file pick with no persistent input → call `tkinter.filedialog.askopenfilename` directly.
 
 ---
@@ -332,7 +332,7 @@ Prefer a different control when:
 ## Related widgets
 
 - [TextEntry](textentry.md) — base composite text field; `PathEntry` shares its label/message/validation/signal machinery.
-- [SelectBox](../selection/selectbox.md) — pick from a known set of paths instead of browsing the filesystem.
+- [SelectBox](../inputs/selectbox.md) — pick from a known set of paths instead of browsing the filesystem.
 - [Form](../forms/form.md) — assemble a full form from field declarations.
 
 ---

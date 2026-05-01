@@ -292,7 +292,7 @@ Prefer a different control when:
   [ToggleGroup](../selection/togglegroup.md).
 - the "options" need to feed a value into a form →
   use [OptionMenu](../selection/optionmenu.md) or
-  [SelectBox](../selection/selectbox.md).
+  [SelectBox](../inputs/selectbox.md).
 
 ---
 
@@ -302,7 +302,7 @@ Prefer a different control when:
 - [MenuButton](menubutton.md) — opens a Tk menu (no primary action).
 - [ContextMenu](contextmenu.md) — same menu, shown on right-click instead of left.
 - [ButtonGroup](buttongroup.md) — connected row of related buttons.
-- [OptionMenu](../selection/optionmenu.md), [SelectBox](../selection/selectbox.md) — pick a value for a form.
+- [OptionMenu](../selection/optionmenu.md), [SelectBox](../inputs/selectbox.md) — pick a value for a form.
 
 ---
 

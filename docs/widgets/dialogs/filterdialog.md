@@ -306,7 +306,7 @@ no-ops if no `master` is set.
 - **Don't reach for `FilterDialog` for single-select.** The widget
   is exclusively multi-select; a single-select picker is better
   served by [`Combobox`](../selection/combobox.md) or
-  [`SelectBox`](../selection/selectbox.md).
+  [`SelectBox`](../inputs/selectbox.md).
 
 ---
 
@@ -330,7 +330,7 @@ Prefer a different control when:
   [`CheckButton`](../selection/checkbutton.md) widgets inline.
 - the user picks **exactly one value** → use
   [`Combobox`](../selection/combobox.md), 
-  [`SelectBox`](../selection/selectbox.md), or
+  [`SelectBox`](../inputs/selectbox.md), or
   [`QueryDialog`](querydialog.md) with `items=`.
 - you need **live filtering as the user toggles** (no Apply
   button) → render checkboxes inline and react to each
@@ -354,7 +354,7 @@ Prefer a different control when:
   multi-select.
 - [`QueryDialog`](querydialog.md) — single-value picker; supports
   filterable `Combobox` mode via `items=`.
-- [`SelectBox`](../selection/selectbox.md) — inline single-select
+- [`SelectBox`](../inputs/selectbox.md) — inline single-select
   control.
 - [`CheckButton`](../selection/checkbutton.md) — inline filter
   primitive for short option sets.

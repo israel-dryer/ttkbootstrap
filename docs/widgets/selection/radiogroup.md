@@ -277,7 +277,7 @@ Prefer:
   or formatting strip and the buttons should look pressed/unpressed
 - **[OptionMenu](optionmenu.md)** — for medium lists (~5–20) where
   vertical space is tight; a button + popup menu
-- **[SelectBox](selectbox.md)** — for longer lists or when search /
+- **[SelectBox](../inputs/selectbox.md)** — for longer lists or when search /
   filtering is needed
 - **[CheckButton](checkbutton.md)** group — when **multiple**
   independent options are allowed (RadioGroup is *exactly one*)
@@ -294,7 +294,7 @@ Prefer:
   RadioToggle children
 - **[CheckButton](checkbutton.md)** / **[Switch](switch.md)** —
   independent boolean siblings (multi-select)
-- **[SelectBox](selectbox.md)** / **[OptionMenu](optionmenu.md)** —
+- **[SelectBox](../inputs/selectbox.md)** / **[OptionMenu](optionmenu.md)** —
   dropdown selection alternatives
 
 ---

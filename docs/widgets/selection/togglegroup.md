@@ -283,7 +283,7 @@ Prefer:
 - **[RadioToggle](radiotoggle.md)** / **[CheckToggle](checktoggle.md)**
   — when you want a single toolbutton-styled toggle, or when you
   need free-form (non-segmented) layout
-- **[OptionMenu](optionmenu.md)** / **[SelectBox](selectbox.md)** —
+- **[OptionMenu](optionmenu.md)** / **[SelectBox](../inputs/selectbox.md)** —
   for medium-to-long lists where a strip would overflow
 
 ---

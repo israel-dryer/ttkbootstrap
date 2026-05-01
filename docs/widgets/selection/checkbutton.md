@@ -263,7 +263,7 @@ Prefer:
   like a button you press in (button bars, view-mode selectors)
 - **[RadioButton](radiobutton.md)** / **[RadioGroup](radiogroup.md)**
   — when only one of several options can be active
-- **[SelectBox](selectbox.md)** / **[OptionMenu](optionmenu.md)** —
+- **[SelectBox](../inputs/selectbox.md)** / **[OptionMenu](optionmenu.md)** —
   when the user picks one item from a dropdown list
 
 ---

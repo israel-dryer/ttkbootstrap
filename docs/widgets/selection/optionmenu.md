@@ -11,7 +11,7 @@ containing the configured options as radiobutton items, all
 sharing one `StringVar`. Selecting an item updates the displayed
 text and fires `<<Change>>` with `event.data = {'value': value}`.
 
-It is intentionally simpler than [SelectBox](selectbox.md): no
+It is intentionally simpler than [SelectBox](../inputs/selectbox.md): no
 search, no custom values, no inline filtering. Use OptionMenu for
 short, well-known option sets where a compact button-plus-popup
 beats showing every option inline as radio indicators.
@@ -247,7 +247,7 @@ Use OptionMenu when:
 
 Prefer:
 
-- **[SelectBox](selectbox.md)** — for longer lists, when search /
+- **[SelectBox](../inputs/selectbox.md)** — for longer lists, when search /
   filtering is needed, or when users may need to type a custom
   value
 - **[RadioButton](radiobutton.md)** / **[RadioGroup](radiogroup.md)**
@@ -269,7 +269,7 @@ Prefer:
   extends; use for menus that aren't single-selection lists
 - **[ContextMenu](../actions/contextmenu.md)** — the underlying menu
   primitive that drives the popup
-- **[SelectBox](selectbox.md)** — combobox-style alternative with
+- **[SelectBox](../inputs/selectbox.md)** — combobox-style alternative with
   search and custom values
 - **[RadioGroup](radiogroup.md)** — inline radio alternative for
   small lists
