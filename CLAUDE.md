@@ -52,7 +52,8 @@ foundational primitive: more per-type detail (Canvas item-type
 options, Text tag styling matrix), more patterns (rubber-band,
 snap-to-grid, animation, embedded widgets, image+PIL recipe), a
 dedicated Performance section breakout, and an expanded Behavior
-section. text.md expansion is queued as a follow-up.
+section. Both `canvas.md` and `text.md` now follow this expanded
+treatment — see their per-page session notes below.
 
 **SelectBox relocation (2026-05-01).** The `selectbox.md` page was
 moved from `widgets/selection/` to `widgets/inputs/`. Rationale: a
@@ -2754,21 +2755,80 @@ power and uniqueness — the bespoke "Content model" / "Drawing
 model" sections plus dedicated Performance breakouts and richer
 Patterns sections).
 
-**Follow-up queued:** apply the same expansion treatment to
-`text.md` — deeper tag styling matrix, full index-syntax
-modifier reference, search options reference (regexp / count /
-forwards / nocase / elide / exact), edit/undo deep-dive, more
-patterns (line numbers, find/replace, syntax highlighting),
-dedicated Performance breakout. Currently text.md follows the
-slim arc with one bespoke Content model section; the Canvas
-expansion shows what the parallel treatment looks like.
+Last session (2026-05-01, text.md expansion follow-up):
+
+- `text.md` expanded beyond the slim arc to match the depth of
+  the canvas.md expansion. The page grew from 11 → 25 snippets,
+  with the following new and expanded subsections:
+  - Indices — added long-form modifier syntax (`5 chars` /
+    `1 lines`), display-vs-logical chars/lines, `@x,y` screen
+    coordinate, modifier chaining rules, `text.count()` units
+    (chars / displaychars / lines / displaylines / indices /
+    displayindices / xpixels / ypixels).
+  - Tags — added the full `tag_configure` styling option matrix
+    as a 16-row table (font / foreground / background /
+    selectforeground / selectbackground / underline / overstrike
+    / underlinefg / overstrikefg / relief / borderwidth /
+    justify / lmargin1 / lmargin2 / rmargin / lmargincolor /
+    rmargincolor / spacing1 / spacing2 / spacing3 / wrap / tabs
+    / tabstyle / elide / bgstipple / fgstipple / offset). Added
+    `tag_nextrange` / `tag_prevrange` walking pattern and the
+    note about the `"sel"` special tag for selection mutation.
+  - Marks — added the method-surface table
+    (mark_set / mark_unset / mark_gravity / mark_names /
+    mark_next / mark_previous), default-gravity rule
+    (user-created marks default to `right`), the `tk::` /
+    project-prefix naming convention.
+  - Embedded objects — documented `window_create` options
+    (`align` / `padx` / `pady` / `stretch` / `create=callable`
+    deferred-instantiation), `image_create` options
+    (`align` / `padx` / `pady` / `name=`), the parent-must-be-
+    text precondition for windows, the image-reference-keeping
+    idiom (`text.image_ref = img`), and the `text.dump(…,
+    window=True)` tool for finding embeds.
+  - **NEW: Selection** subsection under Content model —
+    `tag_ranges("sel")` / `tag_add("sel", …)` /
+    `tag_remove("sel", …)`, the cursor (`"insert"` mark) vs
+    selection distinction, `text.see(index)` for scroll-to.
+  - Undo and editing model — expanded with the full method-
+    surface table (edit_undo / edit_redo / edit_separator /
+    edit_reset / edit_modified / edit("undo" / "redo")) and
+    `autoseparators=True` heuristic notes.
+  - Tag-bound events — added the return-`"break"` pattern for
+    suppressing class bindings under tag handlers.
+  - **NEW: Search** section after Events — full option
+    reference (forwards / backwards / exact / regexp / nocase /
+    elide / count / stopindex), the canonical "find every
+    match" loop with zero-width-match guard.
+  - **NEW: Scrolling** section — view methods table (xview /
+    yview / xview_moveto / yview_moveto / xview_scroll /
+    yview_scroll / see / scan_mark / scan_dragto), scrollbar-
+    pairing symmetry note (without `yscrollcommand=sb.set`,
+    other scroll paths leave the scrollbar thumb stale).
+  - Patterns — added line-numbers gutter (paired Text widget,
+    yview sync), syntax highlighting (regex pass per
+    `<<Modified>>`, with note on incremental scoping), find-
+    and-replace (with `edit_separator` boundaries for one-shot
+    undo), inline-widget embedding via `window_create`,
+    save/restore selection via `tag_ranges("sel")`.
+  - **NEW: Performance** section before "When should I use
+    Text?" — eight numbered rules (batch inserts, single
+    redraw window, tag-once-configure-many, tag stacking
+    matters, `<<Modified>>` once-per-transition gotcha, cap
+    buffer for log views, `see` over `yview_moveto` for tail
+    UIs, `dump` is for serialization not normal reads).
+
+`tools/check_doc_snippets.py --run --file
+docs/widgets/primitives/text.md` → 0 failures (25 snippets, 1
+executed). No structure check (primitives is not in
+`CATEGORY_TEMPLATE_MAP`).
 
 Pages to review (canonical anchor: `entry.md`):
 
 - [x] `entry.md` — anchor for the primitives sweep
 - [x] `combobox.md` — thin `ttk.Combobox` wrapper
 - [x] `spinbox.md` — thin `ttk.Spinbox` wrapper
-- [x] `text.md` — multi-line text primitive (slim arc — expansion queued)
+- [x] `text.md` — multi-line text primitive (expanded arc per user note)
 - [x] `canvas.md` — drawing primitive (expanded arc per user note)
 
 ### Workflow (one page per session)
