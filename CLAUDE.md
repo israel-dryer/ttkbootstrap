@@ -34,12 +34,12 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-04-30, dialogs sweep — 6/11 done)
+### Current handoff (2026-04-30, dialogs sweep — 7/11 done)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 dialogs sweep is in progress: messagedialog, messagebox, querydialog,
-querybox, formdialog, and dialog (base) are done; datedialog, colorchooser,
+querybox, formdialog, dialog (base), and datedialog are done; colorchooser,
 colordropper, fontdialog, and filterdialog remain.**
 
 ### Template arc (apply to every editorial sweep)
@@ -208,7 +208,38 @@ Optional (declared via `*Optional` prose under the heading):
   base classes (`Dialog`) and specialty interactions
   (`ColorDropper`).
 
-Last session (2026-04-30, dialog (base) sweep):
+Last session (2026-04-30, datedialog sweep):
+
+- `datedialog.md` rewritten to the slim template.
+  Frames the page around the dialog's actual commit semantics —
+  there is **no OK/Cancel footer** (`buttons=[]` in source); a
+  click on a non-disabled day commits and closes. Result-value
+  section explains that `<<DialogResult>>` fires only on commit
+  (with `event.data = {"result": date, "confirmed": True}`),
+  navigation/reset clicks are filtered out by
+  `_DialogCalendar._last_trigger_reason`, and cancel paths
+  (Escape, WM close, popover outside-click) leave `.result` as
+  None and emit no event.
+  Common-options table covers all twelve constructor args, with
+  the calendar-side options (min/max, disabled_dates,
+  show_outside_days, show_week_numbers, first_weekday) noted as
+  forwarded through to the embedded Calendar. Behavior section
+  splits modal/popover modes (popover = `close_on_click_outside`),
+  documents the click-to-commit shape, the default positioning
+  fallback (parent's bottom-right rather than centering — unlike
+  most dialogs), and the override-redirect macOS caveat.
+  UX guidance prescribes anchoring popovers to triggers,
+  pre-disabling impossible dates instead of post-validating,
+  setting `first_weekday` from locale, and not trying to do
+  ranges with `DateDialog` (it commits on first click).
+  Corrects four issues in the old page: it described OK/Cancel
+  buttons (none exist), listed `<<Changed>>` / `<<Accepted>>` /
+  `<<Cancelled>>` events (only `<<DialogResult>>` exists, only on
+  commit), hedged `min_date`/`max_date` as "(if supported)" (they
+  are), and described business-rule validation paths that don't
+  exist (validation is by `disabled_dates` + bounds only).
+
+Prior session (2026-04-30, dialog (base) sweep):
 
 - `dialog.md` rewritten to the slim template (`644e5a0`).
   Frames the page as the **builder-pattern base class** — composition
@@ -353,9 +384,9 @@ messagedialog re-review `942642c` — is captured in the "Templates
 already restructured" block at the top of this handoff and in the
 checked rows of the page checklist below.)
 
-`tools/check_doc_structure.py --category dialogs` → 6/11 passing
+`tools/check_doc_structure.py --category dialogs` → 7/11 passing
 (messagedialog, messagebox, querydialog, querybox, formdialog,
-dialog).
+dialog, datedialog).
 
 Pages to review (canonical anchor pattern: `messagedialog.md`):
 
@@ -365,7 +396,7 @@ Pages to review (canonical anchor pattern: `messagedialog.md`):
 - [x] `querybox.md` — umbrella facade over QueryDialog/DateDialog/ColorChooserDialog/FontDialog
 - [x] `formdialog.md`
 - [x] `dialog.md` — base class
-- [ ] `datedialog.md`
+- [x] `datedialog.md`
 - [ ] `colorchooser.md`
 - [ ] `colordropper.md`
 - [ ] `fontdialog.md`
@@ -485,6 +516,18 @@ primitives.
   button `result=` overrides, or document that custom button-result
   routing isn't supported on FormDialog. (Surfaced by formdialog.md
   rewrite, 2026-04-30.)
+- `DateDialog.on_result` callback receives the **full payload
+  dict**, not the unwrapped date. The docstring at
+  `dialogs/datedialog.py:368` claims "The callback receives
+  `event.data["result"]` (a `datetime.date`)", but the handler
+  (`dialogs/datedialog.py:382-383`) actually invokes
+  `callback(getattr(event, "data", None))` — passing
+  `{"result": date, "confirmed": True}`. Either unwrap the payload
+  in the handler or fix the docstring. The same `on_result`
+  binding target is `self._dialog.toplevel or self._master`, so
+  registering before `show()` with no `master=` silently no-ops
+  (returns None) — match QueryDialog's gotcha. (Surfaced by
+  datedialog.md rewrite, 2026-04-30.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
