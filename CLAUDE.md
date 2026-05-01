@@ -34,13 +34,13 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-04-30, dialogs sweep — 8/11 done)
+### Current handoff (2026-04-30, dialogs sweep — 9/11 done)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 dialogs sweep is in progress: messagedialog, messagebox, querydialog,
-querybox, formdialog, dialog (base), datedialog, and colorchooser are
-done; colordropper, fontdialog, and filterdialog remain.**
+querybox, formdialog, dialog (base), datedialog, colorchooser, and
+colordropper are done; fontdialog and filterdialog remain.**
 
 ### Template arc (apply to every editorial sweep)
 
@@ -208,7 +208,60 @@ Optional (declared via `*Optional` prose under the heading):
   base classes (`Dialog`) and specialty interactions
   (`ColorDropper`).
 
-Last session (2026-04-30, colorchooser sweep):
+Last session (2026-04-30, colordropper sweep):
+
+- `colordropper.md` rewritten to the slim template. Frames the page
+  as the **fullscreen screen-pixel sampler** that powers the
+  eyedropper button on `ColorChooserDialog` (Windows/Linux only) —
+  on `show()` it grabs the desktop with `PIL.ImageGrab.grab()`,
+  paints the screenshot onto a fullscreen `Toplevel`, and floats a
+  100×100 zoom-magnifier next to the cursor. Left-click commits,
+  right-click / Escape cancels, mousewheel zooms.
+  Result-value section explains that `dlg.result` is a
+  `tk.Variable` (not a plain attribute) — read with `.get()`. On
+  commit, the Variable is set to the same `ColorChoice(rgb, hsl,
+  hex)` namedtuple shape produced by `ColorChooserDialog`. The
+  Variable is exposed deliberately so the result is reactive —
+  `ColorChooserDialog` itself uses `result.trace_add('write', …)`
+  to mirror the sampled pixel into its hex spinbox in real time.
+  Critical behavior callout: **`show()` is non-blocking** on
+  `ColorDropperDialog` — unlike every other dialog in the section,
+  it does NOT call `wait_window()`. Three patterns to read the
+  result: register `on_dialog_result` *after* `show()`, trace the
+  `result` Variable, or call `app.wait_variable(dlg.result)` to
+  block manually.
+  Common-options section documents that `__init__()` takes **no
+  arguments at all** — no title, no master, no initial_color, no
+  buttons. The dialog is a fixed fullscreen tool. Behavior section
+  splits the picking interactions into a table (motion / wheel /
+  left-click / right-click / Escape), flags that the screenshot is
+  captured **once** at `show()` time (windows that move during the
+  picking session still show the original frame), and breaks down
+  the platform support matrix: Windows fully supported (use HiDPI
+  awareness), Linux uses the `'-type tooltip'` X11 hint instead of
+  override_redirect for the zoom toplevel, **macOS not supported
+  at all** because PIL's `ImageGrab.grab()` has no aqua backend.
+  Events section documents `<<DialogResult>>` payload (`{"result":
+  ColorChoice|None, "confirmed": bool}`), the `on_dialog_result`
+  helper that passes the **payload dict**, and a stronger version
+  of the register-after-show gotcha already documented for
+  `DateDialog` / `QueryDialog` / `ColorChooserDialog`: those
+  dialogs at least have a `master` fallback, but
+  `ColorDropperDialog` doesn't — calling `on_dialog_result` before
+  `show()` returns `None` silently and the callback never fires.
+  Per the slim template, omits the optional UX-guidance section
+  (specialty interaction; UX advice belongs on
+  `ColorChooserDialog`).
+  Corrects three issues from the old page: the old "Quick start"
+  wrote `color = ttk.ColorDropperDialog().show()` and printed
+  `color` — but `show()` returns None and is non-blocking, so that
+  pattern silently never produces output; the old page described
+  `result` as "hex / rgb / None" — it's actually the
+  `ColorChoice(rgb, hsl, hex)` namedtuple wrapped in a Variable;
+  the old page glossed mousewheel zoom and right-click cancel as
+  "implementation-dependent" — both are concrete bindings.
+
+Prior session (2026-04-30, colorchooser sweep):
 
 - `colorchooser.md` rewritten to the slim template (`86a0ced`).
   Frames the page as the modal wrapping `ColorChooser` — three-tab
@@ -434,9 +487,9 @@ messagedialog re-review `942642c` — is captured in the "Templates
 already restructured" block at the top of this handoff and in the
 checked rows of the page checklist below.)
 
-`tools/check_doc_structure.py --category dialogs` → 8/11 passing
+`tools/check_doc_structure.py --category dialogs` → 9/11 passing
 (messagedialog, messagebox, querydialog, querybox, formdialog,
-dialog, datedialog, colorchooser).
+dialog, datedialog, colorchooser, colordropper).
 
 Pages to review (canonical anchor pattern: `messagedialog.md`):
 
@@ -448,7 +501,7 @@ Pages to review (canonical anchor pattern: `messagedialog.md`):
 - [x] `dialog.md` — base class
 - [x] `datedialog.md`
 - [x] `colorchooser.md`
-- [ ] `colordropper.md`
+- [x] `colordropper.md`
 - [ ] `fontdialog.md`
 - [ ] `filterdialog.md`
 
