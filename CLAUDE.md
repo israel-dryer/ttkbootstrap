@@ -34,26 +34,15 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, views sweep CLOSED 3/3 — only primitives remain)
+### Current handoff (2026-05-01, primitives sweep started 1/5)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 the dialogs sweep (11/11), inputs sweep (11/11), data-display sweep
 (8/8), layout sweep (12/12), navigation sweep (5/5), overlays sweep
 (2/2), selection sweep (9/9), and views sweep (3/3) are all
-complete. Views sweep opened 2026-05-01 with the `pagestack.md`
-anchor rewrite, advanced to 2/3 the same day with the `tabview.md`
-rewrite, and closed 3/3 with the `notebook.md` rewrite. The
-selection sweep was closed on 2026-05-01 with the calendar rewrite
-(commit `9334701`) — `checkbutton`, `switch`, `checktoggle`,
-`radiobutton`, `radiogroup`, `radiotoggle`, `togglegroup`,
-`optionmenu`, `calendar` all done. The inputs sweep was briefly
-reopened on 2026-05-01 when `selectbox.md` was relocated from
-`widgets/selection/` to `widgets/inputs/` (see "SelectBox
-relocation" below); it has now been rewritten under the inputs
-template (commit `d495951`, 2026-05-01) and the sweep is closed at
-11/11. Remaining editorial-review categories: primitives (5/5
-pages).**
+complete. Primitives sweep opened 2026-05-01 with the `entry.md`
+anchor rewrite. Remaining: combobox, spinbox, text, canvas (4/5).**
 
 **SelectBox relocation (2026-05-01).** The `selectbox.md` page was
 moved from `widgets/selection/` to `widgets/inputs/`. Rationale: a
@@ -2355,6 +2344,98 @@ Pages to review (canonical anchor: `pagestack.md`):
 - [x] `tabview.md` — composes Tabs + PageStack
 - [x] `notebook.md` — wraps `ttk.Notebook` with key-based registry
 
+### Widget pages — primitives (`docs/widgets/primitives/`, 5 pages) — IN PROGRESS 1/5 (2026-05-01)
+
+The primitives directory is **not** in `CATEGORY_TEMPLATE_MAP`
+(`tools/check_doc_structure.py`), so no template enforcement applies
+— same freedom as `widgets/application/`. Per-page template
+assignment is by closest fit:
+
+| Page | Closest template | Notes |
+|---|---|---|
+| `entry.md` | input template | foundational input primitive; backs TextEntry / NumericEntry / DateEntry / PasswordEntry |
+| `combobox.md` | input template | thin `ttk.Combobox` wrapper; primitive backing SelectBox |
+| `spinbox.md` | input template | thin `ttk.Spinbox` wrapper; primitive backing NumericEntry / SpinnerEntry |
+| `text.md` | bespoke (Content model) | multi-line `tkinter.Text`; primitive backing ScrolledText |
+| `canvas.md` | bespoke (Drawing model) | drawing primitive; backs Meter / FloodGauge and any custom rendering |
+
+The framing across all five pages: **acknowledge the primitive,
+recommend the composite for app-level UX, and only document the raw
+ttk surface as the place to drop down to when building a custom
+composite or needing a Tk option the composite doesn't expose.**
+
+`entry.md` is the canonical anchor (the way `button.md` /
+`textentry.md` / `messagedialog.md` / `label.md` / `frame.md` /
+`tabs.md` / `tooltip.md` / `checkbutton.md` / `pagestack.md`
+anchored their respective categories). The other four primitive
+pages should follow its arc.
+
+Last session (2026-05-01, entry sweep started — primitives anchor):
+
+- `entry.md` rewritten to the slim input arc. Entry is the
+  foundational input primitive — a thin themed wrapper over
+  `ttk.Entry` that adds `accent` / `density` / `surface` styling
+  tokens and a reactive `textsignal` channel via `TextSignalMixin`.
+  Three things the old page got wrong or omitted, three of which
+  became new bugs:
+  (1) the old `Appearance` section listed `accent` and `style` as
+  the only styling knobs and never described the actual surface.
+  Verified at runtime: only the `default` variant is registered
+  (`style/builders/entry.py:19` — `register_builder('default',
+  'TEntry')`); `Entry(variant='solid')` raises
+  `BootstyleBuilderError`. The `surface` token is accepted at
+  construction but **`entry.configure(surface=...)` raises
+  `TclError: unknown option "-surface"`** — Entry has no
+  `_delegate_surface`, so the only post-construction path is the
+  `entry.configure_style_options(surface='primary')` escape hatch
+  (which Frame's surface-cascade hook also drives). Documented in
+  Common options and Behavior; added to the bugs list.
+  (2) the old page never described the `density` axis or its
+  reconfigure quirk. Verified at runtime that
+  `entry.configure(density=...)` updates only the **font** —
+  `_delegate_density` (`widgets/primitives/entry.py:94-103`) calls
+  `self.configure(font='caption' or 'body')` and writes the new
+  density into `_style_options`, but does **not** rebuild the
+  resolved ttk style. Net effect: a default-density Entry
+  reconfigured to compact keeps `Default.TEntry` as its style (no
+  hash prefix at all in the vanilla case, or the original
+  `bs[hash].Default.TEntry` style otherwise) and renders with the
+  default-density image element + padding. Only the font shrinks.
+  Documented as a `!!! warning` in Behavior; added to the bugs
+  list.
+  (3) the old page never noted that `input_background` is **not** a
+  constructor kwarg on `Entry` — it's only reachable via
+  `style_options={'input_background': '...'}` or by inheriting from
+  a parent `Frame(input_background=...)`. The Frame surface-cascade
+  hook (`_refresh_descendant_input_backgrounds`) propagates the
+  parent value at construction. Documented in Common options as a
+  `!!! note` block.
+  Also documented (some new, some restated): the lazy
+  `textsignal`/`textvariable` creation when neither is passed; the
+  `textsignal` wins over `textvariable` precedence; the
+  `state="readonly"` semantics (selection works, typing does not,
+  focus traversal still includes); the `cget('variant')` returning
+  `None` (variant tokens aren't round-tripped through Tk options);
+  `entry.configure(accent=...)` does rebuild the style correctly;
+  the `density='compact'` pre-init sets `font='caption'` in
+  `__init__` (`entry.py:89-91`) — that's the construction-time
+  path that works; the deliberate negative `Events` section (no
+  `<<Change>>`, no `on_*` helpers — Entry is a passthrough; framework
+  events live on TextEntry).
+
+`tools/check_doc_snippets.py --run --file
+docs/widgets/primitives/entry.md` → 0 failures (5 snippets, 1
+executed). No structure check (primitives is not in
+`CATEGORY_TEMPLATE_MAP`).
+
+Pages to review (canonical anchor: `entry.md`):
+
+- [x] `entry.md` — anchor for the primitives sweep
+- [ ] `combobox.md` — thin `ttk.Combobox` wrapper
+- [ ] `spinbox.md` — thin `ttk.Spinbox` wrapper
+- [ ] `text.md` — multi-line text primitive
+- [ ] `canvas.md` — drawing primitive
+
 ### Workflow (one page per session)
 
 1. Read the page end-to-end.
@@ -3482,6 +3563,37 @@ primitives.
   apply the kwargs via `widget.configure(**kwargs)`
   post-registration. (Surfaced by notebook.md rewrite,
   2026-05-01.)
+- `Entry.configure(surface=...)` raises `TclError: unknown option
+  "-surface"`. Entry accepts `surface=` at construction (captured
+  into `_surface` and factored into the resolved style key), but
+  the class doesn't add a `_delegate_surface` to lift the option
+  into a Python-side configure delegator the way Frame does. The
+  escape hatch `entry.configure_style_options(surface='primary')`
+  works (it updates `_style_options` and `_surface` but does **not**
+  rebuild the resolved ttk style — see Frame's
+  `_refresh_descendant_surfaces` hook for how the cascade fixes
+  this when the parent surface changes). Same family as the
+  Sizegrip surface bug already on this list. Either lift `surface`
+  into a configure delegator that rebuilds the resolved style, or
+  document `surface` as construction-time only on Entry.
+  (Surfaced by entry.md rewrite, 2026-05-01.)
+- `Entry.configure(density=...)` updates only the **font** — the
+  resolved ttk style is not rebuilt. `_delegate_density`
+  (`widgets/primitives/entry.py:94-103`) calls
+  `self.configure(font='caption' or 'body')` and writes the new
+  density into `_style_options`, but `configure_style_options(...)`
+  does not trigger a style rebuild. Net effect: the underlying
+  image element key and padding from the construction-time density
+  persist; only the font shrinks/grows. Verified at runtime: a
+  vanilla `Entry(app)` (style `Default.TEntry`) reconfigured with
+  `entry.configure(density='compact')` keeps style `Default.TEntry`
+  and renders with the default-density image element + a caption
+  font — visually inconsistent. Construction-time
+  `Entry(density='compact')` works correctly because the style
+  builder reads the captured `style_options` dict. Either rebuild
+  the style on density writes (matching what construction does),
+  or document `density` as construction-only and reject
+  reconfiguration. (Surfaced by entry.md rewrite, 2026-05-01.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
