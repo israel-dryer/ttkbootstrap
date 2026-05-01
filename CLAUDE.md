@@ -34,14 +34,14 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-04-30, data-display sweep — 3/8)
+### Current handoff (2026-04-30, data-display sweep — 4/8)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 the dialogs sweep is now complete (11/11), and the data-display sweep
-is in progress (3/8): `label.md` (anchor), `badge.md`, and
-`progressbar.md` are rewritten to the slim template. Remaining 5 pages
-(floodgauge, listview, meter, tableview, treeview) still need rewriting.**
+is in progress (4/8): `label.md` (anchor), `badge.md`, `progressbar.md`,
+and `floodgauge.md` are rewritten to the slim template. Remaining 4
+pages (listview, meter, tableview, treeview) still need rewriting.**
 
 ### Template arc (apply to every editorial sweep)
 
@@ -260,7 +260,31 @@ Optional (declared via `*Optional` prose under the heading):
 - `Performance guidance` — include for widgets that scale with
   row count. Skip for lightweight status/progress widgets.
 
-Last session (2026-04-30, progressbar sweep):
+Last session (2026-04-30, floodgauge sweep):
+
+- `floodgauge.md` rewritten to the slim template. Corrects two
+  things the old page got wrong and surfaces several missing
+  facts. (1) The old "Reactivity" section showed
+  `ttk.FloodGauge(app, value=level)` with a `Signal` — that path
+  fails type-wise (`value: int = 0`) and there's **no SignalMixin**
+  on FloodGauge; the widget inherits only `ConfigureDelegationMixin`
+  + `Canvas`. Reactivity goes through `variable=IntVar(...)` /
+  `textvariable=StringVar(...)`. (2) The old "Behavior" claim that
+  "color/style can change based on threshold values" implied a
+  built-in threshold mapping; there is none — callers must
+  reconfigure `accent` themselves. The rewrite documents the
+  actual surface: `mask` (format string with `{}` for the value,
+  the most distinctive feature), `text` (static caption when
+  `mask` is unset), `thickness` (cross-axis size), the bouncing
+  pulse animation in indeterminate mode, the wrapping `step()`
+  semantics (`(value + amount) % (maximum + 1)`), the auto-advance
+  side effect of `start()` in determinate mode, and repaint
+  triggers (`<Configure>`, `<<ThemeChanged>>`, variable writes).
+  Added a deliberate negative `Events` section: no virtual events,
+  no `on_*` helpers — observe via `variable.trace_add(...)`.
+  Common options consolidates into a 13-row table.
+
+Prior session (2026-04-30, progressbar sweep):
 
 - `progressbar.md` rewritten to the slim template. Corrects
   three things the old page got wrong or omitted:
@@ -283,7 +307,7 @@ Last session (2026-04-30, progressbar sweep):
   consolidates into a 12-row table; `length` clarified as
   along-orientation (height for vertical bars).
 
-Prior session (2026-04-30, badge sweep):
+Earlier session (2026-04-30, badge sweep):
 
 - `badge.md` rewritten to the slim template. Corrects the
   framing the old page papered over: Badge is **not** a Label
@@ -315,17 +339,16 @@ Earliest session (2026-04-30, label sweep — anchor):
   emits no virtual events; (3) `surface=` is the right knob if
   you need a colored background on a Label.
 
-`tools/check_doc_structure.py --category data-display` → 3/8
-passing (label, badge, progressbar). 5 remaining pages
-(floodgauge, listview, meter, tableview, treeview) are still on
-the old scaffold.
+`tools/check_doc_structure.py --category data-display` → 4/8
+passing (label, badge, progressbar, floodgauge). 4 remaining pages
+(listview, meter, tableview, treeview) are still on the old scaffold.
 
 Pages to review (canonical anchor: `label.md`):
 
 - [x] `label.md` — anchor for the data-display sweep
 - [x] `badge.md` — extends Label; compact pill chip
 - [x] `progressbar.md` — linear determinate/indeterminate progress
-- [ ] `floodgauge.md`
+- [x] `floodgauge.md` — canvas-drawn fill with inline label
 - [ ] `meter.md`
 - [ ] `listview.md` — first data-bound widget; uses Data model
 - [ ] `tableview.md`
