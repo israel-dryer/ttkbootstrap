@@ -122,7 +122,6 @@ step — CheckButton has no editing buffer.
 | `command` | `Callable[[], None]` | Fires on **user invocation only** (click or `.invoke()`). Programmatic `set()` and variable writes do **not** fire it. |
 | `state` | `'normal'` / `'disabled'` / `'readonly'` | Disables click input but keeps the variable mutable from code. |
 | `accent` | str | Theme token for the indicator's check / dot fill (default `'primary'`). |
-| `variant` | `'default'` / `'switch'` | The style builder registers two variants. `'switch'` produces the slider track used by the [Switch](switch.md) widget; pass `variant='switch'` directly only if you want the switch indicator on a CheckButton instance — otherwise use the dedicated `Switch` class. |
 | `surface` | str | Background surface; usually inherited from the parent. |
 | `density` | `'default'` / `'compact'` | Reduces vertical / horizontal padding. |
 | `width` | int | Label width in characters; widget pads to that width. |
@@ -136,10 +135,15 @@ step — CheckButton has no editing buffer.
 | `takefocus` | bool | Whether the widget participates in Tab traversal. |
 | `style_options` | dict | Extra dict forwarded to the style builder. |
 
-`bootstyle` is accepted but **deprecated** — use `accent` and
-`variant`.
+`bootstyle` is accepted but **deprecated** — use `accent`.
 
-### Theming and variants
+CheckButton has effectively **one variant**: the default check-box
+indicator. The `switch` style registered for `TCheckbutton` exists
+solely to back the dedicated [Switch](switch.md) class (a subclass
+that bakes in `variant='switch'`); reach for `Switch` rather than
+passing `variant=` to `CheckButton` directly.
+
+### Theming
 
 ```python
 ttk.CheckButton(app, text="Default")
