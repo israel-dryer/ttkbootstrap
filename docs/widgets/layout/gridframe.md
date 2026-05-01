@@ -98,13 +98,13 @@ grid.configure_column(1, weight=0, minsize=120)
 When a child calls `grid()` without an explicit `row=` and `column=`,
 GridFrame finds the next free cell using the active `auto_flow` mode:
 
-| Mode             | Placement order                                         |
-| ---------------- | ------------------------------------------------------- |
-| `"row"` (default) | Row-major: fill columns in current row, then next row. |
-| `"column"`       | Column-major: fill rows in current column, then next column. |
-| `"row-dense"`    | Row-major, but search from `(0, 0)` for the smallest free area on every placement (CSS Grid `dense` semantics). |
-| `"column-dense"` | Column-major dense packing.                             |
-| `"none"`         | Disable auto-placement — every implicit `grid()` lands at `(0, 0)`. Use only when every child sets `row=` and `column=` explicitly. |
+| Mode              | Placement order                                              |
+| ----------------- | ------------------------------------------------------------ |
+| `"row"` (default) | Row-major. Cursor advances through columns in the current row, then to the next row. |
+| `"column"`        | Column-major. Cursor advances through rows in the current column, then to the next column. |
+| `"row-dense"`     | Row-major, but search from `(0, 0)` on every placement and pick the first cell where the rectangle fits (CSS Grid `dense` semantics — earlier holes get filled in). |
+| `"column-dense"`  | Column-major dense packing — first-fit search from `(0, 0)`. |
+| `"none"`          | Disable auto-placement — every implicit `grid()` resolves to `(0, 0)`, so any second implicit child overlaps the first. Use only when every child sets **both** `row=` and `column=` explicitly. |
 
 `rowspan`/`columnspan` participate in the search: GridFrame looks for
 a rectangular free area of the required size and places the widget at
@@ -121,9 +121,11 @@ ttk.Label(grid, text="Footer").grid(row=2, columnspan=3)  # explicit
 ```
 
 The cursor wraps to the next row only when `columns` is defined;
-without an explicit column count, the placeholder upper bound is
+without an explicit column count the placeholder upper bound is
 100, so widgets stack along a single row until you set `columns=`.
-Define the track count you want.
+The mirror caveat applies to `auto_flow="column"`: without `rows=`
+defined, widgets stack along a single column. Define the track
+count you want.
 
 ### Gap
 
@@ -136,13 +138,16 @@ ttk.GridFrame(app, columns=3, gap=(8, 12))    # 8px between columns, 12px betwee
 ```
 
 The implementation adds the gap as a **leading** `padx` / `pady` on
-every cell after the first column / row. Per-call `padx` / `pady` are
-merged with the gap rather than overwritten — gap is added to the
-leading edge, the trailing edge stays at the user's value:
+every cell after the first column / row — cells in column 0 (or row
+0) get no gap injection. Per-call `padx` / `pady` are merged with
+the gap rather than overwritten: the gap is added to the leading
+edge, the trailing edge stays at the user's value.
 
 ```python
 grid = ttk.GridFrame(app, columns=3, gap=10)
-ttk.Button(grid, text="X").grid(padx=4)   # final padx=(14, 4)
+ttk.Button(grid, text="A").grid(padx=4)   # cell (0,0) → padx=4
+ttk.Button(grid, text="B").grid(padx=4)   # cell (0,1) → padx=(14, 4)
+ttk.Button(grid, text="C").grid(padx=4)   # cell (0,2) → padx=(14, 4)
 ```
 
 ### Sticky and overrides
@@ -156,9 +161,21 @@ ttk.Entry(grid).grid()                       # sticky="nsew"
 ttk.Label(grid, text="Hint").grid(sticky="w")  # overrides
 ```
 
-Per-call `row=` / `column=` similarly override auto-placement, and
-all standard Tk grid options (`rowspan`, `columnspan`, `ipadx`,
-`ipady`, `in_`) pass through.
+Per-call `row=` / `column=` override auto-placement, but **only when
+both are passed together**. Passing only `row=` (or only `column=`)
+is silently ignored — auto-placement still runs and the cursor's
+next free cell wins:
+
+```python
+grid = ttk.GridFrame(app, columns=3)
+ttk.Button(grid, text="A").grid()           # (0, 0)
+ttk.Button(grid, text="B").grid(row=5)      # not (5, ?) — falls
+                                            # through to (0, 1)
+ttk.Button(grid, text="C").grid(row=2, column=0)  # explicit, lands at (2, 0)
+```
+
+All other Tk grid options (`rowspan`, `columnspan`, `ipadx`,
+`ipady`, `in_`) pass through unchanged.
 
 ---
 
