@@ -34,7 +34,7 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, layout sweep — 10/12, anchor + LabelFrame + Card + PackFrame + GridFrame + PanedWindow + Scrollbar + ScrollView + Accordion + Expander)
+### Current handoff (2026-05-01, layout sweep — 11/12, anchor + LabelFrame + Card + PackFrame + GridFrame + PanedWindow + Scrollbar + ScrollView + Accordion + Expander + Separator)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
@@ -43,8 +43,8 @@ the dialogs sweep (11/11) and data-display sweep (8/8) are complete. The
 restructured to the slim arc in commit `997a5b7`, with `frame.md` rewritten
 as the canonical anchor. `labelframe.md`, `card.md`, `packframe.md`,
 `gridframe.md`, `panedwindow.md`, `scrollbar.md`, `scrollview.md`,
-`accordion.md`, and `expander.md` are done. Remaining 2 pages:
-`separator.md`, `sizegrip.md`. Then move to one of navigation / overlays /
+`accordion.md`, `expander.md`, and `separator.md` are done. Remaining 1
+page: `sizegrip.md`. Then move to one of navigation / overlays /
 selection / forms / views / primitives. The remaining 4 templates (form,
 navigation, overlay, selection) still need the editorial pass at the
 start of each sweep (see "Template arc" below).**
@@ -556,7 +556,58 @@ LabelFrame, Separator, Sizegrip).
 `button.md` / `textentry.md` / `messagedialog.md` / `label.md`
 anchored their respective categories.
 
-Last session (2026-05-01, expander sweep):
+Last session (2026-05-01, separator sweep):
+
+- `separator.md` rewritten to the slim layout template. Separator is
+  the eleventh page in the sweep — a thin themed wrapper over
+  `ttk.Separator` with no SignalMixin and no `on_*` helpers. Layout
+  model section skipped (Separator is a transparent primitive, like
+  Frame / Card / LabelFrame / Sizegrip). Four things the old page
+  got wrong or omitted:
+  (1) the old `Appearance` section said "If your theme exposes
+  separator variants, apply them via `accent` or `style`." That
+  conflates two distinct axes. `accent` is the **line color**
+  (default `"border"`, which resolves through the builder to
+  `b.border(surface)` — the same muted border color used by
+  `Frame(show_border=True)`); `variant` is the visual variant axis
+  but only `"default"` is registered, so any other variant raises
+  `BootstyleBuilderError`. Documented both correctly.
+  (2) the old page never named the **`thickness`** and **`length`**
+  options at all, despite both being in the `SeparatorKwargs`
+  TypedDict and captured into `style_options` at construction
+  (`widgets/primitives/separator.py:58`). The style builder
+  (`style/builders/separator.py:19-42`) reads `thickness` (default
+  `1`) for the cross-axis size and `length` (default `None` →
+  stretchy via sticky `ew`/`ns`) for the along-axis size; setting
+  `length=N` builds the image element at fixed dimensions and
+  ignores geometry-manager fill on that axis. Documented both,
+  including the 40-pixel internal default that catches users who
+  forget `fill=` on a manually-sized line.
+  (3) the old page never noted that **reconfiguring `orient`
+  after construction does not rebuild the resolved ttk style**.
+  Separator is in `ORIENT_CLASSES`, so the orientation is part of
+  the style key (e.g. `bs[…].primary.Vertical.TSeparator`), and
+  `configure(orient=...)` only writes the Tk option without
+  invalidating the cached style. Verified at runtime:
+  `Separator(orient='vertical', accent='primary')
+  .configure(orient='horizontal')` keeps style
+  `bs[…].primary.Vertical.TSeparator` and renders with the wrong
+  axis. Same bug pattern as Scrollbar (already on the bugs list).
+  Documented as construction-time-only and added to the bugs list.
+  (4) the old page never described the `surface` option or the
+  parent-surface inheritance. Verified: a `Separator` inside a
+  `Frame(surface='card')` inherits `_surface='card'`. Documented.
+  Common options consolidates into a 9-row table; deliberate
+  negative `Events` section (no `on_*` helpers, no virtual events).
+
+`tools/check_doc_structure.py --category layout` → separator.md no
+longer in the missing-sections list (1/12 page still pending:
+sizegrip).
+`tools/check_doc_snippets.py --run --file
+docs/widgets/layout/separator.md` → 0 failures (6 snippets, 1
+executed).
+
+Prior session (2026-05-01, expander sweep):
 
 - `expander.md` rewritten to the slim layout template. Expander is
   the tenth page in the sweep — a `Frame` subclass with a clickable
@@ -974,7 +1025,7 @@ Pages to review (canonical anchor: `frame.md`):
 - [x] `scrollview.md` — scrollable viewport over a content frame
 - [x] `accordion.md` — mutual-exclusion stack of Expanders
 - [x] `expander.md` — single collapsible region
-- [ ] `separator.md` — visual divider
+- [x] `separator.md` — visual divider
 - [ ] `sizegrip.md` — bottom-right resize handle
 
 ### Workflow (one page per session)
@@ -1408,6 +1459,23 @@ primitives.
   apply the `selected` ttk state to the header. Pair with
   `highlight=True` + `expand()` from a listener for visual
   feedback today. (Surfaced by expander.md rewrite, 2026-05-01.)
+- `Separator.configure(orient=...)` after construction does **not**
+  rebuild the resolved ttk style. Separator is in `ORIENT_CLASSES`
+  (`style/token_maps.py:42`), so the bootstyle wrapper resolves the
+  style once at construction with the orientation embedded as a
+  prefix (e.g. `bs[…].primary.Vertical.TSeparator`). Subsequent
+  `configure(orient='horizontal')` only writes the Tk option without
+  invalidating the cached `style=` string. Verified at runtime:
+  `Separator(orient='vertical', accent='primary')
+  .configure(orient='horizontal')` → `cget('style') ==
+  'bs[…].primary.Vertical.TSeparator'`, and the line renders with
+  the wrong axis. Same fix as the Scrollbar `orient` bug already on
+  this list — invalidate and rebuild on `orient` writes, or document
+  `orient` as construction-only and reject reconfiguration. Note
+  that `LabelFrame.show_border` had a similar
+  unread-by-`__init__` issue; here the option round-trips correctly
+  but the cached style does not. (Surfaced by separator.md rewrite,
+  2026-05-01.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
