@@ -34,13 +34,14 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-04-30, dialogs sweep — 10/11 done)
+### Current handoff (2026-04-30, dialogs sweep — DONE 11/11)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
-dialogs sweep is in progress: messagedialog, messagebox, querydialog,
+the dialogs sweep is now complete: messagedialog, messagebox, querydialog,
 querybox, formdialog, dialog (base), datedialog, colorchooser,
-colordropper, and fontdialog are done; filterdialog remains.**
+colordropper, fontdialog, and filterdialog are all done. The next sweep
+target is data-display widgets (`docs/widgets/data-display/`).**
 
 ### Template arc (apply to every editorial sweep)
 
@@ -208,7 +209,69 @@ Optional (declared via `*Optional` prose under the heading):
   base classes (`Dialog`) and specialty interactions
   (`ColorDropper`).
 
-Last session (2026-04-30, fontdialog sweep):
+Last session (2026-04-30, filterdialog sweep — dialogs sweep complete):
+
+- `filterdialog.md` rewritten to the slim template. Frames the page
+  as a modal **multi-select picker** built on `Dialog` —
+  scrollable checkbox list with optional top search box and Select
+  All toggle. Returns `list[Any]` of selected `value` fields on
+  OK, `None` on cancel/escape/window-close/outside-click.
+  Intro flags an architectural oddity worth knowing: unlike every
+  other dialog in the sweep, `FilterDialog` is a **`Frame`
+  subclass** that *composes* a `Dialog` on `show()` rather than
+  extending it. That's why events fire on the FilterDialog frame
+  instance (not the dialog's toplevel) and why pre-`show()`
+  subscription survives across multiple `show()` calls.
+  Result-value section flags four non-obvious points: empty list
+  `[]` is a valid OK outcome (user clicked OK with nothing
+  checked), the list contains `value` fields not display `text`,
+  ordering reflects user click order not source-list order, and a
+  **stale-result bug** — `FilterDialog.show()` does NOT reset
+  `self.result` to `None` at the start of each call (only the
+  underlying `Dialog`'s own result is reset). Re-`show()` after an
+  OK and then cancelling returns the previous list.
+  Common-options table covers all six constructor args. Items can
+  be plain strings (text==value) or dicts with text/value/selected.
+  Localization caveat called out: `FilterDialog` has no `localize`
+  flag, default button labels are translation keys
+  (`"button.ok"`/`"button.cancel"`) so a vanilla `FilterDialog()`
+  shows literal `button.ok`/`button.cancel` strings — same gotcha
+  as MessageDialog/FormDialog. The Select All label
+  `"edit.select_all"` has the same issue. The default `title="Filter"`
+  is the only literal English string.
+  Behavior section documents: modal-only (hard-coded
+  `mode="modal"`), fixed width 250px with vertical resize 200–380,
+  Enter→OK / Escape→Cancel both registered correctly (unlike
+  ColorChooserDialog), search is per-keystroke case-insensitive
+  substring match (no debounce), **Select All ignores the search
+  filter** (selects ALL items, not just visible ones — UX gotcha),
+  Select All checkbox does NOT auto-update in response to manual
+  toggles, frameless mode adds outside-click dismiss bound to root
+  window globally, and items with duplicate `text` silently
+  overwrite each other in the internal registry.
+  Events section documents the non-standard event surface: emits
+  **`<<SelectionChange>>`** (not `<<DialogResult>>`) with payload
+  **`{"selected": list}`** (not `{"result": ..., "confirmed": bool}`),
+  the helper is **`on_selection_changed`** (not
+  `on_dialog_result`), the event fires on the **FilterDialog
+  frame** (not the toplevel), and the event **only fires on OK**
+  (cancel paths leave `.result` as None and emit no event).
+  Per the slim template, includes the optional UX-guidance
+  section: pre-select sensible defaults via `selected: True`, use
+  `frameless=True + anchor_to=` for popover-style filter panels,
+  pair search with longer lists (>10 items), don't mix Select All
+  with active search filters (collateral selection surprise),
+  don't reach for FilterDialog for single-select.
+  Corrects four issues from the old page: old "Quick start"
+  showed the dict-only items syntax (real shape supports plain
+  strings too); old "Value model" hedged "dict-like filter state
+  (selected values)" — it's specifically `list[Any]`; old
+  "Behavior" mentioned "Popover mode (if supported)" without
+  documenting the actual `frameless=True` mechanism; old page had
+  no Events section at all (the dialog has a non-standard event
+  surface that needed first-class documentation).
+
+Prior session (2026-04-30, fontdialog sweep):
 
 - `fontdialog.md` rewritten to the slim template. Frames the page
   as a modal font picker built on `Dialog` — family list + size
@@ -541,11 +604,12 @@ messagedialog re-review `942642c` — is captured in the "Templates
 already restructured" block at the top of this handoff and in the
 checked rows of the page checklist below.)
 
-`tools/check_doc_structure.py --category dialogs` → 10/11 passing
+`tools/check_doc_structure.py --category dialogs` → 11/11 passing
 (messagedialog, messagebox, querydialog, querybox, formdialog,
-dialog, datedialog, colorchooser, colordropper, fontdialog).
+dialog, datedialog, colorchooser, colordropper, fontdialog,
+filterdialog).
 
-Pages to review (canonical anchor pattern: `messagedialog.md`):
+Pages reviewed (canonical anchor pattern: `messagedialog.md`):
 
 - [x] `messagedialog.md` — anchor for the dialogs sweep
 - [x] `messagebox.md` — facade over MessageDialog
@@ -557,7 +621,7 @@ Pages to review (canonical anchor pattern: `messagedialog.md`):
 - [x] `colorchooser.md`
 - [x] `colordropper.md`
 - [x] `fontdialog.md`
-- [ ] `filterdialog.md`
+- [x] `filterdialog.md`
 
 ### Workflow (one page per session)
 
@@ -685,6 +749,58 @@ primitives.
   registering before `show()` with no `master=` silently no-ops
   (returns None) — match QueryDialog's gotcha. (Surfaced by
   datedialog.md rewrite, 2026-04-30.)
+- `FilterDialog.show()` does **not** reset `self.result` to `None` at
+  the start of each call (`dialogs/filterdialog.py:290-358`). Only
+  the underlying `Dialog`'s own `result` is reset. If a single
+  FilterDialog instance is used across multiple openings, a sequence
+  of [OK with selection X] → [reopen, then Cancel] returns the stale
+  list X instead of `None`. Either reset `self.result = None` at the
+  top of `show()`, or document that callers must reconstruct the
+  dialog per opening. (Surfaced by filterdialog.md rewrite,
+  2026-04-30.)
+- `FilterDialog` shares the localized-default-button gotcha with
+  `MessageDialog` and `FormDialog`: the OK/Cancel buttons default to
+  the translation keys `"button.ok"` / `"button.cancel"`
+  (`dialogs/filterdialog.py:333-340`), and there is no `localize`
+  flag at all. The Select All checkbox label is also a translation
+  key (`"edit.select_all"`, `dialogs/filterdialog.py:108`). A vanilla
+  `FilterDialog(items=[...], enable_select_all=True)` therefore
+  shows literal `button.ok` / `button.cancel` / `edit.select_all`
+  strings to the user. Plumb a `localize` flag through, or resolve
+  the built-in semantic keys unconditionally. (Surfaced by
+  filterdialog.md rewrite, 2026-04-30.)
+- `FilterDialogContent._handle_select_all`
+  (`dialogs/filterdialog.py:142-149`) iterates **all** registered
+  checkboxes, ignoring the current search filter. If the user types
+  a search term and clicks Select All, every item — including the
+  ones not currently visible due to the filter — is selected/
+  deselected. Either restrict Select All to visible items only, or
+  hide the Select All toggle when a search filter is active. Also,
+  the Select All checkbox does not auto-update its own state when
+  individual items are toggled, so its visible state can desync
+  from "all items selected" reality. (Surfaced by filterdialog.md
+  rewrite, 2026-04-30.)
+- `FilterDialogContent._check_buttons`
+  (`dialogs/filterdialog.py:140`) is keyed by item `text`, not by
+  index or `value`. Items with duplicate `text` fields silently
+  overwrite each other in the registry — the second checkbox
+  renders, but Select All and the search filter only act on the
+  second binding for that key. Key the registry by index (or by
+  `value`) instead. (Surfaced by filterdialog.md rewrite,
+  2026-04-30.)
+- `FilterDialog` is a **`Frame` subclass that composes a `Dialog`**
+  rather than extending Dialog directly
+  (`dialogs/filterdialog.py:173`). This is inconsistent with every
+  other dialog class in the framework and forces unique behavior:
+  events fire on the FilterDialog frame instance instead of the
+  toplevel; the frame is initialized as a child of `master` but
+  never packed; and the event surface uses
+  `<<SelectionChange>>` with payload `{"selected": list}` instead
+  of the framework-standard `<<DialogResult>>` with payload
+  `{"result": ..., "confirmed": bool}`. Consider refactoring to
+  extend Dialog directly and aligning event names/payloads with
+  the rest of the dialogs surface. (Surfaced by filterdialog.md
+  rewrite, 2026-04-30.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
