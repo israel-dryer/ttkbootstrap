@@ -4,9 +4,19 @@ title: CheckButton
 
 # CheckButton
 
-`CheckButton` is a **selection control** that represents an option being **on**, **off**, or **mixed (indeterminate)**.
+`CheckButton` is the **boolean selection primitive** — an indicator
+plus a label, with a bound variable that flips between `onvalue` and
+`offvalue` on user click. By default it carries a `BooleanVar` whose
+states are `True` / `False`, but `onvalue` and `offvalue` accept any
+strings, so the same control can drive `"yes"`/`"no"`, `"on"`/`"off"`,
+or any pair the surrounding form layer expects.
 
-Use `CheckButton` when users can enable multiple options independently (settings, filters, feature flags).
+CheckButton is the foundation that [Switch](switch.md) and
+[CheckToggle](checktoggle.md) extend — both are subclasses that
+restyle the indicator (slider track, toolbutton chrome) without
+changing the value model. Use CheckButton when the selection is one
+*independent* boolean; use [RadioButton](radiobutton.md) when the
+choice is one of many mutually-exclusive options sharing a variable.
 
 <figure markdown>
 ![checkbutton](../../assets/dark/widgets-checkbutton-states.png#only-dark)
@@ -15,9 +25,7 @@ Use `CheckButton` when users can enable multiple options independently (settings
 
 ---
 
-## Quick start
-
-Use `value` to set the initial state.
+## Basic usage
 
 ```python
 import ttkbootstrap as ttk
@@ -26,49 +34,119 @@ app = ttk.App()
 
 ttk.CheckButton(app, text="Enable notifications", value=True).pack(padx=20, pady=6)
 ttk.CheckButton(app, text="Send anonymous usage data", value=False).pack(padx=20, pady=6)
-ttk.CheckButton(app, text="Apply to all", value=None).pack(padx=20, pady=6)
 
 app.mainloop()
 ```
 
-By default, `value=None`, which places the checkbutton in an **indeterminate** state.
+`value=True` / `value=False` initializes the bound variable.
+Construct without `value=` to leave the variable at its default
+(see *Selection model* — the default rendering is a quirk of Tk's
+tri-state mechanism).
 
 ---
 
-## When to use
+## Selection model
 
-Use `CheckButton` when:
+CheckButton holds a single boolean-shaped value. The state lives in a
+Tk `Variable` exposed as `widget.variable` and (when `signal=` is
+used) reflected through a reactive `widget.signal`.
 
-- multiple selections may be enabled at once
-- the value is on/off or mixed
-- you need independent option toggles
-
-### Consider a different control when...
-
-- only one choice is allowed in a group -> use [RadioButton](radiobutton.md)
-- you want a dropdown list -> use [SelectBox](selectbox.md) or [OptionMenu](optionmenu.md)
-- you want a button-like toggle -> use [CheckToggle](checktoggle.md)
-- you want a dedicated on/off switch -> use [Switch](switch.md)
-
----
-
-## Appearance
-
-<figure markdown>
-![checkbutton](../../assets/dark/widgets-checkbutton-states.png#only-dark)
-![checkbutton](../../assets/light/widgets-checkbutton-states.png#only-light)
-</figure>
-
-### Colors and styling
-
-Use semantic color tokens with `accent`.
+**Value type.** The default variable is a `BooleanVar` with
+`onvalue='1'` / `offvalue='0'`. `widget.value` returns the Python
+side of the variable (`True` / `False`). To work in non-boolean
+domains, pass `onvalue=` / `offvalue=` and a matching `variable=`:
 
 ```python
-ttk.CheckButton(app)
-ttk.CheckButton(app, accent="secondary")
-ttk.CheckButton(app, accent="success")
-ttk.CheckButton(app, accent="warning")
-ttk.CheckButton(app, accent="danger")
+import tkinter as tk
+import ttkbootstrap as ttk
+
+app = ttk.App()
+mode = tk.StringVar(value="yes")
+
+ttk.CheckButton(
+    app,
+    text="Subscribed",
+    variable=mode,
+    onvalue="yes",
+    offvalue="no",
+).pack(padx=20, pady=6)
+
+app.mainloop()
+```
+
+**Independent, not grouped.** Each CheckButton owns its own variable
+unless the caller passes one explicitly. Multiple CheckButtons sharing
+a variable will all toggle together — that's a misuse pattern; reach
+for [RadioButton](radiobutton.md) when the choices are mutually
+exclusive.
+
+**Initial state and `value=`.** The constructor reads `value=` only
+when neither `signal=` nor `variable=` was passed. When you bring
+your own variable, it wins:
+
+```python
+v = ttk.Signal(True)
+cb = ttk.CheckButton(app, text="Enabled", signal=v, value=False)
+# cb.value is True — the signal's pre-existing value, not value=False
+```
+
+**Indeterminate state — read carefully.** A fresh CheckButton with no
+`value=`, no `signal=`, and no `variable=` renders in the **alternate**
+state at construction (Tk shows the indeterminate indicator). This is
+a side effect of the bound `BooleanVar` having no Tcl-side value yet,
+which matches the platform's default `tristatevalue` of `""`. After
+the first user click, the variable cycles between `True` and `False`
+only — alternate is **not reachable** programmatically. Calling
+`cb.set(None)` raises `TypeError` because `BooleanVar` cannot hold
+`None`. If you need a real third state that survives clicks, supply
+your own `tk.StringVar` with a non-matching initial value and string
+`onvalue` / `offvalue` — but understand that a single click coerces
+the variable to one of those two strings.
+
+**Commit semantics.** The bound variable is updated on every user
+click and on every `cb.set(...)` call. There's no separate "commit"
+step — CheckButton has no editing buffer.
+
+---
+
+## Common options
+
+| Option | Type | Effect |
+| --- | --- | --- |
+| `text` | `str` | Label shown next to the indicator. Localized through `MessageCatalog` when `localize` permits. |
+| `value` | `Any` | **Construction-time only.** Initial value written to the bound variable when `signal=` and `variable=` are both absent. Does nothing on `configure(value=...)` post-construction. |
+| `onvalue` | `Any` | Value written to the variable when checked. Default `'1'`. |
+| `offvalue` | `Any` | Value written to the variable when unchecked. Default `'0'`. |
+| `signal` | `Signal` | Reactive binding. Constructor auto-syncs a Tk variable to the signal so subscribers fire on every change. |
+| `variable` | `Variable` | Tk variable to bind directly. Mutually substitutable with `signal=`. |
+| `command` | `Callable[[], None]` | Fires on **user invocation only** (click or `.invoke()`). Programmatic `set()` and variable writes do **not** fire it. |
+| `state` | `'normal'` / `'disabled'` / `'readonly'` | Disables click input but keeps the variable mutable from code. |
+| `accent` | str | Theme token for the indicator's check / dot fill (default `'primary'`). |
+| `variant` | `'default'` / `'switch'` | The style builder registers two variants. `'switch'` produces the slider track used by the [Switch](switch.md) widget; pass `variant='switch'` directly only if you want the switch indicator on a CheckButton instance — otherwise use the dedicated `Switch` class. |
+| `surface` | str | Background surface; usually inherited from the parent. |
+| `density` | `'default'` / `'compact'` | Reduces vertical / horizontal padding. |
+| `width` | int | Label width in characters; widget pads to that width. |
+| `padding` | int / tuple | Extra space around the content. |
+| `anchor` | str | Content alignment within the widget bounds (`'w'`, `'e'`, `'center'`, ...). |
+| `compound` | str | Image-vs-text placement when both are set. |
+| `icon` | str / dict | Theme-aware icon spec. |
+| `image` | `PhotoImage` | Custom image to render alongside the indicator. |
+| `underline` | int | Index of label character to underline (Alt-shortcut hint). |
+| `localize` | `bool` / `'auto'` | How `text` is treated (literal vs translation key). Default `'auto'` — tries the catalog, falls back to literal. |
+| `takefocus` | bool | Whether the widget participates in Tab traversal. |
+| `style_options` | dict | Extra dict forwarded to the style builder. |
+
+`bootstyle` is accepted but **deprecated** — use `accent` and
+`variant`.
+
+### Theming and variants
+
+```python
+ttk.CheckButton(app, text="Default")
+ttk.CheckButton(app, text="Secondary", accent="secondary")
+ttk.CheckButton(app, text="Success", accent="success")
+ttk.CheckButton(app, text="Warning", accent="warning")
+ttk.CheckButton(app, text="Danger", accent="danger")
 ```
 
 <figure markdown>
@@ -76,172 +154,131 @@ ttk.CheckButton(app, accent="danger")
 ![colors](../../assets/light/widgets-checkbutton-colors.png#only-light)
 </figure>
 
-!!! link "See [Design System - Variants](../../design-system/variants.md) for how color tokens apply consistently across widgets."
+`accent` colors the check / dot of the indicator. The label
+foreground tracks `surface` automatically (readable on the parent's
+background). Pass `surface='card'` (or any other surface token) to
+shift the background under the widget.
 
----
-
-## Examples & patterns
-
-### How the value works
-
-`CheckButton` uses a single logical value.
-
-The `value` option sets the **initial state**:
-
-- `True` -> checked
-- `False` -> unchecked
-- `None` -> indeterminate
-
-Once bound, the signal or variable becomes the source of truth.
-
-!!! note "Value precedence"
-    The `value` option is only used during initialization.
-    After creation, the bound signal or variable controls the widget state.
-
-### Common options
-
-#### `text`
-
-Label shown next to the indicator.
-
-```python
-ttk.CheckButton(app, text="Auto-sync")
-```
-
-#### `command`
-
-Run a callback when the value toggles.
-
-```python
-flag = ttk.BooleanVar(value=True)
-
-def on_toggle():
-    print("now:", flag.get())
-
-ttk.CheckButton(app, text="Send notifications", variable=flag, command=on_toggle).pack(padx=20, pady=20)
-```
-
-#### `state`
-
-Disable or enable the widget.
-
-```python
-cb = ttk.CheckButton(app, text="Locked", state="disabled")
-cb.pack()
-
-cb.configure(state="normal")
-```
-
-#### `padding`, `width`, `underline`
-
-```python
-ttk.CheckButton(app, text="Wider", padding=(10, 6), width=18).pack(pady=6)
-ttk.CheckButton(app, text="E_xport", underline=1).pack(pady=6)
-```
-
-### Reacting to changes
-
-Use `command` for immediate callbacks, or subscribe to the signal/variable for reactive updates.
-
-```python
-# Using command callback
-def on_toggle():
-    print("toggled!")
-
-cb = ttk.CheckButton(app, text="Option", command=on_toggle)
-
-# Using signal subscription
-enabled = ttk.Signal(False)
-cb = ttk.CheckButton(app, text="Option", signal=enabled)
-enabled.subscribe(lambda v: print(f"Value: {v}"))
-```
-
-### Validation and constraints
-
-Validation is usually minimal for `CheckButton`.
-
-Use validation when:
-
-- the option is required to proceed
-- the indeterminate state must be resolved before submission
-- the selection participates in cross-field rules
+See [Design System – Variants](../../design-system/variants.md) for
+how accents apply across the framework.
 
 ---
 
 ## Behavior
 
-- Click toggles between checked/unchecked.
-- Indeterminate behavior depends on your app logic (commonly used for "mixed" parent selections).
-- Keyboard navigation follows standard ttk checkbutton behavior (focus + Space to toggle).
+**User input.** A left-click toggles the indicator and writes the
+opposite of the current variable value (cycling `onvalue` ↔
+`offvalue`). The standard Tk keyboard contract applies: Tab moves
+focus to the widget, Space invokes it. The widget never auto-focuses
+on hover.
+
+**Disabled and readonly.** `state='disabled'` greys the indicator
+and blocks clicks; the variable is still writable from code, so
+`cb.set(True)` updates the rendered state but `command` does not
+fire. `state='readonly'` is accepted by ttk but, in this widget,
+behaves identically to `disabled` for user input.
+
+**Reconfiguration.** `accent`, `text`, `state`, `value`, `signal`,
+and `variable` can all be changed via `configure(...)` after
+construction. Reconfiguring `value=` writes through to the bound
+variable (this is the post-construction equivalent of `set()`),
+unlike at construction time where `value=` is a one-shot
+initializer.
+
+**Visual states.** The style builder maps four state combinations
+onto the indicator: `selected` (checked), `alternate` (indeterminate),
+neither (unchecked), and `disabled`. Each combines with `hover`,
+`focus`, and `pressed` for transient feedback.
 
 ---
 
-## Localization
+## Events
 
-By default, widgets use `localize="auto"`:
+There are three independent observation paths, and they have
+different timing.
 
-- if a translation key exists, it is used
-- otherwise, the label is treated as a literal string
+| Path | Fires when... | Receives |
+| --- | --- | --- |
+| `command=` callback | The **user** clicks (or `widget.invoke()` is called). Programmatic `set()` does not fire it. | No arguments. |
+| `signal.subscribe(fn)` | The bound variable changes — **either** from a user click **or** from `set()` / `configure(value=...)` / `signal.value = ...`. | The new value. |
+| `variable.trace_add('write', fn)` | Same as signal: any variable write. | The Tk trace tuple `(name, index, mode)`. |
 
-```python
-ttk.CheckButton(app, text="settings.notifications")
-ttk.CheckButton(app, text="settings.notifications", localize=True)
-ttk.CheckButton(app, text="Notifications", localize=False)
-```
-
-!!! tip "Safe to pass literal text"
-    With `localize="auto"`, passing literal text is safe when no translation exists.
-
-!!! link "See [Localization](../../capabilities/localization.md) for configuring translations and message catalogs."
-
----
-
-## Reactivity
-
-Prefer a reactive `signal=...` in v2 apps:
+The asymmetry matters: a "save" handler driven by user intent
+belongs on `command`; a "this state changed for any reason" listener
+belongs on the signal.
 
 ```python
 import ttkbootstrap as ttk
 
 app = ttk.App()
+v = ttk.Signal(False)
 
-v = ttk.Signal("no")
+def on_click():
+    print("user-clicked, current:", v.value)
 
-cb = ttk.CheckButton(
-    app,
-    text="Enable feature",
-    signal=v,
-    onvalue="yes",
-    offvalue="no",
-)
+def on_change(new_value):
+    print("any change, new:", new_value)
+
+cb = ttk.CheckButton(app, text="Notify me", signal=v, command=on_click)
+v.subscribe(on_change)
 cb.pack(padx=20, pady=20)
 
 app.mainloop()
 ```
 
-You can also bind a Tk variable with `variable=...`.
+CheckButton emits **no virtual events** of its own — there is no
+`<<Changed>>` to bind. There are also no `on_*` / `off_*` helpers
+beyond what's listed above.
 
-!!! link "See [Signals](../../capabilities/signals/index.md) for reactive programming patterns."
+!!! warning "`set(None)` raises"
+    `BooleanVar` cannot hold `None`, so `cb.set(None)` raises
+    `TypeError: getboolean() argument must be str, not None`. There
+    is no public path back to the indeterminate (`alternate`) state
+    once the variable has been written. If your domain has a real
+    "unset" third state, use a `tk.StringVar` with custom
+    `onvalue` / `offvalue` and treat any non-matching string as
+    "unset" yourself.
 
 ---
 
-## Additional resources
+## When should I use CheckButton?
 
-### Related widgets
+Use CheckButton when:
 
-- [Switch](switch.md) - dedicated on/off switch control
-- [RadioButton](radiobutton.md) - choose one option from a group
-- [RadioGroup](radiogroup.md) - manage a group of radio options as one control
-- [CheckToggle](checktoggle.md) - button-like toggle presentation
-- [SelectBox](selectbox.md) - select one item from a list
-- [Form](../forms/form.md) - build grouped selection controls declaratively
+- the choice is a single boolean (toggle a feature, accept terms,
+  enable/disable a flag)
+- multiple boolean options exist on the same panel and each is
+  independent (settings, filters, feature flags)
 
-### Framework concepts
+Prefer:
 
-- [Signals](../../capabilities/signals/index.md) - reactive state management
-- [Localization](../../capabilities/localization.md) - text translation
-- [Design System](../../design-system/variants.md) - color tokens and variants
+- **[Switch](switch.md)** — when the boolean is a hardware-style
+  on/off (volume, wireless, autosave) and the slider affordance
+  matches user expectations better than a check
+- **[CheckToggle](checktoggle.md)** — when the toggle should look
+  like a button you press in (button bars, view-mode selectors)
+- **[RadioButton](radiobutton.md)** / **[RadioGroup](radiogroup.md)**
+  — when only one of several options can be active
+- **[SelectBox](selectbox.md)** / **[OptionMenu](optionmenu.md)** —
+  when the user picks one item from a dropdown list
 
-### API reference
+---
 
-- [`ttkbootstrap.CheckButton`](../../reference/widgets/CheckButton.md)
+## Related widgets
+
+- **[Switch](switch.md)** — CheckButton subclass with the slider
+  indicator
+- **[CheckToggle](checktoggle.md)** — CheckButton subclass with
+  toolbutton chrome
+- **[RadioButton](radiobutton.md)** — mutually-exclusive sibling
+- **[Form](../forms/form.md)** — declarative wrapper that bundles
+  CheckButtons with labels and validation
+
+---
+
+## Reference
+
+- **API reference:** `ttkbootstrap.CheckButton`
+- **Related guides:** [Signals](../../capabilities/signals/signals.md),
+  [Localization](../../capabilities/localization.md),
+  [Design System](../../design-system/index.md)

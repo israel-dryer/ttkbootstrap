@@ -34,15 +34,16 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, overlays sweep complete — Toast rewritten)
+### Current handoff (2026-05-01, selection sweep started — CheckButton anchor)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 the dialogs sweep (11/11), data-display sweep (8/8), layout sweep
 (12/12), navigation sweep (5/5), and overlays sweep (2/2) are
-complete. The next category to open is selection or form; both still
-need the editorial pass on the template at the start of the sweep
-(see "Template arc" below).**
+complete. The selection sweep is in progress (1/10 — `checkbutton.md`
+rewritten as the canonical anchor; the selection template was
+restructured to the slim arc at the start of the session). The other
+9 selection pages still need the editorial pass.**
 
 ### Template arc (apply to every editorial sweep)
 
@@ -93,11 +94,14 @@ Templates already restructured to this arc:
   `Lifecycle` is required (it carries the trigger / visibility /
   dismissal / blocking-vs-non-blocking framing that every overlay
   page needs). No `*Optional` H2s.
+- `widget-selection-template.md` (anchored on `checkbutton.md`).
+  `Selection model` is required (it carries the value-type /
+  independent-vs-mutex / initial-state / commit-semantics framing
+  that every selection page needs). No `*Optional` H2s.
 
-Remaining 2 templates (form, selection) still lead with
-`Framework integration` etc. Apply the editorial pass at the start
-of each category's sweep — those categories have 0 pages written,
-so the template fix is free.
+Remaining 1 template (form) still leads with `Framework integration`
+etc. Apply the editorial pass at the start of the form sweep — that
+category has 0 pages written, so the template fix is free.
 
 Phase 6 status (for reference):
 
@@ -1609,6 +1613,97 @@ Pages to review (canonical anchor: `tooltip.md`):
 - [x] `tooltip.md` — anchor for the overlays sweep
 - [x] `toast.md`
 
+### Widget pages — selection (`docs/widgets/selection/`, 10 pages) — IN PROGRESS 1/10 (2026-05-01)
+
+Template: `docs/_template/widget-selection-template.md` (slim arc,
+restructured this session). Required H2s: `Basic usage`,
+`Selection model`, `Common options`, `Behavior`, `Events`,
+`When should I use WidgetName?`, `Related widgets`, `Reference`.
+No `*Optional` H2s — `Selection model` is required (every selection
+page has a value-type / independent-vs-mutex / initial-state story
+worth documenting up front).
+
+`checkbutton.md` is the canonical anchor for the selection sweep,
+the way `button.md` / `textentry.md` / `messagedialog.md` /
+`label.md` / `frame.md` / `tabs.md` / `tooltip.md` anchored their
+respective categories.
+
+Last session (2026-05-01, selection sweep started — template
+restructure + checkbutton anchor):
+
+- `widget-selection-template.md` rewritten to the slim arc.
+  Old form led with `Framework integration` + `Overview` + a long
+  fragmented body (`Variants` / `How the value works` / `Binding to
+  signals or variables` / `Validation and constraints` / `Colors and
+  styling` / `Localization` / `Additional resources`). New form:
+  intro → `Basic usage` → `Selection model` → `Common options` →
+  `Behavior` → `Events` → `When should I use WidgetName?` →
+  `Related widgets` → `Reference`. Mental-model section name fixed
+  at `Selection model` (covers value type, independent vs
+  mutually-exclusive, initial state, indeterminate / empty / no-
+  selection, commit semantics). No `*Optional` H2s.
+- `checkbutton.md` rewritten as the anchor. CheckButton is the
+  boolean selection primitive that Switch and CheckToggle subclass.
+  Three things the old page got wrong or omitted, two of which
+  became new bugs:
+  (1) the old page claimed `value=None` "places the checkbutton in
+  an indeterminate state" as if it were a stable, addressable third
+  value. Verified at runtime: `value=None` + default `BooleanVar`
+  shows `('alternate',)` at construction only because the Tcl
+  variable is unset (matches default `tristatevalue=""`). After the
+  first user click, the variable cycles between True and False
+  only — alternate is **not reachable** programmatically.
+  Documented honestly in Selection model with a `!!! warning` block.
+  (2) the old page never noted that **`cb.set(None)` raises
+  TypeError**. `BooleanVar` cannot hold `None`, so the indeterminate
+  state has no programmatic re-entry path post-construction.
+  Verified at runtime: `cb.set(None)` →
+  `TypeError: getboolean() argument must be str, not None`.
+  Documented in Selection model and Events; added to the bugs list
+  as a real API gap (either expose `tristatevalue=` and switch to
+  `StringVar` when `value=None`, or document the limitation
+  loudly).
+  (3) the old page conflated `command=` with signal subscriptions —
+  saying both fired "when the value toggles." Verified at runtime
+  that `command=` fires **only** on user invocation (click or
+  `.invoke()`), while `signal.subscribe(fn)` and
+  `variable.trace_add('write', fn)` fire on every variable write
+  (programmatic or user-driven). The asymmetry matters for users
+  building "save on user intent" handlers vs "react to any state
+  change" listeners. Documented as a 3-row table in Events with
+  per-path timing.
+  Also documented: the actual variant axis (`default` and `switch`
+  are the only two registered; `pill` / `round` / `square` raise
+  `BootstyleBuilderError`); the construction-time-only nature of
+  `value=` when `signal=` / `variable=` aren't passed (and the
+  bound variable's pre-existing value wins when they are passed);
+  the post-construction `configure(value=...)` path which **does**
+  write through to the variable; the absence of virtual events and
+  `on_*` helpers (CheckButton has no `<<Changed>>`); the deprecated
+  `bootstyle` argument and its replacement by `accent` + `variant`.
+  Common options consolidates into a 22-row table with a Theming
+  and variants subsection underneath.
+
+`tools/check_doc_structure.py --category selection` →
+checkbutton.md no longer in the missing-sections list (9/10 pages
+still pending).
+`tools/check_doc_snippets.py --run --file
+docs/widgets/selection/checkbutton.md` → 0 failures (5 snippets, 3
+executed).
+
+Pages to review (canonical anchor: `checkbutton.md`):
+
+- [x] `checkbutton.md` — anchor for the selection sweep
+- [ ] `switch.md` — CheckButton subclass with slider indicator
+- [ ] `checktoggle.md` — CheckButton subclass with toolbutton chrome
+- [ ] `radiobutton.md` — mutually-exclusive selection primitive
+- [ ] `radiogroup.md` — manages a group of radios as one control
+- [ ] `radiotoggle.md` — RadioButton subclass with toolbutton chrome
+- [ ] `togglegroup.md` — RadioGroup using toolbutton-style children
+- [ ] `optionmenu.md` — list-based selection (button + dropdown menu)
+- [ ] `selectbox.md` — combobox-style list selection with search
+- [ ] `calendar.md` — date selection grid
+
 ### Workflow (one page per session)
 
 1. Read the page end-to-end.
@@ -2316,6 +2411,24 @@ primitives.
   shape (e.g. only `text` and a caller-supplied `result=`) or
   unwrap to the button's text/result by default. (Surfaced by
   toast.md rewrite, 2026-05-01.)
+- `CheckButton`'s indeterminate (`alternate`) state has **no
+  programmatic re-entry path**. The default `BooleanVar` cannot hold
+  `None` — `cb.set(None)` raises
+  `TypeError: getboolean() argument must be str, not None` from
+  `tkinter.BooleanVar.set` (`widgets/primitives/checkbutton.py:113`
+  → CPython `tkinter/__init__.py:639`). The state is only reachable
+  on a fresh widget where the constructor short-circuits the `set()`
+  call (`checkbutton.py:104` — `if initial_value is not None and not
+  signal_provided and not variable_provided`), leaving the Tcl
+  variable initially unset (matches default `tristatevalue=""`).
+  After the first user click, the variable cycles between the bound
+  on/off values only, and indeterminate is unreachable. Either
+  expose `tristatevalue=` and switch to `StringVar` when `value=None`
+  or no value is provided, or accept `None` in `set()` and route it
+  through a Tcl-level unset of the variable. As-is, the
+  documented "indeterminate" semantics are construction-only and
+  not addressable post-construction. (Surfaced by checkbutton.md
+  rewrite, 2026-05-01.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
