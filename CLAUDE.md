@@ -34,18 +34,15 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, overlays sweep started — overlay template restructured to slim arc, ToolTip rewritten as anchor)
+### Current handoff (2026-05-01, overlays sweep complete — Toast rewritten)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 the dialogs sweep (11/11), data-display sweep (8/8), layout sweep
-(12/12), and navigation sweep (5/5) are complete. The **overlays sweep
-is now in progress** — the overlay template has been restructured
-to the slim arc and `tooltip.md` has been rewritten as the anchor.
-One page (`toast.md`) remains.
-
-The remaining 2 templates (form, selection) still need the
-editorial pass at the start of each sweep (see "Template arc" below).**
+(12/12), navigation sweep (5/5), and overlays sweep (2/2) are
+complete. The next category to open is selection or form; both still
+need the editorial pass on the template at the start of the sweep
+(see "Template arc" below).**
 
 ### Template arc (apply to every editorial sweep)
 
@@ -1471,7 +1468,7 @@ Pages to review:
 - [x] `toolbar.md` — action template (at `widgets/application/`)
 - [x] `navigationview.md` — deprecation stub; SKIP_FILES'd
 
-### Widget pages — overlays (`docs/widgets/overlays/`, 2 pages) — IN PROGRESS 1/2 (2026-05-01)
+### Widget pages — overlays (`docs/widgets/overlays/`, 2 pages) — DONE 2/2 (2026-05-01)
 
 Template: `docs/_template/widget-overlay-template.md` (slim arc,
 restructured this session). Required H2s: `Basic usage`,
@@ -1546,16 +1543,71 @@ restructure + tooltip anchor):
   helpers — bind to the target widget's `<Enter>` /
   `<Leave>` directly *before* attaching the tooltip).
 
+Last session (2026-05-01, toast sweep — final overlay page):
+
+- `toast.md` rewritten to the slim overlay template. Toast is the
+  second and final page in the sweep — a programmatically-shown,
+  non-blocking notification overlay. Like ToolTip, Toast is **not a
+  widget** (controller object that owns a Toplevel created on
+  `show()`), but unlike ToolTip it survives across show/hide cycles
+  (the same instance can be reshown). Three things the old page got
+  wrong or omitted, three of which became new bugs:
+  (1) the old page never noted that **calling `show()` twice on the
+  same Toast instance leaks the first Toplevel**. `show()` builds a
+  new Toplevel and writes it to `_toplevel` without destroying the
+  previous one (`composites/toast.py:188-190`). The first Toplevel
+  remains mapped on screen until the application exits. Verified at
+  runtime: `t.show()` → `first = t._toplevel`; `t.show()` →
+  `second = t._toplevel`; `first is not second` and both
+  `winfo_exists() == 1`. Documented as a `!!! warning` in
+  Lifecycle; added to the bugs list.
+  (2) the old page never noted that **`configure(bootstyle=...)`
+  post-construction is silently a no-op for styling**. The
+  legacy-bootstyle bridge runs only at `__init__`
+  (`composites/toast.py:102` — `self._accent = accent or bootstyle`);
+  `configure(bootstyle=...)` writes `_bootstyle` but doesn't update
+  `_accent`. Verified: `Toast(bootstyle='success')` → `cget('accent')
+  == 'success'`; subsequent `configure(bootstyle='danger')` →
+  `cget('accent') == 'success'` (unchanged). Documented in Common
+  options; added to the bugs list.
+  (3) the old page never described the **`on_dismissed` payload
+  contract**. The callback fires with `None` for auto-dismiss /
+  close-button / `hide()` paths, but with the **full button options
+  dict (including the `command` callable!)** for custom-button
+  clicks (`composites/toast.py:297-303`). Verified at runtime: a
+  `buttons=[{'text': 'Yes', 'command': btn_cmd, 'accent':
+  'success'}]` invocation yields `data ==
+  {'text': 'Yes', 'command': <function btn_cmd>, 'accent':
+  'success'}` in the dismiss handler. The unwrap-aware shape is
+  awkward: callers routing on which button was pressed must read
+  `data["text"]` (or another marker key), and the dict still
+  contains the `command` reference under `data["command"]`. Either
+  unwrap to a sanitized payload (e.g. only `text`/`accent`/the
+  caller-supplied `result=`) or document the contract loudly.
+  Documented as the central Events table; added to the bugs list.
+  Also documented: the `show(merge=True/False)` semantics
+  (default `True` merges; `False` clears all options first); the
+  reusable Toast pattern (one instance, many shows); the platform
+  default position (mac/Win bottom-right `-25-75`, Linux X11
+  top-right `+25+25`) via `WindowPositioning.position_anchored`;
+  the macOS chromeless path (`windowtype='tooltip'` →
+  `MacWindowStyle 'help none'`); `topmost=True` and `alpha=0.97`
+  on the Toplevel; the `IconSpec` dict shape (`{name, size, color}`)
+  and the `color` constraint (PIL color names / hex only — theme
+  tokens like `'success'` raise in PIL); `memo` field rendering in
+  the header with muted styling; that destroying via
+  `destroy()` skips the `on_dismissed` callback entirely.
+
 `tools/check_doc_structure.py --category overlays` → 2 files
-checked, 1 failed (only `toast.md` remains).
+checked, all pass.
 `tools/check_doc_snippets.py --run --file
-docs/widgets/overlays/tooltip.md` → 0 failures (5 snippets, 5
+docs/widgets/overlays/toast.md` → 0 failures (9 snippets, 5
 executed).
 
 Pages to review (canonical anchor: `tooltip.md`):
 
 - [x] `tooltip.md` — anchor for the overlays sweep
-- [ ] `toast.md`
+- [x] `toast.md`
 
 ### Workflow (one page per session)
 
@@ -2220,6 +2272,50 @@ primitives.
   binds (allowing both tooltips to attempt to show, which is also
   weird). The current silent-takeover form is the worst option.
   (Surfaced by tooltip.md rewrite, 2026-05-01.)
+- `Toast.show()` called twice on the same instance leaks the first
+  Toplevel. The implementation
+  (`widgets/composites/toast.py:184-190`) clears options if
+  `merge=False`, then unconditionally calls `_build_toast()` which
+  creates a fresh Toplevel and writes it to `self._toplevel` — the
+  previous Toplevel is **never destroyed**, just abandoned. Verified
+  at runtime: `t.show()` followed by `t.show()` produces two
+  `Toplevel` instances, both `winfo_exists() == 1`, and
+  `t._toplevel` references only the second. The first stays mapped
+  on screen and is garbage-collected only when the application
+  exits. Either destroy the previous Toplevel at the top of `show()`
+  (call `self.destroy()` first) or document the precondition that
+  callers must `hide()` between successive `show()` calls. (Surfaced
+  by toast.md rewrite, 2026-05-01.)
+- `Toast.configure(bootstyle=...)` is silently a no-op for styling
+  after construction. The legacy-bootstyle bridge runs only at
+  `__init__` (`widgets/composites/toast.py:102` —
+  `self._accent = accent or bootstyle`); subsequent
+  `configure(bootstyle=...)` writes `_bootstyle` (since `bootstyle`
+  is in `_config_keys`) but does **not** update `_accent`. The next
+  `show()` therefore paints with the original accent. Verified at
+  runtime: `Toast(bootstyle='success')` → `cget('accent') ==
+  'success'`; `t.configure(bootstyle='danger')` → `cget('accent') ==
+  'success'` (unchanged). Either route bootstyle reconfiguration
+  through `_accent` for consistency, or remove `bootstyle` from
+  `_config_keys` to fail loudly. (Surfaced by toast.md rewrite,
+  2026-05-01.)
+- `Toast.on_dismissed(data)` callback delivers the **full button
+  options dict (including the `command` callable!)** when the toast
+  is dismissed via a custom button. The wrapper at
+  `widgets/composites/toast.py:297-303` calls
+  `self._handle_on_dismissed(options)` where `options` is the same
+  dict passed by the caller in `buttons=`, with no sanitization.
+  Verified at runtime: a `buttons=[{'text': 'Yes', 'command':
+  btn_cmd, 'accent': 'success'}]` invocation yields `data ==
+  {'text': 'Yes', 'command': <function btn_cmd>, 'accent':
+  'success'}` in the dismiss handler. Auto-dismiss / close-button /
+  programmatic `hide()` paths all deliver `None`. The asymmetric
+  payload makes routing-by-button awkward (callers must read
+  `data["text"]`, or stash a sentinel marker key) and surfaces the
+  raw callable in any logged payload. Either deliver a sanitized
+  shape (e.g. only `text` and a caller-supplied `result=`) or
+  unwrap to the button's text/result by default. (Surfaced by
+  toast.md rewrite, 2026-05-01.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
