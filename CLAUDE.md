@@ -34,7 +34,7 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, primitives sweep started 1/5)
+### Current handoff (2026-05-01, primitives sweep 2/5)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
@@ -42,7 +42,8 @@ the dialogs sweep (11/11), inputs sweep (11/11), data-display sweep
 (8/8), layout sweep (12/12), navigation sweep (5/5), overlays sweep
 (2/2), selection sweep (9/9), and views sweep (3/3) are all
 complete. Primitives sweep opened 2026-05-01 with the `entry.md`
-anchor rewrite. Remaining: combobox, spinbox, text, canvas (4/5).**
+anchor rewrite; `combobox.md` done 2026-05-01. Remaining: spinbox,
+text, canvas (3/5).**
 
 **SelectBox relocation (2026-05-01).** The `selectbox.md` page was
 moved from `widgets/selection/` to `widgets/inputs/`. Rationale: a
@@ -2344,7 +2345,7 @@ Pages to review (canonical anchor: `pagestack.md`):
 - [x] `tabview.md` — composes Tabs + PageStack
 - [x] `notebook.md` — wraps `ttk.Notebook` with key-based registry
 
-### Widget pages — primitives (`docs/widgets/primitives/`, 5 pages) — IN PROGRESS 1/5 (2026-05-01)
+### Widget pages — primitives (`docs/widgets/primitives/`, 5 pages) — IN PROGRESS 2/5 (2026-05-01)
 
 The primitives directory is **not** in `CATEGORY_TEMPLATE_MAP`
 (`tools/check_doc_structure.py`), so no template enforcement applies
@@ -2354,7 +2355,7 @@ assignment is by closest fit:
 | Page | Closest template | Notes |
 |---|---|---|
 | `entry.md` | input template | foundational input primitive; backs TextEntry / NumericEntry / DateEntry / PasswordEntry |
-| `combobox.md` | input template | thin `ttk.Combobox` wrapper; primitive backing SelectBox |
+| `combobox.md` | input template | thin `ttk.Combobox` wrapper; used by QueryBox dialogs (NOT SelectBox — SelectBox builds its own popdown) |
 | `spinbox.md` | input template | thin `ttk.Spinbox` wrapper; primitive backing NumericEntry / SpinnerEntry |
 | `text.md` | bespoke (Content model) | multi-line `tkinter.Text`; primitive backing ScrolledText |
 | `canvas.md` | bespoke (Drawing model) | drawing primitive; backs Meter / FloodGauge and any custom rendering |
@@ -2428,10 +2429,78 @@ docs/widgets/primitives/entry.md` → 0 failures (5 snippets, 1
 executed). No structure check (primitives is not in
 `CATEGORY_TEMPLATE_MAP`).
 
+Last session (2026-05-01, combobox sweep — 2/5):
+
+- `combobox.md` rewritten to the slim input arc, anchored on
+  `entry.md`. Combobox is the second page in the sweep — a thin
+  themed wrapper over `ttk.Combobox` that adds `accent` /
+  `density` / `surface` / `input_background` styling tokens, a
+  reactive `textsignal` channel via `TextSignalMixin`, and a
+  postcommand wrapper that re-styles the popdown on every open
+  and on `<<ThemeChanged>>` (without it the popdown's embedded
+  listbox/scrollbar would not track theme changes — that's the
+  main thing the wrapper adds beyond `ttk.Combobox`). Three
+  things the old page got wrong or omitted:
+  (1) the old page (and the original primitives table in this
+  doc) framed Combobox as the primitive backing SelectBox.
+  Verified by grep: only `dialogs/query.py` (QueryBox) imports
+  `Combobox` from `widgets.primitives`; SelectBox builds its
+  own popdown out of a `TextEntryPart` + a custom popup
+  (`composites/selectbox.py`), not on `ttk.Combobox` at all.
+  Reframed Combobox as the "drop down to ttk" path, not as the
+  SelectBox backbone, and corrected the Notes column in the
+  primitives table above.
+  (2) the old page never described the actual styling surface.
+  Only the `default` variant is registered (`Combobox(variant=
+  'solid')` raises `BootstyleBuilderError`); `surface` and
+  `density` are accepted at construction; `input_background` is
+  not a constructor kwarg — pass it via `style_options=
+  {'input_background': '...'}` or set it on a parent
+  `Frame(input_background='...')` for cascade. Verified at
+  runtime that the cascade works.
+  (3) the old page treated `state='readonly'` as a value
+  constraint. It only constrains *user typing* — programmatic
+  `combo.set('orphan')` on a readonly Combobox writes the orphan
+  string through, paints it as plain text, and `current()`
+  returns `-1`. Same family as the SelectBox / OptionMenu /
+  ToggleGroup orphan-value bugs already on the bugs list, but
+  this is the standard ttk.Combobox contract — documented as
+  expected behavior rather than a bug.
+  Surfaced two configure-time issues (already on the bugs list
+  for Entry; same root cause in Combobox):
+  - `combo.configure(surface=...)` raises `TclError: unknown
+    option "-surface"` — Combobox accepts `surface=` at
+    construction but has no `_delegate_surface`.
+  - `combo.configure(density=...)` updates the entry's font
+    only; the resolved ttk style is not rebuilt, so the
+    underlying image element key and padding from the
+    construction-time density persist. Default-density
+    Comboboxes reconfigured to `compact` get the smaller
+    caption font but keep their default-height row. Verified
+    at runtime.
+  Documented as Behavior caveats with cross-references rather
+  than logging duplicate bug entries — they're the same shape
+  as the Entry bugs already on the list.
+  Also documented: `<<ComboboxSelected>>` fires only on user
+  selection from the dropdown (not on `combo.set(...)`, not on
+  user typing — verified at runtime); the postcommand wrapper
+  preserves the user's `postcommand=` callback (calls it after
+  the styling pass); `current()` returns `-1` when the text
+  doesn't match any value in `values`; `cget('density')` /
+  `cget('accent')` / `cget('surface')` all return `None` for
+  the Python-side options (different from `cget('variant')`
+  which returns the literal `'default'`); the deprecated
+  `bootstyle=` path bridges to `accent=` correctly.
+
+`tools/check_doc_snippets.py --run --file
+docs/widgets/primitives/combobox.md` → 0 failures (2 snippets,
+1 executed). No structure check (primitives is not in
+`CATEGORY_TEMPLATE_MAP`).
+
 Pages to review (canonical anchor: `entry.md`):
 
 - [x] `entry.md` — anchor for the primitives sweep
-- [ ] `combobox.md` — thin `ttk.Combobox` wrapper
+- [x] `combobox.md` — thin `ttk.Combobox` wrapper
 - [ ] `spinbox.md` — thin `ttk.Spinbox` wrapper
 - [ ] `text.md` — multi-line text primitive
 - [ ] `canvas.md` — drawing primitive
