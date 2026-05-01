@@ -34,20 +34,20 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-04-30, layout sweep — 2/12, anchor + LabelFrame)
+### Current handoff (2026-04-30, layout sweep — 3/12, anchor + LabelFrame + Card)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 the dialogs sweep (11/11) and data-display sweep (8/8) are complete. The
 **layout sweep** is now the active sweep: the layout template was
 restructured to the slim arc in commit `997a5b7`, with `frame.md` rewritten
-as the canonical anchor. `labelframe.md` is the second page done. Remaining
-10 pages: `accordion.md`, `card.md`, `expander.md`, `gridframe.md`,
-`packframe.md`, `panedwindow.md`, `scrollbar.md`, `scrollview.md`,
-`separator.md`, `sizegrip.md`. Then move to one of navigation / overlays /
-selection / forms / views / primitives. The remaining 4 templates
-(form, navigation, overlay, selection) still need the editorial pass at
-the start of each sweep (see "Template arc" below).**
+as the canonical anchor. `labelframe.md` and `card.md` are done. Remaining
+9 pages: `accordion.md`, `expander.md`, `gridframe.md`, `packframe.md`,
+`panedwindow.md`, `scrollbar.md`, `scrollview.md`, `separator.md`,
+`sizegrip.md`. Then move to one of navigation / overlays / selection /
+forms / views / primitives. The remaining 4 templates (form, navigation,
+overlay, selection) still need the editorial pass at the start of each
+sweep (see "Template arc" below).**
 
 ### Template arc (apply to every editorial sweep)
 
@@ -556,7 +556,37 @@ LabelFrame, Separator, Sizegrip).
 `button.md` / `textentry.md` / `messagedialog.md` / `label.md`
 anchored their respective categories.
 
-Last session (2026-04-30, labelframe sweep):
+Last session (2026-04-30, card sweep):
+
+- `card.md` rewritten to the slim layout template. Card is the third
+  page in the sweep — a `Frame` subclass with three constructor
+  defaults (`accent='card'`, `show_border=True`, `padding=16`). Two
+  framing fixes and several additions:
+  (1) the old intro framed Card as a "convenience wrapper around
+  Frame with `surface='card'` and `show_border=True` by default" —
+  the actual default is `accent='card'`
+  (`widgets/primitives/card.py:69`); the container-class rerouting
+  in `style/bootstyle.py:464` then turns that into `surface='card'`
+  because `TFrame` is in `CONTAINER_CLASSES`. Documented the real
+  path and noted that the Frame style builder
+  (`style/builders/frame.py:9`) reads only `surface`, not `accent`.
+  Verified at runtime: `Card(app)` produces `_accent='card'`,
+  `_surface='card'`, `style_options={'show_border': True,
+  'surface': 'card'}`, `padding=(16,)`, style
+  `bs[…].card.TFrame`.
+  (2) the old page never described the `card` token itself.
+  Documented that `card` is a tinted theme surface defined in
+  `style/theme_provider.py:356,368` (slightly elevated tint
+  relative to the page background, in both light and dark modes).
+  Other additions: `padding` semantics (int / 2-tuple / 4-tuple);
+  `bootstyle` mutual-exclusion with `accent`/`variant` (which
+  suppresses Card's accent default); surface-cascade noted as
+  inherited from Frame (Card unlike LabelFrame has the
+  `_refresh_descendant_surfaces` hook for free); negative `Events`
+  section so readers don't hunt for `on_*` helpers Card doesn't
+  expose.
+
+Prior session (2026-04-30, labelframe sweep):
 
 - `labelframe.md` rewritten to the slim layout template. LabelFrame
   is the second page in the sweep — a thin themed wrapper over
@@ -593,18 +623,18 @@ Last session (2026-04-30, labelframe sweep):
   the text label with a custom widget; and the standard
   geometry-propagation note.
 
-`tools/check_doc_structure.py --category layout` → labelframe.md no
-longer in the missing-sections list (10/12 pages still pending,
+`tools/check_doc_structure.py --category layout` → card.md no
+longer in the missing-sections list (9/12 pages still pending,
 all in the existing-but-pre-template state).
 `tools/check_doc_snippets.py --run --file
-docs/widgets/layout/labelframe.md` → 0 failures (6 snippets, 1
+docs/widgets/layout/card.md` → 0 failures (3 snippets, 1
 executed).
 
 Pages to review (canonical anchor: `frame.md`):
 
 - [x] `frame.md` — anchor for the layout sweep
 - [x] `labelframe.md` — titled bordered Frame variant
-- [ ] `card.md` — opinionated Frame preset with header/body/footer
+- [x] `card.md` — Frame subclass with `accent='card'` + border preset
 - [ ] `packframe.md` — Frame subclass with auto-pack + `gap`
 - [ ] `gridframe.md` — Frame subclass with declarative rows/columns
 - [ ] `panedwindow.md` — resizable split regions
