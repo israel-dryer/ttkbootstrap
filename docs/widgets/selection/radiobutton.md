@@ -4,9 +4,19 @@ title: RadioButton
 
 # RadioButton
 
-`RadioButton` is a **selection control** that lets users choose **exactly one option** from a set of mutually exclusive choices.
+`RadioButton` is the **mutually-exclusive selection primitive** — a
+filled-circle indicator plus a label, with a *shared* variable across
+sibling radios. Each radio carries its own `value=`; clicking any
+radio writes that value into the shared variable, and the radio whose
+`value=` matches paints as selected. The variable is the single
+source of truth for the group.
 
-Use `RadioButton` when all options are short and should be visible at once (settings, modes, priority levels).
+Unlike CheckButton (where each control owns an independent boolean),
+RadioButton is meaningful only in groups of two or more sharing a
+`signal=` or `variable=`. For higher-level grouping, see
+[RadioGroup](radiogroup.md) (manages a set of radios as one widget)
+and [RadioToggle](radiotoggle.md) / [ToggleGroup](togglegroup.md)
+(toolbutton-styled variants).
 
 <figure markdown>
 ![radiobutton states](../../assets/dark/widgets-radiobutton-states.png#only-dark)
@@ -15,9 +25,7 @@ Use `RadioButton` when all options are short and should be visible at once (sett
 
 ---
 
-## Quick start
-
-In ttkbootstrap v2, the shared value is typically managed using a `signal`.
+## Basic usage
 
 ```python
 import ttkbootstrap as ttk
@@ -26,65 +34,126 @@ app = ttk.App()
 
 choice = ttk.Signal("medium")
 
-ttk.RadioButton(app, text="Low", signal=choice, value="low").pack(anchor="w", padx=20, pady=2)
+ttk.RadioButton(app, text="Low",    signal=choice, value="low").pack(anchor="w", padx=20, pady=2)
 ttk.RadioButton(app, text="Medium", signal=choice, value="medium").pack(anchor="w", padx=20, pady=2)
-ttk.RadioButton(app, text="High", signal=choice, value="high").pack(anchor="w", padx=20, pady=2)
+ttk.RadioButton(app, text="High",   signal=choice, value="high").pack(anchor="w", padx=20, pady=2)
 
 app.mainloop()
 ```
 
----
-
-## When to use
-
-Use `RadioButton` when:
-
-- exactly **one option must be selected**
-- all options are short and visible
-- users need to see all choices at once
-
-### Consider a different control when...
-
-- multiple selections are allowed -> use [CheckButton](checkbutton.md)
-- the list is long -> use [SelectBox](selectbox.md) or [OptionMenu](optionmenu.md)
-- screen space is limited -> use [SelectBox](selectbox.md) or [OptionMenu](optionmenu.md)
-- search or filtering is needed -> use [SelectBox](selectbox.md)
-- you want a button-like toggle -> use [RadioToggle](radiotoggle.md)
+The radio whose `value=` equals the current signal value paints
+selected (here, "Medium"). Clicking another radio writes its `value=`
+to `choice`, and the visual selection follows.
 
 ---
 
-## Appearance
+## Selection model
 
-### Variants
+RadioButton holds **no value of its own** — selection is decided by
+matching `value=` against the shared variable. The Tk variable lives
+on the widget as `widget.variable`; when `signal=` is used, a reactive
+`widget.signal` mirrors it. Sibling radios sharing the same `signal=`
+or `variable=` reuse the same underlying object.
 
-#### RadioButton (default)
+**Value type.** The default variable is an **`IntVar`** (initial
+value `0`). Pass `value=` strings or other non-int types to coerce
+the variable to a string representation. To pin a known type, supply
+your own `tk.StringVar` / `tk.IntVar` via `variable=` (or a typed
+`Signal`) and pass it to every radio in the group.
 
-The standard radio indicator + label.
+**Mutually exclusive, by sharing a variable.** "Group" is not a
+class-level concept on RadioButton — it's an emergent property of two
+or more radios pointing at the same variable. Forgetting to pass
+`signal=` / `variable=` makes each radio its own independent group of
+one (clicking one does not deselect another). For a group container
+that enforces the binding, use [RadioGroup](radiogroup.md).
 
 ```python
-ttk.RadioButton(app, text="Option", signal=choice, value="opt")
+choice = ttk.Signal("a")
+r1 = ttk.RadioButton(app, text="A", signal=choice, value="a")
+r2 = ttk.RadioButton(app, text="B", signal=choice, value="b")
+# r1.signal is r2.signal  -> True (shared)
+# r1.value is r2.value    -> True (both read from the same signal)
 ```
 
-#### RadioToggle
+**Initial selection.** The radio whose `value=` matches the variable's
+*current* value paints selected. With `Signal("medium")` and three
+radios `value="low"` / `"medium"` / `"high"`, "Medium" is selected at
+construction. Without an initial value (e.g. a default `Signal()`
+holding `""`), no radio paints selected — that's the "no choice yet"
+state. To force a selection at startup, set the signal *before*
+constructing the radios, or call `choice.set("medium")` after.
 
-If you want a button-like "badge" look for mutually exclusive choices, use `RadioToggle`.
+**Reading and writing the selected value.** The selected value is
+just `signal.get()` (or `variable.get()`). Each radio also exposes
+`widget.value` as a convenience that reads the shared variable —
+critically, `widget.value` returns the *current selection*, **not**
+the radio's own `value=` constructor argument:
 
 ```python
-ttk.RadioToggle(app, text="Grid", signal=view, value="grid")
-ttk.RadioToggle(app, text="List", signal=view, value="list")
+choice = ttk.Signal("medium")
+r1 = ttk.RadioButton(app, text="Low", signal=choice, value="low")
+r2 = ttk.RadioButton(app, text="Medium", signal=choice, value="medium")
+# r1.value -> "medium"  (shared selection, NOT "low")
+# r2.value -> "medium"
 ```
+
+The radio's own `value=` constructor argument is stored as the Tk
+option `widget.cget("value")` — that's the constant the radio writes
+into the variable when clicked.
+
+**Commit semantics.** Clicking a radio writes its constructor `value=`
+into the shared variable immediately; programmatic
+`widget.set(some_value)` writes through the same path. There's no
+separate commit step.
+
+---
+
+## Common options
+
+| Option | Type | Effect |
+| --- | --- | --- |
+| `text` | `str` | Label shown next to the indicator. Localized through `MessageCatalog` when `localize` permits. |
+| `value` | `Any` | The constant this radio writes into the shared variable when clicked. Required for meaningful group behavior — defaults to `''`. |
+| `signal` | `Signal` | Shared reactive binding across the group. Subscribers fire on every change. |
+| `variable` | `Variable` | Shared Tk variable to bind directly. Mutually substitutable with `signal=`. |
+| `command` | `Callable[[], None]` | Fires on **user invocation only** (click or `.invoke()`). Programmatic `set()` and variable writes do **not** fire it. |
+| `state` | `'normal'` / `'disabled'` / `'readonly'` | Disables click input but keeps the variable mutable from code. |
+| `accent` | str | Theme token for the selected indicator's dot fill (default `'primary'`). |
+| `surface` | str | Background surface; usually inherited from the parent. |
+| `width` | int | Label width in characters; widget pads to that width. |
+| `padding` | int / tuple | Extra space around the content. |
+| `anchor` | str | Content alignment (`'w'`, `'e'`, `'center'`, ...). |
+| `compound` | str | Image-vs-text placement when both are set. |
+| `icon` | str / dict | Theme-aware icon spec. |
+| `icon_only` | bool | Drop the text-reserved padding when no label is shown. |
+| `image` | `PhotoImage` | Custom image to render alongside the label. |
+| `underline` | int | Index of label character to underline (Alt-shortcut hint). |
+| `localize` | `bool` / `'auto'` | How `text` is treated (literal vs translation key). Default `'auto'`. |
+| `takefocus` | bool | Whether the widget participates in Tab traversal. |
+
+`bootstyle` is accepted but **deprecated** — use `accent`.
+
+RadioButton has only one variant: the default circular indicator.
+The style builder (`style/builders/radiobutton.py`) registers only
+`'default'` for `TRadiobutton`; passing any other variant raises
+`BootstyleBuilderError`. For a button-style radio, use the dedicated
+[RadioToggle](radiotoggle.md) class (it maps to a separate
+`Toolbutton` style class with its own variant axis).
+
+`density` is **not** a valid option for RadioButton — the style
+builder reads only `accent` and `surface`. Passing `density=...`
+raises `TclError: unknown option "-density"`. (RadioToggle does
+accept `density=`.)
 
 ### Colors & Styling
 
-RadioButtons support standard ttkbootstrap color tokens.
-
 ```python
-ttk.RadioButton(app)  # primary is default
-ttk.RadioButton(app, accent="secondary")
-ttk.RadioButton(app, accent="success")
-ttk.RadioButton(app, accent="info")
-ttk.RadioButton(app, accent="warning")
-ttk.RadioButton(app, accent="danger")
+ttk.RadioButton(app, text="Default")
+ttk.RadioButton(app, text="Secondary", accent="secondary")
+ttk.RadioButton(app, text="Success", accent="success")
+ttk.RadioButton(app, text="Warning", accent="warning")
+ttk.RadioButton(app, text="Danger", accent="danger")
 ```
 
 <figure markdown>
@@ -92,178 +161,126 @@ ttk.RadioButton(app, accent="danger")
 ![colors](../../assets/light/widgets-radiobutton-colors.png#only-light)
 </figure>
 
-!!! link "See [Design System → Variants](../../design-system/variants.md) for how color tokens apply consistently across widgets."
-
----
-
-## Examples & patterns
-
-### How the value works
-
-A radio selection is defined by a **shared value** plus a distinct `value=` for each option:
-
-- each `RadioButton` represents one possible value
-- the selected option is the one whose `value` matches the shared **signal** or **variable**
-- only one option can be selected at a time
-
-`RadioButton` uses a **single shared value** to represent the selected option.
-
-- each `RadioButton` defines its own `value`
-- selection is the option whose `value` matches the shared signal or variable
-
-```python
-choice = ttk.Signal("low")
-
-ttk.RadioButton(app, text="Low", signal=choice, value="low")
-ttk.RadioButton(app, text="High", signal=choice, value="high")
-```
-
-Updating the shared state changes the selected option:
-
-```python
-choice.set("high")
-```
-
-!!! note "Single source of truth"
-    The shared signal or variable is the source of truth.
-    Individual radio buttons do not store state independently.
-
-### Common options
-
-#### `command`
-
-Use `command=` to react when the selection changes.
-
-```python
-choice = ttk.Signal("low")
-
-def on_change():
-    print("selected:", choice.get())
-
-ttk.RadioButton(app, text="Low", signal=choice, value="low", command=on_change)
-ttk.RadioButton(app, text="High", signal=choice, value="high", command=on_change)
-```
-
-#### `state`
-
-Disable individual options when they are not available.
-
-```python
-choice = ttk.Signal("basic")
-
-ttk.RadioButton(app, text="Basic", signal=choice, value="basic")
-ttk.RadioButton(app, text="Pro (unavailable)", signal=choice, value="pro", state="disabled")
-```
-
-### Events
-
-Use `command=` for per-button callbacks, or subscribe to the shared signal for group-level changes.
-
-```python
-choice = ttk.Signal("low")
-
-def on_selected(value):
-    print("selected:", value)
-
-bind_id = choice.subscribe(on_selected)
-# Later: choice.unsubscribe(bind_id)
-```
-
-### Validation and constraints
-
-Radio selections are inherently constrained to the set of options you provide.
-
-Validation is most useful when:
-
-- a selection is required before submitting a form
-- certain options become unavailable based on other inputs
+`accent` colors the selected indicator's dot. The label foreground
+tracks `surface` automatically. See
+[Design System – Variants](../../design-system/variants.md).
 
 ---
 
 ## Behavior
 
-- Selecting an option sets the shared signal/variable to that option's `value`.
-- Only one option may be selected at a time.
-- Keyboard navigation follows standard ttk radiobutton behavior (focus + Space to select).
+**User input.** A left-click selects the radio and writes its
+constructor `value=` into the shared variable. The standard Tk
+keyboard contract applies: Tab moves focus, Space selects the focused
+radio. Unlike some platform conventions, the **arrow keys do not
+auto-cycle** between radios sharing a variable — RadioButton inherits
+ttk's stock Tab traversal model. For arrow-key navigation across a
+group, use [RadioGroup](radiogroup.md), which adds the binding.
+
+**Disabled and readonly.** `state='disabled'` greys the indicator and
+blocks clicks; the variable is still writable from code. Disabling a
+radio whose value happens to be the current selection leaves the
+selection visible but uninteractive — the user can still pick another
+radio in the group. `state='readonly'` behaves identically to
+`disabled` for user input.
+
+**Reconfiguration.** `accent`, `text`, `state`, `value`, `signal`,
+and `variable` can all be changed via `configure(...)` after
+construction. Reconfiguring `value=` changes the **constant this
+radio writes when clicked** — it does *not* re-write the shared
+variable. Use `widget.set(new)` (or `signal.set(new)`) to change the
+current selection.
+
+**Visual states.** The style builder maps three combinations onto
+the indicator: `selected`, `!selected !alternate`, and `disabled`.
+Each combines with `focus` for keyboard focus feedback. RadioButton
+has no `alternate` (indeterminate) state — it would be meaningless
+for mutually-exclusive choice.
 
 ---
 
-## Localization
+## Events
 
-By default, widgets use `localize="auto"`:
+Three observation paths, with the same timing asymmetry as
+CheckButton:
 
-- if a translation key exists, it is used
-- otherwise, the label is treated as a literal string
+| Path | Fires when... | Receives |
+| --- | --- | --- |
+| `command=` callback (per radio) | The **user** clicks (or `widget.invoke()` is called) **on this specific radio**. Programmatic `set()` does not fire it. | No arguments. |
+| `signal.subscribe(fn)` | The shared variable changes — from any radio's user click, from `set()` on any radio, from direct `signal.set(...)`. | The new selected value. |
+| `variable.trace_add('write', fn)` | Same as signal: any variable write. | The Tk trace tuple `(name, index, mode)`. |
 
-```python
-ttk.RadioButton(app, text="settings.mode.basic")
-ttk.RadioButton(app, text="settings.mode.basic", localize=True)
-ttk.RadioButton(app, text="Basic", localize=False)
-```
-
-!!! tip "Safe to pass literal text"
-    With `localize="auto"`, passing literal text is safe when no translation exists.
-
-!!! link "See [Localization](../../capabilities/localization.md) for configuring translations and message catalogs."
-
----
-
-## Reactivity
-
-Signals are generally preferred in v2 applications, but Tk variables are fully supported.
-
-### Using a Signal (preferred)
+For group-level handling, subscribe to the shared signal **once** —
+one subscription covers selections from every radio in the group:
 
 ```python
 import ttkbootstrap as ttk
 
 app = ttk.App()
-
 choice = ttk.Signal("medium")
 
-ttk.RadioButton(app, text="Low", signal=choice, value="low").pack(anchor="w", padx=20, pady=2)
-ttk.RadioButton(app, text="Medium", signal=choice, value="medium").pack(anchor="w", padx=20, pady=2)
-ttk.RadioButton(app, text="High", signal=choice, value="high").pack(anchor="w", padx=20, pady=2)
+def on_change(new_value):
+    print("now selected:", new_value)
+
+choice.subscribe(on_change)
+
+for label, val in [("Low", "low"), ("Medium", "medium"), ("High", "high")]:
+    ttk.RadioButton(app, text=label, signal=choice, value=val).pack(anchor="w", padx=20, pady=2)
 
 app.mainloop()
 ```
 
-### Using a Tk variable
-
-```python
-import ttkbootstrap as ttk
-
-app = ttk.App()
-
-choice = ttk.StringVar(value="medium")
-
-ttk.RadioButton(app, text="Low", variable=choice, value="low").pack(anchor="w", padx=20, pady=2)
-ttk.RadioButton(app, text="Medium", variable=choice, value="medium").pack(anchor="w", padx=20, pady=2)
-ttk.RadioButton(app, text="High", variable=choice, value="high").pack(anchor="w", padx=20, pady=2)
-
-app.mainloop()
-```
-
-!!! link "See [Signals](../../capabilities/signals/index.md) for reactive programming patterns."
+Use per-radio `command=` only when you need to know which **specific**
+radio was clicked (e.g. analytics, per-option side effects).
+RadioButton emits **no virtual events** of its own and exposes no
+`on_*` helpers.
 
 ---
 
-## Additional resources
+## When should I use RadioButton?
 
-### Related widgets
+Use RadioButton when:
 
-- [CheckButton](checkbutton.md) - multiple independent selections
-- [SelectBox](selectbox.md) - dropdown selection, optional search
-- [OptionMenu](optionmenu.md) - simple menu-based selection
-- [RadioGroup](radiogroup.md) - composite control for managing radio options as one widget
-- [RadioToggle](radiotoggle.md) - button-like radio styling
+- the user must pick **exactly one** of a small set of options (≤ ~7)
+- all options are short and benefit from being visible at once
+  (priority levels, sort order, view mode, license tier)
+- screen space is available for the full list
 
-### Framework concepts
+Prefer:
 
-- [Signals](../../capabilities/signals/index.md) - reactive state management
-- [Localization](../../capabilities/localization.md) - text translation
-- [Design System](../../design-system/variants.md) - color tokens and variants
+- **[RadioGroup](radiogroup.md)** — when the radios should be managed
+  as a single composite widget (with arrow-key navigation, layout
+  control, and bulk option updates)
+- **[RadioToggle](radiotoggle.md)** / **[ToggleGroup](togglegroup.md)**
+  — when the choice is a view mode or formatting strip and a button
+  affordance fits better than a radio indicator
+- **[OptionMenu](optionmenu.md)** — for medium-length lists (~5–20)
+  where space is tight; a button + popup menu
+- **[SelectBox](selectbox.md)** — for longer lists or when the user
+  needs search / filtering
+- **[CheckButton](checkbutton.md)** — when **multiple** independent
+  options are allowed (RadioButton is *exactly one*)
 
-### API reference
+---
 
-- [`ttkbootstrap.RadioButton`](../../reference/widgets/RadioButton.md)
+## Related widgets
+
+- **[RadioGroup](radiogroup.md)** — composite container that owns
+  the shared signal and adds keyboard navigation
+- **[RadioToggle](radiotoggle.md)** — toolbutton-styled mutually
+  exclusive sibling
+- **[ToggleGroup](togglegroup.md)** — group container for
+  RadioToggle children
+- **[CheckButton](checkbutton.md)** — independent boolean siblings
+  (multi-select)
+- **[SelectBox](selectbox.md)** / **[OptionMenu](optionmenu.md)** —
+  dropdown selection alternatives
+
+---
+
+## Reference
+
+- **API reference:** `ttkbootstrap.RadioButton`
+- **Related guides:** [Signals](../../capabilities/signals/signals.md),
+  [Localization](../../capabilities/localization.md),
+  [Design System](../../design-system/index.md)
