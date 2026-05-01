@@ -34,12 +34,12 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-04-30, dialogs sweep — 5/11 done)
+### Current handoff (2026-04-30, dialogs sweep — 6/11 done)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 dialogs sweep is in progress: messagedialog, messagebox, querydialog,
-querybox, and formdialog are done; dialog (base), datedialog, colorchooser,
+querybox, formdialog, and dialog (base) are done; datedialog, colorchooser,
 colordropper, fontdialog, and filterdialog remain.**
 
 ### Template arc (apply to every editorial sweep)
@@ -208,7 +208,50 @@ Optional (declared via `*Optional` prose under the heading):
   base classes (`Dialog`) and specialty interactions
   (`ColorDropper`).
 
-Last session (2026-04-30, formdialog sweep):
+Last session (2026-04-30, dialog (base) sweep):
+
+- `dialog.md` rewritten to the slim template (`644e5a0`).
+  Frames the page as the **builder-pattern base class** — composition
+  via `content_builder` / `footer_builder` callbacks plus a button
+  list, not inheritance — and the place readers drop down to when
+  the specialized subclasses don't fit. The intro now lists every
+  specialized subclass it underpins (MessageDialog, QueryDialog,
+  FormDialog, FontDialog, ColorChooserDialog, DateDialog,
+  FilterDialog) so readers entering from any of them can route
+  back here.
+  Result-value section flags the central distinction from the
+  subclasses: base `Dialog` does **not** fire `<<DialogResult>>`
+  and has no `on_dialog_result` helper — those are added by
+  subclasses that generate the event themselves. Readers needing
+  an event-style hook on the base class are pointed at button
+  `command` callbacks (which receive the Dialog instance and run
+  before `result` is assigned and the toplevel is destroyed). Also
+  documents the `closes=False` button behavior (runs `command` but
+  does not close or assign `.result`) — useful for "Apply" buttons.
+  One Common-options table covers all twelve constructor args plus
+  a second table for the eight `DialogButton` fields. Behavior
+  section adds: a modes table (modal / popover / sheet) clarifying
+  that sheet mode is macOS-only and falls back to plain modal
+  elsewhere; the **default-button rule difference** from
+  MessageDialog (Dialog does NOT auto-promote the last button —
+  you must set `default=True` explicitly or there's no Enter
+  binding); the Escape fallback (no cancel-role button → Escape
+  destroys the dialog directly with `result=None`); the
+  positioning priority for `show()` (position → anchor_to → center
+  on parent); and the frameless option's recommended use
+  (popover-anchored menus).
+  Per the slim-dialog template, omits the optional UX-guidance
+  section (this is a base class — prescriptive advice belongs on
+  the specialized subclasses).
+  Corrects two errors from the old page: it described buttons as
+  plain strings (`"OK"`, `"Cancel"`) — that syntax works on
+  MessageDialog (which has its own `_parse_buttons`), not on
+  `Dialog`. Base `Dialog._normalize_buttons` only accepts
+  `DialogButton` instances or dicts. The old page also listed
+  `message` and `default` as Dialog options — neither exists on
+  the base class (those are MessageDialog options).
+
+Prior session (2026-04-30, formdialog sweep):
 
 - `formdialog.md` rewritten to the slim template (`a326698`).
   Frames the dialog as a thin Dialog shell wrapping a Form
@@ -242,7 +285,7 @@ Last session (2026-04-30, formdialog sweep):
   ScrollView with the scrollbar visible by default to prevent
   layout jumps.
 
-Prior session (2026-04-30, querybox sweep):
+Earlier session (2026-04-30, querybox sweep):
 
 - `querybox.md` rewritten to the slim template (`fc5484d`).
   Treats the page as the umbrella **facade** over the framework's
@@ -267,7 +310,7 @@ Prior session (2026-04-30, querybox sweep):
   TextEntry's ICU parser); the QueryDialog-backed helpers forward
   extra kwargs (`width`, `padding`) into QueryDialog.
 
-Earlier session (2026-04-30, querydialog sweep):
+Even earlier session (2026-04-30, querydialog sweep):
 
 - `querydialog.md` rewritten to the slim template (`f21e913`).
   Frames the dialog as "prompt for one value" — the input widget
@@ -286,7 +329,7 @@ Earlier session (2026-04-30, querydialog sweep):
   and to pass `master=` if registering `on_dialog_result` before
   `show()`.
 
-Even earlier session (2026-04-30, messagebox sweep):
+Earliest session (2026-04-30, messagebox sweep):
 
 - `messagebox.md` rewritten to the slim template (`58977e7`).
   Treats the page as a thin **facade** over `MessageDialog`:
@@ -305,14 +348,14 @@ Even earlier session (2026-04-30, messagebox sweep):
   because its first label is "No" not "Cancel" (use `yesnocancel`
   if you need keyboard dismissal).
 
-Earliest session (2026-04-30, template overhaul + messagedialog re-review):
+(Earlier dialogs-sweep history — template restructure `7667e36`,
+messagedialog re-review `942642c` — is captured in the "Templates
+already restructured" block at the top of this handoff and in the
+checked rows of the page checklist below.)
 
-- Templates restructured (`7667e36`); `tools/check_doc_structure.py`
-  gained optional-section detection.
-- `messagedialog.md` re-rewritten to the slim template (`942642c`).
-
-`tools/check_doc_structure.py --category dialogs` → 5/11 passing
-(messagedialog, messagebox, querydialog, querybox, formdialog).
+`tools/check_doc_structure.py --category dialogs` → 6/11 passing
+(messagedialog, messagebox, querydialog, querybox, formdialog,
+dialog).
 
 Pages to review (canonical anchor pattern: `messagedialog.md`):
 
@@ -321,7 +364,7 @@ Pages to review (canonical anchor pattern: `messagedialog.md`):
 - [x] `querydialog.md`
 - [x] `querybox.md` — umbrella facade over QueryDialog/DateDialog/ColorChooserDialog/FontDialog
 - [x] `formdialog.md`
-- [ ] `dialog.md` — base class
+- [x] `dialog.md` — base class
 - [ ] `datedialog.md`
 - [ ] `colorchooser.md`
 - [ ] `colordropper.md`
