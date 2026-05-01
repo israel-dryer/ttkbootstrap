@@ -34,18 +34,20 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-04-30, data-display sweep — 8/8 DONE)
+### Current handoff (2026-04-30, layout sweep — 2/12, anchor + LabelFrame)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
-the dialogs sweep is complete (11/11), and the data-display sweep is now
-also complete (8/8): `label.md` (anchor), `badge.md`, `progressbar.md`,
-`floodgauge.md`, `meter.md`, `listview.md`, `tableview.md`, and
-`treeview.md` are rewritten to the slim template. Next sweep — pick one
-of layout / navigation / overlays / selection / forms / views /
-primitives. None of those category templates have been restructured to
-the slim arc yet, so apply the editorial pass to the template at the
-start of the sweep (see "Template arc" below).**
+the dialogs sweep (11/11) and data-display sweep (8/8) are complete. The
+**layout sweep** is now the active sweep: the layout template was
+restructured to the slim arc in commit `997a5b7`, with `frame.md` rewritten
+as the canonical anchor. `labelframe.md` is the second page done. Remaining
+10 pages: `accordion.md`, `card.md`, `expander.md`, `gridframe.md`,
+`packframe.md`, `panedwindow.md`, `scrollbar.md`, `scrollview.md`,
+`separator.md`, `sizegrip.md`. Then move to one of navigation / overlays /
+selection / forms / views / primitives. The remaining 4 templates
+(form, navigation, overlay, selection) still need the editorial pass at
+the start of each sweep (see "Template arc" below).**
 
 ### Template arc (apply to every editorial sweep)
 
@@ -83,11 +85,16 @@ Templates already restructured to this arc:
   `*Optional` so simple display widgets (Label, Badge, Progressbar,
   Floodgauge, Meter) skip them while data-bound widgets (TableView,
   TreeView, ListView) fill them in.
+- `widget-layout-template.md` (commit `997a5b7`, anchored on
+  `frame.md`). `Layout model` is `*Optional` so plain containers
+  (Frame, Card, LabelFrame, Separator, Sizegrip) skip it while
+  widgets with non-trivial geometry semantics (PackFrame, GridFrame,
+  Accordion, PanedWindow, ScrollView) fill it in.
 
-Remaining 5 templates (form, layout, navigation, overlay,
-selection) still lead with `Framework integration` etc. Apply the
-editorial pass at the start of each category's sweep — those
-categories have 0 pages written, so the template fix is free.
+Remaining 4 templates (form, navigation, overlay, selection) still
+lead with `Framework integration` etc. Apply the editorial pass at
+the start of each category's sweep — those categories have 0 pages
+written, so the template fix is free.
 
 Phase 6 status (for reference):
 
@@ -533,6 +540,81 @@ Pages to review (canonical anchor: `label.md`):
 - [x] `tableview.md` — second data-bound widget; SQLite-backed
 - [x] `treeview.md` — thin themed wrapper over ttk.Treeview
 
+### Widget pages — layout (`docs/widgets/layout/`, 12 pages) — IN PROGRESS 2/12
+
+Template: `docs/_template/widget-layout-template.md` (slim arc,
+restructured commit `997a5b7`). Required H2s: `Basic usage`,
+`Common options`, `Behavior`, `Events`,
+`When should I use WidgetName?`, `Related widgets`, `Reference`.
+Optional via `*Optional` prose: `Layout model` — fill in for widgets
+with non-trivial geometry semantics (PackFrame's `gap`/`orient`,
+GridFrame's `columns`/`rows`, Accordion expand/collapse, PanedWindow
+sashes, ScrollView viewport); skip for plain containers (Frame, Card,
+LabelFrame, Separator, Sizegrip).
+
+`frame.md` is the canonical anchor for the layout sweep, the way
+`button.md` / `textentry.md` / `messagedialog.md` / `label.md`
+anchored their respective categories.
+
+Last session (2026-04-30, labelframe sweep):
+
+- `labelframe.md` rewritten to the slim layout template. LabelFrame
+  is the second page in the sweep — a thin themed wrapper over
+  `ttk.Labelframe` that draws a 1px border with an embedded text
+  label. Three things the old page got wrong or omitted, plus
+  several gaps surfaced:
+  (1) the old "Appearance" example showed
+  `ttk.LabelFrame(app, text="Group", style="Card.TLabelframe")`;
+  `Card.TLabelframe` is **not a registered style** anywhere in the
+  framework (no builder registers it). Replaced with the canonical
+  surface/accent path.
+  (2) the old page never mentioned the **container-accent →
+  surface override** behavior. The bootstyle constructor wrapper
+  treats `TLabelframe` as a `CONTAINER_CLASS` (alongside `TFrame`),
+  so passing `accent="primary"` on a LabelFrame resolves to
+  `surface="primary"` and tints the LabelFrame's background — not
+  silently ignored. Verified at runtime: `lf._accent='primary'`,
+  `lf._surface='primary'`, `lf._style_options={'surface': 'primary'}`,
+  rendered style `bs[…].primary.TLabelframe`. Documented as
+  `accent` and `surface` being interchangeable on container widgets.
+  (3) the old page treated LabelFrame as a Frame variant, but
+  LabelFrame **does not subclass Frame**. It misses Frame's
+  `_refresh_descendant_surfaces` and `_refresh_descendant_input_backgrounds`
+  cascade hooks, so runtime surface reconfiguration restyles only
+  the LabelFrame itself — child widgets stay on their old surface.
+  Documented this as a deliberate divergence in `Behavior`.
+  Also surfaced: the **`show_border` gap** (the LabelFrame style
+  builder reads it and defaults to True, but `LabelFrame.__init__`
+  doesn't capture it from kwargs, so passing `show_border=False`
+  raises `TclError: unknown option "-show_border"` — the border is
+  effectively always on); the **`variant` raises** behavior (only
+  `default` registered, so any other variant raises
+  `BootstyleBuilderError`); the `labelwidget=` option for replacing
+  the text label with a custom widget; and the standard
+  geometry-propagation note.
+
+`tools/check_doc_structure.py --category layout` → labelframe.md no
+longer in the missing-sections list (10/12 pages still pending,
+all in the existing-but-pre-template state).
+`tools/check_doc_snippets.py --run --file
+docs/widgets/layout/labelframe.md` → 0 failures (6 snippets, 1
+executed).
+
+Pages to review (canonical anchor: `frame.md`):
+
+- [x] `frame.md` — anchor for the layout sweep
+- [x] `labelframe.md` — titled bordered Frame variant
+- [ ] `card.md` — opinionated Frame preset with header/body/footer
+- [ ] `packframe.md` — Frame subclass with auto-pack + `gap`
+- [ ] `gridframe.md` — Frame subclass with declarative rows/columns
+- [ ] `panedwindow.md` — resizable split regions
+- [ ] `scrollview.md` — scrollable viewport over a content frame
+- [ ] `scrollbar.md` — themed ttk.Scrollbar wrapper
+- [ ] `accordion.md` — expandable sections
+- [ ] `expander.md` — single collapsible region
+- [ ] `separator.md` — visual divider
+- [ ] `sizegrip.md` — bottom-right resize handle
+
 ### Workflow (one page per session)
 
 1. Read the page end-to-end.
@@ -834,6 +916,48 @@ primitives.
   master switch (gate both menu options + the search bar's
   WHERE-clause emission) or remove it from the public ctor
   signature. (Surfaced by tableview.md rewrite, 2026-04-30.)
+- `LabelFrame.__init__` (`widgets/primitives/labelframe.py:45-68`)
+  does not call `_capture_style_options(['show_border'], kwargs)`
+  the way `Frame.__init__` does, so `show_border` is not lifted
+  from kwargs into `style_options`. Net effect: the LabelFrame
+  style builder reads `show_border` and defaults to `True`
+  (`style/builders/labelframe.py:18`), but there is no public knob
+  to turn it off — passing `show_border=False` raises `TclError:
+  unknown option "-show_border"` because Tk rejects the unknown
+  ttk option. Either capture `show_border` (and `input_background`
+  while at it) into `style_options` in `LabelFrame.__init__`, or
+  document the border as non-configurable. (Surfaced by
+  labelframe.md rewrite, 2026-04-30.)
+- `LabelFrame` does **not subclass `Frame`** — it inherits
+  directly from `ttk.LabelFrame`, missing Frame's overridden
+  `configure_style_options`, `_refresh_descendant_surfaces`, and
+  `_refresh_descendant_input_backgrounds`. Net effect: runtime
+  surface reconfiguration on a LabelFrame restyles only the
+  LabelFrame itself; child widgets stay on their old surface. The
+  divergence is unintentional given that `TLabelframe` is already
+  in `CONTAINER_CLASSES` and is treated as a container everywhere
+  else. Either make `LabelFrame` subclass `Frame` (mixing the
+  cascade behavior) or duplicate the cascade hooks. (Surfaced by
+  labelframe.md rewrite, 2026-04-30.)
+- `frame.md` (already shipped on this branch, commit `997a5b7`)
+  contains two narrative inaccuracies surfaced while reviewing
+  LabelFrame against the same constructor path:
+  (1) the page claims `accent` and `variant` are "silently ignored
+  by the Frame style builder" — but `Bootstyle.override_ttk_widget_constructor`
+  treats container classes (including `TFrame`) specially and
+  turns `accent` into a surface override before the builder runs.
+  Verified: `Frame(app, accent="primary")` produces
+  `_surface='primary'`, `style_options={'surface': 'primary'}`,
+  and rendered style `bs[…].primary.TFrame`. The `variant` claim
+  is also imprecise — passing a non-default variant raises
+  `BootstyleBuilderError` rather than being silently ignored.
+  (2) the surface-cascade example shows
+  `section.configure(surface="card")`, but ttk.Frame doesn't
+  accept `-surface` and that call raises `TclError`. The actual
+  runtime cascade path is `section.configure_style_options(surface="card")`,
+  which Frame overrides with the descendant-refresh hook.
+  Both points warrant a frame.md fixup pass. (Surfaced by
+  labelframe.md rewrite, 2026-04-30.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):

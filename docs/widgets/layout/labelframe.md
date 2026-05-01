@@ -4,10 +4,17 @@ title: LabelFrame
 
 # LabelFrame
 
-`LabelFrame` is a **layout container** that groups related widgets under a **visible label**.
+`LabelFrame` is a themed container that draws a thin border around a
+region of the UI and embeds a text label into that border. It wraps
+`ttk.Labelframe` and is the canonical way to group related controls
+under a visible section title — settings groups, form clusters,
+option panels.
 
-It wraps `ttk.Labelframe`, participates in ttkbootstrap styling, and is ideal for labeled sections (settings groups,
-form clusters, option panels) where the title improves scanability.
+Unlike [`Frame`](frame.md), `LabelFrame` does not subclass `Frame` and
+does not propagate runtime `surface` changes to its descendants. It
+inherits its surface from its parent at construction time the same
+way Frame does, but reconfiguring the surface later restyles only the
+LabelFrame itself.
 
 <figure markdown>
 ![labelframe](../../assets/dark/widgets-labelframe.png#only-dark)
@@ -16,7 +23,7 @@ form clusters, option panels) where the title improves scanability.
 
 ---
 
-## Quick start
+## Basic usage
 
 ```python
 import ttkbootstrap as ttk
@@ -32,112 +39,174 @@ ttk.Entry(group).pack(fill="x", pady=(8, 0))
 app.mainloop()
 ```
 
----
-
-## When to use
-
-Use `LabelFrame` when:
-
-- the grouped controls benefit from a section title
-
-- the title should be visually attached to the region
-
-**Consider a different control when:**
-
-- you want grouping without a label -- use [Frame](frame.md)
-
-- the label belongs in surrounding layout (e.g., page header) -- use [Frame](frame.md) with a separate [Label](../data-display/label.md)
+`text=` is the embedded label. `padding=` is the inner spacing between
+the border and the children. Without `padding`, the children butt up
+against the border line.
 
 ---
 
-## Appearance
+## Common options
 
-### Styling
+The styling surface is small and shared with `Frame` — `surface` is the
+canonical knob, and on container classes the `accent` slot is reused
+as a surface override. The border is always drawn (1 px, theme-aware
+stroke); there is no public option to turn it off.
 
-Use `LabelFrame` when the label should be part of the visual grouping.
+| Option         | Type         | Default       | Notes                                                                  |
+| -------------- | ------------ | ------------- | ---------------------------------------------------------------------- |
+| `text`         | str          | `""`          | Label text embedded in the border                                      |
+| `labelanchor`  | str          | `"nw"`        | Label position; see below                                              |
+| `labelwidget`  | Widget       | `None`        | Substitute a widget for the text label (e.g. an icon-bearing `Label`)  |
+| `padding`      | int \| tuple | `""`          | Inner spacing; `(left, top)` or `(l, t, r, b)` accepted                |
+| `width`        | int          | natural       | Requested width in pixels (see propagation note in Behavior)           |
+| `height`       | int          | natural       | Requested height in pixels (see propagation note in Behavior)          |
+| `surface`      | str          | parent inherit | Surface token: `chrome`, `content`, `card`, `overlay`, `input`        |
+| `accent`       | str          | —             | On containers, equivalent to `surface=` — sets the fill                |
+| `input_background` | str      | parent inherit | Cascades to input descendants; does **not** tint the LabelFrame itself |
+| `style`        | str          | `"TLabelframe"` | Explicit ttk style name; overrides theme-token styling               |
 
-For more "modern card" layouts where the label is separate, you may prefer:
+### Label placement
 
-- a `Frame` with a `Label` above it
-
-- a `Frame` styled as a card, with header content
-
-!!! link "Design System"
-    For theming details and color tokens, see [Design System](../../design-system/index.md).
-
-### `accent` / `style`
-
-Apply semantic styling (or a specific style name).
-
-```python
-ttk.LabelFrame(app, text="Group", accent="secondary")
-ttk.LabelFrame(app, text="Group", style="Card.TLabelframe")
-```
-
----
-
-## Examples & patterns
-
-### `text`
-
-Sets the group label.
+`labelanchor` accepts the eight compass values plus center:
 
 ```python
-ttk.LabelFrame(app, text="Appearance")
+ttk.LabelFrame(app, text="Network", labelanchor="nw")  # default — top left
+ttk.LabelFrame(app, text="Network", labelanchor="n")   # centered top
+ttk.LabelFrame(app, text="Network", labelanchor="w")   # left side, vertical
+ttk.LabelFrame(app, text="Network", labelanchor="s")   # bottom (rare)
 ```
 
-### `labelanchor`
-
-Controls where the label appears relative to the frame.
+For a custom label — e.g. a `Label` with an icon — use `labelwidget=`
+in place of `text=`:
 
 ```python
-ttk.LabelFrame(app, text="Network", labelanchor="n")   # top (common)
-ttk.LabelFrame(app, text="Network", labelanchor="w")   # left
-ttk.LabelFrame(app, text="Network", labelanchor="s")   # bottom
+header = ttk.Label(app, text="Advanced", icon="bootstrap-gear")
+ttk.LabelFrame(app, labelwidget=header, padding=12)
 ```
 
-### `padding`
-
-Inner spacing for the content region.
+### Surface and accent
 
 ```python
-ttk.LabelFrame(app, text="Options", padding=(16, 12))
+ttk.LabelFrame(app, text="Section", surface="card")
+ttk.LabelFrame(app, text="Section", accent="primary")   # primary-colored fill
 ```
+
+`surface` and `accent` are interchangeable on container widgets:
+the bootstyle constructor wrapper recognizes that `TLabelframe` is a
+container class and turns `accent` into a surface override. Either
+spelling produces the same effect — `surface=` is the more explicit
+choice.
+
+### Options that don't behave like Frame's
+
+- **`show_border`** is read by the LabelFrame style builder and
+  defaults to `True`, but the constructor doesn't expose it as a kwarg.
+  Passing `show_border=False` raises `TclError: unknown option
+  "-show_border"`. The border is effectively always on.
+- **`variant`** is rejected — only the `default` variant is
+  registered for `TLabelframe`, so passing any other variant raises
+  `BootstyleBuilderError: Builder '<variant>' not found for widget
+  class 'TLabelframe'`.
+- **`input_background`** is accepted and stored on the widget; it
+  cascades to input descendants the same way it does on `Frame`, but
+  the LabelFrame itself is not tinted by it. Use `surface=` to color
+  the LabelFrame.
 
 ---
 
 ## Behavior
 
-- LabelFrames are **containers only** (no interactive behavior).
+`LabelFrame` is a non-interactive structural widget. It does not
+respond to clicks, take keyboard focus by default, or emit any virtual
+events; its responsibilities are visual surfacing and child hosting.
 
-- Use `text=` (or a label widget, if your implementation supports it) to describe the group.
+**Geometry propagation.** Like `ttk.Labelframe`, a `LabelFrame` sizes
+itself to its content unless you disable propagation explicitly:
 
-- Content layout works the same as `Frame` (pack/grid inside the container).
+```python
+pane = ttk.LabelFrame(app, text="Pane", width=240, height=400)
+pane.pack(side="left")
+pane.pack_propagate(False)   # honor width/height instead of children
+```
 
-- A `LabelFrame` is like a `Frame`, but with an integrated label:
+Without `pack_propagate(False)` (or `grid_propagate(False)`), explicit
+`width=`/`height=` are treated as natural-size *hints* and are
+overridden by child requests.
 
-    - the label provides context for the grouped controls
+**Surface inheritance, no runtime cascade.** At construction time,
+LabelFrame inherits its surface from its parent (the same path Frame
+uses), so a LabelFrame nested inside `Frame(surface="card")` picks up
+the `card` surface automatically. **Runtime reconfiguration is not
+cascaded**, however: calling `lf.configure_style_options(surface="card")`
+restyles the LabelFrame itself but leaves child widgets on their
+original surface. This is a deliberate divergence from `Frame`, which
+inherits a `_refresh_descendant_surfaces` hook. If you need regional
+runtime restyling, wrap the LabelFrame in a `Frame` and reconfigure
+the Frame's surface instead.
 
-    - the border/outline visually separates the region
-
-    - content is packed/gridded inside the container like any other frame
+**Label inside the border.** The label is drawn *into* the border
+stroke, not above it — so the border line is interrupted by the label
+text rather than running continuously. This is standard
+`ttk.Labelframe` behavior; the embedded label is what visually anchors
+the title to the region.
 
 ---
 
-## Additional resources
+## Events
 
-### Related widgets
+`LabelFrame` has no `on_*` event helpers and emits no virtual events.
+The only event it participates in is the standard Tk `<Configure>`
+notification fired on resize:
 
-- [Frame](frame.md) -- general-purpose container
+```python
+def on_resize(event):
+    print(event.width, event.height)
 
-- [Separator](separator.md) -- divider between labeled regions
+group.bind("<Configure>", on_resize)
+```
 
-### Framework concepts
+If you need to react to interaction inside the group, bind to the
+relevant child widgets directly — `LabelFrame` is purely a container
+surface.
 
-- [Layout Properties](../../capabilities/layout-props.md)
+---
 
-- [Layout](../../platform/geometry-and-layout.md)
+## When should I use LabelFrame?
 
-### API reference
+Use `LabelFrame` when:
 
-- [`ttkbootstrap.LabelFrame`](../../reference/widgets/LabelFrame.md)
+- a group of related controls benefits from a short, visible section
+  title (e.g. "Network", "Display", "Notifications" in a settings
+  page)
+- the title should be visually attached to the region, not floating
+  above it
+- you don't need the title to be a multi-line header or include
+  prominent imagery
+
+Prefer **Frame** when the region needs no title, or when you want to
+restyle the surface at runtime and have descendants restyle with it.
+Prefer **Card** when you want a stronger card-style treatment with
+separated header / body / footer slots and richer header content.
+Use **Separator** between labelled regions when the visual break
+matters more than a labelled boundary.
+
+---
+
+## Related widgets
+
+- **Frame** — untitled themed container; subclass with surface cascade
+- **Card** — opinionated `Frame` preset with header / body / footer
+- **PackFrame** / **GridFrame** — `Frame` subclasses with auto-pack
+  and auto-grid layout managers
+- **Separator** — visual divider for regions inside a frame
+- **Label** — pair with a plain `Frame` when the title needs to live
+  in surrounding layout instead of inside the border
+
+---
+
+## Reference
+
+- **API reference:** [`ttkbootstrap.LabelFrame`](../../reference/widgets/LabelFrame.md)
+- **Related guides:** [Layout](../../platform/geometry-and-layout.md),
+  [Layout Properties](../../capabilities/layout-props.md),
+  [Design System](../../design-system/index.md)
