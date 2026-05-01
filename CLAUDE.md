@@ -34,16 +34,16 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, views sweep 2/3 — tabview rewrite landed; only notebook + primitives remain)
+### Current handoff (2026-05-01, views sweep CLOSED 3/3 — only primitives remain)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 the dialogs sweep (11/11), inputs sweep (11/11), data-display sweep
 (8/8), layout sweep (12/12), navigation sweep (5/5), overlays sweep
-(2/2), and selection sweep (9/9) are all complete. Views sweep
-opened 2026-05-01 with the `pagestack.md` anchor rewrite and
-advanced to 2/3 the same day with the `tabview.md` rewrite — sweep
-is 2/3 (pagestack and tabview done; notebook remaining). The
+(2/2), selection sweep (9/9), and views sweep (3/3) are all
+complete. Views sweep opened 2026-05-01 with the `pagestack.md`
+anchor rewrite, advanced to 2/3 the same day with the `tabview.md`
+rewrite, and closed 3/3 with the `notebook.md` rewrite. The
 selection sweep was closed on 2026-05-01 with the calendar rewrite
 (commit `9334701`) — `checkbutton`, `switch`, `checktoggle`,
 `radiobutton`, `radiogroup`, `radiotoggle`, `togglegroup`,
@@ -52,8 +52,8 @@ reopened on 2026-05-01 when `selectbox.md` was relocated from
 `widgets/selection/` to `widgets/inputs/` (see "SelectBox
 relocation" below); it has now been rewritten under the inputs
 template (commit `d495951`, 2026-05-01) and the sweep is closed at
-11/11. Remaining editorial-review categories: views (1/3 pages
-remaining), primitives (5/5 pages).**
+11/11. Remaining editorial-review categories: primitives (5/5
+pages).**
 
 **SelectBox relocation (2026-05-01).** The `selectbox.md` page was
 moved from `widgets/selection/` to `widgets/inputs/`. Rationale: a
@@ -2041,7 +2041,7 @@ Pages to review (canonical anchor: `checkbutton.md`):
 (`selectbox.md` was moved to `widgets/inputs/`; it is now tracked
 under the inputs sweep, not selection.)
 
-### Widget pages — views (`docs/widgets/views/`, 3 pages) — 2/3 (2026-05-01)
+### Widget pages — views (`docs/widgets/views/`, 3 pages) — DONE 3/3 (2026-05-01)
 
 Template: **`widget-navigation-template.md`** (reused, not cloned).
 The navigation template's required H2s (`Basic usage` →
@@ -2255,11 +2255,105 @@ tabview.md no longer in the missing-sections list.
 docs/widgets/views/tabview.md` → 0 failures (6 snippets, 1
 executed).
 
+Last session (2026-05-01, notebook sweep — final views page,
+sweep closed 3/3):
+
+- `notebook.md` rewritten to the navigation template. Notebook is
+  the third and final page in the sweep — a thin themed wrapper
+  over `tkinter.ttk.Notebook` that adds a key-based tab registry,
+  locale-aware tab labels, and a (broken — see below) enriched
+  event surface. Restructured around the slim navigation arc with
+  `Navigation model` covering the parallel registries
+  (`_key_registry`, `_tk_to_key`, ttk's tab list), the three tab
+  reference forms (key / index / widget), the imperative-only
+  selection model (no `signal=` / `variable=`), and the
+  auto-select-first-tab semantics. **Six runtime-verified bugs
+  surfaced**, four of which are real API failures (not just doc
+  gaps):
+  (1) **`on_tab_changed` / `on_tab_activated` /
+  `on_tab_deactivated` never fire.** The constructor binds
+  `<<NotebookTabChange>>` (present tense, no `'d'`) at
+  `widgets/primitives/notebook.py:570,485,509`, but Tk's underlying
+  ttk.Notebook emits `<<NotebookTabChanged>>` (past tense, with
+  `'d'`). Verified at runtime: binding directly to
+  `<<NotebookTabChanged>>` fires on programmatic and click
+  selection, but `nb.on_tab_changed(cb)` never fires. The wrapper
+  that synthesizes the activate / deactivate events for the
+  lifecycle pair is also bound to the wrong name, so they're
+  never generated either — the entire enriched event mechanism is
+  dead. The internal `_last_selected` /
+  `_last_change_reason` / `_last_change_via` state is maintained
+  but never observed. Documented as a `!!! danger` block in
+  Events with the workaround (bind directly to
+  `<<NotebookTabChanged>>` and read selection state from the
+  widget); added to the bugs list.
+  (2) **`nb.remove(tab)` and `nb.forget(tab)` always raise
+  `TypeError`.** MRO conflict: `WidgetCapabilitiesMixin.forget`
+  appears in the MRO before `tkinter.ttk.Notebook.forget`, and the
+  former takes no positional arguments (it's the
+  `pack_forget`/`grid_forget` shim). Calling
+  `super().forget(tabid)` from `Notebook.remove` /
+  `Notebook.forget` therefore raises
+  `TypeError: WidgetCapabilitiesMixin.forget() takes 1 positional
+  argument but 2 were given`. Verified at runtime. `nb.hide(tab)`
+  works because there's no upstream `hide` override — only `forget`
+  has the conflict. Documented as a `!!! danger` block in Behavior
+  with a workaround (`tkinter.ttk.Notebook.forget(nb, tabid)` plus
+  manual registry cleanup); added to the bugs list.
+  (3) **Failed `add()` / `insert()` leaves orphan tabs.** Both
+  validation steps inside `_make_key`
+  (`widgets/primitives/notebook.py:147-154`) — duplicate-key check
+  and empty-string check — run *after* `super().insert()` has
+  already added the auto-created Frame to the underlying ttk
+  notebook. Verified: a single `nb.add(text='OK', key='ok')` then
+  `nb.add(text='Bad', key='')` (raises `ValueError`) leaves
+  `nb.keys() == ('ok', '')` and `len(nb.tabs()) == 2`. The orphan
+  tab has no entry in `_key_registry` / `_tk_to_key` and no public
+  way to remove it (the broken `remove()` aside). Either validate
+  the key before `super().insert()`, or roll back the ttk insert
+  on validation failure. Documented as a `!!! warning` in
+  Behavior; added to the bugs list.
+  (4) **`add()` / `insert()` with an existing widget silently
+  drops extra kwargs.** When the first positional argument is
+  `None`, kwargs flow into `Frame(self, **kwargs)` (correct).
+  When a widget is passed, the kwargs are not applied to it.
+  Verified: `existing = ttk.Frame(nb, padding=5);
+  nb.add(existing, key='x', text='X', padding=99)` leaves
+  `existing.cget('padding') == (5,)`. Same shape as the PageStack
+  kwargs-drop bug already on this list. Either raise `TypeError`
+  or call `widget.configure(**kwargs)` post-registration.
+  Documented as a `!!! warning` in Common options; added to the
+  bugs list.
+  Also documented (some new, some restated): the four registered
+  variants (`default`, alias `tab`; `bar`; `pill` — all work,
+  unlike the Tabs `pill` bug); no `orient=` option (Notebook is
+  horizontal-only — verified `TclError: unknown option "-orient"`,
+  the `# TODO add styles in the future that are geared towards
+  left direction navigation` in `style/builders/notebook.py:6`
+  still applies); auto-select-first-tab on initial `add()`;
+  duplicate keys raise `NavigationError`; empty-string keys raise
+  `ValueError`; auto-key naming (`tab1`, `tab2`, … never
+  reused for the lifetime of the notebook); the locale-token
+  registry that re-translates tab labels on
+  `<<LocaleChanged>>`; `tab()` / `configure_item()` aliasing;
+  `forget()` vs `remove()` registry semantics (when they work —
+  `remove()` clears all three registries; `forget()` only clears
+  the locale token); the trip-up where `_to_tab_id` falls back to
+  treating an unknown string as a Tk widget path (the source of
+  "Invalid slave specification" errors when stale keys escape
+  caller bookkeeping).
+
+`tools/check_doc_structure.py --category views` → 3 files
+checked, all pass.
+`tools/check_doc_snippets.py --run --file
+docs/widgets/views/notebook.md` → 0 failures (10 snippets, 1
+executed).
+
 Pages to review (canonical anchor: `pagestack.md`):
 
 - [x] `pagestack.md` — anchor for the views sweep
 - [x] `tabview.md` — composes Tabs + PageStack
-- [ ] `notebook.md` — wraps `ttk.Notebook` with key-based registry
+- [x] `notebook.md` — wraps `ttk.Notebook` with key-based registry
 
 ### Workflow (one page per session)
 
@@ -3319,6 +3413,75 @@ primitives.
   TabItem.TLabel / TabItem.TButton or remove `'pill'` from
   TabView's signature and docstring. (Surfaced by tabview.md
   rewrite, 2026-05-01.)
+- **`Notebook.on_tab_changed` / `on_tab_activated` /
+  `on_tab_deactivated` never fire** — the entire enriched event
+  mechanism is bound to the wrong virtual event name.
+  `widgets/primitives/notebook.py:570,485,509` bind
+  `<<NotebookTabChange>>` (present tense, no `'d'`), but Tk's
+  underlying `ttk.Notebook` emits `<<NotebookTabChanged>>` (past
+  tense, with `'d'`). Verified at runtime: a direct bind to
+  `<<NotebookTabChanged>>` fires on programmatic and click
+  selection, but `nb.on_tab_changed(cb)` never fires. The
+  `wrapper` function inside `on_tab_changed` is what synthesizes
+  the activate / deactivate lifecycle events via
+  `event_generate(...)`, but since the wrapper itself never runs,
+  those events are never generated either — and the
+  `_last_selected` / `_last_change_reason` / `_last_change_via`
+  state the source maintains for the enriched payload is never
+  observed. Workaround until fixed: bind directly to
+  `<<NotebookTabChanged>>` and read `nb.select()` /
+  `nb._tk_to_key.get(...)` from the widget. Fix: change the bind
+  string in three places to the past-tense name and update the
+  three internal `event_generate` calls to match the chosen
+  spelling for the synthetic activate / deactivate events.
+  (Surfaced by notebook.md rewrite, 2026-05-01.)
+- **`Notebook.remove(tab)` and `Notebook.forget(tab)` always raise
+  `TypeError: WidgetCapabilitiesMixin.forget() takes 1 positional
+  argument but 2 were given`.** MRO conflict:
+  `WidgetCapabilitiesMixin.forget` (the
+  `pack_forget`/`grid_forget` shim, takes no positional arguments)
+  appears in the MRO at `core/mixins/widget.py` *before*
+  `tkinter.ttk.Notebook.forget(tabid)`, so
+  `super().forget(tabid)` from
+  `Notebook.remove`/`Notebook.forget` dispatches to the wrong
+  method. Verified at runtime. `Notebook.hide(tab)` works because
+  there is no upstream `hide` override above ttk.Notebook in the
+  MRO. Workaround:
+  `tkinter.ttk.Notebook.forget(nb, nb._to_tab_id(tab))` plus
+  manual cleanup of `_tk_to_key`, `_key_registry`, and
+  `_tab_locale_tokens`. Fix options: (a) call
+  `ttk.Notebook.forget(self, tabid)` directly instead of via
+  `super()`; (b) push the `WidgetCapabilitiesMixin.forget` shim
+  later in the MRO so it doesn't shadow ttk's `forget`; (c) rename
+  the mixin's geometry-forget to something other than `forget`.
+  (Surfaced by notebook.md rewrite, 2026-05-01.)
+- `Notebook.add()` / `Notebook.insert()` validation errors leave
+  orphan tabs in the strip. Both validation steps inside
+  `_make_key` (`widgets/primitives/notebook.py:147-154`) — the
+  duplicate-key `NavigationError` and the empty-string
+  `ValueError` — run *after* `super().insert()` has already added
+  the auto-created Frame to the underlying ttk notebook. Verified
+  at runtime: a single `nb.add(text='OK', key='ok')` followed by
+  `nb.add(text='Bad', key='')` (raises `ValueError`) leaves
+  `nb.keys() == ('ok', '')` and `len(nb.tabs()) == 2`. The orphan
+  has no entry in `_key_registry` / `_tk_to_key`, and there is no
+  public way to remove it (the broken `remove()` aside — see the
+  separate bug). Either validate the key before `super().insert()`
+  runs, or roll back the ttk insert on validation failure.
+  (Surfaced by notebook.md rewrite, 2026-05-01.)
+- `Notebook.add()` / `Notebook.insert()` with an existing widget
+  silently drops extra kwargs. When the first positional argument
+  is `None`, `**kwargs` flows into `Frame(self, **kwargs)`
+  (correct). When a widget is passed, `**kwargs` is ignored —
+  not applied to the existing widget, not raised on. Verified at
+  runtime: `existing = ttk.Frame(nb, padding=5);
+  nb.add(existing, key='x', text='X', padding=99)` leaves
+  `existing.cget('padding') == (5,)`. Same shape as the PageStack
+  kwargs-drop bug already on this list. Either raise `TypeError`
+  when both an existing widget and extra kwargs are passed, or
+  apply the kwargs via `widget.configure(**kwargs)`
+  post-registration. (Surfaced by notebook.md rewrite,
+  2026-05-01.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
