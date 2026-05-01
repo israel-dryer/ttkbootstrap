@@ -34,24 +34,26 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, views sweep started — 1/3 with pagestack anchor; only views and primitives remain)
+### Current handoff (2026-05-01, views sweep 2/3 — tabview rewrite landed; only notebook + primitives remain)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 the dialogs sweep (11/11), inputs sweep (11/11), data-display sweep
 (8/8), layout sweep (12/12), navigation sweep (5/5), overlays sweep
 (2/2), and selection sweep (9/9) are all complete. Views sweep
-opened 2026-05-01 with the `pagestack.md` anchor rewrite — sweep is
-1/3 (pagestack done; tabview, notebook remaining). The selection
-sweep was closed on 2026-05-01 with the calendar rewrite (commit
-`9334701`) — `checkbutton`, `switch`, `checktoggle`, `radiobutton`,
-`radiogroup`, `radiotoggle`, `togglegroup`, `optionmenu`, `calendar`
-all done. The inputs sweep was briefly reopened on 2026-05-01 when
-`selectbox.md` was relocated from `widgets/selection/` to
-`widgets/inputs/` (see "SelectBox relocation" below); it has now
-been rewritten under the inputs template (commit `d495951`,
-2026-05-01) and the sweep is closed at 11/11. Remaining
-editorial-review categories: views (2/3 pages), primitives (5/5 pages).**
+opened 2026-05-01 with the `pagestack.md` anchor rewrite and
+advanced to 2/3 the same day with the `tabview.md` rewrite — sweep
+is 2/3 (pagestack and tabview done; notebook remaining). The
+selection sweep was closed on 2026-05-01 with the calendar rewrite
+(commit `9334701`) — `checkbutton`, `switch`, `checktoggle`,
+`radiobutton`, `radiogroup`, `radiotoggle`, `togglegroup`,
+`optionmenu`, `calendar` all done. The inputs sweep was briefly
+reopened on 2026-05-01 when `selectbox.md` was relocated from
+`widgets/selection/` to `widgets/inputs/` (see "SelectBox
+relocation" below); it has now been rewritten under the inputs
+template (commit `d495951`, 2026-05-01) and the sweep is closed at
+11/11. Remaining editorial-review categories: views (1/3 pages
+remaining), primitives (5/5 pages).**
 
 **SelectBox relocation (2026-05-01).** The `selectbox.md` page was
 moved from `widgets/selection/` to `widgets/inputs/`. Rationale: a
@@ -2039,7 +2041,7 @@ Pages to review (canonical anchor: `checkbutton.md`):
 (`selectbox.md` was moved to `widgets/inputs/`; it is now tracked
 under the inputs sweep, not selection.)
 
-### Widget pages — views (`docs/widgets/views/`, 3 pages) — 1/3 (2026-05-01)
+### Widget pages — views (`docs/widgets/views/`, 3 pages) — 2/3 (2026-05-01)
 
 Template: **`widget-navigation-template.md`** (reused, not cloned).
 The navigation template's required H2s (`Basic usage` →
@@ -2146,10 +2148,117 @@ pagestack.md no longer in the missing-sections list.
 docs/widgets/views/pagestack.md` → 0 failures (7 snippets, 1
 executed).
 
+Last session (2026-05-01, tabview sweep — 2/3):
+
+- `tabview.md` rewritten to the navigation template. TabView is the
+  second page in the sweep — a `Frame` that owns a `Tabs` bar plus a
+  `PageStack`, wired together by a shared `tk.StringVar` so a tab
+  click drives `pagestack.navigate(key)` via a variable trace.
+  Restructured around the slim navigation arc with `Navigation
+  model` covering keyed targets (tabs and pages share the same key,
+  the TabItem's `value` *is* the key), random-access selection,
+  imperative-only observation (no `signal=` / `variable=` on
+  TabView itself), and the auto-select-first-tab semantics. **Five
+  runtime-verified bugs surfaced**, three of which are real API
+  failures (not just doc gaps):
+  (1) **`tabview.remove(key)` always raises `KeyError`.** The
+  implementation at `composites/tabs/tabview.py:194` calls
+  `self._tabs.remove(tab)` where `tab` is the **TabItem widget**,
+  but `Tabs.remove(key: str)` expects a **string key** and looks
+  up the dict entry. The dict (`Tabs._tabs`) is keyed by Tabs's
+  auto-generated string keys (`tab_0`, `tab_1`, …; TabView calls
+  `Tabs.add(...)` with no `key=` so they're auto-generated), so a
+  TabItem reference never matches and Tabs raises
+  `KeyError: "No tab with key '<TabItem path>'"`. Verified at
+  runtime: `tabview.add('home', ...); tabview.remove('home')` →
+  KeyError. **The same crash hits the X-button path** because
+  `tabview.add(...)` wires the close_command (when `enable_closing`
+  / `closable=True`) to `lambda: self.remove(key)` — clicking X on
+  a closable tab raises the same KeyError from inside the Tk
+  callback. So `enable_closing` is functionally broken in current
+  code. Fix: pass the right key. Either look up the Tabs-internal
+  key by walking `self._tabs._tabs.items()` and matching on the
+  TabItem reference, or change `Tabs.add()` to accept and respect
+  a caller-supplied `key=` from TabView. Documented as a `!!!
+  danger` block in Behavior; added to the bugs list.
+  (2) **`tabview.navigate(key, data=...)` pushes history twice.**
+  The implementation at `composites/tabs/tabview.py:218-228` writes
+  the key through `self._tab_variable.set(key)` first, which
+  triggers the variable trace `_on_tab_selected` → calls
+  `self._page_stack.navigate(key)` with **no** data (history push
+  #1, with empty data). Then it calls `self._page_stack.navigate(
+  key, data=data)` itself (history push #2, with caller data). Net
+  effect: two `<<PageChange>>` events fire per call (first with
+  empty `data`, second with the caller's), and history grows by
+  two entries. Verified at runtime
+  (`history=[('home',{}),('files',{}),('home',{}),('home',{'x':1
+  })]` after `add('home') add('files') select('files')
+  navigate('home', data={'x':1})`). Fix options: (a) skip the
+  trace path when `data` is provided and call
+  `self._page_stack.navigate(...)` once explicitly, (b) plumb the
+  data through the variable trace so the trace handler picks it up
+  somehow (cleaner: add a one-shot pending-data slot read and
+  cleared by `_on_tab_selected`). Documented as a `!!! warning`
+  in Navigation model with the `tabview.page_stack_widget.navigate(
+  key, data=...)` workaround; added to the bugs list.
+  (3) **`<<TabSelect>>` and `<<TabClose>>` do not fire on TabView.**
+  The class docstring at `composites/tabs/tabview.py:23-27` lists
+  all four events (`<<TabSelect>>`, `<<TabClose>>`, `<<TabAdd>>`,
+  `<<PageChange>>`) under "Events", but only `<<PageChange>>` and
+  `<<TabAdd>>` actually reach the TabView (forwarded via
+  `on_page_changed` / `on_tab_added` to the inner widgets).
+  `<<TabSelect>>` and `<<TabClose>>` are emitted on the individual
+  `TabItem` (same shape as the Tabs bug already on the bugs list)
+  and Tk virtual events do not propagate up the parent chain — so
+  `tabview.bind("<<TabSelect>>", ...)` silently no-ops. Verified at
+  runtime. Fix: forward the events with a second `event_generate`
+  in `_on_tab_click` / `_on_close_click` paths, or fix the
+  docstring and document `tab.bind('<<TabSelect>>', ...)` as the
+  correct pattern. Documented as a `!!! warning` in Events; added
+  to the bugs list (this one is the same root cause as the Tabs
+  bubbling bug, but TabView's docstring repeats the false claim
+  for itself).
+  Also surfaced (no new bug, just doc fixes vs the existing
+  page):
+  - the existing page used `tabview.tabs` (no parens) and
+    `tabview.page_stack` to refer to the inner widgets, but those
+    properties don't exist by those names — `tabview.tabs` is a
+    method (returning a tuple of TabItems), and `tabview.page_stack`
+    raises `AttributeError`. The actual properties are
+    `tabs_widget` and `page_stack_widget`. Fixed in the rewrite.
+  - the existing page documented `variant='pill'` as a working
+    variant (matching the constructor signature). The TabView
+    constructor succeeds, but the very first `add()` call raises
+    `BootstyleBuilderError: Builder 'pill' not found for widget
+    class 'TabItem.TFrame'`. Same root cause as the Tabs `pill`
+    bug already on the list — TabView inherits the bug because it
+    constructs a Tabs widget that constructs TabItems with no
+    `pill` builder registered. Documented as a `!!! warning` in
+    Common options.
+  - `tabview.add(key, page=existing, padding=99)` silently drops
+    `padding=99` because PageStack's `add()` only feeds kwargs to
+    the auto-created Frame in the `page is None` branch — same
+    shape as the PageStack kwargs-drop bug already on the list.
+    Documented as a Common-options note pointing at the
+    PageStack bug.
+  - `tabview.select('phantom')` and `tabview.navigate('phantom')`
+    are silent no-ops. Validated against `_tab_map` before
+    writing the variable. Inconsistent with Tabs's permissive
+    `set('phantom')` (which writes the orphan value through), but
+    intentional here since TabView would otherwise stack-trace
+    further down.
+
+`tools/check_doc_structure.py --category views` →
+3 files checked, 1 still failing (notebook.md remains);
+tabview.md no longer in the missing-sections list.
+`tools/check_doc_snippets.py --run --file
+docs/widgets/views/tabview.md` → 0 failures (6 snippets, 1
+executed).
+
 Pages to review (canonical anchor: `pagestack.md`):
 
 - [x] `pagestack.md` — anchor for the views sweep
-- [ ] `tabview.md` — composes Tabs + PageStack
+- [x] `tabview.md` — composes Tabs + PageStack
 - [ ] `notebook.md` — wraps `ttk.Notebook` with key-based registry
 
 ### Workflow (one page per session)
@@ -3131,6 +3240,85 @@ primitives.
   passed, or apply the kwargs by calling
   `page.configure(**kwargs)` after registration. (Surfaced by
   pagestack.md rewrite, 2026-05-01.)
+- **`TabView.remove(key)` always raises `KeyError`.** The
+  implementation at `composites/tabs/tabview.py:194` calls
+  `self._tabs.remove(tab)` where `tab` is the **TabItem widget**
+  popped from `self._tab_map`, but `Tabs.remove(key: str)` (at
+  `composites/tabs/tabs.py:340-355`) expects a **string key** and
+  rejects anything else with `KeyError: "No tab with key '<key>'"`.
+  Tabs's internal dict is keyed by auto-generated strings
+  (`tab_0`, `tab_1`, …; TabView calls `Tabs.add(...)` with no
+  `key=` argument so they're auto-generated), so the TabItem
+  reference never matches. **The same crash hits the X-button
+  path** because `tabview.add(...)` wires the default
+  `close_command` (when `enable_closing` / `closable=True`) to
+  `lambda: self.remove(key)` — clicking X on a closable tab
+  raises the same `KeyError` from inside the Tk button callback.
+  Verified at runtime: `tv.add('home'); tv.remove('home')` →
+  KeyError, and `tv.add('docs', closable=True);
+  tv.tab('docs').cget('close_command')()` → KeyError. Net effect:
+  `tabview.remove()` is unusable, and `enable_closing=True` /
+  `enable_closing='hover'` are functionally broken.
+  Fix: walk `self._tabs._tabs.items()` to find the
+  Tabs-internal key matching the TabItem reference and pass that
+  string to `Tabs.remove(...)`, or change `TabView` to pass a
+  caller-supplied `key=` to `Tabs.add(...)` so the Tabs-internal
+  key matches the TabView key. (Surfaced by tabview.md rewrite,
+  2026-05-01.)
+- **`TabView.navigate(key, data=...)` pushes history twice and
+  fires `<<PageChange>>` twice.** The implementation at
+  `composites/tabs/tabview.py:218-228` writes the key through
+  `self._tab_variable.set(key)` first, which triggers the variable
+  trace `_on_tab_selected` → calls `self._page_stack.navigate(
+  key)` with **no** data (history push #1, with empty data). Then
+  it calls `self._page_stack.navigate(key, data=data)` itself
+  (history push #2, with caller data). Verified at runtime: after
+  `add('home') add('files') select('files') navigate('home',
+  data={'x':1})`, `pagestack._history == [('home', {}), ('files',
+  {}), ('home', {}), ('home', {'x': 1})]`. Net effect: history
+  grows by 2 entries per call, listeners fire twice with
+  inconsistent payloads (first empty `data`, second the caller's
+  data). Fix options: (a) skip the trace path for navigate-with-
+  data and call `self._page_stack.navigate(...)` once with the
+  data, plus a separate `self._tab_variable.set(key)` write that
+  the trace's "already on this page" guard short-circuits; (b)
+  add a one-shot pending-data slot read and cleared by
+  `_on_tab_selected`. Workaround until fixed: avoid
+  `tabview.navigate(...)` entirely and call
+  `tabview.page_stack_widget.navigate(key, data=...)` plus
+  `tabview.select(key)` directly. (Surfaced by tabview.md
+  rewrite, 2026-05-01.)
+- **`TabView.<<TabSelect>>` and `<<TabClose>>` do not fire on the
+  TabView.** The class docstring at
+  `composites/tabs/tabview.py:23-27` lists `<<TabSelect>>`,
+  `<<TabClose>>`, `<<TabAdd>>`, and `<<PageChange>>` under
+  "Events", but only the latter two reach the TabView itself
+  (forwarded via `on_page_changed` / `on_tab_added` to the inner
+  PageStack / Tabs widgets). `<<TabSelect>>` and `<<TabClose>>`
+  are emitted on the individual `TabItem` (same root cause as the
+  Tabs bubbling bug already on this list — `TabItem.event_generate
+  (...)` does not propagate up the parent chain), so
+  `tabview.bind("<<TabSelect>>", cb)` silently no-ops. Verified at
+  runtime. Fix: forward in the
+  `_on_tab_click` / `_on_close_click` paths with a second
+  `event_generate` on `self.master.master.master` (the
+  TabView) carrying the value payload, or fix the docstring and
+  add a `tab.bind('<<TabSelect>>', ...)` example. (Surfaced by
+  tabview.md rewrite, 2026-05-01.)
+- `TabView(variant='pill')` succeeds at construction but **the
+  first `add()` call raises `BootstyleBuilderError`**. Same root
+  cause as the Tabs `pill` bug already on this list — TabView
+  forwards `variant` to the inner Tabs which forwards it to each
+  TabItem, and the TabItem.TFrame style builder registers only
+  `'default'` and `'bar'` (`style/builders/tabitem.py:27-28`).
+  Verified at runtime: `tv = TabView(variant='pill')` succeeds,
+  `tv.add('home', text='Home')` →
+  `BootstyleBuilderError: Builder 'pill' not found for widget
+  class 'TabItem.TFrame'. Available variants: default, bar`.
+  Either register the `pill` variant on TabItem.TFrame /
+  TabItem.TLabel / TabItem.TButton or remove `'pill'` from
+  TabView's signature and docstring. (Surfaced by tabview.md
+  rewrite, 2026-05-01.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
