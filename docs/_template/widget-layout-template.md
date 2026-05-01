@@ -1,181 +1,139 @@
 ---
-title: LayoutWidgetName
+title: WidgetName
 ---
 
-# LayoutWidgetName
+# WidgetName
 
-1–2 paragraphs describing:
+1–2 paragraphs that say:
 
-- what kind of layout or structural widget this is
+- what kind of layout or structural widget this is (container,
+  divider, layout primitive)
+- whether it is **interactive** (user can resize, expand, scroll) or
+  **purely structural** (no behavior beyond geometry)
+- a comparison sentence if useful ("Unlike X…", "Similar to Y…")
 
-- what role it plays in organizing UI (grouping, dividing, positioning)
-
-- whether it is interactive or purely structural
-
-Mention whether it is a **container**, **divider**, or **layout primitive**.
-
----
-
-## Framework integration
-
-**Layout Properties**
-
-- How this widget expects to be used (container vs leaf)
-
-- How spacing/padding conventions apply
-
-- How it interacts with child widgets
-
-**Design System** (if applicable)
-
-- Whether borders/surfaces are theme-driven
-
-- Any `accent` usage and what it affects
-
-**Events & lifecycle** (if applicable)
-
-- Whether users should expect `<Configure>` or other layout-related events
+The intro carries the "what is this" framing — there's no separate
+`Framework integration` lead. Its content distributes into Common
+options (theme tokens, padding, surfaces), Behavior (resize,
+propagation, child management), and Events (`<Configure>`, virtual
+events for interactive layouts).
 
 ---
 
 ## Basic usage
 
-Show the simplest, most common usage pattern.
+One minimal, runnable example showing the widget in a layout.
 
 ```python
-# minimal example showing how the widget is used in a layout
+import ttkbootstrap as ttk
+
+# minimal, copy/paste runnable
 ```
 
-If the widget has multiple orientations or modes, show one primary example only.
+If the widget supports multiple orientations or modes (horizontal vs
+vertical, expanded vs collapsed), show only the primary mode here.
 
 ---
 
-## What problem it solves
+## Layout model
 
-Explain the layout or structural problem this widget addresses, such as:
+*Optional — include for widgets with non-trivial layout semantics
+(PackFrame's `gap`/`orient`, GridFrame's `columns`/`rows`,
+Accordion's expand/collapse, PanedWindow's sashes,
+ScrollView's viewport). Skip for plain containers like Frame, Card,
+LabelFrame, Separator, Sizegrip — they're transparent to layout.*
 
-- grouping related content
+Describe how the widget arranges its children (or itself):
 
-- dividing sections visually
+- geometry it imposes on children (auto-pack, auto-grid, manual)
+- propagation rules (does the widget size to its content?)
+- orientation, axis, or directional semantics
+- the relationship to standard geometry managers (`pack`, `grid`,
+  `place`)
 
-- applying consistent spacing or padding
-
-- organizing child widgets
-
-Focus on *why this widget exists* versus alternatives.
-
----
-
-## Core concepts
-
-Explain how to think about this widget.
-
-Typical subsections may include:
-
-- container vs non-container
-
-- orientation or direction
-
-- relationship to geometry managers (`pack`, `grid`)
-
-- visual vs structural responsibility
-
-Use short subsections as needed.
+Include one concise example illustrating the model.
 
 ---
 
-## Common options & patterns
+## Common options
 
-Document the most commonly used options and layout patterns, such as:
+Curated — what users actually configure. Layout widgets typically
+expose a small but distinctive option surface:
 
-- padding and spacing
+- `padding`, `width`, `height`
+- `accent`, `variant`, `surface`, `show_border` (theme tokens)
+- `orient`, `gap`, `columns` (layout-shaping options where applicable)
+- `style` (explicit ttk style override)
 
-- orientation
-
-- borders or separators
-
-- styling via `accent`
-
-Show short examples for each.
+Theme tokens, surface coloring, borders, and density live here — no
+separate `Appearance` section. Show short representative examples
+per concern; this is not an API dump.
 
 ---
 
 ## Behavior
 
-Describe relevant behavior, if any:
+Interaction and presentation rules:
 
-- resize behavior
+- resize behavior and geometry propagation
+- how the widget treats its children (manual vs automatic placement)
+- click / drag / keyboard interactions for interactive layouts
+  (PanedWindow sash drag, Accordion header click, Expander toggle)
+- visual states (`hover`, `active`, `disabled`) where applicable
+- non-interactive nature, when relevant — state it explicitly so
+  readers don't go looking for hooks that don't exist
 
-- propagation
-
-- interaction with child widgets
-
-- non-interactive nature (if applicable)
-
-If the widget has little or no behavior, state that explicitly.
+If the widget composes with scrollbars, popups, or sub-views,
+describe the lifecycle here.
 
 ---
 
 ## Events
 
-Explain whether this widget emits or participates in events.
+Document the event surface. For purely structural widgets this is
+often a deliberate negative ("Frame emits no virtual events"); include
+the section anyway so readers don't go looking.
 
-Common cases:
+Examples:
 
-- `<Configure>` for resize
-
-- no meaningful events for non-interactive widgets
+- `<Configure>` for resize-driven layout
+- virtual events for interactive layouts (`<<TabChanged>>`,
+  `<<ExpanderToggled>>`, `<<PanedWindowSashMoved>>`)
+- payload shape if applicable
 
 ```python
-widget.bind("<Configure>", ...)
+def on_resize(event):
+    ...
+
+widget.bind("<Configure>", on_resize)
 ```
 
 ---
 
-## UX guidance
+## When should I use WidgetName?
 
-Prescriptive guidance on layout usage:
-
-- when to use this widget
-
-- when spacing or another container is better
-
-- common pitfalls (overuse, nesting too deeply)
-
-This section should guide *design decisions*, not API usage.
-
----
-
-## When to use / when not to
-
-**Use LayoutWidgetName when:**
+Use WidgetName when:
 
 - …
 
-**Avoid LayoutWidgetName when:**
+Prefer OtherWidget when:
 
 - …
 
-Point to concrete alternatives.
+This sits near the bottom on purpose: readers reach it after they've
+seen what the widget does and how it's configured, so the
+recommendation lands with context.
 
 ---
 
-## Additional resources
+## Related widgets
 
-**Related widgets**
-
-- **OtherLayoutWidget** — how it differs
-
+- **OtherWidget** — how it differs
 - **AnotherWidget** — complementary role
 
-**Framework concepts**
+---
 
-- [Layout Properties](../../capabilities/layout-props.md)
+## Reference
 
-- [Layout](../../platform/geometry-and-layout.md)
-
-**API reference**
-
-- **API Reference:** `ttkbootstrap.LayoutWidgetName`
-
+- **API reference:** `ttkbootstrap.WidgetName`
 - **Related guides:** Layout, Design System
