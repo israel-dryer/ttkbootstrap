@@ -32,6 +32,7 @@ CATEGORY_TEMPLATE_MAP: dict[str, str] = {
     "navigation": "widget-navigation-template",
     "overlays": "widget-overlay-template",
     "selection": "widget-selection-template",
+    "views": "widget-navigation-template",
 }
 
 # Files to skip within a category (index pages, deprecation stubs, etc.)

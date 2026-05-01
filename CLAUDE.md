@@ -34,13 +34,15 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, selection sweep closed 9/9 — only the views and primitives sweeps remain)
+### Current handoff (2026-05-01, views sweep started — 1/3 with pagestack anchor; only views and primitives remain)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 the dialogs sweep (11/11), inputs sweep (11/11), data-display sweep
 (8/8), layout sweep (12/12), navigation sweep (5/5), overlays sweep
-(2/2), and selection sweep (9/9) are now all complete. The selection
+(2/2), and selection sweep (9/9) are all complete. Views sweep
+opened 2026-05-01 with the `pagestack.md` anchor rewrite — sweep is
+1/3 (pagestack done; tabview, notebook remaining). The selection
 sweep was closed on 2026-05-01 with the calendar rewrite (commit
 `9334701`) — `checkbutton`, `switch`, `checktoggle`, `radiobutton`,
 `radiogroup`, `radiotoggle`, `togglegroup`, `optionmenu`, `calendar`
@@ -49,7 +51,7 @@ all done. The inputs sweep was briefly reopened on 2026-05-01 when
 `widgets/inputs/` (see "SelectBox relocation" below); it has now
 been rewritten under the inputs template (commit `d495951`,
 2026-05-01) and the sweep is closed at 11/11. Remaining
-editorial-review categories: views, primitives.**
+editorial-review categories: views (2/3 pages), primitives (5/5 pages).**
 
 **SelectBox relocation (2026-05-01).** The `selectbox.md` page was
 moved from `widgets/selection/` to `widgets/inputs/`. Rationale: a
@@ -2037,6 +2039,119 @@ Pages to review (canonical anchor: `checkbutton.md`):
 (`selectbox.md` was moved to `widgets/inputs/`; it is now tracked
 under the inputs sweep, not selection.)
 
+### Widget pages — views (`docs/widgets/views/`, 3 pages) — 1/3 (2026-05-01)
+
+Template: **`widget-navigation-template.md`** (reused, not cloned).
+The navigation template's required H2s (`Basic usage` →
+`Navigation model` → `Common options` → `Behavior` → `Events` →
+`When should I use WidgetName?` → `Related widgets` → `Reference`)
+fit all three views pages — keyed-target enumeration plus a
+selection-vs-imperative distinction is exactly what PageStack /
+TabView / Notebook all need. `views` was added to
+`CATEGORY_TEMPLATE_MAP` in `tools/check_doc_structure.py` pointing
+at the navigation template, rather than cloning a dedicated
+`widget-view-template.md` — the template is general enough that
+duplication would just create drift risk. (If a future view widget
+needs a meaningfully different "Page model" framing, fork then.)
+
+`pagestack.md` is the canonical anchor for the views sweep, the way
+`button.md` / `textentry.md` / `messagedialog.md` / `label.md` /
+`frame.md` / `tabs.md` / `tooltip.md` / `checkbutton.md` anchored
+their respective categories. PageStack is the foundational
+primitive — TabView composes it with Tabs, AppShell exposes it as
+`shell.pages`.
+
+Last session (2026-05-01, views sweep started — pagestack anchor):
+
+- `pagestack.md` rewritten to the navigation template. PageStack is
+  a `Frame` subclass that owns a registry of keyed pages and shows
+  one at a time, plus a linear `(key, data)` history with
+  push/back/forward semantics. Restructured around the slim
+  navigation arc with `Navigation model` covering keyed pages,
+  sequential history, imperative-only observation (no `signal=` /
+  `variable=`), and the page lifecycle (mount/unmount events).
+  Four runtime-verified bugs surfaced; all four are real API
+  gotchas, not just doc gaps:
+  (1) `<<PageUnmount>>` is fired without a `data=` argument
+  (`composites/pagestack.py:188`), so handlers receive
+  `event.data is None` while the other three navigation events
+  (`<<PageWillMount>>`, `<<PageMount>>`, `<<PageChange>>`) all
+  carry the full payload. Verified at runtime: a binding on
+  `<<PageUnmount>>` receives `None`. Either pass the same payload
+  (the navigation has the same `prev_page` / `prev_data` /
+  `index` info available at line 187) or document the asymmetry.
+  Documented as a `!!! warning` in Events; added to the bugs list.
+  (2) `<<PageUnmount>>` and `<<PageWillMount>>` fire on the page
+  *widget*, not on the PageStack
+  (`composites/pagestack.py:188,208`). Tk virtual events do not
+  propagate up the parent chain, so binding either event on the
+  stack itself silently no-ops. The class docstring at
+  `composites/pagestack.py:44-50` lists all four events under
+  "Triggered when..." without naming the emission target —
+  reading it implies all four bubble to the stack. Same shape as
+  the Tabs `<<TabSelect>>` / SideNav `<<ItemInvoked>>` bugs
+  already on this list. Documented as a `!!! warning` with the
+  correct `page.bind('<<PageUnmount>>', ...)` workaround.
+  (3) `stack.remove(key)` orphans history. The implementation
+  (`composites/pagestack.py:114-129`) destroys the page widget
+  and removes it from `_pages`, but does not rewrite `_history`
+  or `_index` (the only history fix-up is clearing `_current` to
+  `None` if the removed key was active). Subsequent `back()` or
+  `forward()` walking onto the orphan slot raises
+  `NavigationError` from `navigate()`'s existence check. Verified
+  at runtime: with `history=[a,b,c]`, `index=2`, `current=c`,
+  `stack.remove('b')` leaves `history` unchanged; `stack.back()`
+  raises `NavigationError: Page b does not exist`. Either rewrite
+  history to drop orphan entries (and adjust `_index` accordingly)
+  or document the precondition that callers must only remove
+  pages outside their active history. Documented as a `!!!
+  warning` in Behavior; added to the bugs list.
+  (4) `stack.add(key, page, **kwargs)` silently drops `**kwargs`
+  when `page=` is provided. The signature is
+  `add(self, key, page=None, **kwargs)` and the kwargs only feed
+  the auto-created Frame in the `if page is None` branch
+  (`composites/pagestack.py:106-107`). Verified at runtime:
+  `stack.add('foo', existing_frame, padding=99)` returns the
+  passed frame with its original `padding=(5,)`, never `99`.
+  Either raise `TypeError` when both `page=` and kwargs are
+  passed, or apply the kwargs by calling
+  `page.configure(**kwargs)` after registration. Documented as a
+  `!!! warning` in Common options; added to the bugs list.
+  Also documented (some new, some restated): `add(key,
+  widget_with_other_master)` does **not** reparent — verified at
+  runtime that `stack.winfo_children()` is empty when the widget's
+  `master` is some other frame (the page is registered but never
+  visually attached to the stack); caller-supplied `data` keys
+  passed to `navigate(data=...)` are silently overwritten when
+  they collide with the navigation keys (`page`, `prev_page`,
+  `prev_data`, `nav`, `index`, `length`, `can_back`,
+  `can_forward`); PageStack does **not** auto-mount the first
+  page on `add()` — different from `Tabs` which writes the first
+  added value to its selection variable; `replace=True` overrides
+  the current entry only when there *is* a current entry, so the
+  flag is silently ignored when called with no prior `navigate()`;
+  the mount sequence (`_unmount_event` → `pack_forget` →
+  `_will_mount_event` → `pack` → `_mount_event` → `_change_event`)
+  means `<<PageWillMount>>` fires before geometry-management,
+  while `<<PageMount>>` fires after; the `on_page_changed` /
+  `off_page_changed` helpers wrap `<<PageChange>>` only — the
+  other three events have no helper. Common options consolidates
+  into a 4-row table (no widget-specific options; just inherited
+  Frame surface).
+
+`tools/check_doc_structure.py --category views` →
+3 files checked, 2 still failing (tabview.md and notebook.md);
+pagestack.md no longer in the missing-sections list.
+`tools/check_doc_snippets.py --run --file
+docs/widgets/views/pagestack.md` → 0 failures (7 snippets, 1
+executed).
+
+Pages to review (canonical anchor: `pagestack.md`):
+
+- [x] `pagestack.md` — anchor for the views sweep
+- [ ] `tabview.md` — composes Tabs + PageStack
+- [ ] `notebook.md` — wraps `ttk.Notebook` with key-based registry
+
 ### Workflow (one page per session)
 
 1. Read the page end-to-end.
@@ -2969,6 +3084,53 @@ primitives.
   are `None`, or document that `cal.value` is meaningless in
   range mode and callers must read `cal.range`. (Surfaced by
   calendar.md rewrite, 2026-05-01.)
+- `PageStack.<<PageUnmount>>` is fired without a `data=` argument
+  (`composites/pagestack.py:188`), so handlers receive
+  `event.data is None`, while the other three navigation events
+  carry the full payload. The class docstring at
+  `composites/pagestack.py:44-50` lists all four under "all events
+  provide event.data with keys ..." — false for `<<PageUnmount>>`.
+  Either pass the same payload (the navigation has the same
+  `prev_page` / `prev_data` / `index` info available at
+  `pagestack.py:187`) or document the asymmetry. (Surfaced by
+  pagestack.md rewrite, 2026-05-01.)
+- `PageStack` `<<PageUnmount>>` and `<<PageWillMount>>` fire on the
+  page *widget*, not on the PageStack
+  (`composites/pagestack.py:188,208`). Tk virtual events do not
+  propagate up the parent chain, so binding either event on the
+  stack itself silently no-ops. The class docstring lists all four
+  events together without naming the emission target — implying
+  bubble. Same shape as the Tabs `<<TabSelect>>` / SideNav
+  `<<ItemInvoked>>` bugs already on this list. Either forward
+  these two events to the stack via a second `event_generate(...)`
+  call, or document the binding target alongside each event in
+  the class docstring. (Surfaced by pagestack.md rewrite,
+  2026-05-01.)
+- `PageStack.remove(key)` orphans `_history`. The implementation
+  (`composites/pagestack.py:114-129`) destroys the page widget and
+  removes it from `_pages`, but does not rewrite `_history` or
+  `_index` (the only history fix-up is clearing `_current` to
+  `None` if the removed key was active). Subsequent `back()` or
+  `forward()` walking onto the orphan slot raises
+  `NavigationError` from `navigate()`'s existence check. Verified
+  at runtime: with `history=[a,b,c]`, `index=2`, `current=c`,
+  `stack.remove('b')` leaves `history` unchanged; `stack.back()`
+  → `NavigationError: Page b does not exist`. Either rewrite
+  history to drop orphan entries (and adjust `_index` to step
+  past them) or document the precondition that callers must only
+  remove pages outside their active history. (Surfaced by
+  pagestack.md rewrite, 2026-05-01.)
+- `PageStack.add(key, page, **kwargs)` silently drops `**kwargs`
+  when `page=` is provided. The signature is
+  `add(self, key, page=None, **kwargs)` and the kwargs only feed
+  the auto-created Frame in the `if page is None` branch
+  (`composites/pagestack.py:106-107`). Verified at runtime:
+  `stack.add('foo', existing_frame, padding=99)` returns the
+  passed frame with its original `padding=(5,)`, never `99`.
+  Either raise `TypeError` when both `page=` and kwargs are
+  passed, or apply the kwargs by calling
+  `page.configure(**kwargs)` after registration. (Surfaced by
+  pagestack.md rewrite, 2026-05-01.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
