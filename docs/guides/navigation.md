@@ -528,7 +528,7 @@ to `SideNav` + `PageStack` only when you need the extra control.
 
 - [AppShell](../widgets/application/appshell.md) — toolbar + sidebar + pages in one window.
 - [SideNav](../widgets/navigation/sidenav.md) — standalone sidebar navigation.
-- [Toolbar](../widgets/navigation/toolbar.md) — horizontal toolbar.
+- [Toolbar](../widgets/application/toolbar.md) — horizontal toolbar.
 - [TabView](../widgets/views/tabview.md) — tabs + content area.
 - [Tabs](../widgets/navigation/tabs.md) — standalone tab bar.
 - [Notebook](../widgets/views/notebook.md) — legacy `ttk.Notebook` wrapper.

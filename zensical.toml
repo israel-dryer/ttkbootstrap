@@ -36,6 +36,7 @@ nav = [
         { "Application" = [
             { "App" = "widgets/application/app.md" },
             { "AppShell" = "widgets/application/appshell.md" },
+            { "Toolbar" = "widgets/application/toolbar.md" },
             { "Toplevel" = "widgets/application/toplevel.md" },
         ] },
         { "Actions" = [
@@ -95,7 +96,6 @@ nav = [
         ] },
         { "Navigation" = [
             { "SideNav" = "widgets/navigation/sidenav.md" },
-            { "Toolbar" = "widgets/navigation/toolbar.md" },
             { "Tabs" = "widgets/navigation/tabs.md" },
         ] },
         { "Views" = [

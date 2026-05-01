@@ -5,7 +5,7 @@ title: AppShell
 # AppShell
 
 `AppShell` is an **opinionated application shell** — an `App` subclass
-that wires a [`Toolbar`](../navigation/toolbar.md), a
+that wires a [`Toolbar`](toolbar.md), a
 [`SideNav`](../navigation/sidenav.md), and a
 [`PageStack`](../views/pagestack.md) into the standard desktop layout
 (toolbar across the top, sidebar on the left, pages filling the rest).
@@ -293,7 +293,7 @@ underlying widgets via these properties:
 
 | Property | Type | When present |
 |---|---|---|
-| `shell.toolbar` | [`Toolbar`](../navigation/toolbar.md) or `None` | Only when `show_toolbar=True` |
+| `shell.toolbar` | [`Toolbar`](toolbar.md) or `None` | Only when `show_toolbar=True` |
 | `shell.nav` | [`SideNav`](../navigation/sidenav.md) or `None` | Only when `show_nav=True` |
 | `shell.pages` | [`PageStack`](../views/pagestack.md) | Always |
 | `shell.current_page` | `str` (page key) or `None` | Always |
@@ -349,7 +349,7 @@ window of the process, instantiated once.
 
 - [`App`](app.md) — the underlying root window class without the layout opinions
 - [`Toplevel`](toplevel.md) — secondary windows that share the App's theme and event loop
-- [`Toolbar`](../navigation/toolbar.md) — the toolbar widget AppShell builds at the top
+- [`Toolbar`](toolbar.md) — the toolbar widget AppShell builds at the top
 - [`SideNav`](../navigation/sidenav.md) — the sidebar widget AppShell builds on the left
 - [`PageStack`](../views/pagestack.md) — the page container AppShell builds on the right
 

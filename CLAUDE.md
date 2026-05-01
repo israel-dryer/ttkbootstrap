@@ -34,7 +34,7 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, navigation sweep — 4/5; SideNav rewritten to nav template, NavigationView added to SKIP_FILES; only toolbar.md remains)
+### Current handoff (2026-05-01, navigation sweep COMPLETE — Toolbar relocated to widgets/application/, rewritten to action template)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
@@ -1101,17 +1101,17 @@ Pages to review (canonical anchor: `frame.md`):
 - [x] `separator.md` — visual divider
 - [x] `sizegrip.md` — bottom-right resize handle
 
-### Widget pages — navigation (`docs/widgets/navigation/` + `appshell.md`, 5 pages) — IN PROGRESS 2/5
+### Widget pages — navigation (`docs/widgets/navigation/` + `appshell.md` + `toolbar.md`, 5 pages) — DONE 5/5 (2026-05-01)
 
 The "navigation directory" turned out to be heterogeneous; one
-template doesn't fit all five pages. Per-page assignment:
+template didn't fit all five pages. Per-page assignment:
 
 | Page | Canonical location | Template | Status |
 |---|---|---|---|
 | `tabs.md` | `widgets/navigation/tabs.md` | `widget-navigation-template.md` | done (anchor) |
 | `appshell.md` | `widgets/application/appshell.md` | bespoke app-shell arc | **done 2026-05-01** |
 | `sidenav.md` | `widgets/navigation/sidenav.md` | `widget-navigation-template.md` | **done 2026-05-01** |
-| `toolbar.md` | `widgets/navigation/toolbar.md` | **`widget-action-template.md`** (no nav model) | pending |
+| `toolbar.md` | `widgets/application/toolbar.md` | `widget-action-template.md` (with `Item types` subsection) | **done 2026-05-01** — relocated from `widgets/navigation/`; no longer in CATEGORY_TEMPLATE_MAP enforcement |
 | `navigationview.md` | `widgets/navigation/navigationview.md` | none — deprecation stub | **done 2026-05-01** — added to `SKIP_FILES` in `tools/check_doc_structure.py` |
 
 Rationale for the split: AppShell extends `App` and owns the window
@@ -1394,30 +1394,96 @@ supposed to follow per the per-page assignment table above).
 docs/widgets/navigation/sidenav.md` → 0 failures (4 snippets,
 1 executed).
 
-**Open question for the toolbar.md session:** the file lives at
-`docs/widgets/navigation/toolbar.md` but should follow
-`widget-action-template.md`. Two paths to make the structure
-check happy:
-(a) move the file to `docs/widgets/actions/toolbar.md` and update
-    cross-refs (zensical.toml line 99, plus the relative links in
-    sidenav.md / appshell.md / guides/toolbars.md / etc.). Cleanest
-    long-term; mechanical.
-(b) add a `FILE_TEMPLATE_OVERRIDES` map in
-    `tools/check_doc_structure.py` keyed by `category/file.md`
-    pointing at a template stem. Less churn, preserves the menu
-    position semantics.
-The zensical menu lists Toolbar under "Navigation" today
-(`zensical.toml:98`). If we keep that menu placement, (b) is the
-right answer; if Toolbar belongs under "Actions" alongside Button
-/ ButtonGroup / ContextMenu, (a) is. Decide first thing in the
-toolbar session.
+Last session (2026-05-01, toolbar sweep — final navigation page,
+relocated to widgets/application/):
+
+- The "where does toolbar live?" question was settled in favor of
+  **`docs/widgets/application/`** alongside AppShell — neither
+  `actions/` (the action-template fit but the directory is for
+  individual action *primitives*, not action *containers*) nor
+  `navigation/` (no selection, no keyed targets — fails the nav
+  template). Moved via `git mv`; cross-refs updated in 4 files
+  (`zensical.toml` — Toolbar promoted from Navigation menu to
+  Application menu alongside App/AppShell/Toplevel;
+  `docs/guides/navigation.md`; `docs/guides/toolbars.md`;
+  `docs/widgets/application/appshell.md`). The stub-deletion path
+  used for AppShell wasn't repeated here — the navigation/toolbar.md
+  rename was clean enough.
+- `toolbar.md` rewritten to the slim action template at the new
+  location. Toolbar is the second non-action page using the action
+  template (after AppShell's bespoke arc), and it earned a
+  custom **`Item types`** subsection up front covering the five
+  builders (`add_button` / `add_label` / `add_separator` /
+  `add_spacer` / `add_widget`) — that's the page's central API
+  and consolidates a 5-row table plus per-builder behavior. The
+  optional `Patterns` subsection is filled in for the custom-titlebar
+  + frameless-window composition (the dominant non-AppShell use
+  case) and a menubar-via-MenuButton recipe (since ttkbootstrap
+  doesn't ship a distinct `MenuBar` widget).
+- Three things the old page got wrong or omitted, two of which
+  became new bugs:
+  (1) the old `Quick start` showed the toolbar as a standalone
+  bar with `surface="chrome"` — fine — but the framing throughout
+  treated `accent` as a styling shortcut. Verified at runtime that
+  Toolbar (a `Frame` subclass) is in `CONTAINER_CLASSES`, so
+  `accent="primary"` is rerouted by the bootstyle wrapper to
+  `surface="primary"` — it tints the toolbar's background, not its
+  frame. Documented in Common options and pointed callers at
+  `surface=` for clarity.
+  (2) the old page never warned that **`add_widget()` does not
+  validate the widget's parent**. The source docstring
+  (`widgets/composites/toolbar.py:329-345`) says the widget must be
+  parented to `toolbar.content`, but `add_widget` only calls
+  `widget.pack(**pack_kwargs)` — a widget parented to anything else
+  still gets call-`pack`-ed, just at its *actual parent's* location,
+  which is silently nowhere visible inside the toolbar. Verified at
+  runtime: `Entry(app)` followed by `tb.add_widget(ent)` packs the
+  Entry into `app`, not into `tb.content`. Documented as a `!!!
+  warning` block in `Item types`; added to the bugs list.
+  (3) the old page never noted that **`density` and `button_variant`
+  defaults are read at `add_button()` time**. Reconfiguring them
+  later via `tb.configure(density='default')` only affects subsequent
+  `add_button()` calls — existing buttons keep their original
+  values. Verified at runtime. Documented in Behavior; not a bug,
+  but easy to misread as retroactive given the configure-delegate.
+- Surfaced one additional bug at the snippet-validation step: the
+  three application-window classes use **inconsistent kwarg names**
+  for the "remove OS chrome" option:
+    - `App.override_redirect=True` (with underscore)
+    - `Toplevel.overrideredirect=True` (no underscore — matches
+      Tk's native `wm overrideredirect`)
+    - `AppShell.frameless=True` (renamed entirely)
+  Verified all three at runtime
+  (`App(frameless=True)` → `TypeError: unexpected keyword`,
+  `Toplevel(frameless=True)` → `TclError: unknown option
+  "-frameless"`, both `App(override_redirect=True)` and
+  `Toplevel(overrideredirect=True)` succeed). Documented in
+  `Common options & dragging` with the per-class kwarg-name table
+  inline, and added to the bugs list. Either harmonize on a single
+  spelling across the three classes, or document the divergence
+  in a top-level note. (Surfaced by toolbar.md rewrite,
+  2026-05-01.)
+- Maximize toggle uses `winfo_toplevel().state('zoomed')` — Windows
+  canonical, accepted on macOS but on some Linux WMs is a no-op.
+  Documented as a cross-platform caveat in Behavior; not added to
+  the bugs list since the unreliability sits at Tk's wm-state
+  layer, not Toolbar's.
+
+`tools/check_doc_structure.py --category navigation` → 2 files
+checked, all pass (toolbar.md no longer in this directory; tabs.md
+and sidenav.md remain). `widgets/application/` is not in
+`CATEGORY_TEMPLATE_MAP`, so the new toolbar.md location has no
+template enforcement.
+`tools/check_doc_snippets.py --run --file
+docs/widgets/application/toolbar.md` → 0 failures (10 snippets,
+2 executed).
 
 Pages to review:
 
 - [x] `tabs.md` — navigation template (anchor)
 - [x] `appshell.md` — bespoke app-shell arc (at `widgets/application/`)
 - [x] `sidenav.md` — navigation template
-- [ ] `toolbar.md` — **action template** (no selection state)
+- [x] `toolbar.md` — action template (at `widgets/application/`)
 - [x] `navigationview.md` — deprecation stub; SKIP_FILES'd
 
 ### Workflow (one page per session)
@@ -2023,6 +2089,39 @@ primitives.
   callers can build a wider icon strip), or accept a separate
   `compact_pane_width=` argument. (Surfaced by sidenav.md rewrite,
   2026-05-01.)
+- `Toolbar.add_widget(widget)` does **not** validate that `widget`
+  is parented to `toolbar.content`. The source docstring
+  (`widgets/composites/toolbar.py:329-345`) says the widget must be
+  parented to `toolbar.content`, but the implementation only calls
+  `widget.pack(**pack_kwargs)` (lines 342-344). A widget parented to
+  any other frame still gets packed, but at *that* frame's location
+  — silently, with no error — so the developer's "I added it to the
+  toolbar" mental model breaks invisibly. Verified at runtime:
+  `Entry(app)` followed by `tb.add_widget(ent)` packs the Entry into
+  `app`, not into `tb.content`. Either reparent with
+  `widget.pack(in_=self._content_frame, ...)` so the call still
+  works regardless of how the widget was constructed, or raise a
+  `ValueError` when `widget.master is not self._content_frame`. The
+  silent-misplacement form is the worst option. (Surfaced by
+  toolbar.md rewrite, 2026-05-01.)
+- **Naming inconsistency across `App` / `Toplevel` / `AppShell` for
+  the "remove OS window chrome" option.** `App` exposes
+  `override_redirect=True` (with underscore;
+  `runtime/app.py:514,554`); `Toplevel` exposes `overrideredirect=True`
+  (no underscore, matching Tk's native `wm overrideredirect`;
+  `runtime/toplevel.py:40`); `AppShell` exposes `frameless=True`
+  (renamed entirely; `composites/appshell.py:61,98,110`). All three
+  set the same underlying `wm overrideredirect` attribute. Verified
+  at runtime: `App(frameless=True)` raises `TypeError: unexpected
+  keyword`; `Toplevel(frameless=True)` raises `TclError: unknown
+  option "-frameless"`; `App(override_redirect=True)` and
+  `Toplevel(overrideredirect=True)` and `AppShell(frameless=True)`
+  all succeed. Either pick one spelling across all three classes
+  (most uniform: `frameless=True` everywhere, since it reads as
+  intent rather than as a Tk implementation detail), or accept all
+  three as aliases on each class. The current state is a tripwire
+  for users moving snippets between `App`/`Toplevel`/`AppShell`.
+  (Surfaced by toolbar.md rewrite, 2026-05-01.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):

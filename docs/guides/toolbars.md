@@ -6,7 +6,7 @@ title: Toolbars
 
 A toolbar is a horizontal strip of actions — buttons, labels, status
 indicators, search boxes — that sits at the top of a window or pane.
-ttkbootstrap's [`Toolbar`](../widgets/navigation/toolbar.md) is a thin
+ttkbootstrap's [`Toolbar`](../widgets/application/toolbar.md) is a thin
 layout container with helpers for the common building blocks plus
 optional window controls for custom titlebars.
 
@@ -369,7 +369,7 @@ the long tail in a menu or `DropdownButton`.
 
 ## Additional resources
 
-- [Toolbar widget reference](../widgets/navigation/toolbar.md)
+- [Toolbar widget reference](../widgets/application/toolbar.md)
 - [AppShell](../widgets/application/appshell.md) — built-in toolbar
 - [SideNav](../widgets/navigation/sidenav.md) — paired with toolbar in
   the typical desktop layout
