@@ -4,11 +4,16 @@ title: SelectBox
 
 # SelectBox
 
-`SelectBox` is a **selection control** that lets users pick **one value from a list** using a field-like dropdown.
-It can optionally support **search filtering** and **custom (user-typed) values**.
+`SelectBox` is a field-style dropdown picker built on top of [`Field`](../../reference/widgets/Field.md):
+a label, an entry, a message line, and a chevron button that opens a popup list of
+items. Selecting an item writes its value into the field and emits `<<Change>>`. With
+`enable_search=True` the entry becomes editable and filters the popup list as the user
+types; with `allow_custom_values=True` it also accepts arbitrary text outside the list.
 
-Use `SelectBox` when you want a modern "select" experience (popup list + optional search) while keeping consistent
-field patterns like labels, messages, and validation.
+The committed value is whatever string sits in the entry — typically one of the strings
+in `items`, but the widget does not enforce that. Unlike [OptionMenu](../selection/optionmenu.md),
+which renders a raw button + popup menu, `SelectBox` carries the full form-field chrome
+(label, message, validation) and supports a typing-to-filter mode.
 
 <!--
 IMAGE: SelectBox overview
@@ -18,284 +23,256 @@ Theme variants: light / dark
 
 ---
 
-## Quick start
+## Basic usage
 
 ```python
 import ttkbootstrap as ttk
 
 app = ttk.App()
 
-sb = ttk.SelectBox(
+status = ttk.SelectBox(
     app,
     label="Status",
     items=["New", "In Progress", "Blocked", "Done"],
     value="New",
 )
-sb.pack(fill="x", padx=20, pady=20)
+status.pack(fill="x", padx=20, pady=20)
 
 app.mainloop()
 ```
 
----
-
-## When to use
-
-Use `SelectBox` when:
-
-- users should pick one value from a known list
-
-- search or filtering improves usability
-
-- you want a field-like dropdown with consistent form patterns
-
-### Consider a different control when...
-
-- You want a simpler, menu-based selector — use [OptionMenu](optionmenu.md)
-
-- You need single selection among visible options — use [RadioGroup](radiogroup.md)
-
-- You need direct access to `ttk.Combobox` API — use [Combobox](../primitives/combobox.md)
+In the default mode (no search, no custom values), the entry is read-only — clicking
+either the entry or the chevron button opens the popup; clicking an item commits it
+and closes the popup.
 
 ---
 
-## Appearance
+## Value model
 
-### Variants
+`SelectBox.value` holds the **currently selected string** — what shows in the entry.
+By default it is one of the strings in `items`; with `allow_custom_values=True` it
+can also be a free-form string the user typed.
 
-`SelectBox` is primarily a single pattern (field + popup list). The most meaningful "variant" is whether it behaves as:
-
-- a **strict picker** (choose from items)
-
-- an **editable picker** (allow custom values)
-
-See **Allowing custom values** in the Behavior section below.
-
-### Colors & Styling
-
-`SelectBox` typically follows field styling (surface, border, focus), plus a suffix button.
-
-Apply `accent` at the field level as needed:
+| Concept | Meaning | How to read it |
+|---|---|---|
+| `value` | The current entry text. Read or written via the property. | `sb.value` |
+| `selected_index` | Index of `value` in `items`, or `-1` if not found. | `sb.selected_index` |
 
 ```python
-ttk.SelectBox(app, label="Status", items=["New", "Done"], accent="secondary")
+sb = ttk.SelectBox(app, items=["Low", "Medium", "High"], value="Medium")
+print(sb.value)            # 'Medium'
+print(sb.selected_index)   # 1
+sb.value = "High"          # commits and emits <<Change>>
 ```
 
-!!! link "Design System"
-    For theming details, color tokens, and styling guidelines, see the [Design System](../../design-system/index.md) documentation.
+Setting `selected_index` to a valid integer writes the matching item; setting it to
+`None` or `-1` clears the field. Out-of-range integers raise `IndexError`.
 
----
+### Empty values
 
-## Examples and patterns
+With `allow_blank=True` (the default), an empty entry commits as `None`. With
+`allow_blank=False`, an empty input is replaced with the previous value on commit.
 
-### How the value works
+### Values not in `items`
 
-- `items` defines the available choices shown in the popup
+`SelectBox` does **not** validate writes against `items`. Both the constructor `value=`
+and the `sb.value =` setter silently accept any string — the entry shows that string,
+`selected_index` returns `-1`, and `<<Change>>` fires as if it were a normal selection.
+This is the same shape as [OptionMenu](../selection/optionmenu.md)'s permissive
+contract.
 
-- `value` is the committed selection (typically a string)
+!!! warning "Programmatic writes are unconstrained"
+    `sb.value = "not_in_items"` succeeds with no exception even when
+    `allow_custom_values=False`. Only popup-driven selection is gated by the list. If
+    you need strict validation, check `sb.selected_index >= 0` after writes or attach
+    a validation rule (see *Validation and constraints*).
 
-When the user selects from the popup, `SelectBox` updates `value` and emits `<<Changed>>`.
+### Signals and variables
 
-```python
-print("Current:", sb.value)
-sb.value = "In Progress"
-```
+`SelectBox` exposes the same reactive handles as [TextEntry](textentry.md), bound to
+the entry text:
 
-### Common options
+- `sb.signal` — a `Signal[str]`.
+- `sb.variable` — a Tk `StringVar`.
 
-#### `items`
-
-```python
-sb.configure(items=["Low", "Medium", "High"])
-```
-
-#### `value`
-
-```python
-sb.value = "Medium"
-```
-
-#### `selected_index`
-
-Get or set selection by index.
-
-```python
-sb.selected_index = 2       # select third item
-print(sb.selected_index)    # returns -1 if value not in items
-```
-
-#### `enable_search`
-
-Enable typing to filter the popup list.
-
-```python
-sb = ttk.SelectBox(
-    app,
-    label="Assignee",
-    items=["Alice", "Bob", "Charlie", "Diana"],
-    enable_search=True,
-)
-```
-
-#### `allow_custom_values`
-
-Allow values not present in `items`.
-
-```python
-sb = ttk.SelectBox(
-    app,
-    label="Tag",
-    items=["Bug", "Feature", "Docs"],
-    allow_custom_values=True,
-)
-```
-
-#### Dropdown button options
-
-```python
-sb = ttk.SelectBox(
-    app,
-    label="Priority",
-    items=["Low", "Medium", "High"],
-    show_dropdown_button=True,
-    dropdown_button_icon="chevron-down",
-)
-```
-
-!!! note "Using custom values"
-    `show_dropdown_button` is ignored when `allow_custom_values=True` (the button is always present).
-    The default icon is `"chevron-down"`.
-
-### Events
-
-```python
-def on_changed(e):
-    print("Changed:", sb.value)
-
-sb.on_changed(on_changed)
-```
-
-Most commonly used:
-
-- `<<Changed>>` — fired when the committed value changes
-
-### Binding to signals or variables
-
-Use `textsignal=` for reactive two-way binding:
+Pass your own with `textsignal=` or `textvariable=` to share the field's value with
+another widget or to read it reactively.
 
 ```python
 selection = ttk.Signal("Medium")
-
-box = ttk.SelectBox(
-    app,
-    items=["Low", "Medium", "High"],
-    textsignal=selection,
-)
-
+sb = ttk.SelectBox(app, items=["Low", "Medium", "High"], textsignal=selection)
 selection.subscribe(lambda v: print("selected:", v))
 ```
 
-For compatibility with code that uses `StringVar`, pass `textvariable=` instead.
+---
 
-### Validation and constraints
+## Common options
 
-When `allow_custom_values=False`, values are constrained to `items`, so validation is usually minimal.
+| Option | Purpose |
+|---|---|
+| `value` | Initial committed value. Constructor-only — `configure(value=...)` is broken; use `sb.value = ...` instead. |
+| `items` | Sequence of strings shown in the popup. Reconfigurable via `configure(items=...)`. |
+| `label` | Text shown above the entry. |
+| `message` | Helper text below the entry; replaced by validation errors. |
+| `required` | Adds an asterisk to the label and a `'required'` validation rule. |
+| `allow_blank` | Whether an empty input commits as `None` (default) or preserves the previous value. |
+| `enable_search` | Make the entry editable; typing filters the popup list. |
+| `allow_custom_values` | Make the entry editable and allow committing strings outside `items`. Forces the chevron button on. |
+| `show_dropdown_button` | Whether to render the chevron button (default `True`). Ignored when `allow_custom_values=True`. |
+| `dropdown_button_icon` | Icon name for the chevron button. Default `'chevron-down'`. **Construction-only** — `configure(dropdown_button_icon=...)` raises `TclError`. |
+| `accent` | Semantic color token for the focus ring and active border (`primary`, `success`, `danger`, …). Also tints the highlighted item in the popup. |
+| `density` | `'default'` or `'compact'` for tight forms. |
+| `state` | `'normal'`, `'disabled'`, or `'readonly'`. |
+| `textsignal` / `textvariable` | External signal or Tk variable bound to the entry text. |
+| `width` | Width of the entry in characters. |
 
-Validation is most useful when:
+```python
+ttk.SelectBox(app, items=["A", "B"])                              # default
+ttk.SelectBox(app, items=["A", "B"], enable_search=True)
+ttk.SelectBox(app, items=["A", "B"], allow_custom_values=True)
+ttk.SelectBox(app, items=["A", "B"], accent="success")
+ttk.SelectBox(app, items=["A", "B"], density="compact")
+```
 
-- the list of valid items changes dynamically
-
-- the field is conditionally required
-
-- the selected value must satisfy cross-field rules
+!!! link "See [Design System](../../design-system/index.md) for the full set of accent and density tokens."
 
 ---
 
 ## Behavior
 
-### Opening the popup
+### Modes
 
-The popup opens when:
+The combination of `enable_search` and `allow_custom_values` defines four behaviors:
 
-- the dropdown button is clicked
+| `enable_search` | `allow_custom_values` | Entry | Popup | Commits |
+|---|---|---|---|---|
+| `False` | `False` | read-only | click entry or chevron | popup selection only |
+| `True` | `False` | editable | click chevron, or focus + type | popup selection, **or** the first filtered item when the popup closes without explicit selection |
+| `False` | `True` | editable | click chevron | popup selection, or whatever the user typed |
+| `True` | `True` | editable | click chevron | popup selection, the first filter match on close, or arbitrary typed text |
 
-- the field is readonly and the user clicks the entry area
-  (default when search and custom values are off)
+### Popup positioning
 
-### Search and filtering
+The popup is a borderless `Toplevel` placed directly below the entry, matching the
+entry's width. When there isn't enough room below the entry on screen, it flips above
+— matching Tk's combobox `PlacePopdown` behavior. Maximum popup height is 200px;
+overflow scrolls inside the popup.
 
-When `enable_search=True`:
+### Search filtering
 
-- typing filters the popup list
+With `enable_search=True`, every keystroke filters `items` to the case-insensitive
+substrings that match. The filter only narrows visible items; it doesn't reorder or
+re-rank them.
 
-- the first matching item is automatically highlighted
+When the popup closes without an explicit selection (Escape, Tab to another widget,
+click outside), and `allow_custom_values=False`, the **first filtered item** is
+committed automatically. This makes a "type the prefix, press Tab" interaction work
+without an explicit Enter. With `allow_custom_values=True`, the typed text is kept
+verbatim instead.
 
-- if `allow_custom_values=False`, closing the popup without explicit selection commits the first match
-
-<!--
-IMAGE: SelectBox filtering
-Suggested: typing "di" filters list to "Diana"
-Theme variants: light / dark
--->
-
-### Allowing custom values
-
-When `allow_custom_values=True`:
-
-- the entry becomes editable
-
-- the dropdown button is always shown
-
-- typed text can be kept even if it doesn't match an item
-
-### Keyboard navigation
+### Keyboard
 
 When the popup is open:
 
-- **Arrow Up/Down** navigates through items (highlighted item scrolls into view)
+- **Down / Up** — move the highlight; the popup scrolls to keep the highlighted item visible.
+- **Enter** — commit the highlighted item.
+- **Tab** — commit the highlighted item (search mode only).
+- **Escape** — close the popup without selecting (in search mode, the first filtered item still commits per the rule above).
+- **Click outside** — same as Escape.
 
-- **Enter** selects the highlighted item
+### Reconfiguration
 
-- **Tab** selects the highlighted item (search mode)
-
-- **Escape** closes the popup without selecting
-
-- Clicking outside the popup closes it
-
-### Hover states
-
-Items in the popup display hover states for visual feedback as the user moves the mouse or navigates with arrow keys.
-
----
-
-## Localization
-
-If the field label participates in localization, it follows your global field/widget localization rules.
-
-!!! link "Localization"
-    For details on internationalizing your application, see the [Localization](../../capabilities/localization.md) documentation.
+`configure(items=...)`, `configure(allow_custom_values=...)`, and
+`configure(enable_search=...)` all take effect immediately. `configure(value=...)`
+does **not** work — set the property (`sb.value = ...`) instead. `dropdown_button_icon`
+cannot be reconfigured at all (TclError on attempt).
 
 ---
 
-## Additional resources
+## Events
 
-### Related widgets
+`SelectBox` reuses the entry's event surface — every event fires on the underlying
+`entry_widget`, not on the SelectBox itself. Tk virtual events do not propagate up
+the parent chain, so `sb.bind('<<Change>>', cb)` silently no-ops; use the helpers
+or bind to `sb.entry_widget` directly.
 
-- [OptionMenu](optionmenu.md) — simple menu-based selection control
+| Event | Helper | Fires when… | `event.data` |
+|---|---|---|---|
+| `<<Input>>` | `on_input` | the entry text changes (every keystroke in search/custom mode) | `{'text': str}` |
+| `<<Change>>` | `on_changed` | the committed value changes — popup selection, search-filter close, or `sb.value = ...` | `{'value', 'prev_value', 'text'}` |
+| `<Return>` | `on_enter` | **Enter** pressed in the entry (search/custom mode) | `{'value', 'text'}` |
 
-- [Combobox](../primitives/combobox.md) — classic ttk dropdown + optional typing
+```python
+def on_changed(event):
+    print("now:", event.data["value"])
 
-- [RadioGroup](radiogroup.md) — single selection among visible options
+sb = ttk.SelectBox(app, items=["A", "B", "C"])
+sb.on_changed(on_changed)
+```
 
-- [CheckButton](checkbutton.md) — independent multi-selection
+`<<Change>>` is suppressed when the new value equals the previous value, so writing
+the same value twice fires once.
 
-- [Form](../forms/form.md) — generate selection fields declaratively
+---
 
-### Framework concepts
+## Validation and constraints
 
-- [Validation](../../capabilities/validation.md) — form and field validation patterns
+`SelectBox` inherits the rule system from [TextEntry](textentry.md). The most useful
+rules for a picker are `'required'` and `'custom'`:
 
-- [Events and callbacks](../../capabilities/signals/virtual-events.md) — handling widget events
+```python
+priority = ttk.SelectBox(app, label="Priority", items=["Low", "Medium", "High"], required=True)
 
-### API reference
+# Reject orphan writes (the widget itself does not — see Value model).
+priority.add_validation_rule(
+    "custom",
+    func=lambda v: v in ("", "Low", "Medium", "High"),
+    message="Pick one of the listed priorities.",
+)
+```
 
-- [`ttkbootstrap.SelectBox`](../../reference/widgets/SelectBox.md)
+Validation is most useful when:
+
+- the list of valid items changes dynamically (re-add the rule against the new list);
+- the field is conditionally required;
+- the selected value must satisfy a cross-field rule.
+
+For per-keystroke filtering of *characters* (e.g. allow only letters), use the underlying
+[Entry](../primitives/entry.md)'s `validatecommand`.
+
+---
+
+## When should I use SelectBox?
+
+Use `SelectBox` when:
+
+- users pick one value from a known list and you want full form-field chrome (label, message, validation).
+- the list is long enough that a search/filter helps.
+- you want to allow custom values alongside a suggested list.
+
+Prefer a different control when:
+
+- you want a plain button + popup menu without entry chrome → use [OptionMenu](../selection/optionmenu.md).
+- you need raw `ttk.Combobox` semantics → use [Combobox](../primitives/combobox.md).
+- the choices fit on screen as visible options → use [RadioGroup](../selection/radiogroup.md).
+- the user picks several values → use [CheckButton](../selection/checkbutton.md) or [ToggleGroup](../selection/togglegroup.md).
+
+---
+
+## Related widgets
+
+- [TextEntry](textentry.md) — the input chrome SelectBox is built on.
+- [OptionMenu](../selection/optionmenu.md) — simpler button-and-menu selection.
+- [Combobox](../primitives/combobox.md) — low-level ttk dropdown.
+- [RadioGroup](../selection/radiogroup.md) — single selection from visible options.
+- [Form](../forms/form.md) — declare a `selectbox` editor in a form definition.
+
+---
+
+## Reference
+
+- **API reference:** [`ttkbootstrap.SelectBox`](../../reference/widgets/SelectBox.md)
+- **Related guides:**
+    - [Forms](../../guides/forms.md)
+    - [Signals](../../capabilities/signals/signals.md)
+    - [Localization](../../capabilities/localization.md)
