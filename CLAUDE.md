@@ -34,7 +34,7 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, primitives sweep 3/5)
+### Current handoff (2026-05-01, primitives sweep 4/5)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
@@ -42,8 +42,8 @@ the dialogs sweep (11/11), inputs sweep (11/11), data-display sweep
 (8/8), layout sweep (12/12), navigation sweep (5/5), overlays sweep
 (2/2), selection sweep (9/9), and views sweep (3/3) are all
 complete. Primitives sweep opened 2026-05-01 with the `entry.md`
-anchor rewrite; `combobox.md` and `spinbox.md` done 2026-05-01.
-Remaining: text, canvas (2/5).**
+anchor rewrite; `combobox.md`, `spinbox.md`, and `text.md` done
+2026-05-01. Remaining: canvas (1/5).**
 
 **SelectBox relocation (2026-05-01).** The `selectbox.md` page was
 moved from `widgets/selection/` to `widgets/inputs/`. Rationale: a
@@ -2345,7 +2345,7 @@ Pages to review (canonical anchor: `pagestack.md`):
 - [x] `tabview.md` — composes Tabs + PageStack
 - [x] `notebook.md` — wraps `ttk.Notebook` with key-based registry
 
-### Widget pages — primitives (`docs/widgets/primitives/`, 5 pages) — IN PROGRESS 3/5 (2026-05-01)
+### Widget pages — primitives (`docs/widgets/primitives/`, 5 pages) — IN PROGRESS 4/5 (2026-05-01)
 
 The primitives directory is **not** in `CATEGORY_TEMPLATE_MAP`
 (`tools/check_doc_structure.py`), so no template enforcement applies
@@ -2497,7 +2497,7 @@ docs/widgets/primitives/combobox.md` → 0 failures (2 snippets,
 1 executed). No structure check (primitives is not in
 `CATEGORY_TEMPLATE_MAP`).
 
-Last session (2026-05-01, spinbox sweep — 3/5):
+Earlier session (2026-05-01, spinbox sweep — 3/5):
 
 - `spinbox.md` rewritten to the slim input arc, anchored on
   `entry.md`. Spinbox is the third page in the sweep — a thin
@@ -2566,12 +2566,100 @@ docs/widgets/primitives/spinbox.md` → 0 failures (6 snippets,
 1 executed). No structure check (primitives is not in
 `CATEGORY_TEMPLATE_MAP`).
 
+Last session (2026-05-01, text sweep — 4/5):
+
+- `text.md` already in good structural shape from a prior pass;
+  this session was an accuracy and precision pass, not a full
+  rewrite. The page follows the bespoke Content-model arc
+  prescribed for text/canvas (intro → Basic usage → Content
+  model → Common options → Behavior → Events → Patterns → When
+  → Related → Reference). `ttk.Text is tk.Text` (re-export, not
+  a subclass); the framework integration is the install-time
+  wrapper `Bootstyle.override_tk_widget_constructor` applied to
+  `tk.Text`, which captures `autostyle` / `inherit_surface` /
+  `surface` kwargs, sets `_surface` on the widget, then calls
+  the registered `Text` builder
+  (`style/builders_tk/defaults.py:66-86`) to paint theme colors
+  and registers the widget for `<<ThemeChanged>>`. Three
+  precision fixes vs the prior version, one of which surfaced
+  a new bug:
+  (1) the prior page conflated `surface=` / `inherit_surface=`
+  semantics. Verified at runtime that `inherit_surface=True`
+  (the default — pulled from `AppSettings.inherit_surface_color`
+  at `style/bootstyle.py:561-563`) **silently overrides** the
+  explicit `surface=` argument with the parent's
+  `_surface`. Net effect: `ttk.Text(parent, surface='card')`
+  with default `inherit_surface=True` ends up with
+  `_surface='content'` (parent's surface), NOT `'card'` —
+  callers must also pass `inherit_surface=False` to pin a
+  surface explicitly. Documented as a `!!! warning` block in
+  the Autostyle keywords subsection; added to the bugs list.
+  (Worth noting: this same pattern likely affects every
+  Tk-class autostyle widget — Frame/Label/Button/Entry/Text/
+  Canvas/Listbox/Menu/etc. — but I only verified it on Text.)
+  (2) the prior page said "the autostyle wrapper sets
+  `option_add('*Text*Font', 'TkDefaultFont')` on the root
+  window so every Text widget picks up the framework's default
+  text font." The `option_add` call actually lives in the
+  root-window `Tk` builder (`style/builders_tk/defaults.py:12`),
+  invoked once at App construction — not in the per-Text
+  wrapper. Reworded to attribute it correctly. The end-user
+  effect is the same (every Text gets `TkDefaultFont` instead
+  of Tk's stock `TkFixedFont`), but the previous wording
+  implied the per-Text wrapper sets it on every construction.
+  Verified runtime defaults: `padx=5`, `pady=5`,
+  `highlightthickness=0`, `font='TkDefaultFont'`. With
+  `autostyle=False`: `padx=1`, `highlightthickness=3` (Tk
+  defaults) but `font='TkDefaultFont'` still applies because
+  the root-level `option_add` already ran.
+  (3) clarified that `_surface` is captured even when
+  `autostyle=False` (verified — `style/bootstyle.py:580` runs
+  before the `if not auto_style: return` guard at line 582).
+  The widget is not registered for `<<ThemeChanged>>` and the
+  builder is not called, but `widget._surface` is still
+  populated. Worth knowing for callers who roll their own
+  styling and want to read the captured surface token.
+  Also verified: the existing `!!! warning` about `surface=`
+  not tinting the Text widget is correct — the Text builder
+  reads `'background'` directly (the page-level theme token),
+  ignoring the `surface` argument that other builders honor
+  (Frame, Label, Canvas, etc. all read
+  `options.get('surface', 'content')`). Reworded the warning
+  to lead with `_surface` rather than `surface=` since the
+  inheritance path means `_surface` is the relevant axis even
+  when no `surface=` was passed; the painted background is
+  always the page background regardless.
+  Other accuracy items confirmed at runtime and kept on the
+  page:
+  - `state="disabled"` silently no-ops both user input AND
+    programmatic `insert()` / `delete()` (`text.insert('end',
+    ' world')` on a disabled widget returns no error and
+    leaves content unchanged).
+  - `accent` / `variant` / `density` are not valid kwargs —
+    each raises `TclError: unknown option "-<name>"`.
+  - `<<Modified>>` fires once per transition from clear to set
+    (re-armed by `text.edit_modified(False)`); does not fire
+    while disabled.
+  - `ttk.IntVar` is exported (referenced in the
+    `text.search(..., count=ttk.IntVar())` example).
+  - `Listbox` is **not** exported by `ttk` (`hasattr(ttk,
+    'Listbox') is False`). Only `ListView` is. The Tk builder
+    for `Listbox` exists in
+    `style/builders_tk/defaults.py:142-159` for users who pull
+    `tk.Listbox` directly, but ttkbootstrap ships no top-level
+    re-export.
+
+`tools/check_doc_snippets.py --run --file
+docs/widgets/primitives/text.md` → 0 failures (11 snippets,
+1 executed). No structure check (primitives is not in
+`CATEGORY_TEMPLATE_MAP`).
+
 Pages to review (canonical anchor: `entry.md`):
 
 - [x] `entry.md` — anchor for the primitives sweep
 - [x] `combobox.md` — thin `ttk.Combobox` wrapper
 - [x] `spinbox.md` — thin `ttk.Spinbox` wrapper
-- [ ] `text.md` — multi-line text primitive
+- [x] `text.md` — multi-line text primitive
 - [ ] `canvas.md` — drawing primitive
 
 ### Workflow (one page per session)
@@ -3732,6 +3820,28 @@ primitives.
   the style on density writes (matching what construction does),
   or document `density` as construction-only and reject
   reconfiguration. (Surfaced by entry.md rewrite, 2026-05-01.)
+- The Tk-class autostyle wrapper (`Bootstyle.override_tk_widget_constructor`
+  at `style/bootstyle.py:553-599`) silently overrides the explicit
+  `surface=` argument with the parent's `_surface` whenever
+  `inherit_surface=True` — which is the default, pulled from
+  `AppSettings.inherit_surface_color`. The branch at
+  `style/bootstyle.py:575-578` is `if inherit_surface: surface_token
+  = parent_surface_token else: surface_token = surface_token or
+  'content'` — `surface_token` is *replaced*, not *defaulted*, when
+  inheritance is on. Net effect: `ttk.Text(parent, surface='card')`
+  ends up with `_surface='content'` (parent's surface), NOT
+  `'card'`. Callers must pass both `surface='card',
+  inherit_surface=False` to pin a surface explicitly. Verified at
+  runtime on Text; the same wrapper applies to every Tk-class
+  autostyle widget (Frame, Label, Button, Entry, Text, Canvas,
+  Listbox, Menu, etc.), so this likely affects all of them — only
+  Text was verified during this sweep. Either change the resolution
+  to "explicit `surface=` wins; otherwise inherit"
+  (`surface_token = surface_token if surface_token else (
+  parent_surface_token if inherit_surface else 'content')`), or
+  document the precondition that `surface=` requires
+  `inherit_surface=False`. (Surfaced by text.md rewrite,
+  2026-05-01.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):

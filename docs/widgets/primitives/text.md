@@ -187,19 +187,30 @@ additional kwargs that are not real Tk options:
 
 | Option | Type | Description |
 |---|---|---|
-| `autostyle` | `bool` | Default `True`. Pass `False` to skip the theme-color paint and the `<<ThemeChanged>>` registration entirely. |
-| `inherit_surface` | `bool` | Default `True`. Captures the parent's `_surface` token onto the new widget, mirroring how container widgets cascade `surface`. |
-| `surface` | `str` | Override the inherited surface token on this widget. |
+| `autostyle` | `bool` | Default `True`. Pass `False` to skip the theme-color paint and the `<<ThemeChanged>>` registration entirely. The `_surface` attribute is still captured. |
+| `inherit_surface` | `bool` | Default from `AppSettings.inherit_surface_color`. When true, the new widget's `_surface` is taken from the parent — the explicit `surface=` argument is overridden. |
+| `surface` | `str` | Surface token to record on the widget. Honored only when `inherit_surface=False` (or when there is no parent surface to inherit). |
 
-!!! warning "`surface=` does not tint the Text widget"
-    Both `surface=` and `inherit_surface=` write `_surface` on the
-    widget, but the registered Text builder paints the widget with
-    the theme's `background` token (the page-level background),
-    ignoring the surface argument. So a `Text` inside a
-    `Frame(surface="card")` paints with the page background, not
-    the card background — by design, so input chrome is visually
-    distinct from container chrome. To paint a custom background
-    color, configure `background=` directly.
+!!! warning "`surface=` is overridden by `inherit_surface=True`"
+    The wrapper resolves `_surface` as **parent's surface if
+    `inherit_surface` is true, otherwise the explicit `surface=`
+    argument**. With the default `inherit_surface=True`, passing
+    `surface='card'` to a Text inside a default-surface Frame ends
+    up with `_surface='content'` — the explicit kwarg is silently
+    ignored. To pin a surface explicitly, pass both:
+    `ttk.Text(parent, surface='card', inherit_surface=False)`.
+
+!!! warning "`_surface` does not tint the Text widget"
+    Even when `_surface` is set on the widget (via inheritance or
+    explicit `surface=`), the registered Text builder paints the
+    widget with the theme's `background` token — the page-level
+    background — and ignores `_surface` entirely. So a `Text`
+    inside a `Frame(surface="card")` paints with the page
+    background, not the card background; this is by design so that
+    input chrome stays visually distinct from container chrome. To
+    paint a custom background color, configure `background=`
+    directly (and accept that the next `<<ThemeChanged>>` will
+    revert it — see *Behavior*).
 
 `accent`, `variant`, and `density` are **not** valid kwargs on
 `Text` — passing any of them raises
@@ -227,11 +238,12 @@ def append_line(s: str) -> None:
 `<<Modified>>` does not fire while disabled because nothing changed —
 the silent no-op extends to event emission as well.
 
-**Default font is `TkDefaultFont`.** The autostyle wrapper sets
-`option_add('*Text*Font', 'TkDefaultFont')` on the root window so
-every Text widget picks up the framework's default text font. Pass
-`font=...` to override per widget; the override survives theme
-changes since the Text builder does not reconfigure `font`.
+**Default font is `TkDefaultFont`.** The root-window `Tk` builder
+calls `option_add('*Text*Font', 'TkDefaultFont')` once at app
+construction, so every Text widget picks up the framework's default
+text font instead of Tk's stock `TkFixedFont`. The per-Text builder
+does not touch `font`. Pass `font=...` to override per widget; the
+override survives theme changes.
 
 **Theme reapplication.** The widget is registered with the global
 style on construction; on `<<ThemeChanged>>` the builder runs again
