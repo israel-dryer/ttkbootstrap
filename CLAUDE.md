@@ -34,17 +34,37 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, navigation sweep started — 1/5, anchor: tabs.md)
+### Current handoff (2026-05-01, navigation sweep — 2/5; AppShell rewritten, navigation directory split into per-page templates)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 the dialogs sweep (11/11), data-display sweep (8/8), and layout sweep
 (12/12) are complete. The **navigation sweep is now in progress** — the
-navigation template has been restructured to the slim arc and `tabs.md`
-has been rewritten as the anchor. 4 navigation pages still pending
-(`appshell.md`, `navigationview.md`, `sidenav.md`, `toolbar.md`). The
-remaining 3 templates (form, overlay, selection) still need the editorial
-pass at the start of each sweep (see "Template arc" below).**
+navigation template has been restructured to the slim arc, `tabs.md`
+has been rewritten as the anchor, and `appshell.md` has been rewritten
+at its canonical location (`docs/widgets/application/appshell.md`)
+under a bespoke app-shell arc (it's an `App` subclass, not a child
+widget — the navigation template never fit). The vestigial
+`docs/widgets/navigation/appshell.md` redirect stub was deleted.
+
+The navigation directory turned out to be heterogeneous; the remaining
+three pages each get a different template:
+
+- **`sidenav.md`** — true selection-driven nav chrome → uses the
+  navigation template (`docs/_template/widget-navigation-template.md`)
+  as designed.
+- **`toolbar.md`** — action chrome strip with no selection state, no
+  keyed targets, no signal → uses the **action template** (the same
+  one Button / ButtonGroup / ContextMenu use). Forcing a "Navigation
+  model" H2 onto Toolbar would be contrived. When picking it up, plan
+  for an `Item types` subsection covering `add_button` /
+  `add_label` / `add_separator` / `add_spacer` / `add_window_controls`.
+- **`navigationview.md`** — 6-line deprecation stub for SideNav. Add
+  `"navigationview.md"` to `SKIP_FILES` in
+  `tools/check_doc_structure.py` rather than rewriting it.
+
+The remaining 3 templates (form, overlay, selection) still need the
+editorial pass at the start of each sweep (see "Template arc" below).**
 
 ### Template arc (apply to every editorial sweep)
 
@@ -1081,7 +1101,25 @@ Pages to review (canonical anchor: `frame.md`):
 - [x] `separator.md` — visual divider
 - [x] `sizegrip.md` — bottom-right resize handle
 
-### Widget pages — navigation (`docs/widgets/navigation/`, 5 pages) — IN PROGRESS 1/5
+### Widget pages — navigation (`docs/widgets/navigation/` + `appshell.md`, 5 pages) — IN PROGRESS 2/5
+
+The "navigation directory" turned out to be heterogeneous; one
+template doesn't fit all five pages. Per-page assignment:
+
+| Page | Canonical location | Template | Status |
+|---|---|---|---|
+| `tabs.md` | `widgets/navigation/tabs.md` | `widget-navigation-template.md` | done (anchor) |
+| `appshell.md` | `widgets/application/appshell.md` | bespoke app-shell arc | **done 2026-05-01** |
+| `sidenav.md` | `widgets/navigation/sidenav.md` | `widget-navigation-template.md` | pending |
+| `toolbar.md` | `widgets/navigation/toolbar.md` | **`widget-action-template.md`** (no nav model) | pending |
+| `navigationview.md` | `widgets/navigation/navigationview.md` | none — deprecation stub | add to `SKIP_FILES` in `tools/check_doc_structure.py` |
+
+Rationale for the split: AppShell extends `App` and owns the window
+(not a child widget — its surface is windowing + composition, not
+selection); Toolbar has no selection state, no keyed targets, no
+signal (action-chrome host, not navigation). Forcing both under the
+navigation template would mean contrived "Navigation model" sections
+for pages that don't have one.
 
 Template: `docs/_template/widget-navigation-template.md` (slim arc,
 restructured this session). Required H2s: `Basic usage`,
@@ -1091,9 +1129,9 @@ No `*Optional` H2s — `Navigation model` is required (every
 navigation page has keyed targets and a selection-vs-imperative
 distinction worth documenting).
 
-`tabs.md` is the canonical anchor for the navigation sweep, the
-way `frame.md` / `label.md` / `button.md` / `textentry.md` /
-`messagedialog.md` anchored their respective categories.
+`tabs.md` is the canonical anchor for the **navigation-template**
+pages (Tabs, SideNav). AppShell uses its own arc — see the AppShell
+session notes below for the structure.
 
 Last session (2026-05-01, navigation sweep started — template
 restructure + tabs anchor):
@@ -1179,13 +1217,100 @@ no longer in the missing-sections list.
 docs/widgets/navigation/tabs.md` → 0 failures (4 snippets,
 1 executed).
 
-Pages to review (canonical anchor: `tabs.md`):
+Last session (2026-05-01, AppShell sweep — bespoke app-shell arc):
 
-- [x] `tabs.md` — anchor for the navigation sweep
-- [ ] `appshell.md` — top-level application shell
-- [ ] `navigationview.md` — high-level nav surface
-- [ ] `sidenav.md` — vertical destination list
-- [ ] `toolbar.md` — action chrome strip
+- `appshell.md` rewritten at its canonical location
+  `docs/widgets/application/appshell.md` (NOT under
+  `widgets/navigation/`). The vestigial 10-line "Moved" stub at
+  `docs/widgets/navigation/appshell.md` was deleted — it pointed
+  readers at outdated redirect targets, was not in the zensical
+  nav (zensical lists AppShell under "Application", not
+  "Navigation"), and only existed to fail the structure check
+  for the navigation directory. Verified no inbound links pointed
+  at the stub before deletion.
+- AppShell extends `App` and owns the window/`mainloop`/`frameless`
+  /settings — the navigation template never fit, so the page uses
+  a bespoke app-shell arc:
+  Basic usage → Anatomy (structural diagram of the shell) →
+  Window options → Building the shell (`add_page` family) →
+  Navigation (programmatic + `<<PageChange>>` payload) →
+  Components (drop-down handles for `toolbar` / `nav` / `pages`)
+  → When should I use AppShell? → Related widgets → Reference.
+  The page is in `widgets/application/`, which is **not** in
+  `CATEGORY_TEMPLATE_MAP` in `tools/check_doc_structure.py`, so
+  no template enforcement applies (same freedom as `app.md` and
+  `toplevel.md`).
+- Three things the old page got wrong or omitted, two of which
+  are documentation gaps and one a bug worth surfacing:
+  (1) the old page documented the navigation display modes
+  (`expanded` / `compact` / `minimal`) without describing how
+  they actually behave. Verified at runtime
+  (`composites/sidenav/view.py:296-319`):
+  `expanded` — full pane, packed when `is_pane_open=True`,
+  hidden via `pack_forget()` when toggled off;
+  `compact` — narrow icon-only pane, always packed regardless
+  of `is_pane_open`;
+  `minimal` — same widths as expanded but designed to be
+  hidden via the hamburger (the pane visibility is gated on
+  `is_pane_open`). Documented honestly in the Window options
+  table.
+  (2) the old page never noted that the pre-populated toolbar
+  layout is **fixed**. Verified
+  (`composites/appshell.py:151-175`): the order is hamburger
+  (only when `show_nav=True`) → separator → title label (only
+  when `title=` is set) → spacer → window controls (only when
+  `show_window_controls=True`). User-added buttons land **after**
+  the spacer, so they always sit at the right edge — there's no
+  way to insert before the title or to reorder the built-ins.
+  Documented as a structural constraint in Anatomy.
+  (3) the old page never noted the **no-toggle gap** when
+  `show_toolbar=False, show_nav=True`. Verified at runtime: the
+  hamburger lives on the toolbar (added by AppShell at
+  `composites/appshell.py:163-167`), and the SideNav is
+  constructed with `show_header=False` (`appshell.py:188`)
+  regardless of toolbar presence — `show_header=False` skips
+  the entire `_build_header()` call (`view.py:227`), which is
+  where SideNav would normally render its own internal
+  hamburger. Net effect: with `show_toolbar=False, show_nav=True`,
+  the sidebar has **no built-in UI** to toggle the pane. The
+  pane is still collapsible programmatically via
+  `shell.nav.toggle_pane()`, but users have no affordance to do
+  so unless the developer adds one. Documented as a `!!! note`
+  in Anatomy. Worth fixing — either default `show_header=True`
+  when `show_toolbar=False`, or add a toggle button somewhere
+  visible. Added to the bugs list.
+  Also documented: the full `add_page()` surface (including
+  `scrollable=True` wrapping the page in a ScrollView,
+  `page=` substituting a custom widget, `is_footer=True` /
+  `group=` mutual exclusion, the auto-navigate-on-first-page
+  behavior); the four sidebar primitives (groups, headers,
+  separators, footer items) as forwarders to SideNav; the
+  `<<PageChange>>` payload (`page` / `prev_page` / `prev_data`
+  / `nav` / `index` / `length` / `can_back` / `can_forward`,
+  plus user-supplied data dict merged at the top level — note
+  the keys are `page`/`prev_page`, NOT `key`/`prev_key` as the
+  old page implied); the property table for the drop-down
+  handles (`toolbar` / `nav` / `pages`) including the
+  `Toplevel | None` / `SideNav | None` / `PageStack` (always)
+  presence semantics; the `show_nav=False` path which raises
+  `RuntimeError` from `add_page()` and forces use of
+  `shell.pages.add(...)` directly. Added a `!!! tip` for the
+  CLI scaffolding command (`ttkb start MyApp --template appshell`)
+  near the Basic usage section.
+
+`tools/check_doc_snippets.py --run --file
+docs/widgets/application/appshell.md` → 0 failures (9 snippets,
+5 executed). Structure check N/A (page is in
+`widgets/application/`, not under any template-enforced
+category).
+
+Pages to review:
+
+- [x] `tabs.md` — navigation template (anchor)
+- [x] `appshell.md` — bespoke app-shell arc (at `widgets/application/`)
+- [ ] `sidenav.md` — navigation template
+- [ ] `toolbar.md` — **action template** (no selection state)
+- [ ] `navigationview.md` — deprecation stub; add to `SKIP_FILES`
 
 ### Workflow (one page per session)
 
@@ -1725,6 +1850,21 @@ primitives.
   behavior leaves callers responsible for fixing up state every
   time they remove a tab. (Surfaced by tabs.md rewrite,
   2026-05-01.)
+- `AppShell` with `show_toolbar=False, show_nav=True` ships **no
+  built-in UI to toggle the sidebar pane**. The hamburger button
+  lives on the toolbar and is added by AppShell itself
+  (`composites/appshell.py:163-167`); when the toolbar is omitted,
+  there's no hamburger anywhere. The SideNav would normally render
+  its own hamburger inside its header, but AppShell hard-codes
+  `show_header=False` on the inner SideNav (`appshell.py:188`)
+  unconditionally — so even when `collapsible=not show_toolbar`
+  flips the SideNav's collapsible flag back on, the header that
+  would contain the toggle is suppressed. Net effect: the pane is
+  collapsible only via `shell.nav.toggle_pane()` from code or
+  keyboard, not from any visible affordance. Either pass
+  `show_header=True` to the inner SideNav when `show_toolbar=False`,
+  or add a fallback toggle somewhere the user can see (e.g. inside
+  the body frame). (Surfaced by appshell.md rewrite, 2026-05-01.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
