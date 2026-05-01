@@ -4,11 +4,17 @@ title: Calendar
 
 # Calendar
 
-`Calendar` is an **inline date selection control** for choosing either a **single date** or a **date range**.
+`Calendar` is an inline date-picker that shows one or two months of
+day cells and produces a `datetime.date` value (or a
+`(start, end)` tuple in range mode). Selection is driven entirely by
+clicking day cells in the displayed month(s); there is no `signal=`
+or `variable=` channel — observers either bind `<<DateSelect>>` or
+read `cal.value` / `cal.range` directly.
 
-It produces `datetime.date` values and is commonly used for scheduling views, reporting filters, availability selection, and any UI where users benefit from seeing dates in context instead of typing them.
-
-If you want a compact, form-friendly input (typed + popup), prefer **DateEntry**. If you want an always-visible picker embedded in a panel, use **Calendar**.
+Unlike [DateEntry](../inputs/dateentry.md), Calendar is intended to
+sit visibly in a panel rather than open as a popup. Use DateEntry
+when typing or paste-in flows are primary; use Calendar when users
+benefit from seeing the whole month while choosing.
 
 <figure markdown>
 ![calendar](../../assets/dark/widgets-calendar.png#only-dark)
@@ -17,300 +23,275 @@ If you want a compact, form-friendly input (typed + popup), prefer **DateEntry**
 
 ---
 
-## Quick start
+## Basic usage
 
 ```python
 from datetime import date
 import ttkbootstrap as ttk
-from ttkbootstrap.widgets.composites.calendar import Calendar
 
 app = ttk.App()
 
-cal = Calendar(app, value=date.today(), accent="primary")
+cal = ttk.Calendar(app, value=date(2025, 6, 15), accent="primary")
 cal.pack(padx=12, pady=12)
 
-def on_select(e):
-    # {'date': date, 'range': (start, end|None)}
-    print(e.data)
-
-cal.on_date_selected(on_select)
+cal.on_date_selected(lambda e: print(e.data))
 
 app.mainloop()
 ```
 
----
-
-## When to use
-
-Use Calendar when:
-
-* you want an always-visible date picker embedded in a panel
-
-* users benefit from seeing the whole month(s) while selecting
-
-* you want a natural range-selection interaction
-
-### Consider a different control when
-
-* you need a compact form control — use [DateEntry](../inputs/dateentry.md)
-
-* typing or pasted dates are a primary workflow — use [DateEntry](../inputs/dateentry.md)
-
-* screen space is limited — use [DateEntry](../inputs/dateentry.md)
+In single mode (the default) `cal.value` returns a `date`; in range
+mode `cal.range` returns the `(start, end)` tuple.
 
 ---
 
-## Appearance
+## Selection model
 
-### Variants
+Calendar holds two pieces of state that the public API exposes
+separately:
 
-Calendar supports two selection models:
+| Mode | What `cal.value` returns | What `cal.range` returns |
+|---|---|---|
+| `selection_mode="single"` (default) | the selected `date` | `(date, None)` (start mirrors value) |
+| `selection_mode="range"` | the most-recently-clicked `date` | `(start, end \| None)` |
 
-* **Single** (`selection_mode="single"`): selects exactly one `date`
+**Value type.** Always `datetime.date`. ISO-format strings
+(`"2025-12-25"`), `MM/DD/YYYY` strings, and `datetime` objects are
+coerced through `_coerce_date` at every public entry point —
+`value=`, `start_date=`, `end_date=`, `set()`, `set_range()`, and
+the `value` / `range` property setters. Strings that don't match
+either format are silently ignored.
 
-* **Range** (`selection_mode="range"`): selects a start date, then an end date; dates between are highlighted
+**Independent.** Calendar does not participate in any group. There
+is no shared-variable mechanism, no `signal=`, no `variable=`. To
+react to changes, bind `<<DateSelect>>` (see Events).
 
-Range mode displays **two months side-by-side** to make cross-month selection easier.
+**Initial state.** In single mode pass `value=`. In range mode pass
+`start_date=` and `end_date=` (`value=` is treated as an alias for
+`start_date=`). When both bounds are given and `end_date < start_date`,
+the constructor swaps them. If nothing is passed, the display opens
+on today's month and `_selected_date` is set to `date.today()` but
+`range` is `(None, None)`.
 
-#### Single date
+**No-selection.** In range mode the range can be `(None, None)`
+(after `cal.range = None` or `cal.set_range(None, None)`). In single
+mode there is no "cleared" state — `value=None` is silently ignored
+by `set()` and the property setter.
+
+**Commit semantics.** A user click on a day cell commits immediately
+and emits `<<DateSelect>>`. Programmatic `set()`, `set_range()`, the
+`value` / `range` property setters, and `configure(date=...)`
+**do not emit the event** — they are silent state writes, matching
+the standard Tk pattern for programmatic updates.
 
 ```python
-import ttkbootstrap as ttk
-from ttkbootstrap.widgets.composites.calendar import Calendar
-
-app = ttk.App()
-Calendar(app, value="2025-12-25").pack(padx=12, pady=12)
-app.mainloop()
+cal = ttk.Calendar(app, selection_mode="range")
+cal.set_range(date(2025, 1, 10), date(2025, 1, 20))   # silent
+print(cal.range)                                        # (2025-01-10, 2025-01-20)
+print(cal.value)                                        # 2025-01-20 (the end date)
 ```
 
-#### Date range
+!!! warning "Range mode: prefer `range` over `value`"
+    In range mode `cal.value` returns whichever end of the range was
+    set most recently — and after `cal.range = None` it can return a
+    *stale* date even though the range tuple is `(None, None)` (the
+    underlying `_selected_date` is not cleared by range setters).
+    Use `cal.range` for range-mode reads.
+
+!!! warning "`set()` and `set_range()` bypass constraints"
+    The interactive paths refuse clicks on dates that are in
+    `disabled_dates` or outside `[min_date, max_date]`. The
+    programmatic setters (`set`, `set_range`, the property setters,
+    and `configure(date=...)`) **do not** — they accept any
+    coercible date. If your code routes user input through `set()`,
+    re-validate before calling.
+
+---
+
+## Common options
+
+| Option | Type | Default | Notes |
+|---|---|---|---|
+| `selection_mode` | `"single"` \| `"range"` | `"single"` | Range mode displays two months side-by-side. Construction-only. |
+| `value` | `date` \| `datetime` \| `str` \| `None` | `None` | Initial date for single mode; in range mode aliases `start_date`. |
+| `start_date` | `date` \| `datetime` \| `str` \| `None` | `None` | Range start. |
+| `end_date` | `date` \| `datetime` \| `str` \| `None` | `None` | Range end. Auto-swapped with `start_date` if `end < start`. |
+| `min_date` | `date` \| `datetime` \| `str` \| `None` | `None` | Earliest selectable date and earliest navigable month. |
+| `max_date` | `date` \| `datetime` \| `str` \| `None` | `None` | Latest selectable date and latest navigable month. |
+| `disabled_dates` | `Iterable[date \| datetime \| str]` | `None` | Specific dates that cannot be selected. |
+| `show_outside_days` | `bool` \| `None` | `None` | Renders days from neighboring months as muted cells. Defaults to `True` in single mode and `False` in range mode. |
+| `show_week_numbers` | `bool` | `False` | Adds a leftmost ISO-week-number column. |
+| `first_weekday` | `int` \| `None` | `None` | `0=Monday` … `6=Sunday`. `None` reads the first day of the week from the current locale via Babel; falls back to Monday on failure. |
+| `accent` | str | `"primary"` | Tints the selected day, range endpoints, and the in-range fill. |
+| `bootstyle` | str | `None` | Deprecated. `accent` wins when both are passed. |
+| `padding` | int \| tuple \| str | `None` | Outer ttk padding. |
+
+`accent`, `value`, and `range` are reconfigurable via the property
+setters. `selection_mode`, `show_outside_days`,
+`show_week_numbers`, `first_weekday`, `min_date`, `max_date`, and
+`disabled_dates` are construction-only — `configure(...)` does not
+re-run `_build_ui`.
 
 ```python
-import ttkbootstrap as ttk
-from ttkbootstrap.widgets.composites.calendar import Calendar
-
-app = ttk.App()
-Calendar(app, selection_mode="range", start_date="2025-12-01", end_date="2025-12-12").pack(padx=12, pady=12)
-app.mainloop()
+cal = ttk.Calendar(
+    app,
+    accent="success",
+    selection_mode="range",
+    start_date="2025-12-01",
+    end_date="2025-12-12",
+    show_week_numbers=True,
+)
 ```
 
 ### Colors & Styling
 
-Use `accent` to set the accent color used for:
+`accent` drives every selection-related surface. Internally Calendar
+constructs day cells as `CheckToggle` widgets registered against
+four custom Toolbutton style variants:
 
-* the selected day (single mode)
+- `calendar-day` — selectable in-month days (default cell).
+- `calendar-date` — start and end of a selected range, and the
+  single-mode selected day.
+- `calendar-range` — interior in-range days (uses a subtler tint).
+- `calendar-outside` — neighboring-month "outside days" (rendered
+  with the `ghost` look and disabled).
 
-* the range endpoints and in-range highlight (range mode)
-
-```python
-Calendar(app, accent="success")
-Calendar(app, selection_mode="range", accent="warning")
-```
-
-Calendar also uses internal style names for day/range rendering (e.g. `*-calendar_day-toolbutton`, `*-calendar_date-toolbutton`, `*[subtle]-calendar_range-toolbutton`) so it can visually distinguish:
-
-* normal selectable days
-
-* selected endpoints
-
-* in-range days
+These are not user-overridable through public options; they exist so
+the four cell states render distinctly under the same accent.
 
 !!! link "Design System"
-    For a complete overview of theming, colors, and style tokens, see the [Design System](../../design-system/index.md) documentation.
-
----
-
-## Examples and patterns
-
-### Value API
-
-Calendar provides a standard `get()/set()/.value` API for accessing and modifying the selected date.
-
-**Single mode:**
-
-```python
-# Get the selected date
-selected = cal.get()        # datetime.date or None
-selected = cal.value        # same thing
-
-# Set the selected date programmatically
-cal.set(date(2025, 6, 15))
-cal.set("2025-06-15")       # ISO string also works
-cal.value = date(2025, 6, 15)
-```
-
-**Range mode:**
-
-```python
-# Get the selected range
-start, end = cal.get_range()  # (date|None, date|None)
-start, end = cal.range        # same thing
-
-# Set the range programmatically
-cal.set_range(date(2025, 1, 10), date(2025, 1, 20))
-cal.set_range("2025-01-10", "2025-01-20")  # ISO strings work
-cal.range = (date(2025, 1, 10), date(2025, 1, 20))
-```
-
-!!! note "Programmatic vs User Updates"
-    `set()` and `set_range()` do **not** emit `<<DateSelect>>`. This follows the standard Tk pattern where programmatic updates don't trigger events. User interactions still emit the event.
-
-### How selection works
-
-Calendar maintains:
-
-* a **current date** (`date`) and
-
-* a **range** (`(start_date, end_date | None)`)
-
-Value type:
-
-* single mode: effectively a `date`
-
-* range mode: `start_date` and `end_date` (with `end_date` becoming non-`None` after the second click)
-
-Selection semantics:
-
-* In range mode:
-
-  * first click sets the start
-
-  * second click sets the end (and will reorder if end < start)
-
-  * a third click starts a new range (clearing the previous end)
-
-The value is considered **committed immediately** when a day is clicked (it generates `<<DateSelect>>`).
-
-### Common options
-
-Selection:
-
-* `selection_mode`: `"single"` (default) or `"range"`
-
-* `value`: initial selected date for single mode (`date`, `datetime`, or string)
-
-* `start_date`: range start date (`date`, `datetime`, or string); use `value` for single mode
-
-* `end_date`: range end (range mode only)
-
-Constraints:
-
-* `min_date`: minimum selectable date
-
-* `max_date`: maximum selectable date
-
-* `disabled_dates`: iterable of dates that cannot be selected
-
-Display:
-
-* `show_outside_days`: show adjacent-month days
-  Defaults to `True` for single mode and `False` for range mode.
-
-* `show_week_numbers`: show ISO week numbers (default `False`)
-
-* `first_weekday`: `0=Monday` … `6=Sunday`, or `None` for locale default (default `None`)
-
-Style:
-
-* `accent`: accent color used for selection and highlights (default `"primary"`)
-
-Layout:
-
-* `padding`: padding around the widget (standard ttk padding values)
-
-### Binding to signals or variables
-
-Calendar does not expose a `variable=`/`textvariable=` binding for selection.
-
-Use the selection event and query the value:
-
-```python
-def on_select(e):
-    selected = e.data["date"]
-    start, end = e.data["range"]
-```
-
-If you need an app-level reactive value, update your own `StringVar`/signal inside the handler.
-
-### Events
-
-Calendar emits:
-
-* `<<DateSelect>>` when the selection changes (including reset)
-
-Use the convenience helpers:
-
-```python
-def on_select(e):
-    print(e.data)
-
-bind_id = cal.on_date_selected(on_select)
-
-# later:
-cal.off_date_selected(bind_id)
-```
-
-### Validation and constraints
-
-Calendar enforces constraints at interaction time:
-
-* dates in `disabled_dates` are not selectable
-
-* dates before `min_date` or after `max_date` are not selectable
-
-* month navigation is clamped so you can't navigate entirely outside the allowed min/max month window
+    For the full theming model and color tokens, see the
+    [Design System](../../design-system/index.md) documentation.
 
 ---
 
 ## Behavior
 
-* Month navigation is provided via chevron buttons.
+**Header layout.** Single mode shows one header
+(`«` `‹` `Month Year` `›` `»`) above the grid. Range mode replaces
+it with two per-month headers — the left header keeps the back
+chevrons, the right header keeps the forward chevrons, and the
+inner chevrons are swapped out for invisible spacers so the column
+widths stay aligned across both months.
 
-* In single mode, there is a single header; in range mode, each month has its own header and navigation is mirrored.
+**Click the title to reset.** Clicking the centered `Month Year`
+label snaps the display back to the constructor's initial month,
+restores the initial selection, and fires `<<DateSelect>>`. This is
+an undocumented feature of the original page, but it is part of the
+shipped behavior. The right-click bindings on the year chevrons
+(`«`, `»`) are aliases for left-click — same handler.
 
-* Disabled dates (explicit, or outside min/max) cannot be selected.
+**Navigation clamp.** The four chevron buttons walk
+`_display_date` by one month or one year. `_is_month_allowed`
+rejects any candidate whose first-of-month falls outside
+`[min_date, max_date]` (using `replace(day=1)` for the bounds
+check), so the user can never scroll past a configured edge.
 
-* `show_outside_days=False` hides adjacent-month cells and removes them from focus/selection.
+!!! warning "min/max + no `value=` can lock navigation"
+    When you pass `min_date` / `max_date` but omit `value=` /
+    `start_date=`, the display opens on today's month — and if today
+    is outside the configured window, both chevrons are blocked
+    immediately because every candidate fails the clamp. The user
+    sees an unselectable view with no way to navigate.
+    Always pair `min_date` / `max_date` with an in-range `value=`
+    (or `start_date=`).
 
-Keyboard focus:
+**Click rules in range mode.**
 
-* Day cells are focusable `Checkbutton`-style controls (disabled cells are not focusable).
+1. With no range in progress, the first click sets `start_date` and
+   leaves `end_date` as `None`.
+2. The second click sets `end_date`; if the click is earlier than
+   the existing start, start and end are swapped before commit.
+3. A third click discards the previous range and sets a new
+   `start_date`, with `end_date` reset to `None`.
+
+**Disabled rendering.** Cells in `disabled_dates`, before
+`min_date`, or after `max_date` render with the `disabled` ttk
+state, lose `takefocus`, and refuse clicks. Outside-month cells
+(when `show_outside_days=True`) are also disabled and use the
+`calendar-outside` variant; when `show_outside_days=False` they
+render as empty cells (and entire empty rows are removed via
+`grid_remove`).
+
+**Keyboard contract.** Day cells are focusable Toolbutton-shaped
+`CheckToggle` widgets. Tab walks through the in-month, non-disabled
+cells in row-major order; `<space>` and `<Return>` invoke the cell.
+There is no arrow-key grid navigation today — Tab/Shift-Tab is the
+only keyboard path through the grid.
+
+**Locale refresh.** Calendar binds `<<LocaleChanged>>` and
+re-renders weekday headers (via `MessageCatalog.translate` over
+`day.mo` … `day.su` tokens) and month/year titles (via
+`babel.dates.format_skeleton('yMMMM', ...)`) when the locale
+changes. `first_weekday=None` is resolved once at construction
+through Babel's `Locale.parse(...).first_week_day`.
 
 ---
 
-## Localization
+## Events
 
-Calendar localizes:
+Calendar emits a single virtual event:
 
-* weekday headers via `MessageCatalog` tokens (`day.mo`, `day.tu`, …)
+| Event | Payload (`event.data`) | Fires on |
+|---|---|---|
+| `<<DateSelect>>` | `{"date": date, "range": (date, date \| None)}` | User click on a day cell, and the title-click reset. |
 
-* month/year header via Babel date formatting (with a fallback)
+The event does **not** fire on any programmatic state change —
+`set()`, `set_range()`, `value` / `range` property setters, and
+`configure(date=...)` are all silent.
 
-It refreshes automatically when `<<LocaleChanged>>` is generated.
+```python
+def on_select(event):
+    selected_date = event.data["date"]
+    start, end = event.data["range"]
+    print(selected_date, start, end)
 
-!!! link "Localization"
-    For complete details on internationalization and locale configuration, see the [Localization](../../capabilities/localization.md) documentation.
+bind_id = cal.on_date_selected(on_select)
+
+# later
+cal.off_date_selected(bind_id)
+```
+
+`on_date_selected` is `bind('<<DateSelect>>', cb, add=True)`, so
+multiple subscribers coexist. If you need to react to programmatic
+writes too, hook the call sites in your application code — there is
+no internal observability channel for the silent paths.
 
 ---
 
-## Additional resources
+## When should I use Calendar?
 
-### Related widgets
+Use Calendar when:
 
-* [DateEntry](../inputs/dateentry.md) — compact typed date input
+- the picker should always be visible on screen (a sidebar, a
+  scheduling panel, a reporting filter strip)
+- the surrounding UI benefits from showing a whole month or two
+  months at a glance
+- range selection is a primary interaction and you want the
+  endpoint highlighting and span fill on a real grid
 
-* DateRangeEntry — compact start/end inputs (if present)
+Prefer [DateEntry](../inputs/dateentry.md) when:
 
-* Popover / Dialog date picker — calendar shown in an overlay (if present)
+- the picker should live inside a form alongside other inputs
+- typing or pasting an ISO date is a primary path
+- screen real estate is scarce — DateEntry is a single line until
+  the user opens its popup
 
-### Framework concepts
+For range entry as two compact form inputs, look at
+[DateRangeEntry](../inputs/dateentry.md) (if your app already uses
+the DateEntry stack) instead of pairing two Calendars.
 
-* [Selection](../../capabilities/state-and-interaction.md)
+---
 
-* [Forms](../../guides/forms.md)
+## Related widgets
 
-* [Localization](../../capabilities/localization.md)
+- **[DateEntry](../inputs/dateentry.md)** — compact entry-style
+  date input with a popup calendar.
+- **DateDialog** — modal date picker built on Calendar.
 
-### API reference
+---
 
-- [`ttkbootstrap.Calendar`](../../reference/widgets/Calendar.md)
+## Reference
+
+- **API reference:** [`ttkbootstrap.Calendar`](../../reference/widgets/Calendar.md)
+- **Related guides:** [Forms](../../guides/forms.md),
+  [Localization](../../capabilities/localization.md)
