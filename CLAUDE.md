@@ -34,36 +34,17 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, navigation sweep COMPLETE — Toolbar relocated to widgets/application/, rewritten to action template)
+### Current handoff (2026-05-01, overlays sweep started — overlay template restructured to slim arc, ToolTip rewritten as anchor)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
-the dialogs sweep (11/11), data-display sweep (8/8), and layout sweep
-(12/12) are complete. The **navigation sweep is now in progress** — the
-navigation template has been restructured to the slim arc, `tabs.md`
-has been rewritten as the anchor, and `appshell.md` has been rewritten
-at its canonical location (`docs/widgets/application/appshell.md`)
-under a bespoke app-shell arc (it's an `App` subclass, not a child
-widget — the navigation template never fit). The vestigial
-`docs/widgets/navigation/appshell.md` redirect stub was deleted.
+the dialogs sweep (11/11), data-display sweep (8/8), layout sweep
+(12/12), and navigation sweep (5/5) are complete. The **overlays sweep
+is now in progress** — the overlay template has been restructured
+to the slim arc and `tooltip.md` has been rewritten as the anchor.
+One page (`toast.md`) remains.
 
-The navigation directory turned out to be heterogeneous; the remaining
-three pages each get a different template:
-
-- **`sidenav.md`** — true selection-driven nav chrome → uses the
-  navigation template (`docs/_template/widget-navigation-template.md`)
-  as designed.
-- **`toolbar.md`** — action chrome strip with no selection state, no
-  keyed targets, no signal → uses the **action template** (the same
-  one Button / ButtonGroup / ContextMenu use). Forcing a "Navigation
-  model" H2 onto Toolbar would be contrived. When picking it up, plan
-  for an `Item types` subsection covering `add_button` /
-  `add_label` / `add_separator` / `add_spacer` / `add_window_controls`.
-- **`navigationview.md`** — 6-line deprecation stub for SideNav. Add
-  `"navigationview.md"` to `SKIP_FILES` in
-  `tools/check_doc_structure.py` rather than rewriting it.
-
-The remaining 3 templates (form, overlay, selection) still need the
+The remaining 2 templates (form, selection) still need the
 editorial pass at the start of each sweep (see "Template arc" below).**
 
 ### Template arc (apply to every editorial sweep)
@@ -111,8 +92,12 @@ Templates already restructured to this arc:
   `Navigation model` is required (it carries the keyed-targets /
   random-vs-sequential / signal-vs-imperative description that
   every navigation page needs).
+- `widget-overlay-template.md` (anchored on `tooltip.md`).
+  `Lifecycle` is required (it carries the trigger / visibility /
+  dismissal / blocking-vs-non-blocking framing that every overlay
+  page needs). No `*Optional` H2s.
 
-Remaining 3 templates (form, overlay, selection) still lead with
+Remaining 2 templates (form, selection) still lead with
 `Framework integration` etc. Apply the editorial pass at the start
 of each category's sweep — those categories have 0 pages written,
 so the template fix is free.
@@ -1486,6 +1471,92 @@ Pages to review:
 - [x] `toolbar.md` — action template (at `widgets/application/`)
 - [x] `navigationview.md` — deprecation stub; SKIP_FILES'd
 
+### Widget pages — overlays (`docs/widgets/overlays/`, 2 pages) — IN PROGRESS 1/2 (2026-05-01)
+
+Template: `docs/_template/widget-overlay-template.md` (slim arc,
+restructured this session). Required H2s: `Basic usage`,
+`Lifecycle`, `Common options`, `Behavior`, `Events`,
+`When should I use WidgetName?`, `Related widgets`, `Reference`.
+No `*Optional` H2s — `Lifecycle` is required (every overlay page
+has a trigger / visibility / dismissal / blocking story worth
+documenting).
+
+`tooltip.md` is the canonical anchor for the overlays sweep, the
+way `button.md` / `textentry.md` / `messagedialog.md` / `label.md` /
+`frame.md` / `tabs.md` anchored their respective categories.
+
+Last session (2026-05-01, overlays sweep started — template
+restructure + tooltip anchor):
+
+- `widget-overlay-template.md` rewritten to the slim arc.
+  Old form led with `Framework integration` + `What problem it
+  solves` + `Core concepts` + fragmented `Content and
+  presentation` / `Positioning` / `Behavior and lifecycle` /
+  `Events and callbacks` / `UX guidance` H2s. New form: intro →
+  `Basic usage` → `Lifecycle` → `Common options` → `Behavior` →
+  `Events` → `When should I use WidgetName?` → `Related widgets`
+  → `Reference`. Mental-model section name fixed at `Lifecycle`
+  (covers trigger model, visibility window, dismissal,
+  blocking-vs-non-blocking, one-shot-vs-reusable). No
+  `*Optional` H2s.
+- `tooltip.md` rewritten as the anchor. Three things the old
+  page got wrong or omitted, two of which became new bugs:
+  (1) the old page used `# Tooltip` as the H1 (single capital
+  T), but the public class name is `ToolTip`
+  (`getattr(ttk, 'Tooltip', None) is None`; the export at
+  `api/widgets.py:75` is `ToolTip`). Fixed the H1 to match the
+  public name.
+  (2) the old page never noted that `ToolTip(widget, ...)`
+  uses **hard binds** (`widget.bind("<Enter>", ...)` without
+  `add="+"`) and silently overwrites any existing
+  `<Enter>` / `<Leave>` / `<Motion>` / `<ButtonPress>` binding
+  on the target widget. Verified at runtime: a pre-bound
+  `<Enter>` handler that fires before tooltip attachment
+  stops firing afterward. Documented in Behavior with a
+  workaround (bind your handlers *first*, attach the tooltip
+  *after*); added to the bugs list.
+  (3) the old page never noted that **two `ToolTip(widget,
+  ...)` calls on the same widget cause the second to win** —
+  the second's bindings overwrite the first's, and the first
+  becomes inert (its `_show_tip` never runs because the
+  binding no longer points at it; it's also not garbage-
+  collected automatically because it still owns references
+  through the closure). Verified at runtime: with
+  `t1 = ToolTip(btn, text='first', delay=0)` and
+  `t2 = ToolTip(btn, text='second', delay=0)`, hovering
+  produces `t1._toplevel is None`, `t2._toplevel` populated.
+  Documented in Behavior as a `!!! warning`; added to the
+  bugs list.
+  Also documented: `ToolTip` is **not a widget** (no
+  `configure`/`cget`/parent — controller object that owns a
+  Toplevel created on hover); the only public surface is
+  `__init__` and `destroy`; to change `text` etc., destroy
+  and recreate; the nine-point anchor model
+  (`anchor_point`/`window_point`, default `window_point` is
+  geometric opposite); `auto_flip` (bool / `'vertical'` /
+  `'horizontal'`); the macOS chromeless path
+  (`windowtype="tooltip"` triggers `MacWindowStyle "help
+  none"` since `overrideredirect` is silently skipped on Aqua
+  per `BaseWindow`); the `accent='background[+1]'` default;
+  the internal `variant='tooltip'` Frame style
+  (`style/builders/tooltip.py`); the `image=` field rendering
+  via `compound='bottom'`; `wraplength` defaulting to
+  `scale_size(widget, 300)` (DPI-scaled); the deliberate
+  negative `Events` section (no virtual events, no `on_*`
+  helpers — bind to the target widget's `<Enter>` /
+  `<Leave>` directly *before* attaching the tooltip).
+
+`tools/check_doc_structure.py --category overlays` → 2 files
+checked, 1 failed (only `toast.md` remains).
+`tools/check_doc_snippets.py --run --file
+docs/widgets/overlays/tooltip.md` → 0 failures (5 snippets, 5
+executed).
+
+Pages to review (canonical anchor: `tooltip.md`):
+
+- [x] `tooltip.md` — anchor for the overlays sweep
+- [ ] `toast.md`
+
 ### Workflow (one page per session)
 
 1. Read the page end-to-end.
@@ -2122,6 +2193,33 @@ primitives.
   three as aliases on each class. The current state is a tripwire
   for users moving snippets between `App`/`Toplevel`/`AppShell`.
   (Surfaced by toolbar.md rewrite, 2026-05-01.)
+- `ToolTip(widget, ...)` silently overwrites any pre-existing
+  `<Enter>` / `<Leave>` / `<Motion>` / `<ButtonPress>` binding on
+  the target widget. The constructor uses hard binds
+  (`widgets/composites/tooltip.py:122-125` — `widget.bind("<Enter>",
+  self._on_enter)` etc., without `add="+"`), so a user handler
+  attached before the tooltip is silently replaced. Verified at
+  runtime: a pre-bound `<Enter>` handler that fires before tooltip
+  attachment stops firing afterward (`event_generate("<Enter>")`
+  produces no callback hits). Either rewrite the binds with
+  `add="+"` so user handlers and tooltip handlers coexist, or
+  document the clobbering as deliberate and require users to bind
+  *after* attaching the tooltip. (Surfaced by tooltip.md rewrite,
+  2026-05-01.)
+- `ToolTip` does not support multiple instances on the same widget.
+  A second `ToolTip(widget, ...)` call overwrites the first's
+  bindings (same hard-bind path as above), so the first instance
+  becomes inert — its `_show_tip` never runs because the binding no
+  longer points at it. The first instance is also not garbage-
+  collected automatically (it retains references through closures).
+  Verified at runtime: `t1 = ToolTip(btn, text='first', delay=0)`
+  followed by `t2 = ToolTip(btn, text='second', delay=0)` produces
+  `t1._toplevel is None` and `t2._toplevel` populated after a
+  hover cycle. Either detect a previously-attached tooltip and
+  raise / replace deterministically, or use `add="+"` for the
+  binds (allowing both tooltips to attempt to show, which is also
+  weird). The current silent-takeover form is the worst option.
+  (Surfaced by tooltip.md rewrite, 2026-05-01.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
