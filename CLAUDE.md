@@ -34,20 +34,22 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, inputs sweep 11/11 done; selection sweep 8/9 — calendar remains)
+### Current handoff (2026-05-01, selection sweep closed 9/9 — only the views and primitives sweeps remain)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 the dialogs sweep (11/11), inputs sweep (11/11), data-display sweep
-(8/8), layout sweep (12/12), navigation sweep (5/5), and overlays
-sweep (2/2) are complete. The selection sweep is at 8/9 —
-`checkbutton`, `switch`, `checktoggle`, `radiobutton`, `radiogroup`,
-`radiotoggle`, `togglegroup`, `optionmenu` rewritten; `calendar`
-remains. The inputs sweep was briefly reopened on 2026-05-01 when
+(8/8), layout sweep (12/12), navigation sweep (5/5), overlays sweep
+(2/2), and selection sweep (9/9) are now all complete. The selection
+sweep was closed on 2026-05-01 with the calendar rewrite (commit
+`9334701`) — `checkbutton`, `switch`, `checktoggle`, `radiobutton`,
+`radiogroup`, `radiotoggle`, `togglegroup`, `optionmenu`, `calendar`
+all done. The inputs sweep was briefly reopened on 2026-05-01 when
 `selectbox.md` was relocated from `widgets/selection/` to
 `widgets/inputs/` (see "SelectBox relocation" below); it has now
 been rewritten under the inputs template (commit `d495951`,
-2026-05-01) and the sweep is closed at 11/11.**
+2026-05-01) and the sweep is closed at 11/11. Remaining
+editorial-review categories: views, primitives.**
 
 **SelectBox relocation (2026-05-01).** The `selectbox.md` page was
 moved from `widgets/selection/` to `widgets/inputs/`. Rationale: a
@@ -1711,7 +1713,7 @@ Pages to review (canonical anchor: `tooltip.md`):
 - [x] `tooltip.md` — anchor for the overlays sweep
 - [x] `toast.md`
 
-### Widget pages — selection (`docs/widgets/selection/`, 9 pages) — IN PROGRESS 8/9 (2026-05-01)
+### Widget pages — selection (`docs/widgets/selection/`, 9 pages) — DONE 9/9 (2026-05-01)
 
 **Note:** `selectbox.md` was moved out of this category on
 2026-05-01 (now lives at `widgets/inputs/selectbox.md`). The page
@@ -1731,7 +1733,93 @@ the way `button.md` / `textentry.md` / `messagedialog.md` /
 `label.md` / `frame.md` / `tabs.md` / `tooltip.md` anchored their
 respective categories.
 
-Last session (2026-05-01, selection sweep started — template
+Last session (2026-05-01, calendar sweep — final selection page):
+
+- `calendar.md` rewritten to the slim selection template. Calendar
+  is the ninth and final page in the sweep — an inline date picker
+  (single or range mode) that produces `datetime.date` values. The
+  selection model section frames the two-mode split up front
+  (single-mode `cal.value` returns a `date`; range-mode `cal.range`
+  returns a `(start, end | None)` tuple), documents the silent-
+  write contract for `set()` / `set_range()` / property setters /
+  `configure(date=...)` (none of them fire `<<DateSelect>>`), and
+  notes that Calendar has no shared-variable channel — no `signal=`,
+  no `variable=`, observers bind `<<DateSelect>>` or read directly.
+  Four runtime-verified bugs surfaced; all four are real API
+  gotchas, not just doc gaps:
+  (1) `Calendar(min_date=…, max_date=…)` without `value=` /
+  `start_date=` opens at today's month unconditionally
+  (`composites/calendar.py:166-168`). If today falls outside the
+  configured window, every navigation candidate fails the clamp at
+  `_is_month_allowed` (`calendar.py:850-855`) and both chevrons are
+  blocked immediately. The user sees an unselectable view with no
+  way to navigate. Verified at runtime: today=2026-05-01,
+  `Calendar(min_date=date(2025,6,1), max_date=date(2025,8,31))` →
+  display=2026-05-01, prev/next both rejected. Documented as a
+  `!!! warning` in Behavior; added to the bugs list.
+  (2) `cal.set(None)` and `cal.value = None` are silently no-ops.
+  `set()` calls `_coerce_date(value)` which returns `None` for
+  `None` input, then early-returns at `calendar.py:217-218`. The
+  docstring at `calendar.py:214` claims "or None to clear
+  selection" — false. Either honor `None` (clear `_selected_date`,
+  `_range_start`, `_range_end`) or remove the docstring claim.
+  Documented in Selection model; added to the bugs list.
+  (3) `set()` / `set_range()` / `value` property setter /
+  `configure(date=...)` all bypass `min_date` / `max_date` /
+  `disabled_dates`. The interactive paths
+  (`_on_date_selected_by_date` at `calendar.py:783-784`) check
+  `_is_disabled` and reject; the programmatic paths do not.
+  Verified: `Calendar(min_date=date(2025,6,1),
+  max_date=date(2025,6,30)).set(date(2025,12,25))` succeeds.
+  Documented as a `!!! warning` in Selection model; added to the
+  bugs list.
+  (4) In range mode, `cal.range = None` / `cal.set_range(None,
+  None)` clears `_range_start` and `_range_end` but does NOT
+  clear `_selected_date`. `set_range`'s normalization at
+  `calendar.py:274` uses `e if e else (s if s else
+  self._selected_date)` — when both arguments are `None`, the
+  fallback keeps the old end-date. Net effect: `cal.range`
+  reports `(None, None)` while `cal.value` and `cal.get()`
+  return a stale date. Documented as a `!!! warning` in Selection
+  model with a recommendation to read `cal.range` (not
+  `cal.value`) in range mode; added to the bugs list.
+  Also documented (some new, some restated): the title-click-
+  resets-to-initial-date behavior (clicking the centered `Month
+  Year` label calls `_on_reset_date` which restores the
+  constructor's initial state, navigates display to that month,
+  and emits `<<DateSelect>>` — undocumented in the old page); the
+  right-click bindings on the year chevrons (`bind_right_click` is
+  an alias for left-click — same handler); the range-mode click
+  rules (1st = start, 2nd = end with auto-swap when end < start,
+  3rd = new range starting from the click); the four
+  `calendar-*` Toolbutton style variants (`calendar-day` /
+  `calendar-date` / `calendar-range` / `calendar-outside`,
+  registered in `style/builders/calendar.py`) and that they are
+  not user-overridable through public options;
+  `first_weekday=None` resolution (Babel's
+  `Locale.parse(...).first_week_day`, falls back to Monday on
+  failure, resolved once at construction); the
+  `<<LocaleChanged>>` re-render path (weekday tokens via
+  `MessageCatalog.translate`, month/year via
+  `babel.dates.format_skeleton('yMMMM', ...)`); the keyboard
+  contract (Tab walks in-month non-disabled cells in row-major
+  order; `<space>` / `<Return>` invoke; no arrow-key grid
+  navigation today); `show_outside_days` defaults that diverge
+  by mode (`True` for single, `False` for range); the
+  `value=` / `start_date=` aliasing (when `start_date is None`
+  and `value is not None`, the constructor copies `value` into
+  `start_date` at `calendar.py:163-164`); the construction-only
+  semantics for `selection_mode`, `show_outside_days`,
+  `show_week_numbers`, `first_weekday`, `min_date`, `max_date`,
+  and `disabled_dates`. Common options consolidates into a
+  13-row table.
+
+`tools/check_doc_structure.py --category selection` → 9/9 pass.
+`tools/check_doc_snippets.py --run --file
+docs/widgets/selection/calendar.md` → 0 failures (4 snippets, 1
+executed). Selection sweep complete.
+
+Earlier session (2026-05-01, selection sweep started — template
 restructure + checkbutton anchor):
 
 - `widget-selection-template.md` rewritten to the slim arc.
@@ -1944,7 +2032,7 @@ Pages to review (canonical anchor: `checkbutton.md`):
 - [x] `radiotoggle.md` — RadioButton subclass with toolbutton chrome
 - [x] `togglegroup.md` — RadioGroup using toolbutton-style children
 - [x] `optionmenu.md` — list-based selection (button + dropdown menu)
-- [ ] `calendar.md` — date selection grid
+- [x] `calendar.md` — date selection grid
 
 (`selectbox.md` was moved to `widgets/inputs/`; it is now tracked
 under the inputs sweep, not selection.)
@@ -2820,6 +2908,67 @@ primitives.
   `self.addons['dropdown'].configure(icon=...)`, or document
   the option as construction-time only. (Surfaced by
   selectbox.md rewrite, 2026-05-01.)
+- `Calendar(min_date=…, max_date=…)` without `value=` /
+  `start_date=` opens with both chevrons permanently disabled
+  whenever today's month is outside the configured window. The
+  constructor sets `_display_date = date(today.year, today.month,
+  1)` unconditionally (`composites/calendar.py:166-168`); the
+  navigation handlers then walk `_display_date` by ±1 month / year
+  and gate on `_is_month_allowed` (`calendar.py:850-855`), which
+  rejects any candidate whose first-of-month is outside
+  `[min_date.replace(day=1), max_date.replace(day=1)]`. From an
+  out-of-range starting position every adjacent candidate is
+  out-of-range too, so the user is stranded. Verified at runtime
+  (`today=2026-05-01`, `min=date(2025,6,1)`,
+  `max=date(2025,8,31)` → display stays at 2026-05-01, prev/next
+  both rejected). Either clamp `_display_date` into
+  `[min_date, max_date]` at the end of `__init__` (snap to
+  `min_date.replace(day=1)` if today < min, or
+  `max_date.replace(day=1)` if today > max), or document the
+  precondition that `min_date` / `max_date` must be paired with
+  an in-range `value=`. (Surfaced by calendar.md rewrite,
+  2026-05-01.)
+- `Calendar.set(None)` and the `value` property setter with `None`
+  are silently no-ops, despite the docstring at
+  `composites/calendar.py:214` claiming "or None to clear
+  selection". `set()` calls `_coerce_date(value)` (which returns
+  `None` for `None` input) and early-returns at
+  `calendar.py:217-218`. Net effect: there is no programmatic path
+  to clear the selection in single mode — `cal.value = None` looks
+  like it should work, but the value sticks. Either honor `None`
+  (clear `_selected_date`, `_range_start`, `_range_end` and
+  re-render) or remove the docstring claim. (Surfaced by
+  calendar.md rewrite, 2026-05-01.)
+- `Calendar.set()`, `set_range()`, the `value` / `range` property
+  setters, and `configure(date=...)` all bypass `min_date`,
+  `max_date`, and `disabled_dates`. The interactive path
+  (`_on_date_selected_by_date` at `composites/calendar.py:783-784`)
+  checks `_is_disabled` and refuses out-of-range or disabled
+  clicks, but the programmatic setters write the date directly.
+  Verified: `Calendar(min_date=date(2025,6,1),
+  max_date=date(2025,6,30)).set(date(2025,12,25))` succeeds, and
+  `Calendar(disabled_dates=[date(2025,12,25)]).set(date(2025,12,25))`
+  also succeeds. Either re-validate inside the setters and raise /
+  no-op on out-of-range, or document the divergence in the
+  setters' docstrings. (Surfaced by calendar.md rewrite,
+  2026-05-01.)
+- In range mode, `Calendar.range = None` and `set_range(None,
+  None)` clear `_range_start` and `_range_end` but do **not**
+  clear `_selected_date`. The fallback at
+  `composites/calendar.py:274` (`self._selected_date = e if e else
+  (s if s else self._selected_date)`) keeps the previous
+  `_selected_date` when both arguments coerce to `None`. Net
+  effect: `cal.range` reports `(None, None)`, the grid paints no
+  cell as selected (because `_is_selected` short-circuits on
+  `not self._range_start`), but `cal.value` and `cal.get()`
+  return a *stale* date. Verified: after
+  `cal = Calendar(selection_mode='range',
+  start_date=date(2025,6,1), end_date=date(2025,6,30))` then
+  `cal.range = None`, `cal.value` is still `date(2025,6,30)`.
+  Either also clear `_selected_date` when both range arguments
+  are `None`, or document that `cal.value` is meaningless in
+  range mode and callers must read `cal.range`. (Surfaced by
+  calendar.md rewrite, 2026-05-01.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
