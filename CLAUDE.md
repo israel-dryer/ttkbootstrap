@@ -34,15 +34,15 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-04-30, data-display sweep — 6/8)
+### Current handoff (2026-04-30, data-display sweep — 7/8)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 the dialogs sweep is now complete (11/11), and the data-display sweep
-is in progress (6/8): `label.md` (anchor), `badge.md`, `progressbar.md`,
-`floodgauge.md`, `meter.md`, and `listview.md` are rewritten to the
-slim template. Remaining 2 pages (tableview, treeview) still need
-rewriting.**
+is in progress (7/8): `label.md` (anchor), `badge.md`, `progressbar.md`,
+`floodgauge.md`, `meter.md`, `listview.md`, and `tableview.md` are
+rewritten to the slim template. Remaining 1 page (treeview) still
+needs rewriting.**
 
 ### Template arc (apply to every editorial sweep)
 
@@ -261,7 +261,52 @@ Optional (declared via `*Optional` prose under the heading):
 - `Performance guidance` — include for widgets that scale with
   row count. Skip for lightweight status/progress widgets.
 
-Last session (2026-04-30, listview sweep — first data-bound page):
+Last session (2026-04-30, tableview sweep):
+
+- `tableview.md` rewritten to the slim data-display template.
+  TableView is the **second data-bound** page in the sweep, so it
+  carries `Data model` and `Performance guidance` like ListView.
+  Three things the old page got wrong or omitted:
+  (1) the old page framed TableView as a generic "tabular data view"
+  with no mention of its **SQLite backbone**. TableView is built
+  on `SqliteDataSource` (in-memory by default) — filter is a SQL
+  WHERE clause, sort is ORDER BY, the search bar generates a
+  `LIKE` (or `=`/`STARTS_WITH`/`ENDS_WITH`/raw SQL) WHERE clause
+  across all columns. Documented `set_filters(where: str)`,
+  advanced search "SQL" mode, and `set_sorting(key)` as
+  **trusted-input** APIs that interpolate directly into SQL —
+  surfaced as a `!!! danger` block in the rewrite.
+  (2) the old `Events` section was a flat list with no payloads;
+  promoted to a payload table covering all 8 events
+  (`<<SelectionChange>>` carries `{records, iids}`, `<<RowClick>>`
+  / `<<RowDoubleClick>>` / `<<RowRightClick>>` carry
+  `{record, iid}`, `<<RowInsert>>` / `<<RowUpdate>>` /
+  `<<RowDelete>>` / `<<RowMove>>` carry `{records: list[dict]}`).
+  Surfaced the export-events bug as a `!!! warning`: the three
+  `<<TableViewExport*>>` events are emitted on `self._tree` (the
+  inner private TreeView), not on the TableView, and there are no
+  `on_export_*` helpers — listeners must bind to the private
+  inner widget today.
+  (3) the old page omitted half the constructor surface: no
+  `sorting_mode`, no `search_mode`/`search_trigger`, no
+  `paging_mode`, no `enable_filtering` / `enable_header_filtering`
+  / `enable_row_filtering`, no `allow_grouping` /
+  `show_table_status` / `show_column_chooser` / `context_menus`,
+  no `column_min_width`, no `form_options`. Consolidated all
+  ~30 ctor params into a single Common options table; expanded
+  the column-dict shape (`text` / `key` / `width` / `minwidth` /
+  `anchor` / `align` / `dtype` / `type` / `editor` /
+  `editor_options` / `readonly` / `required`) and documented
+  the auto-anchor inference (numeric → "e", text → "w",
+  fallback samples 20 rows).
+  Also documented grouping (`set_grouping` / `clear_grouping` /
+  `expand_all` / `collapse_all`), hide/unhide for rows and
+  columns, virtual paging's 85 % prefetch threshold, the
+  generated `FormDialog` with role-based Cancel / Delete / Save
+  buttons, the `Tableview = TableView` legacy alias, and the
+  page LRU cache (`page_cache_size`, default 3).
+
+Prior session (2026-04-30, listview sweep — first data-bound page):
 
 - `listview.md` rewritten to the slim data-display template
   (slim arc commit `6dae13a`). ListView is the **first
@@ -421,9 +466,9 @@ Earliest session (2026-04-30, label sweep — anchor):
   emits no virtual events; (3) `surface=` is the right knob if
   you need a colored background on a Label.
 
-`tools/check_doc_structure.py --category data-display` → 6/8
-passing (label, badge, progressbar, floodgauge, meter, listview).
-2 remaining pages (tableview, treeview) are still on the old
+`tools/check_doc_structure.py --category data-display` → 7/8
+passing (label, badge, progressbar, floodgauge, meter, listview,
+tableview). 1 remaining page (treeview) is still on the old
 scaffold.
 
 Pages to review (canonical anchor: `label.md`):
@@ -434,7 +479,7 @@ Pages to review (canonical anchor: `label.md`):
 - [x] `floodgauge.md` — canvas-drawn fill with inline label
 - [x] `meter.md` — radial gauge with central readout
 - [x] `listview.md` — first data-bound widget; uses Data model
-- [ ] `tableview.md`
+- [x] `tableview.md` — second data-bound widget; SQLite-backed
 - [ ] `treeview.md`
 
 ### Workflow (one page per session)
@@ -688,6 +733,56 @@ primitives.
   renaming the private one (e.g. `_InlineMemoryDataSource`)
   so the duplication isn't accidentally relied on. (Surfaced
   by listview.md rewrite, 2026-04-30.)
+- `TableView` export events fire on the **inner private
+  `_tree`**, not on the TableView itself. `_export_all`,
+  `_export_selection`, and `_export_page` (`composites/tableview/
+  tableview.py:1813-1833`) each call
+  `self._tree.event_generate("<<TableViewExport*>>", data=rows)`.
+  All other public events (`<<RowClick>>`, `<<SelectionChange>>`,
+  etc.) are generated on `self`, and TableView ships
+  `on_*` / `off_*` helpers for every one of those — but there
+  are **no `on_export_*` helpers** at all. Net result: the
+  documented `enable_exporting=True` path produces events that
+  callers can only consume by binding to `tv._tree` (a private
+  attribute). Either generate the export events on `self` and
+  add public helpers, or drop the events and expose
+  synchronous `export_all()` / `export_selection()` /
+  `export_page()` methods that return the rows. (Surfaced by
+  tableview.md rewrite, 2026-04-30.)
+- `TableView.set_filters(where: str)` and the advanced search
+  "SQL" mode interpolate user input directly into the SQL
+  WHERE clause (`composites/tableview/tableview.py:1153-1188`,
+  `:562-571`); `TableView.set_sorting(key, ascending)` quotes
+  the column identifier but takes the raw `key` string from
+  the caller (`:580-592`). All three are documented internally
+  as a "trust contract" but the public docstrings don't warn
+  about SQL injection risk. Either parameterize the SqliteData
+  Source's `set_filter` / `set_sort` to bind values, or add a
+  prominent warning to the public docstrings + a top-level
+  note in the API reference. (Surfaced by tableview.md
+  rewrite, 2026-04-30.)
+- `TableView` ships an undocumented lowercase legacy alias
+  `Tableview = TableView` at the end of
+  `composites/tableview/tableview.py:2272`. The alias isn't
+  re-exported through `ttkbootstrap.api` and isn't mentioned
+  in any docstring — it exists only as a backwards-compat
+  hook. Either deprecate it explicitly (with a
+  `DeprecationWarning` on access) or document the lowercase
+  spelling alongside `TableView`. (Surfaced by tableview.md
+  rewrite, 2026-04-30.)
+- `TableView`'s `enable_filtering` parameter is **dead** —
+  documented as a master switch ("Enable filtering features",
+  `composites/tableview/tableview.py:133`), but the value
+  stored as `self._filtering['enabled']` is never read
+  anywhere in the codebase. Only `enable_header_filtering`
+  (read at `_filtering['header_menu_filtering']`) and
+  `enable_row_filtering` (read at
+  `_filtering['row_menu_filtering']`, line 1270) gate any
+  behavior. A caller passing `enable_filtering=False` still
+  gets every filter affordance. Either wire it as a true
+  master switch (gate both menu options + the search bar's
+  WHERE-clause emission) or remove it from the public ctor
+  signature. (Surfaced by tableview.md rewrite, 2026-04-30.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
