@@ -34,14 +34,15 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-04-30, data-display sweep — 5/8)
+### Current handoff (2026-04-30, data-display sweep — 6/8)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 the dialogs sweep is now complete (11/11), and the data-display sweep
-is in progress (5/8): `label.md` (anchor), `badge.md`, `progressbar.md`,
-`floodgauge.md`, and `meter.md` are rewritten to the slim template.
-Remaining 3 pages (listview, tableview, treeview) still need rewriting.**
+is in progress (6/8): `label.md` (anchor), `badge.md`, `progressbar.md`,
+`floodgauge.md`, `meter.md`, and `listview.md` are rewritten to the
+slim template. Remaining 2 pages (tableview, treeview) still need
+rewriting.**
 
 ### Template arc (apply to every editorial sweep)
 
@@ -260,7 +261,54 @@ Optional (declared via `*Optional` prose under the heading):
 - `Performance guidance` — include for widgets that scale with
   row count. Skip for lightweight status/progress widgets.
 
-Last session (2026-04-30, meter sweep):
+Last session (2026-04-30, listview sweep — first data-bound page):
+
+- `listview.md` rewritten to the slim data-display template
+  (slim arc commit `6dae13a`). ListView is the **first
+  data-bound** page in the sweep, so it fills in the optional
+  `Data model` and `Performance guidance` sections that the
+  read-only widgets (Label, Badge, Progressbar, FloodGauge,
+  Meter) skipped. Three things the old page got wrong or
+  omitted:
+  (1) the old "Reactivity" section claimed `items=` accepts a
+  `Signal` and bound it like
+  `ttk.ListView(app, items=signal)`. That path doesn't bind
+  anything — `items=` is iterated immediately by the internal
+  `MemoryDataSource.set_data()`, so a `Signal` is either
+  treated as opaque or fails outright. ListView has **no
+  SignalMixin** and no signal-bound `items` channel. Mutation
+  goes through `insert_item` / `update_item` / `delete_item` /
+  `reload`, plus `datasource=` for external state.
+  (2) the old "Data model" subsection only listed recognized
+  record fields. Documented the **full `DataSourceProtocol`
+  surface** (`total_count`, `get_page_from_index`,
+  `is_selected`, `select_record` / `deselect_record` /
+  `deselect_all`, `get_selected`, CRUD, `reload`, optional
+  `move_record`) and surfaced the already-known mismatch with
+  `BaseDataSource` — the framework's
+  `ttkbootstrap.datasource.MemoryDataSource` /
+  `SqliteDataSource` / `FileDataSource` use
+  `unselect_record`/`unselect_all` and **no `is_selected`**, so
+  they do not satisfy ListView's protocol as-shipped.
+  (3) the old `Events` section was a flat bullet list with no
+  payload information and inflated some payloads
+  (`<<ItemDelete>>` was claimed to carry `event.data =
+  {'record': dict}`, but `_on_item_removing` and `delete_item`
+  pass no data — `event.data` arrives as `None`). Replaced
+  with a payload table that names what actually arrives:
+  `None` for `<<SelectionChange>>` / `<<ItemDelete>>` /
+  `<<ItemDeleteFail>>` / `<<ItemInsert>>` / `<<ItemUpdate>>`;
+  record dict for `<<ItemClick>>`; full drag payload for the
+  three drag events.
+  Also added a positive `Performance guidance` section calling
+  out the `select_all()` cost (loads all records via
+  `get_page_from_index(0, total)`), the `MemoryDataSource`
+  index rebuild on delete/move, the per-scroll cost of
+  `update_data`, and the recommendation to batch external
+  updates and call `reload()` once. Common options consolidates
+  into a 16-row table.
+
+Prior session (2026-04-30, meter sweep):
 
 - `meter.md` rewritten to the slim template. The old page was
   built around the **deprecated** legacy parameter names
@@ -294,7 +342,7 @@ Last session (2026-04-30, meter sweep):
   virtual event — Label, Badge, Progressbar, and FloodGauge all
   have negative Events sections).
 
-Prior session (2026-04-30, floodgauge sweep):
+Earlier session (2026-04-30, floodgauge sweep):
 
 - `floodgauge.md` rewritten to the slim template. Corrects two
   things the old page got wrong and surfaces several missing
@@ -318,7 +366,7 @@ Prior session (2026-04-30, floodgauge sweep):
   no `on_*` helpers — observe via `variable.trace_add(...)`.
   Common options consolidates into a 13-row table.
 
-Earlier session (2026-04-30, progressbar sweep):
+Even earlier session (2026-04-30, progressbar sweep):
 
 - `progressbar.md` rewritten to the slim template. Corrects
   three things the old page got wrong or omitted:
@@ -341,7 +389,7 @@ Earlier session (2026-04-30, progressbar sweep):
   consolidates into a 12-row table; `length` clarified as
   along-orientation (height for vertical bars).
 
-Even earlier session (2026-04-30, badge sweep):
+Earlier still (2026-04-30, badge sweep):
 
 - `badge.md` rewritten to the slim template. Corrects the
   framing the old page papered over: Badge is **not** a Label
@@ -373,9 +421,10 @@ Earliest session (2026-04-30, label sweep — anchor):
   emits no virtual events; (3) `surface=` is the right knob if
   you need a colored background on a Label.
 
-`tools/check_doc_structure.py --category data-display` → 5/8
-passing (label, badge, progressbar, floodgauge, meter). 3 remaining
-pages (listview, tableview, treeview) are still on the old scaffold.
+`tools/check_doc_structure.py --category data-display` → 6/8
+passing (label, badge, progressbar, floodgauge, meter, listview).
+2 remaining pages (tableview, treeview) are still on the old
+scaffold.
 
 Pages to review (canonical anchor: `label.md`):
 
@@ -384,7 +433,7 @@ Pages to review (canonical anchor: `label.md`):
 - [x] `progressbar.md` — linear determinate/indeterminate progress
 - [x] `floodgauge.md` — canvas-drawn fill with inline label
 - [x] `meter.md` — radial gauge with central readout
-- [ ] `listview.md` — first data-bound widget; uses Data model
+- [x] `listview.md` — first data-bound widget; uses Data model
 - [ ] `tableview.md`
 - [ ] `treeview.md`
 
@@ -583,6 +632,62 @@ primitives.
   `variable=`). Consider plumbing a `variable=` (and matching
   `textvariable=` for the readout) through the constructor for
   parity. (Surfaced by meter.md rewrite, 2026-04-30.)
+- `ListView` virtual-event docstrings reference event names
+  with mismatched suffixes that don't match the actual
+  `event_generate(...)` calls. Specifically:
+  `ListView.select_all` (`composites/list/listview.py:1331`)
+  documents `<<SelectionChanged>>` but generates
+  `<<SelectionChange>>`; `insert_item` (`listview.py:1377`)
+  documents `<<ItemInserted>>` but generates `<<ItemInsert>>`;
+  `update_item` (`listview.py:1398`) documents `<<ItemUpdated>>`
+  but generates `<<ItemUpdate>>`; `delete_item` (`listview.py:1414`)
+  documents `<<ItemDeleted>>` but generates `<<ItemDelete>>`.
+  Source-only docstring typos. (Surfaced by listview.md
+  rewrite, 2026-04-30.)
+- `ListView` `on_*` event-helper docstrings (`listview.py:1445-1507`)
+  claim each event carries `event.data = {'record': dict}` (or
+  variants), but the corresponding `event_generate(...)` calls
+  for `<<ItemDelete>>` / `<<ItemDeleteFail>>` / `<<ItemInsert>>` /
+  `<<ItemUpdate>>` (`_on_item_removing` at `listview.py:927-929`,
+  `insert_item` at `:1387`, `update_item` at `:1405`,
+  `delete_item` at `:1421`) pass **no `data=`** parameter — so
+  `event.data` arrives as `None` at the listener. Either pass
+  the record dict through `event_generate(..., data=record)` to
+  match the docstring, or fix the docstrings to say `event.data
+  = None` (and tell users to read state via `get_selected()` /
+  `get_datasource()`). (Surfaced by listview.md rewrite,
+  2026-04-30.)
+- `ListView`'s `DataSourceProtocol`
+  (`composites/list/listview.py:18-129`) requires
+  `is_selected(record_id) -> bool`,
+  `deselect_record(record_id)`, and `deselect_all()`. The
+  framework's own `BaseDataSource` (`datasource/base.py`)
+  exposes `unselect_record`, `unselect_all`, and **no
+  `is_selected`** abstract method. As a result, the public
+  `ttkbootstrap.datasource.MemoryDataSource` /
+  `SqliteDataSource` / `FileDataSource` classes do **not**
+  satisfy `DataSourceProtocol` — passing one to
+  `ListView(datasource=...)` will fail at the first selection
+  event with `AttributeError: ... has no attribute
+  'deselect_record'` (or `is_selected`). The internal
+  `MemoryDataSource` *inside* `listview.py` does match.
+  Resolution options: (a) rename the protocol methods to match
+  `BaseDataSource` (`unselect_*`, add `is_selected` to
+  `BaseDataSource`); or (b) keep ListView's names and add
+  thin shims on `BaseDataSource`. This is the same protocol
+  mismatch already on the bugs list — file paths and call
+  sites confirmed during listview.md rewrite, 2026-04-30.
+- `ListView` ships **two unrelated `MemoryDataSource` classes**:
+  one private to `composites/list/listview.py:132` (used when
+  `items=` is passed; satisfies the `DataSourceProtocol`),
+  and one public at `datasource/memory_source.py:54` (extends
+  `BaseDataSource`; does *not* satisfy the protocol — see
+  previous bug). The two share a name but a different API
+  surface. Consider removing the private duplicate and
+  reconciling the public class against the protocol, or
+  renaming the private one (e.g. `_InlineMemoryDataSource`)
+  so the duplication isn't accidentally relied on. (Surfaced
+  by listview.md rewrite, 2026-04-30.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
