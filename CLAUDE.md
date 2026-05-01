@@ -34,16 +34,17 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, layout sweep — 12/12 DONE, last page: SizeGrip)
+### Current handoff (2026-05-01, navigation sweep started — 1/5, anchor: tabs.md)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
-the dialogs sweep (11/11), data-display sweep (8/8), and **layout sweep
-(12/12)** are now complete. Last layout page rewritten this session:
-`sizegrip.md`. Next: pick one of navigation / overlays / selection /
-forms / views / primitives. The remaining 4 templates (form, navigation,
-overlay, selection) still need the editorial pass at the start of each
-sweep (see "Template arc" below).**
+the dialogs sweep (11/11), data-display sweep (8/8), and layout sweep
+(12/12) are complete. The **navigation sweep is now in progress** — the
+navigation template has been restructured to the slim arc and `tabs.md`
+has been rewritten as the anchor. 4 navigation pages still pending
+(`appshell.md`, `navigationview.md`, `sidenav.md`, `toolbar.md`). The
+remaining 3 templates (form, overlay, selection) still need the editorial
+pass at the start of each sweep (see "Template arc" below).**
 
 ### Template arc (apply to every editorial sweep)
 
@@ -86,11 +87,15 @@ Templates already restructured to this arc:
   (Frame, Card, LabelFrame, Separator, Sizegrip) skip it while
   widgets with non-trivial geometry semantics (PackFrame, GridFrame,
   Accordion, PanedWindow, ScrollView) fill it in.
+- `widget-navigation-template.md` (anchored on `tabs.md`).
+  `Navigation model` is required (it carries the keyed-targets /
+  random-vs-sequential / signal-vs-imperative description that
+  every navigation page needs).
 
-Remaining 4 templates (form, navigation, overlay, selection) still
-lead with `Framework integration` etc. Apply the editorial pass at
-the start of each category's sweep — those categories have 0 pages
-written, so the template fix is free.
+Remaining 3 templates (form, overlay, selection) still lead with
+`Framework integration` etc. Apply the editorial pass at the start
+of each category's sweep — those categories have 0 pages written,
+so the template fix is free.
 
 Phase 6 status (for reference):
 
@@ -536,7 +541,7 @@ Pages to review (canonical anchor: `label.md`):
 - [x] `tableview.md` — second data-bound widget; SQLite-backed
 - [x] `treeview.md` — thin themed wrapper over ttk.Treeview
 
-### Widget pages — layout (`docs/widgets/layout/`, 12 pages) — IN PROGRESS 2/12
+### Widget pages — layout (`docs/widgets/layout/`, 12 pages) — DONE 12/12 (2026-05-01)
 
 Template: `docs/_template/widget-layout-template.md` (slim arc,
 restructured commit `997a5b7`). Required H2s: `Basic usage`,
@@ -1076,6 +1081,112 @@ Pages to review (canonical anchor: `frame.md`):
 - [x] `separator.md` — visual divider
 - [x] `sizegrip.md` — bottom-right resize handle
 
+### Widget pages — navigation (`docs/widgets/navigation/`, 5 pages) — IN PROGRESS 1/5
+
+Template: `docs/_template/widget-navigation-template.md` (slim arc,
+restructured this session). Required H2s: `Basic usage`,
+`Navigation model`, `Common options`, `Behavior`, `Events`,
+`When should I use WidgetName?`, `Related widgets`, `Reference`.
+No `*Optional` H2s — `Navigation model` is required (every
+navigation page has keyed targets and a selection-vs-imperative
+distinction worth documenting).
+
+`tabs.md` is the canonical anchor for the navigation sweep, the
+way `frame.md` / `label.md` / `button.md` / `textentry.md` /
+`messagedialog.md` anchored their respective categories.
+
+Last session (2026-05-01, navigation sweep started — template
+restructure + tabs anchor):
+
+- `widget-navigation-template.md` rewritten to the slim arc.
+  Old form led with `Framework integration` + `What problem it
+  solves` + `Core concepts` + fragmented `Pages and views` /
+  `Navigation behavior` / `Common options & patterns` / `UX
+  guidance` H2s. New form: intro → `Basic usage` → `Navigation
+  model` → `Common options` → `Behavior` → `Events` → `When
+  should I use WidgetName?` → `Related widgets` → `Reference`.
+  Mental-model section name fixed at `Navigation model`
+  (covers keyed targets, random-vs-sequential, signal /
+  variable / imperative, page lifecycle). No `*Optional` H2s.
+- `tabs.md` rewritten as the anchor. Tabs is the simplest
+  navigation primitive — pure tab-bar chrome, no content
+  coupling, single selection signal/variable. Five things
+  the old page got wrong or omitted, four of which became
+  new bugs:
+  (1) the old page documented `variant='pill'` as a working
+  variant (and the docstring at `composites/tabs/tabs.py:42`
+  still lists it). Verified at runtime: only `bar` and
+  `default` (alias) are registered for `TabItem.TFrame`
+  (`style/builders/tabitem.py:27-28`); calling
+  `Tabs(variant='pill')` raises
+  `BootstyleBuilderError: Builder 'pill' not found for widget
+  class 'TabItem.TFrame'. Available variants: default, bar`.
+  Documented the failure in a `!!! warning` block; added to
+  the bugs list.
+  (2) the old `Events` section listed `<<TabSelect>>` /
+  `<<TabClose>>` / `<<TabAdd>>` and showed
+  `tabs.bind("<<TabSelect>>", ...)` as the way to observe
+  selection. Verified at runtime that `<<TabSelect>>` and
+  `<<TabClose>>` are emitted **on the TabItem**
+  (`composites/tabs/tabitem.py:253,261`), not on Tabs, and Tk
+  virtual events do not propagate up the parent chain.
+  Tabs.bind on those events silently no-ops. Only `<<TabAdd>>`
+  is emitted on Tabs (`composites/tabs/tabs.py:220`). The
+  class docstring's claim "Fired when a tab is selected
+  (bubbled from TabItem)"
+  (`composites/tabs/tabs.py:29-30`) is false. Documented as
+  a `!!! warning` with the correct `home.bind("<<TabSelect>>",
+  ...)` workaround; added to the bugs list.
+  (3) the old page never noted that `on_tab_changed(callback)`
+  and `on_tab_added(callback)` deliver **different callback
+  shapes**. `on_tab_changed` is `signal.subscribe` →
+  `cb(value)`; `on_tab_added` is `bind('<<TabAdd>>')` →
+  `cb(event)`. Documented as a per-helper table in `Events`;
+  added to the bugs list.
+  (4) the old page never warned that the **first `add()` call
+  unconditionally writes that tab's value to the variable**
+  (`composites/tabs/tabs.py:335-336`), even if the bound
+  signal already held a meaningful initial value. Verified at
+  runtime: `Signal('initial')` passed to `Tabs(signal=…)` then
+  `tabs.add(...)` clobbers `'initial'` with the first tab's
+  value. Documented as a `!!! warning` in Navigation model;
+  added to the bugs list.
+  (5) the old page never noted that `tabs.remove(selected_key)`
+  leaves the variable holding an orphan value that no longer
+  matches any tab. Verified: after `tabs.set('home');
+  tabs.remove('home')`, `tabs.get()` still returns
+  `'home'`, and the bar paints nothing as selected.
+  Documented as a `!!! warning` in Behavior; added to the
+  bugs list.
+  Also documented: `value` defaults to `key` (so
+  `tabs.get()` returns a key string by default); auto-key
+  scheme (`tab_<n>`); duplicate-key `add()` raises
+  `ValueError`; `tab_width='stretch'` is horizontal-only
+  (vertical packs ignore the `expand=True` path,
+  `composites/tabs/tabs.py:319-322`); `orient` and `variant`
+  are construction-only (raise `ValueError` on reconfigure,
+  `tabs.py:405-417`); `closable='hover'` reserves space and
+  fades the glyph in via the ttk state map; the close button
+  does **not** auto-`remove()` — handlers decide.
+  `TabItem` is **not a public export** (verified:
+  `getattr(ttk, 'TabItem', None) is None`); users only ever
+  get a TabItem instance back from `add()`.
+
+`tools/check_doc_structure.py --category navigation` →
+4/5 still failing (the 4 pages not yet rewritten); tabs.md
+no longer in the missing-sections list.
+`tools/check_doc_snippets.py --run --file
+docs/widgets/navigation/tabs.md` → 0 failures (4 snippets,
+1 executed).
+
+Pages to review (canonical anchor: `tabs.md`):
+
+- [x] `tabs.md` — anchor for the navigation sweep
+- [ ] `appshell.md` — top-level application shell
+- [ ] `navigationview.md` — high-level nav surface
+- [ ] `sidenav.md` — vertical destination list
+- [ ] `toolbar.md` — action chrome strip
+
 ### Workflow (one page per session)
 
 1. Read the page end-to-end.
@@ -1549,6 +1660,71 @@ primitives.
   read path that the construction wrapper already exercises) or
   document `surface` as construction-time only. (Surfaced by
   sizegrip.md rewrite, 2026-05-01.)
+- `Tabs(variant='pill')` raises `BootstyleBuilderError`. The
+  constructor's signature
+  (`composites/tabs/tabs.py:42`) and class docstring list `'pill'`
+  as a supported variant alongside `'bar'`, but no `pill` builder is
+  registered for `TabItem.TFrame`
+  (`style/builders/tabitem.py:27-28` only registers `'bar'` and
+  `'default'`). Verified at runtime:
+  `Tabs(variant='pill')` →
+  `BootstyleBuilderError: Builder 'pill' not found for widget class
+  'TabItem.TFrame'. Available variants: default, bar`. Either
+  register a `pill` variant on `TabItem.TFrame` /
+  `TabItem.TLabel` / `TabItem.TButton` (matching the rounded look
+  the docstring implies) or remove `'pill'` from the type hint and
+  docstring. (Surfaced by tabs.md rewrite, 2026-05-01.)
+- `Tabs.<<TabSelect>>` and `Tabs.<<TabClose>>` do **not** fire on
+  the `Tabs` widget — they fire only on the individual `TabItem`
+  returned by `add()`. The `Tabs` class docstring
+  (`composites/tabs/tabs.py:29-30`) states "Fired when a tab is
+  selected (bubbled from TabItem)" / "(bubbled from TabItem)" but
+  no bubbling occurs — Tk virtual events do not propagate up the
+  parent chain, and `Tabs` does not call
+  `event_generate(...)` to forward them. Verified at runtime:
+  `tabs.bind('<<TabSelect>>', cb)` never fires; binding the same
+  event on `tabs.item(key)` does. The only event actually emitted
+  on `Tabs` is `<<TabAdd>>` (from `_on_add_click`,
+  `composites/tabs/tabs.py:218-220`). Either forward the events
+  (e.g. in `_on_tab_click` and `_on_close_click`, also
+  `event_generate` on `self.master.master` — the `Tabs` —
+  with the value payload) or fix the docstring and add a
+  `tab.bind('<<TabSelect>>', ...)` example to the public API.
+  (Surfaced by tabs.md rewrite, 2026-05-01.)
+- `Tabs.on_tab_changed(callback)` and `Tabs.on_tab_added(callback)`
+  deliver **different callback shapes**. `on_tab_changed`
+  (`composites/tabs/tabs.py:465-474`) is backed by
+  `Signal.subscribe`, so the callback receives the new selected
+  *value* (`cb(value)`). `on_tab_added`
+  (`composites/tabs/tabs.py:222-231`) is backed by
+  `bind('<<TabAdd>>', cb)`, so the callback receives a Tk *event*
+  (`cb(event)`). The framework convention elsewhere is for
+  `on_*` helpers to deliver events — wrap `on_tab_changed` to
+  fire `cb(event)` (where `event.data` carries `{"value":
+  value}`), or rename the helper to `subscribe_tab_changed` to
+  signal the different shape. (Surfaced by tabs.md rewrite,
+  2026-05-01.)
+- `Tabs.add()` unconditionally writes the first tab's value to the
+  bound variable (`composites/tabs/tabs.py:335-336`), clobbering
+  any pre-existing value held by an externally-supplied
+  `signal=` / `variable=`. Verified at runtime: a `Signal('initial')`
+  passed in via `Tabs(signal=sig)` ends up holding the first
+  added tab's value once `add()` is called. Either guard the
+  auto-select on `if self._variable.get() == ''` (or some
+  default-sentinel test), or document the behavior so callers
+  know to set the desired initial value *after* adding tabs.
+  (Surfaced by tabs.md rewrite, 2026-05-01.)
+- `Tabs.remove(key)` does not reset selection state when the
+  removed tab was the active one. The variable still holds the
+  orphan value, no tab paints as selected, and `tabs.get()`
+  returns a stale key. Verified at runtime: `tabs.set('home');
+  tabs.remove('home'); tabs.get()` returns `'home'` despite
+  `tabs.keys()` no longer containing it. Either auto-fall-through
+  to the next remaining tab (e.g. select index 0 of
+  `self._tab_order`) or clear the variable to `''`. The current
+  behavior leaves callers responsible for fixing up state every
+  time they remove a tab. (Surfaced by tabs.md rewrite,
+  2026-05-01.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
