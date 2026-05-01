@@ -34,16 +34,25 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, primitives sweep 4/5)
+### Current handoff (2026-05-01, primitives sweep 5/5 — sweep closed)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 the dialogs sweep (11/11), inputs sweep (11/11), data-display sweep
 (8/8), layout sweep (12/12), navigation sweep (5/5), overlays sweep
-(2/2), selection sweep (9/9), and views sweep (3/3) are all
-complete. Primitives sweep opened 2026-05-01 with the `entry.md`
-anchor rewrite; `combobox.md`, `spinbox.md`, and `text.md` done
-2026-05-01. Remaining: canvas (1/5).**
+(2/2), selection sweep (9/9), views sweep (3/3), and primitives sweep
+(5/5) are all complete. Pass 2 widget pages — DONE. Remaining for
+Pass 2: platform / capabilities / design-system pages.**
+
+**Cross-cutting feedback shipped this session:** the user signaled
+that Canvas and Text "warrant more expansive write-ups given their
+nature" (i.e. they are unique, powerful widgets where the slim
+primitives arc undersells the API). Apply this to any future
+foundational primitive: more per-type detail (Canvas item-type
+options, Text tag styling matrix), more patterns (rubber-band,
+snap-to-grid, animation, embedded widgets, image+PIL recipe), a
+dedicated Performance section breakout, and an expanded Behavior
+section. text.md expansion is queued as a follow-up.
 
 **SelectBox relocation (2026-05-01).** The `selectbox.md` page was
 moved from `widgets/selection/` to `widgets/inputs/`. Rationale: a
@@ -2345,7 +2354,7 @@ Pages to review (canonical anchor: `pagestack.md`):
 - [x] `tabview.md` — composes Tabs + PageStack
 - [x] `notebook.md` — wraps `ttk.Notebook` with key-based registry
 
-### Widget pages — primitives (`docs/widgets/primitives/`, 5 pages) — IN PROGRESS 4/5 (2026-05-01)
+### Widget pages — primitives (`docs/widgets/primitives/`, 5 pages) — DONE 5/5 (2026-05-01)
 
 The primitives directory is **not** in `CATEGORY_TEMPLATE_MAP`
 (`tools/check_doc_structure.py`), so no template enforcement applies
@@ -2566,7 +2575,7 @@ docs/widgets/primitives/spinbox.md` → 0 failures (6 snippets,
 1 executed). No structure check (primitives is not in
 `CATEGORY_TEMPLATE_MAP`).
 
-Last session (2026-05-01, text sweep — 4/5):
+Earlier session (2026-05-01, text sweep — 4/5):
 
 - `text.md` already in good structural shape from a prior pass;
   this session was an accuracy and precision pass, not a full
@@ -2654,13 +2663,113 @@ docs/widgets/primitives/text.md` → 0 failures (11 snippets,
 1 executed). No structure check (primitives is not in
 `CATEGORY_TEMPLATE_MAP`).
 
+Last session (2026-05-01, canvas sweep — 5/5, sweep closed):
+
+- `canvas.md` rewritten to the slim primitives arc anchored on
+  `text.md`, then expanded per the user's mid-session note that
+  Canvas warrants a more expansive write-up given its nature.
+  Canvas is the fifth and final page in the sweep — `tk.Canvas`
+  re-exported from the top-level namespace
+  (`ttkbootstrap.Canvas is tkinter.Canvas` — verified at
+  runtime), styled by the same `Bootstyle.override_tk_widget_constructor`
+  wrapper that handles Text and Listbox. The Canvas-specific
+  builder (`style/builders_tk/defaults.py:89-92`) reads
+  `options.get('surface', 'content')` and writes `background`
+  + `highlightthickness=0`. **Unlike Text**, Canvas honors
+  `surface=` in the painted output — a Canvas in a
+  `Frame(surface='card')` actually paints with the card
+  background. Documented as a positive distinction from Text in
+  the Autostyle keywords subsection.
+- Confirmed at runtime that the `inherit_surface` overrides
+  `surface=` bug surfaced by text.md applies identically to
+  Canvas: `Canvas(parent, surface='card')` with default
+  `inherit_surface=True` ends up with `_surface='content'`
+  (parent's surface), background `#ffffff` (page background).
+  Adding `inherit_surface=False` produces the expected `_surface=
+  'card'`, background `#f5f5f5`. This is the same wrapper-level
+  bug already on the bugs list (logged by text.md sweep) — not
+  a new entry; just additional confirmation that it spans every
+  Tk-class autostyle widget.
+- Three additional accuracy items confirmed at runtime:
+  (1) **Canvas-level `state="disabled"` does NOT block
+  programmatic edits.** Verified: `Canvas(state='disabled')`
+  still allows `create_*`, `coords()`, `move()`, `delete()` to
+  proceed. What it does is restyle items into their
+  `disabledfill` / `disabledoutline` colors and stop delivering
+  events to tag and item bindings. Different from `tk.Text`
+  where disabled silently no-ops `insert`/`delete`. Items have
+  their own independent `state` axis (`normal` / `disabled` /
+  `hidden`); per-item `state="hidden"` is the right tool for
+  hiding without losing the item id, tags, or bindings.
+  (2) **`autostyle=False` defaults change.** With
+  `autostyle=True` (default): `highlightthickness=0`,
+  `background='#ffffff'` (resolved surface). With
+  `autostyle=False`: `highlightthickness=3`,
+  `background='systemWindowBackgroundColor'` (Tk defaults). The
+  `_surface` attribute is still captured.
+  (3) `accent`, `variant`, `density` all rejected with
+  `TclError: unknown option "-<name>"`. Documented as not
+  valid kwargs.
+- Per-user expansion (deeper than the slim primitives arc
+  prescribes):
+  - Item-types subsection under Drawing model with per-type
+    options for line (`arrow`/`smooth`/`splinesteps`/`capstyle`/
+    `joinstyle`), arc (`start`/`extent`/`style`), text
+    (`anchor`/`justify`/`width`), polygon (`smooth`),
+    image (PIL routing), bitmap (built-in names), window
+    (parent-must-be-canvas precondition).
+  - Common-item-options table (state, tags, activefill /
+    activeoutline / activewidth, disabledfill / disabledoutline /
+    disabledwidth, stipple / outlinestipple, dash /
+    dashoffset).
+  - Stacking-order subsection (`tag_raise` / `tag_lower` /
+    `find_above` / `find_below`).
+  - Patterns: rubber-band selection rectangle (`find_enclosed`
+    + `dash` outline), snap-to-grid (round to step, pair with
+    `xscrollincrement`), animation via `after` (mutate in
+    place, no `update()` in the loop), embedded child widgets
+    (`create_window` parent precondition, bbox semantics,
+    bindings precedence), image embedding via PIL (the
+    `c.image_ref = img` reference-keeping idiom that prevents
+    GC), PostScript export option surface.
+  - Dedicated Performance section breakout with six numbered
+    rules (mutate-not-recreate, tag-every-group, hide-instead-
+    of-delete, `bbox` is O(n), virtualize past ~10k items,
+    batch-then-yield).
+  - More Behavior content: theme reapplication only resets
+    `background` and `highlightthickness` (item colors are not
+    theme-managed); `scrollregion=()` resets but `None` is
+    undefined; stale ids resolve to nothing rather than
+    raising.
+
+`tools/check_doc_snippets.py --run --file
+docs/widgets/primitives/canvas.md` → 0 failures (17 snippets,
+1 executed). No structure check (primitives is not in
+`CATEGORY_TEMPLATE_MAP`).
+
+**Sweep closed.** All 5 primitive pages now follow the slim
+input arc anchored on `entry.md` (with `text.md` and `canvas.md`
+expanded beyond the slim arc per the user's note about their
+power and uniqueness — the bespoke "Content model" / "Drawing
+model" sections plus dedicated Performance breakouts and richer
+Patterns sections).
+
+**Follow-up queued:** apply the same expansion treatment to
+`text.md` — deeper tag styling matrix, full index-syntax
+modifier reference, search options reference (regexp / count /
+forwards / nocase / elide / exact), edit/undo deep-dive, more
+patterns (line numbers, find/replace, syntax highlighting),
+dedicated Performance breakout. Currently text.md follows the
+slim arc with one bespoke Content model section; the Canvas
+expansion shows what the parallel treatment looks like.
+
 Pages to review (canonical anchor: `entry.md`):
 
 - [x] `entry.md` — anchor for the primitives sweep
 - [x] `combobox.md` — thin `ttk.Combobox` wrapper
 - [x] `spinbox.md` — thin `ttk.Spinbox` wrapper
-- [x] `text.md` — multi-line text primitive
-- [ ] `canvas.md` — drawing primitive
+- [x] `text.md` — multi-line text primitive (slim arc — expansion queued)
+- [x] `canvas.md` — drawing primitive (expanded arc per user note)
 
 ### Workflow (one page per session)
 
