@@ -172,10 +172,9 @@ tracks `surface` automatically. See
 **User input.** A left-click selects the radio and writes its
 constructor `value=` into the shared variable. The standard Tk
 keyboard contract applies: Tab moves focus, Space selects the focused
-radio. Unlike some platform conventions, the **arrow keys do not
-auto-cycle** between radios sharing a variable — RadioButton inherits
-ttk's stock Tab traversal model. For arrow-key navigation across a
-group, use [RadioGroup](radiogroup.md), which adds the binding.
+radio. **Up/Down traverse** between radios sharing the same
+`variable=` (this is ttk's stock `RadioTraverse` class binding, not a
+ttkbootstrap addition); Left/Right are not bound.
 
 **Disabled and readonly.** `state='disabled'` greys the indicator and
 blocks clicks; the variable is still writable from code. Disabling a
@@ -249,7 +248,7 @@ Use RadioButton when:
 Prefer:
 
 - **[RadioGroup](radiogroup.md)** — when the radios should be managed
-  as a single composite widget (with arrow-key navigation, layout
+  as a single composite widget (with shared signal ownership, layout
   control, and bulk option updates)
 - **[RadioToggle](radiotoggle.md)** / **[ToggleGroup](togglegroup.md)**
   — when the choice is a view mode or formatting strip and a button
