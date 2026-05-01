@@ -34,12 +34,13 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-04-30, template overhaul + dialogs sweep open)
+### Current handoff (2026-04-30, dialogs sweep — 4/11 done)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
-templates have been audited and tightened; dialogs sweep is open with the
-anchor page in place.**
+dialogs sweep is in progress: messagedialog, messagebox, querydialog, and
+querybox are done; formdialog, dialog (base), datedialog, colorchooser,
+colordropper, fontdialog, and filterdialog remain.**
 
 ### Template arc (apply to every editorial sweep)
 
@@ -207,7 +208,32 @@ Optional (declared via `*Optional` prose under the heading):
   base classes (`Dialog`) and specialty interactions
   (`ColorDropper`).
 
-Last session (2026-04-30, querydialog sweep):
+Last session (2026-04-30, querybox sweep):
+
+- `querybox.md` rewritten to the slim template (`fc5484d`).
+  Treats the page as the umbrella **facade** over the framework's
+  input dialogs: one Result-value table maps each of the seven
+  helpers to its underlying dialog (QueryDialog for `get_string`
+  / `get_integer` / `get_float` / `get_item`; DateDialog for
+  `get_date`; ColorChooserDialog for `get_color`; FontDialog for
+  `get_font`) and the typed return value, one Common-options
+  table covers the shared shape and per-helper extras, Behavior
+  splits the QueryDialog-backed validation rules from the
+  delegating helpers.
+  Corrects three errors from the old page: there is **no
+  `get_password` helper** (the old page documented one), the old
+  page was missing three of the seven helpers (`get_color`,
+  `get_font`, `get_date`/`get_item` not called out), and the
+  scaffolding was the pre-overhaul `Quick start` / `When to use`
+  / `Examples & patterns` shape.
+  Surfaces three non-obvious behaviors: `on_result` is supported
+  on the QueryDialog-backed helpers and `get_date` but **not** on
+  `get_color` or `get_font` (their helper signatures don't expose
+  it); `get_string` accepts `value_format` (forwarded to
+  TextEntry's ICU parser); the QueryDialog-backed helpers forward
+  extra kwargs (`width`, `padding`) into QueryDialog.
+
+Prior session (2026-04-30, querydialog sweep):
 
 - `querydialog.md` rewritten to the slim template (`f21e913`).
   Frames the dialog as "prompt for one value" — the input widget
@@ -226,7 +252,7 @@ Last session (2026-04-30, querydialog sweep):
   and to pass `master=` if registering `on_dialog_result` before
   `show()`.
 
-Prior session (2026-04-30, messagebox sweep):
+Earlier session (2026-04-30, messagebox sweep):
 
 - `messagebox.md` rewritten to the slim template (`58977e7`).
   Treats the page as a thin **facade** over `MessageDialog`:
@@ -245,21 +271,21 @@ Prior session (2026-04-30, messagebox sweep):
   because its first label is "No" not "Cancel" (use `yesnocancel`
   if you need keyboard dismissal).
 
-Earlier session (2026-04-30, template overhaul + messagedialog re-review):
+Even earlier session (2026-04-30, template overhaul + messagedialog re-review):
 
 - Templates restructured (`7667e36`); `tools/check_doc_structure.py`
   gained optional-section detection.
 - `messagedialog.md` re-rewritten to the slim template (`942642c`).
 
-`tools/check_doc_structure.py --category dialogs` → 3/11 passing
-(messagedialog, messagebox, querydialog).
+`tools/check_doc_structure.py --category dialogs` → 4/11 passing
+(messagedialog, messagebox, querydialog, querybox).
 
 Pages to review (canonical anchor pattern: `messagedialog.md`):
 
 - [x] `messagedialog.md` — anchor for the dialogs sweep
 - [x] `messagebox.md` — facade over MessageDialog
 - [x] `querydialog.md`
-- [ ] `querybox.md`
+- [x] `querybox.md` — umbrella facade over QueryDialog/DateDialog/ColorChooserDialog/FontDialog
 - [ ] `formdialog.md`
 - [ ] `dialog.md` — base class
 - [ ] `datedialog.md`
