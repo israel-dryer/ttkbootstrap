@@ -34,14 +34,14 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-04-30, data-display sweep — 4/8)
+### Current handoff (2026-04-30, data-display sweep — 5/8)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 the dialogs sweep is now complete (11/11), and the data-display sweep
-is in progress (4/8): `label.md` (anchor), `badge.md`, `progressbar.md`,
-and `floodgauge.md` are rewritten to the slim template. Remaining 4
-pages (listview, meter, tableview, treeview) still need rewriting.**
+is in progress (5/8): `label.md` (anchor), `badge.md`, `progressbar.md`,
+`floodgauge.md`, and `meter.md` are rewritten to the slim template.
+Remaining 3 pages (listview, tableview, treeview) still need rewriting.**
 
 ### Template arc (apply to every editorial sweep)
 
@@ -260,7 +260,41 @@ Optional (declared via `*Optional` prose under the heading):
 - `Performance guidance` — include for widgets that scale with
   row count. Skip for lightweight status/progress widgets.
 
-Last session (2026-04-30, floodgauge sweep):
+Last session (2026-04-30, meter sweep):
+
+- `meter.md` rewritten to the slim template. The old page was
+  built around the **deprecated** legacy parameter names
+  (`amountused`, `amounttotal`, `subtext`, `stripethickness`,
+  `metersize`); they still work via `_coerce_legacy_params` but
+  emit `DeprecationWarning`. The rewrite uses the modern names
+  throughout (`value`, `maxvalue`, `subtitle`, `segment_width`,
+  `size`). Three things the old page got wrong or omitted:
+  (1) the old "Reactivity" section bound a `Signal` via
+  `ttk.Meter(app, amountused=usage, amounttotal=100)` —
+  Meter has **no SignalMixin** and **no public `variable=`
+  parameter**; it owns its internal `IntVar`/`DoubleVar` and the
+  reactive surface is `<<Change>>` / `on_changed()`, plus the
+  four equivalent value-setter paths (`.value` property,
+  `set()`, `configure(value=…)`, `step()`).
+  (2) the old page never named the **four indicator shapes**
+  produced by combining `segment_width` and `indicator_width`
+  (solid sweep / floating wedge / segmented sweep / wedge over
+  segments) — these are first-class Meter axes. Documented as a
+  table.
+  (3) the old `Common options` section omitted `meter_type`
+  ("full" vs "semi"), `arc_range` / `arc_offset` (custom sweeps),
+  and `dtype` (int/float, **construction-only** — reconfiguring
+  later emits `ConfigurationWarning` and is silently ignored).
+  Also documented the bouncing semantics of `step()` (flips
+  direction at min/max), the interactive mode (click/drag on the
+  arc, clamped through `step_size`), and that `<<Change>>` does
+  not re-fire on duplicate writes. Common-options consolidates
+  into a 21-row table; added a positive `Events` section
+  (Meter is the only data-display widget so far that emits a
+  virtual event — Label, Badge, Progressbar, and FloodGauge all
+  have negative Events sections).
+
+Prior session (2026-04-30, floodgauge sweep):
 
 - `floodgauge.md` rewritten to the slim template. Corrects two
   things the old page got wrong and surfaces several missing
@@ -284,7 +318,7 @@ Last session (2026-04-30, floodgauge sweep):
   no `on_*` helpers — observe via `variable.trace_add(...)`.
   Common options consolidates into a 13-row table.
 
-Prior session (2026-04-30, progressbar sweep):
+Earlier session (2026-04-30, progressbar sweep):
 
 - `progressbar.md` rewritten to the slim template. Corrects
   three things the old page got wrong or omitted:
@@ -307,7 +341,7 @@ Prior session (2026-04-30, progressbar sweep):
   consolidates into a 12-row table; `length` clarified as
   along-orientation (height for vertical bars).
 
-Earlier session (2026-04-30, badge sweep):
+Even earlier session (2026-04-30, badge sweep):
 
 - `badge.md` rewritten to the slim template. Corrects the
   framing the old page papered over: Badge is **not** a Label
@@ -339,9 +373,9 @@ Earliest session (2026-04-30, label sweep — anchor):
   emits no virtual events; (3) `surface=` is the right knob if
   you need a colored background on a Label.
 
-`tools/check_doc_structure.py --category data-display` → 4/8
-passing (label, badge, progressbar, floodgauge). 4 remaining pages
-(listview, meter, tableview, treeview) are still on the old scaffold.
+`tools/check_doc_structure.py --category data-display` → 5/8
+passing (label, badge, progressbar, floodgauge, meter). 3 remaining
+pages (listview, tableview, treeview) are still on the old scaffold.
 
 Pages to review (canonical anchor: `label.md`):
 
@@ -349,7 +383,7 @@ Pages to review (canonical anchor: `label.md`):
 - [x] `badge.md` — extends Label; compact pill chip
 - [x] `progressbar.md` — linear determinate/indeterminate progress
 - [x] `floodgauge.md` — canvas-drawn fill with inline label
-- [ ] `meter.md`
+- [x] `meter.md` — radial gauge with central readout
 - [ ] `listview.md` — first data-bound widget; uses Data model
 - [ ] `tableview.md`
 - [ ] `treeview.md`
@@ -532,6 +566,23 @@ primitives.
   extend Dialog directly and aligning event names/payloads with
   the rest of the dialogs surface. (Surfaced by filterdialog.md
   rewrite, 2026-04-30.)
+- `cli/demo.py:734-740` (Meter section) still constructs Meter with
+  the **deprecated** legacy parameter names (`amountused`,
+  `amounttotal`, `subtext`, `metersize`). Each call emits a
+  `DeprecationWarning` from `_coerce_legacy_params`
+  (`composites/meter.py:218-223`) on every demo run. Update the
+  demo to use the modern names (`value`, `maxvalue`, `subtitle`,
+  `size`). Source-only cleanup. (Surfaced by meter.md rewrite,
+  2026-04-30.)
+- `Meter` does not expose its internal value variable
+  (`composites/meter.py:151`, `_value_var`) and accepts no
+  `variable=` parameter. Reactivity is exclusively through
+  `value`-setter paths and the `<<Change>>` event. This is
+  inconsistent with FloodGauge (which accepts `variable=` /
+  `textvariable=`) and Progressbar (which accepts `signal=` /
+  `variable=`). Consider plumbing a `variable=` (and matching
+  `textvariable=` for the readout) through the constructor for
+  parity. (Surfaced by meter.md rewrite, 2026-04-30.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
