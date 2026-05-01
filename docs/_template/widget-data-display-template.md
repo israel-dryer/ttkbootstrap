@@ -1,233 +1,153 @@
 ---
-title: DataDisplayWidgetName
+title: WidgetName
 ---
 
-# DataDisplayWidgetName
+# WidgetName
 
-1–2 paragraphs describing:
+1–2 paragraphs that say:
 
-- what kind of data this widget displays (tabular, hierarchical, list, status)
+- what kind of data this widget displays (tabular, hierarchical, list,
+  status, progress)
+- whether it is **read-only display** or supports interaction
+  (selection, expansion, editing)
+- a comparison sentence if useful ("Unlike X…", "Similar to Y…")
 
-- whether it is **read-only display** or supports interaction (selection, editing)
-
-- what “extras” it provides over the base Tk/ttk widget
-
-If useful, include a short “Use it for…” sentence (file browsers, admin grids, dashboards, etc.).
-
----
-
-## Framework integration
-
-**Design System**
-
-- How styling is controlled (`accent`, `variant`, row/selection colors, headers)
-
-- Typography defaults and density conventions (row height, padding)
-
-- Icon usage (row icons, status icons) if supported
-
-**Signals & Events**
-
-- Selection change events
-
-- Row/column interaction hooks (click, double-click, context menu)
-
-- Reactive data refresh patterns (signal-driven reload) if applicable
-
-**Layout & Scrolling**
-
-- Built-in scroll behavior (integrated scrollbars, ScrollView patterns)
-
-- Recommended container/layout usage
-
-**Localization** (if applicable)
-
-- Header/label localization
-
-- Formatting of displayed values (dates/numbers)
-
-Keep this section practical and behavioral.
+The intro carries the "what is this" framing — there's no separate
+`Framework integration` lead. Its content distributes into Common
+options (theme tokens, headers, icons), Behavior (selection,
+keyboard, scrolling), Events (selection change, row activation,
+data-change events), and Localization & reactivity.
 
 ---
 
 ## Basic usage
 
-Show the smallest runnable example that renders data.
+One minimal, runnable example that renders the data.
 
 ```python
+import ttkbootstrap as ttk
+
 # minimal, copy/paste runnable
 ```
 
-If the widget supports multiple modes (tree vs table, determinate vs indeterminate), show only the primary mode here.
-
----
-
-## What problem it solves
-
-Explain the UI problem this widget addresses, such as:
-
-- displaying large datasets efficiently
-
-- presenting hierarchy + columns
-
-- adding sorting / filtering / paging
-
-- communicating progress or status
-
-Focus on why this widget exists versus simpler alternatives.
-
----
-
-## Core concepts
-
-Explain how to think about the widget’s model and capabilities.
-
-Common subsections:
-
-- data model (rows/records/items) and identifiers
-
-- columns/headings and formatting
-
-- selection model (single/multiple/none)
-
-- modes (tree vs table, determinate vs indeterminate)
-
-- composition (built on TreeView, datasource, etc.)
+If the widget supports multiple modes (tree vs table, determinate
+vs indeterminate), show only the primary mode here.
 
 ---
 
 ## Data model
 
+*Optional — include for data-bound widgets (TableView, TreeView,
+ListView). Skip for read-only status/progress widgets (Label,
+Badge, Progressbar, Floodgauge, Meter) — they don't have a data
+model beyond `text`/`value`.*
+
 Describe how data is provided and represented:
 
-- `rows` / `items` / `datasource`
-
-- record shape (dict, list/tuple, object)
-
+- record shape (dict, list/tuple, object, datasource)
 - identifiers (iids/keys) and how selection maps back to records
+- how to insert / update / delete / reload rows
+- the reactive surface (signals, datasource events) if applicable
 
-- updating/reloading data
-
-Include one concise example of inserting/updating or reloading data.
+Include one concise example of inserting or reloading data.
 
 ---
 
 ## Common options
 
-Curated options only (avoid full API dumps), such as:
+Curated — what users actually configure. Not an API dump. For
+data-display widgets this typically covers:
 
-- columns / headings / widths / alignment
+- `text`, `value`, `accent`, `variant`, `density`
+- columns / headings / widths / alignment (data-bound widgets)
+- selection mode, paging, sorting, filtering (data-bound widgets)
+- `font`, `padding`, `width` (display widgets)
+- `localize`, `value_format` (when supported)
 
-- selection and selection mode
-
-- paging / virtualization
-
-- sorting / filtering / searching
-
-- scrollbars
-
-- styling tokens (`accent`, `variant`) and key style options
-
-Use short examples per topic.
+Show short representative examples per concern.
 
 ---
 
-## Interaction and behavior
+## Behavior
 
-Describe interaction rules:
+Interaction and presentation rules:
 
-- selection and focus
+- selection and focus (data-bound widgets)
+- keyboard navigation (Up/Down, Home/End, expand/collapse)
+- click / double-click / right-click behavior
+- expand/collapse for hierarchical views
+- scroll behavior (built-in scrollbars, virtualization)
+- determinate vs indeterminate animation (progress widgets)
+- visual states (`hover`, `active`, `disabled`)
 
-- keyboard navigation
-
-- expand/collapse behavior (hierarchical views)
-
-- click / double-click / right-click behavior (if supported)
-
-- editing flows (if supported)
+If the widget has a popup or composes with a menu, describe the
+open/close lifecycle here.
 
 ---
 
 ## Events
 
-Document the primary events or callbacks.
+Document the primary event hooks. For display widgets this is
+often a deliberate negative ("Badge does not emit events");
+include the section anyway so readers don't go looking.
 
 Examples:
 
 - selection changed
-
 - row click / double-click / right-click
-
 - open/close for tree items
-
 - data modification events (insert/update/delete/move)
+- `on_changed` for value-bearing widgets (progressbar, meter)
 
-Provide one clear example showing subscribe/unsubscribe patterns (on_* / off_*), if applicable.
+```python
+def on_select(event):
+    ...
 
----
-
-## Styling
-
-Explain practical styling knobs:
-
-- color tokens and what they affect (e.g., selection color)
-
-- style options for borders, headers, selection colors, icons
-
-- row alternation / tags (if supported)
-
-Keep examples representative, not exhaustive.
+widget.on_select(on_select)
+```
 
 ---
 
 ## Performance guidance
 
-For large datasets, include guidance such as:
+*Optional — include for data-bound widgets that scale with row
+count (TableView, TreeView, ListView). Skip for lightweight
+status/progress widgets.*
 
-- prefer paging/virtual mode where available
+For large datasets:
 
+- prefer paging / virtual mode where available
 - avoid inserting thousands of rows on the UI thread at once
-
-- use update batching, reload, or datasource patterns
-
-If the widget is lightweight (e.g., progress indicator), state that this section is not applicable.
-
----
-
-## UX guidance
-
-Prescriptive guidance:
-
-- when to use this widget vs a simpler display control
-
-- how to keep tables readable (column widths, alignment, striping)
-
-- when to show progress and how to label it
-
-- avoid excessive affordances (too many menus, heavy chrome)
+- batch updates via the datasource API
+- cite concrete row-count thresholds where the framework recommends
+  a different mode
 
 ---
 
-## Additional resources
+## When should I use WidgetName?
 
-**Related widgets**
+Use WidgetName when:
 
-- **OtherDataWidget** — how it differs
+- …
 
-- **Selection widget** — when a picker is enough
+Prefer OtherWidget when:
 
-- **Form** — when input/validation is the goal
+- …
 
-**Framework concepts**
+This sits near the bottom on purpose: readers reach it after they've
+seen what the widget does and how it's configured, so the
+recommendation lands with context.
 
-- [Layout Properties](../../capabilities/layout-props.md)
+---
 
-- [Signals & Events](../../capabilities/signals/index.md)
+## Related widgets
 
-- [Validation](../../capabilities/validation.md)
+- **OtherWidget** — how it differs
+- **AnotherWidget** — complementary role
 
-**API reference**
+---
 
-- **API Reference:** `ttkbootstrap.DataDisplayWidgetName`
+## Reference
 
-- **Related guides:** Data Display, Styling, Performance
+- **API reference:** `ttkbootstrap.WidgetName`
+- **Related guides:** …
