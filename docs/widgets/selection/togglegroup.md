@@ -193,7 +193,7 @@ Callbacks receive the new value directly (string in single mode, set in multi mo
 
 ---
 
-## Colors and styling
+## Colors & Styling
 
 `ToggleGroup` forwards `accent` to its child buttons with buttongroup styling.
 

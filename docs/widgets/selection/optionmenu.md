@@ -58,7 +58,7 @@ app.mainloop()
 ## Variants
 
 `OptionMenu` does not have behavioral variants. Its primary variations are visual, controlled by
-`accent` and `variant` (see **Colors and styling**).
+`accent` and `variant` (see **Colors & Styling**).
 
 ---
 
@@ -194,7 +194,7 @@ Validation is typically unnecessary, but may be useful when:
 
 ---
 
-## Colors and styling
+## Colors & Styling
 
 `OptionMenu` supports the same `accent` and `variant` options as `MenuButton`.
 

@@ -70,7 +70,7 @@ Use `SelectBox` when:
 
 See **Allowing custom values** in the Behavior section below.
 
-### Colors and styling
+### Colors & Styling
 
 `SelectBox` typically follows field styling (surface, border, focus), plus a suffix button.
 

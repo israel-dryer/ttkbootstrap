@@ -136,7 +136,7 @@ to a Switch has no effect.
 the style builder reads only `accent` and `surface`. Passing
 `density=...` raises `TclError: unknown option "-density"`.
 
-### Theming
+### Colors & Styling
 
 ```python
 ttk.Switch(app, text="Default")

@@ -140,7 +140,7 @@ only the chrome differs:
 `ghost` is the typical choice for inline toolbar toggles where the
 unpressed state should disappear into the surrounding chrome.
 
-### Theming
+### Colors & Styling
 
 ```python
 ttk.CheckToggle(app, text="Primary", accent="primary")

@@ -143,7 +143,7 @@ solely to back the dedicated [Switch](switch.md) class (a subclass
 that bakes in `variant='switch'`); reach for `Switch` rather than
 passing `variant=` to `CheckButton` directly.
 
-### Theming
+### Colors & Styling
 
 ```python
 ttk.CheckButton(app, text="Default")

@@ -80,7 +80,7 @@ ttk.Combobox(app, values=["A", "B"], accent="secondary")
 !!! link "Design System"
     See the [Design System](../../design-system/index.md) for available color tokens.
 
-### Colors and styling
+### Colors & Styling
 
 Use `accent` tokens to match the active theme. The entry field and the dropdown list are styled consistently and respond
 to theme changes.

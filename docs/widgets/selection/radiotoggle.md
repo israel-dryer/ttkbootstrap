@@ -61,7 +61,7 @@ Use `RadioToggle` when:
 
 The difference is purely presentational: `RadioToggle` uses the toolbutton-style badge variant.
 
-### Colors and styling
+### Colors & Styling
 
 Use semantic color tokens with the `accent` parameter.
 

@@ -77,7 +77,7 @@ ttk.RadioGroup(app, orient="vertical")
 ttk.RadioGroup(app, text="Pick one", labelanchor="w", orient="horizontal")
 ```
 
-### Colors and styling
+### Colors & Styling
 
 `RadioGroup` forwards `accent` to its child radio buttons.
 

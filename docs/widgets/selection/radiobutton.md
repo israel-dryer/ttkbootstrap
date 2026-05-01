@@ -74,7 +74,7 @@ ttk.RadioToggle(app, text="Grid", signal=view, value="grid")
 ttk.RadioToggle(app, text="List", signal=view, value="list")
 ```
 
-### Colors and styling
+### Colors & Styling
 
 RadioButtons support standard ttkbootstrap color tokens.
 

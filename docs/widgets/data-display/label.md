@@ -66,7 +66,7 @@ theming, icon, and signal extensions. The everyday surface:
 | `textsignal`     | Reactive `Signal[str]` bound to the displayed text.               |
 | `state`          | `"normal"`, `"disabled"`, `"readonly"` (see Behavior).            |
 
-**Theming.** `accent` controls the foreground color, not a pill or
+**Colors & Styling.** `accent` controls the foreground color, not a pill or
 chip background — a Label is text on the inherited surface. To get
 a high-contrast colored chip, use [Badge](badge.md) instead.
 

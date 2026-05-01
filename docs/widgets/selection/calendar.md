@@ -94,7 +94,7 @@ Calendar(app, selection_mode="range", start_date="2025-12-01", end_date="2025-12
 app.mainloop()
 ```
 
-### Colors and styling
+### Colors & Styling
 
 Use `accent` to set the accent color used for:
 
