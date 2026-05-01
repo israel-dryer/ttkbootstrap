@@ -34,7 +34,7 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, primitives sweep 2/5)
+### Current handoff (2026-05-01, primitives sweep 3/5)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
@@ -42,8 +42,8 @@ the dialogs sweep (11/11), inputs sweep (11/11), data-display sweep
 (8/8), layout sweep (12/12), navigation sweep (5/5), overlays sweep
 (2/2), selection sweep (9/9), and views sweep (3/3) are all
 complete. Primitives sweep opened 2026-05-01 with the `entry.md`
-anchor rewrite; `combobox.md` done 2026-05-01. Remaining: spinbox,
-text, canvas (3/5).**
+anchor rewrite; `combobox.md` and `spinbox.md` done 2026-05-01.
+Remaining: text, canvas (2/5).**
 
 **SelectBox relocation (2026-05-01).** The `selectbox.md` page was
 moved from `widgets/selection/` to `widgets/inputs/`. Rationale: a
@@ -2345,7 +2345,7 @@ Pages to review (canonical anchor: `pagestack.md`):
 - [x] `tabview.md` — composes Tabs + PageStack
 - [x] `notebook.md` — wraps `ttk.Notebook` with key-based registry
 
-### Widget pages — primitives (`docs/widgets/primitives/`, 5 pages) — IN PROGRESS 2/5 (2026-05-01)
+### Widget pages — primitives (`docs/widgets/primitives/`, 5 pages) — IN PROGRESS 3/5 (2026-05-01)
 
 The primitives directory is **not** in `CATEGORY_TEMPLATE_MAP`
 (`tools/check_doc_structure.py`), so no template enforcement applies
@@ -2356,7 +2356,7 @@ assignment is by closest fit:
 |---|---|---|
 | `entry.md` | input template | foundational input primitive; backs TextEntry / NumericEntry / DateEntry / PasswordEntry |
 | `combobox.md` | input template | thin `ttk.Combobox` wrapper; used by QueryBox dialogs (NOT SelectBox — SelectBox builds its own popdown) |
-| `spinbox.md` | input template | thin `ttk.Spinbox` wrapper; primitive backing NumericEntry / SpinnerEntry |
+| `spinbox.md` | input template | thin `ttk.Spinbox` wrapper; primitive backing SpinnerEntry (NumericEntry uses TextEntryPart, not Spinbox); also used by ColorChooser dialog |
 | `text.md` | bespoke (Content model) | multi-line `tkinter.Text`; primitive backing ScrolledText |
 | `canvas.md` | bespoke (Drawing model) | drawing primitive; backs Meter / FloodGauge and any custom rendering |
 
@@ -2497,11 +2497,80 @@ docs/widgets/primitives/combobox.md` → 0 failures (2 snippets,
 1 executed). No structure check (primitives is not in
 `CATEGORY_TEMPLATE_MAP`).
 
+Last session (2026-05-01, spinbox sweep — 3/5):
+
+- `spinbox.md` rewritten to the slim input arc, anchored on
+  `entry.md`. Spinbox is the third page in the sweep — a thin
+  themed wrapper over `ttk.Spinbox` that adds `accent` /
+  `density` / `surface` / `input_background` styling tokens and
+  a reactive `textsignal` channel via `TextSignalMixin`. Unlike
+  Combobox, Spinbox does **not** wrap any popdown / postcommand
+  machinery — it's purely a styling and signal-binding wrapper.
+  Three things the old page got wrong or omitted:
+  (1) the old page (and the primitives table in this doc) said
+  Spinbox is the primitive backing NumericEntry / SpinnerEntry.
+  Verified by grep: `widgets/parts/spinnerentry_part.py:12`
+  imports Spinbox, but `widgets/composites/numericentry.py`
+  imports `Button` only — NumericEntry uses TextEntryPart, not
+  Spinbox. Reframed: Spinbox backs SpinnerEntry only; also used
+  by `dialogs/colorchooser.py` and `widgets/composites/form.py`.
+  Corrected the Notes column in the primitives table.
+  (2) the old page treated `command=` as a generic "value
+  changed" callback. Verified at runtime that `command=` fires
+  **only on stepping** (arrow click, Up/Down key, programmatic
+  `<<Increment>>` / `<<Decrement>>`). It does NOT fire on
+  `spin.set(...)`, on user typing, or on focus events. Same
+  shape as Combobox's `<<ComboboxSelected>>` (only on dropdown
+  selection). Documented as a four-row table in Events covering
+  the four observation paths (command callback, virtual events,
+  textsignal, KeyRelease).
+  (3) the old page treated `state="readonly"`, `from_/to=`, and
+  `format=` as value constraints. Verified at runtime:
+  - `spin.set(99)` on a `from_=0, to=10` Spinbox writes `'99'`
+    through unchanged (no clamping at all).
+  - `format='%.2f'` reformats values **only when stepping**
+    (arrow click, Increment/Decrement). `spin.set(0.5)` writes
+    `'0.5'` literally even with `format='%.2f'` set.
+  - `state='readonly'` blocks user typing only — programmatic
+    `set()` accepts any value, including out-of-range and
+    not-in-`values`.
+  Documented as a unified Value-model section emphasizing that
+  Spinbox does no parsing, clamping, or formatting on its own —
+  the validation surface is on SpinnerEntry / NumericEntry.
+  Surfaced two configure-time issues (already on the bugs list
+  for Entry; same root cause in Spinbox):
+  - `spin.configure(surface=...)` raises `TclError: unknown
+    option "-surface"` — Spinbox accepts `surface=` at
+    construction but has no `_delegate_surface`.
+  - `spin.configure(density=...)` updates the entry's font
+    only; the resolved ttk style is not rebuilt. Verified at
+    runtime: `Spinbox(...).configure(density='compact')` →
+    style stays `Default.TSpinbox` (no hash) with font
+    `caption`. Default-density Spinboxes reconfigured to
+    compact get the smaller font but keep their
+    default-height row.
+  Documented as Behavior caveats with cross-references rather
+  than logging duplicate bug entries — they're the same shape
+  as the Entry bugs already on the list.
+  Also documented: when both `values=` and `from_/to=` are
+  passed, `values` wins for stepping but both round-trip via
+  `cget`; default `increment` is `1`; `cget('density')` and
+  `cget('variant')` both return `None` (different from Combobox
+  where `cget('variant')` returns `'default'`); the deprecated
+  `bootstyle=` path bridges to `accent=` correctly; the stepping
+  pipeline (read → +/- increment OR list-position → clamp/wrap →
+  format → write → fire command + virtual event).
+
+`tools/check_doc_snippets.py --run --file
+docs/widgets/primitives/spinbox.md` → 0 failures (6 snippets,
+1 executed). No structure check (primitives is not in
+`CATEGORY_TEMPLATE_MAP`).
+
 Pages to review (canonical anchor: `entry.md`):
 
 - [x] `entry.md` — anchor for the primitives sweep
 - [x] `combobox.md` — thin `ttk.Combobox` wrapper
-- [ ] `spinbox.md` — thin `ttk.Spinbox` wrapper
+- [x] `spinbox.md` — thin `ttk.Spinbox` wrapper
 - [ ] `text.md` — multi-line text primitive
 - [ ] `canvas.md` — drawing primitive
 
