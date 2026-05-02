@@ -34,15 +34,16 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, capabilities sweep started — index + configuration done, 16 to go)
+### Current handoff (2026-05-01, capabilities sweep — 3/18; signals/index.md done)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 all widget-page sweeps are complete (dialogs 11/11, inputs 11/11,
 data-display 8/8, layout 12/12, navigation 5/5, overlays 2/2,
 selection 9/9, views 3/3, primitives 5/5). Platform sweep (17/17) — DONE.
-Capabilities sweep — STARTED (2/18 — `index.md` and `configuration.md`).
-Remaining: 16 capabilities pages + 6 design-system pages.**
+Capabilities sweep — IN PROGRESS (3/18 — `index.md`, `configuration.md`,
+`signals/index.md`). Remaining: 15 capabilities pages + 6 design-system
+pages.**
 
 **Capabilities sweep — convention notes (2026-05-01).** The capabilities
 directory has 18 pages (not the ~12 mentioned in the prior handoff).
@@ -64,7 +65,52 @@ here too — replace abstract "X is a shared behavior" framing with
 concrete API surface; verify claims at runtime; nav-aligned topic
 lists with substantive blurbs (not 3-word labels).
 
-Last session (2026-05-01, capabilities/index.md):
+Last session (2026-05-01, capabilities/signals/index.md):
+
+- Rewrote the Signals & Events section landing. Old page was 112 lines
+  of abstract framing ("What is a callback?", "What is a signal?",
+  "Why virtual events exist") with no API surface, no decision rubric,
+  and a hand-wavy "1. user action triggers callback → 2. callback
+  updates signal → 3. widget emits virtual event" flow that doesn't
+  reflect how the library actually composes the three mechanisms.
+  New version leads with a 6-row at-a-glance table comparing
+  Callback / Virtual event / Signal across (registered with /
+  listener receives / multiple listeners / fires on / decoupled /
+  best for), then per-mechanism blurbs that name the actual API
+  (`Signal[T]` from `ttkbootstrap.Signal`, `signal=` / `variable=` /
+  `textsignal=` / `textvariable=` widget kwargs, `command=` only
+  fires on user invocation, `widget.event_generate(...)` /
+  `widget.bind('<<Name>>', cb)`).
+- Three concrete claims surfaced and verified at runtime:
+  (1) `command=` does NOT fire on programmatic value writes — only
+  on user invocation (click, Enter, `widget.invoke()`). Verified
+  with `CheckButton(signal=sig, command=cmd); sig.set(True)` →
+  command not called; `cb.invoke()` → command called. Signal
+  subscribers fire on every variable write. The "user intent vs
+  any state change" asymmetry is the central reason both mechanisms
+  exist.
+  (2) `Signal.set(value)` enforces strict `type(value) is
+  self._type` — `Signal(0).set(True)` raises `TypeError: Expected
+  int, got bool` because of the bool-is-int subclass strictness.
+  Worth documenting in `signals.md` (the next page in the sweep).
+  (3) Subscriber dispatch order is **reverse insertion order**
+  (Tk variable-trace ordering quirk). Two subscribers `a` then
+  `b`: `b` fires before `a`. Probably worth mentioning in
+  `signals.md`; not load-bearing for the index.
+- Carried forward from the platform sweep convention: the page
+  cross-links to platform pages (`event-loop.md`,
+  `events-and-bindings.md`) for the underlying mechanism, and
+  flags the two virtual-event pitfalls already on the bugs list
+  up front (no parent-chain propagation; `add="+"` to keep prior
+  bindings).
+- `signal.subscribe(...)` callback shape is `cb(value)`, not
+  `cb(event)` — different from `bind('<<Change>>', cb)` whose
+  callback receives a Tk event with `.data`. Explicitly contrasted
+  in the table.
+- Snippet check: 2 snippets, 1 executed, 0 failures. All 8
+  cross-links resolve.
+
+Earlier session (2026-05-01, capabilities/index.md):
 
 - Rewrote with three primary changes vs the old version:
   (1) Topic list rebuilt to match the zensical nav. Old "Next steps"
@@ -95,7 +141,7 @@ commit `938e7fc`.
 Pages to review (capabilities sweep, 18 total):
 
 - [x] `index.md` — section landing
-- [ ] `signals/index.md` — Signals & Events overview
+- [x] `signals/index.md` — Signals & Events overview
 - [ ] `signals/signals.md` — `Signal` class
 - [ ] `signals/callbacks.md` — command/bind/subscribe
 - [ ] `signals/virtual-events.md` — virtual events
