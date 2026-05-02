@@ -34,21 +34,21 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-02, capabilities sweep — 13/18; validation/results.md done — Validation sub-section closed 3/3)
+### Current handoff (2026-05-02, capabilities sweep — 14/18; icons/index.md done — Icons & Images sub-section opened 1/3)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 all widget-page sweeps are complete (dialogs 11/11, inputs 11/11,
 data-display 8/8, layout 12/12, navigation 5/5, overlays 2/2,
 selection 9/9, views 3/3, primitives 5/5). Platform sweep (17/17) — DONE.
-Capabilities sweep — IN PROGRESS (13/18 — `index.md`, `configuration.md`,
+Capabilities sweep — IN PROGRESS (14/18 — `index.md`, `configuration.md`,
 `signals/index.md`, `signals/signals.md`, `signals/callbacks.md`,
 `signals/virtual-events.md`, `layout/index.md`, `layout/containers.md`,
 `layout/spacing.md`, `layout/scrolling.md`, `validation/index.md`,
-`validation/rules.md`, `validation/results.md`).
+`validation/rules.md`, `validation/results.md`, `icons/index.md`).
 Signals & Events sub-section (4/4) — DONE. Layout sub-section (4/4) — DONE.
-Validation sub-section (3/3) — DONE.
-Remaining: 5 capabilities pages + 6 design-system pages.**
+Validation sub-section (3/3) — DONE. Icons & Images sub-section (1/3).
+Remaining: 4 capabilities pages + 6 design-system pages.**
 
 **Capabilities sweep — convention notes (2026-05-01).** The capabilities
 directory has 18 pages (not the ~12 mentioned in the prior handoff).
@@ -70,7 +70,85 @@ here too — replace abstract "X is a shared behavior" framing with
 concrete API surface; verify claims at runtime; nav-aligned topic
 lists with substantive blurbs (not 3-word labels).
 
-Last session (2026-05-02, capabilities/validation/results.md —
+Last session (2026-05-02, capabilities/icons/index.md —
+opens Icons & Images sub-section, 1/3):
+
+- Full rewrite. Old page was 107 lines of abstract framing
+  ("Icons vs images", "Icons as a capability", "Images as a
+  capability", "Relationship to styling", "Performance
+  considerations", "ttkbootstrap guidance", "Common pitfalls")
+  with **zero references to the actual API surface** —
+  `BootstrapIcon`, `IconSpec`, `Image`, the `icon=` widget kwarg,
+  the `IconMixin` primitives, the per-state override path were
+  all absent. Same generic-Tk-tutorial shape as the rest of the
+  pre-rewrite signals/layout/validation pages.
+- New version leads with the three concrete pieces of API users
+  actually touch (`BootstrapIcon` / `IconSpec` / `Image`) in a
+  4-row at-a-glance table, then per-section blurbs naming the
+  five `IconMixin` primitives (`Button`, `Label`, `CheckButton`,
+  `RadioButton`, `MenuButton`) and the ~15 composites that
+  forward `icon=` to one of those primitives or to their own
+  internal renderer.
+- One real bug surfaced and verified at runtime:
+  **theme tokens like `'primary'` crash when supplied as
+  `IconSpec.color`** (or in a per-state override's `color`).
+  Cause: `_image_for` at
+  `style/bootstyle_builder_base.py:684` calls
+  `BootstrapIcon(name=name, size=size, color=color)` directly
+  without resolving the token through `self.color(...)` — so
+  PIL receives the literal string `'primary'` and raises
+  `ValueError: unknown color specifier: 'primary'` from
+  `PIL/ImageColor.py:125`. Verified at runtime:
+  `Button(icon={'name': 'star', 'color': 'primary'})` →
+  ValueError. The path that DOES work for users today is to
+  **omit `color`** entirely — when omitted, the icon inherits
+  the widget's foreground state map (already resolved to hex
+  values by the style builder before being handed to
+  `_image_for` via `foreground_spec`). Hex strings (`'#ff6600'`)
+  and PIL named colors (`'red'`, `'navy'`) also work directly.
+  Documented as a `!!! danger` block in the BootstrapIcon
+  section with the resolve-yourself workaround
+  (`app.style.builder.color('primary')` to convert to hex
+  first). Added to the bugs list. Worth fixing — the
+  natural user expectation is that theme tokens work
+  everywhere they appear in widget kwargs.
+- Documented (some new, some restated): the `IconSpec`
+  TypedDict shape (`name` / `size` / `color` / `state`) at
+  `style/bootstyle_builder_base.py:68`; the per-state override
+  shape (`IconStateMap` with `name` and/or `color`); ttk
+  state-expression syntax (`'disabled'`, `'hover !disabled'`,
+  `'pressed !disabled'`, `'selected'`); the
+  `cget` round-trip behavior for `icon=` (string returns
+  string, dict returns normalized dict); the recommended
+  no-color path that inherits the widget's foreground; the
+  `icon_only=True` companion option from `IconMixin`; the
+  reconfigurable-at-runtime nature of both options; the
+  five-method `Image` surface (`open` / `from_pil` /
+  `from_bytes` / `transparent` plus `cache_info` /
+  `clear_cache` / `get_cached` / `set_cached`); the cache-key
+  scheme per method; the `key=` override for explicit
+  versioning; the connection back to the platform-level
+  pinning gotcha (Image.* keeps its own strong references so
+  callers don't have to).
+- Snippet check: 3 snippets, 3 executed, 0 failures. All 8
+  cross-links resolve (siblings: `icons.md`, `images.md`;
+  platform: `images-and-dpi.md`; guides: `icons.md`; design
+  system: `icons.md`). The "Where to read next" closer is the
+  same directive-cross-link shape established in the validation
+  and layout sub-sections.
+- **Icons & Images sub-section status: 1/3** — `index.md` done.
+  Next pages in the sweep: `capabilities/icons/icons.md`, then
+  `capabilities/icons/images.md`. Note that the existing
+  `icons.md` is **already much closer to the rewrite shape**
+  than other pre-rewrite capabilities pages — it leads with a
+  Provider resolution / State integration / Theme-driven
+  coloring / DPI scaling / Caching arc and references real
+  TTK state expressions. Likely a targeted accuracy pass
+  rather than a full rewrite, with verification of the
+  provider-priority claim (and the just-surfaced theme-token
+  bug should be cross-referenced there).
+
+Earlier session (2026-05-02, capabilities/validation/results.md —
 final Validation page, sub-section closed 3/3):
 
 - Full rewrite. Old page was 137 lines of abstract framing
@@ -743,7 +821,7 @@ Pages to review (capabilities sweep, 18 total):
 - [x] `validation/index.md` — validation overview
 - [x] `validation/rules.md` — rule types
 - [x] `validation/results.md` — `ValidationResult`
-- [ ] `icons/index.md` — icons & images overview
+- [x] `icons/index.md` — icons & images overview
 - [ ] `icons/icons.md` — `BootstrapIcon`
 - [ ] `icons/images.md` — `Image` utility
 - [ ] `layout-props.md` — pack/grid/place kwargs
@@ -4939,6 +5017,29 @@ primitives.
   `__repr__`, or `__hash__` on the class. Documented as a
   `!!! danger` block in `validation/results.md`. (Surfaced by
   validation/results.md rewrite, 2026-05-02.)
+- **Theme tokens crash when supplied as `IconSpec.color` (or in a
+  per-state `color` override).** The icon-resolution helper
+  `_image_for` at `style/bootstyle_builder_base.py:684` calls
+  `BootstrapIcon(name=name, size=size, color=color)` directly
+  without resolving the token through `self.color(...)` first — so
+  PIL receives the literal string (e.g., `'primary'`) and raises
+  `ValueError: unknown color specifier: 'primary'` from
+  `PIL/ImageColor.py:125`. Verified at runtime:
+  `Button(icon={'name': 'star', 'color': 'primary'})` →
+  `ValueError`. This contradicts the user expectation that theme
+  tokens work everywhere they appear in widget kwargs. The
+  no-color path (where the icon inherits the widget's foreground
+  state map) works correctly because the `foreground_spec`
+  argument arrives at `_image_for` already-resolved to hex
+  strings by the style builder. Hex strings (`'#ff6600'`) and PIL
+  named colors (`'red'`, `'navy'`) also work directly. Fix:
+  resolve `color` through `self.color(color, surface=...)` (the
+  same helper the rest of the builder uses) before passing into
+  `BootstrapIcon`. Workaround for users today: omit `color` to
+  inherit the foreground, use a hex value, or call
+  `app.style.builder.color('primary')` to convert the token to
+  hex first. (Surfaced by capabilities/icons/index.md rewrite,
+  2026-05-02.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
