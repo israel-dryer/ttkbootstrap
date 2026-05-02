@@ -727,6 +727,7 @@ class ListItem(CompositeFrame):
             "text": self._update_text,
             "caption": self._update_caption,
             "icon": self._update_icon,
+            "badge": self._update_badge,
         }.items():
             value = record.get(field)
             if self._state.get(field) != value:
