@@ -34,23 +34,23 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-02, capabilities sweep — 16/18; icons/images.md done — Icons & Images sub-section CLOSED 3/3)
+### Current handoff (2026-05-02, capabilities sweep — 17/18; layout-props.md done)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 all widget-page sweeps are complete (dialogs 11/11, inputs 11/11,
 data-display 8/8, layout 12/12, navigation 5/5, overlays 2/2,
 selection 9/9, views 3/3, primitives 5/5). Platform sweep (17/17) — DONE.
-Capabilities sweep — IN PROGRESS (16/18 — `index.md`, `configuration.md`,
+Capabilities sweep — IN PROGRESS (17/18 — `index.md`, `configuration.md`,
 `signals/index.md`, `signals/signals.md`, `signals/callbacks.md`,
 `signals/virtual-events.md`, `layout/index.md`, `layout/containers.md`,
 `layout/spacing.md`, `layout/scrolling.md`, `validation/index.md`,
 `validation/rules.md`, `validation/results.md`, `icons/index.md`,
-`icons/icons.md`, `icons/images.md`).
+`icons/icons.md`, `icons/images.md`, `layout-props.md`).
 Signals & Events sub-section (4/4) — DONE. Layout sub-section (4/4) — DONE.
 Validation sub-section (3/3) — DONE. Icons & Images sub-section (3/3) —
-DONE. Remaining: 3 capabilities pages (`layout-props.md`,
-`state-and-interaction.md`, `localization.md`) + 6 design-system pages.**
+DONE. Remaining: 2 capabilities pages (`state-and-interaction.md`,
+`localization.md`) + 6 design-system pages.**
 
 **Capabilities sweep — convention notes (2026-05-01).** The capabilities
 directory has 18 pages (not the ~12 mentioned in the prior handoff).
@@ -72,7 +72,119 @@ here too — replace abstract "X is a shared behavior" framing with
 concrete API surface; verify claims at runtime; nav-aligned topic
 lists with substantive blurbs (not 3-word labels).
 
-Last session (2026-05-02, capabilities/icons/images.md —
+Last session (2026-05-02, capabilities/layout-props.md —
+first standalone capabilities page after Icons & Images
+closed):
+
+- Full rewrite. Old page was 124 lines of abstract framing
+  ("What are layout properties?", "Common layout properties",
+  "Container interpretation", "Declarative layout intent",
+  "Layout timing", "Interaction with scrolling", "ttkbootstrap
+  guidance", "Common pitfalls") that **named no concrete kwargs
+  at all** — `side`, `fill`, `expand`, `sticky`, `row`,
+  `column`, `relx`, `rely`, `bordermode`, `before`, `after`,
+  `in_` were all absent. Same generic-Tk-tutorial shape as the
+  rest of the pre-rewrite capabilities pages (signals/index.md,
+  layout/index.md, validation/index.md, icons/index.md before
+  their rewrites).
+- New version is the per-kwarg reference page that ~17 widget /
+  layout pages link to (`Layout properties` is the third bullet
+  in every layout-widget Reference list — frame.md, packframe.md,
+  gridframe.md, scrollview.md, scrollbar.md, accordion.md,
+  expander.md, panedwindow.md, separator.md, sizegrip.md,
+  labelframe.md, plus `widgets/layout/*.md` siblings, plus the
+  capabilities/layout/* pages and the form-widget template). It
+  leads with a 3-row at-a-glance table comparing the three
+  managers (layout shape / per-call kwargs / container setup
+  needed), then per-manager kwarg tables and per-section blurbs:
+  `pack` (11 kwargs), `grid` (10 kwargs), `place` (12 kwargs);
+  composition rules (single-manager-per-parent, `*_forget` vs
+  `grid_remove` table, container-injected defaults from
+  PackFrame / GridFrame, method chaining); container-side
+  methods (propagate, rowconfigure, columnconfigure, slaves,
+  grid_size); a directive cross-link section.
+- One real bug surfaced and verified at runtime:
+  **`pack_propagate()` and `grid_propagate()` mixin methods
+  always return `None` on query.** Cause: the mixin methods at
+  `core/capabilities/pack.py:99-111` and
+  `core/capabilities/grid.py:112-124` always pass `flag` through
+  to `super().pack_propagate(flag)` / `super().grid_propagate(flag)`,
+  including when `flag=None`. CPython `tkinter.Misc.pack_propagate`
+  / `grid_propagate` distinguish the query path from the setter
+  path by a private `['_noarg_']` sentinel — so passing `None`
+  dispatches as the setter (a no-op-ish set) and the query path
+  is never taken. Verified at runtime: `f.pack_propagate()`
+  returns `None` even on a fresh widget where the underlying Tk
+  value is `True`. The propagation state itself is preserved
+  correctly (the underlying Tcl `pack propagate <w>` reports the
+  right value, accessible via
+  `widget.tk.call('pack', 'propagate', widget._w)`); only the
+  Python-side query is broken. Fix: use a sentinel like
+  `_NO_ARG = object()` and conditionally pass `flag` only when
+  it's not the sentinel — `if flag is _NO_ARG: return
+  super().pack_propagate(); else: super().pack_propagate(flag)`.
+  Documented as a `!!! warning` block in Container-side methods
+  with the workaround. Added to the bugs list.
+- Eight runtime checks performed and documented:
+  (1) Default kwargs from `pack_info()`: `side='top'`,
+  `fill='none'`, `expand=0`, `anchor='center'`, `padx=0`,
+  `pady=0`, `ipadx=0`, `ipady=0`. From `grid_info()`: `row=0`,
+  `column=0`, `columnspan=1`, `rowspan=1`, `sticky=''`,
+  `padx=0`, `pady=0`, `ipadx=0`, `ipady=0`. From
+  `place_info()`: `x='0'`, `y='0'`, `relx='0'`, `rely='0'`,
+  `width=''`, `height=''`, `relwidth=''`, `relheight=''`,
+  `anchor='nw'`, `bordermode='inside'` — note that the `place`
+  size kwargs default to the empty string (not `0`), which Tk
+  reads as "use the widget's own requested size."
+  (2) Mixing managers raises the documented TclError: `cannot
+  use geometry manager grid inside .!frame which already has
+  slaves managed by pack` (and vice versa). `place` overlays
+  either safely.
+  (3) Bad values raise loud TclErrors with descriptive
+  messages: `pack(fill='z')` → `bad fill style "z": must be
+  none, x, y, or both`; `grid(sticky='z')` → `bad stickyness
+  value "z": must be a string containing n, e, s, and/or w`;
+  `pack(side='center')` → `bad side "center": must be top,
+  bottom, left, or right`; `place(bordermode='z')` → `bad
+  bordermode "z": must be inside, outside, or ignore`.
+  (4) `expand=` normalization at the Tk boundary: `True`/`1`/
+  `'yes'`/`'true'` → `1`; `False`/`0`/`'no'`/`'false'` → `0`.
+  Verified all eight value forms.
+  (5) `sticky=` accepts a string of n/s/e/w (any combination,
+  any order), a tuple of those letters, or a comma-separated
+  string. All three forms (`'wsen'`, `('n','s','e','w')`,
+  `'n,s,e,w'`) round-trip via `grid_info()` to the canonical
+  `'nesw'`.
+  (6) `winfo_manager()` reports `''` (empty) before any
+  geometry call, the manager name afterwards, and reverts to
+  `''` after `pack_forget()` / `grid_forget()` / `place_forget()`.
+  Switching managers on a single widget is supported (last call
+  wins); the previous manager's info is gone.
+  (7) `*_forget` vs `grid_remove`: `pack_forget()` makes
+  `pack_info()` raise `TclError: window ".!label" isn't packed`;
+  `grid_forget()` makes `grid_info()` return `{}`;
+  `place_forget()` makes `place_info()` return `{}`;
+  `grid_remove()` is the only one that *preserves* the
+  configuration for a later `widget.grid()` no-arg restore.
+  Verified `grid_remove()` round-trip with `row=2, column=3,
+  sticky='nsew', padx=5` — all four kwargs persist through
+  the remove → re-grid cycle.
+  (8) `grid_size()` reports the bounding box of cells *that
+  have children* (or have been configured). A fresh Frame
+  reports `(0, 0)`; after a single `grid(row=2, column=3)` it
+  reports `(4, 3)` — implicit zero-size placeholders fill the
+  rest. The `pack(before=widget)` / `pack(after=widget)`
+  ordering also verified at runtime — three labels A, B, C
+  added with `c.pack(before=b)` give `pack_slaves()` order
+  `['A', 'C', 'B']`.
+- Snippet check: 10 snippets, 1 executed, 0 failures. All 5
+  cross-links resolve (siblings: `layout/index.md`,
+  `layout/containers.md`, `layout/spacing.md`; platform:
+  `geometry-and-layout.md`, `widget-lifecycle.md`).
+- **Capabilities sweep: 17/18 done.** Remaining:
+  `state-and-interaction.md`, `localization.md`.
+
+Earlier session (2026-05-02, capabilities/icons/images.md —
 final Icons & Images page, sub-section closed 3/3):
 
 - Full rewrite. Old page was 144 lines of abstract framing
@@ -997,7 +1109,7 @@ Pages to review (capabilities sweep, 18 total):
 - [x] `icons/index.md` — icons & images overview
 - [x] `icons/icons.md` — `BootstrapIcon`
 - [x] `icons/images.md` — `Image` utility
-- [ ] `layout-props.md` — pack/grid/place kwargs
+- [x] `layout-props.md` — pack/grid/place kwargs
 - [ ] `state-and-interaction.md` — widget state, focus, grabs
 - [x] `configuration.md` — `AppSettings` + widget kwargs
 - [ ] `localization.md` — `MessageCatalog` + `IntlFormatter`
@@ -5213,6 +5325,27 @@ primitives.
   `app.style.builder.color('primary')` to convert the token to
   hex first. (Surfaced by capabilities/icons/index.md rewrite,
   2026-05-02.)
+- **`pack_propagate()` and `grid_propagate()` mixin methods always
+  return `None` on query.** The mixin methods at
+  `core/capabilities/pack.py:99-111` and
+  `core/capabilities/grid.py:112-124` always pass `flag` through to
+  `super().pack_propagate(flag)` / `super().grid_propagate(flag)`,
+  including when `flag=None`. CPython `tkinter.Misc.pack_propagate`
+  / `grid_propagate` distinguish the query path from the setter path
+  by a private `['_noarg_']` sentinel — so passing `None` dispatches
+  as the setter and the query path is never taken. Verified at
+  runtime: `f.pack_propagate()` → `None` even on a fresh widget
+  where the underlying Tk value is `True`. The propagation state
+  itself is preserved (the underlying Tcl `pack propagate <w>`
+  reports the right value), but the helper return is unusable for
+  reading state. Workaround:
+  `widget.tk.call('pack', 'propagate', widget._w)` returns the raw
+  Tk integer; same for `grid`. Fix: use a private sentinel
+  (`_NO_ARG = object()`) and conditionally pass `flag` only when
+  it's not the sentinel — `if flag is _NO_ARG: return
+  super().pack_propagate(); else: super().pack_propagate(flag)`.
+  Same shape applies to both pack and grid. (Surfaced by
+  capabilities/layout-props.md rewrite, 2026-05-02.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
