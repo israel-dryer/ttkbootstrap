@@ -187,7 +187,7 @@ Keyed page containers that switch content. Anchored on
 
 **Forms (1)**
 
-- [Form](forms/form.md) — spec-driven form builder; assembles a
+- [Form](inputs/form.md) — spec-driven form builder; assembles a
   consistent set of input widgets, labels, validation, and layout
   from a single declaration.
 
@@ -243,7 +243,7 @@ take you a long way:
   settings come together.
 - [AppShell](application/appshell.md) — opinionated multi-page
   shell with toolbar and side navigation.
-- [Form](forms/form.md) — the fastest way to render a useful
+- [Form](inputs/form.md) — the fastest way to render a useful
   data-entry UI.
 
 For visual styling — the meaning of `accent`, `variant`, `surface`,

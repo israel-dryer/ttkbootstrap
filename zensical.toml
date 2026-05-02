@@ -58,6 +58,7 @@ nav = [
             { "LabeledScale" = "widgets/inputs/labeledscale.md" },
             { "DateEntry" = "widgets/inputs/dateentry.md" },
             { "TimeEntry" = "widgets/inputs/timeentry.md" },
+            { "Form" = "widgets/inputs/form.md" },
         ] },
         { "Selection" = [
             { "Calendar" = "widgets/selection/calendar.md" },
@@ -102,9 +103,6 @@ nav = [
             { "TabView" = "widgets/views/tabview.md" },
             { "PageStack" = "widgets/views/pagestack.md" },
             { "Notebook" = "widgets/views/notebook.md" },
-        ] },
-        { "Forms" = [
-            { "Form" = "widgets/forms/form.md" },
         ] },
         { "Dialogs" = [
             { "Overview" = "widgets/dialogs/index.md" },

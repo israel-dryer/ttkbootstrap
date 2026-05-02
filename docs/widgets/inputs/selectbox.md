@@ -265,7 +265,7 @@ Prefer a different control when:
 - [OptionMenu](../selection/optionmenu.md) — simpler button-and-menu selection.
 - [Combobox](../primitives/combobox.md) — low-level ttk dropdown.
 - [RadioGroup](../selection/radiogroup.md) — single selection from visible options.
-- [Form](../forms/form.md) — declare a `selectbox` editor in a form definition.
+- [Form](form.md) — declare a `selectbox` editor in a form definition.
 
 ---
 

@@ -313,7 +313,7 @@ Prefer a different control when:
 - [TextEntry](textentry.md) — base composite text field; `DateEntry` shares its formatting/validation/signal machinery.
 - [DateDialog](../dialogs/datedialog.md) — the calendar popup used by the picker, also usable directly as a modal date prompt.
 - [Calendar](../selection/calendar.md) — standalone calendar widget for inline use.
-- [Form](../forms/form.md) — assemble a full form from field declarations.
+- [Form](form.md) — assemble a full form from field declarations.
 
 ---
 

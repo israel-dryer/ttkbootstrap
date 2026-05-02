@@ -535,7 +535,7 @@ on `FieldItem` is honored at construction time only.
 
 ## Additional resources
 
-- [Form widget reference](../widgets/forms/form.md)
+- [Form widget reference](../widgets/inputs/form.md)
 - [FormDialog](../widgets/dialogs/formdialog.md)
 - [Dialogs guide](dialogs.md) — modal flows
 - [Reactivity guide](reactivity.md) — signals, callbacks, events

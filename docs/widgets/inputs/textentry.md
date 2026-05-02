@@ -306,7 +306,7 @@ Prefer a different control when:
 - [DateEntry](dateentry.md) — calendar-backed date input.
 - [TimeEntry](timeentry.md) — time-of-day input.
 - [SpinnerEntry](spinnerentry.md) — entry that steps through values.
-- [Form](../forms/form.md) — assemble a full form from field declarations.
+- [Form](form.md) — assemble a full form from field declarations.
 
 ---
 

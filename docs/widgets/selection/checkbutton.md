@@ -275,7 +275,7 @@ Prefer:
 - **[CheckToggle](checktoggle.md)** — CheckButton subclass with
   toolbutton chrome
 - **[RadioButton](radiobutton.md)** — mutually-exclusive sibling
-- **[Form](../forms/form.md)** — declarative wrapper that bundles
+- **[Form](../inputs/form.md)** — declarative wrapper that bundles
   CheckButtons with labels and validation
 
 ---

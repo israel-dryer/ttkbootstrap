@@ -312,7 +312,7 @@ visible = dialog.result   # list of selected items, or None
 
 ## Multi-field input
 
-`FormDialog` embeds a [Form](../widgets/forms/form.md) inside a modal
+`FormDialog` embeds a [Form](../widgets/inputs/form.md) inside a modal
 dialog. Use it when you need **several related fields** in one step:
 
 ```python

@@ -26,7 +26,6 @@ CATEGORY_TEMPLATE_MAP: dict[str, str] = {
     "actions": "widget-action-template",
     "data-display": "widget-data-display-template",
     "dialogs": "widget-dialog-template",
-    "forms": "widget-form-template",
     "inputs": "widget-input-template",
     "layout": "widget-layout-template",
     "navigation": "widget-navigation-template",

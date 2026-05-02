@@ -4,7 +4,7 @@ title: FormDialog
 
 # FormDialog
 
-`FormDialog` is a modal dialog that wraps a [`Form`](../forms/form.md)
+`FormDialog` is a modal dialog that wraps a [`Form`](../inputs/form.md)
 composite in a `Dialog` shell with an OK/Cancel footer. Calling
 `show()` blocks until the user submits or cancels; the form's data —
 keyed by field name — is then available on `.result`.
@@ -136,7 +136,7 @@ dlg = ttk.FormDialog(
     dialog.
 
 For richer layouts — labelled groups, tabbed forms, custom editors
-per field — see the [`Form` widget](../forms/form.md), which
+per field — see the [`Form` widget](../inputs/form.md), which
 documents the full `FieldItem` / `GroupItem` / `TabsItem` shape.
 `FormDialog` forwards `items` to it verbatim.
 
@@ -290,7 +290,7 @@ Prefer a different control when:
 - you need a yes/no/confirmation, not data entry → use
   [`MessageBox`](messagebox.md) or [`MessageDialog`](messagedialog.md).
 - the form is large, multi-step, or the user will spend more than a
-  minute in it → embed a [`Form`](../forms/form.md) directly in a
+  minute in it → embed a [`Form`](../inputs/form.md) directly in a
   page or [`PageStack`](../views/pagestack.md) flow.
 - you need full control of the layout and footer (custom widgets
   beside the buttons, non-form content) → drop down to
@@ -302,7 +302,7 @@ Prefer a different control when:
 
 **Related widgets**
 
-- [`Form`](../forms/form.md) — the inline composite that powers
+- [`Form`](../inputs/form.md) — the inline composite that powers
   `FormDialog`. Use it directly when the form lives in a page, not a
   modal.
 - [`Dialog`](dialog.md) — the generic builder underneath; reach for

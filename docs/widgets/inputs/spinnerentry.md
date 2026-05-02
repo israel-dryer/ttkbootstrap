@@ -301,7 +301,7 @@ Prefer a different control when:
 - [Scale](scale.md) — slider-based numeric adjustment.
 - [SelectBox](../inputs/selectbox.md) — dropdown picker for larger lists.
 - [TextEntry](textentry.md) — base composite text field; `SpinnerEntry` shares its formatting/validation/signal machinery.
-- [Form](../forms/form.md) — assemble a full form from field declarations.
+- [Form](form.md) — assemble a full form from field declarations.
 
 ---
 

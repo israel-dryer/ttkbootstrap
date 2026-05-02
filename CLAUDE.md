@@ -34,14 +34,16 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-02, design-system sweep closed — Pass 2 is now COMPLETE)
+### Current handoff (2026-05-02, Form sweep closed + relocated — Pass 2 truly COMPLETE)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is now COMPLETE
-across every section.** Sweep status:
+across every section, including the previously-overlooked solo Form
+page.** Sweep status:
 
 - **Guides** (14/14) — DONE 2026-04-30.
-- **Widgets** — DONE: dialogs 11/11, inputs 11/11, data-display 8/8,
+- **Widgets** — DONE: dialogs 11/11, inputs 12/12 (Form moved here from
+  the deleted `forms/` category 2026-05-02), data-display 8/8,
   layout 12/12, navigation 5/5, overlays 2/2, selection 9/9, views 3/3,
   primitives 5/5, actions 5/5.
 - **Platform** (17/17) — DONE 2026-05-01.
@@ -59,6 +61,87 @@ listed below the per-page session notes (8B ListView.badge bug fix,
 do a final cross-cutting consistency pass (e.g. verify every section
 landing page links correctly to the capabilities/platform pages it
 mentions), but the per-page editorial work is finished.
+
+**Form relocation (2026-05-02).** The `form.md` page was moved from
+`widgets/forms/` to `widgets/inputs/`. Rationale: a category of one
+is awkward, and `Form` is fundamentally an input — its API surface
+(`.value` / `.data` / `validate()` / `field(key)`) matches the input
+shape, and it produces a value (a `dict[str, Any]`). Same precedent
+as the `selectbox.md` move from `selection/` to `inputs/`. Logistics
+done in the move commit:
+
+- `git mv docs/widgets/forms/form.md docs/widgets/inputs/form.md`
+- `docs/widgets/forms/` directory removed
+- `docs/_template/widget-form-template.md` deleted (uses the input
+  template now; `Form model` content lives in the page-level
+  `Value model` H2)
+- `tools/check_doc_structure.py` — `forms` entry dropped from
+  `CATEGORY_TEMPLATE_MAP`
+- `zensical.toml` — Form moved from a solo "Forms" menu to the
+  bottom of the "Inputs" menu (after `TimeEntry`)
+- `docs_scripts/screenshots.toml` — `[[shots]]` entry repointed
+  (slug `widgets-form` unchanged; factory module name unchanged)
+- 16 inbound link updates across 14 files
+
+Last session (2026-05-02, Form sweep — input template):
+
+- `form.md` rewritten to the slim input arc anchored on
+  `textentry.md`. Form is the heaviest input in the framework — a
+  `Frame` subclass that builds a labeled grid of editor widgets
+  from a list of `FieldItem` / `GroupItem` / `TabsItem` specs (or
+  inferred from a `data` dict). The page rebuilds the spec
+  vocabulary from scratch against the dataclass + `_normalize_items`
+  / `_build_field` source, producing two reference tables (one for
+  spec item shapes, one for editor names) plus a dtype-inference
+  table.
+- Seven runtime-verified bugs surfaced; all seven are real API
+  gotchas, not just doc gaps:
+  (1) **`form.field_signal()` and `form.field_textsignal()` always
+  return `None` for Field-based editors** — the build path reads
+  `_signal` (with underscore), but Field exposes the attribute as
+  `signal`. Workaround: `form.field(key).signal`.
+  (2) **Spec keys outside `FieldItem` are silently dropped.** The
+  pre-rewrite docs page used `value=`, `required=`, `validate=`,
+  `help=`, `message=` in the spec dict — none of which are read by
+  `_normalize_items`. Initial values must come from `data=`; rules
+  attach via `form.field(key).add_validation_rule(...)`.
+  (3) **Unknown editor names silently fall through to `TextEntry`.**
+  `editor='select'`, `editor='int'`, `editor='bogus'` all hit the
+  fallback `else` branch in `_build_field` and build a TextEntry
+  with no warning.
+  (4) **`columns=` (the documented kwarg) raises `TclError`** — the
+  actual kwarg is `col_count=`. The pre-rewrite page advertised
+  `columns=2`.
+  (5) **`numericentry` editor without `dtype` round-trips strings.**
+  `_coerce_value` only coerces when `dtype` is set; the auto-built
+  variable is a `StringVar` unless `dtype in ('int', int, 'float',
+  float)`. Pair `numericentry` with `dtype='int'` or `'float'`
+  explicitly.
+  (6) **`TabsItem.label` is a dead dataclass field** — never
+  rendered anywhere. `TabItem.label` (per-tab) is the one that
+  becomes the tab caption.
+  (7) **`set_field_value(key, v)` on `visible=False` writes to
+  `_data` but no widget exists.** Useful for hidden round-trip
+  fields, but inconsistent with the docstring; documented as
+  intended behavior on the page.
+- Four equivalent reads (`form.data` / `form.value` / `form.get()` /
+  `form.cget('data')`) and two equivalent writes (`form.set(...)` /
+  `form.value = ...` / `form.configure(data=...)`) documented in
+  Value model.
+- Other facts surfaced and documented: footer-button command shape
+  (`cb(form)` — single positional argument, not no-args); button
+  ordering (right-to-left in `pack(side='right')`, primary lands
+  on the right edge); `editor_options` filtering for non-Field
+  editors (`show_message` / `required` / `validator` filtered out
+  for `Spinbox` / `Text` / `Switch` / `CheckButton` / `Scale`);
+  `form.set(...)` suspends `on_data_changed` for the duration of
+  the bulk write; `Form.validate()` trigger gating (only `'always'`
+  and `'manual'` triggered rules run — blur-triggered rules are
+  skipped); the synthetic event emission for each rule that runs
+  (`<<Valid>>` / `<<Invalid>>` / `<<Validate>>` on the inner
+  editor); the role-to-(accent, variant) table for footer buttons.
+- Snippet check: 19 snippets, 1 executed, 0 failures. Structure
+  check: 12 inputs files, all pass.
 
 **Capabilities sweep — convention notes (2026-05-01).** The capabilities
 directory has 18 pages (not the ~12 mentioned in the prior handoff).
@@ -5426,6 +5509,93 @@ primitives.
   super().pack_propagate(); else: super().pack_propagate(flag)`.
   Same shape applies to both pack and grid. (Surfaced by
   capabilities/layout-props.md rewrite, 2026-05-02.)
+- **`Form.field_signal(key)` and `Form.field_textsignal(key)` always
+  return `None` for Field-based editors.** The build path at
+  `composites/form.py:598-603` reads
+  `getattr(field_widget, "_signal", None)` and
+  `getattr(field_widget, "_textsignal", None)` — but `Field` exposes
+  the attributes as `signal` / `textsignal` (no underscore). Only
+  direct `SignalMixin` subclasses (`CheckButton`, `Switch`, `Scale`,
+  `RadioToggle`) own `_signal`, so they're the only editors that
+  populate `Form._signals` / `_textsignals`. Every Field-based editor
+  (`TextEntry`, `NumericEntry`, `SelectBox`, `DateEntry`,
+  `PasswordEntry`, `Spinbox`, `Combobox`) returns `None`. The
+  deprecated `get_field_signal` / `get_field_textsignal` aliases
+  inherit the same bug. Workaround: `form.field(key).signal` works
+  for every editor. Fix: try both attribute names in the build
+  path, or remove the helpers and tell users to go through
+  `form.field(key).signal`. (Surfaced by widgets/inputs/form.md
+  rewrite, 2026-05-02.)
+- **Form spec keys outside `FieldItem` are silently dropped.**
+  `_normalize_items` (`composites/form.py:627-686`) only reads
+  `key`, `label`, `dtype`, `readonly`, `visible`, `column`, `row`,
+  `columnspan`, `rowspan`, `editor`, `editor_options`. The
+  pre-rewrite docs page used spec keys like `value=`, `required=`,
+  `validate=`, `help=`, `message=` — all of which were accepted by
+  the dict literal but never reached the widget. Verified at
+  runtime: `Form(items=[{"key": "x", "value": "Alice", "required":
+  True, "validate": "email"}])` → field value `''`, no rules
+  attached. Either validate spec keys at normalize time and raise on
+  unknown ones, or document loudly that the only path for initial
+  values is `data=` and the only path for rules is
+  `form.field(key).add_validation_rule(...)`. (Surfaced by
+  widgets/inputs/form.md rewrite, 2026-05-02.)
+- **Form unknown editor names silently fall through to TextEntry.**
+  `_build_field` at `composites/form.py:506-581` has a chain of
+  explicit `editor == 'X'` branches with a final `else: TextEntry`
+  fallback. A misspelled editor name (`'select'`, `'int'`,
+  `'bogus'`) hits the fallback and silently constructs a TextEntry
+  with no warning. Verified at runtime. Either validate `editor`
+  against `EditorType` at normalize time (raise `ValueError` on
+  miss), or emit a warning when the fallback fires.
+  (Surfaced by widgets/inputs/form.md rewrite, 2026-05-02.)
+- **Form `numericentry` editor without `dtype` round-trips strings.**
+  `_read_value_from_widget` (`composites/form.py:717-738`) calls
+  `_coerce_value(item.dtype, value)` — but `_coerce_value` only
+  coerces when `dtype` is set; otherwise the raw widget value passes
+  through unchanged. NumericEntry's variable is auto-built as an
+  `IntVar` only when `dtype in ('int', int, 'float', float)` —
+  otherwise it's a `StringVar`. Net effect: `Form(items=[{"key":
+  "n", "editor": "numericentry"}])` then `form.set({"n": 7})` →
+  `form.data["n"] == '7'` (string). Either default `dtype` from
+  `editor` (`numericentry` → `int`) when not specified, or document
+  loudly that `editor='numericentry'` without `dtype` returns
+  strings. (Surfaced by widgets/inputs/form.md rewrite,
+  2026-05-02.)
+- **`Form` rejects `columns=` (the documented kwarg) — actual is
+  `col_count=`.** The pre-rewrite docs page advertised
+  `Form(app, columns=2)`, but the real constructor signature
+  (`composites/form.py:139-153`) accepts `col_count`. The wrong name
+  flows through `**kwargs` to the underlying ttk Frame and raises
+  `TclError: unknown option "-columns"` from
+  `tkinter/__init__.py:2780`. Either accept `columns=` as an alias,
+  or update every docs example to use `col_count=`. The page now
+  documents `col_count=` as a `!!! note` block. (Surfaced by
+  widgets/inputs/form.md rewrite, 2026-05-02.)
+- **`TabsItem.label` is a dead dataclass field.** The dataclass at
+  `composites/form.py:93-104` declares `label: str | None = None`,
+  but the build path (`composites/form.py:480-489`) constructs the
+  Notebook using only `width=` / `height=` and walks
+  `tabs` directly — `item.label` is never read. Verified at
+  runtime: `TabsItem(label="MY-LABEL", tabs=[...])` produces a
+  Notebook with no "MY-LABEL" anywhere in the widget tree. Either
+  render the label as a section heading above the Notebook (e.g.
+  via a `Label` or `LabelFrame` wrapper), or remove the field from
+  the dataclass. (Surfaced by widgets/inputs/form.md rewrite,
+  2026-05-02.)
+- **`Form.set_field_value(key, v)` on `visible=False` writes to
+  `_data` but no widget exists.** The check
+  (`composites/form.py:331-335`) tests `key in self._items_by_key`
+  (which contains the FieldItem even for invisible fields), then
+  calls `_apply_value_to_widget(...)` (which silently no-ops because
+  `_widgets.get(key)` returns `None`), then writes `self._data[key]
+  = value`. Net effect: invisible fields ARE in `form.data` and
+  ARE writable via `set_field_value`, but no UI reflects them.
+  Useful pattern for hidden round-trip fields (IDs, schema versions),
+  but inconsistent with the docstring "Set the value of the field"
+  — there's no field, only a dict slot. The page documents this as
+  intended behavior. (Surfaced by widgets/inputs/form.md rewrite,
+  2026-05-02.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):

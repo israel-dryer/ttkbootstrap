@@ -306,7 +306,7 @@ Prefer a different control when:
 - [SelectBox](../inputs/selectbox.md) — base composite that `TimeEntry` extends; useful when you want the same searchable-dropdown UX over an arbitrary list.
 - [TextEntry](textentry.md) — base composite text field; `TimeEntry` shares its formatting/validation/signal machinery.
 - [SpinnerEntry](spinnerentry.md) — entry that steps through values without a popup.
-- [Form](../forms/form.md) — assemble a full form from field declarations.
+- [Form](form.md) — assemble a full form from field declarations.
 
 ---
 

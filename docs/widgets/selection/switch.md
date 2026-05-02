@@ -273,7 +273,7 @@ choice is about user expectation.
 - **[CheckToggle](checktoggle.md)** — sibling subclass with
   toolbutton chrome
 - **[RadioButton](radiobutton.md)** — mutually-exclusive sibling
-- **[Form](../forms/form.md)** — declarative wrapper supporting
+- **[Form](../inputs/form.md)** — declarative wrapper supporting
   `editor='switch'` for switch fields
 
 ---

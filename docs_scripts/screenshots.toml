@@ -407,11 +407,11 @@ slug = "widgets-treeview"
 page = "widgets/data-display/treeview.md"
 factory = "docs_scripts.shots.data_display:treeview"
 
-# ----- Forms (Form) ------------------------------------------------------
+# ----- Form (lives under inputs/) ----------------------------------------
 
 [[shots]]
 slug = "widgets-form"
-page = "widgets/forms/form.md"
+page = "widgets/inputs/form.md"
 factory = "docs_scripts.shots.forms:form"
 
 # ----- Navigation (Toolbar, SideNav, AppShell) ---------------------------

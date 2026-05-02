@@ -328,7 +328,7 @@ Prefer a different control when:
 - [Scale](scale.md) — slider for live numeric adjustment.
 - [LabeledScale](labeledscale.md) — slider with a value readout.
 - [Spinbox](../primitives/spinbox.md) — low-level numeric stepper primitive.
-- [Form](../forms/form.md) — assemble a full form from field declarations.
+- [Form](form.md) — assemble a full form from field declarations.
 
 ---
 

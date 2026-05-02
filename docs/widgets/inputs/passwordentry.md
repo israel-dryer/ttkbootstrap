@@ -279,7 +279,7 @@ Prefer a different control when:
 - [TextEntry](textentry.md) — base composite text field that `PasswordEntry` extends.
 - [NumericEntry](numericentry.md) — numeric input with bounds and stepping.
 - [Entry](../primitives/entry.md) — low-level text input primitive (no label, message, or validation).
-- [Form](../forms/form.md) — assemble a full form from field declarations.
+- [Form](form.md) — assemble a full form from field declarations.
 
 ---
 

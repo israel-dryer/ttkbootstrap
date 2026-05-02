@@ -333,7 +333,7 @@ Prefer a different control when:
 
 - [TextEntry](textentry.md) — base composite text field; `PathEntry` shares its label/message/validation/signal machinery.
 - [SelectBox](../inputs/selectbox.md) — pick from a known set of paths instead of browsing the filesystem.
-- [Form](../forms/form.md) — assemble a full form from field declarations.
+- [Form](form.md) — assemble a full form from field declarations.
 
 ---
 
