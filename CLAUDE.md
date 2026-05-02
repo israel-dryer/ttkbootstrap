@@ -34,22 +34,23 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-02, capabilities sweep — 15/18; icons/icons.md done — Icons & Images sub-section 2/3)
+### Current handoff (2026-05-02, capabilities sweep — 16/18; icons/images.md done — Icons & Images sub-section CLOSED 3/3)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 all widget-page sweeps are complete (dialogs 11/11, inputs 11/11,
 data-display 8/8, layout 12/12, navigation 5/5, overlays 2/2,
 selection 9/9, views 3/3, primitives 5/5). Platform sweep (17/17) — DONE.
-Capabilities sweep — IN PROGRESS (15/18 — `index.md`, `configuration.md`,
+Capabilities sweep — IN PROGRESS (16/18 — `index.md`, `configuration.md`,
 `signals/index.md`, `signals/signals.md`, `signals/callbacks.md`,
 `signals/virtual-events.md`, `layout/index.md`, `layout/containers.md`,
 `layout/spacing.md`, `layout/scrolling.md`, `validation/index.md`,
 `validation/rules.md`, `validation/results.md`, `icons/index.md`,
-`icons/icons.md`).
+`icons/icons.md`, `icons/images.md`).
 Signals & Events sub-section (4/4) — DONE. Layout sub-section (4/4) — DONE.
-Validation sub-section (3/3) — DONE. Icons & Images sub-section (2/3).
-Remaining: 3 capabilities pages + 6 design-system pages.**
+Validation sub-section (3/3) — DONE. Icons & Images sub-section (3/3) —
+DONE. Remaining: 3 capabilities pages (`layout-props.md`,
+`state-and-interaction.md`, `localization.md`) + 6 design-system pages.**
 
 **Capabilities sweep — convention notes (2026-05-01).** The capabilities
 directory has 18 pages (not the ~12 mentioned in the prior handoff).
@@ -71,7 +72,107 @@ here too — replace abstract "X is a shared behavior" framing with
 concrete API surface; verify claims at runtime; nav-aligned topic
 lists with substantive blurbs (not 3-word labels).
 
-Last session (2026-05-02, capabilities/icons/icons.md —
+Last session (2026-05-02, capabilities/icons/images.md —
+final Icons & Images page, sub-section closed 3/3):
+
+- Full rewrite. Old page was 144 lines of abstract framing
+  ("Images as shared resources", "Image lifetime
+  management", "Image caching", "DPI awareness", "Image
+  formats", "Images and styling", "Performance
+  considerations", "ttkbootstrap guidance", "Common
+  pitfalls") with **zero references to the actual `Image`
+  API**. The four constructors (`open` / `from_pil` /
+  `from_bytes` / `transparent`), the cache management
+  surface (`cache_info` / `clear_cache` / `get_cached` /
+  `set_cached`), the per-method default cache keys, the
+  `key=` override, and `ImageCacheInfo` were all absent.
+- New version is the spec page for the `Image` utility (the
+  `index.md` covers the surface; this page goes deeper). It
+  leads with an 8-row at-a-glance table covering the four
+  constructors plus the four cache-management methods, then
+  per-section blurbs: constructing images (Pillow's role,
+  what gets returned, format support); cache identity (the
+  four default key shapes with the rationale for each, and
+  worked examples of the `key=` override for
+  versioning / cross-source identity / set_cached stash);
+  cache lifetime (`cache_info` / `clear_cache` / `get_cached` /
+  `set_cached` semantics, `ImageCacheInfo` is a frozen
+  dataclass); the GC contract as a `!!! danger` block (with
+  the runtime-verified failure mode of `clear_cache` while
+  widgets are alive); the pinning idiom (raw-Tk
+  attribute-pin pattern vs `Image.*` automatic pinning);
+  when `Image` is the wrong tool (Bootstrap icons,
+  state-aware imagery, throwaway raster).
+- Eight runtime checks performed and documented:
+  (1) Default cache keys: `Image.transparent(16, 16)` returns
+  the same object on second call; `Image.transparent(32, 32)`
+  is a separate slot. `Image.cache_info().items` reflects
+  the count; `Image.clear_cache()` zeroes it.
+  (2) `Image.from_pil(pil_a)` and `Image.from_pil(pil_a.copy())`
+  produce **different** PhotoImage objects — `from_pil` keys by
+  `id(image)`, so PIL copies bypass the cache. Documented as
+  expected behavior; the alternative (content-hashing every PIL
+  image) would be expensive.
+  (3) `Image.from_bytes(data)` keys by `md5(data)` hex digest;
+  identical byte sequences hit the same slot regardless of
+  source.
+  (4) `Image.set_cached(key, img)` returns `img` (chainable);
+  `Image.get_cached(missing_key)` returns `None`.
+  (5) **`Image` is exported at `ttk.Image`** (verified
+  `ttk.Image is core.images.Image`). Re-exported from
+  `ttkbootstrap.api.utils`.
+  (6) **`ImageCacheInfo` is a frozen dataclass** — verified
+  `info.items = 99` raises `FrozenInstanceError`. Future
+  versions can add hit/miss counters without breaking
+  callers; the page tells readers to rely on the field name,
+  not the order or count.
+  (7) **The GC contract: `clear_cache()` while a widget
+  displays a cached image breaks the widget.** Verified at
+  runtime — `Image.transparent(20, 20)` referenced by a Label
+  via `image=img`, then `Image.clear_cache()` + `gc.collect()`
+  + `update_idletasks()` results in `app.tk.call('image',
+  'type', tcl_image_name)` raising
+  `TclError: image "(...)" doesn't exist`. The widget retains
+  the Tcl image *name* on its `image=` config but no Python
+  reference to the `PhotoImage` object — once the cache is
+  the last strong ref and gets dropped, the Python finalizer
+  destroys the `PhotoImage` which destroys the underlying Tcl
+  image, and the widget goes blank with no exception. This
+  isn't a bug — it's the documented contract — but it's the
+  only failure mode a caller can plausibly trigger, so the
+  `!!! danger` block leads with a runtime-verified example
+  and the recommended scoping pattern (clear after window
+  destruction, never while it's open).
+  (8) Cache key form for `Image.open` is
+  `('file', resolved_absolute_path)` — `Path(p).expanduser()
+  .resolve()` is called once at the top of `open`, so
+  `'logo.png'`, `'./logo.png'`, and `'~/proj/logo.png'`
+  collapse to the same slot when they resolve to the same
+  file.
+- No new bugs surfaced. The `Image` utility is a small,
+  self-contained module (`core/images.py`, 284 lines); the
+  surface is correct and the contracts match the
+  implementation. The behaviors that *could* surprise users
+  (`from_pil` not content-hashing; `clear_cache` breaking
+  live widgets) are documented contracts rather than bugs —
+  the alternative implementations would be worse (expensive
+  hashing, reference cycles, or per-widget weakref
+  bookkeeping that defeats the whole point of caching).
+- Snippet check: 6 snippets, 5 executed, 0 failures. Block
+  with `tk.PhotoImage(file='logo.png')` was changed to
+  `tk.PhotoImage(width=20, height=20)` because raw Tk's
+  file-not-found path raises `_tkinter.TclError`, not
+  `FileNotFoundError`, so it bypasses the snippet runner's
+  acceptable-error whitelist. The `Image.open('logo.png')`
+  example is fine — PIL raises `FileNotFoundError` which the
+  whitelist accepts. All 4 cross-links resolve (siblings:
+  `index.md`, `icons.md`; platform: `images-and-dpi.md`;
+  guides: `icons.md`).
+- **Capabilities sweep: 16/18 done.** Icons & Images
+  sub-section closed (3/3). Remaining: `layout-props.md`,
+  `state-and-interaction.md`, `localization.md`.
+
+Earlier session (2026-05-02, capabilities/icons/icons.md —
 2/3 in Icons & Images sub-section):
 
 - Targeted accuracy pass — page was already structurally
@@ -895,7 +996,7 @@ Pages to review (capabilities sweep, 18 total):
 - [x] `validation/results.md` — `ValidationResult`
 - [x] `icons/index.md` — icons & images overview
 - [x] `icons/icons.md` — `BootstrapIcon`
-- [ ] `icons/images.md` — `Image` utility
+- [x] `icons/images.md` — `Image` utility
 - [ ] `layout-props.md` — pack/grid/place kwargs
 - [ ] `state-and-interaction.md` — widget state, focus, grabs
 - [x] `configuration.md` — `AppSettings` + widget kwargs
