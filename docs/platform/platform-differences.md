@@ -17,8 +17,9 @@ ttkbootstrap runs on macOS, Windows, and Linux. Most behavior is identical acros
 | ContextMenu backend | Native NSMenu | Themed Toplevel | Themed Toplevel |
 | Toast default position | Bottom-right | Bottom-right | Top-right |
 | Window close button | Hides app (dock stays) | Destroys window | Destroys window |
+| Quit shortcut | Cmd+Q (destroys) | Alt+F4 (destroys) | (varies by WM) |
 | `window_style` effects | Ignored | `mica`, `acrylic`, etc. | Ignored |
-| System appearance sync | Supported | Not supported | Not supported |
+| System appearance sync | Supported | Not supported (silent no-op) | Not supported (silent no-op) |
 | Config/state directory | `~/Library/Application Support/<app>` | `%APPDATA%\<app>` | `$XDG_CONFIG_HOME/<app>` |
 | ttkbootstrap dialog style | Themed Tk window | Themed Tk window | Themed Tk window |
 | Native file picker | `tkinter.filedialog` | `tkinter.filedialog` | `tkinter.filedialog` |
@@ -57,7 +58,7 @@ Tk binding strings for the same shortcut differ per platform:
 | macOS | `<Command-s>` |
 | Windows / Linux | `<Control-s>` |
 
-Use the `Shortcuts` service rather than hardcoding binding strings to keep your code portable.
+Use the `Shortcuts` service rather than hardcoding binding strings to keep your code portable. See [Events & Bindings → Modifier keys](events-and-bindings.md#modifier-keys) for the broader bindings model.
 
 !!! link "API Reference"
     See [`ttkbootstrap.Shortcuts`](../reference/app/Shortcuts.md) and [`ttkbootstrap.Shortcut`](../reference/app/Shortcut.md).
