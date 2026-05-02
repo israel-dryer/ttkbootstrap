@@ -34,20 +34,21 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-02, capabilities sweep — 11/18; validation/index.md done — Validation sub-section started 1/3)
+### Current handoff (2026-05-02, capabilities sweep — 13/18; validation/results.md done — Validation sub-section closed 3/3)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 all widget-page sweeps are complete (dialogs 11/11, inputs 11/11,
 data-display 8/8, layout 12/12, navigation 5/5, overlays 2/2,
 selection 9/9, views 3/3, primitives 5/5). Platform sweep (17/17) — DONE.
-Capabilities sweep — IN PROGRESS (11/18 — `index.md`, `configuration.md`,
+Capabilities sweep — IN PROGRESS (13/18 — `index.md`, `configuration.md`,
 `signals/index.md`, `signals/signals.md`, `signals/callbacks.md`,
 `signals/virtual-events.md`, `layout/index.md`, `layout/containers.md`,
-`layout/spacing.md`, `layout/scrolling.md`, `validation/index.md`).
+`layout/spacing.md`, `layout/scrolling.md`, `validation/index.md`,
+`validation/rules.md`, `validation/results.md`).
 Signals & Events sub-section (4/4) — DONE. Layout sub-section (4/4) — DONE.
-Validation sub-section (1/3) — IN PROGRESS.
-Remaining: 7 capabilities pages + 6 design-system pages.**
+Validation sub-section (3/3) — DONE.
+Remaining: 5 capabilities pages + 6 design-system pages.**
 
 **Capabilities sweep — convention notes (2026-05-01).** The capabilities
 directory has 18 pages (not the ~12 mentioned in the prior handoff).
@@ -69,7 +70,91 @@ here too — replace abstract "X is a shared behavior" framing with
 concrete API surface; verify claims at runtime; nav-aligned topic
 lists with substantive blurbs (not 3-word labels).
 
-Last session (2026-05-02, capabilities/validation/index.md —
+Last session (2026-05-02, capabilities/validation/results.md —
+final Validation page, sub-section closed 3/3):
+
+- Full rewrite. Old page was 137 lines of abstract framing
+  ("What is a validation result?", "Valid vs invalid vs warning",
+  "Aggregating results", "Driving UI feedback", "Relationship
+  to widgets", "Integration with signals", "Timing and user
+  experience", "ttkbootstrap guidance", "Common pitfalls") with
+  zero references to the actual `ValidationResult` API —
+  hallucinated a `'warning'` severity level, multi-message lists,
+  and aggregation features that do not exist on the object. Same
+  pre-rewrite shape as the rest of the validation/layout/signals
+  pages.
+- New version leads with the actual two-attribute surface
+  (`is_valid: bool`, `message: str`) in a 2-row at-a-glance table
+  and states explicitly that's the entire surface — no severity,
+  no multi-message, no rule reference, no contextual data, no
+  `__eq__`, no `__repr__`, no `__hash__`. Per-section blurbs:
+  constructing a result, reading the fields, the result vs event
+  payload distinction, where the result appears, what's not here,
+  standalone use, where to read next.
+- Two findings worth surfacing (one new bug, one reframing of an
+  existing API claim):
+  (1) **`bool(ValidationResult(False))` is `True`.** No
+  `__bool__` override exists on the class
+  (`core/validation/validation_result.py` is 23 lines, no dunder
+  methods). Net effect: `if rule.validate(value): ...` is a silent
+  always-truthy footgun. Verified at runtime. The framework
+  itself does not hit this — `ValidationRule.validate()` and
+  `ValidationMixin.validate()` access `result.is_valid` explicitly
+  — but standalone-use callers can. Documented as a `!!! danger`
+  block in Reading the result with the correct usage.
+  (2) **`ValidationMixin.validate()`'s docstring at
+  `widgets/mixins/validation_mixin.py:99-100` claims the return
+  is "True if validation was performed (regardless of result)".**
+  The actual return semantics are: returns `True` only when at
+  least one rule ran AND every rule passed; returns `False` on the
+  first invalid result and on the no-rules case (the early-return
+  at line 117 plus the `return ran_rule` at line 124, which
+  short-circuits on first failure before flipping ran_rule's
+  meaning). Verified at runtime: `inner.validate('Alice', trigger=
+  'manual')` → True (passed); `inner.validate('', trigger=
+  'manual')` → False (failed). Documented as a `!!! warning` in
+  Where the result appears; added to the bugs list as a docstring
+  fix (the implementation is more useful than the docstring; fix
+  the docstring).
+- Surfaced the central distinction between `ValidationResult`
+  (returned by `ValidationRule.validate()`, the only place users
+  see the object) and the **event payload `dict`** (`{value,
+  is_valid, message}` delivered by `<<Valid>>` / `<<Invalid>>` /
+  `<<Validate>>` and to the `on_valid` / `on_invalid` /
+  `on_validated` helpers). The conversion happens in
+  `ValidationMixin.validate` at lines 103-122 — read the result's
+  `.is_valid` and `.message` fields, pack into a dict, emit. So
+  handlers reading `event.data` always get a dict, never a
+  `ValidationResult`. Same pattern in `Form.validate()`. This was
+  already documented on `index.md` and `rules.md` as the event
+  payload shape, but never connected back to "the result object
+  itself never reaches the event handler" — added a
+  Result vs event payload section that names this explicitly.
+- One subtle public-surface fact worth noting: **`ValidationResult`
+  is mutable and accepts `is_valid=True` with a non-empty
+  message**. Verified at runtime. The framework never produces
+  that shape (`_default_message()` is consulted only on failure)
+  and the public flow expects an immutable carrier, but the
+  attribute setters are not protected. Documented in
+  Constructing a result as a behavioral note rather than a bug —
+  the contract is clear from the attribute table.
+- Snippet check: 8 snippets, 0 executed, 0 failures. All 9
+  cross-links resolve (siblings: `rules.md`, `index.md`;
+  callbacks: `signals/callbacks.md`; widgets:
+  `dialogs/formdialog.md`, `inputs/textentry.md`,
+  `inputs/numericentry.md`, `inputs/dateentry.md`,
+  `inputs/spinnerentry.md`, `inputs/selectbox.md`). The
+  in-page anchor `index.md#reading-the-result` and
+  `rules.md#messages` both verified against the section
+  headings.
+- **Validation sub-section is now complete** (3/3 pages done in
+  nav order: `index.md`, `rules.md`, `results.md`). Note:
+  `rules.md` was already shipped on this branch in commit
+  `d9202b4`; the prior handoff was stale. Next sub-section in
+  the sweep: Icons & Images (3 pages — `icons/index.md`,
+  `icons/icons.md`, `icons/images.md`).
+
+Earlier session (2026-05-02, capabilities/validation/index.md —
 opens Validation sub-section, 1/3):
 
 - Full rewrite. Old page was 121 lines of abstract framing
@@ -656,8 +741,8 @@ Pages to review (capabilities sweep, 18 total):
 - [x] `layout/spacing.md` — padding, gap, density
 - [x] `layout/scrolling.md` — ScrollView
 - [x] `validation/index.md` — validation overview
-- [ ] `validation/rules.md` — rule types
-- [ ] `validation/results.md` — `ValidationResult`
+- [x] `validation/rules.md` — rule types
+- [x] `validation/results.md` — `ValidationResult`
 - [ ] `icons/index.md` — icons & images overview
 - [ ] `icons/icons.md` — `BootstrapIcon`
 - [ ] `icons/images.md` — `Image` utility
@@ -4817,6 +4902,43 @@ primitives.
   or accept both spellings in `validate()` so the docstring example
   works as written. (Surfaced by validation/index.md rewrite,
   2026-05-02.)
+- **`ValidationMixin.validate()`'s docstring lies about the return
+  value.** The docstring at `widgets/mixins/validation_mixin.py:99-100`
+  says the method returns "True if validation was performed
+  (regardless of result)." The actual return semantics are: returns
+  `True` only when at least one rule ran AND every rule passed;
+  returns `False` on the first invalid result (early-return at line
+  117) and on the no-rules case (`return ran_rule` at line 124,
+  where `ran_rule` is `False` because no rule's filter matched).
+  Verified at runtime via the inner part:
+  `inner.validate('Alice', trigger='manual')` → `True` with a
+  required rule (passed); `inner.validate('', trigger='manual')` →
+  `False` with the same rule (failed); `entry2.validate('x',
+  trigger='manual')` → `False` with no rules (ran_rule stayed False).
+  The "True if validation was performed" claim is the *opposite* of
+  reality — validation was performed in case 1 (returns True) and
+  in case 2 (returns False). The current implementation is more
+  useful than the docstring (it answers "did this value pass?"); the
+  fix is to update the docstring to "True if all applicable rules
+  passed, False otherwise" rather than to change the
+  implementation. `Field.validation()` is `self._entry.validate`
+  forwarding (`composites/field.py:281`), so the same
+  return-semantics bug applies to the public-facing
+  `widget.validation(value)` call. (Surfaced by validation/results.md
+  rewrite, 2026-05-02.)
+- **`ValidationResult` has no `__bool__`.** This is technically a
+  framework hardening gap rather than a bug, but worth noting:
+  `bool(ValidationResult(False))` returns `True` because the class
+  inherits the default truthy-by-identity behavior. The framework
+  itself never hits this — `ValidationRule.validate()` and
+  `ValidationMixin.validate()` always read `result.is_valid`
+  explicitly — but standalone-use callers writing
+  `if rule.validate(value): ...` get a silent always-true
+  short-circuit. Either add `__bool__ = lambda self: self.is_valid`
+  or document the gap loudly. There is also no `__eq__`,
+  `__repr__`, or `__hash__` on the class. Documented as a
+  `!!! danger` block in `validation/results.md`. (Surfaced by
+  validation/results.md rewrite, 2026-05-02.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
