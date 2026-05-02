@@ -4,44 +4,56 @@ title: Images & DPI
 
 # Images & DPI
 
-Images in Tk are first-class objects with lifetimes independent of widgets.
-Understanding how images behave — especially under high-DPI displays — is essential
-for building correct and visually consistent ttkbootstrap applications.
+Tk images are first-class objects in the Tcl interpreter, with
+lifetimes independent of the widgets that display them. They also
+interact with platform DPI in surprising ways: macOS does the work
+for you, Windows needs an awareness manifest before any window
+opens, and Linux varies by desktop environment. This page covers
+both halves — image lifetime and reference handling, plus per-OS
+DPI behavior.
 
-This page explains how Tk handles images, how DPI scaling works per platform, and
-how ttkbootstrap provides structure around image usage.
-
----
-
-## Images as objects
-
-In Tk, images are not owned by widgets.
-
-Instead:
-
-- images are created as named objects in the Tk interpreter
-- widgets reference images by name
-- images persist until explicitly destroyed or garbage-collected
-
-If an image object is garbage-collected in Python, widgets that reference it
-may stop displaying it.
-
-This behavior is a common source of bugs. Keep a reference to every image your
-application uses — typically as an attribute on a long-lived object such as the
-`App` or a view class.
+The framework provides two image abstractions that absorb most of
+the boilerplate: the `Image` utility (file/bytes/PIL → cached
+PhotoImage) and `BootstrapIcon` (theme-aware vector glyphs from
+Bootstrap Icons). Use those rather than constructing `PhotoImage`
+directly when you can.
 
 ---
 
-## Image lifetime
+## Images as Tcl objects
 
-Because images outlive widgets:
+Tk images live in the Tcl interpreter, not the Python widget tree:
 
-- the image must be kept alive for as long as it is displayed
-- destroying a widget does not destroy its image
-- losing the last Python reference can invalidate the image
+- An image is created as a named object inside Tcl
+  (`tkinter.PhotoImage` is a thin wrapper around the Tcl handle).
+- Widgets reference an image by passing the Python `PhotoImage`
+  instance — Tk records the underlying Tcl name.
+- The image persists in Tcl until explicitly destroyed, *but* if the
+  Python wrapper is garbage-collected, Tcl's reference count drops
+  and Tk frees the image even though widgets still point at it.
 
-ttkbootstrap encourages treating images as **application-level resources**
-rather than widget-local objects.
+The result: a label that previously showed an icon goes blank, with
+no exception, no log message, and no clue in the widget's
+configuration. The fix is the **pinning idiom** — keep a Python
+reference somewhere that outlives the widget:
+
+```python
+# Wrong — img is GC'd at end of build_ui; the label renders blank
+def build_ui():
+    img = ttk.PhotoImage(file="logo.png")
+    ttk.Label(app, image=img).pack()
+
+# Right — pin on the widget itself
+img = ttk.PhotoImage(file="logo.png")
+label = ttk.Label(app, image=img)
+label.image_ref = img       # framework idiom: pin reference on widget
+```
+
+The `Image` utility (next section) handles this for you by keeping
+its own cache.
+
+See [Widget Lifecycle → Image and font references](widget-lifecycle.md#image-and-font-references)
+for the same gotcha framed in terms of construction and destruction.
 
 ---
 
@@ -165,12 +177,12 @@ only Tk-native formats work.
 
 ---
 
-## Image caching
+## The `Image` utility
 
-Creating images repeatedly is expensive and wastes memory.
-
-ttkbootstrap provides an `Image` abstraction to manage caching and reuse.
-Use it rather than creating `PhotoImage` objects directly:
+Constructing `PhotoImage` repeatedly is expensive (disk read +
+decode) and creates the GC trap for free. The `Image` utility loads
+once, caches by source, and keeps a strong reference so widgets
+can't lose theirs:
 
 ```python
 import ttkbootstrap as ttk
@@ -178,13 +190,61 @@ from ttkbootstrap.api.utils import Image
 
 app = ttk.App()
 
-# Cached — second call returns the same PhotoImage object
-logo = Image.open("logo.png")
-same_logo = Image.open("logo.png")  # same object, no disk read
-
+logo = Image.open("logo.png")              # decode + cache
+same_logo = Image.open("logo.png")         # cache hit — same object
 label = ttk.Label(app, image=logo)
 label.pack()
 ```
+
+Constructors:
+
+| Method | Source | Notes |
+|---|---|---|
+| `Image.open(path, *, key=None)` | File path (str / Path) | `~` expansion + path resolution; cache key is the absolute path |
+| `Image.from_bytes(data, *, key=None)` | Raw bytes | Cache key is a content hash (so duplicate bytes deduplicate) |
+| `Image.from_pil(pil_image, *, key=None)` | A PIL `Image` instance | Cache key is `id(pil_image)` — pass `key=` if you want stable identity |
+| `Image.transparent(width, height)` | n/a | A blank transparent placeholder, useful for layout spacers |
+
+Cache management:
+
+| Method | Use |
+|---|---|
+| `Image.get_cached(key)` | Look up a cached image; returns `None` if missing |
+| `Image.set_cached(key, img)` | Manually insert a key→image entry |
+| `Image.clear_cache()` | Drop every cached image (existing widgets keep working until they're recreated) |
+| `Image.cache_info()` | `ImageCacheInfo` with `items` count for diagnostics |
+
+Pillow is required for everything except `Image.transparent`. Without
+Pillow installed, `Image.open` and friends raise an `ImportError`
+on first use.
+
+---
+
+## `BootstrapIcon`
+
+For *icons* (as opposed to bitmap images), reach for `BootstrapIcon`
+instead. It produces a themed glyph from the Bootstrap Icons font
+that scales cleanly with DPI and re-renders on `<<ThemeChanged>>`:
+
+```python
+import ttkbootstrap as ttk
+
+icon = ttk.BootstrapIcon("save", size=20, color="primary")
+ttk.Button(app, text=" Save", image=icon, compound="left").pack()
+```
+
+The framework's widgets accept `BootstrapIcon` anywhere they accept
+a `PhotoImage`. Most composites also accept an **icon spec dict**
+(`{"name": "save", "size": 20, "color": "primary"}`) and construct
+the icon for you — see Toolbar's `add_button(icon=...)` for example
+usage. Color values must be PIL color names or hex strings; theme
+tokens like `"success"` are *not* valid here. Pass the resolved color
+via `get_theme_color("success")` if you need theme-driven coloring.
+
+Cross-references:
+[Capabilities → Icons](../capabilities/icons/icons.md) for the icon
+mechanics. [Design System → Icons](../design-system/icons.md) for
+icon design principles.
 
 ---
 
