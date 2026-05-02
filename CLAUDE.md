@@ -34,16 +34,17 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, capabilities sweep — 5/18; signals/callbacks.md done)
+### Current handoff (2026-05-01, capabilities sweep — 6/18; signals/virtual-events.md done)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 all widget-page sweeps are complete (dialogs 11/11, inputs 11/11,
 data-display 8/8, layout 12/12, navigation 5/5, overlays 2/2,
 selection 9/9, views 3/3, primitives 5/5). Platform sweep (17/17) — DONE.
-Capabilities sweep — IN PROGRESS (5/18 — `index.md`, `configuration.md`,
-`signals/index.md`, `signals/signals.md`, `signals/callbacks.md`).
-Remaining: 13 capabilities pages + 6 design-system pages.**
+Capabilities sweep — IN PROGRESS (6/18 — `index.md`, `configuration.md`,
+`signals/index.md`, `signals/signals.md`, `signals/callbacks.md`,
+`signals/virtual-events.md`). Signals & Events sub-section (4/4) — DONE.
+Remaining: 12 capabilities pages + 6 design-system pages.**
 
 **Capabilities sweep — convention notes (2026-05-01).** The capabilities
 directory has 18 pages (not the ~12 mentioned in the prior handoff).
@@ -65,7 +66,67 @@ here too — replace abstract "X is a shared behavior" framing with
 concrete API surface; verify claims at runtime; nav-aligned topic
 lists with substantive blurbs (not 3-word labels).
 
-Last session (2026-05-01, capabilities/signals/callbacks.md):
+Last session (2026-05-01, capabilities/signals/virtual-events.md):
+
+- Full rewrite. Old page was 150 lines of abstract framing
+  ("What is a virtual event?", "Why virtual events exist",
+  "Generating virtual events", "Naming conventions", "Common
+  pitfalls") that **never named a single concrete event the framework
+  emits**. Read like a generic Tk tutorial — same shape as the
+  pre-rewrite `signals/index.md` and `signals/callbacks.md`.
+- New version leads with two ttkbootstrap-specific extensions over
+  stock Tk: (a) arbitrary Python payloads on `event.data` (stock Tcl
+  forces strings), (b) the framework's emitted-events naming
+  convention. Then per-section coverage of subscribing
+  (`bind` + `add="+"`), emitting (`event_generate(seq, data=...)`,
+  `when=now/tail` semantics), the no-bubble axiom with the bug-list
+  table of false-bubble claims (Tabs, TabView, SideNav, PageStack,
+  SelectBox), framework-emitted events as four scoped tables
+  (cross-cutting / selection / lifecycle-and-navigation /
+  widget-specific), Tk's stock virtual events (clipboard /
+  navigation), naming conventions, and pitfalls.
+- Six concrete behaviors verified at runtime, several worth noting
+  for the cross-section:
+  (1) **Default `when="now"` fires synchronously**, inline in the
+  `event_generate` call. `when="tail"` queues to the regular event
+  queue (drained by `update()`, NOT `update_idletasks`). Verified:
+  with `event_generate("<<X>>", when="tail")` then a list-append
+  after the call, ordering is `['after gen', ..., 'handler']` only
+  after `app.update()`. The framework's `MessageCatalog.locale()`
+  uses `when="tail"` deliberately so it can emit
+  `<<LocaleChanged>>` without re-entering the dispatch loop
+  mid-callback.
+  (2) **Generating an unbound virtual event is silent** — no
+  exception, no warning. This is how the framework emits
+  `<<Selected>>` on every selection-aware widget without forcing
+  every host to register a handler.
+  (3) **Virtual events do not bubble.** Verified — a
+  `<<X>>` emitted on a child widget never reaches a `bind` on
+  the parent. Documented with the explicit re-emit relay pattern
+  and a 5-row table of widgets that *claim* to bubble but don't
+  (Tabs, TabView, SideNav, PageStack, SelectBox).
+  (4) **`event.data` round-trips arbitrary Python objects intact.**
+  Verified that `dict`, `list`, `tuple`, etc. arrive as the same
+  type with `==` equality. The framework's `BindingsMixin`
+  (`core/capabilities/bind.py:140-154`) is what enables this.
+  (5) **`event.data` arrives as `None` on non-virtual events** and
+  on virtual events emitted without `data=`. Documented as a
+  table-row distinction.
+  (6) **`<<ThemeChanged>>` is Tk-stock** (fires on root when
+  `Style.theme_use(...)` is called); **`<<LocaleChanged>>` is
+  framework-emitted** by `MessageCatalog.locale(new_locale)` with
+  payload `{"locale": new_locale}`. Both verified at runtime.
+- Two existing bugs already on the bugs list referenced in the
+  new page (no new bugs surfaced this session): the no-bubble
+  failure cases listed above, and the Python 3.13 / Tk 8.6
+  `unbind(seq, fid)` bug for `add="+"` bindings (cross-linked to
+  `callbacks.md`'s `!!! danger` block). Snippet check: 7
+  snippets, 1 executed, 0 failures. All cross-links resolve.
+- **Signals & Events sub-section is now complete** (4/4 pages
+  done in nav order). Next page in the sweep:
+  `capabilities/layout/index.md`.
+
+Earlier session (2026-05-01, capabilities/signals/callbacks.md):
 
 - Full rewrite. Old page was 148 lines of abstract framing
   ("What is a callback?", "Callback execution model", "Widget command
@@ -278,7 +339,7 @@ Pages to review (capabilities sweep, 18 total):
 - [x] `signals/index.md` — Signals & Events overview
 - [x] `signals/signals.md` — `Signal` class
 - [x] `signals/callbacks.md` — command/bind/subscribe
-- [ ] `signals/virtual-events.md` — virtual events
+- [x] `signals/virtual-events.md` — virtual events
 - [ ] `layout/index.md` — layout overview
 - [ ] `layout/containers.md` — Frame family
 - [ ] `layout/spacing.md` — padding, gap, density
