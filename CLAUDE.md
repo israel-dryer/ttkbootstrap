@@ -34,16 +34,16 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, capabilities sweep — 4/18; signals/signals.md done)
+### Current handoff (2026-05-01, capabilities sweep — 5/18; signals/callbacks.md done)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 all widget-page sweeps are complete (dialogs 11/11, inputs 11/11,
 data-display 8/8, layout 12/12, navigation 5/5, overlays 2/2,
 selection 9/9, views 3/3, primitives 5/5). Platform sweep (17/17) — DONE.
-Capabilities sweep — IN PROGRESS (4/18 — `index.md`, `configuration.md`,
-`signals/index.md`, `signals/signals.md`). Remaining: 14 capabilities
-pages + 6 design-system pages.**
+Capabilities sweep — IN PROGRESS (5/18 — `index.md`, `configuration.md`,
+`signals/index.md`, `signals/signals.md`, `signals/callbacks.md`).
+Remaining: 13 capabilities pages + 6 design-system pages.**
 
 **Capabilities sweep — convention notes (2026-05-01).** The capabilities
 directory has 18 pages (not the ~12 mentioned in the prior handoff).
@@ -65,7 +65,90 @@ here too — replace abstract "X is a shared behavior" framing with
 concrete API surface; verify claims at runtime; nav-aligned topic
 lists with substantive blurbs (not 3-word labels).
 
-Last session (2026-05-01, capabilities/signals/signals.md):
+Last session (2026-05-01, capabilities/signals/callbacks.md):
+
+- Full rewrite. Old page was 148 lines of abstract framing
+  ("What is a callback?", "Callback execution model", "Widget command
+  callbacks", "Event bindings") with **zero references to ttkbootstrap's
+  actual API surface** — no mention of `command=`, `bind()`, `add="+"`,
+  the `on_*` / `off_*` helpers, `report_callback_exception`, or even
+  the existence of the framework's helper layer. Reads like a generic
+  Tk tutorial.
+- New version leads with a 4-row at-a-glance table comparing the three
+  registration surfaces (`command=` / `widget.bind` / `widget.on_*`),
+  then per-surface concrete sections naming the actual API. Mirrors
+  the structure of `index.md` (4-row at-a-glance table) and
+  `signals.md` (lead with the API, follow with rationale).
+- Five concrete claims surfaced and verified at runtime:
+  (1) **`command=` does NOT fire on programmatic value writes** —
+  only on user invocation. Restated from index.md but with the full
+  per-widget table (Button, Toolbutton, MenuButton, DropdownButton,
+  CheckButton, Switch, CheckToggle, RadioButton, RadioToggle,
+  OptionMenu, Scale, Spinbox) and the firing condition for each
+  (Scale fires repeatedly during drag; Spinbox fires only on
+  stepping; OptionMenu's set() does not fire — but see the
+  double-fire bug in OptionMenu's own page).
+  (2) **`widget.bind(seq, fn)` without `add="+"` silently
+  *replaces* any prior binding on `seq`.** Verified at runtime:
+  `bind('<<X>>', a); bind('<<X>>', b); event_generate('<<X>>')` →
+  only `b` fires. With `add="+"`, both fire. The framework's `on_*`
+  helpers all use `add="+"` internally so mixing them with raw
+  binds is safe; mixing two raw binds is the bug. Documented as
+  the central "almost always what you want" axiom under the
+  `widget.bind` section.
+  (3) **`widget.bind` returns a string id ending in `wrapper`;
+  `signal.subscribe` returns a string id ending in `traced_callback`.**
+  Verified at runtime
+  (`fid = '4690485056wrapper'`, `sid = '4684328192traced_callback'`).
+  Useful for telling at a glance which observation surface a given
+  helper wraps when you don't have the source open.
+  (4) **The `on_* / off_*` helpers come in three callback shapes**,
+  not one: bind passthrough (cb receives event with raw `event.data`),
+  bind+enrich (cb receives event with synthesized `event.data` built
+  from widget state at firing time — e.g. `TextEntryPart.on_enter`
+  rebuilds `{value, text}` even though `<Return>` carries no data),
+  and signal subscribe (cb receives the new value, no event wrapper).
+  Documented as a 3-row table with the three flavors named explicitly
+  and an example of each. Plus a fourth shape on dialog-result
+  helpers (`MessageDialog.on_dialog_result(cb)` unwraps `event.data`
+  to pass the payload dict directly to `cb` — already on the bugs
+  list).
+  (5) **Exceptions in any callback land in
+  `tk.Tk.report_callback_exception`** — printed to stderr as the
+  standard "Exception in Tkinter callback" trace, then discarded.
+  The event loop continues. Verified at runtime
+  (`Button(command=lambda: raise ValueError('boom!')).invoke()`
+  prints the trace and the UI keeps running). Override by
+  reassigning `app.report_callback_exception = handler`. Cross-link
+  to `signals.md`'s `immediate=True` swallow-asymmetry warning.
+- **One real bug surfaced and added to the bugs list:**
+  `widget.unbind(seq, fid)` is broken for `add="+"` bindings on
+  Python 3.13 / Tk 8.6. The CPython 3.13 `Misc._unbind`
+  (`tkinter/__init__.py` ~line 1450) filters bind script lines for
+  the prefix `if {"[<fid> ` — the wrapper form Tk uses for
+  non-`add` bindings. Bindings registered with `add="+"` produce
+  raw script lines starting with the bare fid, so the filter never
+  matches: no lines are removed but `Tcl.deletecommand(fid)` still
+  runs, leaving dangling references in the bind script. Subsequent
+  `event_generate(seq)` then dispatches to the deleted proc and
+  aborts the entire binding sequence silently — *every* handler on
+  `seq` (not just the targeted one) stops firing. Verified on
+  Python 3.13.9 / Tk 8.6 with two `add="+"` bindings, one
+  `unbind(seq, fid)` call, then `event_generate` produces zero
+  invocations. **Every `off_*` helper in the framework is implicated**
+  because every `on_*` helper passes `add="+"` (or `add=True`). The
+  documented workaround is `widget.unbind(seq)` to detach everything
+  and re-bind the handlers you want to keep, or hold a single
+  dispatcher closure and switch its body via a flag instead of
+  unbinding. This is technically a CPython tkinter bug, not a
+  ttkbootstrap bug, but it impacts the entire framework's `off_*`
+  surface today and is worth flagging at the framework level.
+  Added to the bugs list as a `!!! danger` block.
+- Snippet check: 16 snippets, 1 executed, 0 failures. All 7
+  cross-links resolve (`index.md`, `signals.md`,
+  `virtual-events.md`, three platform pages, one widget page).
+
+Earlier session (2026-05-01, capabilities/signals/signals.md):
 
 - Targeted edits over the existing page (it was already structurally
   sound). Added a new "Constructing a signal" section that surfaces
@@ -194,7 +277,7 @@ Pages to review (capabilities sweep, 18 total):
 - [x] `index.md` — section landing
 - [x] `signals/index.md` — Signals & Events overview
 - [x] `signals/signals.md` — `Signal` class
-- [ ] `signals/callbacks.md` — command/bind/subscribe
+- [x] `signals/callbacks.md` — command/bind/subscribe
 - [ ] `signals/virtual-events.md` — virtual events
 - [ ] `layout/index.md` — layout overview
 - [ ] `layout/containers.md` — Frame family
@@ -4306,6 +4389,30 @@ primitives.
   (breaking change), or add an explicit `master` positional /
   keyword-only param so the wrong call shape raises a clearer
   error. (Surfaced by windows.md rewrite, 2026-05-01.)
+- **`widget.unbind(seq, fid)` is broken for `add="+"` bindings on
+  Python 3.13 / Tk 8.6.** This is a CPython tkinter bug, not a
+  ttkbootstrap bug, but it impacts every `off_*` helper in the
+  framework because every `on_*` helper passes `add="+"` (or
+  `add=True`). Cause: `Misc._unbind` in CPython 3.13's
+  `tkinter/__init__.py` filters bind script lines for the prefix
+  `if {{"[<fid> ` — the wrapper form Tk uses for non-`add`
+  bindings (`if {{"[<fid> %d %# ...]" == "break"}} break`). Bindings
+  registered with `add="+"` produce raw script lines starting with
+  the bare fid (`<fid> %d %# ...`), so the prefix-match never finds
+  them: no lines are removed but `Tcl.deletecommand(fid)` still
+  runs, leaving dangling references in the bind script. Subsequent
+  `event_generate(seq)` then dispatches to the deleted proc and
+  aborts the entire binding sequence silently — every handler on
+  `seq` (not just the targeted one) stops firing. Verified on
+  Python 3.13.9 / Tk 8.6: two `add="+"` bindings → one
+  `unbind(seq, fid)` → zero invocations on event_generate. The
+  documented workaround in `callbacks.md` is `widget.unbind(seq)`
+  to detach everything and re-bind the handlers you want to keep,
+  or hold a single dispatcher closure and switch its body via a
+  flag instead of unbinding. Worth tracking upstream
+  (CPython issue) and considering a framework-side override of
+  `Misc._unbind` that handles both line forms. (Surfaced by
+  callbacks.md rewrite, 2026-05-01.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
