@@ -26,6 +26,21 @@ virtual events, see [Signals & Events](index.md).
 
 ---
 
+## Constructing a signal
+
+`Signal(value, name=None, master=None)` accepts three arguments:
+
+| Argument | Meaning |
+|---|---|
+| `value` | The initial value. Its **runtime type** picks the backing `tk.Variable` (see below) and is stored as `signal.type` for the lifetime of the signal. |
+| `name` | Optional Tcl variable name. Auto-generated as `"SIG<n>"` when omitted; pass an explicit name to make the variable findable from Tcl or to share a name across processes. |
+| `master` | Optional `tk.Misc` to own the underlying variable. Defaults to the implicit root window — the same fallback `tk.StringVar()` uses. |
+
+The signal must be created **after** an `App` (or another `tk.Tk`)
+exists, since `tk.Variable` constructors require a default root.
+
+---
+
 ## Backing variable
 
 `Signal(value)` chooses its backing `tk.Variable` from the *type* of
@@ -60,9 +75,10 @@ ttk.Label(app, textvariable=name.var).pack()
 app.destroy()
 ```
 
-`Signal.from_variable(tk_var)` adapts a pre-existing `tk.Variable` —
-useful for wrapping a variable Tk created on your behalf (e.g. a
-widget's auto-built variable) without re-allocating it:
+`Signal.from_variable(tk_var, *, name=None, coerce=None)` adapts a
+pre-existing `tk.Variable` — useful for wrapping a variable Tk created
+on your behalf (e.g. a widget's auto-built variable) without
+re-allocating it:
 
 ```python
 import tkinter as tk
@@ -79,8 +95,11 @@ print(raw.get())                            # 'world' — same variable
 app.destroy()
 ```
 
-The Python-side type can be overridden via `coerce=`; otherwise it is
-inferred from the variable subclass.
+`coerce=` overrides the inferred Python type — for instance, treat an
+`IntVar` as `Signal[str]` if you only ever read the stringified form.
+Without it, the type is inferred from the variable subclass via the
+same table as the constructor (and `BooleanVar` → `bool`,
+`IntVar` → `int`, etc.).
 
 ---
 
@@ -140,6 +159,13 @@ This matters for derivation patterns: a transform that maps to a
 narrower domain (e.g. `int → bool`) won't fire downstream listeners
 when the input changes within an equivalence class.
 
+`Signal` proxies attribute lookups to its backing variable through
+`__getattr__`, so any `tk.Variable` method works directly on the
+signal — `signal.trace_info()`, `signal.trace_add(...)`, and
+`signal.trace_remove(...)` all reach through to the underlying
+`tk.Variable`. Use this sparingly; the framework already exposes
+`subscribe` / `unsubscribe` for the common path.
+
 ---
 
 ## Subscribing
@@ -165,7 +191,8 @@ name.set("Bob")          # silent
 `subscribe` returns a trace id (`fid`), a string assigned by Tk that
 identifies the underlying `trace_add` registration. Pass the id back
 to `unsubscribe(fid)` to detach. `unsubscribe_all()` detaches every
-subscriber on the signal.
+subscriber on the signal. Both `unsubscribe(unknown_fid)` and a
+double-`unsubscribe(fid)` are silent — neither raises.
 
 Pass `immediate=True` to also invoke the callback once at registration
 time with the current value — useful for "render now, then react to
@@ -179,6 +206,27 @@ name.subscribe(lambda v: print("rendered:", v), immediate=True)
 # rendered: Alice  (fires synchronously inside subscribe)
 ```
 
+Subscribing the **same callable twice** registers two distinct traces.
+Both fids are tracked, both fire on every write, and detaching one
+leaves the other live:
+
+```python
+import ttkbootstrap as ttk
+
+name = ttk.Signal("")
+def react(v): print("hit:", v)
+
+fid1 = name.subscribe(react)
+fid2 = name.subscribe(react)
+name.set("Alice")           # hit: Alice  (twice)
+name.unsubscribe(fid1)
+name.set("Bob")             # hit: Bob    (once)
+```
+
+This is intentional — composite widgets that wire the same handler
+through multiple paths rely on it. If you want exactly one
+subscription per callable, dedupe at the call site.
+
 !!! note "Dispatch order is reverse insertion order"
     Tk traces fire in the order they were *registered*, but Tcl
     walks them in reverse — the last subscriber added is the first
@@ -187,6 +235,16 @@ name.subscribe(lambda v: print("rendered:", v), immediate=True)
     Don't rely on subscription order for ordering side effects;
     use a single coordinator subscriber that dispatches in the
     order you want.
+
+!!! warning "Exception handling differs between `immediate=True` and normal dispatch"
+    Exceptions raised inside the **immediate** invocation are
+    silently swallowed — the subscription still registers and the
+    error is lost. Exceptions raised inside a **write-driven**
+    dispatch propagate to Tk's `report_callback_exception` and
+    print to stderr (the standard "Exception in Tkinter callback"
+    trace). Don't rely on `immediate=True` to surface errors at
+    registration time; wrap the callback yourself if you need to
+    fail loudly.
 
 The callback runs synchronously on the Tk thread inside the variable
 write. Long-running work must be deferred — schedule with `after()`,
