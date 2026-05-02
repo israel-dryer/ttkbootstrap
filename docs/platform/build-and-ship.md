@@ -120,10 +120,23 @@ Shipping a desktop app usually requires bundling:
 
 - **icons** (app icon + in-app icon packs)
 - **themes** (custom theme palettes, additional theme files)
-- **images** (PNG/SVG sources, runtime-generated caches if any)
-- **localization** (message catalogs / language packs)
+- **images** (PNG/SVG sources)
+- **localization** (compiled message catalogs)
 
-If you’re using ttkbootstrap’s built-in asset systems, the CLI/build integration should include the relevant folders.
+The default `[build.datas].include` pattern in `ttkb.toml` covers
+the standard locations:
+
+```toml
+[build.datas]
+include = ["assets/**", "locales/**", "themes/**", "ttkb.toml"]
+```
+
+Add additional patterns if you keep assets elsewhere. Every path
+in the source tree must also be reachable at runtime through a
+helper like `resource_path` — see [Project Structure → Resolving
+asset paths](project-structure.md#resolving-asset-paths) for the
+canonical pattern. PyInstaller's onefile mode extracts assets to
+a temp directory at launch; hardcoded paths break.
 
 !!! link "See [Capabilities → Icons & Images](../capabilities/icons/index.md) for how icons and images behave at runtime (DPI, caching, recoloring)."
 
@@ -152,19 +165,28 @@ ttk.Button(app, text="button.save")
 
 ## App icon and branding
 
-Most apps should ship with:
+Set the app icon (visible in the taskbar / dock / Alt-Tab) by
+pointing `[build.icon].path` at your file:
 
-- an **application icon** (window/taskbar)
-- a **brand mark** (optional)
-- optional installer metadata (publisher, description)
+```toml
+[build.icon]
+path = "assets/icon.ico"     # Windows
+# path = "assets/icon.icns"  # macOS
+# path = "assets/icon.png"   # Linux desktop file
+```
 
-Your CLI can provide a default icon that users can replace.
+If `path` is unset, `ttkb build` uses the bundled ttkbootstrap
+icon. Per-platform icon files require per-platform formats:
 
-If you support per-platform icons:
+- **Windows** — `.ico` (multi-resolution recommended: 16, 32, 48,
+  256 px)
+- **macOS** — `.icns` (use `iconutil` from `.iconset/`)
+- **Linux** — `.png` (referenced from the `.desktop` file when you
+  package as `.deb` / Flatpak)
 
-- Windows: `.ico`
-- macOS: `.icns`
-- Linux: `.png` (desktop file icon)
+Branding metadata for installers (publisher, description) lives
+under your installer-builder's config (Briefcase's `pyproject.toml`,
+WiX, etc.), not in `ttkb.toml`.
 
 ---
 
