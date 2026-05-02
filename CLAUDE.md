@@ -34,15 +34,16 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, primitives sweep 5/5 — sweep closed)
+### Current handoff (2026-05-01, platform sweep 17/17 — sweep closed)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
-the dialogs sweep (11/11), inputs sweep (11/11), data-display sweep
-(8/8), layout sweep (12/12), navigation sweep (5/5), overlays sweep
-(2/2), selection sweep (9/9), views sweep (3/3), and primitives sweep
-(5/5) are all complete. Pass 2 widget pages — DONE. Remaining for
-Pass 2: platform / capabilities / design-system pages.**
+all widget-page sweeps are complete (dialogs 11/11, inputs 11/11,
+data-display 8/8, layout 12/12, navigation 5/5, overlays 2/2,
+selection 9/9, views 3/3, primitives 5/5). The platform sweep
+(17/17) is now also complete. Pass 2 widget pages — DONE.
+Pass 2 platform pages — DONE. Remaining for Pass 2: capabilities
+(~12 pages) and design-system (~6 pages).**
 
 **Cross-cutting feedback shipped this session:** the user signaled
 that Canvas and Text "warrant more expansive write-ups given their
@@ -83,6 +84,36 @@ sweep. One inline `**Theming.**` lead-in on `data-display/label.md`
 was also normalized for consistency. "Theming" mentions that point
 at the user-guide `Theming` page (Related-guides bullets etc.) were
 left alone — those are guide names, not section labels.
+
+**Platform sweep — convention notes (2026-05-01).** Architectural
+pages (`platform/*`, `capabilities/*`, `design-system/*`) don't follow
+the widget templates and aren't in `CATEGORY_TEMPLATE_MAP`. The
+editorial sweep produced one consistent pattern across all 17
+platform pages worth applying to capabilities and design-system:
+
+1. **Replace abstractions with verified-at-runtime facts.** Almost
+   every "thin" platform page led with generic "Tk has an event
+   loop" / "ttk has styles" framing. The rewrites lead with concrete
+   API surface (default bindtag tuple, resolved style names, three
+   window classes) verified by running code at the start of the
+   session.
+2. **Snippets are runtime-validated.** Use `tools/check_doc_snippets.py
+   --run --file <path>` after every rewrite. The check caught one
+   genuine bug: the page incorrectly showed `ttk.Toplevel(parent,
+   title=...)` — `Toplevel.__init__` takes `title` as the first
+   positional argument, with master through `**kwargs`. Worth
+   cross-checking when widgets reference Toplevel construction.
+3. **Cross-link the surfaced bugs.** Where a platform page describes
+   behavior already on the bugs list (e.g. the `App.override_redirect`
+   / `Toplevel.overrideredirect` / `AppShell.frameless` naming
+   inconsistency), name the bug explicitly with file:line context so
+   readers landing here see the connection.
+
+Two pages required no edits — `accessibility.md` (Phase 4C) and
+`cli.md` (PR #1051) were already in the right shape. `threading-and-
+async.md` (Phase 4A) and `platform-differences.md` (Phase 4B) needed
+only light touch-ups. The other 13 got rewrites or substantial
+expansions.
 
 ### Template arc (apply to every editorial sweep)
 
@@ -2831,6 +2862,89 @@ Pages to review (canonical anchor: `entry.md`):
 - [x] `text.md` — multi-line text primitive (expanded arc per user note)
 - [x] `canvas.md` — drawing primitive (expanded arc per user note)
 
+### Platform pages (`docs/platform/`, 17 pages) — DONE 17/17 (2026-05-01)
+
+Architectural pages — not in `CATEGORY_TEMPLATE_MAP`, no template
+enforcement. The structural convention that emerged: most pages
+benefit from replacing abstract "Tk has X" framing with concrete,
+verified-at-runtime facts about ttkbootstrap's actual API surface.
+
+**Cross-cutting pattern applied:** every page rewritten in this
+sweep grounds claims in runtime checks (capturing actual style
+names, default bindtag tuples, autostyle wrapper coverage, etc.).
+Snippets all pass `tools/check_doc_snippets.py --run`.
+
+Per-page treatment (commit hashes listed; see commit messages for
+the full per-page detail):
+
+| Page | Commit | Treatment | Snippets |
+|---|---|---|---|
+| `index.md` | `3c59ed9` | Rewrite — topic list rebuilt to match `zensical.toml` nav (added 6 missing pages), broken-indentation list fixed | 0 |
+| `tk-vs-ttk.md` | `65dc809` | Rewrite — actual import surface (subclass vs identity), 16 autostyled Tk classes, `inherit_surface` override trap | 3 |
+| `event-loop.md` | `d7f63cb` | Rewrite — fixed wrong claim that `wait_*` doesn't recurse the loop, added queue model, `update` vs `update_idletasks` | 4 |
+| `events-and-bindings.md` | `f12d6ea` | Rewrite — bindtag walk grounded in runtime tuple, `add="+"` trap, Shortcuts cross-platform `Mod`, non-bubbling virtual events | 10 |
+| `geometry-and-layout.md` | `e3df73b` | Rewrite — full pack/grid/place mechanics, `winfo_reqwidth` vs `winfo_width`, propagation rules | 9 |
+| `widget-lifecycle.md` | `91e5b8c` | Rewrite — three-phase model (created/managed/mapped), `<<ThemeChanged>>` as lifecycle event, image GC pin idiom | 7 |
+| `ttk-styles-elements.md` | `118a1cb` | Rewrite — resolved style name format `bs[<hash>].<accent>.<orient>.<variant>.T<Class>`, `CONTAINER_CLASSES` / `ORIENT_CLASSES` reroute rules, captured `_token` attributes for debugging | 9 |
+| `images-and-dpi.md` | `441eae1` | Targeted — full `Image` utility surface, `BootstrapIcon`, intro tightening; per-OS DPI sections kept (Phase 4D) | 9 |
+| `platform-differences.md` | `8ca3252` | Light — Quit shortcut row added; cross-link to events-and-bindings; minor tightening (Phase 4B was already comprehensive) | 6 |
+| `accessibility.md` | — | Verified, no edits (Phase 4C is already in good shape) | 4 |
+| `windows.md` | `d5eea28` | Rewrite — three window classes (App / Toplevel / AppShell), frameless-kwarg inconsistency table, modality split (grab vs wait), `WM_DELETE_WINDOW`, `<Destroy>` filter pattern | 8 |
+| `threading-and-async.md` | — | Verified, no edits (Phase 4A is already in good shape) | 8 |
+| `debugging.md` | `62b2935` | Targeted — fixed mislabeled `theme_names()` comment; expanded style-debugging vocabulary (Style.layout / lookup / map); added captured token attributes section | 9 |
+| `performance.md` | `fe4db05` | Rewrite — five ranked bottlenecks (blocking I/O, eager construction, layout thrashing, image regen, theme switch), lazy construction patterns, measuring via `time.perf_counter` / cProfile | 8 |
+| `cli.md` | — | Verified, no edits (PR #1051 left it complete and accurate) | 1 |
+| `project-structure.md` | `e013934` | Rewrite — fixed two broken links to nonexistent `docs/build/` pages; CLI-first reframing (canonical `ttkb start` layouts first, manual layout as alternative); added `ttkb.toml` section | 4 |
+| `build-and-ship.md` | `271f46b` | Targeted — `[build.datas].include` pattern for assets, `[build.icon].path` schema with per-OS format notes; per-OS shipping sections kept (Phase 4E) | 1 |
+
+Bugs surfaced during the platform sweep (added to the bugs list):
+
+- **Toplevel.__init__ signature footgun.** `Toplevel.__init__(self,
+  title="ttkbootstrap", ...)` takes `title` as the first positional
+  argument; the master/parent flows through `**kwargs` and is
+  passed through to `tkinter.Toplevel.__init__`. Net effect:
+  `ttk.Toplevel(app, title="...")` raises
+  `TypeError: __init__() got multiple values for argument 'title'`
+  because `app` resolves to `title` positionally first. Caught by
+  the runtime snippet check on `windows.md`. Workaround: always
+  pass `master=app` as a kwarg. The unusual signature is at
+  `runtime/toplevel.py:30-47` — every other window class
+  (`App`, `AppShell`) puts the master/parent first.
+- **`docs/platform/project-structure.md` had two broken admonition
+  links** to `../build/app-runtime.md` and
+  `../build/app-configuration.md` — there is no `docs/build/`
+  directory. Fixed in the project-structure rewrite. Reference
+  links elsewhere should be checked next sweep — running
+  `tools/check_doc_links.py` would surface any others.
+- **The `inherit_surface=True` overrides explicit `surface=`**
+  bug surfaced earlier on text.md and canvas.md was confirmed
+  to be a wrapper-level issue at `style/bootstyle.py:575-578`,
+  affecting every Tk-class autostyle widget (Frame, Label,
+  Button, Entry, Text, Canvas, Listbox, Menu, etc.). Only Text
+  and Canvas were verified at runtime; documented in
+  `tk-vs-ttk.md` as a wrapper-level fact for users. Already on
+  the bugs list.
+
+Pages reviewed (in commit order):
+
+- [x] `index.md` — section landing
+- [x] `tk-vs-ttk.md` — Tk vs ttk widget systems
+- [x] `event-loop.md` — mainloop, after, queues
+- [x] `events-and-bindings.md` — bindtags, scopes, add="+"
+- [x] `geometry-and-layout.md` — pack/grid/place
+- [x] `widget-lifecycle.md` — created/managed/mapped
+- [x] `ttk-styles-elements.md` — resolved style names, builders
+- [x] `images-and-dpi.md` — Image utility, BootstrapIcon, per-OS DPI
+- [x] `platform-differences.md` — per-OS behavior matrix
+- [x] `accessibility.md` — keyboard nav, focus rings (verified)
+- [x] `windows.md` — App / Toplevel / AppShell
+- [x] `threading-and-async.md` — worker patterns (verified)
+- [x] `debugging.md` — logging, exceptions, style introspection
+- [x] `performance.md` — five bottleneck patterns
+- [x] `cli.md` — `ttkb` command surface (verified)
+- [x] `project-structure.md` — CLI-first layout
+- [x] `build-and-ship.md` — packaging + shipping
+
 ### Workflow (one page per session)
 
 1. Read the page end-to-end.
@@ -4011,6 +4125,21 @@ primitives.
   document the precondition that `surface=` requires
   `inherit_surface=False`. (Surfaced by text.md rewrite,
   2026-05-01.)
+- `Toplevel.__init__` has an unusual signature footgun: the **first
+  positional argument is `title`**, not `master` /  parent. The
+  master/parent flows through `**kwargs` and is forwarded to
+  `tkinter.Toplevel.__init__` (`runtime/toplevel.py:30-73`). Net
+  effect: `ttk.Toplevel(app, title="...")` raises
+  `TypeError: __init__() got multiple values for argument 'title'`
+  because `app` resolves positionally to `title` first. Verified at
+  runtime via the snippet check on `windows.md`. Workaround: always
+  pass the parent as `master=app` (kwarg). Inconsistent with `App`
+  and `AppShell` (which also take `title` as a kwarg) and with the
+  raw `tkinter.Toplevel` (which takes `master` as the first
+  positional). Either reorder the signature to put `master` first
+  (breaking change), or add an explicit `master` positional /
+  keyword-only param so the wrong call shape raises a clearer
+  error. (Surfaced by windows.md rewrite, 2026-05-01.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
