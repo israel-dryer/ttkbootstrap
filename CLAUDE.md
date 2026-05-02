@@ -34,16 +34,16 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, capabilities sweep — 3/18; signals/index.md done)
+### Current handoff (2026-05-01, capabilities sweep — 4/18; signals/signals.md done)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 all widget-page sweeps are complete (dialogs 11/11, inputs 11/11,
 data-display 8/8, layout 12/12, navigation 5/5, overlays 2/2,
 selection 9/9, views 3/3, primitives 5/5). Platform sweep (17/17) — DONE.
-Capabilities sweep — IN PROGRESS (3/18 — `index.md`, `configuration.md`,
-`signals/index.md`). Remaining: 15 capabilities pages + 6 design-system
-pages.**
+Capabilities sweep — IN PROGRESS (4/18 — `index.md`, `configuration.md`,
+`signals/index.md`, `signals/signals.md`). Remaining: 14 capabilities
+pages + 6 design-system pages.**
 
 **Capabilities sweep — convention notes (2026-05-01).** The capabilities
 directory has 18 pages (not the ~12 mentioned in the prior handoff).
@@ -65,7 +65,58 @@ here too — replace abstract "X is a shared behavior" framing with
 concrete API surface; verify claims at runtime; nav-aligned topic
 lists with substantive blurbs (not 3-word labels).
 
-Last session (2026-05-01, capabilities/signals/index.md):
+Last session (2026-05-01, capabilities/signals/signals.md):
+
+- Targeted edits over the existing page (it was already structurally
+  sound). Added a new "Constructing a signal" section that surfaces
+  the previously-undoc `name=` and `master=` ctor kwargs and the
+  precondition that a default root must already exist (Signal cannot
+  be constructed before the App). Surfaced the `coerce=` parameter
+  on `from_variable` with a worked use case. Added a brief
+  `__getattr__`-proxy note (signal.trace_info() etc. work
+  transparently) at the end of "Reading and writing the value".
+- Three new findings surfaced in "Subscribing", all verified at
+  runtime:
+  (1) `unsubscribe(unknown_fid)` and a double-`unsubscribe(fid)`
+  are silent — `_SignalTrace.remove` (`signal.py:60-68`) swallows
+  `tk.TclError` and pops a missing fid as None. Worth knowing for
+  cleanup paths that may double-unsubscribe.
+  (2) Subscribing the **same callable twice** registers two
+  distinct fids; both fire on every write; detaching one leaves
+  the other live. Verified at runtime
+  (`subscribers count == 2` after two `subscribe(cb)` calls;
+  one `set('x')` call produces 2 invocations of `cb`). Intentional
+  per source comment at `signal.py:97` ("Map fid -> callback to
+  allow multiple subscriptions of same function") — composite
+  widgets that wire the same handler through multiple paths rely
+  on this. Documented as an intentional contract, not a bug. Tied
+  loosely to the OptionMenu `<<Change>>` double-fire bug already
+  on the bugs list — that bug is the failure mode of the same
+  feature when used unintentionally.
+  (3) **Exception handling asymmetry between `immediate=True`
+  and write-driven dispatch.** Exceptions raised during the
+  `immediate=True` invocation are silently swallowed (the
+  `try/except Exception: pass` at `signal.py:266-268`).
+  Exceptions raised during write-driven dispatch propagate to
+  Tk's `report_callback_exception` and print to stderr (the
+  standard "Exception in Tkinter callback" trace). Verified at
+  runtime: a subscriber raising `ValueError` with
+  `immediate=True` is silent at registration, but the same
+  subscriber raising `ZeroDivisionError` on a `set()` produces
+  the Tk traceback to stderr. Documented as a `!!! warning`
+  block. Worth considering as a real bug — either swallow both
+  (less likely the desirable behavior) or propagate both
+  (consistent error surfacing); the current asymmetry is
+  surprising. Not added to the bugs list since it lives at the
+  Tk dispatch boundary and the immediate path's `except` is a
+  deliberate "don't fail subscription due to callback error"
+  guard.
+- Snippet check: 16 snippets, 8 executed, 0 failures. All
+  cross-links resolve (`index.md`, `callbacks.md`,
+  `virtual-events.md`, `../configuration.md`, two
+  platform pages).
+
+Earlier session (2026-05-01, capabilities/signals/index.md):
 
 - Rewrote the Signals & Events section landing. Old page was 112 lines
   of abstract framing ("What is a callback?", "What is a signal?",
@@ -142,7 +193,7 @@ Pages to review (capabilities sweep, 18 total):
 
 - [x] `index.md` — section landing
 - [x] `signals/index.md` — Signals & Events overview
-- [ ] `signals/signals.md` — `Signal` class
+- [x] `signals/signals.md` — `Signal` class
 - [ ] `signals/callbacks.md` — command/bind/subscribe
 - [ ] `signals/virtual-events.md` — virtual events
 - [ ] `layout/index.md` — layout overview
