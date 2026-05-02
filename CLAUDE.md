@@ -34,16 +34,85 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, platform sweep 17/17 — sweep closed)
+### Current handoff (2026-05-01, capabilities sweep started — index + configuration done, 16 to go)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 all widget-page sweeps are complete (dialogs 11/11, inputs 11/11,
 data-display 8/8, layout 12/12, navigation 5/5, overlays 2/2,
-selection 9/9, views 3/3, primitives 5/5). The platform sweep
-(17/17) is now also complete. Pass 2 widget pages — DONE.
-Pass 2 platform pages — DONE. Remaining for Pass 2: capabilities
-(~12 pages) and design-system (~6 pages).**
+selection 9/9, views 3/3, primitives 5/5). Platform sweep (17/17) — DONE.
+Capabilities sweep — STARTED (2/18 — `index.md` and `configuration.md`).
+Remaining: 16 capabilities pages + 6 design-system pages.**
+
+**Capabilities sweep — convention notes (2026-05-01).** The capabilities
+directory has 18 pages (not the ~12 mentioned in the prior handoff).
+Per `zensical.toml:168-196` the nav groups them as:
+
+| Section | Pages |
+|---|---|
+| Signals & Events | `signals/index.md`, `signals/signals.md`, `signals/callbacks.md`, `signals/virtual-events.md` |
+| Layout | `layout/index.md`, `layout/containers.md`, `layout/spacing.md`, `layout/scrolling.md` |
+| Validation | `validation/index.md`, `validation/rules.md`, `validation/results.md` |
+| Icons & Images | `icons/index.md`, `icons/icons.md`, `icons/images.md` |
+| (standalone) | `layout-props.md`, `state-and-interaction.md`, `configuration.md`, `localization.md` |
+
+`docs/capabilities/` is **not** in `CATEGORY_TEMPLATE_MAP` in
+`tools/check_doc_structure.py`, so no template enforcement applies (same
+freedom as platform/, design-system/, widgets/application/, widgets/
+primitives/). The patterns that emerged from the platform sweep apply
+here too — replace abstract "X is a shared behavior" framing with
+concrete API surface; verify claims at runtime; nav-aligned topic
+lists with substantive blurbs (not 3-word labels).
+
+Last session (2026-05-01, capabilities/index.md):
+
+- Rewrote with three primary changes vs the old version:
+  (1) Topic list rebuilt to match the zensical nav. Old "Next steps"
+  listed only 4 of 7 nav sections (signals, layout, validation, icons),
+  missing `layout-props.md`, `state-and-interaction.md`,
+  `configuration.md`, and `localization.md`. New version groups all 18
+  pages under five thematic headings (Reactivity / Layout / Input and
+  feedback / Visual assets / Configuration and localization), parallel
+  to platform/index.md.
+  (2) Replaced abstract framing ("What is a capability?", "Why
+  capabilities exist", "How capabilities are implemented") with a
+  concrete "Capabilities vs Platform vs Guides" section. The old page
+  claimed "capabilities are mixins" — only true for some (e.g. the
+  `LocalizationMixin` family in `core/capabilities/`); Signals are a
+  class system, validation is a rule engine, configuration is a
+  dataclass plus widget kwargs. The collision with `reference/
+  capabilities/` (which IS literally the mixins page tree) made the
+  framing ambiguous.
+  (3) "When to read this section" now lists eight concrete questions,
+  each linking to the page that answers it — directive rather than
+  philosophical.
+- All 22 cross-links resolve. Snippet check: 113 files, 919 snippets,
+  0 failures.
+
+Earlier session (2026-04-30, capabilities/configuration.md): see
+commit `938e7fc`.
+
+Pages to review (capabilities sweep, 18 total):
+
+- [x] `index.md` — section landing
+- [ ] `signals/index.md` — Signals & Events overview
+- [ ] `signals/signals.md` — `Signal` class
+- [ ] `signals/callbacks.md` — command/bind/subscribe
+- [ ] `signals/virtual-events.md` — virtual events
+- [ ] `layout/index.md` — layout overview
+- [ ] `layout/containers.md` — Frame family
+- [ ] `layout/spacing.md` — padding, gap, density
+- [ ] `layout/scrolling.md` — ScrollView
+- [ ] `validation/index.md` — validation overview
+- [ ] `validation/rules.md` — rule types
+- [ ] `validation/results.md` — `ValidationResult`
+- [ ] `icons/index.md` — icons & images overview
+- [ ] `icons/icons.md` — `BootstrapIcon`
+- [ ] `icons/images.md` — `Image` utility
+- [ ] `layout-props.md` — pack/grid/place kwargs
+- [ ] `state-and-interaction.md` — widget state, focus, grabs
+- [x] `configuration.md` — `AppSettings` + widget kwargs
+- [ ] `localization.md` — `MessageCatalog` + `IntlFormatter`
 
 **Cross-cutting feedback shipped this session:** the user signaled
 that Canvas and Text "warrant more expansive write-ups given their
