@@ -34,19 +34,20 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, capabilities sweep — 9/18; layout/spacing.md done)
+### Current handoff (2026-05-02, capabilities sweep — 11/18; validation/index.md done — Validation sub-section started 1/3)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 all widget-page sweeps are complete (dialogs 11/11, inputs 11/11,
 data-display 8/8, layout 12/12, navigation 5/5, overlays 2/2,
 selection 9/9, views 3/3, primitives 5/5). Platform sweep (17/17) — DONE.
-Capabilities sweep — IN PROGRESS (9/18 — `index.md`, `configuration.md`,
+Capabilities sweep — IN PROGRESS (11/18 — `index.md`, `configuration.md`,
 `signals/index.md`, `signals/signals.md`, `signals/callbacks.md`,
 `signals/virtual-events.md`, `layout/index.md`, `layout/containers.md`,
-`layout/spacing.md`). Signals & Events sub-section (4/4) — DONE.
-Layout sub-section (3/4 — index + containers + spacing).
-Remaining: 9 capabilities pages + 6 design-system pages.**
+`layout/spacing.md`, `layout/scrolling.md`, `validation/index.md`).
+Signals & Events sub-section (4/4) — DONE. Layout sub-section (4/4) — DONE.
+Validation sub-section (1/3) — IN PROGRESS.
+Remaining: 7 capabilities pages + 6 design-system pages.**
 
 **Capabilities sweep — convention notes (2026-05-01).** The capabilities
 directory has 18 pages (not the ~12 mentioned in the prior handoff).
@@ -68,7 +69,118 @@ here too — replace abstract "X is a shared behavior" framing with
 concrete API surface; verify claims at runtime; nav-aligned topic
 lists with substantive blurbs (not 3-word labels).
 
-Last session (2026-05-01, capabilities/layout/spacing.md):
+Last session (2026-05-02, capabilities/validation/index.md —
+opens Validation sub-section, 1/3):
+
+- Full rewrite. Old page was 121 lines of abstract framing
+  ("What is validation?", "Validation as a capability",
+  "Rules and results", "Timing and lifecycle", "Relationship
+  to signals and callbacks", "UI feedback", "ttkbootstrap
+  guidance", "Common pitfalls") with zero references to
+  ttkbootstrap's actual validation surface — no
+  `ValidationRule`, no `ValidationResult`, no `add_validation_rule`,
+  no `<<Valid>>`/`<<Invalid>>`/`<<Validate>>`, no `Form.validate()`,
+  no `required=True` shortcut. Same pre-rewrite shape as the
+  signals/layout pages.
+- New version leads with a 4-row at-a-glance table covering the
+  full surface (`ValidationRule` / `ValidationResult` /
+  `ValidationMixin` / `Form.validate()`) across (where it lives /
+  what it does). Then per-section blurbs: adding a rule (with
+  the `required=True` constructor shortcut and the
+  `add_validation_rules([...])` replace-list path); when rules
+  fire (the 5-row trigger-defaults table, plus the 50ms debounce
+  fact and the manual-trigger escape hatch); reading the result
+  (the 3-row events table noting the `<<Validate>>` event /
+  `on_validated` helper name asymmetry, and the dict-payload
+  divergence from the rest of the on_* helpers); form-level
+  validation; "what's not here" (no async, no cross-field, no
+  `compare`, `min`/`max` only); directive cross-link section
+  with 5 questions.
+- Two bugs surfaced and verified at runtime, both new:
+  (1) **`ValidationRule('compare')` is a silent no-op.** The
+  `RuleType` literal at `core/validation/types.py:4` lists
+  `'compare'` as a supported rule type, but `ValidationRule.validate()`
+  (`core/validation/validation_rules.py:48-86`) has no `elif self.type
+  == 'compare'` branch — so `ValidationRule('compare').validate('anything')`
+  returns `is_valid=True` for any input. Either implement the
+  rule (presumably comparing against a reference value passed in
+  `params`) or remove `'compare'` from the Literal so callers get
+  a static-type error. Documented as a "What's not here" bullet
+  on the page; added to the bugs list.
+  (2) **`stringLength` accepts `min`/`max`, not `min_length`/`max_length`.**
+  The `ValidationMixin.add_validation_rule` docstring at
+  `widgets/mixins/validation_mixin.py:78` shows `min_length=5`
+  as the example kwarg, but `ValidationRule.validate` reads
+  `params.get("min", 0)` and `params.get("max", float("inf"))`
+  (`validation_rules.py:73-74`). `min_length`/`max_length`
+  are silently swallowed into `params` and never read; the
+  rule falls back to its default range and accepts everything.
+  Verified at runtime:
+  `ValidationRule('stringLength', min=5).validate('abc').is_valid`
+  → `False`; `ValidationRule('stringLength', min_length=5).validate('abc').is_valid`
+  → `True`. Either fix the docstring example to `min=`/`max=` or
+  accept both spellings in `validate()`. Added to the bugs list.
+- Verified the on_valid/on_invalid/on_validated callback shape
+  at runtime — they receive the **payload dict directly** (not
+  a Tk event with `.data`), confirming the asymmetry already on
+  the bugs list and now documented as a "deliberate divergence"
+  in the page.
+- Snippet check: 6 snippets, 1 executed, 0 failures. All 8
+  cross-links resolve (siblings: `rules.md`, `results.md`;
+  callbacks: `signals/callbacks.md`; widgets:
+  `dialogs/formdialog.md`, `inputs/textentry.md`,
+  `inputs/numericentry.md`, `inputs/dateentry.md`,
+  `inputs/spinnerentry.md`).
+- **Validation sub-section status: 1/3** — `index.md` done.
+  Next pages in the sweep: `capabilities/validation/rules.md`,
+  then `capabilities/validation/results.md`.
+
+Earlier session (2026-05-02, capabilities/layout/scrolling.md —
+final layout page, sub-section closed 4/4):
+
+- Full rewrite. Old page was 124 lines of abstract framing
+  ("Scrolling as a layout concern", "Scrollable containers",
+  "Content size and updates", "Vertical and horizontal
+  scrolling", "Mouse wheel handling", "Performance
+  considerations", "ttkbootstrap guidance", "Common pitfalls")
+  with zero references to ttkbootstrap's actual scrolling
+  surface — no `ScrollView`, no `Scrollbar`, no
+  `xscrollcommand`/`yscrollcommand` protocol, no
+  `scroll_direction`, no `scrollbar_visibility`, no
+  `ScrolledText`. Same generic-Tk-tutorial shape as the other
+  pre-rewrite layout pages.
+- New version leads with a 3-row at-a-glance table covering the
+  three scroll-path categories (built-in widget scrolling /
+  ScrollView for arbitrary widget trees / pre-bundled
+  composites). Then per-section blurbs: the two-way scrollbar
+  protocol (`command=` + `xscrollcommand=`/`yscrollcommand=`)
+  with the central "wiring only one half breaks one direction
+  silently" axiom; ScrollView mechanics with the four
+  framework-specific gotchas (parent-on-`sv.canvas` not `sv`;
+  auto scrollregion via `<Configure>`; per-instance bindtag
+  for normalized mousewheel; gutter reservation in `hover` and
+  `scroll` modes); pre-bundled scrollers; choosing an axis;
+  pitfalls.
+- All claims grounded in either the prior `scrollview.md`
+  sweep notes (verified at runtime in that session) or
+  on-page source reads — no new runtime verification needed
+  this session because ScrollView's behavior was already
+  tested thoroughly during the widgets sweep. The new content
+  rephrases that knowledge for the capabilities-page audience
+  (who arrived from the layout-overview path, not the widget
+  page) and emphasizes the protocol contract and choosing-
+  the-right-path framing.
+- Snippet check: 2 snippets, 2 executed, 0 failures. All 9
+  cross-links resolve (siblings: `containers.md`; widgets:
+  `scrollview.md`, `scrollbar.md`, `scrolledtext.md`,
+  `tableview.md`, `treeview.md`, `listview.md`,
+  `canvas.md`; platform: `events-and-bindings.md`).
+- **Layout sub-section is now complete** (4/4 pages done in
+  nav order). Next sub-section in the sweep: Validation
+  (3 pages — `validation/index.md`, `validation/rules.md`,
+  `validation/results.md`).
+
+Earlier session (2026-05-01, capabilities/layout/spacing.md):
 
 - Full rewrite. Old page was 122 lines of abstract framing
   ("Types of spacing", "Padding vs margins", "Consistent
@@ -542,8 +654,8 @@ Pages to review (capabilities sweep, 18 total):
 - [x] `layout/index.md` — layout overview
 - [x] `layout/containers.md` — Frame family
 - [x] `layout/spacing.md` — padding, gap, density
-- [ ] `layout/scrolling.md` — ScrollView
-- [ ] `validation/index.md` — validation overview
+- [x] `layout/scrolling.md` — ScrollView
+- [x] `validation/index.md` — validation overview
 - [ ] `validation/rules.md` — rule types
 - [ ] `validation/results.md` — `ValidationResult`
 - [ ] `icons/index.md` — icons & images overview
@@ -4673,6 +4785,38 @@ primitives.
   (CPython issue) and considering a framework-side override of
   `Misc._unbind` that handles both line forms. (Surfaced by
   callbacks.md rewrite, 2026-05-01.)
+- **`ValidationRule('compare')` is a silent no-op.** The `RuleType`
+  literal at `core/validation/types.py:4` lists `'compare'` as a
+  supported rule type alongside `'required'`, `'email'`, `'pattern'`,
+  `'stringLength'`, and `'custom'`, but `ValidationRule.validate()`
+  (`core/validation/validation_rules.py:48-86`) has no `elif self.type
+  == 'compare'` branch. Net effect: the construction succeeds, the
+  rule joins the widget's rule list normally, and every call to
+  `rule.validate(value)` falls through to the `return ValidationResult
+  (True)` at line 86 — so a `'compare'` rule reports every input as
+  valid, regardless of what it was supposed to compare against.
+  Verified at runtime: `ValidationRule('compare').validate('anything').is_valid`
+  → `True`. Either implement the rule (presumably comparing against
+  a reference value passed in `params`, e.g. `func`-style or a
+  named widget reference) or remove `'compare'` from the Literal so
+  IDEs and type-checkers reject the call shape. (Surfaced by
+  validation/index.md rewrite, 2026-05-02.)
+- **`ValidationRule('stringLength', min_length=N, max_length=N)` is
+  silently ignored.** The rule's `validate()` method reads
+  `params.get("min", 0)` and `params.get("max", float("inf"))`
+  (`core/validation/validation_rules.py:73-74`), so passing
+  `min_length` / `max_length` (the names used in the
+  `ValidationMixin.add_validation_rule` docstring example at
+  `widgets/mixins/validation_mixin.py:78`, `min_length=5`) writes
+  the values into `params` but never reads them — the rule falls back
+  to its default `min=0` / `max=∞` and accepts any string. Verified
+  at runtime: `ValidationRule('stringLength', min=5).validate('abc').is_valid`
+  → `False` (the correct, working call); `ValidationRule('stringLength',
+  min_length=5).validate('abc').is_valid` → `True` (silently
+  permissive). Either fix the docstring example to use `min=`/`max=`,
+  or accept both spellings in `validate()` so the docstring example
+  works as written. (Surfaced by validation/index.md rewrite,
+  2026-05-02.)
 
 **Renderer conventions** (when authoring new factories — read the
 existing `docs_scripts/shots/*.py` for live examples):
