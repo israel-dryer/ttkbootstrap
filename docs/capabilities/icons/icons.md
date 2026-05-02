@@ -32,10 +32,13 @@ style rebuild. The style builder for that widget class then asks
 
 The framework ships exactly one icon provider:
 **`_TtkBootstrapIconProvider`**, defined at
-`style/bootstyle_builder_base.py:21-45`. It is a thin subclass of
-`ttkbootstrap_icons_bs.provider.BootstrapFontProvider` that overrides the
-`y_bias` to `0.02` for better vertical alignment of icons against text in
-ttkbootstrap buttons.
+`style/bootstyle_builder_base.py:21-45`. It bypasses
+`BootstrapFontProvider.__init__` and calls `BaseFontProvider.__init__`
+directly so the framework can pin the `y_bias`, `default_style`, and
+`styles` map explicitly. The pinned `y_bias` is `0.02`, which matches the
+upstream `BootstrapFontProvider` default — the override exists so the
+constant lives in framework code rather than depending on an upstream
+default that could shift.
 
 The provider is registered lazily — `_ensure_icon_provider` runs on the
 first call to `_image_for` (which happens the first time a widget with an
@@ -167,9 +170,10 @@ runs (registered at construction by the bootstyle wrapper). That tears
 down and recomputes the resolved style key, which re-runs
 `map_stateful_icons` with a fresh `foreground_spec` matching the new
 theme — and the icon images are regenerated at the new colors. The cget
-round-trip on `icon=` survives unchanged: pass a string and `cget('icon')`
-returns a string; pass a dict and `cget('icon')` returns the normalized
-dict.
+round-trip preserves the original spec shape: pass a string and
+`cget('icon')` returns that string; pass a dict and `cget('icon')` returns
+the dict you passed (the DPI-scaled `size` and other normalizations
+happen inside `map_stateful_icons`, not on the stored config value).
 
 !!! danger "Theme tokens crash when supplied as `IconSpec.color`"
     `Button(icon={'name': 'star', 'color': 'primary'})` raises
@@ -242,12 +246,15 @@ The cache is **rebuilt on every style rebuild**, which fires on:
 - Any other `configure_style_options(...)` write that triggers
   `rebuild_style()`.
 
-Because the cache is local to `map_stateful_icons`, two widgets that
-display the same icon at the same size and color do **not** share a
-`PhotoImage` — each gets its own. The redundancy is by design: ttk owns
-each widget's element images via the resolved style, and the per-rebuild
-local cache keeps the image lifetime bound to the style rebuild that
-created it.
+Sharing across widgets happens at the **ttk style layer**, not at the
+`PhotoImage` layer. Two widgets with identical accent / variant /
+`style_options` / icon resolve to the same `bs[<hash>].…` style key —
+that style is registered with ttk once, and every widget pointing at it
+shows the same image element. Two widgets with *different* resolved
+style keys (different accent, different surface, different size, etc.)
+each trigger their own `map_stateful_icons` call and end up with
+independently-allocated `PhotoImage` objects. The per-call cache exists
+to deduplicate within a single rebuild, not across widgets.
 
 For application-managed images outside the icon pipeline (logos,
 photographs, custom raster assets) — see [Images](images.md) and the

@@ -34,21 +34,22 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-02, capabilities sweep — 14/18; icons/index.md done — Icons & Images sub-section opened 1/3)
+### Current handoff (2026-05-02, capabilities sweep — 15/18; icons/icons.md done — Icons & Images sub-section 2/3)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 all widget-page sweeps are complete (dialogs 11/11, inputs 11/11,
 data-display 8/8, layout 12/12, navigation 5/5, overlays 2/2,
 selection 9/9, views 3/3, primitives 5/5). Platform sweep (17/17) — DONE.
-Capabilities sweep — IN PROGRESS (14/18 — `index.md`, `configuration.md`,
+Capabilities sweep — IN PROGRESS (15/18 — `index.md`, `configuration.md`,
 `signals/index.md`, `signals/signals.md`, `signals/callbacks.md`,
 `signals/virtual-events.md`, `layout/index.md`, `layout/containers.md`,
 `layout/spacing.md`, `layout/scrolling.md`, `validation/index.md`,
-`validation/rules.md`, `validation/results.md`, `icons/index.md`).
+`validation/rules.md`, `validation/results.md`, `icons/index.md`,
+`icons/icons.md`).
 Signals & Events sub-section (4/4) — DONE. Layout sub-section (4/4) — DONE.
-Validation sub-section (3/3) — DONE. Icons & Images sub-section (1/3).
-Remaining: 4 capabilities pages + 6 design-system pages.**
+Validation sub-section (3/3) — DONE. Icons & Images sub-section (2/3).
+Remaining: 3 capabilities pages + 6 design-system pages.**
 
 **Capabilities sweep — convention notes (2026-05-01).** The capabilities
 directory has 18 pages (not the ~12 mentioned in the prior handoff).
@@ -70,7 +71,78 @@ here too — replace abstract "X is a shared behavior" framing with
 concrete API surface; verify claims at runtime; nav-aligned topic
 lists with substantive blurbs (not 3-word labels).
 
-Last session (2026-05-02, capabilities/icons/index.md —
+Last session (2026-05-02, capabilities/icons/icons.md —
+2/3 in Icons & Images sub-section):
+
+- Targeted accuracy pass — page was already structurally
+  sound (Provider resolution / State integration /
+  Theme-driven coloring / DPI scaling / Caching arc; real
+  TTK state expressions; bug-list cross-reference for the
+  theme-token PIL crash). Three precision items fixed
+  vs the prior version, all surfaced by runtime checks:
+  (1) **`cget('icon')` does not return the normalized
+  dict** — it returns the *original* dict the user passed.
+  Verified: `Button(icon={'name': 'gear'}).cget('icon')`
+  returns `{'name': 'gear'}` (no `size` key added);
+  `Button(icon={'name': 'gear', 'size': 24}).cget('icon')`
+  returns `{'name': 'gear', 'size': 24}` (size NOT
+  DPI-scaled at the cget boundary). The DPI scaling and
+  default-size injection happen inside
+  `map_stateful_icons` on the spec passed to
+  `_image_for`, not on the stored config. Reworded the
+  Theme-driven coloring section's cget claim.
+  (2) **`_TtkBootstrapIconProvider`'s `y_bias=0.02`
+  matches the `BootstrapFontProvider` default** (verified:
+  both `_TtkBootstrapIconProvider().y_bias` and
+  `BootstrapFontProvider().y_bias` return 0.02). The
+  source comment at `style/bootstyle_builder_base.py:24-25`
+  claims "ttkbootstrap buttons need y_bias=0.08 for proper
+  vertical alignment of icons with text" but the constant
+  `_ICON_Y_BIAS = 0.02` contradicts that comment — looks
+  like an incomplete refactor. Either way, the page now
+  describes the provider as bypassing
+  `BootstrapFontProvider.__init__` to call
+  `BaseFontProvider.__init__` directly so the framework
+  can pin `y_bias` / `default_style` / `styles`
+  explicitly, and notes that the pinned 0.02 matches the
+  upstream default rather than overriding it. (Not added
+  to the bugs list — the source comment vs. constant
+  divergence is a code-comment cleanup, not a behavior
+  bug.)
+  (3) **The "two widgets do not share a `PhotoImage`"
+  framing in the Caching section was misleading.** Two
+  widgets with identical accent / variant / `style_options`
+  / icon resolve to the same `bs[<hash>].…` style key,
+  which is registered with ttk once — so they share the
+  ttk style entry's image element at the ttk layer.
+  Verified: `Button(text='1', icon='star')` and
+  `Button(text='2', icon='star')` both resolve to
+  `bs[1e950e80].Solid.TButton`. Reworded to lead with
+  ttk-style-layer sharing as the primary mechanism, with
+  the per-call PhotoImage cache framed as
+  within-rebuild deduplication, not a cross-widget
+  contract.
+- All five existing claims that *were* accurate held up
+  under runtime checks: provider lazy-init pattern (verified
+  `b._icon_provider_initialized` flips False → True after
+  the first icon-bearing widget renders), the
+  `name='empty'` short-circuit (returns a transparent
+  PhotoImage skipping the provider), the `_match_override`
+  token-vs-exact form table, the `_derive_expr` token
+  derivations (`'hover'` → `'hover !disabled'`,
+  `'pressed'` → `'pressed !disabled'`,
+  `'selected'` → `'selected !disabled'`), and the
+  `Style().style_builder.color('primary')` workaround for
+  the theme-token bug (verified: `→ '#4D76F6'`).
+- Snippet check: 4 snippets, 4 executed, 0 failures. All
+  cross-links resolve (siblings: `index.md`, `images.md`;
+  platform: `images-and-dpi.md`; guides: `icons.md`;
+  design system: `icons.md`).
+- **Icons & Images sub-section status: 2/3** —
+  `index.md` and `icons.md` done. Next page in the sweep:
+  `capabilities/icons/images.md`.
+
+Earlier session (2026-05-02, capabilities/icons/index.md —
 opens Icons & Images sub-section, 1/3):
 
 - Full rewrite. Old page was 107 lines of abstract framing
@@ -822,7 +894,7 @@ Pages to review (capabilities sweep, 18 total):
 - [x] `validation/rules.md` — rule types
 - [x] `validation/results.md` — `ValidationResult`
 - [x] `icons/index.md` — icons & images overview
-- [ ] `icons/icons.md` — `BootstrapIcon`
+- [x] `icons/icons.md` — `BootstrapIcon`
 - [ ] `icons/images.md` — `Image` utility
 - [ ] `layout-props.md` — pack/grid/place kwargs
 - [ ] `state-and-interaction.md` — widget state, focus, grabs
