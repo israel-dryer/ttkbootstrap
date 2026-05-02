@@ -4,6 +4,54 @@ Tracking document for the docs overhaul started 2026-04-29. Captures observation
 
 ---
 
+## Status snapshot (2026-05-02)
+
+**Pass 2 editorial review is COMPLETE across every section.** Closed
+sweeps: Guides 14/14, Widgets (actions 5, inputs 12 incl. Form,
+selection 9, data-display 8, layout 12, navigation 5, views 3, overlays
+2, dialogs 11, primitives 5), Platform 17/17, Capabilities 18/18,
+Design System 6/6. Phase 9 snippet validation tooling and Pass 1 drift
+sweep are closed (0 snippet failures across 134 files / 1063 snippets).
+
+**Two operational items remain**, both gated on a running display
+this session can't drive:
+
+1. **Phase 6F — popup / animated screenshot capture.** Two asset
+   classes still need tooling beyond the in-frame model: popup-shape
+   widgets (ContextMenu, SelectBox open state, all 11 dialog pages)
+   and animated widgets (Toast, Tooltip, Accordion, Expander,
+   PageStack, FloodGauge, Meter). Surfaces today as 1 known
+   `IMAGE:` placeholder (`selectbox.md`) plus missing imagery on
+   the dialog and animated-widget pages. Needs a renderer mode that
+   captures a `Toplevel` bbox after the popup is realized but
+   before any modal `grab_set` blocks the parent loop, and an
+   MP4/GIF recording path for animations.
+
+2. **Phase 8C — rendered docstring review for 22 priority symbols.**
+   Goal: `zensical serve -o` and visually verify mkdocstrings
+   rendering matches the spec model on `App`, `AppShell`, `Form`,
+   `TableView`, `MessageDialog`, `BaseDataSource`, etc. — no orphan
+   `Examples:`, no broken cross-links, both `Attributes:` and
+   `Args:` rendering side-by-side as the convention requires.
+
+**Optional**, not yet picked up:
+
+- Cross-cutting consistency pass on landing pages — verify every
+  section landing page links correctly to the capabilities/platform
+  pages it mentions. `tools/check_doc_links.py`-shaped work; would
+  catch any straggler stale links.
+- Plan-doc reconciliation against the bugs surfaced during Pass 2 —
+  ~80 code-level bugs are now logged in CLAUDE.md's bugs list, none
+  fixed (except 8B). Pick one and ship: most have low-risk fixes
+  (rename a kwarg, validate input, fix a docstring claim).
+
+**Closed off by decision**: 1E (LIBRARY_STRUCTURE.md is contributor
+docs, not user docs), 2C/2D (folded into 8C), 3A (Tk re-exports point
+at stdlib), 3D (TK_WIDGETS / TTK_WIDGETS as constants, no page),
+5F (deferred until rebrand).
+
+---
+
 ## Context
 
 ### Goals (from the original ask)
@@ -234,8 +282,8 @@ This is the foundation for Goal 1.
 These were discovered while authoring screenshot factories — the factories couldn't run the documented snippets verbatim, which exposed live drift between the docs and the implementation. Each item is a concrete docs-or-code fix.
 
 - [x] **8A. `dropdownbutton.md` API drift.** Fixed in drift sweep (Pass 1, 2026-04-30). All ContextMenuItem calls in `dropdownbutton.md` now use `type=` as first positional; separator uses `ContextMenuItem("separator")`; per-item `accent=` removed; `DropdownButton(command=)` removed (not implemented). Sibling pages `contextmenu.md` and `menubutton.md` had no raw ContextMenuItem calls to fix.
-- [ ] **8B. ListView `badge` field is documented but not dispatched.** `ListItem` (`widgets/composites/list/listitem.py:34-44`) lists `badge` as a recognized field, but `update_data` (`listitem.py:725-734`) only dispatches `title`/`text`/`caption`/`icon` — `badge` is silently dropped. Either add `"badge": self._update_badge` to that mapping, or remove the field from the docstring. Code fix is preferable since `_update_badge` (`listitem.py:428-453`) is fully implemented.
-- [ ] **8C. Phase 2C/2D rendered review.** Originally deferred to a session with a running Tk display. Now that `python -m docs_scripts.render` works end-to-end, the same display can drive `zensical serve -o` for the 22 priority symbols listed in the per-symbol tracker. Goal: verify the rendered output of `App`, `AppShell`, `Form`, `TableView`, `MessageDialog`, `BaseDataSource`, etc. matches the spec model in practice (no orphan `Examples:`, no broken cross-links, `Attributes:` and `Args:` both showing).
+- [x] **8B. ListView `badge` field dispatch fix.** Fixed in commit `d6317b0` (2026-05-02). Added `"badge": self._update_badge` to the `update_data` dispatch map at `widgets/composites/list/listitem.py:725-734`.
+- [ ] **8C. Phase 2C/2D rendered review.** Originally deferred to a session with a running Tk display. Now that `python -m docs_scripts.render` works end-to-end, the same display can drive `zensical serve -o` for the 22 priority symbols listed in the per-symbol tracker. Goal: verify the rendered output of `App`, `AppShell`, `Form`, `TableView`, `MessageDialog`, `BaseDataSource`, etc. matches the spec model in practice (no orphan `Examples:`, no broken cross-links, `Attributes:` and `Args:` both showing). **Still requires a display — not driveable headlessly.**
 
 ### Phase 9 — Snippet validation tooling and Pass 1 drift (2026-04-30)
 
@@ -258,10 +306,23 @@ These were discovered while authoring screenshot factories — the factories cou
 - [x] **10F-navigation.** `docs/guides/navigation.md` (2026-04-30). Reframed around `TabView` (modern) vs `Tabs` (lower-level) vs `Notebook` (legacy). Added `page=` param to `add_page`; added `navigate(key, data=)`; documented `<<PageWillMount>>`, `<<PageMount>>`, `<<PageUnmount>>`, `<<PageChange>>` lifecycle events with payload table. Confirmed no transition configurability on `PageStack`.
 - [x] **10F-layout.** `docs/guides/layout.md` (2026-04-30). Added full constructor option lists for `PackFrame`/`GridFrame`; column/row size-spec table; `auto_flow` and `configure_row`/`configure_column` documentation. Expanded patterns to 5 concrete examples. `ScrollView.add()` returns a `Frame` for nesting — documented. All API verified against source.
 - [x] **10G.** Remaining guides (2026-04-30): theming, typography, icons, spacing-and-alignment, app-settings. All 14 guides in `docs/guides/` are now editorially reviewed. Drift notes: `AppSettings.light_theme`/`dark_theme` defaults are `"docs-light"`/`"docs-dark"` (surprising for users); 50-step shade spectrum documented as 9-step in design-system pages (inconsistency); `follow_system_appearance` is no-op on Windows/Linux; bare `tk.Menu.add_command` doesn't accept `icon=` (fixed to use `ContextMenu`).
-- [-] **10H.** Widget pages (per-category pass). Started 2026-04-30.
-  - **actions/button.md** (2026-04-30). Restructured to template: renamed `Quick start` → `Basic usage`, added `Framework integration` overview block, merged `Localization` + `Reactivity` → `Localization & reactivity`. Fixed mislabeled `Accents` section that previously showed variant code with a "colors" image — section now lists all 8 accent tokens (`primary`, `secondary`, `success`, `info`, `warning`, `danger`, `light`, `dark`) and shows accent variation in the example. Added `Density` subsection (was missing). Split former "Size and emphasis" — `padding`/`width` is sizing, `underline` is a mnemonic (different concern). Verified `compound="left"` default is real (set by `style/builders/utils.py:284` when icon is present). Localization narrative clarified: any `text` literal becomes a message key when localization is on; missing keys fall back to the literal — so `text="Save"` works regardless of localization state. 0 snippet failures, structure check passes.
-  - **inputs/textentry.md** (2026-04-30). Canonical input-template page. Restructured to the input template's nine required H2s (`Basic usage`, `Value model`, `Common options`, `Behavior`, `Events`, `Validation and constraints`, `When should I use TextEntry?`, `Related widgets`, `Reference`). Promoted the value/text/signal split into a dedicated `Value model` section with a table; added an `Empty values` and `Signals and variables` subsection. Split the `Events` section into two tables: input/value events whose callbacks receive an `event` (with `.data`), and validation events whose callbacks receive the payload `dict` directly — a real API inconsistency, see code-bug note below. Curated `Common options` to a table (was prose). Added `disable`/`enable`/`readonly` and `add_validation_rules` snippets. Replaced the old `Quick start`/`Appearance`/`Examples and patterns`/`Localization`/`Reactivity` ordering. `tools/check_doc_structure.py` updated to substitute the literal `WidgetName` in template H2s with the page's H1, so per-page section titles can use the real widget name. Snippet check: 107 files, 859 snippets, 0 failures. **Code-bug noted**: `ValidationMixin.on_valid`/`on_invalid`/`on_validated` register the callback as `_on_*_command` and dispatch via `_dispatch_*(event)` → `callback(event.data)` — so the handler receives the payload dict, not the event. By contrast, `TextEntryPart.on_input`/`on_changed`/`on_enter` use `bind(...)` directly and the handler receives an event with `.data`. Two `on_*` families on the same widget take different signatures. Either route the validation callbacks through a wrapper that calls `callback(event)`, or document the split (textentry page now does the latter).
-- [ ] **10I.** Platform and capabilities pages.
+- [x] **10H.** Widget pages — DONE 2026-05-02. Every category complete:
+  actions 5/5, inputs 12/12 (including Form, relocated from `forms/`),
+  selection 9/9, data-display 8/8, layout 12/12, navigation 5/5
+  (including the AppShell + Toolbar relocations to `widgets/application/`),
+  views 3/3, overlays 2/2, dialogs 11/11, primitives 5/5. The full
+  per-page session notes (anchors, surfaced bugs, snippet counts) live
+  in CLAUDE.md's "Active work" section.
+  - **actions/button.md** (2026-04-30) was the canonical anchor, the way `inputs/textentry.md` anchored inputs and `dialogs/messagedialog.md` anchored dialogs.
+  - **inputs/textentry.md** (2026-04-30) introduced the slim arc the rest of the inputs sweep followed.
+  - Form was relocated from `widgets/forms/` to `widgets/inputs/` 2026-05-02 (a category of one was awkward; Form's API surface — `.value` / `.data` / `validate()` / `field(key)` — matches the input shape). 16 inbound-link updates, `widget-form-template.md` deleted, the `forms/` directory removed, `CATEGORY_TEMPLATE_MAP` cleaned up.
+- [x] **10I.** Platform and capabilities pages — DONE 2026-05-01 / 2026-05-02.
+  Platform (17/17), Capabilities (18/18), Design System (6/6) all
+  editorially closed. Architectural pages aren't in
+  `CATEGORY_TEMPLATE_MAP`; the consistent pattern that emerged is
+  "replace abstract X-as-shared-behavior framing with concrete
+  verified-at-runtime API surface." Per-page session notes live in
+  CLAUDE.md.
 
 ---
 

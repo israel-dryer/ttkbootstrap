@@ -34,12 +34,48 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-02, Form sweep closed + relocated — Pass 2 truly COMPLETE)
+### Current handoff (2026-05-02, Pass 2 truly COMPLETE — next-session entry point)
 
-Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
-complete; 6F not started. Pass 2 (editorial review) is now COMPLETE
-across every section, including the previously-overlooked solo Form
-page.** Sweep status:
+**Read this section first.** The full per-page session notes below
+this handoff are historical context — useful when picking up
+specific work, not required reading to get oriented.
+
+Pass 2 (editorial review) is COMPLETE across every section. Phases
+1–7 and 9A–9D are also complete. The remaining work is two
+operational items, **both gated on a running display this session
+can't drive**:
+
+1. **Phase 6F — popup / animated screenshot capture.** Surfaces
+   today as 1 known `IMAGE:` placeholder (`selectbox.md`) plus
+   missing imagery on the 11 dialog pages and 7 animated-widget
+   pages (Toast, Tooltip, Accordion, Expander, PageStack,
+   FloodGauge, Meter). Needs (a) a renderer mode that captures a
+   `Toplevel` bbox after the popup is realized but before any
+   modal `grab_set` blocks the parent loop, and (b) an MP4/GIF
+   recording path for animations. The plan doc
+   (`analysis/docs-review-and-plan.md` § Phase 6F) has the full
+   list and the renderer mode needed.
+
+2. **Phase 8C — rendered docstring review for 22 priority symbols.**
+   Run `zensical serve -o` and visually verify mkdocstrings
+   rendering matches the spec model on `App`, `AppShell`, `Form`,
+   `TableView`, `MessageDialog`, `BaseDataSource`, etc. — no
+   orphan `Examples:`, no broken cross-links, both `Attributes:`
+   and `Args:` rendering side-by-side.
+
+**Two optional items** that don't need a display:
+
+- **Cross-cutting consistency pass.** Verify every section landing
+  page links correctly to the capabilities/platform pages it
+  mentions. `tools/check_doc_links.py`-shaped work; catches any
+  straggler stale links. Lightweight — fits in one session.
+- **Code-bug fixes from the bugs list.** ~80 code-level bugs are
+  now logged in this file's bugs list (search "Surfaced by"). Most
+  are low-risk: rename a kwarg, validate input, fix a docstring
+  claim. Pick one and ship. The Form sweep alone surfaced 7 — see
+  the bottom of the bugs list.
+
+Sweep status (closed):
 
 - **Guides** (14/14) — DONE 2026-04-30.
 - **Widgets** — DONE: dialogs 11/11, inputs 12/12 (Form moved here from
@@ -54,13 +90,9 @@ page.** Sweep status:
   `localization.md`).
 - **Design System** (6/6) — DONE 2026-05-02.
 
-The next available work is downstream of Pass 2 — the open Phase
-6F (popup / animated screenshot capture) and the Phase 8 follow-ups
-listed below the per-page session notes (8B ListView.badge bug fix,
-8C rendered docstring review). Anyone picking up Pass 2 itself can
-do a final cross-cutting consistency pass (e.g. verify every section
-landing page links correctly to the capabilities/platform pages it
-mentions), but the per-page editorial work is finished.
+Phase 8B (ListView.badge dispatch fix) shipped in commit `d6317b0`
+(2026-05-02). 8C (rendered review) is the only Phase 8 item still
+open and requires a display.
 
 **Form relocation (2026-05-02).** The `form.md` page was moved from
 `widgets/forms/` to `widgets/inputs/`. Rationale: a category of one
