@@ -34,23 +34,31 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-02, capabilities sweep — 17/18; layout-props.md done)
+### Current handoff (2026-05-02, design-system sweep closed — Pass 2 is now COMPLETE)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
-complete; 6F not started. Pass 2 (editorial review) is the active work —
-all widget-page sweeps are complete (dialogs 11/11, inputs 11/11,
-data-display 8/8, layout 12/12, navigation 5/5, overlays 2/2,
-selection 9/9, views 3/3, primitives 5/5). Platform sweep (17/17) — DONE.
-Capabilities sweep — IN PROGRESS (17/18 — `index.md`, `configuration.md`,
-`signals/index.md`, `signals/signals.md`, `signals/callbacks.md`,
-`signals/virtual-events.md`, `layout/index.md`, `layout/containers.md`,
-`layout/spacing.md`, `layout/scrolling.md`, `validation/index.md`,
-`validation/rules.md`, `validation/results.md`, `icons/index.md`,
-`icons/icons.md`, `icons/images.md`, `layout-props.md`).
-Signals & Events sub-section (4/4) — DONE. Layout sub-section (4/4) — DONE.
-Validation sub-section (3/3) — DONE. Icons & Images sub-section (3/3) —
-DONE. Remaining: 2 capabilities pages (`state-and-interaction.md`,
-`localization.md`) + 6 design-system pages.**
+complete; 6F not started. Pass 2 (editorial review) is now COMPLETE
+across every section.** Sweep status:
+
+- **Guides** (14/14) — DONE 2026-04-30.
+- **Widgets** — DONE: dialogs 11/11, inputs 11/11, data-display 8/8,
+  layout 12/12, navigation 5/5, overlays 2/2, selection 9/9, views 3/3,
+  primitives 5/5, actions 5/5.
+- **Platform** (17/17) — DONE 2026-05-01.
+- **Capabilities** (18/18) — DONE 2026-05-02. All four sub-sections
+  closed (Signals & Events 4/4, Layout 4/4, Validation 3/3,
+  Icons & Images 3/3) plus the four standalone pages
+  (`layout-props.md`, `state-and-interaction.md`, `configuration.md`,
+  `localization.md`).
+- **Design System** (6/6) — DONE 2026-05-02.
+
+The next available work is downstream of Pass 2 — the open Phase
+6F (popup / animated screenshot capture) and the Phase 8 follow-ups
+listed below the per-page session notes (8B ListView.badge bug fix,
+8C rendered docstring review). Anyone picking up Pass 2 itself can
+do a final cross-cutting consistency pass (e.g. verify every section
+landing page links correctly to the capabilities/platform pages it
+mentions), but the per-page editorial work is finished.
 
 **Capabilities sweep — convention notes (2026-05-01).** The capabilities
 directory has 18 pages (not the ~12 mentioned in the prior handoff).
@@ -72,7 +80,77 @@ here too — replace abstract "X is a shared behavior" framing with
 concrete API surface; verify claims at runtime; nav-aligned topic
 lists with substantive blurbs (not 3-word labels).
 
-Last session (2026-05-02, capabilities/layout-props.md —
+Last session (2026-05-02, design-system sweep — full
+section closed 6/6 in one session):
+
+- Six pages rewritten in nav order: `index.md` (commit
+  `177c4ae`), `colors.md` (`4c0f54b`), `variants.md`
+  (`21fa9ae`), `typography.md` (`6d3df1c`), `icons.md`
+  (`1d08bcf`), `custom-themes.md` (`fb5ba98`). All previously
+  consisted of 60–110 lines of abstract design-philosophy
+  framing that named no concrete API surface.
+- Two new bugs surfaced and added to the bugs list (the
+  per-page detail lives in the commit messages):
+  (1) `ttk.set_theme(name)` may silently fail to switch to a
+  user-registered theme; `Style().theme_use(name)` is the
+  reliable path. Verified at runtime — `set_theme` calls
+  `get_style().theme_use(name)`, but the Style instance
+  resolution goes through a different path than `Style()`
+  returns directly, and the theme switch doesn't propagate.
+  Worth investigating (`runtime/app.py:574,771` and
+  `style/style.py:405-415`); the fix is likely to ensure
+  `get_style()` returns the same instance as `Style()`.
+  Documented in custom-themes.md as a `!!! note`; the
+  reliable path (`Style().theme_use(name)`) is the
+  documented one.
+  (2) Inline `font="not-a-real-token"` falls through silently
+  to Tk's default font with no warning — easy footgun if a
+  token name is misspelled. Documented in typography.md as a
+  `!!! note` with the workaround (token spellings are
+  validated only when modifiers are present, e.g.
+  `font="not-a-real-token[bold]"` parses through the
+  modifier path and falls back correctly to a `body[bold]`-
+  shaped resolution).
+- Cross-cutting findings re-confirmed at runtime and used to
+  ground every page:
+  (a) The four token vocabularies (`accent` / `variant` /
+  `font` / `icon`) and the kwargs that consume them.
+  (b) The full color-token surface: 8 brand semantics + 5
+  surfaces + 5 on_<surface> + 5 secondary + 2 strokes
+  (`stroke` / `stroke_subtle` — note that `border` and
+  `border_subtle` are NOT valid tokens and raise) + 11 shade
+  families with auto-generated 9-step spectra.
+  (c) Per-widget variant registry from
+  `BootstyleBuilderTTk._builder_registry`: Button (default,
+  solid, outline, ghost, link, text), MenuButton (no link),
+  Toolbutton (no link/text), CheckButton (default + switch),
+  Notebook (default, bar, pill, tab), Tabs (default, bar
+  only — `pill` is a known bug), Badge (square, pill),
+  Progressbar (default, striped, thin), Scrollbar (default,
+  square, round, rounded), ButtonGroup (default, solid,
+  outline, ghost), everything else default-only.
+  (d) The 14 typography tokens (the existing page omitted
+  `heading-sm`) and the inline modifier syntax including
+  size tokens (`xs`/`sm`/`md`/`lg`/`xl`/`xxl` =
+  8/10/12/14/16/18 pt), `+N`/`-N` token deltas, and the
+  alias `strikethrough` / `strike` for `overstrike`.
+  (e) Bootstrap Icons v1.13.1: 705 fill glyphs + 2,746
+  outline glyphs (~3,400 total unique names); outline is
+  the default style; the catalog at icons.getbootstrap.com
+  matches names one-for-one.
+  (f) Theme JSON schema: 9 required top-level fields plus
+  `shades` and `semantic` maps. Surface tokens, on-surface
+  foregrounds, stroke colors, and the 9-step shade spectrum
+  are all auto-derived from the literals — a custom theme
+  needs only ~17 hex values plus the semantic map.
+  (g) Custom theme registration via
+  `register_user_theme(name, path)` and switching via
+  `Style().theme_use(name)` works end-to-end, verified at
+  runtime with a generated `demo-dark` theme.
+- Snippet check: 17 snippets across the 6 pages, 14
+  executed, 0 failures. All cross-links resolve.
+
+Earlier session (2026-05-02, capabilities/layout-props.md —
 first standalone capabilities page after Icons & Images
 closed):
 
@@ -1274,8 +1352,10 @@ Open items from earlier phases (do not lose track):
 Pass 1 is done; every snippet is known to match the current API. Pass 2 is
 the active work. Goal: each guide is best-in-class for its content type.
 
-**All 14 guides in `docs/guides/` are done** (2026-04-30). Widget pages
-in progress; platform/capabilities pages still to come.
+**All 14 guides in `docs/guides/` are done** (2026-04-30). Every
+section under `docs/` has now had the editorial pass:
+guides 14/14, widgets (all categories), platform 17/17,
+capabilities 18/18, design-system 6/6.
 
 **Widget pages — actions** (`docs/widgets/actions/`) — **DONE 2026-04-30
 (re-reviewed against slim template).**
