@@ -225,24 +225,37 @@ app.after_idle(check_size)
 
 ## Debug styles
 
-Styling bugs are often name-resolution problems.
-
-Tips:
-
-- log the resolved style name
-- inspect theme definitions
-- verify state transitions (hover, active, disabled)
+Styling bugs are usually name-resolution problems — the widget is on
+a style you didn't expect, or the style maps a state you didn't
+account for.
 
 ```python
-# Inspect the style applied to a widget
-print(widget.cget("style"))
+# What style is this widget on?
+print(widget.cget("style"))                  # 'bs[<hash>].primary.Solid.TButton'
 
-# List all styles in the current theme
+# What's the element layout?
+from tkinter import ttk
+s = ttk.Style()
+print(s.layout(widget.cget("style")))        # the element tree
+
+# What color does this style produce in this state?
+print(s.lookup(widget.cget("style"), "background"))
+print(s.lookup(widget.cget("style"), "background", ["pressed"]))
+
+# What's the current theme?
 style = ttk.get_style()
-print(style.theme_names())
+print(style.theme_use())                     # current theme name
+print(style.theme_names())                   # list of all installed themes
 ```
 
-Remember that styles are resolved dynamically.
+The captured token attributes are useful too — `widget._accent`,
+`widget._variant`, `widget._density`, `widget._surface`, and
+`widget._style_options` show what the bootstyle wrapper resolved at
+construction. Remember that the style is recomputed on every
+`<<ThemeChanged>>`, so any `Style.configure(...)` overrides you
+applied are wiped on theme switch. See
+[Styling Internals](ttk-styles-elements.md) for the full
+resolution model.
 
 ---
 
