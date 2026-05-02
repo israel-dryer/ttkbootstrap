@@ -34,17 +34,19 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-01, capabilities sweep — 6/18; signals/virtual-events.md done)
+### Current handoff (2026-05-01, capabilities sweep — 9/18; layout/spacing.md done)
 
 Phases 1–7, 9A–9D are complete. **Phase 6 (screenshot pipeline) is partially
 complete; 6F not started. Pass 2 (editorial review) is the active work —
 all widget-page sweeps are complete (dialogs 11/11, inputs 11/11,
 data-display 8/8, layout 12/12, navigation 5/5, overlays 2/2,
 selection 9/9, views 3/3, primitives 5/5). Platform sweep (17/17) — DONE.
-Capabilities sweep — IN PROGRESS (6/18 — `index.md`, `configuration.md`,
+Capabilities sweep — IN PROGRESS (9/18 — `index.md`, `configuration.md`,
 `signals/index.md`, `signals/signals.md`, `signals/callbacks.md`,
-`signals/virtual-events.md`). Signals & Events sub-section (4/4) — DONE.
-Remaining: 12 capabilities pages + 6 design-system pages.**
+`signals/virtual-events.md`, `layout/index.md`, `layout/containers.md`,
+`layout/spacing.md`). Signals & Events sub-section (4/4) — DONE.
+Layout sub-section (3/4 — index + containers + spacing).
+Remaining: 9 capabilities pages + 6 design-system pages.**
 
 **Capabilities sweep — convention notes (2026-05-01).** The capabilities
 directory has 18 pages (not the ~12 mentioned in the prior handoff).
@@ -66,7 +68,204 @@ here too — replace abstract "X is a shared behavior" framing with
 concrete API surface; verify claims at runtime; nav-aligned topic
 lists with substantive blurbs (not 3-word labels).
 
-Last session (2026-05-01, capabilities/signals/virtual-events.md):
+Last session (2026-05-01, capabilities/layout/spacing.md):
+
+- Full rewrite. Old page was 122 lines of abstract framing
+  ("Types of spacing", "Padding vs margins", "Consistent
+  spacing", "Spacing and resizing", "Vertical vs horizontal
+  spacing", "Responsive considerations", "ttkbootstrap
+  guidance", "Common pitfalls") with **zero references to
+  ttkbootstrap's actual spacing options** — no `padding=`,
+  no `padx`/`pady`, no `ipadx`/`ipady`, no `gap=`, no
+  `density=`. Same generic-Tk-tutorial shape as the
+  pre-rewrite `signals/index.md` /
+  `signals/callbacks.md` / `signals/virtual-events.md` /
+  `layout/index.md` / `layout/containers.md`.
+- New version leads with a 5-row at-a-glance table covering
+  every spacing knob in the framework (`padding=` / `padx`+
+  `pady` / `ipadx`+`ipady` / `gap=` / `density=`) across
+  (where it lives / what it does / accepted by). Per-knob
+  blurbs name the actual API surface. Closes with a
+  composition-rules section explaining how the five knobs
+  interact at the parent/child boundary, and a directive
+  cross-link section.
+- Six concrete claims and behaviors verified at runtime:
+  (1) `padding=` accepts three shapes: int (all four sides),
+  2-tuple `(h, v)`, 4-tuple `(l, t, r, b)`. Verified on
+  `Frame(app, padding=10)` → `cget('padding') == (10,)`,
+  `padding=(10, 20)` → `(10, 20)`, `padding=(5, 10, 15, 20)`
+  → `(5, 10, 15, 20)`.
+  (2) `PackFrame` injects gap as **leading** `padx`/`pady` on
+  the second-and-later children only. Verified at runtime
+  with `direction='vertical', gap=8` and three buttons:
+  first button `pady=0`, others `pady=(8, 0)`. Same shape
+  in horizontal mode (`padx=(N, 0)`).
+  (3) `GridFrame` injects gap as leading `padx` on column ≥ 1
+  and leading `pady` on row ≥ 1. The `(0, 0)` cell receives
+  no gap injection. Verified at runtime with `columns=3,
+  gap=10` and 5 buttons: cell `(0, 0)` → `padx=0, pady=0`;
+  cell `(0, 1)` → `padx=(10, 0), pady=0`; cell `(1, 1)` →
+  `padx=(10, 0), pady=(10, 0)`.
+  (4) `GridFrame` **merges** user `padx=N` with the gap
+  rather than replacing. Verified at runtime: with `gap=10`
+  and a per-call `padx=4`, cell `(0, 0)` reaches the cell as
+  `4` unchanged (no gap injection); cell `(0, 1)` reaches as
+  `(14, 4)` — leading edge sums to 14, trailing edge stays
+  4. The merge function is `_merge_padding`
+  (`widgets/primitives/gridframe.py:274-283`).
+  (5) `density='compact'` swaps three things at once: the
+  font (`body` → `caption`, ~13 pt → ~11 pt on macOS), the
+  button padding (scaled `(8, 0)` → `(6, 5, 6, 3)` — extra
+  top padding to center text in the smaller row), and the
+  field height (33 px → 26 px scaled). Helpers: `button_font`
+  / `button_padding` / `field_height` /
+  `normalize_button_density` at
+  `style/builders/utils.py:152-329`. Verified: a default
+  TextEntry has `winfo_reqheight()=42`, a compact one
+  `winfo_reqheight()=33`.
+  (6) `density=` is **not universal**. Surface-tested 12
+  classes:
+    - Accepts: `Button`, `MenuButton`, `OptionMenu`,
+      `CheckToggle`, `RadioToggle`, `Toolbar`, `TextEntry`,
+      `Spinbox`, `Combobox`, `Label`, `TreeView`.
+    - Rejects with `TclError: unknown option "-density"`:
+      `Frame`, `Card`, `LabelFrame`, `PackFrame`,
+      `GridFrame`, `CheckButton`, `RadioButton`, `Switch`,
+      `Tabs`, `SideNav`, `PageStack`.
+  Cross-referenced the existing density-reconfigure bug
+  already on the bugs list (Entry / Combobox / Spinbox —
+  `configure(density=…)` updates only the font, not the
+  resolved ttk style key, so the underlying image element
+  height persists).
+- One framing fix worth carrying forward: there is **no
+  widget-level margin option** in Tk. What CSS calls "margin"
+  is expressed from the parent's side via `padx`/`pady` on
+  the child's `pack()` / `grid()` call — the page leads with
+  that distinction so readers don't search for a non-existent
+  `margin=` kwarg.
+- Snippet check: 7 snippets, 7 executed, 0 failures. All
+  cross-links resolve (siblings: `index.md`, `containers.md`,
+  `scrolling.md`; parent: `../layout-props.md`; widget:
+  `../../widgets/layout/gridframe.md`; platform:
+  `geometry-and-layout.md`, `widget-lifecycle.md`).
+- **Layout sub-section status: 3/4** — `index.md`,
+  `containers.md`, and `spacing.md` done. Next page in the
+  sweep: `capabilities/layout/scrolling.md`.
+
+Earlier session (2026-05-01, capabilities/layout/containers.md):
+
+- Full rewrite. Old page was 163 lines of abstract framing
+  ("What is a container?", "Container ownership and layout
+  context", "Single responsibility", "Composition over per-widget
+  tuning", "Nested containers", "Common pitfalls") — same generic
+  Tk-tutorial shape as pre-rewrite `signals/index.md` /
+  `signals/callbacks.md` / `signals/virtual-events.md` /
+  `layout/index.md`. Almost no references to ttkbootstrap's
+  actual container surface (PackFrame, GridFrame, ScrollView
+  mentioned briefly; LabelFrame / Card / PanedWindow / Accordion
+  / Expander / Notebook / TabView / PageStack absent).
+- New version leads with a 12-row at-a-glance table covering
+  every container in the framework across (role / primary API /
+  geometry policy). Three categories called out explicitly: passive
+  (Frame / Card / LabelFrame), opinionated (PackFrame /
+  GridFrame), specialized (ScrollView / PanedWindow / Accordion /
+  Expander / Notebook / TabView / PageStack). Per-section blurbs
+  with code examples lifted from the matching widget pages.
+- Three concrete claims and behaviors verified at runtime:
+  (1) Frame's `_refresh_descendant_surfaces` hook
+  (`widgets/primitives/frame.py:110`) walks every descendant
+  whose `_surface` matches the OLD surface and retints them on
+  `configure_style_options(surface=…)`. `input_background`
+  cascades the same way through
+  `_refresh_descendant_input_backgrounds`. Documented as the
+  "Surfaces cascade" section, including the exclude-explicit-pin
+  rule (descendants with `_style_options['surface']` set are
+  excluded).
+  (2) The cascade-divergence on LabelFrame is restated from the
+  bugs list: LabelFrame does NOT subclass Frame, so children
+  inside a LabelFrame keep their old surface when the LabelFrame's
+  surface changes. The TypedDict comparison confirms this — the
+  three classes carry different kwarg surfaces (Frame includes
+  `input_background` and `show_border`; Card omits
+  `input_background`; LabelFrame omits both `input_background`
+  and `show_border`, plus adds `text` / `labelanchor` /
+  `relief` / `borderwidth` / `localize`).
+  (3) The "geometry managers don't mix" claim restated from the
+  layout/index.md sweep, with the verified Tk error text — the
+  same `cannot use geometry manager grid inside .!frame which
+  already has slaves managed by pack` message. `place` overlays
+  pack OR grid safely (verified).
+- LabelFrame `show_border=False` raises `TclError: unknown option
+  "-show_border"` — confirmed at runtime; already on the bugs
+  list. Card defaults verified: `_surface='card'`, `_accent='card'`,
+  `padding=(16,)`, `style_options={'show_border': True, 'surface':
+  'card'}`.
+- Snippet check: 7 snippets, 7 executed, 0 failures. All 20
+  cross-links resolve (siblings: `index.md`, `spacing.md`,
+  `scrolling.md`; parent: `../layout-props.md`; platform:
+  `geometry-and-layout.md`, `widget-lifecycle.md`; widgets:
+  `frame.md`, `card.md`, `labelframe.md`, `packframe.md`,
+  `gridframe.md`, `scrollview.md`, `panedwindow.md`,
+  `accordion.md`, `expander.md`, `notebook.md`, `tabview.md`,
+  `pagestack.md`, `appshell.md`, `toolbar.md`).
+- **Layout sub-section status: 2/4** — `index.md` and
+  `containers.md` done. Next pages in the sweep:
+  `capabilities/layout/spacing.md`, then
+  `capabilities/layout/scrolling.md`.
+
+Earlier session (2026-05-01, capabilities/layout/index.md):
+
+- Full rewrite. Old page was 122 lines of abstract framing
+  ("Layout as a capability", "Geometry managers", "Container
+  responsibility", "Declarative intent", "Scrolling as layout",
+  "Common pitfalls") with zero references to ttkbootstrap's
+  actual API surface — no `PackFrame`, no `GridFrame`, no
+  `ScrollView`, no concrete kwargs. Same generic-Tk-tutorial
+  shape as pre-rewrite `signals/index.md`, `signals/callbacks.md`,
+  and `signals/virtual-events.md`.
+- New version leads with a 6-column at-a-glance table comparing
+  `pack` / `grid` / `place` / `PackFrame` / `GridFrame` /
+  `ScrollView` across (layout shape / per-child kwargs /
+  container kwargs / mixing in one parent / best for). Then
+  per-mechanism blurbs that name the actual API
+  (`PackFrame(direction=, gap=, fill_items=, expand_items=,
+  anchor_items=)`, `GridFrame(rows=, columns=, gap=,
+  sticky_items=, auto_flow=)`, `ScrollView(scroll_direction=,
+  scrollbar_visibility=)`) and code examples lifted from the
+  matching widget pages. Closes with a "Containers vs widgets"
+  framing (parent owns layout policy; child requests size and
+  passes per-call kwargs) and a directive 8-question
+  cross-link section.
+- Three concrete claims verified at runtime:
+  (1) `pack` and `grid` cannot be mixed in the same parent —
+  Tk raises `_tkinter.TclError: cannot use geometry manager
+  grid inside .!frame which already has slaves managed by pack`
+  (and vice versa). `place` overlays either safely.
+  (2) Container defaults: `Frame` → `padding=''` (Tcl empty),
+  `_surface='content'`; `PackFrame` → `direction='vertical'`,
+  `gap=0`; `GridFrame` → `_num_columns=100` (placeholder when
+  no columns passed), `_num_rows=100`, `_gap=(0, 0)`,
+  `_auto_flow='row'`; `ScrollView` → `scroll_direction='both'`,
+  `scrollbar_visibility='always'`. (Note: ScrollView's default
+  `scrollbar_visibility='always'` matches the correction
+  surfaced in the prior `scrolledtext.md` sweep — old guides
+  said `'scroll'`.)
+  (3) All twelve top-level layout exports resolve at
+  `ttkbootstrap.<Name>`: Frame, PackFrame, GridFrame,
+  ScrollView, PanedWindow, LabelFrame, Card, Accordion,
+  Expander, Separator, SizeGrip, Scrollbar.
+- Snippet check: 4 snippets, 1 executed, 0 failures. All 12
+  cross-links resolve (siblings: `containers.md`, `spacing.md`,
+  `scrolling.md`; parent: `../layout-props.md`; platform:
+  `geometry-and-layout.md`, `widget-lifecycle.md`; widgets:
+  `packframe.md`, `gridframe.md`, `scrollview.md`,
+  `panedwindow.md`, `contextmenu.md`, `tooltip.md`).
+- **Layout sub-section status: 1/4** — `index.md` done. Next
+  pages in the sweep: `capabilities/layout/containers.md`,
+  `capabilities/layout/spacing.md`,
+  `capabilities/layout/scrolling.md`.
+
+Earlier session (2026-05-01, capabilities/signals/virtual-events.md):
 
 - Full rewrite. Old page was 150 lines of abstract framing
   ("What is a virtual event?", "Why virtual events exist",
@@ -340,9 +539,9 @@ Pages to review (capabilities sweep, 18 total):
 - [x] `signals/signals.md` — `Signal` class
 - [x] `signals/callbacks.md` — command/bind/subscribe
 - [x] `signals/virtual-events.md` — virtual events
-- [ ] `layout/index.md` — layout overview
-- [ ] `layout/containers.md` — Frame family
-- [ ] `layout/spacing.md` — padding, gap, density
+- [x] `layout/index.md` — layout overview
+- [x] `layout/containers.md` — Frame family
+- [x] `layout/spacing.md` — padding, gap, density
 - [ ] `layout/scrolling.md` — ScrollView
 - [ ] `validation/index.md` — validation overview
 - [ ] `validation/rules.md` — rule types
