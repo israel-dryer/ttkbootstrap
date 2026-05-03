@@ -34,16 +34,18 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-02, Pass 2 truly COMPLETE — next-session entry point)
+### Current handoff (2026-05-02, cross-cutting link pass DONE — next-session entry point)
 
 **Read this section first.** The full per-page session notes below
 this handoff are historical context — useful when picking up
 specific work, not required reading to get oriented.
 
 Pass 2 (editorial review) is COMPLETE across every section. Phases
-1–7 and 9A–9D are also complete. The remaining work is two
-operational items, **both gated on a running display this session
-can't drive**:
+1–7 and 9A–9D are also complete. The cross-cutting link consistency
+pass is also complete (commit `e07c372` — `tools/check_doc_links.py`
+added; 18 broken links fixed across 14 files).
+
+**Remaining work gated on a running display:**
 
 1. **Phase 6F — popup / animated screenshot capture.** Surfaces
    today as 1 known `IMAGE:` placeholder (`selectbox.md`) plus
@@ -63,17 +65,27 @@ can't drive**:
    orphan `Examples:`, no broken cross-links, both `Attributes:`
    and `Args:` rendering side-by-side.
 
-**Two optional items** that don't need a display:
+**Next session (no display needed): code-bug fixes.**
 
-- **Cross-cutting consistency pass.** Verify every section landing
-  page links correctly to the capabilities/platform pages it
-  mentions. `tools/check_doc_links.py`-shaped work; catches any
-  straggler stale links. Lightweight — fits in one session.
-- **Code-bug fixes from the bugs list.** ~80 code-level bugs are
-  now logged in this file's bugs list (search "Surfaced by"). Most
-  are low-risk: rename a kwarg, validate input, fix a docstring
-  claim. Pick one and ship. The Form sweep alone surfaced 7 — see
-  the bottom of the bugs list.
+~80 code-level bugs are logged in this file's bugs list (search
+"Surfaced by"). Most are low-risk: rename a kwarg, validate input,
+fix a docstring claim. Good starting points (roughly easiest first):
+
+1. `ValidationMixin.validate()` docstring — wrong return description
+   (`widgets/mixins/validation_mixin.py:99-100`). One-liner fix.
+2. `ValidationRule('stringLength')` param name mismatch — docstring
+   uses `min_length=`/`max_length=` but `validate()` reads `min=`/`max=`
+   (`validation_rules.py:73-74`, `validation_mixin.py:78`).
+3. `ValidationRule('compare')` silent no-op — remove `'compare'` from
+   `RuleType` literal or implement the branch
+   (`core/validation/types.py:4`, `validation_rules.py:48-86`).
+4. Form bugs (7 total) — `field_signal`/`field_textsignal` attribute
+   name mismatch, unknown editor fallback, `col_count` vs `columns`,
+   `TabsItem.label` dead field, etc. All in `composites/form.py`.
+5. Calendar `set(None)` silent no-op / `min_date` display-date clamp.
+
+Run `python tools/check_doc_snippets.py --run` before and after each
+fix to guard against regressions.
 
 Sweep status (closed):
 
