@@ -34,7 +34,7 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-03, bug-fix session 4 DONE — next-session entry point)
+### Current handoff (2026-05-03, bug-fix session 5 DONE — next-session entry point)
 
 **Read this section first.** The full per-page session notes below
 this handoff are historical context — useful when picking up
@@ -63,6 +63,62 @@ pass is also complete (commit `e07c372`).
    `TableView`, `MessageDialog`, `BaseDataSource`, etc. — no
    orphan `Examples:`, no broken cross-links, both `Attributes:`
    and `Args:` rendering side-by-side.
+
+**Bug-fix session 5 (2026-05-03) — CLOSED. Commit: `dffb234`.**
+
+Fixed (7 bugs, docs updated to match each):
+
+- `MessageDialog` now defaults `localize=True` so `button.ok` /
+  `button.cancel` are resolved through `MessageCatalog.translate`
+  without callers having to opt in (`dialogs/message.py:72`). Docs
+  updated in `messagedialog.md` — removed the "localization caveat"
+  warning block; `localize` row updated to show default `True`.
+- `FormDialog` default buttons now resolved through
+  `MessageCatalog.translate` — `_normalize_buttons` no longer emits
+  literal key strings to the user (`dialogs/formdialog.py:507-509`).
+  Docs updated in `formdialog.md` — removed the localization warning
+  block.
+- `FilterDialog` button labels and "Select All" checkbox text now
+  resolved through `MessageCatalog.translate` — both
+  `"button.ok"` / `"button.cancel"` in `show()` and
+  `"edit.select_all"` in `_build_content()` (`filterdialog.py:108,333-335`).
+  Docs updated in `filterdialog.md` — replaced the three-bullet
+  "localization caveats" danger block with a brief "now resolved" note.
+- `ListView.<<ItemInsert>>` now carries `event.data = {'record': dict}`
+  (the inserted record with its newly assigned id)
+  (`composites/list/listview.py:1387`).
+- `ListView.<<ItemUpdate>>` now carries `event.data = {'record': dict}`
+  (the partial update dict) (`listview.py:1405`).
+- `ListView.<<ItemDelete>>` now carries
+  `event.data = {'record_id': Any}` from both `delete_item()` and
+  `_on_item_removing()` (`listview.py:927,1421`). Note: the full
+  record is no longer available at emission time (already deleted
+  from the datasource), so only the id is passed.
+- `ListView.<<ItemDeleteFail>>` now carries
+  `event.data = {'record_id': Any, 'error': str}` (`listview.py:929`).
+- Updated `on_item_*` docstrings and the `listview.md` events table
+  to match the actual payloads.
+
+**Next session (no display needed): continue the bug list.**
+
+The per-page session notes below still contain further bugs. Remaining
+higher-value bugs without a display requirement:
+
+- `follow_system_appearance` is silently no-op on Windows/Linux
+  (documented; no code fix possible without OS-level hooks).
+- `ListView`/`TableView` event name suffix mismatches in docstrings
+  (e.g. `<<ItemInserted>>` vs `<<ItemInsert>>` in source comments).
+- `TableView` export events fire on `self._tree` instead of the
+  `TableView` (no `on_export_*` helpers exist).
+- Various `LabelFrame`, `Scrollbar`, `Separator` orientation and
+  surface configuration bugs (see per-page notes).
+- `ValidationResult` has no `__bool__` (`bool(result)` is always
+  `True`).
+- `BootstrapIcon` theme-token crash when `color='primary'` is passed
+  as `IconSpec.color`.
+
+Run `python tools/check_doc_snippets.py --run` before and after each
+fix to guard against regressions.
 
 **Bug-fix session 4 (2026-05-03) — CLOSED. Commit: `1ca3743`.**
 
@@ -95,26 +151,6 @@ Fixed (10 bugs, docs updated to match each):
   `super().pack_propagate()` / `super().grid_propagate()` without
   args when `flag is None` (`core/capabilities/pack.py:112`,
   `core/capabilities/grid.py:113`).
-
-**Next session (no display needed): continue the bug list.**
-
-The per-page session notes below still contain further bugs. The
-remaining higher-value bugs without a display requirement (search for
-`"Surfaced by"` and `"!!! warning"` / `"!!! danger"` blocks in the
-per-page notes). Notable remaining items:
-
-- `follow_system_appearance` is silently no-op on Windows/Linux
-  (documented; no code fix possible without OS-level hooks).
-- Various dialog localization bugs (`MessageDialog`, `FormDialog`,
-  `FilterDialog` show literal `button.ok`/`button.cancel` keys when
-  `localize=False`).
-- Various `ListView`/`TableView` event payload mismatches.
-- `Notebook.remove()` / `forget()` MRO conflict (`TypeError`).
-- `TabView.remove(key)` always raises `KeyError`.
-- `Calendar.set(None)` / `set_range(None, None)` are no-ops.
-
-Run `python tools/check_doc_snippets.py --run` before and after each
-fix to guard against regressions.
 
 **Bug-fix session 3 (2026-05-03) — CLOSED. Commit: `417abe4`.**
 
