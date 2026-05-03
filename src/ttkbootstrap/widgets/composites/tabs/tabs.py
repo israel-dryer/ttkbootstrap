@@ -85,6 +85,10 @@ class Tabs(Frame):
         """
         super().__init__(master=master, **kwargs)
 
+        if variant not in ('default', 'bar', 'pill'):
+            raise ValueError(f"Unknown Tabs variant {variant!r}. Valid values: 'default', 'bar'.")
+        if variant == 'pill':
+            raise ValueError("variant='pill' is not implemented. Use 'default' or 'bar'.")
         self._orient = orient
         self._variant = variant
         self._compound = compound
@@ -326,6 +330,10 @@ class Tabs(Frame):
             tab.pack(before=self._add_button, **pack_opts)
         else:
             tab.pack(**pack_opts)
+
+        # Forward TabItem events to Tabs so callers can bind on the Tabs widget
+        tab.bind('<<TabSelect>>', lambda e: self.event_generate('<<TabSelect>>', data=e.data), add='+')
+        tab.bind('<<TabClose>>', lambda e: self.event_generate('<<TabClose>>', data=e.data), add='+')
 
         # Track tab by key
         self._tabs[key] = tab

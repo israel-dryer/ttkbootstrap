@@ -152,10 +152,8 @@ r.validate("Xfoo").is_valid    # True
 r.validate("foo").is_valid     # False
 ```
 
-!!! warning "A `'custom'` rule with no `func=` silently passes everything"
-    The validate branch is `if func and not func(value)`, so a missing
-    callable short-circuits to `is_valid=True`. There is no error at
-    construction or validation time.
+A `'custom'` rule with no `func=` fails with `is_valid=False` and a
+"No validation function provided." message — it no longer silently passes.
 
 Default message: `"Invalid value."` Override with `message="..."` (or
 return a tuple from `func` and post-process the result yourself).

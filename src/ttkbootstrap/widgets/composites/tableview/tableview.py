@@ -1813,14 +1813,14 @@ class TableView(Frame):
     def _export_all(self) -> None:
         try:
             rows = self._datasource.get_page_from_index(0, self._datasource.total_count())
-            self._tree.event_generate("<<TableViewExportAll>>", data=rows)
+            self.event_generate("<<TableViewExportAll>>", data=rows)
         except Exception:
             pass
 
     def _export_selection(self) -> None:
         try:
             selected = [self._row_map[iid] for iid in self._tree.selection() if iid in self._row_map]
-            self._tree.event_generate("<<TableViewExportSelection>>", data=selected)
+            self.event_generate("<<TableViewExportSelection>>", data=selected)
         except Exception:
             pass
 
@@ -1828,7 +1828,7 @@ class TableView(Frame):
         try:
             start_index = self._current_page * self._paging['page_size']
             rows = self._datasource.get_page_from_index(start_index, self._paging['page_size'])
-            self._tree.event_generate("<<TableViewExportPage>>", data=rows)
+            self.event_generate("<<TableViewExportPage>>", data=rows)
         except Exception:
             pass
 

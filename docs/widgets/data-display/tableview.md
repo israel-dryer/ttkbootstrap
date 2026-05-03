@@ -266,14 +266,9 @@ tv.on_row_inserted(lambda e: print("inserted:", e.data["records"]))
 The `on_*` helpers return a Tk bind ID; pass it to `off_*` to detach
 a specific listener.
 
-!!! warning "Export events fire on the inner Treeview, not on `self`"
-    `enable_exporting=True` adds an Export dropdown that emits
-    `<<TableViewExportAll>>`, `<<TableViewExportSelection>>`, or
-    `<<TableViewExportPage>>` (carrying the row list as
-    `event.data`). These events are generated on
-    **`tv._tree`** (the internal `TreeView`) — not on `tv` — and
-    there are no `on_export_*` helpers. To consume them today,
-    bind to the private inner widget; a public API is pending.
+Export events (`<<TableViewExportAll>>`, `<<TableViewExportSelection>>`,
+`<<TableViewExportPage>>`) fire on `tv` with `event.data` containing
+the exported row list. Bind them directly on the `TableView` widget.
 
 ---
 

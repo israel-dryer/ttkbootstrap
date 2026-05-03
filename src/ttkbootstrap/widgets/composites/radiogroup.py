@@ -473,7 +473,7 @@ class RadioGroup(Frame):
             A tuple of all values that can be selected.
 
         """
-        return tuple(self._buttons.keys())
+        return tuple(b.cget("value") for b in self._buttons.values())
 
     def __len__(self) -> int:
         """Return the number of buttons in the group."""

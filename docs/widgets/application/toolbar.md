@@ -79,11 +79,9 @@ search = ttk.Entry(toolbar.content)   # parent must be toolbar.content
 toolbar.add_widget(search, padx=8)
 ```
 
-!!! warning "Parent enforcement is silent"
-    `add_widget()` does not validate the widget's parent. A widget
-    parented to a different frame is still call-`pack`-ed, but it
-    appears at the wrong parent — not inside the toolbar. Always
-    construct the widget with `toolbar.content` as its parent.
+`add_widget()` raises `ValueError` if the widget is not parented to
+`toolbar.content`. Construct the widget with `toolbar.content` as its
+parent before passing it to `add_widget()`.
 
 ### Stretch separators vs fixed-length
 

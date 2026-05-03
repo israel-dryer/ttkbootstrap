@@ -175,35 +175,10 @@ round-trip preserves the original spec shape: pass a string and
 the dict you passed (the DPI-scaled `size` and other normalizations
 happen inside `map_stateful_icons`, not on the stored config value).
 
-!!! danger "Theme tokens crash when supplied as `IconSpec.color`"
-    `Button(icon={'name': 'star', 'color': 'primary'})` raises
-    `ValueError: unknown color specifier: 'primary'` from PIL. The
-    `_image_for` helper at `style/bootstyle_builder_base.py:684` calls
-    `BootstrapIcon(name=name, size=size, color=color)` directly without
-    resolving the token — so PIL receives the literal string and
-    rejects it. Hex strings (`'#ff6600'`) and PIL named colors
-    (`'red'`, `'navy'`) work; theme tokens (`'primary'`,
-    `'background[+1]'`) do not.
-
-    The reliable workarounds:
-
-    1. **Omit `color`** so the foreground map (which is already-resolved
-       to hex by the widget's style builder) drives the icon. This is
-       the recommended path.
-    2. **Resolve the token yourself first** before constructing the
-       spec:
-
-        ```python
-        import ttkbootstrap as ttk
-
-        app = ttk.App()
-        builder = ttk.Style().style_builder
-        primary_hex = builder.color('primary')   # → e.g. '#4D76F6'
-        ttk.Button(app, text='X', icon={'name': 'star', 'color': primary_hex}).pack(padx=20)
-        ```
-
-    The same crash applies to per-state `color` overrides
-    (`'state': [('hover', {'color': 'success'})]`).
+Theme tokens (`'primary'`, `'background[+1]'`, etc.) in `IconSpec.color`
+and per-state `color` overrides are resolved through `self.color(...)`
+before reaching PIL, so `Button(icon={'name': 'star', 'color': 'primary'})`
+works. Hex strings and PIL named colors also work directly.
 
 ---
 

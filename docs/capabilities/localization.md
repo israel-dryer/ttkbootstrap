@@ -217,26 +217,6 @@ Dict form accepts `{type, precision, currency, pattern, use_grouping}`.
 | `'day'` / `'month'` / `'year'` / `'quarter'` / `'dayOfWeek'` / `'hour'` / `'minute'` / `'second'` / `'millisecond'` | Single-component renders | |
 | CLDR pattern (e.g. `'yyyy-MM-dd'`) | Treated as `'custom'` if the string is not a known preset | |
 
-!!! danger "Time-only formatting is broken"
-
-    `IntlFormatter.format(time_obj, 'shortTime')` — and every other
-    time-only preset (`'longTime'`, `'hour'`, `'minute'`, `'second'`,
-    `'millisecond'`) — raises `TypeError: tzinfo argument must be
-    None or of a tzinfo subclass, not type 'str'`. Cause:
-    `_format_time` at `core/localization/intl_format.py:441-446`
-    calls `format_time(t, 'short', self.locale)`. Babel's
-    `format_time` signature is `format_time(time, format, tzinfo,
-    locale)` — the third positional is `tzinfo`, not `locale`, so
-    the locale string lands in the wrong slot. Fix: replace each
-    `format_time(..., self.locale)` with
-    `format_time(..., locale=self.locale)` (or insert `None` as the
-    `tzinfo` positional). Workaround: format from a `datetime`
-    instead of a bare `time`, or call Babel's `format_time` directly
-    with `locale=` as a kwarg.
-
-    Date-only and datetime presets are unaffected — Babel's
-    `format_date` and `format_datetime` have `locale` as their third
-    positional parameter, which matches the IntlFormatter calls.
 
 ### Parsing
 

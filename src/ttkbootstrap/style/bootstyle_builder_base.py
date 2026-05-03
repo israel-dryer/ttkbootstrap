@@ -679,11 +679,20 @@ class BootstyleBuilderBase:
             # Ensure our custom icon provider is initialized with the correct y_bias
             _ensure_icon_provider()
 
+            # Resolve theme token (e.g. 'primary') to a hex color before passing
+            # to BootstrapIcon. PIL only accepts hex/named colors, not theme tokens.
+            resolved_color = color
+            if color and not color.startswith('#'):
+                try:
+                    resolved_color = self.color(color)
+                except Exception:
+                    pass  # leave as-is; BootstrapIcon will raise a clear PIL error
+
             # Call the provider directly; it returns an icon object with `.image`
             try:
-                icon_obj = BootstrapIcon(name=name, size=size, color=color)  # type: ignore[misc]
+                icon_obj = BootstrapIcon(name=name, size=size, color=resolved_color)  # type: ignore[misc]
             except TypeError:
-                icon_obj = BootstrapIcon(name, size, color)  # type: ignore[misc]
+                icon_obj = BootstrapIcon(name, size, resolved_color)  # type: ignore[misc]
             if icon_obj is None:
                 return None
 

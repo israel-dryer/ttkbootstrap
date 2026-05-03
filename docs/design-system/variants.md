@@ -50,12 +50,8 @@ and `surface` alone, and passing `variant=` at all raises
 `BootstyleBuilderError`. If a widget isn't listed above, assume
 `default` is the only valid value.
 
-!!! warning "`Tabs(variant='pill')` raises at the first `add()` call"
-    The `Tabs` constructor signature lists `'pill'` as a supported
-    variant alongside `'bar'`, but no `pill` builder is registered for
-    `TabItem.TFrame`. Construction succeeds, then the first `add()`
-    raises `BootstyleBuilderError: Builder 'pill' not found for widget
-    class 'TabItem.TFrame'. Available variants: default, bar`.
+`Tabs(variant='pill')` raises `ValueError` immediately at construction
+— `'pill'` is not yet implemented. Use `'default'` or `'bar'`.
 
 ## What each variant does
 

@@ -438,19 +438,19 @@ class IntlFormatter:
         opt = self._normalize_date_spec(spec)
         typ = opt["type"]
         if typ == "custom": return format_time(t, format=opt["pattern"], locale=self.locale)
-        if typ == "longTime": return format_time(t, "long", self.locale)
-        if typ == "shortTime": return format_time(t, "short", self.locale)
-        if typ == "hour": return format_time(t, "H", self.locale)
-        if typ == "minute": return format_time(t, "m", self.locale)
-        if typ == "second": return format_time(t, "s", self.locale)
-        if typ == "millisecond": return format_datetime(datetime.combine(date.today(), t), "S", self.locale)
+        if typ == "longTime": return format_time(t, "long", locale=self.locale)
+        if typ == "shortTime": return format_time(t, "short", locale=self.locale)
+        if typ == "hour": return format_time(t, "H", locale=self.locale)
+        if typ == "minute": return format_time(t, "m", locale=self.locale)
+        if typ == "second": return format_time(t, "s", locale=self.locale)
+        if typ == "millisecond": return format_datetime(datetime.combine(date.today(), t), "S", locale=self.locale)
         if typ in ("longDate", "shortDate", "monthAndDay", "monthAndYear", "quarterAndYear", "day", "dayOfWeek",
                    "month", "quarter", "year"):
-            return format_time(t, "short", self.locale)
+            return format_time(t, "short", locale=self.locale)
         if typ in ("longDateLongTime", "shortDateShortTime"):
             return format_datetime(
-                datetime.combine(date.today(), t), "long" if typ == "longDateLongTime" else "short", self.locale)
-        return format_time(t, "short", self.locale)
+                datetime.combine(date.today(), t), "long" if typ == "longDateLongTime" else "short", locale=self.locale)
+        return format_time(t, "short", locale=self.locale)
 
     def _format_datetime(self, dt: datetime, spec: LooseSpec) -> str:
         opt = self._normalize_date_spec(spec)

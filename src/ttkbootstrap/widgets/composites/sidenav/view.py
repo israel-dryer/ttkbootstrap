@@ -107,7 +107,7 @@ class SideNav(Frame):
         show_back_button: bool = False,
         collapsible: bool = True,
         display_mode: DisplayMode = 'expanded',
-        is_pane_open: bool = True,
+        is_pane_open: bool = None,
         pane_width: int = None,
         signal: 'Signal[str]' = None,
         variable: Variable = None,
@@ -141,6 +141,9 @@ class SideNav(Frame):
         self._show_back_button = show_back_button
         self._collapsible = collapsible
         self._display_mode = display_mode
+        # Default: minimal mode starts closed (hidden); other modes start open
+        if is_pane_open is None:
+            is_pane_open = display_mode != 'minimal'
         self._is_pane_open = is_pane_open
         self._pane_width = pane_width
 

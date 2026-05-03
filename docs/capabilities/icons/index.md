@@ -66,21 +66,11 @@ Constructor surface (from `ttkbootstrap_icons_bs.BootstrapIcon`):
 The icon object also exposes `.image` (the cached `PhotoImage`),
 `.name`, `.size`, `.color`, and `.cleanup()` for explicit teardown.
 
-!!! danger "Theme tokens crash here"
-    `BootstrapIcon('star', color='primary')` raises
-    `ValueError: unknown color specifier: 'primary'` from PIL. The
-    direct constructor passes `color` straight through to PIL, which
-    only understands hex strings and PIL color names. Theme tokens
-    like `'primary'`, `'success'`, or modifier-style tokens like
-    `'background[+1]'` only resolve when the spec is processed by the
-    style engine — i.e., when you pass it as `IconSpec` through a
-    widget's `icon=` kwarg, **not** when you call `BootstrapIcon(...)`
-    yourself. This is a real bug in `_image_for` at
-    `style/bootstyle_builder_base.py:684`: theme tokens supplied via
-    the per-state override path (`icon.color` or `state[*].color`) are
-    forwarded to PIL without going through `self.color(...)` first.
-    Resolve the token yourself with `app.style.builder.color('primary')`
-    before constructing an icon, or stick to hex values.
+Theme tokens (`'primary'`, `'background[+1]'`, etc.) are resolved
+through the style engine before reaching PIL, so
+`Button(icon={'name': 'star', 'color': 'primary'})` works. When
+calling `BootstrapIcon(...)` directly, pass a resolved hex value or a
+PIL named color — the direct constructor does not resolve tokens.
 
 ---
 

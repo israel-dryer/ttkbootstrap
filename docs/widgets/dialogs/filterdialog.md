@@ -83,15 +83,8 @@ A few non-obvious points:
 - `.result` is set by the OK button's command callback before the
   dialog destroys. Cancel paths leave it untouched.
 
-!!! warning "Stale result on re-`show()`"
-
-    `FilterDialog.show()` does **not** reset `.result` to `None` at
-    the start of each call (only the underlying `Dialog`'s own
-    `result` is reset). If you call `show()` once, the user clicks
-    OK, then you call `show()` again and the user cancels, the
-    second call returns the **previous** OK result rather than
-    `None`. Always set `dlg.result = None` before re-showing, or
-    construct a fresh `FilterDialog` per opening.
+`.result` is reset to `None` at the start of each `show()` call, so
+re-using a `FilterDialog` across multiple openings is safe.
 
 ---
 

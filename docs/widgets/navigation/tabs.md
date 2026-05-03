@@ -109,13 +109,8 @@ this for you).
 | `variable` | internal | Shared `tk.Variable` for selection state. Wrapped into a `Signal` internally. |
 | `accent` | `None` | Theme token for the active-tab indicator (the underline in the `bar` variant). Defaults to `primary` when omitted. |
 
-!!! warning "`variant='pill'` is not implemented"
-    The constructor accepts `"pill"` and the docstring lists it, but
-    no `pill` builder is registered for `TabItem.TFrame`. Passing
-    `variant="pill"` raises
-    `BootstyleBuilderError: Builder 'pill' not found for widget
-    class 'TabItem.TFrame'. Available variants: default, bar`. Use
-    `"bar"` (or omit `variant`) until the builder ships.
+`variant='pill'` raises `ValueError` at construction — the pill builder
+is not yet implemented. Use `'bar'` or `'default'`.
 
 The bar inherits standard `Frame` chrome (`surface`, `padding`,
 `show_border`, `density`); the active-tab underline color is driven
@@ -182,22 +177,12 @@ individual `TabItem` returned by `add()`.
 
 | Event | Fired on | When | `event.data` |
 |---|---|---|---|
-| `<<TabSelect>>` | the **TabItem** clicked | tab is clicked or `tab.select()` is called | `{"value": <tab.value>}` |
-| `<<TabClose>>` | the **TabItem** | close button is clicked | `{"value": <tab.value>}` |
+| `<<TabSelect>>` | the **TabItem** *and* **Tabs** | tab is clicked or `tab.select()` is called | `{"value": <tab.value>}` |
+| `<<TabClose>>` | the **TabItem** *and* **Tabs** | close button is clicked | `{"value": <tab.value>}` |
 | `<<TabAdd>>` | the **Tabs** widget | the `+` / `New` button is clicked (with `enable_adding=True`) | *none* |
 
-!!! warning "`<<TabSelect>>` does not bubble to `Tabs`"
-    Tk virtual events do not propagate through the parent chain, and
-    `Tabs` does not forward them. `tabs.bind("<<TabSelect>>", ...)`
-    silently registers a callback that never fires. To observe
-    selection at the bar level, use `tabs.on_tab_changed(...)` or
-    `tabs.signal.subscribe(...)`. To observe a single tab, bind on
-    that `TabItem`:
-
-    ```python
-    home = tabs.add(text="Home", key="home")
-    home.bind("<<TabSelect>>", lambda e: print("home clicked", e.data))
-    ```
+`<<TabSelect>>` and `<<TabClose>>` fire on the `TabItem` first, then
+are forwarded to the `Tabs` widget. Bind on either:
 
 `Tabs` exposes two `on_*` helpers, each with a different callback
 shape — choose by what you want delivered:

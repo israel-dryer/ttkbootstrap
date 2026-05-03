@@ -126,13 +126,8 @@ Per-tab options live in `add()`:
 | `command` | Callback invoked when the tab is selected (in addition to the variable trace). Receives no arguments. |
 | `**kwargs` | When `page=` is `None`, forwarded to the auto-created Frame (`padding`, `surface`, `show_border`, …). |
 
-!!! warning "`variant=\"pill\"` crashes on the first `add()`"
-    The constructor signature lists `"pill"` as a valid variant, and
-    `TabView(variant="pill")` returns successfully — but the very
-    next `add()` call raises
-    `BootstyleBuilderError: Builder 'pill' not found for widget
-    class 'TabItem.TFrame'`. Same root cause as the
-    [Tabs `variant="pill"` bug](../navigation/tabs.md#common-options).
+`variant='pill'` raises `ValueError` at construction — the pill builder
+is not yet implemented. Use `'bar'` or `'default'`.
     Stick to `"bar"` until a `pill` builder is registered.
 
 ---
@@ -212,27 +207,12 @@ def on_change(event):
 tabview.on_page_changed(on_change)
 ```
 
-!!! warning "`<<TabSelect>>` and `<<TabClose>>` do not fire on TabView"
-    The class docstring (`composites/tabs/tabview.py:23-27`) lists
-    `<<TabSelect>>`, `<<TabClose>>`, `<<TabAdd>>`, and `<<PageChange>>`
-    under "Events", but **only `<<PageChange>>` and `<<TabAdd>>`
-    actually reach the TabView**. `<<TabSelect>>` and `<<TabClose>>`
-    are emitted on the individual `TabItem`, and Tk virtual events
-    do not propagate up the parent chain — so binding them on
-    `tabview` silently no-ops. Same shape as the
-    [Tabs bubbling bug](../navigation/tabs.md#events).
-
-    For per-tab events, bind on the TabItem itself:
-
-    ```python
-    tab = tabview.tab("home")
-    tab.bind("<<TabSelect>>", on_select)
-    tab.bind("<<TabClose>>", on_close)
-    ```
-
-    For aggregate "any tab changed" handling, prefer
-    `on_page_changed` — it fires on every navigation regardless of
-    which tab was clicked.
+`<<TabSelect>>` and `<<TabClose>>` fire on the `TabItem` first, then
+are forwarded to the `Tabs` bar (and from there they also reach
+`TabView`). Bind on the TabView, the Tabs bar, or the individual
+TabItem — all three work. For aggregate "any tab changed" handling,
+prefer `on_page_changed` — it fires on every navigation regardless
+of which tab was clicked.
 
 The page-level `<<PageWillMount>>` / `<<PageMount>>` /
 `<<PageUnmount>>` events from

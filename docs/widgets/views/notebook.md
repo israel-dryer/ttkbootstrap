@@ -179,18 +179,15 @@ page = nb.add(text="Settings", key="settings", padding=10, accent="primary")
 # Frame is created with padding=10, accent='primary'
 ```
 
-!!! warning "kwargs are silently dropped on the existing-widget path"
-    When you pass an existing widget, extra kwargs are *not* applied
-    to it:
+When you pass an existing widget, any extra `**kwargs` are applied via
+`widget.configure(**kwargs)` — the widget's own options take effect
+but do not override its construction arguments for Tk-immutable options.
 
-    ```python
-    existing = ttk.Frame(nb, padding=5)
-    nb.add(existing, key="x", text="X", padding=99)
-    # existing.cget('padding') is still (5,) — the 99 was ignored
-    ```
-
-    Configure the widget directly before or after `add()`. (Same
-    shape as the [`PageStack.add`](pagestack.md) kwargs-drop bug.)
+```python
+existing = ttk.Frame(nb, padding=5)
+nb.add(existing, key="x", text="X", padding=99)
+# existing.cget('padding') is now (99,) — kwargs applied
+```
 
 ---
 
@@ -214,16 +211,8 @@ nb.remove("settings")   # gone; key freed
 nb.hide("settings")     # off strip; can be restored
 ```
 
-!!! warning "Failed `add()` leaves orphan tabs in the strip"
-    Both validation steps inside `_make_key` (duplicate key,
-    empty-string key) run *after* `super().insert()` has already
-    added the auto-created `Frame` to the underlying ttk notebook.
-    A failed `add(key="dup")` therefore leaves a tab in the strip
-    that has no entry in `_key_registry` and no entry in `_tk_to_key`.
-    `nb.keys()` reports it as `''` (empty string).
-
-    Workaround: validate keys before calling `add()`, or catch the
-    exception and call `nb.remove(nb.tabs()[-1])` to clean up the orphan.
+Key validation (duplicate key, empty-string key) runs before the
+underlying ttk insert, so a failed `add()` leaves no orphan tab.
 
 ### Tab states
 

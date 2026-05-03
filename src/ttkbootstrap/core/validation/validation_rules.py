@@ -80,7 +80,9 @@ class ValidationRule:
                 return ValidationResult(False, msg)
         elif self.type == "custom":
             func: Callable[[str], bool] = self.params.get("func")
-            if func and not func(value):
+            if func is None:
+                return ValidationResult(False, msg or "No validation function provided.")
+            if not func(value):
                 return ValidationResult(False, msg)
 
         return ValidationResult(True)

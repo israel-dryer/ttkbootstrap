@@ -73,30 +73,10 @@ print(result.message)    # 'Enter at least 3 characters.'
 `ValidationRule.validate()` always returns a `ValidationResult` and
 never raises.
 
-!!! danger "`if result:` is always True"
+`bool(result)` delegates to `result.is_valid`, so `if result:` and
+`if result.is_valid:` are equivalent. Both forms are safe.
 
-    There is no `__bool__` override on `ValidationResult`, so the
-    object's truthiness is the default for any user-defined class:
-    truthy. **`bool(ValidationResult(False))` is `True`.**
-
-    This makes `if rule.validate(value): ...` a silent footgun:
-
-    ```python
-    # WRONG — always taken
-    if ttk.ValidationRule("required").validate(""):
-        save_form()
-
-    # Right — check the field
-    if ttk.ValidationRule("required").validate("").is_valid:
-        save_form()
-    ```
-
-    Either always read `.is_valid`, or wrap the truthiness check
-    yourself. The `ValidationRule` itself short-circuits correctly
-    inside the framework because it accesses `result.is_valid`
-    explicitly.
-
-There is also no `__eq__`, `__repr__`, or `__hash__`.
+There is no `__eq__`, `__repr__`, or `__hash__`.
 `ValidationResult(True) == ValidationResult(True)` is `False` (object
 identity), and `repr(result)` shows the default
 `<...ValidationResult object at 0x...>`. Compare the fields directly

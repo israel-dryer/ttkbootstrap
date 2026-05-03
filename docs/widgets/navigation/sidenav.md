@@ -174,13 +174,10 @@ both have `is_pane_open=True` — the distinction is conceptual:
 occasionally hidden; `minimal` describes one that's typically hidden
 and only briefly opened.
 
-!!! warning "`display_mode='minimal'` does not start hidden"
-    Despite the name, `display_mode='minimal'` defaults `is_pane_open=True`
-    — the pane is shown in full at startup. To get a sidebar that
-    starts hidden and opens on toggle, pass both
-    `display_mode='minimal', is_pane_open=False`. The `compact` /
-    `expanded` toggle dance via `toggle_pane()` is a separate path; see
-    the next note.
+`display_mode='minimal'` defaults `is_pane_open=False` — the pane
+starts hidden and opens when toggled. Pass `is_pane_open=True`
+explicitly to override. The `compact` / `expanded` toggle dance via
+`toggle_pane()` is a separate path; see the next note.
 
 ### Pane state vs display mode
 

@@ -73,13 +73,9 @@ If you pass an explicit `color` in an `IconSpec`, it overrides the
 inherited foreground. PIL color strings (`"red"`, `"navy"`) and hex
 values (`"#ff6600"`) work directly.
 
-!!! danger "Theme tokens crash when supplied as `IconSpec.color`"
-    Brand semantics like `"primary"` are not pre-resolved before being
-    passed to PIL — they raise `ValueError: unknown color specifier:
-    'primary'`. Use a hex value, omit `color` to inherit, or call
-    `app.style.style_builder.color("primary")` to resolve manually.
-    See [Capabilities → Icons & Imagery](../capabilities/icons/index.md)
-    for the bug detail and workarounds.
+Theme tokens (`"primary"`, `"success"`, etc.) in `IconSpec.color` are
+resolved through the style engine before reaching PIL.
+Hex strings and PIL named colors also work directly.
 
 ### Size and DPI
 

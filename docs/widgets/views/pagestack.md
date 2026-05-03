@@ -235,14 +235,9 @@ The `on_page_changed(callback) -> bind_id` /
 `off_page_changed(bind_id)` helpers wrap `<<PageChange>>` only — the
 other three events have no helper and require explicit `bind()`.
 
-!!! warning "`<<PageUnmount>>` has no payload"
-    `<<PageMount>>`, `<<PageWillMount>>`, and `<<PageChange>>` all
-    carry the full navigation payload via `event.data`.
-    `<<PageUnmount>>` is fired without a `data=` argument, so
-    handlers receive `event.data is None`. Read state from the
-    stack itself (`stack.current()`, `stack.can_back()`) inside the
-    unmount handler. (Logged on the bugs list — should pass the
-    same payload as the other three for consistency.)
+`<<PageUnmount>>` carries `event.data = {'page': key, 'prev_page': prev_key,
+'prev_data': dict}` — a subset of the full navigation payload (the new
+page is not yet mounted so its data is not available at unmount time).
 
 ---
 

@@ -199,7 +199,10 @@ class PageStack(Frame):
 
         # Unmount previous page
         if self._current is not None:
-            self._pages[self._current].event_generate('<<PageUnmount>>', when="tail")
+            self._pages[self._current].event_generate(
+                '<<PageUnmount>>', when="tail",
+                data={"page": self._current, "prev_page": prev_key, "prev_data": prev_data},
+            )
             self._pages[self._current].pack_forget()
 
         # Normalized payload (self-contained snapshot)

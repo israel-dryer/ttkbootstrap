@@ -161,15 +161,8 @@ for `'vertical'`.
   `cget(option)` instead.
 - `keys()` — tuple of registered keys.
 
-!!! warning "`values()` returns keys, not values"
-    The implementation of `RadioGroup.values()` returns
-    `tuple(self._buttons.keys())` — the **keys**, not each radio's
-    `value=`. When `key` defaults to `value` (the common case),
-    that's a tautology. But if you passed `key='foo', value='bar'`,
-    `g.keys()` and `g.values()` both return `('foo',)` —
-    `g.values()` does not surface `'bar'`. Walk
-    `g.items()` and read each radio's `cget('value')` if you need
-    the actual values.
+- `values()` — tuple of `value=` strings for each button (the value written
+  to the shared variable when that button is selected).
 
 **Reconfiguration.** Configure-delegates handle:
 

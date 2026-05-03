@@ -164,27 +164,19 @@ code do not — they stay the same across themes by design.
 
 ## Theme tokens and icons
 
-!!! danger "Theme tokens crash when supplied as `IconSpec.color`"
-    Passing a brand semantic to an icon spec raises a PIL error:
+Theme tokens (`"primary"`, `"success"`, etc.) in `IconSpec.color` and
+per-state color overrides are resolved through the style engine before
+reaching PIL. Hex strings and PIL named colors also work directly.
 
-    ```python
-    # FAILS: PIL receives the literal string 'primary'
-    ttk.Button(app, icon={"name": "star", "color": "primary"})
-    # → ValueError: unknown color specifier: 'primary'
-    ```
+```python
+# All three forms are equivalent and correct
+ttk.Button(app, icon={"name": "star", "color": "primary"})
+ttk.Button(app, icon={"name": "star", "color": "#4D76F6"})
+ttk.Button(app, icon={"name": "star"})  # inherits widget foreground
+```
 
-    The icon-resolution path in `style/bootstyle_builder_base.py` does not
-    pre-resolve `IconSpec.color` through `self.color(...)` before handing
-    it to PIL. Workarounds:
-
-    - Omit `color` so the icon inherits the widget's foreground color
-      (this is the recommended path).
-    - Pass a hex string (`color="#0d6efd"`).
-    - Resolve manually: `color=app.style.style_builder.color("primary")`.
-
-    See [Capabilities → Icons & Imagery](../capabilities/icons/index.md)
-    for the per-state icon override surface and the resolved-foreground
-    path that does work.
+See [Capabilities → Icons & Imagery](../capabilities/icons/index.md)
+for the full per-state icon override surface.
 
 ## Where to read next
 

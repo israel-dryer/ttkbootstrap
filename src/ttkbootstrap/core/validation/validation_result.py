@@ -20,3 +20,6 @@ class ValidationResult:
         """
         self.is_valid = is_valid
         self.message = message
+
+    def __bool__(self) -> bool:
+        return self.is_valid

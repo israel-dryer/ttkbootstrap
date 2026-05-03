@@ -340,9 +340,14 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
             Widget: The tab content widget (passed or created Frame).
 
         """
-        # Create Frame with kwargs if no child provided
+        # Validate key before inserting (avoid orphan tab on validation failure)
+        tab_key = self._make_key(key)
+
+        # Create Frame with kwargs if no child provided; otherwise configure existing widget
         if child is None:
             child = Frame(self, **kwargs)
+        elif kwargs:
+            child.configure(**kwargs)
 
         self._mark_api_change('reorder')
 
@@ -362,7 +367,6 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
             tab_opts['underline'] = underline
 
         super().insert(index, child, **tab_opts)
-        tab_key = self._make_key(key)
         self._tk_to_key[str(child)] = tab_key
         self._key_registry[tab_key] = child
         self._register_tab_token(str(child), text, tuple(fmtargs))

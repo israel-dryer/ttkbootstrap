@@ -339,6 +339,11 @@ class Toolbar(Frame):
             Widget: The added widget.
 
         """
+        if widget.master is not self._content_frame:
+            raise ValueError(
+                f"widget must be parented to toolbar.content, not {widget.master!r}. "
+                "Create the widget with `toolbar.content` as its parent."
+            )
         pack_kwargs.setdefault('side', 'left')
         pack_kwargs.setdefault('padx', 2)
         widget.pack(**pack_kwargs)

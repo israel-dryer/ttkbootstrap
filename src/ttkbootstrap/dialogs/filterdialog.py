@@ -326,6 +326,7 @@ class FilterDialog(ttk.Frame):
         Returns:
             List of selected item values, or None if canceled.
         """
+        self.result = None
         self._dialog: Dialog = Dialog(
             master=self._master,
             title=self._title,
