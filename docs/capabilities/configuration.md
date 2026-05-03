@@ -209,17 +209,18 @@ each individually with the file:line of the broken delegator.
 
 ### Switching theme at runtime
 
-The canonical runtime theme switch is `Style.theme_use(name)`:
+The canonical runtime theme switch is `ttk.set_theme(name)`:
 
 ```python
 import ttkbootstrap as ttk
 
 app = ttk.App()
-style = ttk.Style()
-style.theme_use("bootstrap-dark")
+ttk.set_theme("bootstrap-dark")
 ```
 
 This rebuilds every theme-managed element and fires `<<ThemeChanged>>`.
+Use `ttk.toggle_theme()` to flip between the configured light and dark
+themes without specifying a name.
 
 !!! note "`app.settings.theme` is the initial theme preference, not a live setter"
     `settings.theme` is read once at startup to determine which theme

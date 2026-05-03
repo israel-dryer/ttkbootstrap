@@ -119,7 +119,7 @@ semantic map — and you get the full token vocabulary documented in
 ## Registering and switching to a custom theme
 
 Register the theme **before** creating the App, then switch to it
-through `Style().theme_use(name)`:
+with `ttk.set_theme(name)`:
 
 ```python
 import json
@@ -159,8 +159,7 @@ path.write_text(json.dumps(theme))
 register_user_theme("demo-dark", str(path))
 
 app = ttk.App(title="Custom theme")
-style = ttk.Style()
-style.theme_use("demo-dark")
+ttk.set_theme("demo-dark")
 
 ttk.Button(app, text="Save", accent="primary").pack(padx=20, pady=20)
 app.mainloop()
@@ -168,15 +167,9 @@ app.mainloop()
 
 `register_user_theme(name, path)` reads the JSON, validates the schema,
 and registers the theme under the given name. After that, the theme
-appears in `ttk.get_themes()` and is usable via
-`Style().theme_use(name)`. Theme switching cascades automatically
-through every widget; no per-widget reconfiguration is required.
-
-!!! note "Use `Style().theme_use(name)` for switching"
-    The public `ttk.set_theme(name)` helper currently has issues
-    propagating user-registered themes to live widgets. The reliable
-    path is to obtain the Style instance and call `theme_use()`
-    directly. For switching between bundled themes, both paths work.
+appears in `ttk.get_themes()` and is switchable via `ttk.set_theme(name)`.
+Theme switching cascades automatically through every widget; no
+per-widget reconfiguration is required.
 
 ## Reading from a packaged file
 

@@ -152,7 +152,7 @@ app = ttk.App(title="Theme switch")
 ttk.Button(app, text="Save", accent="primary").pack(padx=20, pady=20)
 
 def to_dark():
-    ttk.Style().theme_use("bootstrap-dark")
+    ttk.set_theme("bootstrap-dark")
 
 ttk.Button(app, text="Dark mode", command=to_dark, variant="outline").pack(pady=5)
 app.mainloop()
