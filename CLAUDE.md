@@ -34,7 +34,7 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-03, bug-fix session 1 DONE — next-session entry point)
+### Current handoff (2026-05-03, bug-fix session 2 DONE — next-session entry point)
 
 **Read this section first.** The full per-page session notes below
 this handoff are historical context — useful when picking up
@@ -63,6 +63,39 @@ pass is also complete (commit `e07c372`).
    `TableView`, `MessageDialog`, `BaseDataSource`, etc. — no
    orphan `Examples:`, no broken cross-links, both `Attributes:`
    and `Args:` rendering side-by-side.
+
+**Bug-fix session 2 (2026-05-03) — CLOSED. Commit: `1bdd489`.**
+
+Fixed (10 bugs, docs updated to match each):
+
+- `SelectBox.configure(value=X)` inverted delegate — swapped
+  `if value is not None` branches in `_delegate_value`
+  (`composites/selectbox.py:493`).
+- `SelectBox.<<Change>>` now fires on the SelectBox itself — added
+  `self.event_generate(...)` after the inner `entry_widget` emit
+  (`selectbox.py:536`).
+- `Calendar.set()` / `set_range()` now enforce `min_date`,
+  `max_date`, and `disabled_dates` — call `_is_disabled()` and
+  return early on invalid dates (`composites/calendar.py`).
+- `Calendar.set_range(None, None)` now clears `_selected_date` —
+  fallback changed from `self._selected_date` to `None`
+  (`calendar.py:286`).
+- `PageStack.remove(key)` now rewrites `_history` to strip orphan
+  entries and adjusts `_index` accordingly
+  (`composites/pagestack.py:125`).
+- `PageStack.add(key, page, **kwargs)` now forwards `**kwargs` via
+  `page.configure(**kwargs)` when `page=` is provided
+  (`pagestack.py:107`).
+- `TabView.navigate(key, data=...)` double history push fixed —
+  suppresses variable trace during navigate so only one
+  `pagestack.navigate()` runs (`tabs/tabview.py:220`).
+- `Tabs.add()` no longer clobbers signal initial value — guards
+  auto-select on `not self._variable.get()` (`tabs/tabs.py:335`).
+- `Tabs.remove(key)` now falls through to next tab (or `""`) when
+  the active tab is removed (`tabs/tabs.py:354`).
+- `RadioGroup(accent=...)` now reaches child radios — restores
+  `_accent` after `super().__init__()`, same fix ToggleGroup had
+  (`composites/radiogroup.py:106`).
 
 **Bug-fix session 1 (2026-05-03) — CLOSED. Commits: `8deee17`
 `64002c6` `dfa11f7` `280d95f` `906c0f6` `1cc06b2` `42ee1dd`.**
@@ -111,30 +144,25 @@ Fixed (15 bugs, docs updated to match each):
 
 **Next session (no display needed): continue the bug list.**
 
-Remaining bugs are still logged in the per-page notes below (search
-"Surfaced by"). Good next targets in roughly ascending complexity:
+The 10-bug list from session 2 is fully closed. Remaining bugs are
+still logged in the per-page notes below (search "Surfaced by").
+The next-highest-value bugs without a display requirement (search
+the per-page notes for specifics):
 
-1. `SelectBox.configure(value=X)` inverted delegate — same pattern
-   as the LabeledScale fix (`composites/selectbox.py:493`).
-2. `SelectBox.<<Change>>` fires on `entry_widget`, not `SelectBox`
-   — forward via a second `event_generate` (`selectbox.py:536`).
-3. `Calendar` programmatic setters bypass `min_date`/`max_date`/
-   `disabled_dates` — validate inside `set()`/`set_range()`.
-4. `Calendar.set_range(None, None)` stale `_selected_date`
-   (`calendar.py:274`).
-5. `PageStack.remove(key)` orphans `_history` — strip orphan entries
-   and adjust `_index` (`composites/pagestack.py:114`).
-6. `PageStack.add(key, page, **kwargs)` silently drops `**kwargs`
-   when `page=` is provided (`pagestack.py:106`).
-7. `TabView.navigate(key, data=...)` double history push — variable
-   trace + explicit navigate call both push (`tabs/tabview.py:218`).
-8. `Tabs.add()` clobbers signal initial value on first tab
-   (`tabs/tabs.py:335`).
-9. `Tabs.remove(key)` leaves orphan value in variable when active
-   tab is removed (`tabs/tabs.py:352`).
-10. `RadioGroup(accent='success')` accent not forwarded to children
-    — Frame super().__init__ resets `_accent` (`radiogroup.py`).
-    (ToggleGroup already has the fix at `togglegroup.py:96`.)
+- `ToggleGroup.set(value)` does not validate against known keys
+  (same shape as the RadioGroup orphan-value bug).
+- `OptionMenu.set(value)` does not validate against `options=`.
+- `SelectBox.value = "not_in_items"` is accepted even when
+  `allow_custom_values=False`.
+- `SideNav.select(key)` does not validate key.
+- `Accordion.add()` raises `TypeError` when accordion has `accent`
+  and per-call `add()` also passes `accent=`.
+- `Accordion.remove(key)` suppresses `<<AccordionChange>>` when
+  removing the last expander.
+- `Accordion.configure(show_separators=...)` does not retroactively
+  add/remove separators.
+- `Expander.collapsible=False` does not gate programmatic
+  `expand()`/`collapse()` paths.
 
 Run `python tools/check_doc_snippets.py --run` before and after each
 fix to guard against regressions. Update the relevant `.md` page to
