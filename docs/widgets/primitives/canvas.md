@@ -287,14 +287,14 @@ additional kwargs that are not real Tk options:
 | `inherit_surface` | `bool` | Default from `AppSettings.inherit_surface_color`. When true, the new widget's `_surface` is taken from the parent — the explicit `surface=` argument is overridden. |
 | `surface` | `str` | Surface token to record on the widget. Honored only when `inherit_surface=False` (or when there is no parent surface to inherit). |
 
-!!! warning "`surface=` is overridden by `inherit_surface=True`"
-    The wrapper resolves `_surface` as **parent's surface if
-    `inherit_surface` is true, otherwise the explicit `surface=`
-    argument**. With the default `inherit_surface=True`, passing
-    `surface='card'` to a Canvas inside a default-surface Frame ends
-    up with `_surface='content'` — the explicit kwarg is silently
-    ignored. To pin a surface explicitly, pass both:
-    `ttk.Canvas(parent, surface='card', inherit_surface=False)`.
+`inherit_surface=True` (the default) is the opt-in behavior for legacy
+Tk widgets: the canvas blends with its container rather than forcing a
+specific surface. If you want to pin a surface regardless of the parent,
+pass `inherit_surface=False` alongside your explicit `surface=`:
+
+```python
+ttk.Canvas(parent, surface='card', inherit_surface=False)
+```
 
 Unlike [`Text`](text.md), the Canvas builder **does** honor `surface`
 — a Canvas in a `Frame(surface='card')` paints with the card
