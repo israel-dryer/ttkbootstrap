@@ -120,8 +120,8 @@ app = ttk.App()
 icon = Image.open("icon@2x.png")
 ```
 
-Scale factor can be read at runtime via `app.tk.call("tk", "scaling")` — multiply
-your design-time pixel dimensions by that value to choose the right asset.
+For most use cases, load assets through `Image.open` and let the
+framework's DPI handling take care of the rest.
 
 ---
 
@@ -274,10 +274,10 @@ def refresh_row(data):
 
 Use the `Image` utility with caching, or create the image once and reuse.
 
-**Ignoring DPI on Windows:** loading a fixed-pixel image without accounting for
-the scaling factor produces icons that look too small on HiDPI displays. Use
-DPI-aware asset variants (e.g., `icon.png` at 1× and `icon@2x.png` at 2×)
-and select the right one based on `app.tk.call("tk", "scaling")`.
+**Ignoring DPI on Windows:** load images through `Image.open` rather than
+directly via `tk.PhotoImage`. `Image.open` goes through the framework's
+DPI-aware path and caches by resolved path, avoiding both the scaling
+issue and the GC gotcha.
 
 ---
 
