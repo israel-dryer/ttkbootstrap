@@ -180,6 +180,13 @@ class Calendar(ttk.Frame):
         self._max_date = self._coerce_date(max_date)
         self._min_date = self._coerce_date(min_date)
 
+        # Clamp _display_date into the allowed window so the calendar doesn't
+        # open stranded outside min/max with both chevrons permanently disabled.
+        if self._min_date and self._display_date < self._min_date.replace(day=1):
+            self._display_date = self._min_date.replace(day=1)
+        elif self._max_date and self._display_date > self._max_date.replace(day=1):
+            self._display_date = self._max_date.replace(day=1)
+
         self._title_var = ttk.StringVar()
         self._locked_size: Optional[tuple[int, int]] = None
 
@@ -215,6 +222,11 @@ class Calendar(ttk.Frame):
         """
         new_date = self._coerce_date(value)
         if new_date is None:
+            # Clear selection
+            self._selected_date = self._initial_date
+            self._range_start = None
+            self._range_end = None
+            self._refresh_calendar()
             return
         self._selected_date = new_date
         if self._selection_mode == "single":
