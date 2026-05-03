@@ -80,13 +80,10 @@ Pass an existing `signal=` (or `variable=`) at construction to share
 state with another widget. If neither is provided, `Tabs` creates an
 internal `StringVar` + `Signal` pair.
 
-!!! warning "Auto-select clobbers external state"
-    The first call to `add()` writes that tab's value to the
-    variable unconditionally — even if the variable already held a
-    meaningful value. If you pass `signal=external_signal` with a
-    pre-set value, that value is replaced when the first tab is
-    added. Add tabs first, then write the desired initial value, or
-    call `tabs.set(...)` after `add()`.
+The first `add()` call auto-selects the tab if the variable does not
+already hold a value — so a pre-set `signal=` or `variable=` value is
+preserved, and you can safely add tabs after setting the desired
+initial value.
 
 `Tabs` does not own pages. Tab keys are scoped to the bar; if you
 want to drive a content pane, observe `tabs.signal` and switch the
@@ -145,12 +142,9 @@ auto-generated as `tab_<n>` if omitted. `tabs.remove(key)` destroys
 the tab; you can also iterate via `tabs.keys()` or `tabs.items()`.
 `tabs.add(key=...)` raises `ValueError` on duplicate keys.
 
-!!! warning "`remove()` does not reset selection"
-    Removing the currently-selected tab leaves the variable holding
-    an orphan value that no longer matches any tab. The bar paints
-    nothing as selected, but `tabs.get()` still returns the stale
-    key. Call `tabs.set(...)` (or read `tabs.keys()` and pick a
-    fallback) after removing the active tab.
+Removing the currently-selected tab automatically advances selection
+to the first remaining tab, or clears the variable to `""` if no
+tabs remain.
 
 **Per-tab control.** `tabs.item(key)` returns the underlying
 `TabItem` (which is not a publicly-constructable type — you only ever

@@ -72,17 +72,19 @@ the constructor swaps them. If nothing is passed, the display opens
 on today's month and `_selected_date` is set to `date.today()` but
 `range` is `(None, None)`.
 
-**No-selection.** In range mode the range can be `(None, None)`
-(after `cal.range = None` or `cal.set_range(None, None)`). In single
-mode, `cal.set(None)` and `cal.value = None` clear the selection —
-`_selected_date` reverts to the initial date and the range markers
-are cleared.
+**No-selection.** Call `cal.set(None)` or `cal.value = None` in single
+mode, or `cal.set_range(None, None)` / `cal.range = None` in range mode,
+to clear the selection. All three paths clear `_selected_date` and the
+range markers, so `cal.value` returns `None` and `cal.range` returns
+`(None, None)` afterwards.
 
 **Commit semantics.** A user click on a day cell commits immediately
 and emits `<<DateSelect>>`. Programmatic `set()`, `set_range()`, the
 `value` / `range` property setters, and `configure(date=...)`
 **do not emit the event** — they are silent state writes, matching
-the standard Tk pattern for programmatic updates.
+the standard Tk pattern for programmatic updates. They also enforce
+`min_date`, `max_date`, and `disabled_dates` — out-of-range or
+disabled dates are silently ignored.
 
 ```python
 cal = ttk.Calendar(app, selection_mode="range")
@@ -90,21 +92,6 @@ cal.set_range(date(2025, 1, 10), date(2025, 1, 20))   # silent
 print(cal.range)                                        # (2025-01-10, 2025-01-20)
 print(cal.value)                                        # 2025-01-20 (the end date)
 ```
-
-!!! warning "Range mode: prefer `range` over `value`"
-    In range mode `cal.value` returns whichever end of the range was
-    set most recently — and after `cal.range = None` it can return a
-    *stale* date even though the range tuple is `(None, None)` (the
-    underlying `_selected_date` is not cleared by range setters).
-    Use `cal.range` for range-mode reads.
-
-!!! warning "`set()` and `set_range()` bypass constraints"
-    The interactive paths refuse clicks on dates that are in
-    `disabled_dates` or outside `[min_date, max_date]`. The
-    programmatic setters (`set`, `set_range`, the property setters,
-    and `configure(date=...)`) **do not** — they accept any
-    coercible date. If your code routes user input through `set()`,
-    re-validate before calling.
 
 ---
 

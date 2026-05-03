@@ -110,7 +110,7 @@ selection.subscribe(lambda v: print("selected:", v))
 
 | Option | Purpose |
 |---|---|
-| `value` | Initial committed value. Constructor-only — `configure(value=...)` is broken; use `sb.value = ...` instead. |
+| `value` | Committed value. Set at construction or via `configure(value=...)` / `sb.value = ...`. |
 | `items` | Sequence of strings shown in the popup. Reconfigurable via `configure(items=...)`. |
 | `label` | Text shown above the entry. |
 | `message` | Helper text below the entry; replaced by validation errors. |
@@ -182,19 +182,17 @@ When the popup is open:
 
 ### Reconfiguration
 
-`configure(items=...)`, `configure(allow_custom_values=...)`, and
-`configure(enable_search=...)` all take effect immediately. `configure(value=...)`
-does **not** work — set the property (`sb.value = ...`) instead. `dropdown_button_icon`
-cannot be reconfigured at all (TclError on attempt).
+`configure(items=...)`, `configure(allow_custom_values=...)`,
+`configure(enable_search=...)`, and `configure(value=...)` all take effect
+immediately. `dropdown_button_icon` cannot be reconfigured (TclError on attempt).
 
 ---
 
 ## Events
 
-`SelectBox` reuses the entry's event surface — every event fires on the underlying
-`entry_widget`, not on the SelectBox itself. Tk virtual events do not propagate up
-the parent chain, so `sb.bind('<<Change>>', cb)` silently no-ops; use the helpers
-or bind to `sb.entry_widget` directly.
+`SelectBox` fires events on itself and forwards them to the underlying `entry_widget`.
+Bind directly to the SelectBox (`sb.bind('<<Change>>', cb)`) or use the `on_*`
+helpers.
 
 | Event | Helper | Fires when… | `event.data` |
 |---|---|---|---|

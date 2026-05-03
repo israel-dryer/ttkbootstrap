@@ -106,7 +106,7 @@ known keys.
 | `orient` | `'horizontal'` (default) / `'vertical'` | Layout direction for the radios inside the button container. Reconfigure-safe — re-packs children. |
 | `labelanchor` | `'n'` (default) / `'s'` / `'e'` / `'w'` plus combinations like `'nw'`, `'se'` | Placement of the group label relative to the buttons. Compound anchors are normalized to a primary direction (priority `n` > `s` > `w` > `e`). |
 | `state` | `'normal'` (default) / `'disabled'` | Applied to every child radio at creation and on configure. |
-| `accent` | str | **Forwarded default** for child radios. **See the warning below — currently broken at construction.** |
+| `accent` | str | Forwarded default for child radios. Passed at construction or via `configure(accent=...)`. |
 | `surface` | str | Background surface for the group's frame; usually inherited from parent. |
 | `show_border` | bool | Draws a 1px border around the group's frame. |
 | `padding` | int / tuple | Frame padding (default `1`). |
@@ -120,36 +120,14 @@ single-valued (see [RadioButton](radiobutton.md)).
 `density` is **not** a valid option for RadioGroup or its children
 (the radiobutton style builder reads only `accent` and `surface`).
 
-!!! warning "Constructor `accent=` doesn't reach child radios"
-    Passing `accent='success'` to the constructor sets the
-    instance's `_accent` correctly inside `RadioGroup.__init__` —
-    but `super().__init__()` (the Frame init path) then resets
-    `self._accent` to `None` before the constructor returns. As a
-    result, child radios added via `add()` are constructed with
-    `accent=None` and paint with the default style. Confirmed at
-    runtime: `RadioGroup(accent='success').add('A', 'a')` yields a
-    child whose `style` is `Default.TRadiobutton`, not
-    `bs[…].success.TRadiobutton`.
-
-    **Workarounds:**
-
-    - call `group.configure(accent='success')` *after* construction
-      and *before* `add(...)` — that path goes through
-      `_delegate_accent`, which writes `_accent` and forwards to
-      existing children
-    - or pass `accent='success'` per-call via `add('A', 'a',
-      accent='success')` — the per-call kwarg flows through to the
-      RadioButton constructor untouched
-
 ### Colors & Styling
 
-Both workarounds in the warning above produce a properly styled
-group. The post-construct `configure(accent=...)` form is the
-shorter:
+The `accent=` constructor argument is forwarded to every child radio
+added via `add()`. You can also set it after construction via
+`configure(accent=...)`, which updates existing children too.
 
 ```python
-g = ttk.RadioGroup(app, text="Plan", orient="vertical")
-g.configure(accent="success")
+g = ttk.RadioGroup(app, text="Plan", orient="vertical", accent="success")
 g.add("Basic", "basic")
 g.add("Pro", "pro")
 g.add("Enterprise", "enterprise")

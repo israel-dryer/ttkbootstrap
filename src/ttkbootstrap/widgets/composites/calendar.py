@@ -223,10 +223,12 @@ class Calendar(ttk.Frame):
         new_date = self._coerce_date(value)
         if new_date is None:
             # Clear selection
-            self._selected_date = self._initial_date
+            self._selected_date = None
             self._range_start = None
             self._range_end = None
             self._refresh_calendar()
+            return
+        if self._is_disabled(new_date):
             return
         self._selected_date = new_date
         if self._selection_mode == "single":
@@ -280,10 +282,14 @@ class Calendar(ttk.Frame):
             end: The range end date. If None, sets a range-in-progress.
         """
         s, e = self._normalize_range(start, end)
+        if s is not None and self._is_disabled(s):
+            return
+        if e is not None and self._is_disabled(e):
+            return
         self._range_start = s
         self._range_end = e
-        # Update selected_date to the end if complete, else start
-        self._selected_date = e if e else (s if s else self._selected_date)
+        # Update selected_date: end if complete, start if in-progress, None if cleared
+        self._selected_date = e if e else s
         # Navigate display to show the range
         if s:
             self._display_date = date(s.year, s.month, 1)

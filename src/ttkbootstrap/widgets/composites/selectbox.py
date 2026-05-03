@@ -492,7 +492,7 @@ class SelectBox(Field):
 
     @configure_delegate('value')
     def _delegate_value(self, value=None):
-        if value is not None:
+        if value is None:
             return self.value
         else:
             self.value = value
@@ -533,13 +533,11 @@ class SelectBox(Field):
         if new_value != prev_value:
             self.entry_widget._prev_changed_value = new_value
             if not getattr(self, "_suppress_changed_event", False):
-                self.entry_widget.event_generate(
-                    '<<Change>>',
-                    data={
-                        'value': new_value,
-                        'prev_value': prev_value,
-                        'text': self.entry_widget.get()
-                    },
-                    when="tail"
-                )
+                data = {
+                    'value': new_value,
+                    'prev_value': prev_value,
+                    'text': self.entry_widget.get()
+                }
+                self.entry_widget.event_generate('<<Change>>', data=data, when="tail")
+                self.event_generate('<<Change>>', data=data, when="tail")
 

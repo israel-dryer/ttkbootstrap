@@ -91,18 +91,10 @@ event from PageStack), or read `tabview.current` synchronously.
 no exception, no event. Validate keys yourself if you depend on
 strict behavior.
 
-!!! warning "`navigate(key, data=...)` pushes history twice"
-    `tabview.navigate(key, data={...})` first writes the key through
-    the selection variable — that triggers the trace, which calls
-    `pagestack.navigate(key)` with no data — and *then* calls
-    `pagestack.navigate(key, data=data)` itself. History grows by two
-    entries per call, and `<<PageChange>>` fires twice (once with an
-    empty `data` payload, once with the caller's data).
-
-    Workaround until fixed: avoid `tabview.navigate(...)` and use
-    `tabview.page_stack_widget.navigate(key, data=...)` directly when
-    you need to attach data; pair with `tabview.select(key)` if you
-    also want the tab strip to repaint.
+`navigate(key, data=...)` temporarily suppresses the selection-variable
+trace, calls `pagestack.navigate(key, data=data)` once, then restores
+the trace — so history grows by exactly one entry per call and
+`<<PageChange>>` fires once.
 
 ---
 

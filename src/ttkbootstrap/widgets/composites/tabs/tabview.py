@@ -224,10 +224,16 @@ class TabView(Frame):
             key: The identifier of the tab/page to navigate to.
             data: Optional data to pass to the page.
         """
-        if key in self._tab_map:
+        if key not in self._tab_map:
+            return
+        # Temporarily remove the trace so the variable write does not
+        # trigger a second page-stack navigation in _on_tab_selected.
+        self._tab_variable.trace_remove('write', self._trace_id)
+        try:
             self._tab_variable.set(key)
-            if data:
-                self._page_stack.navigate(key, data=data)
+        finally:
+            self._trace_id = self._tab_variable.trace_add('write', self._on_tab_selected)
+        self._page_stack.navigate(key, data=data)
 
     @property
     def tabs_widget(self) -> Tabs:

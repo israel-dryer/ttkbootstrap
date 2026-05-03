@@ -105,6 +105,8 @@ class PageStack(Frame):
 
         if page is None:
             page = Frame(self, **kwargs)
+        elif kwargs:
+            page.configure(**kwargs)
 
         self._pages[key] = page
         page.pack(fill='both', expand=True)
@@ -127,6 +129,18 @@ class PageStack(Frame):
             page.destroy()
         if self._current == key:
             self._current = None
+
+        # Strip orphan entries from history and adjust _index accordingly
+        new_history = []
+        adjustments = 0
+        for i, entry in enumerate(self._history):
+            if entry[0] == key:
+                if i <= self._index:
+                    adjustments += 1
+            else:
+                new_history.append(entry)
+        self._history = new_history
+        self._index = max(-1, self._index - adjustments)
 
     def navigate(
             self,

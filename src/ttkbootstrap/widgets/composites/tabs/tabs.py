@@ -331,8 +331,8 @@ class Tabs(Frame):
         self._tabs[key] = tab
         self._tab_order.append(key)
 
-        # Auto-select first tab
-        if len(self._tabs) == 1:
+        # Auto-select first tab only when the variable has no prior value
+        if len(self._tabs) == 1 and not self._variable.get():
             self._variable.set(value)
 
         return tab
@@ -353,6 +353,14 @@ class Tabs(Frame):
         self._tab_order.remove(key)
         tab.pack_forget()
         tab.destroy()
+
+        # If the removed tab was active, fall through to the next remaining tab
+        if self._variable.get() == tab.cget("value"):
+            if self._tab_order:
+                next_key = self._tab_order[0]
+                self._variable.set(self._tabs[next_key].cget("value"))
+            else:
+                self._variable.set("")
 
     def item(self, key: str) -> TabItem:
         """Get a tab by its key.

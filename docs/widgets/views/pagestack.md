@@ -123,19 +123,14 @@ page = stack.add("settings", padding=12, surface="card", show_border=True)
 These reach the auto-created `Frame`. Use them to apply theming or
 layout to individual pages.
 
-!!! warning "Kwargs are silently dropped if `page=` is passed"
-    When you pass an existing widget as `page=`, the keyword arguments
-    are discarded — `add()`'s signature is
-    `add(key, page=None, **kwargs)`, and the kwargs only feed the
-    auto-created Frame in the `page is None` branch.
+When you pass an existing widget as `page=`, any additional keyword arguments
+are forwarded to `page.configure(**kwargs)` after registration, so you can
+apply theming inline:
 
-    ```python
-    custom = ttk.Frame(stack)
-    stack.add("foo", custom, padding=99)  # padding=99 is silently ignored
-    ```
-
-    Configure your widget before passing it, or omit `page=` and let
-    `add()` build the Frame.
+```python
+custom = ttk.Frame(stack)
+stack.add("foo", custom, padding=12)   # padding=12 applied via configure()
+```
 
 !!! warning "Pages must be parented to the stack"
     `add(key, widget)` does **not** reparent `widget`. If
@@ -177,30 +172,10 @@ is ignored and the call behaves as a normal push.
 managed — DOM-style "the page is in the tree but not yet visible."
 `<<PageMount>>` fires after pack, so widget sizes are valid by then.
 
-**Removing pages.** `remove(key)` destroys the page widget and drops
-it from the page registry, but does **not** rewrite the history list.
-If the removed page sits in the middle of history, walking through
-that index later raises `NavigationError` from `navigate()`'s
-existence check.
-
-!!! warning "`remove()` orphans history; back/forward can crash"
-    `stack.remove(key)` deletes the widget and removes it from
-    `_pages`, but `_history` and `_index` are untouched (with one
-    exception: if the removed key happens to be `_current`, only
-    `_current` is cleared to `None`). Subsequent `back()` /
-    `forward()` calls that step onto the orphan entry raise
-    `NavigationError: Page <key> does not exist`.
-
-    ```python
-    # history=[a, b, c], current=c, index=2
-    stack.remove("b")
-    stack.back()   # NavigationError: Page b does not exist
-    ```
-
-    Workaround: clear and rebuild history after removal, or only
-    remove pages at the head/tail of history. (Logged on the bugs
-    list — `remove()` should rewrite history to drop the orphan
-    entry and adjust `_index`.)
+**Removing pages.** `remove(key)` destroys the page widget, drops it
+from the page registry, and rewrites `_history` to remove all entries
+for that key — adjusting `_index` so that `back()` and `forward()`
+continue to work correctly after removal.
 
 **Data merge collisions.** The dict passed to `navigate(data=...)` is
 merged with the navigation keys at the top level of `event.data`.

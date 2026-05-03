@@ -103,7 +103,11 @@ class RadioGroup(Frame):
             kwargs['padding'] = 1
 
         # Call super().__init__() - just Frame now
+        _saved_accent = self._accent
         super().__init__(master, style_options=style_options, **kwargs)
+        # Restore _accent — Frame.__init__ via the bootstyle wrapper resets it
+        # to None when 'accent' is not present in the kwargs it receives.
+        self._accent = _saved_accent
 
         # Handle variable/signal setup manually
         if signal_value is not None:
