@@ -526,7 +526,15 @@ class SelectBox(Field):
 
     @value.setter
     def value(self, value):
-        """Set the selected value and emit `<<Change>>` when it differs."""
+        """Set the selected value and emit `<<Change>>` when it differs.
+
+        Raises:
+            ValueError: If allow_custom_values is False and value is not in items.
+        """
+        if not self._allow_custom_values and value not in self._items:
+            raise ValueError(
+                f"Value {value!r} is not in items and allow_custom_values is False"
+            )
         prev_value = Field.value.fget(self)
         Field.value.fset(self, value)
         new_value = Field.value.fget(self)

@@ -267,9 +267,14 @@ class ToggleGroup(Frame):
         if self._mode == 'single':
             if not isinstance(value, str):
                 raise TypeError(f"Single mode requires a string value, got {type(value).__name__}")
+            if value not in self._buttons:
+                raise ValueError(f"Value {value!r} is not a known key; valid keys: {list(self._buttons)}")
         else:  # multi mode
             if not isinstance(value, set):
                 raise TypeError(f"Multi mode requires a set value, got {type(value).__name__}")
+            unknown = value - self._buttons.keys()
+            if unknown:
+                raise ValueError(f"Unknown keys {unknown!r}; valid keys: {list(self._buttons)}")
 
         self.variable.set(value)
 

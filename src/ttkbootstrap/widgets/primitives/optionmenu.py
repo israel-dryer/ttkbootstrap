@@ -179,8 +179,17 @@ class OptionMenu(MenuButton):
         return self._textvariable.get()
 
     def set(self, value: Any) -> None:
-        """Set the current value (coerced to string)."""
-        self._textvariable.set(str(value))
+        """Set the current value (coerced to string).
+
+        Raises:
+            ValueError: If the value is not in the current options list.
+        """
+        str_value = str(value)
+        if str_value not in self._menu_options:
+            raise ValueError(
+                f"Value {str_value!r} is not in options; valid options: {self._menu_options}"
+            )
+        self._textvariable.set(str_value)
 
     @property
     def value(self) -> str:

@@ -174,11 +174,10 @@ toggle the section. The header takes keyboard focus
 (`takefocus=True`), so `<Tab>` walks Expanders in tab order and
 `<Return>` / `<space>` toggle the focused one.
 
-**`collapsible=False`** hides the chevron and stops the header click
-from calling `toggle()`. It does **not** disable the
-`expand()` / `collapse()` / `configure(expanded=...)` paths — those
-still work programmatically. Use `collapsible=False` to lock a
-section open as a UI affordance, not as an enforced invariant.
+**`collapsible=False`** hides the chevron and blocks all expansion or collapse
+operations — both the header click and the programmatic `expand()` / `collapse()` /
+`configure(expanded=...)` paths become no-ops. Use it to permanently fix the expansion
+state in both the UI and code.
 
 **`highlight=True`** keeps the header visually marked as `selected`
 (via the inner `CompositeFrame.set_selected`) for as long as the

@@ -777,7 +777,12 @@ class SideNav(Frame):
         Args:
             key (str): The item key to select.
 
+        Raises:
+            KeyError: If key does not correspond to a registered item.
+
         """
+        if key not in self._items and key not in self._footer_items:
+            raise KeyError(f"No item with key {key!r}")
         if self._selection_var:
             self._selection_var.set(key)
 

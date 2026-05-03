@@ -86,17 +86,8 @@ priority order:
 a non-`None` `value`; `key` defaults to `value`; duplicate keys
 raise `ValueError`.
 
-!!! warning "`set(...)` does NOT validate against known keys"
-    ToggleGroup's `set(value)` enforces only the type (str for
-    single, set for multi); it does not check that `value` matches
-    a registered key. Verified at runtime:
-    `g = ttk.ToggleGroup(app); g.add('A', 'a'); g.set('unknown')`
-    succeeds — `g.value == 'unknown'` afterwards, and no child
-    paints selected because no matching toggle exists. This is
-    inconsistent with [RadioGroup](radiogroup.md), where
-    `set('unknown')` raises `ValueError`. Either validate against
-    `keys()` to match RadioGroup's behavior, or document the
-    permissive contract loudly. (Surfaced 2026-05-01.)
+`set(value)` validates the value against the registered keys and raises `ValueError`
+for unknown keys (consistent with [RadioGroup](radiogroup.md)).
 
 **Multi-mode click semantics.** In multi mode, `_on_multi_toggle`
 runs on every child click — it reads the current `set`, toggles

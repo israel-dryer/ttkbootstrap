@@ -64,16 +64,13 @@ rendered as a radiobutton menu entry. Items are coerced to strings
 via `str(item)` for display. Reconfigure-safe — `configure(options=
 [...])` rebuilds the underlying ContextMenu in place.
 
-!!! warning "`set(...)` does not validate against `options=`"
-    OptionMenu's `set(value)` writes the stringified value to the
-    underlying variable unconditionally. There is no membership
-    check against `options`. Verified at runtime: `m =
-    OptionMenu(app, value='A', options=['A','B'])`,
-    `m.set('not_in_list')` succeeds — `m.value == 'not_in_list'`,
-    no menu radiobutton paints selected, and `<<Change>>` still
-    fires with the orphan value. Either validate against `options`
-    and raise on miss (matching RadioGroup's behavior), or document
-    the permissive contract loudly. (Surfaced 2026-05-01.)
+`set(value)` validates against `options` and raises `ValueError` if the value is not
+present. To write a value outside the current list, reconfigure `options` first:
+
+```python
+m.configure(options=m.cget('options') + ['New'])
+m.set('New')
+```
 
 **Initial value.** Three constructor paths to determine the starting
 value:

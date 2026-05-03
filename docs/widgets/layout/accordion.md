@@ -81,11 +81,9 @@ for key in accordion.keys():
 ```
 
 **Optional separators.** With `show_separators=True`, a horizontal
-[Separator](separator.md) is inserted between each pair of adjacent
-expanders. The first section has no leading separator. Reconfiguring
-`show_separators` at runtime takes effect on **future** `add()` calls
-only — existing sections keep their current separator layout. Plan to
-toggle this at construction time, not after expanders are populated.
+[Separator](separator.md) is inserted between each pair of adjacent expanders. The
+first section has no leading separator. Reconfiguring `show_separators` at runtime
+retroactively adds or removes all separators and re-packs the expanders to match.
 
 ```python
 accordion = ttk.Accordion(app, show_separators=True)
@@ -104,7 +102,7 @@ fully collapsed.
 | -------------------- | ------------ | ------- | ------------------------------------------------------------------------------ |
 | `allow_multiple`     | bool         | `False` | Allow multiple sections open simultaneously                                    |
 | `allow_collapse_all` | bool         | `True`  | If `False`, at least one section must stay open; first added is auto-expanded  |
-| `show_separators`    | bool         | `False` | Insert horizontal separators between sections (effective at construction time) |
+| `show_separators`    | bool         | `False` | Insert horizontal separators between sections; reconfigurable at runtime       |
 | `accent`             | str          | `None`  | Default accent **forwarded to child Expanders** (see *Accent forwarding* below) |
 | `variant`            | str          | `None`  | Default variant **forwarded to child Expanders** (`solid` or `default`)        |
 
@@ -133,15 +131,9 @@ ttk.Accordion(app, accent="success", variant="solid")
 # the container itself is unstyled
 ```
 
-!!! warning "Per-call accent collides with accordion accent"
-
-    When the accordion has its own `accent`, passing `accent=` (or
-    `variant=`) to a per-call `add(...)` raises
-    `TypeError: got multiple values for keyword argument 'accent'`.
-    Pick one source: either set the accent on the accordion (and
-    every section gets it) or leave the accordion's accent unset and
-    pass per-section accents to `add()`. Mixing them is not
-    supported.
+When the accordion has its own `accent`, a per-call `add(accent=...)` overrides it for
+that section; the accordion's default applies when no per-call accent is given. Both
+the accordion accent and a per-call accent can coexist without error.
 
 Existing `Expander` instances passed via `add(expander=existing)` keep
 their own accent and variant — the accordion does **not** restyle
@@ -187,21 +179,18 @@ when `allow_multiple=False`), then `<<AccordionChange>>` fires.
 the section headers in order. `<Return>` and `<space>` toggle the
 focused section.
 
-**Reconfiguration.** `allow_multiple`, `allow_collapse_all`, and
-`show_separators` are all reconfigurable through `configure(...)` and
-queryable through `cget(...)`. Only `show_separators` has a layout
-caveat: existing sections keep their current separator state, and
-only future `add()` calls react to the new value.
+**Reconfiguration.** `allow_multiple`, `allow_collapse_all`, and `show_separators` are
+all reconfigurable through `configure(...)` and queryable through `cget(...)`.
+Changing `show_separators` retroactively rebuilds the separator strip.
 
 ---
 
 ## Events
 
-`<<AccordionChange>>` fires whenever the set of expanded sections
-changes — on user click, on programmatic `expand` / `collapse`, on
-`expand_all` / `collapse_all`, and on `remove(key)` (provided at
-least one section remains; removing the last section does **not**
-fire the event).
+`<<AccordionChange>>` fires whenever the set of expanded sections changes — on user
+click, on programmatic `expand` / `collapse`, on `expand_all` / `collapse_all`, and on
+`remove(key)` (including when the last section is removed; the payload is then
+`{"expanded": []}`).
 
 | Event                | Payload (`event.data`)              | Notes                              |
 | -------------------- | ----------------------------------- | ---------------------------------- |

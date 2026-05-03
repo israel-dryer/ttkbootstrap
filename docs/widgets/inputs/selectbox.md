@@ -81,11 +81,9 @@ and the `sb.value =` setter silently accept any string — the entry shows that 
 This is the same shape as [OptionMenu](../selection/optionmenu.md)'s permissive
 contract.
 
-!!! warning "Programmatic writes are unconstrained"
-    `sb.value = "not_in_items"` succeeds with no exception even when
-    `allow_custom_values=False`. Only popup-driven selection is gated by the list. If
-    you need strict validation, check `sb.selected_index >= 0` after writes or attach
-    a validation rule (see *Validation and constraints*).
+Programmatic writes respect `allow_custom_values`. When `allow_custom_values=False`,
+`sb.value = "not_in_items"` raises `ValueError`. When `allow_custom_values=True`, any
+string is accepted.
 
 ### Signals and variables
 

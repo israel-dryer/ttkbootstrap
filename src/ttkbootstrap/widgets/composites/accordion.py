@@ -124,9 +124,13 @@ class Accordion(Frame):
                 else:
                     expanded = False
 
-            # Get accent/variant from kwargs or use accordion defaults
-            accent = self._accent or kwargs.pop('accent', None)
-            variant = self._variant or kwargs.pop('variant', None)
+            # Get accent/variant from kwargs or use accordion defaults.
+            # Always pop first so per-call values don't collide with the explicit
+            # kwarg passed to the Expander constructor below.
+            per_call_accent = kwargs.pop('accent', None)
+            per_call_variant = kwargs.pop('variant', None)
+            accent = self._accent or per_call_accent
+            variant = self._variant or per_call_variant
 
             expander = Expander(
                 self,
@@ -206,12 +210,11 @@ class Accordion(Frame):
             if not any_open:
                 expander_list[0].expand()
 
-        # Fire change event
-        if self._expanders:
-            expander_list = [self._expanders[k] for k in self._expander_order]
-            self.event_generate('<<AccordionChange>>', data={
-                'expanded': [exp for exp in expander_list if exp['expanded']]
-            })
+        # Fire change event regardless of whether any expanders remain.
+        expander_list = [self._expanders[k] for k in self._expander_order]
+        self.event_generate('<<AccordionChange>>', data={
+            'expanded': [exp for exp in expander_list if exp['expanded']]
+        })
 
     def _on_expander_toggle(self, expander: Expander, event):
         """Handle expander toggle events."""
@@ -370,7 +373,25 @@ class Accordion(Frame):
         """Get or set whether separators are shown between sections."""
         if value is None:
             return self._show_separators
+        if value == self._show_separators:
+            return None
         self._show_separators = value
+        # Rebuild the separator strip retroactively.
+        for sep in self._separator_widgets:
+            sep.destroy()
+        self._separator_widgets.clear()
+        if value:
+            # Re-pack all expanders with fresh separators between them.
+            for key in self._expander_order:
+                self._expanders[key].pack_forget()
+            for i, key in enumerate(self._expander_order):
+                if i > 0:
+                    sep = Separator(self, orient='horizontal')
+                    sep.pack(fill='x')
+                    self._separator_widgets.append(sep)
+                self._expanders[key].pack(fill='x')
+        # When show_separators=False, separators already destroyed above;
+        # expanders are still packed so no repacking needed.
         return None
 
     def on_accordion_changed(self, callback: Callable) -> str:

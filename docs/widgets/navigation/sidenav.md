@@ -71,15 +71,8 @@ Pass an existing `signal=` (or `variable=`) at construction to share
 state with another widget; otherwise `SideNav` creates an internal
 `Signal('')`.
 
-!!! warning "`select()` does not validate the key"
-    Calling `nav.select("phantom")` for a key that isn't registered
-    silently sets the underlying variable, fires `<<SelectionChanged>>`
-    with `event.data = {"key": "phantom"}`, and then paints nothing as
-    selected (the selection effect requires the key to exist in
-    `_items` or `_footer_items`). `nav.selected_key` will return the
-    orphan key. Validate the key against `nav.node_keys()` /
-    `nav.footer_node_keys()` before selecting if the input isn't
-    trusted.
+`select(key)` raises `KeyError` if the key is not registered. To check membership
+before selecting, use `nav.node_keys()` / `nav.footer_node_keys()`.
 
 ### Item types
 
