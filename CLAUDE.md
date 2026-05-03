@@ -64,83 +64,57 @@ pass is also complete (commit `e07c372`).
    orphan `Examples:`, no broken cross-links, both `Attributes:`
    and `Args:` rendering side-by-side.
 
-**Bug-fix session 5 (2026-05-03) — CLOSED. Commit: `dffb234`.**
+**Bug-fix sessions 5–6 (2026-05-03) — CLOSED.**
 
-Fixed (7 bugs, docs updated to match each):
+Commits: `dffb234` (session 5, 7 bugs) + `0d98bc6` + `03945a4` (session 6, 20 bugs).
+27 bugs fixed, 24 warning/danger blocks removed from docs.
 
-- `MessageDialog` now defaults `localize=True` so `button.ok` /
-  `button.cancel` are resolved through `MessageCatalog.translate`
-  without callers having to opt in (`dialogs/message.py:72`). Docs
-  updated in `messagedialog.md` — removed the "localization caveat"
-  warning block; `localize` row updated to show default `True`.
-- `FormDialog` default buttons now resolved through
-  `MessageCatalog.translate` — `_normalize_buttons` no longer emits
-  literal key strings to the user (`dialogs/formdialog.py:507-509`).
-  Docs updated in `formdialog.md` — removed the localization warning
-  block.
-- `FilterDialog` button labels and "Select All" checkbox text now
-  resolved through `MessageCatalog.translate` — both
-  `"button.ok"` / `"button.cancel"` in `show()` and
-  `"edit.select_all"` in `_build_content()` (`filterdialog.py:108,333-335`).
-  Docs updated in `filterdialog.md` — replaced the three-bullet
-  "localization caveats" danger block with a brief "now resolved" note.
-- `ListView.<<ItemInsert>>` now carries `event.data = {'record': dict}`
-  (the inserted record with its newly assigned id)
-  (`composites/list/listview.py:1387`).
-- `ListView.<<ItemUpdate>>` now carries `event.data = {'record': dict}`
-  (the partial update dict) (`listview.py:1405`).
-- `ListView.<<ItemDelete>>` now carries
-  `event.data = {'record_id': Any}` from both `delete_item()` and
-  `_on_item_removing()` (`listview.py:927,1421`). Note: the full
-  record is no longer available at emission time (already deleted
-  from the datasource), so only the id is passed.
-- `ListView.<<ItemDeleteFail>>` now carries
-  `event.data = {'record_id': Any, 'error': str}` (`listview.py:929`).
-- Updated `on_item_*` docstrings and the `listview.md` events table
-  to match the actual payloads.
+Session 5 fixes (dialog localization + ListView CRUD payloads):
+- `MessageDialog` defaults `localize=True` (`dialogs/message.py:72`)
+- `FormDialog` default buttons go through `MessageCatalog.translate` (`formdialog.py:507-509`)
+- `FilterDialog` button labels and "Select All" go through `MessageCatalog.translate` (`filterdialog.py:108,333-335`)
+- `ListView.<<ItemInsert>>` carries `{'record': dict}` (`listview.py:1387`)
+- `ListView.<<ItemUpdate>>` carries `{'record': dict}` (partial update, `listview.py:1405`)
+- `ListView.<<ItemDelete>>` carries `{'record_id': Any}` (`listview.py:927,1421`)
+- `ListView.<<ItemDeleteFail>>` carries `{'record_id': Any, 'error': str}` (`listview.py:929`)
 
-**Bug-fix sessions 5+6 (2026-05-03) — CLOSED.**
+Session 6 fixes:
+- `ValidationResult.__bool__` returns `is_valid` (`core/validation/validation_result.py`)
+- `ValidationRule('custom')` no `func=` now fails instead of silently passing (`validation_rules.py`)
+- `RadioGroup.values()` returns actual radio values not keys (`radiogroup.py`)
+- `IntlFormatter._format_time` uses `locale=` kwarg — time-only formatting fixed (`intl_format.py`)
+- `IconSpec.color` theme tokens resolved through style engine before PIL (`bootstyle_builder_base.py`)
+- `Tabs(variant='pill')` raises `ValueError` at construction, not at `add()` (`tabs.py`)
+- `Tabs` forwards `<<TabSelect>>` and `<<TabClose>>` to the Tabs widget after each `add()` (`tabs.py`)
+- `PageStack.<<PageUnmount>>` carries `{'page', 'prev_page', 'prev_data'}` (`pagestack.py`)
+- `Notebook.insert()` validates key before `super().insert()` — no orphan tabs (`notebook.py`)
+- `Notebook.insert()` applies `**kwargs` to existing widget via `configure()` (`notebook.py`)
+- `FilterDialog.show()` resets `self.result = None` at start (`filterdialog.py`)
+- `Toolbar.add_widget()` raises `ValueError` for wrong parent (`toolbar.py`)
+- `SideNav(display_mode='minimal')` defaults `is_pane_open=False` (`sidenav/view.py`)
+- `TableView` export events fire on `self` not `self._tree` (`tableview.py`)
+- `ToolTip` second attach destroys prior instance cleanly (`tooltip.py`)
 
-Session 5 commit: `dffb234` (7 bugs — dialog localization, ListView CRUD payloads).
+**Remaining warning/danger blocks (18 total) — all documented behavior / CPython / design intent.**
+No code changes are needed for any of these.
 
-Session 6 commits: `0d98bc6` + `03945a4` (20 bugs):
-
-- `ValidationResult.__bool__` returns `is_valid` — `if result:` is safe
-- `ValidationRule('custom')` with no `func=` now fails instead of silently passing
-- `RadioGroup.values()` returns actual radio values not keys
-- `IntlFormatter._format_time` all calls use `locale=` kwarg — time-only formatting fixed
-- `IconSpec.color` theme tokens (`'primary'` etc.) resolved through style engine before PIL
-- `Tabs(variant='pill')` raises `ValueError` immediately at construction
-- `Tabs` forwards `<<TabSelect>>` and `<<TabClose>>` to the Tabs widget after each `add()`
-- `PageStack.<<PageUnmount>>` now carries `event.data = {'page': key, 'prev_page': ..., 'prev_data': ...}`
-- `Notebook.insert()` validates key before `super().insert()` — no more orphan tabs on failure
-- `Notebook.insert()` applies `**kwargs` to existing widget via `configure()`
-- `FilterDialog.show()` resets `self.result = None` at the start of each call
-- `Toolbar.add_widget()` raises `ValueError` when widget is not parented to `toolbar.content`
-- `SideNav(display_mode='minimal')` defaults `is_pane_open=False` — starts hidden
-- `TableView` export events fire on `self` not `self._tree`
-- `ToolTip.__init__` destroys any prior tooltip on the widget before attaching
-- All corresponding docs updated — 24 warning/danger blocks resolved
-
-**Remaining warning/danger blocks (18 total) — all documented behavior / CPython / design intent:**
-
-- Deprecated `NavigationView` pages (×2) — intentional
-- `PasswordEntry` sensitive data (security advisory) — intentional
-- `callbacks.md` `unbind(seq, fid)` broken on Python 3.13 — CPython bug, not framework
-- `images.md` `clear_cache()` breaks live widgets — documented contract
-- `signals.md` exception handling asymmetry — documented behavior
-- `datasource.md` SQL injection contract — documented trusted-input
-- `localization.md` catalogs require Tk — documented constraint
-- `state-and-interaction.md` `state()` requires iterable — documented gotcha
-- `pagestack.md` pages must be parented to stack — documented constraint
-- `text.md` `surface=` overridden by `inherit_surface=True` (×2 — canvas too) — wrapper design
-- `text.md` `_surface` doesn't tint Text widget — Text builder reads `background` directly
-- `sidenav.md` hamburger ≠ show/hide in expanded mode — complex navigation design
-- `configuration.md` `app.settings.theme` decoupled from live theme — architectural design
-- `form.md` spec keys outside FieldItem are silently dropped — documented behavior (note, not warning)
-- `virtual-events.md` reference to callbacks danger block — cross-reference only
-
-No code changes are needed for any of the remaining 18.
+| Block | File | Category |
+|---|---|---|
+| `state()` requires iterable, not string | `capabilities/state-and-interaction.md:87` | Documented gotcha |
+| `app.settings.theme` decoupled from `Style.theme_use()` | `capabilities/configuration.md:224` | Architectural design |
+| `unbind(seq, fid)` broken on Python 3.13 | `capabilities/signals/callbacks.md:139` | CPython bug |
+| Exception handling asymmetry `immediate=True` | `capabilities/signals/signals.md:239` | Documented behavior |
+| `clear_cache()` breaks live widgets | `capabilities/icons/images.md:162` | Documented contract |
+| SQL injection contract | `guides/datasource.md:117` | Documented trusted-input |
+| Catalogs require Tk | `guides/localization.md:223` | Documented constraint |
+| Hamburger ≠ show/hide in expanded mode | `widgets/navigation/sidenav.md:201` | Navigation design |
+| `surface=` overridden by `inherit_surface=True` | `widgets/primitives/text.md:359` + `canvas.md:290` | Wrapper design |
+| `_surface` does not tint Text widget | `widgets/primitives/text.md:368` | Builder design |
+| SQL injection contract | `widgets/data-display/tableview.md:302` | Documented trusted-input |
+| Pages must be parented to stack | `widgets/views/pagestack.md:135` | Documented constraint |
+| Sensitive data | `widgets/inputs/passwordentry.md:78` | Security advisory |
+| Deprecated NavigationView | `widgets/navigation/navigationview.md:7` + `reference/…:3` | Intentional |
+| (cross-ref to callbacks danger) | `capabilities/signals/virtual-events.md:330` | Cross-reference |
 
 Run `python tools/check_doc_snippets.py --run` before and after any
 further changes to guard against regressions.
