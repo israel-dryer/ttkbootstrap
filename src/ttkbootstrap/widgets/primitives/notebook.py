@@ -376,13 +376,16 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
         if key:
             self._key_registry.pop(key, None)
         self._tab_locale_tokens.pop(tabid, None)
-        super().forget(tabid)
+        # Call ttk.Notebook.forget directly to bypass WidgetCapabilitiesMixin.forget,
+        # which takes no positional arguments and shadows this method in the MRO.
+        ttk.Notebook.forget(self, tabid)
 
     def forget(self, tab: Tab) -> None:
         """Hide or forget a tab while keeping the registry consistent."""
         tabid = self._to_tab_id(tab)
         self._tab_locale_tokens.pop(tabid, None)
-        super().forget(tabid)
+        # Same MRO bypass as remove() above.
+        ttk.Notebook.forget(self, tabid)
 
     def tab(self, tab: Tab, option: str = None, **kwargs) -> Any:
         """Configure or query tab configuration.

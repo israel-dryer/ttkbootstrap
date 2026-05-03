@@ -204,28 +204,15 @@ page = nb.add(text="Settings", key="settings", padding=10, accent="primary")
 | `forget(tab)` | Tab disappears from strip | Locale token cleared; key still in `_key_registry` (stale) | Partially — `add(widget)` re-shows but key must be re-supplied |
 | `remove(tab)` | Tab disappears from strip | Key, widget, locale token all cleared | No |
 
-!!! danger "`remove()` and `forget()` are broken in current code"
-    Both methods raise `TypeError: WidgetCapabilitiesMixin.forget()
-    takes 1 positional argument but 2 were given`. The MRO routes
-    `super().forget(tabid)` to `WidgetCapabilitiesMixin.forget` (which
-    expects no positional arguments — it's the
-    `pack_forget`/`grid_forget` shim) before reaching
-    `tkinter.ttk.Notebook.forget(tabid)`. Workaround: call the ttk
-    method directly and clean the registry yourself.
+`remove(tab)` removes the tab and clears all three registries.
+`forget(tab)` hides the tab and clears its locale token.
+`hide(tab)` hides without clearing the registry (the tab is
+re-showable via `add(widget, key=...)`).
 
-    ```python
-    from tkinter import ttk as ttk_native
-
-    tabid = nb._to_tab_id("settings")
-    key = nb._tk_to_key.pop(tabid, None)
-    if key:
-        nb._key_registry.pop(key, None)
-    nb._tab_locale_tokens.pop(tabid, None)
-    ttk_native.Notebook.forget(nb, tabid)
-    ```
-
-    `hide()` works because it calls `super().hide(tabid)` and the MRO
-    has no upstream `hide` override above ttk.Notebook.
+```python
+nb.remove("settings")   # gone; key freed
+nb.hide("settings")     # off strip; can be restored
+```
 
 !!! warning "Failed `add()` leaves orphan tabs in the strip"
     Both validation steps inside `_make_key` (duplicate key,
@@ -233,12 +220,10 @@ page = nb.add(text="Settings", key="settings", padding=10, accent="primary")
     added the auto-created `Frame` to the underlying ttk notebook.
     A failed `add(key="dup")` therefore leaves a tab in the strip
     that has no entry in `_key_registry` and no entry in `_tk_to_key`.
-    `nb.keys()` reports it as `''` (empty string), and there is no
-    public way to remove it (the broken `remove()` aside).
+    `nb.keys()` reports it as `''` (empty string).
 
     Workaround: validate keys before calling `add()`, or catch the
-    exception and look up the orphan widget via `nb.tabs()[-1]` to
-    drive a manual cleanup.
+    exception and call `nb.remove(nb.tabs()[-1])` to clean up the orphan.
 
 ### Tab states
 

@@ -117,7 +117,7 @@ strict behavior.
 | `tab_width` | `None` | `None` = auto-size, integer = fixed character width, `"stretch"` = expand horizontally to fill the bar. `"stretch"` is silently ignored in `orient="vertical"`. |
 | `tab_padding` | `(12, 8)` | Internal `(padx, pady)` for every tab. |
 | `tab_anchor` | auto | Defaults to `"w"` for vertical orientation, `"center"` for horizontal. |
-| `enable_closing` | `False` | Default close-button visibility for all tabs: `True` (always), `False` (never), `"hover"` (on hover). Per-tab override via `closable=` in `add()`. **See the "Removing tabs" warning below — the default close handler is broken in current code.** |
+| `enable_closing` | `False` | Default close-button visibility for all tabs: `True` (always), `False` (never), `"hover"` (on hover). Per-tab override via `closable=` in `add()`. |
 | `enable_adding` | `False` | If `True`, shows an add button on the bar that fires `<<TabAdd>>` when clicked. The user is responsible for calling `tabview.add(...)` in the handler — clicking the button doesn't auto-create anything. |
 | `accent` | `None` | Theme accent token forwarded to `Tabs` and through to every `TabItem`. |
 | Frame kwargs | — | `padding`, `surface`, `show_border`, `width`, `height`, etc. all forwarded to the outer `Frame`. |
@@ -130,7 +130,7 @@ Per-tab options live in `add()`:
 | `icon` | Icon name (`"house"`) or `IconSpec` dict (`{"name": ..., "size": ..., "color": ..."}`). |
 | `page` | Existing widget to use as the page. **If passed, kwargs are silently dropped** — same shape as the [`PageStack` bug](pagestack.md#common-options). Configure your page widget before passing it, or omit `page=` and let `add()` build the Frame. |
 | `closable` | `True` / `False` / `"hover"` / `None`. `None` falls through to the widget-level `enable_closing`. |
-| `close_command` | Custom handler for the X button. If omitted and `closable` is enabled, defaults to `lambda: tabview.remove(key)` — which is currently broken (see below). |
+| `close_command` | Custom handler for the X button. If omitted and `closable` is enabled, defaults to `lambda: tabview.remove(key)`. |
 | `command` | Callback invoked when the tab is selected (in addition to the variable trace). Receives no arguments. |
 | `**kwargs` | When `page=` is `None`, forwarded to the auto-created Frame (`padding`, `surface`, `show_border`, …). |
 
@@ -164,44 +164,13 @@ variable is not modified, no event fires).
 they're the same string), or `None` if no tab is selected (e.g. after
 removing the only tab).
 
-**Removing tabs.** This is currently broken in two ways:
+**Removing tabs.** Call `tabview.remove(key)` to remove a tab and its
+page together. If the removed tab was active, the first remaining tab
+is selected automatically; if none remain, the variable is set to `""`.
 
-!!! danger "`tabview.remove(key)` always raises `KeyError`"
-    The implementation passes the *TabItem widget* to
-    `Tabs.remove(...)`, which expects a *string key* — Tabs's
-    auto-generated internal key (`tab_0`, `tab_1`, …) never matches
-    that widget reference, so the membership check raises
-    `KeyError: "No tab with key '<TabItem path>'"`.
-
-    The same crash hits the X-click path: when `enable_closing`
-    is set and no custom `close_command` is provided, `add()` wires
-    the X button to `lambda: self.remove(key)`. Clicking it raises
-    the same `KeyError` from inside Tk's button callback.
-
-    There is no clean workaround for the bundled API today. The
-    closest path that runs without crashing is:
-
-    ```python
-    # remove the page
-    tabview.page_stack_widget.remove(key)
-    # remove the tab — Tabs uses an auto-generated internal key,
-    # so look it up from the TabItem we tracked
-    tab = tabview.tab(key)
-    for tabs_key, item in tabview.tabs_widget._tabs.items():
-        if item is tab:
-            tabview.tabs_widget.remove(tabs_key)
-            break
-    del tabview._tab_map[key]
-    ```
-
-    This reaches into private state and is recommended only as a
-    stopgap. The `enable_closing` affordance should be considered
-    unusable until the `tabview.py` fix lands.
-
-**Auto-select fallback.** Once `remove()` is fixed, the implementation
-already handles falling back to the next remaining tab when the
-removed tab was active (it sets the variable to the first remaining
-key, or to `""` when none remain).
+```python
+tabview.remove("settings")
+```
 
 **Coupling.** Tab and page lifetime are joined: every `add(key, ...)`
 creates one of each, every `remove(key)` (when it works) destroys
