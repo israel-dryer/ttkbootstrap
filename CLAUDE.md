@@ -34,7 +34,7 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-03, bug-fix session 5 DONE — next-session entry point)
+### Current handoff (2026-05-03, bug-fix sessions 5–6 DONE — next-session entry point)
 
 **Read this section first.** The full per-page session notes below
 this handoff are historical context — useful when picking up
@@ -99,26 +99,51 @@ Fixed (7 bugs, docs updated to match each):
 - Updated `on_item_*` docstrings and the `listview.md` events table
   to match the actual payloads.
 
-**Next session (no display needed): continue the bug list.**
+**Bug-fix sessions 5+6 (2026-05-03) — CLOSED.**
 
-The per-page session notes below still contain further bugs. Remaining
-higher-value bugs without a display requirement:
+Session 5 commit: `dffb234` (7 bugs — dialog localization, ListView CRUD payloads).
 
-- `follow_system_appearance` is silently no-op on Windows/Linux
-  (documented; no code fix possible without OS-level hooks).
-- `ListView`/`TableView` event name suffix mismatches in docstrings
-  (e.g. `<<ItemInserted>>` vs `<<ItemInsert>>` in source comments).
-- `TableView` export events fire on `self._tree` instead of the
-  `TableView` (no `on_export_*` helpers exist).
-- Various `LabelFrame`, `Scrollbar`, `Separator` orientation and
-  surface configuration bugs (see per-page notes).
-- `ValidationResult` has no `__bool__` (`bool(result)` is always
-  `True`).
-- `BootstrapIcon` theme-token crash when `color='primary'` is passed
-  as `IconSpec.color`.
+Session 6 commits: `0d98bc6` + `03945a4` (20 bugs):
 
-Run `python tools/check_doc_snippets.py --run` before and after each
-fix to guard against regressions.
+- `ValidationResult.__bool__` returns `is_valid` — `if result:` is safe
+- `ValidationRule('custom')` with no `func=` now fails instead of silently passing
+- `RadioGroup.values()` returns actual radio values not keys
+- `IntlFormatter._format_time` all calls use `locale=` kwarg — time-only formatting fixed
+- `IconSpec.color` theme tokens (`'primary'` etc.) resolved through style engine before PIL
+- `Tabs(variant='pill')` raises `ValueError` immediately at construction
+- `Tabs` forwards `<<TabSelect>>` and `<<TabClose>>` to the Tabs widget after each `add()`
+- `PageStack.<<PageUnmount>>` now carries `event.data = {'page': key, 'prev_page': ..., 'prev_data': ...}`
+- `Notebook.insert()` validates key before `super().insert()` — no more orphan tabs on failure
+- `Notebook.insert()` applies `**kwargs` to existing widget via `configure()`
+- `FilterDialog.show()` resets `self.result = None` at the start of each call
+- `Toolbar.add_widget()` raises `ValueError` when widget is not parented to `toolbar.content`
+- `SideNav(display_mode='minimal')` defaults `is_pane_open=False` — starts hidden
+- `TableView` export events fire on `self` not `self._tree`
+- `ToolTip.__init__` destroys any prior tooltip on the widget before attaching
+- All corresponding docs updated — 24 warning/danger blocks resolved
+
+**Remaining warning/danger blocks (18 total) — all documented behavior / CPython / design intent:**
+
+- Deprecated `NavigationView` pages (×2) — intentional
+- `PasswordEntry` sensitive data (security advisory) — intentional
+- `callbacks.md` `unbind(seq, fid)` broken on Python 3.13 — CPython bug, not framework
+- `images.md` `clear_cache()` breaks live widgets — documented contract
+- `signals.md` exception handling asymmetry — documented behavior
+- `datasource.md` SQL injection contract — documented trusted-input
+- `localization.md` catalogs require Tk — documented constraint
+- `state-and-interaction.md` `state()` requires iterable — documented gotcha
+- `pagestack.md` pages must be parented to stack — documented constraint
+- `text.md` `surface=` overridden by `inherit_surface=True` (×2 — canvas too) — wrapper design
+- `text.md` `_surface` doesn't tint Text widget — Text builder reads `background` directly
+- `sidenav.md` hamburger ≠ show/hide in expanded mode — complex navigation design
+- `configuration.md` `app.settings.theme` decoupled from live theme — architectural design
+- `form.md` spec keys outside FieldItem are silently dropped — documented behavior (note, not warning)
+- `virtual-events.md` reference to callbacks danger block — cross-reference only
+
+No code changes are needed for any of the remaining 18.
+
+Run `python tools/check_doc_snippets.py --run` before and after any
+further changes to guard against regressions.
 
 **Bug-fix session 4 (2026-05-03) — CLOSED. Commit: `1ca3743`.**
 
