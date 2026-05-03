@@ -221,13 +221,11 @@ style.theme_use("bootstrap-dark")
 
 This rebuilds every theme-managed element and fires `<<ThemeChanged>>`.
 
-!!! warning "`app.settings.theme` is decoupled from `Style.theme_use()`"
-    Assigning `app.settings.theme = 'dark'` writes the dataclass field
-    but does **not** apply the theme. Conversely, `style.theme_use('dark')`
-    applies the theme but doesn't update `app.settings.theme`. Read
-    `style.theme_use()` to find out which theme is *actually* in
-    effect; treat `app.settings.theme` as the *initial* logical
-    preference, not the live source of truth.
+!!! note "`app.settings.theme` is the initial theme preference, not a live setter"
+    `settings.theme` is read once at startup to determine which theme
+    to apply. Writing to it after the app is running has no effect.
+    To switch the active theme at runtime, use `ttk.set_theme('darkly')`
+    (or `ttk.toggle_theme()` to flip between light and dark).
 
 ---
 
