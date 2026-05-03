@@ -112,11 +112,9 @@ class OptionMenu(MenuButton):
 
         super().__init__(master, text=value, **kwargs)
 
-        # Configure the menubutton to use the textvariable
+        # Configure the menubutton to use the textvariable; this routes through
+        # _delegate_textsignal which also calls _bind_change_event and saves _bind_id.
         self.configure(textvariable=self._textvariable)
-
-        # Bind signal to change event
-        self._bind_id = self._bind_change_event()
 
         if self._command is not None:
             self.on_changed(lambda e: self._command(e.data['value']))
@@ -229,7 +227,7 @@ class OptionMenu(MenuButton):
             return super()._delegate_textsignal()
         else:
             super()._delegate_textsignal(value)
-            self._bind_change_event()
+            self._bind_id = self._bind_change_event()
         return None
 
     @configure_delegate('show_dropdown_button')

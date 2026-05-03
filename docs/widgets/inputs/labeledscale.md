@@ -132,11 +132,13 @@ not state-aware.
 ### Adjusting the range at runtime
 
 ```python
-scale.scale.configure(from_=0, to=200)
+scale.configure(minvalue=0, maxvalue=200)
+scale.configure(value=50)
 ```
 
-Reconfigure through the inner scale rather than `LabeledScale.configure`
-itself.
+Use the `LabeledScale` configure delegates (`minvalue=`, `maxvalue=`,
+`value=`). The inner scale's `from_` / `to` are also accepted directly
+via `scale.scale.configure(from_=0, to=200)`.
 
 ---
 
@@ -180,10 +182,10 @@ it is — cross-field rules, conditional enabling — read `widget.value` at
 the point of use (form submit, action handler), or filter through the
 inner scale's `signal` subscription.
 
-For dynamic ranges, reconfigure the inner scale:
+For dynamic ranges:
 
 ```python
-scale.scale.configure(from_=new_min, to=new_max)
+scale.configure(minvalue=new_min, maxvalue=new_max)
 ```
 
 ---

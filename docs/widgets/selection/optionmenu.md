@@ -107,7 +107,7 @@ popup without picking just leaves the original value in place.
 | --- | --- | --- |
 | `value` | `Any` (coerced to `str`) | Initial selected value. Passed as `text=` to the underlying MenuButton. |
 | `options` | `list[Any]` | The available choices. Coerced to strings for display via `str(item)`. Reconfigure-safe. |
-| `command` | `Callable[[str], None]` | Fires after selection commits. Receives the new value (string), **not** the event. **See the warning under Events — currently fires twice per change.** |
+| `command` | `Callable[[str], None]` | Fires after selection commits. Receives the new value (string), **not** the event. |
 | `textsignal` | `Signal[str]` | Reactive binding. Subscribers fire on every change. |
 | `textvariable` | `StringVar` | Tk variable to bind directly. Mutually substitutable with `textsignal=`. |
 | `state` | `'normal'` / `'disabled'` / `'readonly'` | Disabled / readonly states block menu opening (`show_menu` checks `instate(("!disabled", "!readonly"))`). |
@@ -216,22 +216,6 @@ bind_id = menu.on_changed(on_changed)
 A `command=` callback (passed at construction) is wired to
 `<<Change>>` internally and receives the **value**, not the event:
 `command=lambda v: print(v)`.
-
-!!! warning "`<<Change>>` fires twice per write"
-    The OptionMenu constructor calls `_bind_change_event()` twice
-    during `__init__` — once indirectly via `self.configure(
-    textvariable=self._textvariable)` (which routes through
-    `_delegate_textsignal`) and once explicitly at the end of
-    `__init__`. Each call subscribes a fresh `<<Change>>`-emitting
-    lambda to `textsignal` without unsubscribing the previous one
-    (the `if self._bind_id is not None` guard runs against
-    `self._bind_id`, but only the second call assigns to it). Net
-    effect: every variable write fires `<<Change>>` **twice**, and
-    any `command=` callback runs **twice** per change. Verified at
-    runtime: `len(m.textsignal._subscribers) == 2` immediately
-    after construction. `on_changed` listeners and `command=`
-    callbacks must be idempotent until this is fixed. (Surfaced
-    2026-05-01.)
 
 ---
 

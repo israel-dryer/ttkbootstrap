@@ -274,45 +274,7 @@ separately by the variant's builder using the same `accent` value.
 
 ## Events
 
-!!! danger "The enriched event mechanism is broken in current code"
-    `on_tab_changed` / `on_tab_activated` / `on_tab_deactivated` all
-    bind to virtual events spelled
-    **`<<NotebookTabChange>>` / `<<NotebookTabActivate>>` /
-    `<<NotebookTabDeactivate>>`** (present tense, no `'d'`), but
-    Tk's underlying `ttk.Notebook` emits
-    **`<<NotebookTabChanged>>`** (past tense, with `'d'`). Net
-    effect:
-
-    - `nb.on_tab_changed(callback)` — never fires
-    - `nb.on_tab_activated(callback)` — never fires (and the wrapper
-      that synthesizes the activate / deactivate events for the
-      lifecycle pair is also bound to the wrong name, so they're
-      never generated in the first place)
-    - `nb.on_tab_deactivated(callback)` — never fires
-    - The enriched `event.data` payload (`current` / `previous` /
-      `reason` / `via`) is never populated
-
-    Workaround until the binding names are fixed: bind directly to
-    the past-tense Tk event and read selection state from the widget:
-
-    ```python
-    def on_changed(event):
-        current_path = event.widget.select()
-        current_key = event.widget._tk_to_key.get(current_path)
-        print("now showing:", current_key)
-
-    nb.bind("<<NotebookTabChanged>>", on_changed, add="+")
-    ```
-
-    The `_last_selected` / `_last_change_reason` /
-    `_last_change_via` fields the source maintains for the enriched
-    payload are never read by anything that runs, so the workaround
-    above is the only path that reports tab changes today.
-
-For reference, the *intended* event surface (once the binding names
-are aligned) is:
-
-| Helper | Underlying event | Payload (intended) |
+| Helper | Underlying event | Payload |
 |---|---|---|
 | `on_tab_changed(cb)` / `off_tab_changed(id)` | `<<NotebookTabChanged>>` | `{'current': TabRef, 'previous': TabRef, 'reason': str, 'via': str}` |
 | `on_tab_activated(cb)` / `off_tab_activated(id)` | `<<NotebookTabActivate>>` (synthetic) | `{'tab': TabRef}` |

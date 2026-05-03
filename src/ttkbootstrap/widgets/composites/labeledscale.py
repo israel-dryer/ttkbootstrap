@@ -147,7 +147,7 @@ class LabeledScale(Frame):
 
     @configure_delegate('value')
     def _delegate_value(self, value=None):
-        if value is not None:
+        if value is None:
             return self.value
         else:
             self.value = value
@@ -155,7 +155,7 @@ class LabeledScale(Frame):
 
     @configure_delegate('minvalue')
     def _delegate_minvalue(self, value=None):
-        if value is not None:
+        if value is None:
             return self.cget('from_')
         else:
             self.configure(from_=value)
@@ -163,7 +163,7 @@ class LabeledScale(Frame):
 
     @configure_delegate('maxvalue')
     def _delegate_maxvalue(self, value=None):
-        if value is not None:
+        if value is None:
             return self.cget('to')
         else:
             self.configure(to=value)

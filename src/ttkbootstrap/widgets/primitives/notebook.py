@@ -72,7 +72,7 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
 
     !!! note "Events"
 
-        - `<<NotebookTabChange>>`: Triggered when the selected tab changes.
+        - `<<NotebookTabChanged>>`: Triggered when the selected tab changes.
         - `<<NotebookTabActivate>>`: Triggered when a tab becomes active.
         - `<<NotebookTabDeactivate>>`: Triggered when a tab becomes inactive.
 
@@ -518,7 +518,7 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
         self.unbind("<<NotebookTabDeactivate>>", bind_id)
 
     def on_tab_changed(self, callback: Callable[[Any], Any]) -> str:
-        """Bind a callback to the `<<NotebookTabChange>>` event.
+        """Bind a callback to the `<<NotebookTabChanged>>` event.
 
         This also emits `<<NotebookTabActivate>>` and `<<NotebookTabDeactivate>>`
         events for the affected tabs.
@@ -567,13 +567,13 @@ class Notebook(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Noteb
             commit(payload)
             return callback(event)
 
-        return self.bind("<<NotebookTabChange>>", wrapper, add=True)
+        return self.bind("<<NotebookTabChanged>>", wrapper, add=True)
 
     def off_tab_changed(self, bind_id: str | None = None) -> None:
-        """Remove a `<<NotebookTabChange>>` binding.
+        """Remove a `<<NotebookTabChanged>>` binding.
 
         Args:
             bind_id (str): The bind_id returned by `on_tab_changed()`.
 
         """
-        self.unbind("<<NotebookTabChange>>", bind_id)
+        self.unbind("<<NotebookTabChanged>>", bind_id)
