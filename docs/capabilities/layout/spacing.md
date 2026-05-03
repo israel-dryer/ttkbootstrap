@@ -278,16 +278,9 @@ expect a single `density='compact'` on a container to cascade to
 its children — `density` is per-widget, and there's no descendant
 walk for it the way there is for `surface`.
 
-!!! warning "`configure(density=…)` is not fully live"
-
-    On `Entry` / `Combobox` / `Spinbox`, reconfiguring density
-    after construction updates only the *font* — the resolved ttk
-    style key isn't rebuilt, so the underlying image element height
-    and padding from construction-time density persist. A
-    default-density `TextEntry` reconfigured with
-    `entry.configure(density='compact')` ends up with the smaller
-    caption font in a default-height row. Workaround: pass
-    `density=` at construction time. Tracked on the bugs list.
+`Entry`, `Combobox`, and `Spinbox` (and the composites built on them)
+support live density reconfiguration — `entry.configure(density='compact')`
+rebuilds the resolved ttk style, not just the font.
 
 ---
 

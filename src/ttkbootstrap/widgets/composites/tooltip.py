@@ -118,6 +118,15 @@ class ToolTip:
         if "alpha" not in self.toplevel_kwargs:
             self.toplevel_kwargs["alpha"] = 0.95
 
+        # Destroy any prior tooltip on this widget before attaching
+        existing = getattr(widget, '_ttkbootstrap_tooltip', None)
+        if existing is not None:
+            try:
+                existing.destroy()
+            except Exception:
+                pass
+        widget._ttkbootstrap_tooltip = self
+
         # event binding
         self._widget.bind("<Enter>", self._on_enter)
         self._widget.bind("<Leave>", self._on_leave)

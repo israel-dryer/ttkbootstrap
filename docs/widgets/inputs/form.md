@@ -96,13 +96,12 @@ A `FieldItem` (or its dict equivalent) accepts only these keys:
 - `visible` — `False` skips widget construction entirely (the key still appears in `form.data` if seeded from `data=` or written via `set_field_value`)
 - `column`, `row`, `columnspan`, `rowspan` — explicit grid placement
 
-!!! warning "Spec keys outside this list are silently dropped"
-    `_normalize_items` only reads the fields above. Common spec
-    additions like `value=`, `required=True`, `validate="email"`,
-    `help=...`, `message=...` are accepted by the dict literal but
-    never reach the widget. Use `data=` for initial values and
-    `form.field(key).add_validation_rule(...)` for rules — see
-    Validation and constraints below.
+!!! note
+    `_normalize_items` only reads the fields above. Common dict keys like
+    `value=`, `required=True`, `validate="email"` are accepted by the
+    dict literal but silently ignored — they never reach the widget.
+    Use `data=` for initial values and `form.field(key).add_validation_rule(...)`
+    for validation rules — see Validation and constraints below.
 
 ### Editor inference
 
@@ -135,10 +134,8 @@ The full editor vocabulary recognized by `editor=`:
 | `'switch'`, `'toggle'` | `Switch` |
 | `'scale'` | `Scale` |
 
-!!! warning "Unknown editor names fall back silently"
-    A misspelled editor name (`'select'`, `'int'`, `'bogus'`) hits
-    the fallback branch and builds a `TextEntry` with no warning.
-    Verify editor names against the table above.
+A misspelled editor name emits `UserWarning` and falls back to
+`TextEntry`. Check the table above to verify the exact name.
 
 ### Reading and writing data
 

@@ -200,13 +200,8 @@ hover effect or click handler, attach the tooltip first and bind
 your handlers afterward — or use `bind(..., add="+")` for the
 tooltip's own bindings (not currently supported by `ToolTip`).
 
-!!! warning "Two tooltips on one widget — the second wins"
-    Each `ToolTip(widget, ...)` call overwrites the previous
-    constructor's bindings. The first instance becomes inert (its
-    `_show_tip` never runs because the binding no longer points at
-    it) and is not garbage-collected automatically. Destroy the
-    previous tooltip explicitly before attaching a new one to the
-    same widget.
+Attaching a second `ToolTip` to a widget automatically destroys the
+first — the new instance replaces the old one cleanly.
 
 ### Window flags
 
