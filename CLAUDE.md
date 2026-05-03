@@ -34,7 +34,7 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-02, cross-cutting link pass DONE — next-session entry point)
+### Current handoff (2026-05-03, bug-fix session 1 DONE — next-session entry point)
 
 **Read this section first.** The full per-page session notes below
 this handoff are historical context — useful when picking up
@@ -42,8 +42,7 @@ specific work, not required reading to get oriented.
 
 Pass 2 (editorial review) is COMPLETE across every section. Phases
 1–7 and 9A–9D are also complete. The cross-cutting link consistency
-pass is also complete (commit `e07c372` — `tools/check_doc_links.py`
-added; 18 broken links fixed across 14 files).
+pass is also complete (commit `e07c372`).
 
 **Remaining work gated on a running display:**
 
@@ -65,27 +64,82 @@ added; 18 broken links fixed across 14 files).
    orphan `Examples:`, no broken cross-links, both `Attributes:`
    and `Args:` rendering side-by-side.
 
-**Next session (no display needed): code-bug fixes.**
+**Bug-fix session 1 (2026-05-03) — CLOSED. Commits: `8deee17`
+`64002c6` `dfa11f7` `280d95f` `906c0f6` `1cc06b2` `42ee1dd`.**
 
-~80 code-level bugs are logged in this file's bugs list (search
-"Surfaced by"). Most are low-risk: rename a kwarg, validate input,
-fix a docstring claim. Good starting points (roughly easiest first):
+Fixed (15 bugs, docs updated to match each):
 
-1. `ValidationMixin.validate()` docstring — wrong return description
-   (`widgets/mixins/validation_mixin.py:99-100`). One-liner fix.
-2. `ValidationRule('stringLength')` param name mismatch — docstring
-   uses `min_length=`/`max_length=` but `validate()` reads `min=`/`max=`
-   (`validation_rules.py:73-74`, `validation_mixin.py:78`).
-3. `ValidationRule('compare')` silent no-op — remove `'compare'` from
-   `RuleType` literal or implement the branch
-   (`core/validation/types.py:4`, `validation_rules.py:48-86`).
-4. Form bugs (7 total) — `field_signal`/`field_textsignal` attribute
-   name mismatch, unknown editor fallback, `col_count` vs `columns`,
-   `TabsItem.label` dead field, etc. All in `composites/form.py`.
-5. Calendar `set(None)` silent no-op / `min_date` display-date clamp.
+- `ValidationRule('compare')` removed from `RuleType` literal (was
+  silent no-op; `core/validation/types.py`).
+- `ValidationMixin.validate()` docstring fixed — return is "True if
+  all rules passed", not "True if performed regardless of result"
+  (`validation_mixin.py:99`).
+- `add_validation_rule()` docstring example: `min_length=` → `min=`
+  (`validation_mixin.py:77`).
+- Form `field_signal()`/`field_textsignal()` — now reads both
+  `signal`/`textsignal` (Field subclasses) and `_signal`/`_textsignal`
+  (raw SignalMixin subclasses) (`composites/form.py:598`).
+- Form unknown editor names now emit `UserWarning` instead of
+  silently building a TextEntry (`composites/form.py:574`).
+- Form `columns=` accepted as alias for `col_count=` (`form.py:170`).
+- `TabsItem.label` annotated as reserved/not rendered (`form.py:98`).
+- `Calendar.set(None)` now clears selection instead of silently
+  returning (`composites/calendar.py:216`).
+- `Calendar.__init__` clamps `_display_date` into `[min_date,
+  max_date]` window so the widget doesn't open stranded
+  (`calendar.py:183`).
+- Docstring fixes: `DateEntry` `monthAndDate`→`monthAndDay`;
+  `TimeEntry` removed bogus `"mediumTime"` preset; `FormDialog`
+  `resizable` default `False`; `MessageDialog` `show_info` etc.
+  live on `MessageBox`; `demo.py` Meter uses modern param names.
+- `Notebook.on_tab_changed` event name: `<<NotebookTabChange>>` →
+  `<<NotebookTabChanged>>` — restores the entire enriched event
+  mechanism (`notebook.py:570`).
+- `LabeledScale` configure delegates: inverted query/set branches
+  fixed on `_delegate_value`, `_delegate_minvalue`,
+  `_delegate_maxvalue` (`composites/labeledscale.py:148`).
+- `OptionMenu.<<Change>>` double-fire: `_bind_change_event()` now
+  called once (via delegate); redundant explicit call removed
+  (`optionmenu.py:116,119`).
+- `TabView.remove(key)` `KeyError`: `add()` now passes `key=key` to
+  `Tabs.add()` so both sides share the key string; `remove()` passes
+  the string key not the widget. Also restores `enable_closing`
+  (`tabs/tabview.py:166,194`).
+- `Notebook.remove(tab)`/`forget(tab)` `TypeError`: MRO conflict
+  bypassed by calling `ttk.Notebook.forget(self, tabid)` directly
+  (`notebook.py:379,385`).
+
+**Next session (no display needed): continue the bug list.**
+
+Remaining bugs are still logged in the per-page notes below (search
+"Surfaced by"). Good next targets in roughly ascending complexity:
+
+1. `SelectBox.configure(value=X)` inverted delegate — same pattern
+   as the LabeledScale fix (`composites/selectbox.py:493`).
+2. `SelectBox.<<Change>>` fires on `entry_widget`, not `SelectBox`
+   — forward via a second `event_generate` (`selectbox.py:536`).
+3. `Calendar` programmatic setters bypass `min_date`/`max_date`/
+   `disabled_dates` — validate inside `set()`/`set_range()`.
+4. `Calendar.set_range(None, None)` stale `_selected_date`
+   (`calendar.py:274`).
+5. `PageStack.remove(key)` orphans `_history` — strip orphan entries
+   and adjust `_index` (`composites/pagestack.py:114`).
+6. `PageStack.add(key, page, **kwargs)` silently drops `**kwargs`
+   when `page=` is provided (`pagestack.py:106`).
+7. `TabView.navigate(key, data=...)` double history push — variable
+   trace + explicit navigate call both push (`tabs/tabview.py:218`).
+8. `Tabs.add()` clobbers signal initial value on first tab
+   (`tabs/tabs.py:335`).
+9. `Tabs.remove(key)` leaves orphan value in variable when active
+   tab is removed (`tabs/tabs.py:352`).
+10. `RadioGroup(accent='success')` accent not forwarded to children
+    — Frame super().__init__ resets `_accent` (`radiogroup.py`).
+    (ToggleGroup already has the fix at `togglegroup.py:96`.)
 
 Run `python tools/check_doc_snippets.py --run` before and after each
-fix to guard against regressions.
+fix to guard against regressions. Update the relevant `.md` page to
+remove the `!!! warning`/`!!! danger` block and replace with
+accurate prose after each fix.
 
 Sweep status (closed):
 
