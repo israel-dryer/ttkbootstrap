@@ -34,7 +34,7 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-03, bug-fix session 2 DONE — next-session entry point)
+### Current handoff (2026-05-03, bug-fix session 3 DONE — next-session entry point)
 
 **Read this section first.** The full per-page session notes below
 this handoff are historical context — useful when picking up
@@ -63,6 +63,57 @@ pass is also complete (commit `e07c372`).
    `TableView`, `MessageDialog`, `BaseDataSource`, etc. — no
    orphan `Examples:`, no broken cross-links, both `Attributes:`
    and `Args:` rendering side-by-side.
+
+**Bug-fix session 3 (2026-05-03) — CLOSED. Commit: `417abe4`.**
+
+Fixed (8 bugs, docs updated to match each):
+
+- `ToggleGroup.set(value)` now raises `ValueError` for unknown keys
+  in both single (str) and multi (set) modes
+  (`composites/togglegroup.py:267`).
+- `OptionMenu.set(value)` now raises `ValueError` if value is not in
+  `options` (`primitives/optionmenu.py:181`).
+- `SelectBox.value = "not_in_items"` now raises `ValueError` when
+  `allow_custom_values=False` (`composites/selectbox.py:528`).
+- `SideNav.select(key)` now raises `KeyError` for unregistered keys
+  (`composites/sidenav/view.py:774`).
+- `Accordion.add()` TypeError fixed — `accent`/`variant` kwargs are
+  always popped before precedence resolution so per-call and
+  accordion defaults no longer collide (`composites/accordion.py:128`).
+- `Accordion.remove(key)` now fires `<<AccordionChange>>` even when
+  removing the last expander; payload is `{"expanded": []}`
+  (`accordion.py:210`).
+- `Accordion.configure(show_separators=...)` now retroactively
+  rebuilds the separator strip for all existing expanders
+  (`accordion.py:368`).
+- `Expander.collapsible=False` now gates `expand()`, `collapse()`,
+  and `configure(expanded=...)` in addition to the UI affordance
+  (`composites/expander.py:261`).
+
+**Next session (no display needed): continue the bug list.**
+
+The per-page session notes below still contain further bugs. The
+remaining higher-value bugs without a display requirement (search for
+`"Surfaced by"` and `"!!! warning"` / `"!!! danger"` blocks in the
+per-page notes):
+
+- `AppSettings.light_theme`/`dark_theme` defaults are `docs-light`/
+  `docs-dark` (counterintuitive; should be `bootstrap-light`/
+  `bootstrap-dark`).
+- `follow_system_appearance` is silently no-op on Windows/Linux.
+- `Signal.map()` weakref: inline `textvariable=sig.map(fn)` can stop
+  updating after the derived signal is GC'd.
+- `Toast.show()` called twice leaks the first Toplevel.
+- `Toast.configure(bootstyle=...)` is a no-op for styling.
+- `CheckButton.set(None)` raises TypeError — no programmatic
+  re-entry path for the indeterminate state.
+- `Switch(bootstyle='primary')` bypasses `variant='switch'`.
+- `Entry.configure(surface=...)` raises TclError.
+- `Entry.configure(density=...)` updates font only.
+- `pack_propagate()` / `grid_propagate()` always return `None` on query.
+
+Run `python tools/check_doc_snippets.py --run` before and after each
+fix to guard against regressions.
 
 **Bug-fix session 2 (2026-05-03) — CLOSED. Commit: `1bdd489`.**
 
