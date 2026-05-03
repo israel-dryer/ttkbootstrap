@@ -109,8 +109,16 @@ class CheckButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TT
         return self.variable.get()
 
     def set(self, value: Any) -> None:
-        """Set the value of the checkbutton."""
-        self.variable.set(value)
+        """Set the value of the checkbutton.
+
+        Pass `None` to enter the indeterminate state (sets the ttk `alternate`
+        state flag without modifying the underlying variable).
+        """
+        if value is None:
+            self.state(['alternate'])
+        else:
+            self.state(['!alternate'])
+            self.variable.set(value)
 
     @property
     def value(self) -> Any:

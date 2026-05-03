@@ -77,8 +77,8 @@ and as the leaf in the persisted-window-state filename.
 | Field | Type | Default | Purpose |
 |-------|------|---------|---------|
 | `theme` | `str` | `"light"` | Active theme name, or `"light"` / `"dark"` alias |
-| `light_theme` | `str` | `"docs-light"` | What `"light"` resolves to |
-| `dark_theme` | `str` | `"docs-dark"` | What `"dark"` resolves to |
+| `light_theme` | `str` | `"bootstrap-light"` | What `"light"` resolves to |
+| `dark_theme` | `str` | `"bootstrap-dark"` | What `"dark"` resolves to |
 | `follow_system_appearance` | `bool` | `False` | Track the OS light/dark preference |
 | `available_themes` | `Sequence[str]` | `()` | Filter and order the theme list shown by `get_themes()` |
 | `inherit_surface_color` | `bool` | `True` | Children pick up the parent surface color |

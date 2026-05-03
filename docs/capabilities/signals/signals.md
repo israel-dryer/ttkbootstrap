@@ -274,15 +274,6 @@ print(upper.get())          # 'BOB'
 The derived signal is its own variable; reads come from the cached
 transform output, not from re-running `transform()` on demand.
 
-!!! warning "Inline `map` results are GC-sensitive"
-    `signal.map(...)` holds the derived signal via a `weakref` from
-    the source's subscription — an inline expression like
-    `textvariable=name.map(str.upper)` may be garbage-collected the
-    moment Tk's `configure(...)` returns, after which the derived
-    signal stops updating. Bind the result to a name first
-    (`upper = name.map(str.upper)`) and pass `upper` (or
-    `upper.var`) to the widget.
-
 ---
 
 ## Plugging signals into widgets

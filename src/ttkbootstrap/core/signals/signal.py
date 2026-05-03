@@ -1,6 +1,5 @@
 """Reactive signal implementation for ttkbootstrap."""
 import tkinter as tk
-import weakref
 from itertools import count
 from typing import Any, Callable, Generic, Type, TypeVar
 
@@ -233,15 +232,11 @@ class Signal(Generic[T]):
         """
         derived = Signal(transform(self()))
 
-        # Use weakref to avoid keeping derived alive solely via subscription
-        weak_derived = weakref.ref(derived)
-
-        def update(value: T) -> None:
-            d = weak_derived()
-            if d is None:
-                # Auto-detach if derived is GC'd
-                return
-            d.set(transform(value))
+        # Keep a strong reference inside the closure so inline callers like
+        # textvariable=sig.map(fn) don't lose updates after GC collects the
+        # local variable returned to the caller.
+        def update(value: T, _derived: 'Signal[U]' = derived) -> None:
+            _derived.set(transform(value))
 
         self.subscribe(update)
         return derived

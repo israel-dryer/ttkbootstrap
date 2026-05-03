@@ -332,23 +332,6 @@ app.update_idletasks()
 f.winfo_width(), f.winfo_height()       # → (300, 80) — held at configured size
 ```
 
-!!! warning "`pack_propagate()` and `grid_propagate()` always return None"
-
-    The mixin methods (`core/capabilities/pack.py:99-111`,
-    `core/capabilities/grid.py:112-124`) always pass `flag` through
-    to the underlying Tk call, including when `flag=None`. CPython
-    `tkinter` distinguishes the query path from the setter path by
-    a private `['_noarg_']` sentinel — so passing `None` dispatches
-    as the setter, and the query never returns the current value.
-    Verified at runtime: `f.pack_propagate()` → `None`, even on a
-    fresh widget where the underlying Tk value is `True`. The
-    propagation state itself is preserved correctly (the underlying
-    Tcl `pack propagate <w>` reports the right value), but you
-    cannot read it through the helper. Workaround:
-    `widget.tk.call('pack', 'propagate', widget._w)` returns the
-    raw Tk integer, or `widget.tk.call('grid', 'propagate', widget._w)`
-    for grid.
-
 ---
 
 ## When to read this page

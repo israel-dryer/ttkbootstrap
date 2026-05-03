@@ -204,7 +204,7 @@ fork as a starting point for your own:
 | Family | Light | Dark |
 |---|---|---|
 | Bootstrap | `bootstrap-light` | `bootstrap-dark` |
-| Docs (default) | `docs-light` | `docs-dark` |
+| Docs | `docs-light` | `docs-dark` |
 | Ocean | `ocean-light` | `ocean-dark` |
 | Forest | `forest-light` | `forest-dark` |
 | Rose | `rose-light` | `rose-dark` |
@@ -213,18 +213,18 @@ fork as a starting point for your own:
 | Classic | `classic-light` | `classic-dark` |
 
 `AppSettings.light_theme` / `AppSettings.dark_theme` default to
-`docs-light` / `docs-dark` — the abstract `theme="light"` /
+`"bootstrap-light"` / `"bootstrap-dark"` — the abstract `theme="light"` /
 `theme="dark"` aliases you pass to `App(...)` resolve to those.
-Override `AppSettings` to change the defaults application-wide:
+Override `AppSettings` to point at a different family:
 
 ```python
 import ttkbootstrap as ttk
 
 settings = ttk.AppSettings(
-    light_theme="bootstrap-light",
-    dark_theme="bootstrap-dark",
+    light_theme="ocean-light",
+    dark_theme="ocean-dark",
 )
-app = ttk.App(title="Bootstrap defaults", settings=settings)
+app = ttk.App(title="Ocean theme", settings=settings)
 app.mainloop()
 ```
 

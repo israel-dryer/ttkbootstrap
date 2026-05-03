@@ -150,6 +150,9 @@ class Toast:
                 if key in self._config_keys:
                     attr = f"_{key}"
                     setattr(self, attr, value)
+                    # Keep _accent in sync with the deprecated bootstyle alias.
+                    if key == 'bootstyle':
+                        self._accent = value
                 else:
                     raise AttributeError(f"'{key}' is not a valid option")
         return None
@@ -218,6 +221,11 @@ class Toast:
 
     def _build_toast(self) -> None:
         import ttkbootstrap as ttk
+        # Destroy any prior Toplevel so successive show() calls don't leak windows.
+        if self._toplevel:
+            self._toplevel.destroy()
+            self._toplevel = None
+
         # ----- Configuration Options -------
 
         has_title = self._title is not None

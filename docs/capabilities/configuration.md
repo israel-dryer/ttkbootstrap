@@ -45,8 +45,8 @@ print(app.settings.date_format)   # 'd.M.yy' (auto-derived from locale)
 | `app_author` | `None` | Reserved for config-path namespacing |
 | `app_version` | `None` | Reserved for window state and About dialogs |
 | `theme` | `'light'` | Logical token; resolved via `light_theme` / `dark_theme` |
-| `light_theme` | `'docs-light'` | Concrete theme used when `theme='light'` |
-| `dark_theme` | `'docs-dark'` | Concrete theme used when `theme='dark'` |
+| `light_theme` | `'bootstrap-light'` | Concrete theme used when `theme='light'` |
+| `dark_theme` | `'bootstrap-dark'` | Concrete theme used when `theme='dark'` |
 | `follow_system_appearance` | `False` | macOS only; tracks `<<TkSystemAppearanceChanged>>`. No-op on Win/Linux |
 | `inherit_surface_color` | `True` | Children inherit parent `_surface` (overrides explicit `surface=` on Tk-class widgets — see Pitfalls) |
 | `available_themes` | `()` | Filter applied to the built-in theme list |
@@ -66,12 +66,6 @@ below.
 `AppSettings` defaults can also be supplied via a project-local
 `ttkb.toml` `[app]` table when scaffolding an app with the CLI. See
 [Project structure](../platform/project-structure.md).
-
-!!! warning "`light_theme` / `dark_theme` defaults"
-    The defaults are `'docs-light'` / `'docs-dark'` — the themes used to
-    render this site, not the canonical app themes. For most apps,
-    override them to `'bootstrap-light'` / `'bootstrap-dark'` (or your
-    chosen brand themes). See the bugs list for the rationale.
 
 ---
 

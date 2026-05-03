@@ -131,23 +131,10 @@ The shorthand `entry.state(["readonly"])` / `entry.state(["disabled"])`
 also works (provided by `TtkStateMixin`) and is the form to prefer when
 toggling the same state on and off.
 
-**Reconfiguration caveats.**
-
-- `entry.configure(accent=...)` rebuilds the resolved style and works
-  as expected.
-- `entry.configure(surface=...)` raises
-  `TclError: unknown option "-surface"`. The `surface` constructor
-  argument has no matching configure delegate. Set surface at
-  construction time, or fall through to the escape hatch:
-  `entry.configure_style_options(surface='primary')`. Either way, the
-  parent frame's surface is the better channel for surface
-  inheritance.
-- `entry.configure(density=...)` updates only the entry's **font**.
-  The resolved ttk style is not rebuilt, so the underlying image
-  element and padding from the construction-time density persist.
-  Default-density Entries reconfigured to `compact` keep their
-  default-height row but get the smaller caption font — visually
-  inconsistent. Set `density` at construction time.
+**Reconfiguration.** `entry.configure(accent=...)`, `configure(surface=...)`,
+and `configure(density=...)` all rebuild the resolved ttk style and
+take effect immediately. `density` also updates the entry's font
+(`caption` for compact, `body` for default).
 
 ---
 

@@ -138,24 +138,11 @@ would not track theme changes.
 The shorthand `combo.state(["readonly"])` / `combo.state(["disabled"])`
 also works (provided by `TtkStateMixin`).
 
-**Reconfiguration caveats.**
-
-- `combo.configure(values=...)` works; the dropdown reflects the new
-  list on its next open.
-- `combo.configure(accent=...)` rebuilds the resolved style.
-- `combo.configure(surface=...)` raises
-  `TclError: unknown option "-surface"`. Set `surface` at construction
-  time, or rely on the parent frame's surface for inheritance.
-- `combo.configure(density=...)` updates only the **font**. The
-  resolved ttk style is not rebuilt, so the underlying image element
-  and padding from the construction-time density persist —
-  default-density Comboboxes reconfigured to `compact` get the smaller
-  caption font but keep their default-height row. Set `density` at
-  construction time.
-
-Both surface/density caveats are the same shape as the Entry bugs
-already on the framework's bug list — Combobox shares the same
-configure-delegation pattern.
+**Reconfiguration.** `combo.configure(values=...)` works; the dropdown
+reflects the new list on its next open. `combo.configure(accent=...)`,
+`configure(surface=...)`, and `configure(density=...)` all rebuild the
+resolved ttk style and take effect immediately. `density` also updates
+the font (`caption` for compact, `body` for default).
 
 ---
 

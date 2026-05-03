@@ -54,7 +54,7 @@ app.mainloop()
 ### Light and dark aliases
 
 `"light"` and `"dark"` resolve through `AppSettings.light_theme` and
-`AppSettings.dark_theme`. They default to `"docs-light"` and `"docs-dark"`.
+`AppSettings.dark_theme`. They default to `"bootstrap-light"` and `"bootstrap-dark"`.
 Configure them when you create the app to make the aliases — and
 `toggle_theme()` — point at your preferred family:
 

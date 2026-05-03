@@ -299,8 +299,8 @@ class AppSettings:
 
     # theme
     theme: str = "light"
-    light_theme: str = "docs-light"
-    dark_theme: str = "docs-dark"
+    light_theme: str = "bootstrap-light"
+    dark_theme: str = "bootstrap-dark"
     follow_system_appearance: bool = False
     available_themes: Sequence[str] = ()
     inherit_surface_color: bool = True

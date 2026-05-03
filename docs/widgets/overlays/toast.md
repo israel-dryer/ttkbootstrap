@@ -93,13 +93,8 @@ ttk.Button(app, text="Failed",
 app.mainloop()
 ```
 
-!!! warning "Don't call `show()` again before the previous toast dismisses"
-    Calling `show()` twice on the same instance while the first
-    `Toplevel` is still on screen leaks the first window — `_toplevel`
-    is overwritten and the previous `Toplevel` stays mapped until the
-    application exits. Either let the previous toast finish (set a
-    `duration` and time the second call after it) or call `hide()`
-    explicitly before the second `show()`.
+Calling `show()` again before the previous toast dismisses automatically
+destroys the previous `Toplevel` and creates a fresh one.
 
 ---
 
@@ -115,7 +110,7 @@ app.mainloop()
 | `buttons` | `None` | Sequence of button option dicts. Each dict is passed to `ttk.Button(...)`; recognized keys include `text`, `icon`, `accent`, `variant`, plus a special `command`. See *Buttons*. |
 | `show_close_button` | `True` | Renders an X close button in the header. The button calls `hide()` and fires `on_dismissed(None)`. |
 | `accent` | `None` | Theme token for the toast container. Tints the background and drives the muted close-button / memo color via `"<accent>[muted]"`. |
-| `bootstyle` | `None` | DEPRECATED — use `accent`. Construction-time only; `configure(bootstyle=...)` is silently a no-op for styling. |
+| `bootstyle` | `None` | DEPRECATED — use `accent`. Kept for backwards compatibility; routes to `accent` internally. |
 | `position` | `None` | Tk geometry string (`"+x+y"` or `"-x-y"`). Overrides the platform default. |
 | `alert` | `False` | If `True`, rings the system bell (`top.bell()`) when the toast is shown. |
 | `on_dismissed` | `None` | Callback invoked when the toast goes away. Payload depends on dismissal path. See *Events*. |
@@ -231,10 +226,6 @@ toast.hide()
 toast.configure(title="Done!", duration=2000)
 toast.show()
 ```
-
-`configure(bootstyle=...)` post-construction stores the value but
-does **not** update `_accent`, so the next `show()` paints with the
-original styling. Pass `accent` instead.
 
 ### Stacking
 

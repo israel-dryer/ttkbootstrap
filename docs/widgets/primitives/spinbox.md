@@ -158,24 +158,11 @@ textvariable channel.
 The shorthand `spin.state(["readonly"])` / `spin.state(["disabled"])`
 also works (provided by `TtkStateMixin`).
 
-**Reconfiguration caveats.**
-
-- `spin.configure(values=...)` works; arrows cycle through the new
-  list on the next step.
-- `spin.configure(accent=...)` rebuilds the resolved style.
-- `spin.configure(surface=...)` raises
-  `TclError: unknown option "-surface"`. Set `surface` at construction
-  time, or rely on the parent frame's surface for inheritance.
-- `spin.configure(density=...)` updates only the **font**. The
-  resolved ttk style is not rebuilt, so the underlying image element
-  and padding from the construction-time density persist —
-  default-density Spinboxes reconfigured to `compact` get the smaller
-  caption font but keep their default-height row. Set `density` at
-  construction time.
-
-Both surface/density caveats are the same shape as the Entry bugs
-already on the framework's bug list — Spinbox shares the same
-configure-delegation pattern.
+**Reconfiguration.** `spin.configure(values=...)` works; arrows cycle
+through the new list on the next step. `spin.configure(accent=...)`,
+`configure(surface=...)`, and `configure(density=...)` all rebuild the
+resolved ttk style and take effect immediately. `density` also updates
+the font (`caption` for compact, `body` for default).
 
 ---
 

@@ -124,12 +124,10 @@ here.
 | `localize` | `bool` / `'auto'` | How `text` is treated (literal vs translation key). Default `'auto'`. |
 | `takefocus` | bool | Whether the widget participates in Tab traversal. |
 
-`bootstyle` is accepted but **deprecated**. See the warnings in
-*Behavior* — the deprecated path produces a different widget shape.
+`bootstyle` is accepted but **deprecated**. Use `accent` instead.
 
-`variant` is **silently overridden**: Switch unconditionally writes
-`variant='switch'` when `bootstyle` is not in kwargs
-(`widgets/primitives/switch.py:43-44`). Passing `variant='default'`
+`variant` is always `'switch'` — Switch unconditionally sets it
+(`widgets/primitives/switch.py:43`), so passing `variant='default'`
 to a Switch has no effect.
 
 `density` is **not** a valid option for Switch (or CheckButton) —
@@ -183,23 +181,11 @@ and `variable` can all be changed via `configure(...)` after
 construction. Reconfiguring `value=` writes through to the bound
 variable (the post-construction equivalent of `set()`).
 
-!!! warning "`bootstyle` produces a non-Switch widget"
-    The deprecated `bootstyle` argument bypasses the
-    `variant='switch'` assignment
-    (`widgets/primitives/switch.py:43-44`). Constructing
-    `Switch(bootstyle='primary')` yields a Tk style of
-    `bs[…].primary.TCheckbutton` — a regular CheckButton with a
-    check-box indicator, not a slider. Use `accent='primary'`
-    instead. The deprecation warning fires, but the visual silently
-    diverges from what the class name implies.
-
-!!! warning "`set(None)` raises"
-    `BooleanVar` cannot hold `None`, so `sw.set(None)` raises
-    `TypeError: getboolean() argument must be str, not None`. There
-    is no programmatic path to the indeterminate state at all on
-    Switch — the visual mapping isn't there either, so the question
-    doesn't arise in practice. If your domain has a real "unset"
-    third state, switch to CheckButton with a custom `tk.StringVar`.
+**`set(None)` on Switch.** Since there is no indeterminate visual for
+Switch (the style builder has no `alternate` image mapping), `set(None)`
+sets the ttk `alternate` state (inherited from CheckButton) but produces
+no visible indicator change. If your domain needs a visible third state,
+use [CheckButton](checkbutton.md) which has dedicated indeterminate images.
 
 ---
 

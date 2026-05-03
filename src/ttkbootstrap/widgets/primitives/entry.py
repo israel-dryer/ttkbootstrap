@@ -100,4 +100,12 @@ class Entry(TextSignalMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMi
                 self.configure(font='caption')
             else:
                 self.configure(font='body')
-            return self.configure_style_options(density=value)
+            self.configure_style_options(density=value)
+            return self.rebuild_style()
+
+    @configure_delegate('surface')
+    def _delegate_surface(self, value=None):
+        if value is None:
+            return self._surface
+        self.configure_style_options(surface=value)
+        return self.rebuild_style()

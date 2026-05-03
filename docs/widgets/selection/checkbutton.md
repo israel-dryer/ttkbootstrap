@@ -90,18 +90,13 @@ cb = ttk.CheckButton(app, text="Enabled", signal=v, value=False)
 # cb.value is True — the signal's pre-existing value, not value=False
 ```
 
-**Indeterminate state — read carefully.** A fresh CheckButton with no
-`value=`, no `signal=`, and no `variable=` renders in the **alternate**
-state at construction (Tk shows the indeterminate indicator). This is
-a side effect of the bound `BooleanVar` having no Tcl-side value yet,
-which matches the platform's default `tristatevalue` of `""`. After
-the first user click, the variable cycles between `True` and `False`
-only — alternate is **not reachable** programmatically. Calling
-`cb.set(None)` raises `TypeError` because `BooleanVar` cannot hold
-`None`. If you need a real third state that survives clicks, supply
-your own `tk.StringVar` with a non-matching initial value and string
-`onvalue` / `offvalue` — but understand that a single click coerces
-the variable to one of those two strings.
+**Indeterminate state.** Call `cb.set(None)` to enter the indeterminate
+(`alternate`) state — the ttk state flag is set without writing to the
+`BooleanVar`. A fresh CheckButton with no `value=`, no `signal=`, and
+no `variable=` also starts in this state (the Tcl variable has no value
+yet, which Tk treats as matching the platform `tristatevalue`). After
+the first user click the variable cycles between `True` and `False`;
+call `cb.set(None)` again to return to indeterminate.
 
 **Commit semantics.** The bound variable is updated on every user
 click and on every `cb.set(...)` call. There's no separate "commit"
@@ -233,15 +228,6 @@ app.mainloop()
 CheckButton emits **no virtual events** of its own — there is no
 `<<Changed>>` to bind. There are also no `on_*` / `off_*` helpers
 beyond what's listed above.
-
-!!! warning "`set(None)` raises"
-    `BooleanVar` cannot hold `None`, so `cb.set(None)` raises
-    `TypeError: getboolean() argument must be str, not None`. There
-    is no public path back to the indeterminate (`alternate`) state
-    once the variable has been written. If your domain has a real
-    "unset" third state, use a `tk.StringVar` with custom
-    `onvalue` / `offvalue` and treat any non-matching string as
-    "unset" yourself.
 
 ---
 
