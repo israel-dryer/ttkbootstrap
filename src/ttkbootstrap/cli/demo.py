@@ -731,10 +731,10 @@ def _build_progress_page(page):
     ]:
         ttk.Meter(
             meter_row,
-            metersize=120,
-            amountused=amount,
-            amounttotal=100,
-            subtext=label,
+            size=120,
+            value=amount,
+            maxvalue=100,
+            subtitle=label,
             accent=color,
             interactive=True,
         ).pack(side=LEFT, padx=10)

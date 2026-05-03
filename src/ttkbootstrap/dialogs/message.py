@@ -23,9 +23,9 @@ class MessageDialog:
     Each button is identified by a unique symbolic name. Calling
     `show()` opens the dialog modally and blocks until a button is
     selected; the chosen button's name is then available on `.result`
-    and dispatched as a `<<DialogResult>>` event. The class also exposes
+    and dispatched as a `<<DialogResult>>` event. The preset variants
     `show_info`, `show_warning`, `show_error`, and `show_question`
-    static methods as preset variants.
+    live on `MessageBox`, not on this class.
 
     !!! note "Events"
 

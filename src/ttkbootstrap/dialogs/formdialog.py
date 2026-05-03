@@ -52,7 +52,7 @@ class FormDialog:
             If provided, ensures width is at least the calculated minimum to prevent
             horizontal scrolling. Defaults to None (auto-calculate).
         maxsize: Maximum dialog window size as (width, height). Defaults to None.
-        resizable: Allow window resizing as (width, height) bools. Defaults to (True, True).
+        resizable: Allow window resizing as (width, height) bools. Defaults to False.
         alert: If True, plays system alert sound on show. Defaults to False.
         mode: Dialog interaction mode ("modal" or "popover"). Defaults to "modal".
     """

@@ -27,7 +27,7 @@ class DateEntry(Field):
     and can accept input as strings, date objects, or datetime objects.
 
     The available date format presets are: `longDate` (January 15, 2025),
-    `shortDate` (1/15/25), `monthAndDate` (January 15), `monthAndYear`
+    `shortDate` (1/15/25), `monthAndDay` (January 15), `monthAndYear`
     (January 2025), `quarterAndYear` (Q1 2025), `day` (15), `dayOfWeek`
     (Wednesday), `month` (January), `quarter` (Q1), `year` (2025),
     `longTime` (3:30:45 PM PST), `shortTime` (3:30 PM), `longDateLongTime`,
