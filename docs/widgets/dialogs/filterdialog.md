@@ -103,7 +103,7 @@ A few non-obvious points:
 | `title` | Window title. Default `"Filter"` — a literal string, **not** a translation key (unlike most dialogs). Pass an explicit translated string if you ship localized builds. |
 | `items` | List of items to display as checkboxes. Each item is either a **string** (used as both display text and value) or a **dict** with `text` (required), `value` (defaults to `text`), and `selected` (defaults to `False`). |
 | `enable_search` | If `True`, adds a search `TextEntry` with a leading magnifying-glass icon at the top of the dialog. The search is a case-insensitive substring match against each item's `text`. Default `False`. |
-| `enable_select_all` | If `True`, adds a "Select All" checkbox above the item list. Default `False`. The checkbox label is the translation key `"edit.select_all"` — see the localization caveat below. |
+| `enable_select_all` | If `True`, adds a "Select All" checkbox above the item list. Default `False`. The checkbox label is resolved through `MessageCatalog.translate("edit.select_all")`. |
 | `frameless` | If `True`, the dialog is rendered without window decorations and dismisses when the user clicks outside it. Default `False`. |
 
 Item shape:
@@ -116,23 +116,14 @@ items = [
 ]
 ```
 
-!!! note "Localization caveats"
-
-    `FilterDialog` does **not** expose a `localize` flag and does
-    **not** translate strings automatically. Three places use
-    translation keys without resolution:
-
-    - The default OK and Cancel button labels are
-      `"button.ok"` / `"button.cancel"`. A vanilla `FilterDialog()`
-      shows the literal strings `button.ok` / `button.cancel` to
-      the end user.
-    - The Select All checkbox label is `"edit.select_all"`.
-    - Item `text` is shown verbatim — translate it yourself before
-      passing.
-
-    The default `title="Filter"` is the only literal English string;
-    everything else is a translation key that won't resolve unless
-    your `MessageCatalog` has been populated.
+!!! note "Localization"
+    Default button labels (`"button.ok"` / `"button.cancel"`) and the
+    Select All checkbox label (`"edit.select_all"`) are resolved
+    through `MessageCatalog.translate` so they render in the active
+    locale. Item `text` is shown verbatim — translate it yourself
+    before passing. The default `title="Filter"` is an English
+    literal; pass an explicit translated string if you ship localized
+    builds.
 
 ---
 

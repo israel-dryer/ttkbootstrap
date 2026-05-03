@@ -252,10 +252,10 @@ state.
 | ---------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------- |
 | `<<SelectionChange>>`  | Selection set changed (click, `select_all`, `clear_selection`). | `None` — call `get_selected()`.                                |
 | `<<ItemClick>>`        | A row was clicked.                                    | The clicked record (`dict`), enriched with `selected`/`focused`/`item_index`. |
-| `<<ItemDelete>>`       | An item was removed via the row × button or `delete_item`. | `None`.                                                              |
-| `<<ItemDeleteFail>>`   | The datasource raised during deletion.                | `None`.                                                                   |
-| `<<ItemInsert>>`       | `insert_item(...)` succeeded.                         | `None`.                                                                   |
-| `<<ItemUpdate>>`       | `update_item(...)` succeeded.                         | `None`.                                                                   |
+| `<<ItemDelete>>`       | An item was removed via the row × button or `delete_item`. | `{'record_id': Any}` — the id of the deleted record.                |
+| `<<ItemDeleteFail>>`   | The datasource raised during deletion.                | `{'record_id': Any, 'error': str}`.                                       |
+| `<<ItemInsert>>`       | `insert_item(...)` succeeded.                         | `{'record': dict}` — the inserted record with its assigned id.            |
+| `<<ItemUpdate>>`       | `update_item(...)` succeeded.                         | `{'record': dict}` — the partial update dict.                             |
 | `<<ItemDragStart>>`    | A drag began.                                         | The dragged record + `source_index`.                                      |
 | `<<ItemDrag>>`         | The drag cursor moved.                                | `{source_index, target_index, y_current, ...}`.                           |
 | `<<ItemDragEnd>>`      | The drag was released.                                | `{source_index, target_index, moved, y_start, y_end, ...}`.               |
@@ -272,10 +272,9 @@ lv.on_item_drag_end(lambda e: print(
 ```
 
 The helpers return a Tk bind ID; pass it back to `off_*` to
-detach a specific listener. Note that `<<SelectionChange>>`,
-`<<ItemDelete>>`, `<<ItemDeleteFail>>`, `<<ItemInsert>>`, and
-`<<ItemUpdate>>` carry no payload — read the current state from
-the widget or the datasource.
+detach a specific listener. Note that `<<SelectionChange>>` carries
+no payload — call `get_selected()` for the current selection. The
+other CRUD events carry the relevant record data in `event.data`.
 
 ---
 

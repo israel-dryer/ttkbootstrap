@@ -128,13 +128,6 @@ dlg = ttk.FormDialog(
 )
 ```
 
-!!! note "Localization caveat"
-    The default buttons render the literal strings `"button.cancel"`
-    and `"button.ok"` — the same translation-key gotcha as
-    `MessageDialog`. Pass explicit button labels (or rely on a
-    locale catalog that translates those keys) for any user-facing
-    dialog.
-
 For richer layouts — labelled groups, tabbed forms, custom editors
 per field — see the [`Form` widget](../inputs/form.md), which
 documents the full `FieldItem` / `GroupItem` / `TabsItem` shape.

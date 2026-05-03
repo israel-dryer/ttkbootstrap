@@ -69,7 +69,7 @@ class MessageDialog:
         self._width = width
         self._padding = padding
         self._icon = icon
-        self._localize = kwargs.get("localize")
+        self._localize = kwargs.get("localize", True)
         self._img = None  # Store icon image to prevent garbage collection
 
         if buttons is None:

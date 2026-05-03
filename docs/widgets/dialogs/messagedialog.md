@@ -85,7 +85,7 @@ rather than label string.
 | `alert` | If `True`, rings the system bell when the dialog opens. Default `False`. |
 | `master` | Parent window. Defaults to the application root. |
 | `command` | Callable invoked once for *any* button press, before the dialog closes. Receives no arguments. |
-| `localize` | Pass via `**kwargs`. When `True`, button labels are resolved through `MessageCatalog.translate` so the default `"button.cancel"` / `"button.ok"` keys render in the active locale. |
+| `localize` | Pass via `**kwargs`. When `True` (the default), button labels are resolved through `MessageCatalog.translate`. Pass `localize=False` to display button strings verbatim (useful when you supply pre-translated labels). |
 
 ```python
 ttk.MessageDialog(
@@ -97,12 +97,6 @@ ttk.MessageDialog(
     alert=True,
 ).show()
 ```
-
-!!! note "Localization caveat"
-    The default `["button.cancel", "button.ok"]` are translation
-    *keys*, not display strings. Without `localize=True`, the user
-    sees the literal text `button.cancel` / `button.ok`. Either pass
-    `localize=True`, or supply your own button labels.
 
 ---
 
