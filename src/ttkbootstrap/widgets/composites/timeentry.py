@@ -64,7 +64,7 @@ class TimeEntry(SelectBox):
             value_format: Time format pattern for parsing and displaying times.
                 Default is "shortTime" (e.g., "3:30 PM"). Common formats:
                 "shortTime" (3:30 PM), "longTime" (3:30:45 PM PST),
-                "mediumTime" (3:30:45 PM), "HH:mm" (15:30), "h:mm a" (3:30 PM).
+                "HH:mm" (15:30), "h:mm a" (3:30 PM).
             interval: Time interval in minutes for dropdown items (e.g., 15, 30, 60).
                 Default is 30 minutes.
             min_time: Minimum time value for the dropdown list. Can be a time object

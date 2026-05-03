@@ -1,3 +1,4 @@
+"""Composite state coordinator and CompositeFrame base widget."""
 import tkinter as tk
 from tkinter import ttk
 from typing import Any
@@ -23,6 +24,7 @@ class Composite:
         DISABLED (str): State name constant for disabled state ('disabled').
         selected (bool): Read-only property for current selection state.
         disabled (bool): Read-only property for current disabled state.
+
     """
 
     # state names
@@ -43,6 +45,7 @@ class Composite:
                 composite group.
             select_on_click: If True, automatically toggles the selected state
                 when clicking on non-button registered widgets. Defaults to False.
+
         """
         self._hovered = False
         self._pressed = False
@@ -88,6 +91,7 @@ class Composite:
         Note:
             Buttons are treated specially - they invoke their command on
             click instead of generating <<CompositeInvoke>> events.
+
         """
         self._composites.add(widget)
 
@@ -103,6 +107,7 @@ class Composite:
 
         Args:
             selected: True to mark as selected, False to deselect.
+
         """
         self._selected = selected
         self._update_states()
@@ -115,6 +120,7 @@ class Composite:
 
         Args:
             disabled: True to mark as disabled, False to enable.
+
         """
         self._disabled = disabled
         self._update_states()
@@ -211,6 +217,7 @@ class CompositeFrame(Frame):
     Attributes:
         selected (bool): Read-only property for current selection state.
         disabled (bool): Read-only property for current disabled state.
+
     """
 
     def __init__(self, master: Master = None, select_on_click: bool = False, **kwargs: Any):
@@ -221,6 +228,7 @@ class CompositeFrame(Frame):
             select_on_click: If True, automatically toggles selection when
                 clicking on non-button registered widgets. Defaults to False.
             **kwargs: Additional arguments passed to ttk.Frame constructor.
+
         """
         super().__init__(master, **kwargs)
 
@@ -238,6 +246,7 @@ class CompositeFrame(Frame):
 
         See Also:
             Composite.register_composite for more details.
+
         """
         return self._composite.register_composite(widget)
 
@@ -249,6 +258,7 @@ class CompositeFrame(Frame):
 
         See Also:
             Composite.set_selected for more details.
+
         """
         return self._composite.set_selected(selected)
 
@@ -260,6 +270,7 @@ class CompositeFrame(Frame):
 
         See Also:
             Composite.set_disabled for more details.
+
         """
         return self._composite.set_disabled(disabled)
 

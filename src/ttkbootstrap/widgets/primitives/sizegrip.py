@@ -1,3 +1,4 @@
+"""SizeGrip widget — a ttk.Sizegrip with theme support."""
 from __future__ import annotations
 
 from tkinter import ttk
@@ -11,6 +12,8 @@ from ttkbootstrap.widgets.types import Master
 
 
 class SizeGripKwargs(TypedDict, total=False):
+    """Keyword arguments for SizeGrip."""
+
     # Standard ttk.Sizegrip options
     style: str
     class_: str
@@ -25,7 +28,7 @@ class SizeGripKwargs(TypedDict, total=False):
 
 
 class SizeGrip(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Sizegrip):
-    """ttkbootstrap wrapper for `ttk.Sizegrip` with bootstyle support."""
+    """ttkbootstrap Sizegrip with theme support."""
 
     _ttk_base = ttk.Sizegrip
 
@@ -35,12 +38,14 @@ class SizeGrip(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Sizeg
         Args:
             master: Parent widget. If None, uses the default root window.
 
-        Other Parameters:
+        Other Parameters
+        ----------------
             style (str): Explicit ttk style name (overrides accent/variant).
             accent (str): Accent token for styling.
             bootstyle (str): DEPRECATED - Use `accent` instead.
             surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
+
         """
         super().__init__(master, **kwargs)
 

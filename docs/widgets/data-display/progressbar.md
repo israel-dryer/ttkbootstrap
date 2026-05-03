@@ -4,13 +4,26 @@ title: Progressbar
 
 # Progressbar
 
-`Progressbar` displays **task progress over time**.
+`Progressbar` is a themed wrapper over `tkinter.ttk.Progressbar` that
+shows **how much of a task has completed** (determinate) or **that work
+is ongoing** (indeterminate). It's a static, non-interactive indicator
+— it doesn't take focus, fire `command`, or emit virtual events, and
+it's the right control whenever the message is "how far along".
 
-It communicates how much work has completed (determinate) or that work is ongoing (indeterminate), without requiring user interaction.
+Determinate mode renders a fill from `0` to `maximum` driven by `value`.
+Indeterminate mode runs an animation until `stop()` is called, with no
+meaningful value. The widget supports three visual variants
+(`default`, `striped`, `thin`) and the standard accent palette, so it
+fits in toolbars and dialogs as well as full-width status rows.
+
+<figure markdown>
+![progressbar](../../assets/dark/widgets-progressbar.png#only-dark)
+![progressbar](../../assets/light/widgets-progressbar.png#only-light)
+</figure>
 
 ---
 
-## Quick start
+## Basic usage
 
 ```python
 import ttkbootstrap as ttk
@@ -23,139 +36,183 @@ pb.pack(fill="x", padx=20, pady=20)
 app.mainloop()
 ```
 
----
-
-## When to use
-
-Use Progressbar when:
-
-- progress is linear and measurable
-
-- users benefit from seeing completion percentage
-
-- tracking task progress over time
-
-### Consider a different control when...
-
-- **You want a more expressive, dashboard-style indicator** — use [Meter](meter.md) instead
-
-- **You need to show capacity or fullness** — use [FloodGauge](floodgauge.md) instead
-
-- **You need a compact status indicator** — use [Badge](badge.md) for text-based status
-
----
-
-## Appearance
-
-### Styling with `accent`
-
-Use `accent` to indicate intent or severity:
+For indeterminate work, switch modes and call `start()`:
 
 ```python
-ttk.Progressbar(app, accent="success")
-ttk.Progressbar(app, accent="warning")
-ttk.Progressbar(app, accent="danger")
-```
-
-!!! link "Design System"
-    See [Design System](../../design-system/index.md) for color tokens and theming guidelines.
-
----
-
-## Examples & patterns
-
-### Value model
-
-- **Determinate**: shows progress between `0` and `maximum`
-
-- **Indeterminate**: animates continuously to indicate ongoing work
-
-```python
-pb.configure(mode="indeterminate")
+pb = ttk.Progressbar(app, mode="indeterminate")
+pb.pack(fill="x", padx=20, pady=20)
 pb.start()
 ```
 
-### Common options
+Call `pb.stop()` when the work finishes.
 
-- `value` — current progress value
+---
 
-- `maximum` — maximum value (default 100)
+## Common options
 
-- `mode="determinate" | "indeterminate"` — progress mode
+Progressbar accepts the standard `ttk.Progressbar` options plus the
+framework's theming and signal extensions:
 
-- `length` — length of the progressbar in pixels
+| Option          | Purpose                                                                  |
+| --------------- | ------------------------------------------------------------------------ |
+| `value`         | Current progress as a float (0 to `maximum`).                            |
+| `maximum`       | Upper bound of the determinate range. Default `100`.                     |
+| `mode`          | `"determinate"` (default) or `"indeterminate"`.                          |
+| `orient`        | `"horizontal"` (default) or `"vertical"`.                                |
+| `length`        | Requested length along the orientation axis, in pixels.                  |
+| `accent`        | Theme color token applied to the fill (`"primary"` by default).          |
+| `variant`       | Visual style: `"default"`, `"striped"`, or `"thin"`.                     |
+| `surface`       | Surface token used for the trough background (`"content"` by default).   |
+| `signal`        | Reactive `Signal` bound to `value`.                                      |
+| `variable`      | Tk `DoubleVar` (or compatible) bound to `value`.                         |
+| `phase`         | Animation phase for indeterminate mode (rarely set by hand).             |
+| `state`         | `"normal"` or `"disabled"` (see Behavior).                               |
 
-- `orient="horizontal" | "vertical"` — orientation
-
-### Updating progress
+**Variant.** `variant` controls the bar silhouette. `default` is a
+solid fill, `striped` adds a diagonal hatch (useful for indeterminate
+mode), and `thin` collapses both bar and trough to a slim track:
 
 ```python
-pb = ttk.Progressbar(app, maximum=100)
-pb.pack()
-
-# Update progress programmatically
-pb.configure(value=50)
-
-# Or step by a value
-pb.step(10)
+ttk.Progressbar(app, value=40, variant="default")
+ttk.Progressbar(app, value=40, variant="striped", accent="info")
+ttk.Progressbar(app, value=40, variant="thin")
 ```
+
+**Accent.** `accent` drives the fill color. Pair it with `variant`
+to express both severity and density:
+
+```python
+ttk.Progressbar(app, value=80, accent="success")
+ttk.Progressbar(app, value=20, accent="warning")
+ttk.Progressbar(app, value=10, accent="danger", variant="striped")
+```
+
+**Orientation and size.** `orient="vertical"` rotates the bar; `length`
+is the requested size along the orientation axis (height for vertical
+bars). The cross-axis size is determined by the variant.
+
+```python
+ttk.Progressbar(app, orient="vertical", length=200, value=60).pack()
+```
+
+**Reactive value.** Bind a `Signal` (or `Variable`) via `signal=` —
+**not** `value=` — to keep the bar live without manual `configure()`
+calls. The signal's value drives `value` directly:
+
+```python
+progress = ttk.Signal(0.0)
+pb = ttk.Progressbar(app, signal=progress, maximum=100)
+pb.pack(fill="x", padx=20, pady=10)
+
+progress.set(45)  # bar updates automatically
+```
+
+After construction, the widget exposes `pb.signal` and `pb.variable`
+for the same purpose. Passing `value=signal` does **not** create a
+binding — it sets `value` once to the signal's stringified repr.
 
 ---
 
 ## Behavior
 
-- Determinate mode updates visually as `value` changes
-
-- Indeterminate mode runs an animation until stopped
-
-- Use `start()` to begin indeterminate animation
-
-- Use `stop()` to halt indeterminate animation
+**Determinate mode.** The fill reflects `value / maximum`. Update
+`value` directly, via the `value` property, via `configure(value=...)`,
+or via the bound signal/variable; all four routes converge on the same
+underlying option:
 
 ```python
-# Start indeterminate animation
-pb.configure(mode="indeterminate")
-pb.start(interval=10)  # interval in milliseconds
+pb.value = 50          # property
+pb.set(75)             # method
+pb.configure(value=90) # configure
+progress.set(100)      # bound signal
+```
 
-# Stop animation
+`step(amount=1.0)` advances `value` by `amount`, wrapping back to `0`
+when it would exceed `maximum`. It's convenient for "tick" loops that
+don't track an absolute count.
+
+**Indeterminate mode.** `start(interval=50)` schedules a periodic
+`step(1.0)` every `interval` milliseconds (default 50 ms). `stop()`
+cancels the schedule. The bar's `value` still advances numerically
+underneath, but the visual is an animated loop rather than a fill
+proportion.
+
+```python
+pb.configure(mode="indeterminate")
+pb.start()        # default 50 ms tick
 pb.stop()
 ```
 
----
+The `striped` variant is a common pairing for indeterminate work —
+the moving stripes reinforce the "ongoing" feel.
 
-## Reactivity
-
-Progressbar can be updated dynamically by binding to signals:
+**State.** Through `TtkStateMixin`, Progressbar honors the standard
+ttk states. `"disabled"` dims both the bar fill and the trough via
+the `disabled` state map. `"active"` and `"readonly"` are accepted
+but rarely have a distinct visual.
 
 ```python
-progress = ttk.Signal(0)
-pb = ttk.Progressbar(app, value=progress)
-
-# Update progress
-progress.set(50)  # Progressbar updates automatically
+pb.state(["disabled"])
+pb.state(["!disabled"])
 ```
-
-!!! link "Signals"
-    See [Signals](../../capabilities/signals/signals.md) for reactive programming patterns.
 
 ---
 
-## Additional resources
+## Events
 
-### Related widgets
+Progressbar does **not** emit virtual events and does **not** expose
+any `on_*` helpers — it's a pure status indicator. To observe value
+changes, subscribe to the bound signal:
 
-- [Meter](meter.md) — dashboard-style gauge indicators
+```python
+progress = ttk.Signal(0.0)
+pb = ttk.Progressbar(app, signal=progress, maximum=100)
 
-- [FloodGauge](floodgauge.md) — capacity/level indicators
+def on_progress(value):
+    if value >= 100:
+        print("done")
 
-- [Badge](badge.md) — compact status indicators
+progress.subscribe(on_progress)
+```
 
-### Framework concepts
+If you need to know when an indeterminate animation ends, drive
+`stop()` from your own code path — there's no completion event.
 
-- [Design System](../../design-system/index.md) — colors, typography, and theming
+---
 
-- [Signals](../../capabilities/signals/signals.md) — reactive data binding
+## When should I use Progressbar?
 
-### API reference
+Use `Progressbar` when:
 
-- [`ttkbootstrap.Progressbar`](../../reference/widgets/Progressbar.md)
+- progress is **linear and quantifiable** (bytes downloaded, files
+  processed, tests run)
+- you want a compact, neutral indicator that doesn't demand attention
+- the work runs in the background and the user just needs a heartbeat
+
+Prefer:
+
+- [Meter](meter.md) — when you want a dashboard-style gauge with a
+  central numeric readout
+- [Floodgauge](floodgauge.md) — when the message is "how full" and
+  you want a label rendered inside the fill
+- [Badge](badge.md) — when the status is categorical
+  (`"Saved"`, `"Failed"`) rather than continuous
+
+---
+
+## Related widgets
+
+- **[Meter](meter.md)** — radial gauge with a numeric readout
+- **[Floodgauge](floodgauge.md)** — capacity indicator with a built-in
+  label
+- **[Badge](badge.md)** — compact, categorical status chip
+- **[Label](label.md)** — pair with a Progressbar for a "Downloading…"
+  caption above or beside the bar
+
+---
+
+## Reference
+
+- **API reference:** `ttkbootstrap.Progressbar`
+- **Related guides:** [Design System](../../design-system/index.md),
+  [Signals](../../capabilities/signals/signals.md)

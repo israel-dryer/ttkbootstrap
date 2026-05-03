@@ -22,7 +22,7 @@ Filtering Syntax:
         - Logical operators: AND, OR
         - Literals: 'string', "string", 123, 3.14, true, false, null
 
-    Example:
+Example:
         ```python
         set_filter("status = 'active' AND age >= 18")
         set_filter("name LIKE 'John%'")
@@ -37,6 +37,7 @@ Data Format:
     - Records must be dictionaries or will be auto-wrapped as {"text": str(value)}
     - Each record automatically gets an 'id' field (integer, auto-generated if missing)
     - Each record automatically gets a 'selected' field (0 or 1)
+
 """
 
 from __future__ import annotations
@@ -76,6 +77,7 @@ class MemoryDataSource(BaseDataSource):
         ds.set_filter("age >= 30")
         page = ds.get_page(0)
         ```
+
     """
 
     def __init__(self, page_size: int = 10):
@@ -83,6 +85,7 @@ class MemoryDataSource(BaseDataSource):
 
         Args:
             page_size: Number of records returned per page when paginating.
+
         """
         super().__init__(page_size)
         self._table = "records"
@@ -142,6 +145,7 @@ class MemoryDataSource(BaseDataSource):
 
         Returns:
             Predicate function that evaluates rows, or None if no filter
+
         """
         if not where_sql:
             return None
@@ -279,6 +283,7 @@ class MemoryDataSource(BaseDataSource):
 
         Returns:
             Self for method chaining
+
         """
         if not records:
             self._data = []

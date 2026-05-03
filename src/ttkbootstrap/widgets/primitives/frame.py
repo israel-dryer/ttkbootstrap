@@ -1,3 +1,4 @@
+"""Themed frame container."""
 from __future__ import annotations
 
 from tkinter import ttk
@@ -15,6 +16,8 @@ from ..mixins import configure_delegate
 
 
 class FrameKwargs(TypedDict, total=False):
+    """Keyword-argument schema for `Frame.__init__`."""
+
     # Standard ttk.Frame options
     padding: Any
     width: int
@@ -36,7 +39,13 @@ class FrameKwargs(TypedDict, total=False):
 
 
 class Frame(TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Frame):
-    """ttkbootstrap wrapper for `ttk.Frame` with bootstyle support."""
+    """Themed container for grouping and laying out child widgets.
+
+    Extends `ttk.Frame` with theme-aware styling via `accent`, `variant`,
+    `surface`, and `show_border` tokens so frames participate in the
+    design system without manual styling. Acts as a surface for nested
+    geometry managers (`pack`, `grid`, `place`).
+    """
 
     _ttk_base = ttk.Frame
 

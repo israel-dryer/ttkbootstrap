@@ -1,3 +1,4 @@
+"""GridFrame widget — a Frame with automatic grid layout management."""
 from __future__ import annotations
 
 import tkinter as tk
@@ -51,6 +52,7 @@ class GridFrame(Frame):
         Label(frame, text="D").grid()  # auto-placed at row=1, col=0
         Label(frame, text="Wide").grid(columnspan=2)  # spans 2 columns
         ```
+
     """
 
     def __init__(
@@ -81,6 +83,7 @@ class GridFrame(Frame):
             auto_flow: Auto-placement mode — `'row'` (default), `'column'`,
                 `'row-dense'`, `'column-dense'`, or `'none'`.
             **kwargs: Additional keyword arguments forwarded to `Frame`.
+
         """
         super().__init__(master, **kwargs)
 
@@ -368,7 +371,7 @@ class GridFrame(Frame):
     # -------------------------------------------------------------------------
 
     def _on_child_grid(self, widget: tk.Widget, **options: Any) -> None:
-        """Hook called when a child widget calls grid().
+        """Handle a child widget calling grid().
 
         Applies frame defaults, handles gap spacing, auto-placement, and tracks the widget.
         """
@@ -412,7 +415,7 @@ class GridFrame(Frame):
             self._managed.append((widget, options, (row, col, rowspan, colspan)))
 
     def _on_child_grid_forget(self, widget: tk.Widget) -> None:
-        """Hook called when a child widget calls grid_forget().
+        """Handle a child widget calling grid_forget().
 
         Removes widget from tracking and frees its occupied area.
         """
@@ -429,7 +432,7 @@ class GridFrame(Frame):
         self._removed.discard(widget)  # Clean up if it was in removed set
 
     def _on_child_grid_remove(self, widget: tk.Widget) -> None:
-        """Hook called when a child widget calls grid_remove().
+        """Handle a child widget calling grid_remove().
 
         Hides widget but keeps its configuration for later restore via grid().
         The widget's position is preserved so it can be restored with grid().

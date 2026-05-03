@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from tkinter import BooleanVar, DoubleVar, IntVar, StringVar, Text, Variable
@@ -94,7 +95,7 @@ class TabItem:
 class TabsItem:
     """Notebook container with one or more TabItem entries."""
     tabs: list[TabItem | Mapping[str, Any]] = field(default_factory=list)
-    label: str | None = None
+    label: str | None = None  # reserved; not currently rendered — use TabItem.label for per-tab captions
     width: int | None = None
     height: int | None = None
     column: int | None = None
@@ -134,24 +135,6 @@ class Form(Frame):
         data (dict): Current form data (read-only property).
         value (dict): Alias for form data (get/set property).
         result (Any): Result value set by button commands.
-
-    Args:
-        master: Parent widget.
-        data: Initial data backing the form. If items are not provided,
-            field items are inferred from the keys and value types.
-        items: Optional explicit form definition. Accepts dictionaries that
-            match the FieldItem/GroupItem/TabsItem shapes or the dataclass
-            instances directly.
-        col_count: Number of columns at the top level.
-        min_col_width: Minimum width for each column in pixels.
-        on_data_changed: Optional callback invoked with the updated data dict
-            whenever a field value changes.
-        width: Requested width for the form container.
-        height: Requested height for the form container.
-        accent: Accent token for the form container (e.g., 'primary', 'secondary').
-        buttons: Optional footer buttons. Accepts plain strings, DialogButton
-            instances, or dictionaries that map to DialogButton kwargs.
-        **kwargs: Additional Frame configuration options.
     """
 
     def __init__(
@@ -187,6 +170,9 @@ class Form(Frame):
         # Support legacy bootstyle parameter
         if 'bootstyle' in kwargs:
             accent = accent or kwargs.pop('bootstyle')
+        # Accept `columns=` as an alias for `col_count=`
+        if 'columns' in kwargs:
+            col_count = kwargs.pop('columns')
         super().__init__(master=master, width=width, height=height, accent=accent, **kwargs)
 
         self._data: dict[str, Any] = dict(data) if data else {}
@@ -590,6 +576,11 @@ class Form(Frame):
             elif editor == 'scale':
                 field_widget = Scale(container, variable=variable, **filtered_options)
             else:
+                warnings.warn(
+                    f"Unknown editor {editor!r} for field {item.key!r}; falling back to TextEntry. "
+                    f"Valid editors: {', '.join(EditorType.__args__)}",
+                    stacklevel=4,
+                )
                 field_widget = TextEntry(
                     container, value=initial_value or "", label=label_text, textvariable=variable, **options)
 
@@ -612,11 +603,13 @@ class Form(Frame):
         elif variable is not None:
             self._register_variable(item.key, variable)
 
-        # record signals if the widget exposes them
-        signal_obj = getattr(field_widget, "_signal", None)
+        # record signals if the widget exposes them; Field subclasses expose
+        # signal/textsignal (no underscore), while direct SignalMixin subclasses
+        # (CheckButton, Switch, Scale) use _signal/_textsignal.
+        signal_obj = getattr(field_widget, "signal", None) or getattr(field_widget, "_signal", None)
         if signal_obj is not None:
             self._signals[item.key] = signal_obj
-        text_signal = getattr(field_widget, "_textsignal", None)
+        text_signal = getattr(field_widget, "textsignal", None) or getattr(field_widget, "_textsignal", None)
         if text_signal is not None:
             self._textsignals[item.key] = text_signal
 

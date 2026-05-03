@@ -18,15 +18,14 @@ logger = logging.getLogger(__name__)
 
 
 class MessageDialog:
-    """A simple modal dialog class that can be used to build simple
-    message dialogs.
+    """A modal dialog that displays a message and a set of named buttons.
 
-    Displays a message and a set of buttons. Each of the buttons in the
-    message window is identified by a unique symbolic name. After the
-    message window is popped up, the message box awaits for the user to
-    select one of the buttons. Then it returns the symbolic name of the
-    selected button. Use a `Toplevel` widget for more advanced modal
-    dialog designs.
+    Each button is identified by a unique symbolic name. Calling
+    `show()` opens the dialog modally and blocks until a button is
+    selected; the chosen button's name is then available on `.result`
+    and dispatched as a `<<DialogResult>>` event. The preset variants
+    `show_info`, `show_warning`, `show_error`, and `show_question`
+    live on `MessageBox`, not on this class.
 
     !!! note "Events"
 
@@ -53,14 +52,13 @@ class MessageDialog:
         Args:
             message: The message text to display. Supports multiline strings.
             title: The dialog window title.
-            buttons: List of button labels. Can specify color as "label:color".
-                If None, defaults to ["Cancel", "OK"]. Legacy "bootstyle" syntax
-                is still supported (e.g., "OK:primary").
+            buttons: List of button labels. Can specify accent as "label:accent"
+                (e.g., "OK:primary"). If None, defaults to ["Cancel", "OK"].
             command: Optional callback function to execute when any button is pressed.
             width: Maximum width in characters for text wrapping.
             master: Parent widget for the dialog.
             alert: If True, rings the system bell when shown.
-            default: The button label to use as default. Receives primary bootstyle and focus.
+            default: The button label to use as default. Receives the primary accent and focus.
             padding: Padding around the message content.
             icon: Optional icon specification. Can be a string (icon name) or dict with
                 keys: 'name' (required), 'size' (default 32), 'color' (optional).
@@ -71,7 +69,7 @@ class MessageDialog:
         self._width = width
         self._padding = padding
         self._icon = icon
-        self._localize = kwargs.get("localize")
+        self._localize = kwargs.get("localize", True)
         self._img = None  # Store icon image to prevent garbage collection
 
         if buttons is None:

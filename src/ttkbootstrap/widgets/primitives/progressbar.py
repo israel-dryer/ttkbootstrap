@@ -1,3 +1,4 @@
+"""Progressbar widget — a ttk.Progressbar with theme support."""
 from __future__ import annotations
 
 from tkinter import ttk
@@ -16,6 +17,8 @@ if TYPE_CHECKING:
 
 
 class ProgressbarKwargs(TypedDict, total=False):
+    """Keyword arguments for Progressbar."""
+
     # Standard ttk.Progressbar options
     mode: Literal['determinate', 'indeterminate'] | str
     orient: Any
@@ -39,7 +42,7 @@ class ProgressbarKwargs(TypedDict, total=False):
 
 
 class Progressbar(SignalMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Progressbar):
-    """ttkbootstrap wrapper for `ttk.Progressbar` with bootstyle support."""
+    """ttkbootstrap Progressbar with theme support."""
 
     _ttk_base = ttk.Progressbar
 
@@ -49,7 +52,8 @@ class Progressbar(SignalMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkState
         Args:
             master: Parent widget. If None, uses the default root window.
 
-        Other Parameters:
+        Other Parameters
+        ----------------
             mode (str): Progress mode ('determinate' or 'indeterminate').
             orient (str): Orientation of the bar ('horizontal' or 'vertical').
             length (int): Requested length of the progress bar in pixels.
@@ -65,6 +69,7 @@ class Progressbar(SignalMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkState
                 Combined style tokens (e.g., 'success', 'striped').
             surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
+
         """
         super().__init__(master, **kwargs)
 

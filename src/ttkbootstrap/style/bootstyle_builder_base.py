@@ -1,3 +1,4 @@
+"""Base class and shared utilities for ttkbootstrap style builders."""
 from __future__ import annotations
 
 import re
@@ -65,6 +66,8 @@ SOURCE_RESOLUTION = 2.0
 
 
 class IconSpec(TypedDict, total=False):
+    """Icon specification for a widget state."""
+
     name: str
     size: Optional[int]
     color: Optional[str]
@@ -72,6 +75,8 @@ class IconSpec(TypedDict, total=False):
 
 
 class IconStateMap(TypedDict, total=False):
+    """Per-state icon name and color overrides."""
+
     name: Optional[str]
     color: Optional[str]
 
@@ -90,6 +95,7 @@ class BootstyleBuilderBase:
     _RE_TOKEN = re.compile(r"^\s*(?P<head>[a-zA-Z_][\w-]*)(?P<brackets>(?:\[[^]]*])*)\s*$")
 
     def __init__(self, theme_provider: ThemeProvider | None = None, style_instance: Any | None = None):  # noqa: ANN401
+        """Initialize the style builder with a theme provider."""
         # If no provider given, try to derive from style_instance
         if theme_provider is None and style_instance is not None:
             try:
@@ -100,18 +106,22 @@ class BootstyleBuilderBase:
         self._style = style_instance
 
     def set_style_instance(self, style_instance: Any) -> None:  # noqa: ANN401
+        """Set the style engine instance for this builder."""
         self._style = style_instance
 
     @property
     def provider(self) -> ThemeProvider:
+        """The active ThemeProvider instance."""
         return self._provider
 
     @property
     def style(self) -> Any | None:  # noqa: ANN401
+        """The active Style engine instance."""
         return self._style
 
     @property
     def colors(self) -> dict:
+        """Color palette from the active theme."""
         return self.provider.colors
 
     # ----- Color Utilities & Transformers -----
@@ -172,6 +182,7 @@ class BootstyleBuilderBase:
 
         Raises:
             ValueError: If the color token cannot be resolved to a valid color.
+
         """
         # If token is already a hex color, return it directly
         if token and token.startswith('#'):
@@ -263,18 +274,23 @@ class BootstyleBuilderBase:
                 return mix_colors(base_color, surface_val, 0.10)
 
     def active(self, color: str) -> str:
+        """Return the active-state variant of a color."""
         return self._state_color(color, "active")
 
     def pressed(self, color: str) -> str:
+        """Return the pressed-state variant of a color."""
         return self._state_color(color, "pressed")
 
     def focus(self, color: str) -> str:
+        """Return the focus-state variant of a color."""
         return self._state_color(color, "focus")
 
     def selected(self, color: str) -> str:
+        """Return the selected-state variant of a color."""
         return self._state_color(color, "selected")
 
     def focus_border(self, color: str) -> str:
+        """Return the focus-border variant of a color."""
         lum = relative_luminance(color)
         if self.provider.mode == "dark":
             return lighten_color(color, 0.1)
@@ -282,6 +298,7 @@ class BootstyleBuilderBase:
             return darken_color(color, 0.2 if lum > 0.5 else 0.1)
 
     def focus_ring(self, color: str, surface: str | None = None) -> str:
+        """Return a focus ring color contrasting with the given surface."""
         surface = surface or self.color(color)
         lum = relative_luminance(color)
         if self.provider.mode == "dark":
@@ -300,7 +317,7 @@ class BootstyleBuilderBase:
         return mixed
 
     def focus_inner(self, fill: str) -> str:
-        """Internal focus line (2–3px), slightly brighter but not glowy."""
+        """Return an internal focus line color: slightly brighter but not glowy."""
         from ttkbootstrap.style.utility import contrast_ratio, hex_to_rgb
 
         on = self.on_color(fill)
@@ -322,9 +339,7 @@ class BootstyleBuilderBase:
         return ring
 
     def border(self, color: str, strength: float = 0.84) -> str:
-        """Derive a stroke color for a given surface by blending toward the surface's
-        computed on-color (text/icon color).
-        """
+        """Derive a stroke color by blending toward the surface's contrast color."""
         fg = self.on_color(color)
         return mix_colors(color, fg, strength)
 
@@ -416,6 +431,7 @@ class BootstyleBuilderBase:
 
         Returns:
             A muted foreground color with adequate contrast against the background.
+
         """
         from ttkbootstrap.style.utility import hex_to_rgb, contrast_ratio
 
@@ -458,6 +474,7 @@ class BootstyleBuilderBase:
             role: 'background' for surfaces, 'text' for foregrounds.
             surface: Optional surface color to mix against. If omitted,
                      uses the theme background.
+
         """
         surface = surface or self.color('background')
 
@@ -481,6 +498,7 @@ class BootstyleBuilderBase:
         return mix_colors(gray, surface, mix_ratio)
 
     def elevate(self, color: str, elevation: int = 0, max_elevation: int = 5) -> str:
+        """Return a color elevated by blending toward black or white."""
         if elevation <= 0:
             return color
         blend_target = "#000000" if self.provider.mode == "light" else "#ffffff"
@@ -510,6 +528,7 @@ class BootstyleBuilderBase:
 
     @staticmethod
     def scale(value: Union[int, List, Tuple]):
+        """Scale a size value using the display scale factor."""
         return scale_size(value)
 
     @staticmethod
@@ -531,6 +550,7 @@ class BootstyleBuilderBase:
         Example:
             # If your source image has 10px corners:
             border=b.scale_from_source(10)  # Correctly scales for all DPIs
+
         """
         if isinstance(value, (int, float)):
             return scale_size(int(value / SOURCE_RESOLUTION + 0.5))
@@ -543,13 +563,7 @@ class BootstyleBuilderBase:
 
     @staticmethod
     def normalize_icon_spec(icon: str | IconSpec, default_size: int = 18) -> IconSpec:
-        """
-            If the icon is a string, then create a icon spec where the name is known and the size is set to default_size.
-            If the there is an icon spec, map the default size if one is not already specified in the spec.
-
-            Icon sizes are automatically scaled based on DPI settings. The default size of 20px provides
-            a balanced appearance, being slightly larger than the visible text (16px) but not overwhelming.
-        """
+        """Build an IconSpec from a string name, applying the default size."""
         from ttkbootstrap.runtime.utility import scale_size
 
         # Apply DPI scaling to default size
@@ -569,11 +583,10 @@ class BootstyleBuilderBase:
             return result
 
     def map_stateful_icons(self, icon: IconSpec, foreground_spec: Sequence[tuple]):
-        """
-        Build and return a TTK image state map for icons, using the
-        configured icon provider.
+        """Build and return a TTK image state map for icons.
 
-        Parameters:
+        Parameters
+        ----------
             icon (IconSpec):
                 Base icon spec with default `name` and optional `size`/`color`.
                 Optional `state` provides per-state overrides where the value
@@ -600,8 +613,10 @@ class BootstyleBuilderBase:
             - Identical (name, size, color) combinations reuse the same image.
 
         Returns:
+        -------
             list[tuple[str, str]]: List of (state, image_name) tuples suitable
             for `ttk.Style.element_create(..., 'image', default, (state, image) ...)`.
+
         """
         # Normalize base values
         base_name: str = icon.get('name')  # type: ignore[assignment]
@@ -664,11 +679,20 @@ class BootstyleBuilderBase:
             # Ensure our custom icon provider is initialized with the correct y_bias
             _ensure_icon_provider()
 
+            # Resolve theme token (e.g. 'primary') to a hex color before passing
+            # to BootstrapIcon. PIL only accepts hex/named colors, not theme tokens.
+            resolved_color = color
+            if color and not color.startswith('#'):
+                try:
+                    resolved_color = self.color(color)
+                except Exception:
+                    pass  # leave as-is; BootstrapIcon will raise a clear PIL error
+
             # Call the provider directly; it returns an icon object with `.image`
             try:
-                icon_obj = BootstrapIcon(name=name, size=size, color=color)  # type: ignore[misc]
+                icon_obj = BootstrapIcon(name=name, size=size, color=resolved_color)  # type: ignore[misc]
             except TypeError:
-                icon_obj = BootstrapIcon(name, size, color)  # type: ignore[misc]
+                icon_obj = BootstrapIcon(name, size, resolved_color)  # type: ignore[misc]
             if icon_obj is None:
                 return None
 

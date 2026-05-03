@@ -1,3 +1,4 @@
+"""Themed dropdown-like field widget with optional search and custom values."""
 from tkinter import Toplevel
 
 from typing_extensions import Unpack
@@ -491,7 +492,7 @@ class SelectBox(Field):
 
     @configure_delegate('value')
     def _delegate_value(self, value=None):
-        if value is not None:
+        if value is None:
             return self.value
         else:
             self.value = value
@@ -525,20 +526,26 @@ class SelectBox(Field):
 
     @value.setter
     def value(self, value):
-        """Set the selected value and emit `<<Change>>` when it differs."""
+        """Set the selected value and emit `<<Change>>` when it differs.
+
+        Raises:
+            ValueError: If allow_custom_values is False and value is not in items.
+        """
+        if not self._allow_custom_values and value not in self._items:
+            raise ValueError(
+                f"Value {value!r} is not in items and allow_custom_values is False"
+            )
         prev_value = Field.value.fget(self)
         Field.value.fset(self, value)
         new_value = Field.value.fget(self)
         if new_value != prev_value:
             self.entry_widget._prev_changed_value = new_value
             if not getattr(self, "_suppress_changed_event", False):
-                self.entry_widget.event_generate(
-                    '<<Change>>',
-                    data={
-                        'value': new_value,
-                        'prev_value': prev_value,
-                        'text': self.entry_widget.get()
-                    },
-                    when="tail"
-                )
+                data = {
+                    'value': new_value,
+                    'prev_value': prev_value,
+                    'text': self.entry_widget.get()
+                }
+                self.entry_widget.event_generate('<<Change>>', data=data, when="tail")
+                self.event_generate('<<Change>>', data=data, when="tail")
 

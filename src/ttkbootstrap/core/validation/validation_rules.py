@@ -1,3 +1,4 @@
+"""Built-in validation rule implementations."""
 import re
 from typing import Callable
 
@@ -8,8 +9,8 @@ from ttkbootstrap.core.validation.validation_result import ValidationResult
 class ValidationRule:
     """A single validation rule that can be applied to a string value.
 
-    Supports the built-in rule types `'required'`, `'email'`,
-    `'stringLength'`, `'pattern'`, and `'custom'`, and carries a trigger
+    Supports the built-in rule types `'required'`, `'email'`, `'stringLength'`,
+    `'pattern'`, and `'custom'`, and carries a trigger
     policy that controls when the rule is evaluated.
 
     Attributes:
@@ -19,6 +20,7 @@ class ValidationRule:
         params (dict): Additional parameters specific to the rule type
             (e.g., `min`/`max` for `'stringLength'`, `pattern` for `'pattern'`,
             `func` for `'custom'`).
+
     """
 
     def __init__(
@@ -27,15 +29,16 @@ class ValidationRule:
             message: str = "",
             **kwargs
     ):
-        """Create a validation rule.
+        r"""Create a validation rule.
 
         Args:
             rule_type: The type of validation to apply.
             message: Custom error message. If empty, a sensible default is used.
             **kwargs: Rule-specific parameters.  Pass `trigger` to override the
                 default trigger policy; all other keys are stored in `params`
-                (e.g., `min=3, max=20` for `'stringLength'`, `pattern=r'\\d+'`
+                (e.g., `min=3, max=20` for `'stringLength'`, `pattern=r'\d+'`
                 for `'pattern'`, `func=callable` for `'custom'`).
+
         """
         self.type = rule_type
         self.message = message
@@ -51,6 +54,7 @@ class ValidationRule:
         Returns:
             A ValidationResult with `is_valid=True` on success or `is_valid=False`
             with an error message on failure.
+
         """
         msg = self.message or self._default_message()
 
@@ -76,7 +80,9 @@ class ValidationRule:
                 return ValidationResult(False, msg)
         elif self.type == "custom":
             func: Callable[[str], bool] = self.params.get("func")
-            if func and not func(value):
+            if func is None:
+                return ValidationResult(False, msg or "No validation function provided.")
+            if not func(value):
                 return ValidationResult(False, msg)
 
         return ValidationResult(True)

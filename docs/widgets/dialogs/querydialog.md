@@ -4,136 +4,247 @@ title: QueryDialog
 
 # QueryDialog
 
-`QueryDialog` is a **modal dialog** for collecting user input with built-in validation.
+`QueryDialog` is a modal dialog that prompts the user for **a single
+value** — a string, integer, float, date, or pick from a list. It
+swaps in the right input widget for the requested `datatype` (a
+`TextEntry`, `NumericEntry`, `DateEntry`, or `Combobox`), runs that
+widget's validation when the user clicks Submit, and exposes the
+typed value on `.result`.
 
-Use `QueryDialog` when you need to prompt the user for a single value (text, number, date, or item selection). For common patterns, prefer the convenience methods in [QueryBox](querybox.md).
+It is the building block underneath
+[`QueryBox`](querybox.md) — the canned `get_string` / `get_integer`
+/ `get_float` / `get_date` / `get_item` helpers all construct a
+`QueryDialog` for you. Drop down to `QueryDialog` directly when you
+need to combine options the helpers don't expose together (e.g. an
+ICU value format on an integer prompt with min/max bounds).
 
 ---
 
-## Quick start
+## Basic usage
 
 ```python
 import ttkbootstrap as ttk
-from ttkbootstrap.dialogs import QueryDialog
 
 app = ttk.App()
 
-dialog = QueryDialog(
-    prompt="Enter your name:",
-    title="Name Input",
-    value="",
-)
-dialog.show()
+def ask_name():
+    dialog = ttk.QueryDialog(prompt="What is your name?", title="Name")
+    dialog.show()
+    if dialog.result is not None:
+        print("Hello,", dialog.result)
 
-if dialog.result:
-    print("User entered:", dialog.result)
-
+ttk.Button(app, text="Ask…", command=ask_name).pack(padx=20, pady=20)
 app.mainloop()
 ```
 
+`show()` blocks the caller. Read `.result` after it returns, or
+register a callback with `on_dialog_result` for an event-style flow.
+
+Test for `result is not None` rather than the bare `result` —
+`""` and `0` are valid answers.
+
 ---
 
-## When to use
+## Result value
 
-Use `QueryDialog` when:
+`.result` is the **typed value** the user submitted, converted to
+the dialog's `datatype`:
 
-- you need custom validation (min/max values)
-- you want control over the input widget type
-- you need programmatic access to dialog events
+| `datatype` | `.result` type |
+|---|---|
+| `str` (default) | `str` |
+| `int` | `int` |
+| `float` | `float` |
+| `date` | `datetime.date` |
+| any, with `items=[...]` | `str` (the chosen item) |
 
-### Consider a different control when...
+`None` means the user **cancelled** — clicked Cancel, pressed
+Escape, or closed the window from the title bar.
 
-- you want a simple string/integer/float prompt -> use [QueryBox](querybox.md) static methods
-- you just need to show a message -> use [MessageDialog](messagedialog.md)
-- you need a complex multi-field form -> use [FormDialog](formdialog.md)
+The `<<DialogResult>>` event payload also carries a `confirmed`
+flag (`True` whenever `result is not None`) — useful when you only
+care about "did the user submit?" rather than the value.
 
 ---
 
 ## Common options
 
-### `prompt`
-
-The prompt text to display above the input field. Supports multiline strings.
-
-### `value`
-
-The initial value to populate in the input field.
-
-### `datatype`
-
-Expected data type for validation: `str`, `int`, `float`, or `date`.
+| Option | Purpose |
+|---|---|
+| `prompt` | Prompt text shown above the input. Newlines are preserved; each line is wrapped to `width` characters. |
+| `value` | Initial value pre-filled into the input. Coerced to the widget's expected type. |
+| `datatype` | `str` (default), `int`, `float`, or `date`. Selects the input widget and validation. |
+| `items` | If non-empty, replaces the entry with a filterable `Combobox`. Overrides `datatype`. |
+| `minvalue` / `maxvalue` | Range bounds for `int` / `float`. Ignored for `str`. |
+| `increment` | Step size for the `NumericEntry` spinner buttons. |
+| `value_format` | ICU pattern (numbers: `"$#,##0.00"`, `"#,##0.##"`) or date preset (`"shortDate"`, `"yyyy-MM-dd"`) used to format and parse the value. |
+| `width` | Maximum line length for prompt wrapping, in characters. Default `65`. |
+| `padding` | Inner padding around the body, as `(x, y)` or a single int. Default `(20, 20)`. |
+| `title` | Window title shown in the title bar. |
+| `master` | Parent window. Defaults to the application root. |
 
 ```python
 from datetime import date
 
-# Integer input
-QueryDialog(prompt="Enter age:", datatype=int, minvalue=0, maxvalue=150)
+# Numeric input with bounds and currency formatting
+ttk.QueryDialog(
+    prompt="What's your bid?",
+    title="Place bid",
+    datatype=float,
+    minvalue=0,
+    maxvalue=10_000,
+    value_format="$#,##0.00",
+    increment=10,
+).show()
 
 # Date input
-QueryDialog(prompt="Select date:", datatype=date)
-```
+ttk.QueryDialog(prompt="Pick a day:", datatype=date).show()
 
-### `minvalue` / `maxvalue`
-
-Range constraints for numeric data types.
-
-### `items`
-
-Optional list of items for dropdown selection. Shows a Combobox instead of Entry.
-
-```python
-QueryDialog(
-    prompt="Select a color:",
+# Filterable list pick
+ttk.QueryDialog(
+    prompt="Choose a colour:",
     items=["Red", "Green", "Blue"],
     value="Green",
-)
+).show()
 ```
 
-### `value_format`
-
-ICU format pattern for formatting/parsing values.
-
-```python
-QueryDialog(prompt="Enter amount:", datatype=float, value_format="$#,##0.00")
-```
+When `items=` is set the `datatype` is ignored — the dialog renders
+a `Combobox` whose dropdown filters as the user types.
 
 ---
 
 ## Behavior
 
-- The dialog is modal - blocks interaction with the parent until closed.
-- Submit validates the input before closing.
-- Invalid input shows an error message and keeps the dialog open.
-- Cancel closes without setting a result.
+### Modality and lifecycle
+
+The dialog opens a `Toplevel` transient to its parent and runs in
+modal mode: the parent window is grabbed, and `show()` does not
+return until the user dismisses the dialog. The dialog is centered
+on the parent unless an explicit `position` is passed:
+
+```python
+dialog.show(position=(200, 150))
+```
+
+The `Toplevel` is destroyed on dismissal — to re-prompt, build a
+new `QueryDialog`.
+
+### Buttons
+
+The button row is fixed: a **Cancel** button (cancel role; bound to
+**Escape**, returns `None`) and a **Submit** button (primary,
+default; bound to **Enter**, runs validation). They cannot be
+relabelled or reordered through `QueryDialog` itself — use
+[`Dialog`](dialog.md) directly if you need different button text or
+roles.
+
+### Submit and validation
+
+Clicking Submit (or pressing Enter inside the input) runs the
+underlying input widget's validation:
+
+- For **`str` input** (`TextEntry`), any value is accepted.
+- For **`int` / `float` input** (`NumericEntry`), the value must
+  parse as the requested type and fall within `minvalue` /
+  `maxvalue`.
+- For **`date` input** (`DateEntry`), the value must parse as a
+  date in the current locale or `value_format`.
+- For **`items` mode** (`Combobox`), the typed value must match an
+  entry in `items` (case-sensitive, exact match).
+
+Validation outcomes differ by widget. The `Combobox` and old-style
+numeric paths show a translated error in a child `MessageBox.ok` and
+keep the dialog open. The `Field`-based widgets (`TextEntry`,
+`NumericEntry`, `DateEntry`) raise their own inline validation
+feedback under the input — if the value is invalid the dialog stays
+open silently, with the field's error message visible.
+
+### Focus
+
+The input field receives focus when the dialog opens (re-applied via
+`after_idle` so the buttons' own focus calls don't steal it).
 
 ---
 
 ## Events
 
-`QueryDialog` emits `<<DialogResult>>` when closed.
+`<<DialogResult>>` fires once on the dialog's `Toplevel` after
+dismissal. The payload exposed via `event.data` carries:
+
+| Key | Type | Meaning |
+|---|---|---|
+| `result` | the typed value, or `None` | The submitted value (or `None` if cancelled). |
+| `confirmed` | `bool` | `result is not None`. |
+
+Use `on_dialog_result(callback)` to register a handler that receives
+the payload directly (no `event.data` unwrap needed). The helper
+returns a binding identifier you can pass back to
+`off_dialog_result` to detach.
 
 ```python
-def on_result(payload):
+def handle(payload):
     if payload["confirmed"]:
-        print("User entered:", payload["result"])
+        print("submitted:", payload["result"])
     else:
-        print("User canceled")
+        print("cancelled")
 
-dialog.on_dialog_result(on_result)
+dialog = ttk.QueryDialog(prompt="Enter your age:", datatype=int, master=app)
+dialog.on_dialog_result(handle)
 dialog.show()
 ```
+
+Pass `master=` so the binding has somewhere to live before the
+`Toplevel` is created (`on_dialog_result` binds to
+`self._dialog.toplevel or self._master`, and the toplevel does not
+exist until `show()` runs).
+
+---
+
+## When should I use QueryDialog?
+
+Use `QueryDialog` when:
+
+- you need a single value with bounds, formatting, or list-pick
+  behavior, and the [`QueryBox`](querybox.md) helpers don't quite
+  fit (e.g. you want both `minvalue` *and* a custom ICU format).
+- you want the typed result and the `<<DialogResult>>` lifecycle
+  hook on the same object (`QueryBox` returns the value directly
+  but doesn't expose the dialog).
+
+Prefer a different control when:
+
+- the call shape is one of the canned patterns
+  (`get_string` / `get_integer` / `get_float` / `get_date` /
+  `get_item`) — use [`QueryBox`](querybox.md) for a one-line call.
+- you need more than one input field — use
+  [`FormDialog`](formdialog.md).
+- you only need to show a message or get a button choice — use
+  [`MessageDialog`](messagedialog.md) or
+  [`MessageBox`](messagebox.md).
+- you need full control over button labels, roles, or footer
+  layout — drop down to [`Dialog`](dialog.md).
 
 ---
 
 ## Additional resources
 
-### Related widgets
+**Related widgets**
 
-- [QueryBox](querybox.md) - static convenience methods for common input patterns
-- [MessageDialog](messagedialog.md) - message-only dialogs
-- [FormDialog](formdialog.md) - multi-field form dialogs
-- [Dialog](dialog.md) - base dialog class
+- [`QueryBox`](querybox.md) — static `get_string` / `get_integer`
+  / `get_float` / `get_date` / `get_item` helpers that build a
+  `QueryDialog` for you.
+- [`MessageDialog`](messagedialog.md) — message + button choice,
+  no input field.
+- [`FormDialog`](formdialog.md) — multi-field modal form.
+- [`Dialog`](dialog.md) — the generic builder underneath
+  `QueryDialog`; use it when you need custom buttons or layout.
 
-### API reference
+**Framework concepts**
 
-- [`ttkbootstrap.dialogs.QueryDialog`](../../reference/dialogs/QueryDialog.md)
+- [Windows](../../platform/windows.md)
+- [Localization](../../capabilities/localization.md)
+
+**API reference**
+
+- **API reference:** [`ttkbootstrap.QueryDialog`](../../reference/dialogs/QueryDialog.md)
+- **Related guides:** Dialogs, Localization

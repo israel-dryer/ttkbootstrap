@@ -4,450 +4,325 @@ title: Theming
 
 # Theming
 
-This guide explains how ttkbootstrap's theming system works—palettes, color generation, and creating custom themes.
+This guide is the practical reference for theming a ttkbootstrap application:
+selecting a theme at startup, switching at runtime, exposing a theme picker,
+following system appearance, and registering custom themes that ship with your
+app.
+
+For the underlying theme model (properties, shades, semantic tokens, the
+built-in family list) see
+[Design System → Custom Themes](../design-system/custom-themes.md). This guide
+assumes that vocabulary and focuses on what application code does with it.
 
 ---
 
-## How Themes Work
+## The single fact to remember
 
-A theme defines the **complete color system** for your application. Instead of hardcoding colors, you work with semantic tokens (`primary`, `danger`, etc.) that resolve to actual colors based on the active theme.
+A theme defines what semantic tokens like `primary` and `surface` resolve to.
+Your widgets ask for the token; the theme decides the color.
 
 ```python
 import ttkbootstrap as ttk
 
-# Theme determines what "primary" means
 app = ttk.App(theme="ocean-light")
 
-# Same code, different colors per theme
+# "primary" means whatever ocean-light says it means.
+# Switching themes changes the resolved color, not this code.
 ttk.Button(app, text="Submit", accent="primary")
 ```
 
----
-
-## Theme Structure
-
-Every theme defines:
-
-| Property | Purpose |
-|----------|---------|
-| `name` | Unique identifier (e.g., `"ocean-light"`) |
-| `display_name` | Human-readable name (e.g., `"Ocean Light"`) |
-| `mode` | `"light"` or `"dark"` |
-| `foreground` | Default text color |
-| `background` | Default surface color |
-| `shades` | Base color palette (blue, red, green, etc.) |
-| `semantic` | Role mappings (primary → cyan[600]) |
-
-### Shades: The Color Palette
-
-Shades define the raw colors available to the theme:
-
-```json
-{
-  "shades": {
-    "blue": "#0d6efd",
-    "red": "#dc3545",
-    "green": "#198754",
-    "yellow": "#ffc107",
-    "cyan": "#0dcaf0",
-    "teal": "#20c997",
-    "orange": "#fd7e14",
-    "purple": "#6f42c1",
-    "pink": "#d63384",
-    "indigo": "#6610f2",
-    "gray": "#adb5bd"
-  }
-}
-```
-
-From each shade, ttkbootstrap generates a **full spectrum** of 9 variants:
-
-```
-blue[100] → lightest tint
-blue[200]
-blue[300]
-blue[400]
-blue[500] → base color
-blue[600]
-blue[700]
-blue[800]
-blue[900] → darkest shade
-```
-
-### Semantic: Role Mappings
-
-Semantic tokens map abstract roles to specific shades:
-
-```json
-{
-  "semantic": {
-    "primary": "cyan[600]",
-    "secondary": "blue[600]",
-    "success": "teal[600]",
-    "info": "blue[600]",
-    "warning": "yellow[600]",
-    "danger": "red[600]",
-    "light": "gray[100]",
-    "dark": "gray[900]"
-  }
-}
-```
-
-This indirection is powerful:
-
-- Light themes typically use `[600]` shades for contrast
-- Dark themes typically use `[400]` shades for visibility
-- Changing `"primary": "cyan[600]"` to `"primary": "blue[600]"` rebrands the entire app
+That separation is the entire point. Your application code stays theme-neutral;
+themes plug in underneath.
 
 ---
 
-## Built-in Themes
+## Selecting a theme
 
-ttkbootstrap includes paired light/dark themes:
+### At startup
 
-| Theme Family | Light | Dark |
-|--------------|-------|------|
-| Bootstrap | `bootstrap-light` | `bootstrap-dark` |
-| Ocean | `ocean-light` | `ocean-dark` |
-| Forest | `forest-light` | `forest-dark` |
-| Rose | `rose-light` | `rose-dark` |
-| Amber | `amber-light` | `amber-dark` |
-| Aurora | `aurora-light` | `aurora-dark` |
-| Classic | `classic-light` | `classic-dark` |
-
-### Listing Available Themes
+Pass `theme=` to `App` (or set it on `AppSettings`). The value is either a
+specific theme name (`"ocean-light"`, `"forest-dark"`) or one of the aliases
+`"light"` / `"dark"`:
 
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.App()
-
-# Get all registered themes
-themes = ttk.get_themes()
-for theme in themes:
-    print(f"{theme['name']}: {theme['display_name']}")
+app = ttk.App(theme="ocean-light")
+app.mainloop()
 ```
 
----
+### Light and dark aliases
 
-## Switching Themes
-
-### At Startup
+`"light"` and `"dark"` resolve through `AppSettings.light_theme` and
+`AppSettings.dark_theme`. They default to `"bootstrap-light"` and `"bootstrap-dark"`.
+Configure them when you create the app to make the aliases — and
+`toggle_theme()` — point at your preferred family:
 
 ```python
-app = ttk.App(theme="ocean-dark")
+import ttkbootstrap as ttk
+
+app = ttk.App(
+    theme="light",
+    settings={
+        "light_theme": "ocean-light",
+        "dark_theme": "ocean-dark",
+    },
+)
 ```
 
-### At Runtime
+After this call:
+
+- `theme="light"` resolved to `ocean-light` at startup
+- `set_theme("dark")` would switch to `ocean-dark`
+- `toggle_theme()` cycles between the two
+
+### Switching at runtime
+
+The runtime API is three small functions on `ttkbootstrap`:
 
 ```python
-from ttkbootstrap import set_theme, toggle_theme, get_theme
+import ttkbootstrap as ttk
 
-# Switch to a specific theme
-set_theme("forest-light")
-
-# Toggle between light and dark
-toggle_theme()
-
-# Check current theme
-current = get_theme()
-print(f"Current theme: {current}")
+ttk.set_theme("forest-light")    # switch to a specific theme
+ttk.toggle_theme()                # flip light <-> dark via the aliases
+current = ttk.get_theme()         # name of the active theme
 ```
 
-### Theme Toggle Button
+`set_theme()` is the underlying primitive. `toggle_theme()` is sugar over it
+that reads `light_theme` / `dark_theme` from `AppSettings`.
+
+A typical theme-toggle button:
 
 ```python
 import ttkbootstrap as ttk
 
 app = ttk.App(theme="ocean-light")
 
-def on_toggle():
-    ttk.toggle_theme()
-
-ttk.Button(app, text="Toggle Dark Mode", command=on_toggle).pack(pady=20)
+ttk.Button(
+    app,
+    text="Toggle theme",
+    command=ttk.toggle_theme,
+).pack(padx=20, pady=20)
 
 app.mainloop()
 ```
 
 ---
 
-## Light and Dark Aliases
+## Exposing a theme picker
 
-ttkbootstrap provides `"light"` and `"dark"` aliases that resolve to configured themes:
-
-```python
-# These are equivalent when ocean-light is configured as the light theme
-app = ttk.App(theme="light")
-app = ttk.App(theme="ocean-light")
-```
-
-Configure aliases in your app settings (see [App Settings](#configuring-theme-preferences)).
-
----
-
-## Creating Custom Themes
-
-### Theme JSON Format
-
-Create a JSON file with the theme structure:
-
-```json
-{
-  "name": "my-theme-light",
-  "display_name": "My Theme Light",
-  "mode": "light",
-  "foreground": "#212529",
-  "background": "#f8f9fa",
-  "white": "#ffffff",
-  "black": "#000000",
-  "shades": {
-    "blue": "#0066cc",
-    "red": "#cc3333",
-    "green": "#339933",
-    "yellow": "#ffcc00",
-    "cyan": "#00cccc",
-    "teal": "#009999",
-    "orange": "#ff9900",
-    "purple": "#9933cc",
-    "pink": "#cc3399",
-    "indigo": "#6633cc",
-    "gray": "#999999"
-  },
-  "semantic": {
-    "primary": "blue[500]",
-    "secondary": "gray[600]",
-    "success": "green[500]",
-    "info": "cyan[500]",
-    "warning": "yellow[500]",
-    "danger": "red[500]",
-    "light": "gray[100]",
-    "dark": "gray[900]"
-  }
-}
-```
-
-### Paired Light and Dark Themes
-
-For a complete theme, create both variants. The key differences:
-
-**Light theme:**
-
-- `mode`: `"light"`
-- `foreground`: dark color (e.g., `"#212529"`)
-- `background`: light color (e.g., `"#f8f9fa"`)
-- `semantic` uses `[500]` or `[600]` shades
-
-**Dark theme:**
-
-- `mode`: `"dark"`
-- `foreground`: light color (e.g., `"#f8f9fa"`)
-- `background`: dark color (e.g., `"#1a1a1a"`)
-- `semantic` uses `[400]` shades for visibility
-
-### Example: Corporate Brand Theme
-
-```json
-{
-  "name": "acme-light",
-  "display_name": "Acme Light",
-  "mode": "light",
-  "foreground": "#1a1a2e",
-  "background": "#fafafa",
-  "white": "#ffffff",
-  "black": "#000000",
-  "shades": {
-    "blue": "#0066ff",
-    "red": "#e63946",
-    "green": "#2a9d8f",
-    "yellow": "#e9c46a",
-    "cyan": "#00b4d8",
-    "teal": "#14b8a6",
-    "orange": "#f4a261",
-    "purple": "#7c3aed",
-    "pink": "#ec4899",
-    "indigo": "#4f46e5",
-    "gray": "#6b7280"
-  },
-  "semantic": {
-    "primary": "blue[500]",
-    "secondary": "gray[500]",
-    "success": "green[500]",
-    "info": "cyan[500]",
-    "warning": "orange[500]",
-    "danger": "red[500]",
-    "light": "gray[100]",
-    "dark": "gray[900]"
-  }
-}
-```
-
----
-
-## Registering Custom Themes
-
-```python
-from ttkbootstrap.style.theme_provider import register_user_theme
-
-# Register before creating the App
-register_user_theme("acme-light", "path/to/acme-light.json")
-register_user_theme("acme-dark", "path/to/acme-dark.json")
-
-# Now use the theme
-app = ttk.App(theme="acme-light")
-```
-
----
-
-## Configuring Theme Preferences
-
-Configure default themes when creating the App:
-
-```python
-app = ttk.App(
-    theme="light",  # Start with light theme
-    light_theme="ocean-light",  # "light" alias resolves to this
-    dark_theme="ocean-dark",    # "dark" alias resolves to this
-)
-```
-
-With this configuration:
-
-- `theme="light"` uses `ocean-light`
-- `theme="dark"` uses `ocean-dark`
-- `toggle_theme()` switches between them
-
----
-
-## Color Spectrum Generation
-
-When you define a shade like `"blue": "#0d6efd"`, ttkbootstrap generates the full spectrum:
-
-```
-blue[100] ← 80% tint (lightest)
-blue[200] ← 60% tint
-blue[300] ← 40% tint
-blue[400] ← 25% tint
-blue[500] ← base color
-blue[600] ← 25% shade
-blue[700] ← 40% shade
-blue[800] ← 60% shade
-blue[900] ← 85% shade (darkest)
-```
-
-This means you only define 11 base colors, and the system generates 99 usable shades.
-
-### Accessing Generated Colors
-
-```python
-from ttkbootstrap import get_theme_provider
-
-provider = get_theme_provider()
-
-# Access any generated color
-primary_500 = provider.colors["primary[500]"]
-blue_300 = provider.colors["blue[300]"]
-```
-
----
-
-## Theme-Aware Code
-
-### Checking Theme Mode
-
-```python
-from ttkbootstrap import get_theme_provider
-
-provider = get_theme_provider()
-
-if provider.mode == "dark":
-    # Dark mode specific logic
-    pass
-else:
-    # Light mode specific logic
-    pass
-```
-
-### Responding to Theme Changes
+`get_themes()` returns every registered theme as a list of dicts with `name`
+and `display_name`. Use it to populate menus, comboboxes, or settings panels:
 
 ```python
 import ttkbootstrap as ttk
 
 app = ttk.App()
 
-def on_theme_changed():
+themes = ttk.get_themes()
+for theme in themes:
+    print(f"{theme['name']}: {theme['display_name']}")
+```
+
+A minimal picker wired up with a `SelectBox`:
+
+```python
+import ttkbootstrap as ttk
+
+app = ttk.App(theme="ocean-light")
+
+theme_names = [t["name"] for t in ttk.get_themes()]
+
+picker = ttk.SelectBox(app, value=ttk.get_theme(), items=theme_names)
+picker.bind("<<Change>>", lambda e: ttk.set_theme(picker.value))
+picker.pack(padx=20, pady=20)
+
+app.mainloop()
+```
+
+Both the v2 and legacy theme packages are loaded automatically; the same list
+covers all of them.
+
+---
+
+## Following the system appearance
+
+On macOS, ttkbootstrap can track the OS light/dark preference automatically.
+Set `follow_system_appearance=True` and provide the two themes to switch
+between:
+
+```python
+import ttkbootstrap as ttk
+
+app = ttk.App(
+    settings={
+        "follow_system_appearance": True,
+        "light_theme": "ocean-light",
+        "dark_theme": "ocean-dark",
+    },
+)
+```
+
+With this set, the initial theme is chosen to match the OS, and the app rebinds
+to `<<TkSystemAppearanceChanged>>` so it updates live when the user toggles
+appearance in System Settings.
+
+The flag is currently effective on macOS only. On Windows and Linux it is
+silently a no-op — the app keeps whatever theme was specified at startup. On
+those platforms, ship your own UI control (a toggle button or settings option)
+and call `toggle_theme()` directly.
+
+---
+
+## Reacting to theme changes
+
+`set_theme()` and `toggle_theme()` rebuild every registered TTK style and
+restyle every legacy Tk widget tracked by the runtime. Most application code
+does nothing — widgets re-render automatically.
+
+If your code holds derived state that depends on the theme (a custom canvas,
+a manually-drawn chart, a colour picked out of the palette), listen for
+`<<ThemeChanged>>` on the root window. Tk fires this event whenever the
+underlying ttk theme changes:
+
+```python
+import ttkbootstrap as ttk
+
+app = ttk.App(theme="ocean-light")
+
+def on_theme_changed(_event):
     current = ttk.get_theme()
-    print(f"Theme changed to: {current}")
-    # Update any theme-dependent state
+    # rebuild any cached colours, redraw custom widgets, etc.
+    print(f"Theme is now {current}")
 
-# Listen for theme changes
-app.bind("<<ThemeChanged>>", lambda e: on_theme_changed())
+app.bind("<<ThemeChanged>>", on_theme_changed, add="+")
+
+ttk.Button(app, text="Toggle", command=ttk.toggle_theme).pack(padx=20, pady=20)
+app.mainloop()
 ```
+
+Use `add="+"` so you don't displace bindings the framework itself installs.
 
 ---
 
-## Best Practices
+## Reading colors from the active theme
 
-### 1. Always Create Paired Themes
-
-If you create `my-theme-light`, also create `my-theme-dark`. Users expect dark mode.
-
-### 2. Use Semantic Tokens
-
-Don't hardcode colors. Use `accent="primary"` so themes work correctly:
+Every named token resolves to a hex string through `get_theme_color()`:
 
 ```python
-# Good
-ttk.Button(app, text="Submit", accent="primary")
+import ttkbootstrap as ttk
 
-# Bad - ignores theming
-ttk.Button(app, text="Submit", background="#0066cc")
+app = ttk.App(theme="ocean-light")
+
+primary = ttk.get_theme_color("primary")    # e.g. "#0d6efd"
+surface = ttk.get_theme_color("background")  # current theme background
 ```
 
-### 3. Test Both Modes
+You can ask for any registered token: semantic roles (`primary`, `success`),
+neutral roles (`foreground`, `background`), surface tokens (`card`, `chrome`,
+`overlay`, `input`), or a specific shade step (`blue[500]`, `gray[700]`).
 
-Always test your UI in both light and dark modes. Some designs that work in light mode may have contrast issues in dark mode.
+Color tokens are intended for occasional, deliberate use — for example, picking
+a stroke colour for a custom canvas or feeding a chart library. Day-to-day
+widget styling should stay on `accent=` and `variant=` so themes can do their
+job. See [Styling](styling.md) for the full token vocabulary and modifier
+syntax.
 
-### 4. Respect System Preferences
-
-Consider detecting the system's dark mode preference at startup:
+For lower-level access (full palette dictionary, theme metadata), call
+`get_theme_provider()`:
 
 ```python
-import darkdetect
+provider = ttk.get_theme_provider()
 
-# Start with system preference
-initial_theme = "dark" if darkdetect.isDark() else "light"
-app = ttk.App(theme=initial_theme)
+provider.name           # "ocean-light"
+provider.mode           # "light" or "dark"
+provider.colors["primary"]   # same as get_theme_color("primary")
+provider.colors["blue[300]"]
 ```
 
-### 5. Keep Semantic Mappings Logical
+---
 
-- `primary` → brand color, main actions
-- `secondary` → supporting actions
-- `success` → positive outcomes (green family)
-- `danger` → destructive actions (red family)
-- `warning` → caution (yellow/orange family)
-- `info` → informational (blue family)
+## Registering custom themes
+
+A theme is a JSON file. The full property list and shape are documented in
+[Design System → Custom Themes](../design-system/custom-themes.md). To make
+your app see a custom theme, register it before constructing `App`:
+
+```python
+from ttkbootstrap.style.theme_provider import register_user_theme
+
+register_user_theme("acme-light", "themes/acme-light.json")
+register_user_theme("acme-dark", "themes/acme-dark.json")
+
+import ttkbootstrap as ttk
+app = ttk.App(theme="acme-light")
+```
+
+The registry is process-global, so a single registration call covers every
+window the app opens. Register both modes if you ship dark mode — many users
+expect it, and `toggle_theme()` needs both ends of the pair.
+
+To make a custom family the default for the `"light"` / `"dark"` aliases, also
+set `light_theme` and `dark_theme` on `AppSettings`:
+
+```python
+register_user_theme("acme-light", "themes/acme-light.json")
+register_user_theme("acme-dark", "themes/acme-dark.json")
+
+app = ttk.App(
+    theme="light",
+    settings={
+        "light_theme": "acme-light",
+        "dark_theme": "acme-dark",
+    },
+)
+```
 
 ---
 
-## Summary
+## Common patterns
 
-- Themes define **shades** (raw colors) and **semantic** mappings (role → shade)
-- Each shade generates a **9-step spectrum** automatically
-- Use `set_theme()` and `toggle_theme()` for runtime switching
-- Create custom themes as **JSON files** with paired light/dark variants
-- Always use **semantic tokens** (`accent` and `variant`) instead of hardcoded colors
+### Persisting the user's choice
 
-!!! link "Styling Guide"
-    See [Styling](styling.md) for using color and variant tokens in widgets.
+ttkbootstrap doesn't persist the active theme automatically. Save it on close
+and re-apply on startup using whichever storage mechanism your app uses — a
+JSON file in the OS config directory, a settings database, etc. Sketch:
 
-!!! link "Color Modifiers"
-    See [Styling → Color Modifiers](styling.md#color-modifiers) for adjusting colors dynamically.
+```python
+import json
+from pathlib import Path
+
+import ttkbootstrap as ttk
+
+CONFIG = Path.home() / ".myapp.json"
+
+def load_pref(key, default):
+    if CONFIG.exists():
+        return json.loads(CONFIG.read_text()).get(key, default)
+    return default
+
+def save_pref(key, value):
+    data = json.loads(CONFIG.read_text()) if CONFIG.exists() else {}
+    data[key] = value
+    CONFIG.write_text(json.dumps(data))
+
+app = ttk.App(theme=load_pref("theme", "ocean-light"))
+
+def on_close():
+    save_pref("theme", ttk.get_theme())
+    app.destroy()
+
+app.on_close(on_close)
+app.mainloop()
+```
 
 ---
 
-## Next Steps
+## Related guides
 
-- [Styling](styling.md) — using color and variant tokens
-- [Typography](typography.md) — font tokens and modifiers
-- [App Structure](app-structure.md) — application organization
+- [Design System → Custom Themes](../design-system/custom-themes.md) — theme
+  vocabulary, properties, shade spectrum, and the built-in family list.
+- [Styling](styling.md) — using `accent`, `variant`, and color tokens on
+  individual widgets.
+- [App Settings](app-settings.md) — `light_theme`, `dark_theme`, and
+  `follow_system_appearance` in context.

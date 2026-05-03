@@ -1,3 +1,4 @@
+"""Toast notification widget for temporary in-app messages."""
 from tkinter import Widget, Misc
 
 from ttkbootstrap.runtime.toplevel import Toplevel
@@ -10,6 +11,7 @@ from ttkbootstrap.runtime.window_utilities import WindowPositioning, AnchorPoint
 
 class IconSpec(TypedDict, total=False):
     """Icon configuration for toast."""
+
     name: str
     size: Optional[int]
     color: Optional[str]
@@ -17,6 +19,7 @@ class IconSpec(TypedDict, total=False):
 
 class ToastConfig(TypedDict, total=False):
     """Configuration options for Toast widget."""
+
     title: Optional[str]
     icon: Union[str, IconSpec, None]
     message: Optional[str]
@@ -83,6 +86,7 @@ class Toast:
             on_dismissed (Callable): Callback function invoked when the toast is dismissed. Receives the
                 button options dict if dismissed via a button, or None if dismissed via close
                 button or auto-dismiss.
+
         """
         self._config_keys = {'title', 'icon', 'message', 'memo', 'duration', 'buttons', 'show_close_button',
                              'accent', 'bootstyle', 'position', 'alert', 'on_dismissed'}
@@ -130,6 +134,7 @@ class Toast:
 
         Returns:
             Configuration tuple if option provided, otherwise None.
+
         """
         if option is not None:
             if option in self._config_keys:
@@ -145,6 +150,9 @@ class Toast:
                 if key in self._config_keys:
                     attr = f"_{key}"
                     setattr(self, attr, value)
+                    # Keep _accent in sync with the deprecated bootstyle alias.
+                    if key == 'bootstyle':
+                        self._accent = value
                 else:
                     raise AttributeError(f"'{key}' is not a valid option")
         return None
@@ -157,6 +165,7 @@ class Toast:
 
         Returns:
             The value of the configuration option.
+
         """
         if option in self._config_keys:
             attr = f"_{option}"
@@ -173,6 +182,7 @@ class Toast:
         Args:
             merge: If True, merge options with existing configuration. If False, clear existing options first.
             **options: Configuration options to set before showing.
+
         """
         if not merge:
             self._clear_options()
@@ -211,6 +221,11 @@ class Toast:
 
     def _build_toast(self) -> None:
         import ttkbootstrap as ttk
+        # Destroy any prior Toplevel so successive show() calls don't leak windows.
+        if self._toplevel:
+            self._toplevel.destroy()
+            self._toplevel = None
+
         # ----- Configuration Options -------
 
         has_title = self._title is not None

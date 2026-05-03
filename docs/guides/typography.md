@@ -4,95 +4,99 @@ title: Typography
 
 # Typography
 
-This guide shows how to use ttkbootstrap's typography system—font tokens, modifiers, and the `Font` class for creating reusable named fonts.
+This guide is the practical reference for typography in a ttkbootstrap
+application: how to choose a font for a widget, how to vary it (bold, italic,
+size), and how to keep typography consistent across an app.
+
+For the underlying token vocabulary (the table of token names and their
+intended roles) see [Design System → Typography](../design-system/typography.md).
+This guide assumes that vocabulary and focuses on what application code does
+with it.
 
 ---
 
-## Font Tokens
+## The mental model
 
-ttkbootstrap defines **semantic font tokens** rather than raw font tuples. Tokens represent typographic roles:
-
-| Token | Purpose |
-|-------|---------|
-| `caption` | Small supporting text |
-| `label` | Bold label text (form labels, field labels) |
-| `body-sm` | Compact body text |
-| `body` | Default body text |
-| `body-lg` | Larger body text |
-| `body-xl` | Extra large body text |
-| `heading-md` | Medium heading |
-| `heading-lg` | Large heading |
-| `heading-xl` | Extra large heading |
-| `display-lg` | Large display text |
-| `display-xl` | Extra large display text |
-| `code` | Monospace code text |
-| `hyperlink` | Underlined link text |
-
-### Using Tokens Directly
-
-Tokens are registered as named Tk fonts, so you can use them directly:
+Don't pick a font family. Pick a **role**.
 
 ```python
 import ttkbootstrap as ttk
 
 app = ttk.App()
 
-ttk.Label(app, text="Body text", font="body").pack()
-ttk.Label(app, text="Large heading", font="heading-lg").pack()
-ttk.Label(app, text="Code snippet", font="code").pack()
+ttk.Label(app, text="Settings", font="heading-lg").pack()
+ttk.Label(app, text="Configure your preferences below.", font="body").pack()
+ttk.Label(app, text="Last saved 2 minutes ago", font="caption").pack()
 
 app.mainloop()
 ```
 
-Tokens adapt to the platform—using Segoe UI on Windows, SF Pro on macOS, and DejaVu Sans on Linux.
+Tokens like `body`, `heading-lg`, and `caption` are registered as named Tk
+fonts at app startup. They resolve to platform-appropriate families (Segoe UI
+on Windows, SF Pro Text on macOS, DejaVu Sans on Linux) and a size scale tuned
+for desktop UIs. You write the role; the framework picks the font.
+
+This separation is the entire point. Application code stays platform-neutral
+and visually consistent; the typography registry decides how each role looks.
 
 ---
 
-## The Font Class
+## Using tokens
 
-The `Font` class provides a powerful way to create fonts with modifiers:
+Anywhere a Tk widget accepts a `font=` option, ttkbootstrap accepts a token
+name as a string:
 
 ```python
-from ttkbootstrap import Font
-
-# Create a font from a token
-body_font = Font("body")
-
-# Create a font with modifiers
-bold_body = Font("body[bold]")
-
-# Use in widgets
-ttk.Label(app, text="Bold text", font=bold_body)
+ttk.Label(app, text="Title", font="heading-xl")
+ttk.Label(app, text="Body text", font="body")
+ttk.Label(app, text="def hello(): ...", font="code")
 ```
 
-The `Font` class:
+The full token table is in
+[Design System → Typography](../design-system/typography.md). At a glance:
 
-- Parses a string syntax for tokens and modifiers
-- Creates and caches named Tk fonts
-- Can be passed directly to any widget's `font` parameter
+- **Reading**: `caption`, `body-sm`, `body`, `body-lg`, `body-xl`
+- **UI labels**: `label` (bold)
+- **Headings**: `heading-sm`, `heading-md`, `heading-lg`, `heading-xl`
+- **Display**: `display-lg`, `display-xl`
+- **Specialty**: `code` (monospace), `hyperlink` (underlined)
 
 ---
 
-## Modifier Syntax
+## Modifiers: tweaking a token without abandoning it
 
-Modifiers are specified in **chained brackets** after the token name:
-
-!!! note "Consistent Syntax"
-    Font modifiers use the same chained bracket syntax as [color modifiers](styling.md#color-modifiers). This consistency makes both systems easy to learn together.
+When you need a slight variation — bold, italic, two points larger — use
+modifiers in chained brackets after the token name. The result is still
+anchored to the token, so it adapts when the registry's family or scale
+changes.
 
 ```python
-# Single modifier
-Font("body[bold]")
-Font("body[italic]")
-Font("body[underline]")
-
-# Multiple modifiers (chained brackets)
-Font("body[bold][italic]")
-Font("body[14][bold][underline]")
-Font("heading-lg[18][bold][italic]")
+ttk.Label(app, text="Emphasis", font="body[bold]")
+ttk.Label(app, text="Quote", font="body[italic]")
+ttk.Label(app, text="Bold and italic", font="body[bold][italic]")
+ttk.Label(app, text="Strikethrough", font="body[overstrike]")
 ```
 
-Available modifiers:
+### Sizing
+
+Two ways to set size, with different intent:
+
+```python
+# Relative: stays anchored to the token's base size.
+# When the registry's base size changes, this tracks it.
+"body+1"        # one point larger than body
+"caption-1"     # one point smaller than caption
+
+# Absolute: pins a specific size in the bracket.
+# Useful when you need a fixed visual size regardless of the token scale.
+"body[14]"      # 14 points
+"body[16px]"    # 16 pixels
+```
+
+Prefer the relative form unless you have a reason to pin an absolute size.
+Relative offsets keep the design system in sync; absolute sizes opt out of it.
+
+### Modifier reference
 
 | Modifier | Effect |
 |----------|--------|
@@ -101,73 +105,27 @@ Available modifiers:
 | `italic` | Italic style |
 | `roman` | Remove italic |
 | `underline` | Underlined text |
-| `overstrike` | Strikethrough text |
-| `14` | Absolute size (14pt) |
-| `16px` | Absolute size in pixels |
+| `overstrike` | Strikethrough |
+| `N` | Absolute size in points (e.g. `14`) |
+| `Npx` | Absolute size in pixels (e.g. `16px`) |
 
-### Size in Brackets
-
-Specify absolute size as a bracketed modifier:
+When the same property appears more than once, the last value wins:
 
 ```python
-Font("body[14]")              # Force 14pt
-Font("body[16][bold]")        # 16pt bold
-Font("body[16px]")            # Force 16 pixels
-Font("heading-lg[24][italic]") # 24pt italic heading
+"body[bold][normal]"   # normal weight
+"body[14][16]"         # 16 points
 ```
 
-### Size Delta with +/-
-
-Adjust size relative to the token's base size using `+` or `-` before the brackets:
-
-```python
-Font("body+1")              # 1 point larger than body
-Font("body-2")              # 2 points smaller than body
-Font("heading-lg+2[bold]")  # 2 points larger than heading-lg, bold
-Font("caption-1[italic]")   # 1 point smaller than caption, italic
-```
-
-### Modifier Pipeline
-
-Modifiers are applied left-to-right as a pipeline. For the same property, later values override earlier ones:
-
-```python
-Font("body[bold][normal]")   # Results in normal weight
-Font("body[14][16]")         # Results in 16pt
-```
-
-### Complete Examples
-
-```python
-from ttkbootstrap import Font
-
-# Common patterns
-title_font = Font("heading-xl")
-subtitle_font = Font("heading-lg[normal]")  # Heading size, normal weight
-body_font = Font("body")
-emphasis_font = Font("body[bold][italic]")
-code_font = Font("code")
-small_caption = Font("caption[italic]")
-
-# Size variations using +/-
-large_body = Font("body+2")
-compact_label = Font("body-1")
-
-# Size with modifiers
-large_bold = Font("body+2[bold]")
-custom_heading = Font("heading-lg[18][italic]")
-
-# Decoration
-link_text = Font("body[underline]")
-deleted_text = Font("body[overstrike]")
-emphasized_link = Font("body[bold][underline]")
-```
+The same chained-bracket syntax also drives color modifiers — see
+[Styling → Color Modifiers](styling.md#color-modifiers) for the parallel.
 
 ---
 
-## Using Fonts in Widgets
+## The `Font` class
 
-Pass `Font` objects directly to widgets:
+For fonts you create once and reuse, wrap the string in `Font`. It parses the
+expression once, caches the resulting Tk named font, and gives you the same
+object to pass everywhere.
 
 ```python
 import ttkbootstrap as ttk
@@ -175,217 +133,146 @@ from ttkbootstrap import Font
 
 app = ttk.App()
 
-# Define fonts
-title = Font("heading-xl")
-body = Font("body")
-code = Font("code")
+heading = Font("heading-lg")
+emphasis = Font("body[bold][italic]")
 
-# Apply to widgets
-ttk.Label(app, text="Welcome", font=title).pack(pady=10)
-ttk.Label(app, text="This is body text.", font=body).pack()
-ttk.Label(app, text="print('Hello')", font=code).pack(pady=10)
+ttk.Label(app, text="Hello", font=heading).pack()
+ttk.Label(app, text="Important note", font=emphasis).pack()
+ttk.Label(app, text="More with same heading", font=heading).pack()
 
 app.mainloop()
 ```
 
-### Inline Font Strings
+Strings and `Font` instances are interchangeable wherever a `font=` argument
+is accepted. Use the string form for one-offs; use `Font` when the same
+expression appears multiple times or when you want measurement utilities.
 
-Many widgets also accept the font string directly:
+### Measurement
 
-```python
-ttk.Label(app, text="Bold heading", font="heading-lg[bold]")
-ttk.Label(app, text="Italic caption", font="caption[italic]")
-```
-
----
-
-## Creating Named Fonts
-
-For fonts you'll reuse across your application, create them once and reference by name:
+`Font` exposes Tk's measurement API on the resolved font:
 
 ```python
 from ttkbootstrap import Font
 
-# Create reusable fonts at app startup
+body = Font("body")
+
+body.measure("Hello, World!")   # pixel width of the rendered string
+body.metrics()                  # {'ascent': ..., 'descent': ..., 'linespace': ..., 'fixed': ...}
+body.actual()                   # {'family': ..., 'size': ..., 'weight': ..., ...}
+```
+
+These are useful for layout decisions where you need to size a widget around
+its text — for example, sizing a column to fit the longest expected value, or
+laying out a custom canvas.
+
+---
+
+## Patterns
+
+### A small "design tokens" module
+
+For a real app, the most common pattern is to declare your typography choices
+in one place and import them everywhere. This makes the design easier to
+adjust later — change one file, the whole app updates.
+
+```python
+import ttkbootstrap as ttk
+from ttkbootstrap import Font
+
+# fonts.py — design tokens for the app
 class AppFonts:
-    title = Font("heading-xl")
-    subtitle = Font("heading-lg[normal]")
+    page_title = Font("display-lg")
+    section = Font("heading-lg")
     body = Font("body")
-    body_bold = Font("body[bold]")
-    caption = Font("caption[italic]")
+    body_emphasis = Font("body[bold]")
+    caption = Font("caption")
     code = Font("code")
 
-# Use throughout the application
-ttk.Label(app, text="Title", font=AppFonts.title)
-ttk.Label(app, text="Description", font=AppFonts.body)
+app = ttk.App()
+ttk.Label(app, text="Welcome", font=AppFonts.page_title).pack()
+ttk.Label(app, text="Getting started", font=AppFonts.section).pack()
+ttk.Label(app, text="Read the introduction below.", font=AppFonts.body).pack()
+ttk.Label(app, text="Updated 2 minutes ago", font=AppFonts.caption).pack()
+app.mainloop()
 ```
 
-### Accessing the Underlying Tk Font
+### Form labels
 
-The `Font` class wraps a Tk named font:
+The `label` token is intentionally bold and slightly smaller than `body` —
+it's the form-field label voice:
 
 ```python
-font = Font("body[bold]")
+import ttkbootstrap as ttk
 
-# Get the Tk font object
-tk_font = font.tkfont
+app = ttk.App()
 
-# Get the registered font name
-name = font.name  # e.g., "ttkbootstrap.font.abc123"
+form = ttk.GridFrame(app, columns=2, gap=10, padding=20)
+form.pack()
 
-# Font can be used as a string (returns name)
-str(font)  # Same as font.name
+ttk.Label(form, text="Name", font="label").grid()
+ttk.Entry(form).grid()
+
+ttk.Label(form, text="Email", font="label").grid()
+ttk.Entry(form).grid()
+
+app.mainloop()
 ```
 
----
+### Heading hierarchy
 
-## Font Measurement
-
-The `Font` class provides measurement utilities:
+Reach for headings in size order. If you need an extra step you can bridge
+with bracket-modified body sizes:
 
 ```python
+import ttkbootstrap as ttk
 from ttkbootstrap import Font
 
-font = Font("body")
+app = ttk.App()
 
-# Measure text width in pixels
-width = font.measure("Hello, World!")
+ttk.Label(app, text="Document Title", font=Font("display-lg")).pack()
+ttk.Label(app, text="Section", font=Font("heading-lg")).pack()
+ttk.Label(app, text="Subsection", font=Font("heading-md")).pack()
+ttk.Label(app, text="Minor heading", font=Font("body[bold]")).pack()
 
-# Get font metrics
-metrics = font.metrics()
-# Returns: {'ascent': 12, 'descent': 3, 'linespace': 15, 'fixed': 0}
-
-# Get actual font properties
-actual = font.actual()
-# Returns: {'family': 'Segoe UI', 'size': 11, 'weight': 'normal', ...}
-```
-
-### Practical Uses
-
-```python
-# Calculate required widget width
-text = "This is a long label"
-font = Font("body")
-required_width = font.measure(text) + 20  # Add padding
-
-ttk.Label(app, text=text, font=font, width=required_width)
-
-# Get line height for layout calculations
-line_height = font.metrics()["linespace"]
+app.mainloop()
 ```
 
 ---
 
-## Typography Registry
+## Customizing the typography registry
 
-For advanced use, access the typography system directly:
+Most apps don't need to touch the registry — the defaults are tuned for
+desktop UIs across all three platforms. If you do need to override family or
+size globally, the controls live on `Typography`:
 
 ```python
-from ttkbootstrap.style.typography import Typography, FontSpec
+from ttkbootstrap.style.typography import Typography
 
-# Get a token's specification
-spec = Typography.get_token("heading-lg")
-print(spec.font, spec.size, spec.weight)
+# Replace the UI font family for every non-monospace token.
+Typography.set_global_family("Inter")
 
-# Update a token globally
+# Tweak a single token's size while keeping its family and weight.
 Typography.update_font_token("body", size=12)
-
-# Change the global font family
-Typography.set_global_family("Arial")
 ```
 
-### Available Token Names
+These calls update the registered Tk fonts in place. Widgets that already
+reference a token by name (`font="body"`) re-render automatically. Widgets
+that hold a derived `Font` object instantiated *before* the change keep their
+original metrics — re-create them after global changes if you need them to
+follow.
 
-```python
-from ttkbootstrap.style.typography import FontTokenNames
+`Typography.set_global_family` deliberately leaves `code` alone so monospace
+keeps working when the app font changes.
 
-# Access token name constants
-FontTokenNames.body       # "body"
-FontTokenNames.heading_lg # "heading-lg"
-FontTokenNames.code       # "code"
-```
+For the underlying primitives (`FontSpec`, `FontTokens`, `FontTokenNames`,
+`build_desktop_tokens`) see the API reference.
 
 ---
 
-## Common Patterns
+## Related guides
 
-### Consistent Headings
-
-```python
-from ttkbootstrap import Font
-
-# Define heading hierarchy
-h1 = Font("heading-xl")
-h2 = Font("heading-lg")
-h3 = Font("heading-md")
-h4 = Font("body-lg[bold]")
-
-ttk.Label(app, text="Main Title", font=h1).pack()
-ttk.Label(app, text="Section", font=h2).pack()
-ttk.Label(app, text="Subsection", font=h3).pack()
-ttk.Label(app, text="Minor Heading", font=h4).pack()
-```
-
-### Form Labels and Values
-
-```python
-label_font = Font("body[bold]")
-value_font = Font("body")
-
-grid = ttk.GridFrame(app, columns=2, gap=10, padding=20)
-
-ttk.Label(grid, text="Name:", font=label_font).grid()
-ttk.Label(grid, text="Alice", font=value_font).grid()
-
-ttk.Label(grid, text="Email:", font=label_font).grid()
-ttk.Label(grid, text="alice@example.com", font=value_font).grid()
-```
-
-### Code Display
-
-```python
-code_font = Font("code")
-line_number_font = Font("code[bold]")
-
-# Code editor style
-ttk.Label(app, text="1", font=line_number_font)
-ttk.Label(app, text="def hello():", font=code_font)
-```
-
-### Status Messages
-
-```python
-normal_status = Font("caption")
-error_status = Font("caption[bold]")
-success_status = Font("caption[italic]")
-
-def show_status(message, level="normal"):
-    fonts = {
-        "normal": normal_status,
-        "error": error_status,
-        "success": success_status,
-    }
-    status_label.configure(text=message, font=fonts[level])
-```
-
----
-
-## Summary
-
-- Use **font tokens** (`body`, `heading-lg`, `code`) for semantic typography
-- Use the **`Font` class** to create fonts with modifiers
-- Specify **modifiers in brackets**: `Font("body[bold][italic]")`
-- Adjust **size with +/-**: `Font("body+2")` or `Font("body[14]")`
-- **Reuse fonts** by creating them once and referencing throughout
-- Use **`measure()`** and **`metrics()`** for layout calculations
-
-!!! link "Design System"
-    See [Design System → Typography](../design-system/typography.md) for the design philosophy.
-
----
-
-## Next Steps
-
-- [Styling](styling.md) — working with the design system
-- [Layout](layout.md) — building layouts with containers
-- [App Structure](app-structure.md) — how applications are organized
+- [Design System → Typography](../design-system/typography.md) — token
+  vocabulary, intent, and scale.
+- [Styling](styling.md) — color tokens and the parallel modifier syntax.
+- [Layout](layout.md) — composing typography with `PackFrame` and
+  `GridFrame`.

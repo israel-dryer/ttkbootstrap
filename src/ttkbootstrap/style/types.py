@@ -1,3 +1,4 @@
+"""Type aliases for color and style values."""
 from tkinter.font import Font
 from typing import Literal, Union
 

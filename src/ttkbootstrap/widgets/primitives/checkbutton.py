@@ -1,3 +1,4 @@
+"""CheckButton widget — a ttk.Checkbutton with theme and icon support."""
 from __future__ import annotations
 
 from tkinter import ttk
@@ -17,6 +18,8 @@ if TYPE_CHECKING:
 
 
 class CheckButtonKwargs(TypedDict, total=False):
+    """Keyword arguments for CheckButton."""
+
     # Standard ttk.Checkbutton options
     text: Any
     command: Optional[Callable[[], Any]]
@@ -52,7 +55,7 @@ class CheckButtonKwargs(TypedDict, total=False):
 
 
 class CheckButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Checkbutton):
-    """ttkbootstrap wrapper for `ttk.Checkbutton` with bootstyle and icon support."""
+    """ttkbootstrap Checkbutton with theme and icon support."""
 
     _ttk_base = ttk.Checkbutton
 
@@ -62,7 +65,8 @@ class CheckButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TT
         Args:
             master: Parent widget. If None, uses the default root window.
 
-        Other Parameters:
+        Other Parameters
+        ----------------
             text (str): Text to display.
             textvariable (Variable): Tk variable linked to the text.
             textsignal (Signal[str]): Reactive Signal linked to the text (auto-synced with textvariable).
@@ -90,6 +94,7 @@ class CheckButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TT
                 Combined style tokens (e.g., 'primary', 'success').
             surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
+
         """
         signal_provided = 'signal' in kwargs
         variable_provided = 'variable' in kwargs
@@ -104,8 +109,16 @@ class CheckButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TT
         return self.variable.get()
 
     def set(self, value: Any) -> None:
-        """Set the value of the checkbutton."""
-        self.variable.set(value)
+        """Set the value of the checkbutton.
+
+        Pass `None` to enter the indeterminate state (sets the ttk `alternate`
+        state flag without modifying the underlying variable).
+        """
+        if value is None:
+            self.state(['alternate'])
+        else:
+            self.state(['!alternate'])
+            self.variable.set(value)
 
     @property
     def value(self) -> Any:

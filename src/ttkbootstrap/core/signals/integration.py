@@ -73,7 +73,6 @@ def enable_widget_integration() -> None:
     instance to `textvariable` or `variable` in the constructor or in
     `configure(...)`, it is automatically converted to its Tcl name.
     """
-
     ttk_classes: Tuple[type, ...] = (
         ttk.Entry,
         ttk.Label,

@@ -64,7 +64,10 @@ from ttkbootstrap.widgets.primitives.separator import Separator
 from ttkbootstrap.widgets.primitives.sizegrip import SizeGrip
 from ttkbootstrap.widgets.primitives.spinbox import Spinbox
 from ttkbootstrap.widgets.composites.spinnerentry import SpinnerEntry
+from ttkbootstrap.widgets.composites.list.listview import ListView
 from ttkbootstrap.widgets.composites.tableview import TableView
+from ttkbootstrap.widgets.composites.tabs.tabs import Tabs
+from ttkbootstrap.widgets.composites.tabs.tabview import TabView
 from ttkbootstrap.widgets.composites.textentry import TextEntry
 from ttkbootstrap.widgets.composites.timeentry import TimeEntry
 from ttkbootstrap.widgets.composites.toast import Toast
@@ -98,6 +101,7 @@ __all__ = [
     "Label",
     "LabelFrame",
     "LabeledScale",
+    "ListView",
     "MenuBar",
     "SideNav",
     "SideNavItem",
@@ -133,6 +137,8 @@ __all__ = [
     "Spinbox",
     "SpinnerEntry",
     "TableView",
+    "Tabs",
+    "TabView",
     "TextEntry",
     "TimeEntry",
     "Toast",

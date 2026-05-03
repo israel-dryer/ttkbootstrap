@@ -55,10 +55,12 @@ _TABLE_SEARCH_MODE_OPTIONS = [
 
 
 class TableView(Frame):
-    """TableView backed by an in-memory SqliteDataSource.
+    """Sortable, filterable, paginated tabular data view.
 
-    Provides sortable headers, filtering/search, pagination or virtual scrolling,
-    optional grouping, column striping, and configurable exporting/editing.
+    Renders rows from a `SqliteDataSource` (an in-memory source is created
+    by default) with sortable column headers, header- and row-level
+    filtering, search, standard pagination or virtual scrolling, optional
+    grouping, column striping, in-place editing, and exporting.
 
     !!! note "Events"
         - `<<SelectionChange>>`: Fired when row selection changes. `event.data = {'records': list[dict], 'iids': list[str]}`
@@ -117,8 +119,7 @@ class TableView(Frame):
             column_auto_width: bool = False,
             **kwargs,
     ):
-        """
-        Create a TableView backed by an in-memory SqliteDataSource.
+        """Create a TableView backed by an in-memory SqliteDataSource.
 
         Args:
             master: Parent widget.
@@ -160,6 +161,7 @@ class TableView(Frame):
             column_auto_width: Automatically size columns to widest visible text.
                 Defaults to False.
             **kwargs: Additional arguments passed through to Frame.
+
         """
         super().__init__(master, **kwargs)
 
@@ -530,18 +532,23 @@ class TableView(Frame):
 
     # ------------------------------------------------------------------ Pagination helpers
     def next_page(self) -> None:
+        """Advance to the next page."""
         self._next_page()
 
     def previous_page(self) -> None:
+        """Move to the previous page."""
         self._prev_page()
 
     def first_page(self) -> None:
+        """Jump to the first page."""
         self._first_page()
 
     def last_page(self) -> None:
+        """Jump to the last page."""
         self._last_page()
 
     def go_to_page(self, index: int) -> None:
+        """Jump to a specific page by index."""
         self._load_page(max(0, index))
 
     # ------------------------------------------------------------------ Filter/Sort/Group API
@@ -553,6 +560,7 @@ class TableView(Frame):
             return ""
 
     def set_filters(self, where: str) -> None:
+        """Apply a SQL WHERE clause filter to the data."""
         try:
             self._datasource.set_filter(where or "")
         except Exception:
@@ -562,6 +570,7 @@ class TableView(Frame):
         self._update_status_labels()
 
     def clear_filters(self) -> None:
+        """Remove the active filter."""
         self._clear_filter_cmd()
 
     def get_sorting(self) -> dict[str, bool]:
@@ -569,6 +578,7 @@ class TableView(Frame):
         return dict(self._sort_state)
 
     def set_sorting(self, key: str, ascending: bool = True) -> None:
+        """Sort by a column key, ascending or descending."""
         quoted_key = self._quote_col(key)
         order = "ASC" if ascending else "DESC"
         try:
@@ -582,12 +592,15 @@ class TableView(Frame):
         self._update_status_labels()
 
     def clear_sorting(self) -> None:
+        """Remove the active sort order."""
         self._clear_sort()
 
     def get_grouping(self) -> str | None:
+        """Return the current grouping column key, or None."""
         return self._group_by_key
 
     def set_grouping(self, key: str | None) -> None:
+        """Group rows by a column key, or ungroup if key is None."""
         if not key:
             self._ungroup_all()
             return
@@ -607,10 +620,12 @@ class TableView(Frame):
         self._update_status_labels()
 
     def clear_grouping(self) -> None:
+        """Remove grouping and flatten the view."""
         self._ungroup_all()
 
     # ------------------------------------------------------------------ Group expand/collapse
     def expand_all(self) -> None:
+        """Expand all group rows."""
         for iid in self._tree.get_children(""):
             try:
                 self._tree.item(iid, open=True)
@@ -618,6 +633,7 @@ class TableView(Frame):
                 pass
 
     def collapse_all(self) -> None:
+        """Collapse all group rows."""
         for iid in self._tree.get_children(""):
             try:
                 self._tree.item(iid, open=False)
@@ -625,6 +641,7 @@ class TableView(Frame):
                 pass
 
     def expand_group(self, group_value) -> None:
+        """Expand a specific group by its value."""
         parent = self._group_parents.get(group_value)
         if parent:
             try:
@@ -633,6 +650,7 @@ class TableView(Frame):
                 pass
 
     def collapse_group(self, group_value) -> None:
+        """Collapse a specific group by its value."""
         parent = self._group_parents.get(group_value)
         if parent:
             try:
@@ -1795,14 +1813,14 @@ class TableView(Frame):
     def _export_all(self) -> None:
         try:
             rows = self._datasource.get_page_from_index(0, self._datasource.total_count())
-            self._tree.event_generate("<<TableViewExportAll>>", data=rows)
+            self.event_generate("<<TableViewExportAll>>", data=rows)
         except Exception:
             pass
 
     def _export_selection(self) -> None:
         try:
             selected = [self._row_map[iid] for iid in self._tree.selection() if iid in self._row_map]
-            self._tree.event_generate("<<TableViewExportSelection>>", data=selected)
+            self.event_generate("<<TableViewExportSelection>>", data=selected)
         except Exception:
             pass
 
@@ -1810,7 +1828,7 @@ class TableView(Frame):
         try:
             start_index = self._current_page * self._paging['page_size']
             rows = self._datasource.get_page_from_index(start_index, self._paging['page_size'])
-            self._tree.event_generate("<<TableViewExportPage>>", data=rows)
+            self.event_generate("<<TableViewExportPage>>", data=rows)
         except Exception:
             pass
 

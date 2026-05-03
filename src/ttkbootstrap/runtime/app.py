@@ -47,6 +47,7 @@ def get_app_settings() -> AppSettings:
 
     Raises:
         RuntimeError: If no active App instance is set.
+
     """
     return get_current_app().settings
 
@@ -66,6 +67,7 @@ def get_current_app() -> App:
 
     Raises:
         RuntimeError: If no App has been registered yet.
+
     """
     if _current_app is None:
         raise RuntimeError(
@@ -80,6 +82,7 @@ def has_current_app() -> bool:
 
     Returns:
         True if an App instance exists, False otherwise.
+
     """
     return _current_app is not None
 
@@ -100,6 +103,7 @@ def get_default_root(what: Optional[str] = None) -> tkinter.Tk:
     Raises:
         RuntimeError: If tkinter is configured to not support default root,
             or if called too early with a 'what' description.
+
     """
     if not tkinter._support_default_root:
         raise RuntimeError(
@@ -114,7 +118,7 @@ def get_default_root(what: Optional[str] = None) -> tkinter.Tk:
 
 
 def apply_class_bindings(window: tkinter.Widget | App) -> None:
-    """Add class level event bindings in application"""
+    """Add class-level event bindings to the application."""
     # Copy TCheckbutton bindings to Toolbutton class
     # This is needed because widgets using class_='Toolbutton' have their
     # bindtags reference 'Toolbutton' instead of 'TCheckbutton', so they
@@ -142,8 +146,7 @@ def apply_class_bindings(window: tkinter.Widget | App) -> None:
     window.unbind_class("TButton", "<Key-space>")
 
     def button_default_binding(event: tkinter.Event) -> None:
-        """The default keybind on a button when the return or enter key
-        is pressed and the button has focus or is the default button."""
+        """Invoke the focused button when Return or Enter is pressed."""
         try:
             widget = window.nametowidget(event.widget)
             widget.invoke()
@@ -157,14 +160,13 @@ def apply_class_bindings(window: tkinter.Widget | App) -> None:
 
 
 def apply_all_bindings(window: tkinter.Widget | App) -> None:
-    """Add bindings to all widgets in the application"""
+    """Add bindings to all widgets in the application."""
     window.bind_all('<Map>', on_map_child, '+')
     window.bind_all('<Destroy>', lambda e: Publisher.unsubscribe(e.widget))
 
 
 def on_disabled_readonly_state(event: tkinter.Event) -> None:
-    """Change the cursor of entry type widgets to 'arrow' if in a
-    disabled or readonly state."""
+    """Set entry widget cursors to 'arrow' in a readonly or disabled state."""
     try:
         widget = event.widget
         state = str(widget.cget('state'))
@@ -184,8 +186,7 @@ def on_disabled_readonly_state(event: tkinter.Event) -> None:
 
 
 def on_map_child(event: tkinter.Event) -> None:
-    """Callback for <Map> event which generates a <<MapChild>> virtual
-    event on the parent"""
+    """Generate a <<MapChild>> virtual event when a child widget is mapped."""
     widget: tkinter.Widget = event.widget
     try:
         if widget.master is None:  # root widget
@@ -198,7 +199,7 @@ def on_map_child(event: tkinter.Event) -> None:
 
 
 def on_select_all(event: tkinter.Event) -> None:
-    """Callback to select all text in Entry or Text widget when Ctrl+A is pressed."""
+    """Select all text in an Entry or Text widget when Ctrl+A is pressed."""
     widget = event.widget
 
     if isinstance(widget, tkinter.Text):
@@ -288,7 +289,9 @@ class AppSettings:
         print(app.settings.locale)  # 'de_DE'
         print(app.settings.date_format)  # 'd.M.yy'
         ```
+
     """
+
     # information
     app_name: str | None = None
     app_author: str | None = None
@@ -296,8 +299,8 @@ class AppSettings:
 
     # theme
     theme: str = "light"
-    light_theme: str = "docs-light"
-    dark_theme: str = "docs-dark"
+    light_theme: str = "bootstrap-light"
+    dark_theme: str = "bootstrap-dark"
     follow_system_appearance: bool = False
     available_themes: Sequence[str] = ()
     inherit_surface_color: bool = True
@@ -327,6 +330,8 @@ class AppSettings:
 
 
 class AppSettingsKwargs(TypedDict, total=False):
+    """Keyword arguments for AppSettings."""
+
     app_name: str
     app_author: str
     app_version: str
@@ -424,7 +429,9 @@ class TkKwargs(TypedDict, total=False):
         useTk: If True, initializes the Tk system.
         sync: If true, executes all X server commands synchronously.
         use: The id of the window in which to embed the application.
+
     """
+
     screenName: str
     baseName: str
     className: str
@@ -437,10 +444,20 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
     """The primary application window and entry point.
 
     App adds theming, localization, and platform setup on top of `tkinter.Tk`.
+    Also exported under the legacy alias `Window`.
 
     The standard widget API (events, scheduling, clipboard, geometry managers,
-    winfo, etc.) is documented under ttkbootstrap capabilities and is available
-    on App via inheritance.
+    winfo, etc.) is inherited from `BaseWindow` and `WidgetCapabilitiesMixin`.
+
+    Platform:
+        On Windows, `window_style` enables pywinstyles effects (`mica`,
+        `acrylic`, `aero`, `transparent`, `win7`); the parameter is ignored
+        on macOS and Linux.
+        On macOS, native quit behavior (Cmd+Q, dock-icon hide/show) is
+        installed by default; configure via `AppSettings.macos_quit_behavior`.
+        The per-platform window-state directory used for `state_path`
+        defaults: `Library/Application Support` (macOS), `%APPDATA%`
+        (Windows), `$XDG_CONFIG_HOME` (Linux).
     """
 
     def __init__(
@@ -466,7 +483,7 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
             window_style: str | None | object = _USE_SETTINGS,
             **kwargs: Unpack[TkKwargs],
     ) -> None:
-        """Initializes the application window.
+        """Initialize the application window.
 
         Args:
             title: The text to display in the window's title bar. This
@@ -496,8 +513,12 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
             transient: The parent window for this window.
             override_redirect: If `True`, creates a window without standard
                 decorations (title bar, borders, etc.).
+            window_style: Windows-only pywinstyles effect for all windows
+                (`mica`, `acrylic`, `aero`, `transparent`, `win7`). Overrides
+                `AppSettings.window_style`. Ignored on macOS and Linux.
             **kwargs: Additional keyword arguments to pass to the
                 underlying `tkinter.Tk` constructor.
+
         """
         # --- Settings ---------------------------------------------------
         if settings is None:
@@ -630,18 +651,18 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
         apply_all_bindings(self)
 
     def mainloop(self, n=0) -> None:
-        """Start the application event loop
+        """Start the application event loop.
 
         Args:
-            n (int): A threshold that keeps the window open if at least n windows is open. This is an archaic c-level
-                detail that should not be adjusted unless you have a specific reason.
+            n: A threshold that keeps the window open if at least n windows are open.
+
         """
         self.place_window_center()
         self.show()
         super().mainloop(n=n)
 
     def close(self) -> None:
-        """Close the application window (destroys the Tk root)"""
+        """Close the application window."""
         clear_current_app(self)
         self.quit()
 
@@ -847,6 +868,7 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
         Args:
             handler: Zero-argument callable invoked when the user picks
                 About from the apple menu.
+
         """
         if self.winsys != 'aqua':
             return
@@ -866,6 +888,7 @@ class App(BaseWindow, WidgetCapabilitiesMixin, tkinter.Tk):
         Args:
             handler: Zero-argument callable invoked when the user picks
                 Preferences from the apple menu.
+
         """
         if self.winsys != 'aqua':
             return

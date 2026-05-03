@@ -36,6 +36,7 @@ nav = [
         { "Application" = [
             { "App" = "widgets/application/app.md" },
             { "AppShell" = "widgets/application/appshell.md" },
+            { "Toolbar" = "widgets/application/toolbar.md" },
             { "Toplevel" = "widgets/application/toplevel.md" },
         ] },
         { "Actions" = [
@@ -50,12 +51,14 @@ nav = [
             { "PasswordEntry" = "widgets/inputs/passwordentry.md" },
             { "PathEntry" = "widgets/inputs/pathentry.md" },
             { "ScrolledText" = "widgets/inputs/scrolledtext.md" },
+            { "SelectBox" = "widgets/inputs/selectbox.md" },
             { "SpinnerEntry" = "widgets/inputs/spinnerentry.md" },
             { "NumericEntry" = "widgets/inputs/numericentry.md" },
             { "Scale" = "widgets/inputs/scale.md" },
             { "LabeledScale" = "widgets/inputs/labeledscale.md" },
             { "DateEntry" = "widgets/inputs/dateentry.md" },
             { "TimeEntry" = "widgets/inputs/timeentry.md" },
+            { "Form" = "widgets/inputs/form.md" },
         ] },
         { "Selection" = [
             { "Calendar" = "widgets/selection/calendar.md" },
@@ -67,7 +70,6 @@ nav = [
             { "RadioGroup" = "widgets/selection/radiogroup.md" },
             { "ToggleGroup" = "widgets/selection/togglegroup.md" },
             { "OptionMenu" = "widgets/selection/optionmenu.md" },
-            { "SelectBox" = "widgets/selection/selectbox.md" },
         ] },
         { "Data Display" = [
             { "Label" = "widgets/data-display/label.md" },
@@ -95,16 +97,12 @@ nav = [
         ] },
         { "Navigation" = [
             { "SideNav" = "widgets/navigation/sidenav.md" },
-            { "Toolbar" = "widgets/navigation/toolbar.md" },
             { "Tabs" = "widgets/navigation/tabs.md" },
         ] },
         { "Views" = [
             { "TabView" = "widgets/views/tabview.md" },
             { "PageStack" = "widgets/views/pagestack.md" },
             { "Notebook" = "widgets/views/notebook.md" },
-        ] },
-        { "Forms" = [
-            { "Form" = "widgets/forms/form.md" },
         ] },
         { "Dialogs" = [
             { "Overview" = "widgets/dialogs/index.md" },
@@ -151,8 +149,11 @@ nav = [
         ] },
         { "Styling Internals" = "platform/ttk-styles-elements.md" },
         { "Images & DPI" = "platform/images-and-dpi.md" },
+        { "Platform Differences" = "platform/platform-differences.md" },
+        { "Accessibility" = "platform/accessibility.md" },
         { "Windows" = "platform/windows.md" },
         { "Operations" = [
+            { "Threading & Async" = "platform/threading-and-async.md" },
             { "Debugging" = "platform/debugging.md" },
             { "Performance" = "platform/performance.md" },
         ] },
@@ -203,6 +204,9 @@ nav = [
             { "get_app_settings" = "reference/app/get_app_settings.md" },
             { "MenuManager" = "reference/app/MenuManager.md" },
             { "create_menu" = "reference/app/create_menu.md" },
+            { "Shortcuts" = "reference/app/Shortcuts.md" },
+            { "Shortcut" = "reference/app/Shortcut.md" },
+            { "get_shortcuts" = "reference/app/get_shortcuts.md" },
         ] },
         { "Style" = [
             { "Overview" = "reference/style/index.md" },
@@ -261,13 +265,9 @@ nav = [
             { "Label" = "reference/widgets/Label.md" },
             { "LabeledScale" = "reference/widgets/LabeledScale.md" },
             { "LabelFrame" = "reference/widgets/LabelFrame.md" },
+            { "MenuBar" = "reference/widgets/MenuBar.md" },
             { "MenuButton" = "reference/widgets/MenuButton.md" },
             { "Meter" = "reference/widgets/Meter.md" },
-            { "SideNav" = "reference/widgets/SideNav.md" },
-            { "SideNavItem" = "reference/widgets/NavigationViewItem.md" },
-            { "SideNavGroup" = "reference/widgets/NavigationViewGroup.md" },
-            { "SideNavHeader" = "reference/widgets/NavigationViewHeader.md" },
-            { "SideNavSeparator" = "reference/widgets/NavigationViewSeparator.md" },
             { "Notebook" = "reference/widgets/Notebook.md" },
             { "NumericEntry" = "reference/widgets/NumericEntry.md" },
             { "OptionMenu" = "reference/widgets/OptionMenu.md" },
@@ -287,6 +287,10 @@ nav = [
             { "SelectBox" = "reference/widgets/SelectBox.md" },
             { "Separator" = "reference/widgets/Separator.md" },
             { "SideNav" = "reference/widgets/SideNav.md" },
+            { "SideNavItem" = "reference/widgets/SideNavItem.md" },
+            { "SideNavGroup" = "reference/widgets/SideNavGroup.md" },
+            { "SideNavHeader" = "reference/widgets/SideNavHeader.md" },
+            { "SideNavSeparator" = "reference/widgets/SideNavSeparator.md" },
             { "SizeGrip" = "reference/widgets/SizeGrip.md" },
             { "Spinbox" = "reference/widgets/Spinbox.md" },
             { "SpinnerEntry" = "reference/widgets/SpinnerEntry.md" },
@@ -344,6 +348,7 @@ nav = [
             { "ValidationResult" = "reference/utils/ValidationResult.md" },
             { "SetVar" = "reference/utils/SetVar.md" },
         ] },
+        { "Deprecated names" = "reference/deprecated.md" },
     ] },
     { "Showcase" = [
         { "Overview" = "showcase/index.md" },

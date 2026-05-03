@@ -74,7 +74,7 @@ class ValidationMixin(Widget):
 
         Args:
             rule_type: Type of validation rule (e.g., 'required', 'min_length')
-            **kwargs: Rule-specific options (e.g., min_length=5, message='...')
+            **kwargs: Rule-specific options (e.g., min=5, max=20, message='...')
         """
         self._rules.append(ValidationRule(rule_type, **kwargs))
 
@@ -97,7 +97,8 @@ class ValidationMixin(Widget):
             trigger: Trigger type ('manual', 'key', 'blur', or 'always')
 
         Returns:
-            True if validation was performed (regardless of result)
+            True if at least one rule ran and every rule passed; False if any
+            rule failed or no rules matched the trigger.
         """
         ran_rule = False
         payload: dict[str, Any] = {"value": value, "is_valid": True, "message": ""}

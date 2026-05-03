@@ -16,6 +16,7 @@ from ttkbootstrap.runtime.app import Window
 from ttkbootstrap.dialogs import Dialog, DialogButton
 from ttkbootstrap.widgets.composites.scrollview import ScrollView
 from ttkbootstrap.runtime.window_utilities import AnchorPoint
+from ttkbootstrap.core.localization import MessageCatalog
 
 ttk = SimpleNamespace(
     Checkbutton=CheckButton,
@@ -105,7 +106,7 @@ class FilterDialogContent(ttk.Frame):
 
         # Select all checkbox
         if self._enable_select_all:
-            self._select_all_cb = ttk.Checkbutton(self, text='edit.select_all')
+            self._select_all_cb = ttk.Checkbutton(self, text=MessageCatalog.translate('edit.select_all'))
             self._select_all_cb.invoke()
             self._select_all_cb.invoke()
             self._select_all_cb['command'] = self._handle_select_all
@@ -325,14 +326,15 @@ class FilterDialog(ttk.Frame):
         Returns:
             List of selected item values, or None if canceled.
         """
+        self.result = None
         self._dialog: Dialog = Dialog(
             master=self._master,
             title=self._title,
             content_builder=self._build_content,
             buttons=[
-                DialogButton(text="button.cancel", role="cancel", result=None),
+                DialogButton(text=MessageCatalog.translate("button.cancel"), role="cancel", result=None),
                 DialogButton(
-                    text="button.ok",
+                    text=MessageCatalog.translate("button.ok"),
                     role="primary",
                     result=True,
                     default=True,

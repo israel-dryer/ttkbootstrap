@@ -21,6 +21,7 @@ Examples:
     # Menu displays shortcut text automatically
     menu.add_command(text="Save", shortcut="save", command=save_file)
     ```
+
 """
 from __future__ import annotations
 
@@ -74,7 +75,9 @@ class Shortcut:
         key: Unique identifier for lookup (e.g., "save", "file.open")
         pattern: Shortcut pattern (e.g., "Mod+S", "Shift+Alt+N")
         command: Function to execute when triggered
+
     """
+
     key: str
     pattern: str
     command: Callable
@@ -86,6 +89,7 @@ class Shortcut:
         Returns:
             On Mac: "⇧⌘S" (symbols, no separators)
             On Windows/Linux: "Ctrl+Shift+S" (names with + separators)
+
         """
         parts = self.pattern.split('+')
         key_part = parts[-1]
@@ -116,6 +120,7 @@ class Shortcut:
 
         Returns:
             Binding string like "<Control-s>" or "<Command-Shift-s>"
+
         """
         parts = self.pattern.split('+')
         key_part = parts[-1].lower()
@@ -160,11 +165,13 @@ class Shortcuts:
         # Get display string for menu
         shortcuts.display("save")  # "Ctrl+S" on Windows, "⌘S" on Mac
         ```
+
     """
 
     _instance: 'Shortcuts | None' = None
 
     def __new__(cls):
+        """Return the singleton Shortcuts instance, creating it on first call."""
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._shortcuts: dict[str, Shortcut] = {}
@@ -196,6 +203,7 @@ class Shortcuts:
             shortcuts.register("quit", "Mod+Q", app.quit)
             shortcuts.register("refresh", "F5", refresh)
             ```
+
         """
         if key in self._shortcuts:
             raise ValueError(f"Shortcut key '{key}' is already registered")
@@ -217,6 +225,7 @@ class Shortcuts:
 
         Raises:
             KeyError: If key is not registered.
+
         """
         if key not in self._shortcuts:
             raise KeyError(f"Shortcut key '{key}' is not registered")
@@ -235,6 +244,7 @@ class Shortcuts:
 
         Returns:
             The Shortcut object, or None if not found.
+
         """
         return self._shortcuts.get(key)
 
@@ -247,6 +257,7 @@ class Shortcuts:
         Returns:
             Platform-appropriate display string (e.g., "Ctrl+S" or "⌘S"),
             or empty string if not found.
+
         """
         shortcut = self._shortcuts.get(key)
         return shortcut.display if shortcut else ''
@@ -260,6 +271,7 @@ class Shortcuts:
         Returns:
             Tkinter binding string (e.g., "<Control-s>"),
             or empty string if not found.
+
         """
         shortcut = self._shortcuts.get(key)
         return shortcut.binding if shortcut else ''
@@ -273,6 +285,7 @@ class Shortcuts:
         Note:
             Shortcuts registered after calling bind_to will also be
             automatically bound to this window.
+
         """
         if window in self._bound_windows:
             return
@@ -289,6 +302,7 @@ class Shortcuts:
 
         Args:
             window: The window to unbind shortcuts from.
+
         """
         if window not in self._bound_windows:
             return
@@ -309,6 +323,7 @@ class Shortcuts:
 
         Returns:
             Dictionary mapping keys to Shortcut objects.
+
         """
         return dict(self._shortcuts)
 
@@ -362,6 +377,7 @@ def get_shortcuts() -> Shortcuts:
         shortcuts.register("save", "Mod+S", save_file)
         shortcuts.bind_to(app)
         ```
+
     """
     return Shortcuts()
 
@@ -396,6 +412,7 @@ def format_shortcut(spec: str | None) -> str:
         format_shortcut("F5")         # "F5" everywhere
         format_shortcut("⌘S")         # "⌘S" — passes through unchanged
         ```
+
     """
     if not spec:
         return ''

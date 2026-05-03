@@ -1,3 +1,4 @@
+"""Themed combobox widget."""
 from __future__ import annotations
 
 from tkinter import ttk
@@ -16,6 +17,8 @@ if TYPE_CHECKING:
 
 
 class ComboboxKwargs(TypedDict, total=False):
+    """Keyword-argument schema for `Combobox.__init__`."""
+
     # Standard ttk.Combobox options
     values: Any
     textvariable: Any
@@ -44,7 +47,14 @@ class ComboboxKwargs(TypedDict, total=False):
 
 
 class Combobox(TextSignalMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Combobox):
-    """ttkbootstrap wrapper for `ttk.Combobox` with bootstyle support."""
+    """Themed single-line text entry combined with a dropdown list.
+
+    Extends `ttk.Combobox` with theme-aware styling and text-signal
+    binding. The entry shows the current value; the dropdown exposes
+    choices from `values`. The `state` setting controls whether users
+    can also type free-form values (`normal`) or only choose from the
+    list (`readonly`).
+    """
 
     _ttk_base = ttk.Combobox
 
@@ -98,7 +108,15 @@ class Combobox(TextSignalMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStat
                 self.configure(font='caption')
             else:
                 self.configure(font='body')
-            return self.configure_style_options(density=value)
+            self.configure_style_options(density=value)
+            return self.rebuild_style()
+
+    @configure_delegate('surface')
+    def _delegate_surface(self, value=None):
+        if value is None:
+            return self._surface
+        self.configure_style_options(surface=value)
+        return self.rebuild_style()
 
     def _setup_postcommand(self) -> None:
         """Re-style the popdown each time it opens.

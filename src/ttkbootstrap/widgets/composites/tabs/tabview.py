@@ -162,8 +162,10 @@ class TabView(Frame):
         if effective_closable and close_command is None:
             close_command = lambda k=key: self.remove(k)
 
-        # Add tab
+        # Add tab — pass key= so Tabs._tabs uses the same key as TabView._tab_map,
+        # which lets remove() call self._tabs.remove(key) directly.
         tab = self._tabs.add(
+            key=key,
             text=text,
             icon=icon,
             value=key,
@@ -188,11 +190,11 @@ class TabView(Frame):
         Args:
             key: The identifier of the tab/page to remove.
         """
-        # Remove tab
+        # Remove tab — Tabs._tabs uses the same key string (set at add() time),
+        # so we can pass the key directly.
         if key in self._tab_map:
-            tab = self._tab_map.pop(key)
-            self._tabs.remove(tab)
-            tab.destroy()
+            self._tab_map.pop(key)
+            self._tabs.remove(key)
 
         # Remove page
         self._page_stack.remove(key)
@@ -222,10 +224,16 @@ class TabView(Frame):
             key: The identifier of the tab/page to navigate to.
             data: Optional data to pass to the page.
         """
-        if key in self._tab_map:
+        if key not in self._tab_map:
+            return
+        # Temporarily remove the trace so the variable write does not
+        # trigger a second page-stack navigation in _on_tab_selected.
+        self._tab_variable.trace_remove('write', self._trace_id)
+        try:
             self._tab_variable.set(key)
-            if data:
-                self._page_stack.navigate(key, data=data)
+        finally:
+            self._trace_id = self._tab_variable.trace_add('write', self._on_tab_selected)
+        self._page_stack.navigate(key, data=data)
 
     @property
     def tabs_widget(self) -> Tabs:

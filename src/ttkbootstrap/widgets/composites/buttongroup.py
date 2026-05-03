@@ -1,3 +1,4 @@
+"""ButtonGroup widget — a group of visually connected buttons."""
 from __future__ import annotations
 
 from typing import Any, Callable, Literal, TypedDict, TYPE_CHECKING
@@ -17,6 +18,8 @@ if TYPE_CHECKING:
 
 
 class ButtonGroupKwargs(TypedDict, total=False):
+    """Keyword arguments for ButtonGroup."""
+
     orient: Literal['horizontal', 'vertical']
     accent: str
     variant: str
@@ -55,7 +58,8 @@ class ButtonGroup(Frame):
         Args:
             master: Parent widget. If None, uses the default root window.
 
-        Other Parameters:
+        Other Parameters
+        ----------------
             orient (str): Layout orientation - 'horizontal' (default) or 'vertical'.
             accent (str): The accent token (e.g., 'primary', 'success', 'danger').
             variant (str): The style variant (e.g., 'solid', 'outline', 'ghost'). Defaults to 'solid',
@@ -66,6 +70,7 @@ class ButtonGroup(Frame):
             width (int): Requested width in pixels.
             height (int): Requested height in pixels.
             style_options (dict): Additional style options passed to child widgets.
+
         """
         # Store ButtonGroup-specific options from explicit parameters
         # NOTE: _color and _variant are set AFTER super().__init__() because
@@ -114,6 +119,7 @@ class ButtonGroup(Frame):
 
         Raises:
             ValueError: If a widget with the same key already exists.
+
         """
         # Auto-generate key if not provided
         if key is None:
@@ -220,6 +226,7 @@ class ButtonGroup(Frame):
 
         Raises:
             KeyError: If no widget with the given key exists.
+
         """
         if key not in self._widgets:
             raise KeyError(f"No widget with key '{key}'")
@@ -238,6 +245,7 @@ class ButtonGroup(Frame):
 
         Raises:
             KeyError: If no widget with the given key exists.
+
         """
         if key not in self._widgets:
             raise KeyError(f"No widget with key '{key}'")
@@ -257,6 +265,7 @@ class ButtonGroup(Frame):
         Examples:
             group.configure_item("save_btn", state='disabled')
             current_state = group.configure_item("save_btn", 'state')
+
         """
         widget = self.item(key)
         if option is not None:
@@ -268,6 +277,7 @@ class ButtonGroup(Frame):
 
         Returns:
             A tuple of all widget instances in the group.
+
         """
         return tuple(self._widgets.values())
 
@@ -276,6 +286,7 @@ class ButtonGroup(Frame):
 
         Returns:
             A tuple of all widget keys in the group.
+
         """
         return tuple(self._widgets.keys())
 
@@ -284,6 +295,7 @@ class ButtonGroup(Frame):
 
         Examples:
             >>> count = len(button_group)
+
         """
         return len(self._widgets)
 
@@ -293,6 +305,7 @@ class ButtonGroup(Frame):
         Examples:
             >>> if 'save' in button_group:
             ...     print('Save button exists')
+
         """
         return key in self._widgets
 
@@ -302,6 +315,7 @@ class ButtonGroup(Frame):
         Examples:
             >>> for widget in button_group:
             ...     widget.configure(state='disabled')
+
         """
         return iter(self._widgets.values())
 
@@ -333,7 +347,7 @@ class ButtonGroup(Frame):
         self._reconfigure_all_widgets()
 
     def _reconfigure_all_widgets(self):
-        """Reconfigure all widgets with current accent/variant/density"""
+        """Reconfigure all widgets with current accent/variant/density."""
         for widget in self._widgets.values():
             # Update density in style_options
             if hasattr(widget, 'configure_style_options'):

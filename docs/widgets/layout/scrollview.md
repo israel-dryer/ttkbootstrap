@@ -4,19 +4,30 @@ title: ScrollView
 
 # ScrollView
 
-`ScrollView` is a **scrollable container** for arbitrary widgets.
+`ScrollView` is a scrollable container for arbitrary widgets. It
+wraps a `Canvas` plus one or two `Scrollbar`s into a single
+`Frame` subclass, hosts a content widget inside the canvas, and
+binds mousewheel scrolling on every descendant — so a long form,
+settings panel, or stacked card list can be made scrollable
+without hand-wiring the canvas, the scrollbars, the wheel events,
+and the cross-platform platform deltas.
 
-It provides a framed content area inside a scrolling viewport, handling scrollbars, mousewheel behavior, and sizing so you can
-build scrollable panels and forms without manually wiring a `Canvas` + scrollbars.
+`ScrollView` extends [Frame](frame.md), so the same `surface`,
+`show_border`, `input_background`, and `padding` tokens apply to
+the outer container. The viewport is a `Canvas` instance; the two
+scrollbars are [Scrollbar](scrollbar.md) widgets. Both are exposed
+as attributes (`canvas`, `vertical_scrollbar`,
+`horizontal_scrollbar`) for situations where the composite's
+defaults don't fit.
 
-<!--
-IMAGE: ScrollView with a long form or a list of cards
-Theme variants: light / dark
--->
+<figure markdown>
+![scrollview](../../assets/dark/widgets-scrollview.png#only-dark)
+![scrollview](../../assets/light/widgets-scrollview.png#only-light)
+</figure>
 
 ---
 
-## Quick start
+## Basic usage
 
 ```python
 import ttkbootstrap as ttk
@@ -26,145 +37,306 @@ app = ttk.App()
 sv = ttk.ScrollView(app)
 sv.pack(fill="both", expand=True, padx=20, pady=20)
 
-# Get the content frame and add widgets to it
 content = sv.add()
 for i in range(30):
-    ttk.Label(content, text=f"Row {i+1}").pack(anchor="w", pady=4)
+    ttk.Label(content, text=f"Row {i + 1}").pack(anchor="w", pady=4)
 
 app.mainloop()
 ```
 
----
-
-## When to use
-
-Use `ScrollView` when:
-
-- you need to scroll a region that contains normal widgets (forms/panels/cards)
-
-- you want to scroll long forms, settings panels, or stacked content
-
-- you want to build resizable layouts where only part of the UI scrolls
-
-- you want to avoid manual Canvas/Scrollbar plumbing
-
-**Consider a different control when:**
-
-- you need a multi-line text editor/log output -- use [ScrolledText](../inputs/scrolledtext.md)
-
-- you need highly customized scrolling or virtualized rendering -- use manual [Canvas](../primitives/canvas.md) + [Scrollbar](scrollbar.md)
+`sv.add()` returns the content `Frame` you should pack widgets
+into. Subsequent calls without arguments are idempotent — they
+return the same frame — so it's safe to call lazily from a setup
+helper.
 
 ---
 
-## Appearance
+## Layout model
 
-`ScrollView` is different from `ScrolledText`:
+`ScrollView` uses a fixed 2×2 internal grid:
 
-- `ScrollView` scrolls **widgets**
+| Cell    | Widget                                         |
+| ------- | ---------------------------------------------- |
+| `(0,0)` | the `canvas` viewport                          |
+| `(0,1)` | `vertical_scrollbar` (`scroll_direction` ≠ horizontal) |
+| `(1,0)` | `horizontal_scrollbar` (`scroll_direction` ≠ vertical) |
 
-- `ScrolledText` scrolls **text content** (tk.Text)
+The content is mounted as a *canvas window* — the canvas's
+`create_window(0, 0, anchor=anchor, window=child)` call — not as a
+gridded child. This is what makes scrolling work: as the canvas
+scrolls, the window position translates relative to the viewport,
+and the scrollbars report a `(first, last)` fraction of the
+content visible at any time.
 
-!!! link "Design System"
-    For theming details and color tokens, see [Design System](../../design-system/index.md).
-
----
-
-## Examples & patterns
-
-### Adding content
-
-Use `add()` to get a content frame for placing widgets.
+**The content widget must be parented on `sv.canvas`.** When you
+let `add()` create the frame for you, that's automatic. When you
+build your own content widget, parent it explicitly:
 
 ```python
 sv = ttk.ScrollView(app)
 sv.pack(fill="both", expand=True)
 
-content = sv.add()  # Returns a Frame
-for i in range(30):
-    ttk.Label(content, text=f"Item {i+1}").pack(anchor="w", pady=4)
+content = ttk.Frame(sv.canvas, padding=16)   # parent on the canvas
+sv.add(content)
+
+ttk.Label(content, text="Custom outer frame").pack(anchor="w")
 ```
 
-Frame options (padding, color, etc.) can be passed directly:
+A widget parented on `sv` (the outer Frame) instead of `sv.canvas`
+will display, but it won't scroll — it lives outside the canvas
+window and ignores `xview` / `yview`.
+
+**One content widget at a time.** `add()` raises `ValueError` if
+you pass a new widget while one is already present. Call
+`remove()` first to swap:
 
 ```python
-content = sv.add(padding=10, accent="primary")
+sv.remove()              # detach and return the old widget
+sv.add(new_content)
 ```
 
-Calling `add()` multiple times returns the same frame (idempotent).
+`get_child()` returns the current content widget (or `None`).
 
-### Custom content widget
+**Scrollbar gutter is reserved in `hover` and `scroll` modes.**
+The grid column (vertical) and row (horizontal) that hold the
+scrollbars are given a `minsize` equal to each scrollbar's natural
+requested dimension, then the scrollbar widgets are
+`grid_remove()`d. The minsize persists, so the canvas occupies a
+constant area regardless of whether the scrollbar is currently
+shown — the same idea as CSS `scrollbar-gutter: stable`. In
+`always` and `never` modes no gutter is reserved (the bar is
+either always there or never there, so reflow isn't possible).
 
-You can also pass your own widget to `add()`:
+---
+
+## Common options
+
+ScrollView's distinctive surface is four options layered on top of
+[Frame](frame.md)'s container tokens:
+
+| Option                 | Type | Default     | Notes                                                                          |
+| ---------------------- | ---- | ----------- | ------------------------------------------------------------------------------ |
+| `scroll_direction`     | str  | `"both"`    | `"vertical"`, `"horizontal"`, or `"both"`; controls which bars exist           |
+| `scrollbar_visibility` | str  | `"always"`  | `"always"`, `"never"`, `"hover"`, or `"scroll"` (see *Visibility modes* below) |
+| `autohide_delay`       | int  | `1000`      | Milliseconds before scrollbars hide in `"scroll"` mode                         |
+| `scrollbar_variant`    | str  | `"default"` | Forwarded as `variant=` to both `Scrollbar` instances                          |
+
+All four are reconfigurable at runtime through `configure(...)`
+and `cget(...)`; changes rewire the canvas's scroll commands and
+toggle the gutter reservation as needed.
+
+Inherited from [Frame](frame.md):
+
+- `padding`, `width`, `height` — outer-frame geometry
+- `surface`, `show_border` — themed surface tokens
+- `input_background` — cascaded fill for input descendants of the
+  outer frame *only*; the canvas-window content widget is reached
+  via the cascade from `sv.canvas`'s parent (the ScrollView), so
+  inputs inside the scroll content do pick up the token.
+- `accent` is rerouted to a `surface` override on the outer frame.
+  `ScrollView` inherits `Frame`, so its style class is `TFrame`,
+  which is in `CONTAINER_CLASSES`; the bootstyle constructor wrapper
+  rewrites `accent="primary"` as `surface="primary"` and paints the
+  outer container — *not* the scrollbars. To tint the scrollbars
+  themselves, pass `accent` to a custom `Scrollbar` built on
+  `sv.canvas` and replace the bundled bars.
+
+### Visibility modes
 
 ```python
-my_frame = ttk.Frame(sv.canvas, padding=16)
-sv.add(my_frame)
-
-ttk.Label(my_frame, text="Custom frame with padding").pack()
+ttk.ScrollView(app, scrollbar_visibility="always")   # default
+ttk.ScrollView(app, scrollbar_visibility="never")
+ttk.ScrollView(app, scrollbar_visibility="hover")
+ttk.ScrollView(app, scrollbar_visibility="scroll")
 ```
 
-### Scroll direction
+| Mode      | Bars visible when                              | Mousewheel    | Gutter reserved |
+| --------- | ---------------------------------------------- | ------------- | --------------- |
+| `always`  | content overflows                              | Always        | No              |
+| `never`   | Never                                          | Always        | No              |
+| `hover`   | mouse over container *and* content overflows   | While hovered | Yes             |
+| `scroll`  | a wheel scroll just happened *and* overflows; auto-hides after `autohide_delay` ms | Always | Yes |
 
-Choose vertical, horizontal, or both scrolling depending on content.
+In `"never"` mode, the bars are hidden but mousewheel scrolling
+still works — useful for embedding a scroll region in a chrome-free
+panel.
+
+In `"hover"` mode, mousewheel scrolling is **only enabled while the
+mouse is over the container**. This keeps a parent ScrollView from
+hijacking the wheel for nested scrollables.
+
+### Direction
 
 ```python
-ttk.ScrollView(app, scroll_direction='vertical')    # default
-ttk.ScrollView(app, scroll_direction='horizontal')
-ttk.ScrollView(app, scroll_direction='both')
+ttk.ScrollView(app, scroll_direction="both")        # default
+ttk.ScrollView(app, scroll_direction="vertical")
+ttk.ScrollView(app, scroll_direction="horizontal")
 ```
 
-### Scrollbar visibility
+`"vertical"` or `"horizontal"` build only the matching scrollbar;
+the canvas's `xscrollcommand` / `yscrollcommand` is set to `None`
+on the unused axis. Mousewheel scrolling is gated on the same axis
+— `<MouseWheel>` only scrolls vertical and `<Shift-MouseWheel>` only
+scrolls horizontal, so a horizontal-only ScrollView ignores plain
+wheel events entirely.
 
-Use auto-hide policies to keep UI clean.
+### Scrollbar variant
 
 ```python
-ttk.ScrollView(app, scrollbar_visibility='always')    # default
-ttk.ScrollView(app, scrollbar_visibility='never')     # hidden but scrolling works
-ttk.ScrollView(app, scrollbar_visibility='hover')     # appear on mouse enter
-ttk.ScrollView(app, scrollbar_visibility='scroll')    # appear when scrolling
+ttk.ScrollView(app, scrollbar_variant="square")
 ```
 
-### Padding
-
-Add padding to your content frame:
-
-```python
-content = sv.add()
-inner = ttk.Frame(content, padding=16)
-inner.pack(fill="both", expand=True)
-
-for i in range(20):
-    ttk.Label(inner, text=f"Item {i+1}").pack(anchor="w", pady=4)
-```
+Passed straight through to both inner `Scrollbar` widgets. Valid
+values follow [Scrollbar](scrollbar.md): `"default"`, `"round"`,
+and `"rounded"` are aliases for the image-based rounded thumb;
+`"square"` is the flat solid-color thumb. Any other value raises
+`BootstyleBuilderError` from the scrollbar builder.
 
 ---
 
 ## Behavior
 
-- Mouse wheel scrolling is handled for cross-platform consistency.
+**Mousewheel binding via a per-instance class tag.** Each
+`ScrollView` creates a unique Tk bind tag (`ScrollView_<id>`) and
+binds the wheel events on that tag — not on individual widgets. At
+`add()` time, the tag is inserted into the `bindtags` chain of the
+canvas and *every descendant of the content widget*. This is how
+the wheel scrolls regardless of which child the cursor is over.
 
-- The scroll region updates as content size changes.
+After **bulk-adding** widgets to the content frame (especially
+through programmatic loops), call `refresh_bindings()` to walk the
+tree again and pick up new descendants:
 
-- Use `fill="both", expand=True` to let the viewport grow with the window.
+```python
+content = sv.add()
+for i in range(1000):
+    ttk.Label(content, text=str(i)).pack()
+sv.refresh_bindings()
+```
+
+`enable_scrolling()` and `disable_scrolling()` toggle the wheel
+binding on/off without changing visibility. `"hover"` mode uses
+this internally — wheel scrolling is disabled outside the hover
+window.
+
+**Platform-specific wheel deltas** are normalized:
+`event.delta / 120` on Win32, raw `event.delta` on Aqua,
+`<Button-4>` / `<Button-5>` on X11. The delta is converted to
+`canvas.yview_scroll(units, "units")`. `<Shift-MouseWheel>` (or
+`<Shift-Button-4>` / `<Shift-Button-5>` on X11) maps to
+horizontal.
+
+**Wheel events are no-ops when content fits.** Before scrolling,
+the wheel handler reads `canvas.yview()` and returns early if
+`first <= 0.0 and last >= 1.0`. This means a parent ScrollView
+sees the wheel event after a content-fitting child ScrollView
+returns, so vertically-stacked scroll regions chain correctly.
+
+**Auto-hide when content fits.** Even in `"always"` mode, the
+scrollbars are `grid_remove`d when the content is smaller than
+the viewport on that axis. The bars reappear automatically as
+the content grows.
+
+**Programmatic scrolling.** The standard view protocol is exposed
+on the ScrollView itself — calls are forwarded to the inner
+canvas:
+
+```python
+sv.yview()                 # ("first", "last") fraction tuple
+sv.yview_moveto(0.5)       # jump to 50% from the top
+sv.yview("scroll", 1, "units")
+sv.xview_moveto(0.0)
+```
+
+**Reconfiguration is live, with one caveat.**
+`configure(scrollbar_visibility=...)` rebinds the hover handlers,
+syncs the gutter, and re-evaluates which bar should be shown right
+now. `configure(scrollbar_variant=...)` forwards to both bars.
+`configure(scroll_direction=...)` rewires the canvas
+`xscrollcommand` / `yscrollcommand` and re-runs the visibility
+check, but it does **not** regrid the scrollbars — only the bar(s)
+matching the *initial* `scroll_direction` are placed in the layout
+with the correct row, column, and `sticky`. Reconfiguring from
+`"vertical"` to `"both"` (or `"horizontal"` to `"both"`) leaves the
+new bar without `sticky="ew"` / `"ns"`, so it renders as a stub
+instead of spanning its row or column. Pick the final
+`scroll_direction` at construction time, or rebuild the
+`ScrollView` if you need to switch.
 
 ---
 
-## Additional resources
+## Events
 
-### Related widgets
+`ScrollView` emits no virtual events and exposes no `on_*` event
+helpers. The standard Tk `<Configure>` fires on the outer frame
+when its size changes, and on the inner content widget when the
+content's size changes (the latter is how the canvas's
+`scrollregion` stays in sync — `ScrollView` handles it
+internally; rebinding `<Configure>` on the content widget will
+break that hook).
 
-- [Scrollbar](scrollbar.md) -- low-level scrollbar primitive
+To react to scroll-position changes, hook the underlying canvas
+directly:
 
-- [ScrolledText](../inputs/scrolledtext.md) -- scrollable text widget
+```python
+def on_view_change(first, last):
+    sv.vertical_scrollbar.set(first, last)
+    print("at fraction", float(first))
 
-- [Frame](frame.md) -- common content container inside a scroll view
+sv.canvas.configure(yscrollcommand=on_view_change)
+```
 
-### Framework concepts
+This wraps the existing scrollbar update — calling
+`vertical_scrollbar.set(first, last)` first preserves the bundled
+behavior, then your callback runs. Without that, the scrollbar
+will stop tracking the view.
 
-- [Layout Properties](../../capabilities/layout-props.md)
+---
 
-- [Layout](../../platform/geometry-and-layout.md)
+## When should I use ScrollView?
 
-### API reference
+Use `ScrollView` when:
 
-- [`ttkbootstrap.ScrollView`](../../reference/widgets/ScrollView.md)
+- you need a scrollable region of normal widgets (forms, settings
+  panels, stacked cards, dynamic lists)
+- you want consistent cross-platform mousewheel behavior on a
+  group of widgets without binding the events yourself
+- you want a built-in autohide / hover / always-on policy without
+  toggling visibility manually
+
+Prefer **[ScrolledText](../inputs/scrolledtext.md)** when the
+content is a multi-line text editor or log view — it ships with a
+`Text` widget pre-wired to a vertical scrollbar.
+
+Prefer **[Scrollbar](scrollbar.md)** plus a bare
+[Canvas](../primitives/canvas.md) (or `Treeview` / `Listbox`) when
+you need view virtualization, custom scroll geometry, or full
+control over the wheel and view protocols.
+
+Prefer a **[PanedWindow](panedwindow.md)** when the goal is
+*resizing* fixed regions, not *scrolling* through a long region.
+
+---
+
+## Related widgets
+
+- **[ScrolledText](../inputs/scrolledtext.md)** — `Text` widget
+  bundled with a configurable scrollbar; same visibility-mode
+  vocabulary
+- **[Scrollbar](scrollbar.md)** — the underlying themed scrollbar;
+  exposed as `vertical_scrollbar` / `horizontal_scrollbar`
+- **[Frame](frame.md)** — parent class; `surface`, `show_border`,
+  `input_background` tokens behave identically
+- **[Canvas](../primitives/canvas.md)** — the inner viewport;
+  exposed as `sv.canvas` for advanced wiring
+- **[PanedWindow](panedwindow.md)** — resize-based alternative to
+  scrolling
+
+---
+
+## Reference
+
+- **API reference:** [`ttkbootstrap.ScrollView`](../../reference/widgets/ScrollView.md)
+- **Related guides:** [Layout](../../platform/geometry-and-layout.md),
+  [Layout Properties](../../capabilities/layout-props.md),
+  [Design System](../../design-system/index.md)

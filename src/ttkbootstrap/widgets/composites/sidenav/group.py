@@ -21,6 +21,8 @@ if TYPE_CHECKING:
 
 
 class SideNavGroupKwargs(TypedDict, total=False):
+    """Keyword arguments for SideNavGroup."""
+
     key: str
     text: str
     icon: Any
@@ -61,6 +63,7 @@ class SideNavGroup(Frame):
         nav.add_item('local', text='Local', icon='hdd', group='files')
         nav.add_item('cloud', text='Cloud', icon='cloud', group='files')
         ```
+
     """
 
     # Default padding values (same as SideNavItem)
@@ -92,6 +95,7 @@ class SideNavGroup(Frame):
             variable (Variable | None): Shared variable for selection tracking.
             is_expanded (bool): Initial expansion state. Default False.
             **kwargs: Additional arguments passed to Frame.
+
         """
         if not key:
             raise ValueError("SideNavGroup requires a non-empty 'key'")
@@ -277,6 +281,7 @@ class SideNavGroup(Frame):
 
         Args:
             has_selected_child: True if any child item is selected.
+
         """
         self._container.set_selected(has_selected_child)
 
@@ -347,6 +352,7 @@ class SideNavGroup(Frame):
 
         Args:
             compact (bool): True for compact mode, False for full display.
+
         """
         if self._compact == compact:
             return

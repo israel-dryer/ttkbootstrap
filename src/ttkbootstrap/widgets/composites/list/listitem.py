@@ -1,3 +1,4 @@
+"""ListItem widget for use in list and table views."""
 from tkinter import TclError
 from typing import Any
 
@@ -62,6 +63,7 @@ class ListItem(CompositeFrame):
                     when selection_mode is 'single' or 'multi', False otherwise.
                 density (str): Visual density ('default' or 'compact'). Defaults to 'default'.
                 **kwargs: Additional arguments forwarded to CompositeFrame.
+
         """
         # state tracking
         self._data = {}
@@ -549,6 +551,7 @@ class ListItem(CompositeFrame):
 
         Args:
             surface: Surface color name or value (e.g., 'background', 'background[+1]').
+
         """
         previous = getattr(self, "_surface", "background")
         self.configure_style_options(surface=surface)
@@ -652,6 +655,7 @@ class ListItem(CompositeFrame):
 
         Returns:
             bool or None: True if selected, False if deselected, None if no action.
+
         """
         mode = self._selection_mode
         if mode == 'none':
@@ -679,6 +683,7 @@ class ListItem(CompositeFrame):
         Args:
             record: Dictionary containing the item data. If None or contains
                 '__empty__' key, the item will be hidden.
+
         """
         if record is None or '__empty__' in record:
             self.pack_forget()
@@ -722,6 +727,7 @@ class ListItem(CompositeFrame):
             "text": self._update_text,
             "caption": self._update_caption,
             "icon": self._update_icon,
+            "badge": self._update_badge,
         }.items():
             value = record.get(field)
             if self._state.get(field) != value:

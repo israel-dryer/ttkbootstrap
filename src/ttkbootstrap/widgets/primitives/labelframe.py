@@ -1,3 +1,4 @@
+"""LabelFrame widget — a ttk.LabelFrame with theme support."""
 from __future__ import annotations
 
 from tkinter import ttk
@@ -13,6 +14,8 @@ from ttkbootstrap.widgets.types import Master
 
 
 class LabelFrameKwargs(TypedDict, total=False):
+    """Keyword arguments for LabelFrame."""
+
     # Standard ttk.Labelframe options
     text: Any
     labelanchor: Any
@@ -35,7 +38,7 @@ class LabelFrameKwargs(TypedDict, total=False):
 
 
 class LabelFrame(LocalizationMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.LabelFrame):
-    """ttkbootstrap wrapper for `ttk.Labelframe` with bootstyle support."""
+    """ttkbootstrap LabelFrame with theme support."""
 
     _ttk_base = ttk.Labelframe
 
@@ -45,7 +48,8 @@ class LabelFrame(LocalizationMixin, TTKWrapperBase, WidgetCapabilitiesMixin, Ttk
         Args:
             master: Parent widget. If None, uses the default root window.
 
-        Other Parameters:
+        Other Parameters
+        ----------------
             text (str): Text for the embedded label.
             labelanchor (str): Position of the label relative to the frame.
             padding (int | tuple): Extra internal padding.
@@ -59,5 +63,6 @@ class LabelFrame(LocalizationMixin, TTKWrapperBase, WidgetCapabilitiesMixin, Ttk
             surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
             localize (bool | Literal['auto']): Determines the widget's localization mode.
+
         """
         super().__init__(master, **kwargs)

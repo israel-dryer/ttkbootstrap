@@ -1,3 +1,4 @@
+"""Themed button widget."""
 from __future__ import annotations
 
 from tkinter import ttk
@@ -15,6 +16,8 @@ if TYPE_CHECKING:
 
 
 class ButtonKwargs(TypedDict, total=False):
+    """Keyword-argument schema for `Button.__init__`."""
+
     # Standard ttk.Button options
     text: Any
     command: Optional[Callable[[], Any]]
@@ -47,9 +50,12 @@ class ButtonKwargs(TypedDict, total=False):
 
 
 class Button(LocalizationMixin, TextSignalMixin, IconMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Button):
-    """TTK Bootstrap Button
+    """Themed clickable control that invokes a callback when activated.
 
-    ttkbootstrap wrapper for `ttk.Button` with bootstyle and icon support.
+    Extends `ttk.Button` with theme-aware styling via `accent`,
+    `variant`, `density`, and `surface` tokens, icon integration through
+    the style system, text-signal binding, localization, and runtime
+    state management.
     """
     _ttk_base = ttk.Button
 

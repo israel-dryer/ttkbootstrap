@@ -32,8 +32,8 @@ from dateutil import parser as duparser
 # ----------------------------
 
 def detect_locale(default: str = "en_US") -> str:
-    """
-    Return a Babel-friendly locale like 'de_DE' or 'en_US'.
+    """Return a Babel-friendly locale like 'de_DE' or 'en_US'.
+
     - Tries current process locale, then system default (if available).
     - Strips encoding suffixes (e.g. '.UTF-8').
     - Validates with Babel; falls back to `default` on failure.
@@ -109,6 +109,8 @@ DatePreset = Literal[
 
 
 class NumberFormatOptions(TypedDict, total=False):
+    """Options for number formatting."""
+
     type: NumberPreset | Literal["custom"]
     precision: int
     currency: str
@@ -120,6 +122,8 @@ NumberFormatSpec = Union[str, NumberFormatOptions]
 
 
 class DateFormatOptions(TypedDict, total=False):
+    """Options for date formatting."""
+
     type: DatePreset | Literal["custom"]
     pattern: str
 
@@ -137,6 +141,8 @@ FormatSpec = LooseSpec
 
 @dataclass(frozen=True)
 class Suffix:
+    """Compact-number suffix with a magnitude threshold and display symbol."""
+
     threshold: int
     symbol: str
 
@@ -152,8 +158,8 @@ _NUMBERISH = (int, float)
 
 
 def _locale_to_languages(loc: str) -> list[str]:
-    """
-    'en_US' -> ['en']; 'pt_BR' -> ['pt']; 'fr' -> ['fr'].
+    """'en_US' -> ['en']; 'pt_BR' -> ['pt']; 'fr' -> ['fr'].
+
     dateparser wants base languages, not 'de-DE'.
     """
     return [loc.replace("_", "-").split("-")[0].lower()]
@@ -183,6 +189,7 @@ class IntlFormatter:
                 from the current process/system settings.
             day_first: Whether day precedes month when parsing dates (e.g., D/M/Y).
             year_first: Whether year precedes month/day when parsing dates (e.g., Y/M/D).
+
         """
         self.locale = locale or detect_locale()
         self.day_first = day_first
@@ -204,6 +211,7 @@ class IntlFormatter:
 
         Returns:
             The formatted string.
+
         """
         if value is None:
             return ""
@@ -229,6 +237,7 @@ class IntlFormatter:
 
         Raises:
             ValueError: If parsing fails for temporal values.
+
         """
         s = (text or "").strip()
         if s == "":
@@ -366,11 +375,11 @@ class IntlFormatter:
         return "," in format_decimal(1.1, locale=self.locale)
 
     def _get_default_currency(self) -> str:
-        """
-        Get the default currency for the current locale based on its territory.
+        """Get the default currency for the current locale based on its territory.
 
         Returns:
             Currency code (e.g., 'JPY', 'USD', 'EUR') or 'USD' as fallback.
+
         """
         # Map common language codes to their primary territories when no territory is specified
         LANG_TO_TERRITORY = {
@@ -429,19 +438,19 @@ class IntlFormatter:
         opt = self._normalize_date_spec(spec)
         typ = opt["type"]
         if typ == "custom": return format_time(t, format=opt["pattern"], locale=self.locale)
-        if typ == "longTime": return format_time(t, "long", self.locale)
-        if typ == "shortTime": return format_time(t, "short", self.locale)
-        if typ == "hour": return format_time(t, "H", self.locale)
-        if typ == "minute": return format_time(t, "m", self.locale)
-        if typ == "second": return format_time(t, "s", self.locale)
-        if typ == "millisecond": return format_datetime(datetime.combine(date.today(), t), "S", self.locale)
+        if typ == "longTime": return format_time(t, "long", locale=self.locale)
+        if typ == "shortTime": return format_time(t, "short", locale=self.locale)
+        if typ == "hour": return format_time(t, "H", locale=self.locale)
+        if typ == "minute": return format_time(t, "m", locale=self.locale)
+        if typ == "second": return format_time(t, "s", locale=self.locale)
+        if typ == "millisecond": return format_datetime(datetime.combine(date.today(), t), "S", locale=self.locale)
         if typ in ("longDate", "shortDate", "monthAndDay", "monthAndYear", "quarterAndYear", "day", "dayOfWeek",
                    "month", "quarter", "year"):
-            return format_time(t, "short", self.locale)
+            return format_time(t, "short", locale=self.locale)
         if typ in ("longDateLongTime", "shortDateShortTime"):
             return format_datetime(
-                datetime.combine(date.today(), t), "long" if typ == "longDateLongTime" else "short", self.locale)
-        return format_time(t, "short", self.locale)
+                datetime.combine(date.today(), t), "long" if typ == "longDateLongTime" else "short", locale=self.locale)
+        return format_time(t, "short", locale=self.locale)
 
     def _format_datetime(self, dt: datetime, spec: LooseSpec) -> str:
         opt = self._normalize_date_spec(spec)
@@ -535,8 +544,8 @@ class IntlFormatter:
         return cast(DateFormatOptions, dict(spec))
 
     def _date_order_from_locale(self) -> str:
-        """
-        Infer DATE_ORDER for dateparser from the locale's short date pattern.
+        """Infer DATE_ORDER for dateparser from the locale's short date pattern.
+
         Returns 'DMY', 'MDY', or 'YMD'.
         """
         try:

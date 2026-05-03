@@ -4,272 +4,293 @@ title: Icons
 
 # Icons
 
-This guide explains how to use icons effectively in ttkbootstrap applications—from simple buttons to state-aware toolbar actions.
+This guide is the practical reference for using icons in a ttkbootstrap
+application: how to attach an icon to a widget, when to use the dict form for
+extra control, and how state-based icon overrides work.
 
----
-
-## Icons as framework infrastructure
-
-In ttkbootstrap, icons are **named resources**, not file paths.
-
-When you specify an icon:
-
-```python
-ttk.Button(app, text="Settings", icon="gear")
-```
-
-The framework:
-
-- resolves the name through an icon provider
-- recolors the icon to match the widget's foreground
-- scales it for the current DPI
-- caches it for reuse
-- updates it when the theme changes
-
-You don't manage image files, recolor assets, or worry about resolution. The framework handles it.
+For the resolution pipeline (providers, caching, DPI rasterization, theme
+recoloring) see [Capabilities → Icons](../capabilities/icons/icons.md). This
+guide assumes that pipeline and focuses on what application code does with it.
 
 ---
 
 ## The mental model
 
-Think of icons as **semantic identifiers**, similar to color tokens:
+Icons are **named resources**, not file paths. You pass a name; the framework
+resolves, recolors, scales, and caches the rendered image.
+
+```python
+import ttkbootstrap as ttk
+
+app = ttk.App()
+
+ttk.Button(app, text="Settings", icon="gear").pack(padx=20, pady=20)
+
+app.mainloop()
+```
+
+The same name (`"gear"`) renders correctly in light and dark themes, on
+standard and high-DPI displays, in the right size for the widget, and in the
+right colour for its current state — without your code doing anything.
+
+Think of icons the way you think of color tokens:
 
 | Concept | You write | Framework resolves |
 |---------|-----------|-------------------|
-| Color | `accent="danger"` | `#dc3545` (or theme equivalent) |
-| Icon | `icon="trash"` | Themed, scaled, cached image |
+| Color | `accent="danger"` | theme-appropriate red |
+| Icon | `icon="trash"` | themed, scaled, cached image |
 
-The same icon name works across light and dark themes. The icon adapts automatically—you don't maintain separate assets.
-
-Icons also participate in **widget state**. When a button is disabled, its icon dims. When hovered, it can change. This happens without extra code.
+Application code stays semantic; the system handles rendering.
 
 ---
 
-## Basic usage
+## Attaching an icon to a widget
 
-### Icon with text
-
-```python
-ttk.Button(app, text="Save", icon="check")
-ttk.Button(app, text="Delete", icon="trash", accent="danger")
-```
-
-The icon appears to the left of the text by default.
-
-### Icon only
+Most widgets that show text — buttons, labels, menu items — also accept
+`icon=`:
 
 ```python
-ttk.Button(app, icon="plus", icon_only=True)
-ttk.Button(app, icon="x-lg", icon_only=True, accent="secondary")
+import ttkbootstrap as ttk
+
+app = ttk.App()
+
+ttk.Button(app, text="Save", icon="check").pack(padx=10, pady=4)
+ttk.Button(app, text="Delete", icon="trash", accent="danger").pack(padx=10, pady=4)
+ttk.Label(app, text="Unsaved changes", icon="exclamation-triangle").pack(padx=10, pady=4)
+
+app.mainloop()
 ```
 
-Use `icon_only=True` when the icon is self-explanatory. The widget adjusts its padding accordingly.
+The icon appears to the left of the text. The label widget treats it
+decoratively; on a button the icon and text together form the click target.
 
-### Labels with icons
+### Icon-only widgets
+
+When the icon alone communicates the action (close, refresh, settings), pass
+`icon_only=True` so the widget removes the padding reserved for text:
 
 ```python
-ttk.Label(app, text="Warning: unsaved changes", icon="exclamation-triangle")
+import ttkbootstrap as ttk
+
+app = ttk.App()
+
+ttk.Button(app, icon="plus", icon_only=True).pack(side="left", padx=4, pady=20)
+ttk.Button(app, icon="x-lg", icon_only=True, accent="secondary").pack(side="left", padx=4, pady=20)
+
+app.mainloop()
 ```
 
-Icons in labels reinforce the message without making it interactive.
+Reserve icon-only for symbols that are universally recognized (close,
+minimize, search, plus). Anything ambiguous should keep its label.
 
 ---
 
-## Common UI patterns
+## The dict form: when you need control
 
-### Toolbar actions
-
-Toolbars typically use icon-only buttons:
-
-```python
-toolbar = ttk.PackFrame(app, direction="horizontal", gap=4)
-
-ttk.Button(toolbar, icon="folder-open", icon_only=True).pack(side="left")
-ttk.Button(toolbar, icon="save", icon_only=True).pack(side="left")
-ttk.Button(toolbar, icon="printer", icon_only=True).pack(side="left")
-```
-
-### Icon + text for clarity
-
-Primary actions benefit from both:
+A string is enough for most uses. When you need to override size, color, or
+provide per-state overrides, pass a dict instead:
 
 ```python
-ttk.Button(app, text="New Project", icon="plus-lg", accent="primary")
-ttk.Button(app, text="Export", icon="download")
+ttk.Button(app, text="Settings", icon={"name": "gear", "size": 18})
 ```
 
-### Contextual emphasis
-
-Use color to reinforce icon meaning:
-
-```python
-ttk.Button(app, text="Delete", icon="trash", accent="danger")
-ttk.Button(app, text="Success", icon="check-circle", accent="success")
-ttk.Label(app, text="Connection lost", icon="wifi-off", accent="warning")
-```
-
-### Menu items
-
-Menus support icons for quick recognition:
-
-```python
-menu.add_command(label="Cut", icon="scissors")
-menu.add_command(label="Copy", icon="copy")
-menu.add_command(label="Paste", icon="clipboard")
-```
-
----
-
-## Icon specifications
-
-For more control, pass a dict instead of a string:
-
-```python
-ttk.Button(app, text="Settings", icon={
-    "name": "gear",
-    "size": 18,
-})
-```
-
-### Available options
+Available keys:
 
 | Key | Purpose |
 |-----|---------|
 | `name` | Icon identifier (required) |
-| `size` | Size in pixels (default: 20, DPI-scaled) |
-| `color` | Override color (hex or semantic token) |
-| `state` | Per-state icon overrides (list of tuples) |
+| `size` | Size in pixels (default: derived from widget; DPI-scaled) |
+| `color` | Override color (hex string or theme token) |
+| `state` | Per-state icon overrides (list of `(state_expr, override)` tuples) |
 
-### State-based icons
-
-Some widgets have multiple visual states where different icons make sense. Use the `state` key to specify per-state overrides:
+Examples:
 
 ```python
-ttk.CheckToggle(app, text="Enable notifications", icon={
-    "name": "bell-slash",
-    "state": [
-        ("selected", {"name": "bell"}),
-    ]
-})
+import ttkbootstrap as ttk
+
+app = ttk.App()
+
+# Larger than default
+ttk.Button(app, text="Big", icon={"name": "star", "size": 24}).pack()
+
+# Pinned color (rarely needed — let the theme decide)
+ttk.Button(app, text="Tinted", icon={"name": "heart", "color": "#ff0066"}).pack()
+
+app.mainloop()
 ```
 
-When unselected, the toggle shows `bell-slash`. When selected, it shows `bell`.
+Setting an explicit `color` opts out of theme-driven recolouring, so the icon
+keeps that color across light and dark themes. Use it sparingly — usually the
+default (derived from the widget's foreground) is what you want.
 
-State expressions follow TTK conventions:
+---
+
+## State-based icon overrides
+
+Some widgets show different visuals in different states. Use the `state` key
+to swap the icon (or its color) when the widget enters that state:
+
+```python
+import ttkbootstrap as ttk
+
+app = ttk.App()
+
+# Outline bell when off, filled bell when on
+ttk.CheckToggle(
+    app,
+    text="Notifications",
+    icon={
+        "name": "bell-slash",
+        "state": [
+            ("selected", {"name": "bell-fill"}),
+        ],
+    },
+).pack(padx=20, pady=20)
+
+app.mainloop()
+```
+
+Each entry is `(state_expression, override)`, where the override is itself a
+dict that may set `name`, `color`, or both. State expressions follow Tk's
+ttk-style conventions:
 
 | Expression | Meaning |
 |------------|---------|
-| `"selected"` | Widget is selected/checked |
+| `"selected"` | Widget is selected or checked |
 | `"disabled"` | Widget is disabled |
-| `"hover !disabled"` | Mouse over, but not disabled |
+| `"hover !disabled"` | Mouse over, not disabled |
 | `"pressed !disabled"` | Being clicked |
 | `"focus !disabled"` | Has keyboard focus |
 
-Each state override can specify `name`, `color`, or both:
+Order matters — the first matching expression wins, so list the most specific
+states first. Use the unprefixed bare-name form for the base appearance and
+state entries to override it:
 
 ```python
 ttk.Button(app, text="Play", icon={
     "name": "play",
     "state": [
+        ("pressed !disabled", {"name": "play-fill"}),
         ("hover !disabled", {"name": "play-fill"}),
-        ("pressed !disabled", {"color": "#ffffff"}),
-    ]
+    ],
 })
 ```
 
-### When to use specs
-
-Use the dict form when you need to:
-
-- adjust size for visual balance
-- override color for emphasis
-- fine-tune appearance in specific contexts
-
-For most cases, the string form is sufficient.
-
 ---
 
-## DPI and scaling
+## Patterns
 
-ttkbootstrap handles icon scaling automatically.
+### Toolbar of icon-only buttons
 
-When you specify `size=16`, the framework:
+Toolbars are the canonical icon-only context: small, dense, repeated controls
+where the icon is the affordance.
 
-- detects the display's DPI
-- scales the icon appropriately
-- maintains crisp rendering
+```python
+import ttkbootstrap as ttk
 
-You write the same code for standard and high-DPI displays. No manual asset management, no `@2x` variants.
+app = ttk.App()
+
+toolbar = ttk.PackFrame(app, direction="horizontal", gap=4, padding=8)
+toolbar.pack(fill="x")
+
+for name in ("folder2-open", "save", "printer", "scissors", "clipboard"):
+    ttk.Button(toolbar, icon=name, icon_only=True).pack(side="left")
+
+app.mainloop()
+```
+
+### Reinforcing meaning with color
+
+A semantic accent paired with a literal icon makes the intent unambiguous:
+
+```python
+import ttkbootstrap as ttk
+
+app = ttk.App()
+
+ttk.Button(app, text="Delete", icon="trash", accent="danger").pack(pady=4)
+ttk.Button(app, text="Confirm", icon="check-circle", accent="success").pack(pady=4)
+ttk.Label(app, text="Connection lost", icon="wifi-off", accent="warning").pack(pady=4)
+
+app.mainloop()
+```
+
+### Context menu items
+
+`ContextMenu.add_command` accepts an `icon=` argument the same way buttons
+do:
+
+```python
+import ttkbootstrap as ttk
+from ttkbootstrap import ContextMenu
+
+app = ttk.App()
+
+menu = ContextMenu(app)
+menu.add_command(text="Cut", icon="scissors", shortcut="Ctrl+X")
+menu.add_command(text="Copy", icon="copy", shortcut="Ctrl+C")
+menu.add_command(text="Paste", icon="clipboard", shortcut="Ctrl+V")
+menu.add_separator()
+menu.add_command(text="Delete", icon="trash")
+
+app.mainloop()
+```
+
+When the underlying `tk.Menu` is constructed via the framework's declarative
+helpers (e.g. `create_menu`), the same `icon=` key is honored on each item
+dict.
 
 ---
 
 ## Icons and themes
 
-Icons adapt to theme changes automatically:
+Icon color is derived from the active theme's foreground unless you override
+it. When the theme switches, every icon recolours automatically — no caches
+to invalidate, no per-widget refresh code.
 
-```python
-# Same code works for both themes
-ttk.Button(app, text="Edit", icon="pencil")
-```
-
-In a light theme, the icon renders dark. In a dark theme, it renders light. The framework derives icon color from the widget's foreground, which the theme controls.
-
-If you override `color` in an icon spec, that color is used instead—but this is rarely necessary.
+If you set `color` explicitly in an icon spec (a hex string, or a token like
+`"primary"`), that becomes a hard pin: the icon keeps that color across theme
+changes. That's the right behavior for branded marks but the wrong behavior
+for typical UI icons; default to leaving `color` unset.
 
 ---
 
 ## Icons and localization
 
-Icons reinforce meaning but shouldn't replace text for critical actions:
+Icons reinforce meaning, but they don't translate. For localized applications:
 
-```python
-# Good: icon reinforces label
-ttk.Button(app, text="Delete", icon="trash")
+- **Pair icons with translated labels** wherever the action is non-universal
+  ("Settings", "Reports", "Profile" — words help in any language).
+- **Reserve icon-only for universally recognized symbols** — close,
+  minimize, plus, search, play.
+- **Test icon meaning across cultures**. Some symbols read differently
+  outside their origin context (e.g. mailboxes, hand gestures).
 
-# Use carefully: icon-only requires universal recognition
-ttk.Button(app, icon="x-lg", icon_only=True)  # Close button - widely understood
-```
-
-For localized applications:
-
-- pair icons with translated labels
-- reserve icon-only for universally understood symbols (close, minimize, search)
-- test icon meaning across target cultures
-
-!!! link "Localization Guide"
-    See [Localization](localization.md) for internationalization patterns.
+See [Localization](localization.md) for translation patterns.
 
 ---
 
-## What not to do
+## Anti-patterns
 
-Avoid Tkinter habits that bypass the icon system:
+ttkbootstrap's icon system exists so you don't manage these concerns by hand.
+Don't reach for them.
 
 | Don't | Why |
 |-------|-----|
-| Use file paths for icons | Bypasses theming and caching |
-| Manually recolor images | Framework handles state colors |
-| Maintain light/dark asset sets | Icons adapt automatically |
-| Hardcode icon colors | Use color token or let theme decide |
-| Resize images yourself | DPI scaling is automatic |
-
-The icon system exists to handle these concerns. Use it.
+| Pass file paths to `icon=` | Bypasses theming, scaling, caching |
+| Maintain `light/` and `dark/` icon folders | Icons recolour automatically |
+| Use `PhotoImage` and resize manually | DPI scaling is automatic |
+| Hardcode colours unless intentional | Foreground is theme-driven |
+| Recolour images per state by hand | Use the `state` key |
 
 ---
 
-## Summary
+## Related guides
 
-- Icons are **named resources**, not files
-- The framework handles **theming, scaling, and caching**
-- Use `icon="name"` for simple cases, `icon={...}` for control
-- Icons adapt to **widget state** automatically
-- Pair icons with text for **clarity and accessibility**
-
----
-
-## Related resources
-
-- [Design System: Icons](../design-system/icons.md) — design philosophy and principles
-- [Styling](styling.md) — color tokens and semantic colors
-- [Theming](theming.md) — theme configuration and switching
-- [Localization](localization.md) — internationalization patterns
+- [Capabilities → Icons](../capabilities/icons/icons.md) — provider
+  resolution, state integration, DPI pipeline, and caching.
+- [Design System → Icons](../design-system/icons.md) — icon vocabulary and
+  intent.
+- [Styling](styling.md) — color tokens and accent semantics.
+- [Theming](theming.md) — theme switching and color derivation.
+- [Localization](localization.md) — pairing icons with translated text.

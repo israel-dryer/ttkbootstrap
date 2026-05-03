@@ -1,3 +1,4 @@
+"""Localization specification types for ttkbootstrap widgets."""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -15,7 +16,9 @@ class LocalizedSpec:
 
     Attributes:
         enabled: Whether this spec is currently enabled for localization.
+
     """
+
     enabled: bool = True
 
     def resolve(self, locale: str) -> str:
@@ -29,6 +32,7 @@ class LocalizedSpec:
 
         Raises:
             NotImplementedError: Subclasses must implement this method.
+
         """
         raise NotImplementedError("Subclasses must implement resolve().")
 
@@ -45,7 +49,9 @@ class LocalizedTextSpec(LocalizedSpec):
         fmtargs: Tuple of formatting arguments for MessageCatalog interpolation.
         original: Fallback literal text if translation fails.
         enabled: Whether this spec is currently enabled for localization.
+
     """
+
     key: str
     fmtargs: Tuple[Any, ...] = ()
     original: Optional[str] = None
@@ -60,6 +66,7 @@ class LocalizedTextSpec(LocalizedSpec):
 
         Returns:
             The translated string, or the original/key as fallback.
+
         """
         try:
             return MessageCatalog.translate(self.key, *self.fmtargs)
@@ -79,7 +86,9 @@ class LocalizedValueSpec(LocalizedSpec):
         format_spec: IntlFormatter spec such as "currency", "decimal", "percent",
             or a dict with formatting options.
         enabled: Whether this spec is currently enabled for localization.
+
     """
+
     value: Any
     format_spec: FormatSpec
 
@@ -93,6 +102,7 @@ class LocalizedValueSpec(LocalizedSpec):
 
         Returns:
             The formatted string, or str(value) as fallback.
+
         """
         try:
             current_locale = MessageCatalog.locale()
@@ -118,6 +128,7 @@ def L(key: str, *fmtargs: Any) -> LocalizedTextSpec:
     Examples:
         >>> spec = L("greeting", "World")
         >>> # Will translate "greeting" with "World" as format argument
+
     """
     return LocalizedTextSpec(key=key, fmtargs=fmtargs, original=key)
 
@@ -139,5 +150,6 @@ def LV(value: Any, format_spec: FormatSpec) -> LocalizedValueSpec:
     Examples:
         >>> spec = LV(1234.56, "currency")
         >>> # Will format as currency in the current locale
+
     """
     return LocalizedValueSpec(value=value, format_spec=format_spec)

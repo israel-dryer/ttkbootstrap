@@ -121,6 +121,8 @@ class GridMixin:
         Returns:
             When queried, returns the current propagation flag. When set, returns None.
         """
+        if flag is None:
+            return super().grid_propagate()  # type: ignore[misc]
         return super().grid_propagate(flag)  # type: ignore[misc]
 
     def grid_rowconfigure(self, index: int, cnf: dict[str, Any] | None = None, **kw: Any) -> None:

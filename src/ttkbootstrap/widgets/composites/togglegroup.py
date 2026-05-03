@@ -1,3 +1,4 @@
+"""ToggleGroup widget — a group of toggle buttons with single or multi selection."""
 from __future__ import annotations
 
 from tkinter import StringVar
@@ -17,6 +18,8 @@ if TYPE_CHECKING:
 
 
 class ToggleGroupKwargs(TypedDict, total=False):
+    """Keyword arguments for ToggleGroup."""
+
     mode: Literal['single', 'multi']
     variable: Any
     signal: Signal[Any]
@@ -47,7 +50,8 @@ class ToggleGroup(Frame):
         Args:
             master: Parent widget. If None, uses the default root window.
 
-        Other Parameters:
+        Other Parameters
+        ----------------
             mode (str): Selection mode - 'single' for radio button behavior (default),
                 or 'multi' for checkbox behavior allowing multiple selections.
             orient (str): Layout orientation - 'horizontal' (default) or 'vertical'.
@@ -65,6 +69,7 @@ class ToggleGroup(Frame):
             padding (int | tuple): Frame padding. Defaults to 1.
             width (int): Requested width in pixels.
             height (int): Requested height in pixels.
+
         """
         # Extract ToggleGroup-specific options before super().__init__
         self._mode = kwargs.pop('mode', 'single')
@@ -149,6 +154,7 @@ class ToggleGroup(Frame):
 
         Returns:
             The created button widget.
+
         """
         if value is None:
             raise ValueError("The 'value' argument is required.")
@@ -235,7 +241,7 @@ class ToggleGroup(Frame):
             button.rebuild_style()
 
     def _on_multi_toggle(self, val: str):
-        """Callback to update the SetVar when a CheckToggle is clicked."""
+        """Update the SetVar when a CheckToggle is clicked."""
         current_set = self.get()
         if val in current_set:
             current_set.remove(val)
@@ -255,14 +261,20 @@ class ToggleGroup(Frame):
 
         Raises:
             TypeError: If value type doesn't match the mode.
+
         """
         # Validate value type matches mode
         if self._mode == 'single':
             if not isinstance(value, str):
                 raise TypeError(f"Single mode requires a string value, got {type(value).__name__}")
+            if value not in self._buttons:
+                raise ValueError(f"Value {value!r} is not a known key; valid keys: {list(self._buttons)}")
         else:  # multi mode
             if not isinstance(value, set):
                 raise TypeError(f"Multi mode requires a set value, got {type(value).__name__}")
+            unknown = value - self._buttons.keys()
+            if unknown:
+                raise ValueError(f"Unknown keys {unknown!r}; valid keys: {list(self._buttons)}")
 
         self.variable.set(value)
 
@@ -292,6 +304,7 @@ class ToggleGroup(Frame):
 
         Returns:
             A tuple of all button instances in the group.
+
         """
         return tuple(self._buttons.values())
 
@@ -306,6 +319,7 @@ class ToggleGroup(Frame):
 
         Raises:
             KeyError: If no button with the given key exists.
+
         """
         if key not in self._buttons:
             raise KeyError(f"No button with key '{key}'")
@@ -321,6 +335,7 @@ class ToggleGroup(Frame):
 
         Returns:
             If option is provided, returns the value of that option.
+
         """
         button = self.item(key)
         if option is not None:
@@ -332,6 +347,7 @@ class ToggleGroup(Frame):
 
         Returns:
             A tuple of all button keys in the group.
+
         """
         return tuple(self._buttons.keys())
 

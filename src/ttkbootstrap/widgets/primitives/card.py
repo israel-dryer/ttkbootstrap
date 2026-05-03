@@ -1,3 +1,4 @@
+"""Card widget — a Frame with elevated card styling."""
 from __future__ import annotations
 
 from typing import Any, TypedDict
@@ -9,6 +10,8 @@ from ttkbootstrap.widgets.types import Master
 
 
 class CardKwargs(TypedDict, total=False):
+    """Keyword arguments for Card."""
+
     # Standard ttk.Frame options
     padding: Any
     width: int
@@ -39,6 +42,7 @@ class Card(Frame):
         card = ttk.Card(app, padding=20)
         ttk.Label(card, text="Card content").pack()
         ```
+
     """
 
     def __init__(self, master: Master = None, **kwargs: Unpack[CardKwargs]) -> None:
@@ -47,7 +51,8 @@ class Card(Frame):
         Args:
             master: Parent widget. If None, uses the default root window.
 
-        Other Parameters:
+        Other Parameters
+        ----------------
             padding (int | tuple): Extra padding inside the card. Default 16.
             width (int): Requested width in pixels.
             height (int): Requested height in pixels.
@@ -58,6 +63,7 @@ class Card(Frame):
             surface (str): Surface token for the parent background.
             show_border (bool): Draw a border around the card. Default True.
             style_options (dict): Optional dict forwarded to the style builder.
+
         """
         if 'bootstyle' not in kwargs:
             kwargs.setdefault('accent', 'card')

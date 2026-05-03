@@ -1,3 +1,4 @@
+"""RadioButton widget — a ttk.Radiobutton with theme and icon support."""
 from __future__ import annotations
 
 from tkinter import ttk
@@ -17,6 +18,8 @@ if TYPE_CHECKING:
 
 
 class RadioButtonKwargs(TypedDict, total=False):
+    """Keyword arguments for RadioButton."""
+
     # Standard ttk.Radiobutton options
     text: Any
     command: Optional[Callable[[], Any]]
@@ -50,7 +53,7 @@ class RadioButtonKwargs(TypedDict, total=False):
 
 
 class RadioButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Radiobutton):
-    """ttkbootstrap wrapper for `ttk.Radiobutton` with bootstyle and icon support."""
+    """ttkbootstrap Radiobutton with theme and icon support."""
 
     _ttk_base = ttk.Radiobutton
 
@@ -60,7 +63,8 @@ class RadioButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TT
         Args:
             master: Parent widget. If None, uses the default root window.
 
-        Other Parameters:
+        Other Parameters
+        ----------------
             text (str): Text to display.
             textvariable (Variable): Tk variable linked to the text.
             textsignal (Signal[str]): Reactive Signal linked to the text (auto-synced with textvariable).
@@ -86,6 +90,7 @@ class RadioButton(LocalizationMixin, SignalMixin, TextSignalMixin, IconMixin, TT
             surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
             localize (bool | Literal['auto']): Determines the widget's localization mode.
+
         """
         kwargs.update(style_options=self._capture_style_options(['icon_only', 'icon', 'anchor'], kwargs))
         super().__init__(master, **kwargs)

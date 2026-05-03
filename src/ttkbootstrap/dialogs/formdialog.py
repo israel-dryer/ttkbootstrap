@@ -17,6 +17,7 @@ from ttkbootstrap.widgets.primitives.frame import Frame
 from ttkbootstrap.widgets.types import Master
 from ttkbootstrap.constants import DEFAULT_MIN_COL_WIDTH as FORM_MIN_COL_WIDTH
 from ttkbootstrap.runtime.window_utilities import AnchorPoint
+from ttkbootstrap.core.localization import MessageCatalog
 
 
 class FormDialog:
@@ -52,7 +53,7 @@ class FormDialog:
             If provided, ensures width is at least the calculated minimum to prevent
             horizontal scrolling. Defaults to None (auto-calculate).
         maxsize: Maximum dialog window size as (width, height). Defaults to None.
-        resizable: Allow window resizing as (width, height) bools. Defaults to (True, True).
+        resizable: Allow window resizing as (width, height) bools. Defaults to False.
         alert: If True, plays system alert sound on show. Defaults to False.
         mode: Dialog interaction mode ("modal" or "popover"). Defaults to "modal".
     """
@@ -502,10 +503,9 @@ class FormDialog:
     def _normalize_buttons(self, buttons: Iterable[ButtonSpec | str] | None) -> list[DialogButton]:
         """Normalize button specifications, providing defaults if none given."""
         if buttons is None:
-            # Default buttons: Cancel and OK
             return [
-                DialogButton(text="button.cancel", role="cancel", result=None),
-                DialogButton(text="button.ok", role="primary", result="ok", default=True),
+                DialogButton(text=MessageCatalog.translate("button.cancel"), role="cancel", result=None),
+                DialogButton(text=MessageCatalog.translate("button.ok"), role="primary", result="ok", default=True),
             ]
 
         normalized: list[DialogButton] = []

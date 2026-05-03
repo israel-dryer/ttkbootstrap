@@ -28,7 +28,7 @@ import argparse
 import sys
 from typing import Sequence
 
-from ttkbootstrap.cli import add, build, doctor, list_cmd, promote, run, start
+from ttkbootstrap.cli import add, build, doctor, list_cmd, promote, run, screenshots, start
 from ttkbootstrap.cli.demo import run_demo
 
 
@@ -82,6 +82,7 @@ For more information on a command:
     add.add_parser(subparsers)
     list_cmd.add_parser(subparsers)
     doctor.add_parser(subparsers)
+    screenshots.add_parser(subparsers)
 
     # Demo command (kept for backwards compatibility)
     demo_parser = subparsers.add_parser(

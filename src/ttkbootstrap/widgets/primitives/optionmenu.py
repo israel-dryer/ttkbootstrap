@@ -1,3 +1,4 @@
+"""Themed single-selection dropdown menu widget."""
 from __future__ import annotations
 
 from tkinter import StringVar
@@ -15,6 +16,8 @@ if TYPE_CHECKING:
 
 
 class OptionMenuKwargs(TypedDict, total=False):
+    """Keyword-argument schema for `OptionMenu.__init__`."""
+
     command: Optional[Callable[[], Any]]
     image: Any
     icon: Any
@@ -62,9 +65,6 @@ class OptionMenu(MenuButton):
     ):
         """Create an OptionMenu backed by a ContextMenu.
 
-        !!! note "Events"
-            - `<<Change>>`: Fired when the selected value changes. `event.data = {'value': Any}`
-
         Args:
             master: Parent widget. If None, uses the default root window.
             value: Initial selected value.
@@ -73,7 +73,7 @@ class OptionMenu(MenuButton):
         Other Parameters:
             command (Callable): Callback invoked when the value changes via menu selection.
             image (PhotoImage): Tk image to display.
-            icon (str | dict): Bootstyle icon spec for the label content.
+            icon (str | dict): Optional icon spec integrated via the style system.
             icon_only (bool): Whether to reserve label padding when showing only an icon.
             compound (str): Placement of image relative to text.
             padding (int | tuple): Extra padding around the menubutton content.
@@ -103,6 +103,7 @@ class OptionMenu(MenuButton):
 
         self._bind_id = None
         self._menu_options = options if options is not None else []
+        self._command = kwargs.pop('command', None)
 
         # Store the textvariable if provided, or create a new one
         self._textvariable = kwargs.pop('textvariable', None)
@@ -111,11 +112,12 @@ class OptionMenu(MenuButton):
 
         super().__init__(master, text=value, **kwargs)
 
-        # Configure the menubutton to use the textvariable
+        # Configure the menubutton to use the textvariable; this routes through
+        # _delegate_textsignal which also calls _bind_change_event and saves _bind_id.
         self.configure(textvariable=self._textvariable)
 
-        # Bind signal to change event
-        self._bind_id = self._bind_change_event()
+        if self._command is not None:
+            self.on_changed(lambda e: self._command(e.data['value']))
 
         # Create menu items that update the shared variable
         self._context_menu = self._build_context_menu()
@@ -177,8 +179,17 @@ class OptionMenu(MenuButton):
         return self._textvariable.get()
 
     def set(self, value: Any) -> None:
-        """Set the current value (coerced to string)."""
-        self._textvariable.set(str(value))
+        """Set the current value (coerced to string).
+
+        Raises:
+            ValueError: If the value is not in the current options list.
+        """
+        str_value = str(value)
+        if str_value not in self._menu_options:
+            raise ValueError(
+                f"Value {str_value!r} is not in options; valid options: {self._menu_options}"
+            )
+        self._textvariable.set(str_value)
 
     @property
     def value(self) -> str:
@@ -225,7 +236,7 @@ class OptionMenu(MenuButton):
             return super()._delegate_textsignal()
         else:
             super()._delegate_textsignal(value)
-            self._bind_change_event()
+            self._bind_id = self._bind_change_event()
         return None
 
     @configure_delegate('show_dropdown_button')

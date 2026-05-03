@@ -1,3 +1,4 @@
+"""Scale widget — a ttk.Scale with theme support."""
 from __future__ import annotations
 
 from tkinter import ttk
@@ -16,6 +17,8 @@ if TYPE_CHECKING:
 
 
 class ScaleKwargs(TypedDict, total=False):
+    """Keyword arguments for Scale."""
+
     # Standard ttk.Scale options
     from_: float
     to: float
@@ -39,7 +42,7 @@ class ScaleKwargs(TypedDict, total=False):
 
 
 class Scale(SignalMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin, ttk.Scale):
-    """ttkbootstrap wrapper for `ttk.Scale` with bootstyle support."""
+    """ttkbootstrap Scale with theme support."""
 
     _ttk_base = ttk.Scale
 
@@ -49,7 +52,8 @@ class Scale(SignalMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin,
         Args:
             master: Parent widget. If None, uses the default root window.
 
-        Other Parameters:
+        Other Parameters
+        ----------------
             from_ (float): Minimum value.
             to (float): Maximum value.
             value (float): Initial value.
@@ -63,6 +67,7 @@ class Scale(SignalMixin, TTKWrapperBase, WidgetCapabilitiesMixin, TtkStateMixin,
             bootstyle (str): DEPRECATED - Use `accent` instead.
             surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
+
         """
         super().__init__(master, **kwargs)
 

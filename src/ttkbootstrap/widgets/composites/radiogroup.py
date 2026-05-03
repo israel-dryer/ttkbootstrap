@@ -1,3 +1,4 @@
+"""RadioGroup widget — a group of mutually exclusive radio buttons."""
 from __future__ import annotations
 
 from tkinter import StringVar
@@ -17,6 +18,8 @@ if TYPE_CHECKING:
 
 
 class RadioGroupKwargs(TypedDict, total=False):
+    """Keyword arguments for RadioGroup."""
+
     variable: Any
     signal: Signal[Any]
     value: str
@@ -44,6 +47,7 @@ class RadioGroup(Frame):
     Attributes:
         variable (Variable): The underlying tk.Variable for the selected value.
         signal (Signal): Signal for reactive programming and change subscriptions.
+
     """
 
     def __init__(self, master: Master = None, **kwargs: Unpack[RadioGroupKwargs]):
@@ -52,7 +56,8 @@ class RadioGroup(Frame):
         Args:
             master: Parent widget. If None, uses the default root window.
 
-        Other Parameters:
+        Other Parameters
+        ----------------
             orient (str): Layout orientation - 'horizontal' (default) or 'vertical'.
             accent (str): Accent token for styling (e.g., 'primary', 'success', 'danger').
                 Defaults to 'primary'.
@@ -70,6 +75,7 @@ class RadioGroup(Frame):
             padding (int | tuple): Frame padding. Defaults to 1.
             width (int): Requested width in pixels.
             height (int): Requested height in pixels.
+
         """
         # Extract RadioGroup-specific options before super().__init__
         self._orientation = kwargs.pop('orient', 'horizontal')
@@ -97,7 +103,11 @@ class RadioGroup(Frame):
             kwargs['padding'] = 1
 
         # Call super().__init__() - just Frame now
+        _saved_accent = self._accent
         super().__init__(master, style_options=style_options, **kwargs)
+        # Restore _accent — Frame.__init__ via the bootstyle wrapper resets it
+        # to None when 'accent' is not present in the kwargs it receives.
+        self._accent = _saved_accent
 
         # Handle variable/signal setup manually
         if signal_value is not None:
@@ -227,6 +237,7 @@ class RadioGroup(Frame):
 
         Raises:
             ValueError: If value is None or if a button with the same key already exists.
+
         """
         if value is None:
             raise ValueError("The 'value' argument is required.")
@@ -272,6 +283,7 @@ class RadioGroup(Frame):
         Raises:
             TypeError: If value is not a string.
             ValueError: If value doesn't exist in the group.
+
         """
         if not isinstance(value, str):
             raise TypeError(f"RadioGroup requires a string value, got {type(value).__name__}")
@@ -303,6 +315,7 @@ class RadioGroup(Frame):
 
         Raises:
             KeyError: If no button with the given key exists.
+
         """
         if key not in self._buttons:
             raise KeyError(f"No button with key '{key}'")
@@ -314,6 +327,7 @@ class RadioGroup(Frame):
 
         Returns:
             A tuple of all RadioButton instances in the group.
+
         """
         return tuple(self._buttons.values())
 
@@ -328,6 +342,7 @@ class RadioGroup(Frame):
 
         Raises:
             KeyError: If no button with the given key exists.
+
         """
         if key not in self._buttons:
             raise KeyError(f"No button with key '{key}'")
@@ -343,6 +358,7 @@ class RadioGroup(Frame):
 
         Returns:
             If option is provided, returns the value of that option.
+
         """
         button = self.item(key)
         if option is not None:
@@ -446,6 +462,7 @@ class RadioGroup(Frame):
 
         Returns:
             A tuple of all button keys in the group.
+
         """
         return tuple(self._buttons.keys())
 
@@ -454,8 +471,9 @@ class RadioGroup(Frame):
 
         Returns:
             A tuple of all values that can be selected.
+
         """
-        return tuple(self._buttons.keys())
+        return tuple(b.cget("value") for b in self._buttons.values())
 
     def __len__(self) -> int:
         """Return the number of buttons in the group."""

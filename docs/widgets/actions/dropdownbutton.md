@@ -4,14 +4,26 @@ title: DropdownButton
 
 # DropdownButton
 
-`DropdownButton` is a **button-first** control that opens a menu of related actions.
-Use it when the primary action is still a button click, but you want a secondary list of choices available on demand.
+A `DropdownButton` looks and acts like a [Button](button.md), but
+clicking it opens a menu of related actions. Reach for one when a
+single toolbar slot needs to expose more than one choice — "File",
+"Tools", "More actions", or a kebab menu in a card header.
+
+The menu is a [ContextMenu](contextmenu.md) under the hood, so its
+items are declared with `ContextMenuItem` and support icons,
+shortcuts, separators, checkbuttons, and radiobuttons just like a
+context menu does.
+
+<figure markdown>
+![dropdownbutton](../../assets/dark/widgets-dropdownbutton.png#only-dark)
+![dropdownbutton](../../assets/light/widgets-dropdownbutton.png#only-light)
+</figure>
 
 ---
 
-## Quick start
+## Basic usage
 
-Provide menu items as `ContextMenuItem` entries. The button can also have its own `command` for the "main" action.
+Build a list of `ContextMenuItem` entries and pass them as `items=`.
 
 ```python
 import ttkbootstrap as ttk
@@ -19,45 +31,46 @@ import ttkbootstrap as ttk
 app = ttk.App()
 
 items = [
-    ttk.ContextMenuItem(text="Open", command=lambda: print("Open")),
-    ttk.ContextMenuItem(text="Rename", command=lambda: print("Rename")),
-    ttk.ContextMenuItem(separator=True),
-    ttk.ContextMenuItem(text="Delete", accent="danger", command=lambda: print("Delete")),
+    ttk.ContextMenuItem("command", text="Open", command=lambda: print("Open")),
+    ttk.ContextMenuItem("command", text="Rename", command=lambda: print("Rename")),
+    ttk.ContextMenuItem("separator"),
+    ttk.ContextMenuItem("command", text="Delete", command=lambda: print("Delete")),
 ]
 
-ttk.DropdownButton(
-    app,
-    text="File",
-    items=items,
-    command=lambda: print("Primary action"),
-).pack(padx=20, pady=20)
+ttk.DropdownButton(app, text="File", items=items).pack(padx=20, pady=20)
 
 app.mainloop()
 ```
 
----
-
-## When to use
-
-Use `DropdownButton` when:
-
-- you have a **primary action** plus a small set of related actions
-- you want the options to be **discoverable**, but not always visible
-- the control belongs in a **toolbar** or dense header area
-
-### Consider a different control when…
-
-- you want a *single* action → use [Button](button.md)
-- the control is primarily "a menu" (not a button) → use [MenuButton](menubutton.md)
-- the menu must be shown on right-click / contextual interaction → use [ContextMenu](contextmenu.md)
+You can also build the menu after construction with `add_command()`,
+`add_separator()`, `add_checkbutton()`, `add_radiobutton()`, or
+`add_item()`. The two styles are equivalent — prefer `items=` when the
+set is known up front.
 
 ---
 
-## Appearance
+## Common options
 
-`DropdownButton` supports semantic colors and variants through `accent` and `variant`.
+| Option | Purpose |
+|---|---|
+| `text` | Button label. Treated as a localization key when localization is on. |
+| `items` | Initial list of `ContextMenuItem` entries. |
+| `command` | Optional callback fired on the *button* click — runs *alongside* opening the menu, not instead of it. |
+| `accent` | Semantic color: `primary`, `secondary`, `success`, `info`, `warning`, `danger`, `light`, `dark`. |
+| `variant` | Visual weight: `solid` (default), `outline`, `ghost`, `link`, `text`. |
+| `density` | `default` or `compact`. Propagates to the dropdown menu. |
+| `surface` | Optional surface token; otherwise inherits from the parent. |
+| `icon` / `compound` / `icon_only` | Icon on the button face. |
+| `show_dropdown_button` | Hide the chevron with `False` (kebab pattern). |
+| `dropdown_button_icon` | Override the chevron with a custom icon name. |
+| `popdown_options` | Forwarded to the underlying ContextMenu (`anchor`, `attach`, `offset`). |
+| `textsignal` | `Signal[str]` driving a reactive button label. |
 
-!!! link "See [Design System → Variants](../../design-system/variants.md) for how variants map consistently across widgets."
+### Accents and variants
+
+`accent` and `variant` follow the same conventions as
+[Button](button.md) — the same accent token reads the same way across
+every ttkbootstrap widget.
 
 ```python
 ttk.DropdownButton(app, text="Primary", accent="primary", items=[]).pack(pady=4)
@@ -65,83 +78,244 @@ ttk.DropdownButton(app, text="Outline", accent="primary", variant="outline", ite
 ttk.DropdownButton(app, text="Ghost", accent="primary", variant="ghost", items=[]).pack(pady=4)
 ```
 
----
+!!! link "See [Design System → Variants](../../design-system/variants.md) for how accents and variants compose across widgets."
 
-## Examples & patterns
+### Density
 
-### Adding icons to items
+`density="compact"` reduces padding on the button and propagates the
+same density to the dropdown menu, so a compact toolbar opens a
+compact menu.
 
-`ContextMenuItem` supports icons per entry.
+```python
+ttk.DropdownButton(app, text="More", density="compact", items=[]).pack()
+```
+
+### Chevron
+
+A chevron sits to the right of the label by default, signaling the
+dropdown affordance.
+
+- `show_dropdown_button=False` removes it — useful for a kebab/ellipsis
+  button where the icon already conveys "menu".
+- `dropdown_button_icon="ellipsis-vertical"` swaps the chevron for any
+  other icon name.
+
+```python
+ttk.DropdownButton(
+    app,
+    icon="ellipsis-vertical",
+    icon_only=True,
+    show_dropdown_button=False,
+    items=[],
+).pack()
+```
+
+### Icons on items
+
+Each `ContextMenuItem` accepts its own `icon=`. Items without an icon
+still align with items that have one — the menu reserves the icon
+column.
 
 ```python
 items = [
-    ttk.ContextMenuItem(text="Settings", icon="gear", command=lambda: print("Settings")),
-    ttk.ContextMenuItem(text="Help", icon="circle-help", command=lambda: print("Help")),
+    ttk.ContextMenuItem("command", text="Settings", icon="gear",
+                        command=lambda: print("Settings")),
+    ttk.ContextMenuItem("command", text="Help", icon="circle-help",
+                        command=lambda: print("Help")),
 ]
 ttk.DropdownButton(app, text="More", items=items).pack(pady=10)
 ```
 
-!!! link "See [Icons & Imagery](../../capabilities/icons-and-imagery.md) for icon sizing, DPI handling, and recoloring behavior."
+!!! link "See [Icons & Imagery](../../capabilities/icons/index.md) for icon sizing, DPI handling, and recoloring behavior."
 
-### Handling item clicks
+### Shortcuts on items
 
-You can attach callbacks at item creation time, or subscribe to item-click events on the widget.
+`add_command()` accepts a `shortcut=` string (e.g., `"Ctrl+S"`) or a
+key registered with the shortcuts service. The display string is
+rendered right-aligned on the item; binding the actual accelerator on
+a window is the caller's job.
 
 ```python
-btn = ttk.DropdownButton(app, text="Actions", items=items).pack(pady=10)
+btn = ttk.DropdownButton(app, text="File")
+btn.pack()
 
-# Optional: listen for item clicks at the widget level
-# (useful if you want centralized routing/logging).
-btn.on_item_click(lambda item: print("Clicked:", item.text))
+btn.add_command(text="Save", shortcut="Ctrl+S",
+                command=lambda: print("save"))
+btn.add_command(text="Save As…", shortcut="Ctrl+Shift+S",
+                command=lambda: print("save as"))
 ```
 
-!!! link "See [Callbacks](../../capabilities/callbacks.md) for how ttkbootstrap command callbacks are structured."
+### Positioning the menu
+
+`popdown_options=` is forwarded to the underlying ContextMenu. Use it
+to override the default `anchor` / `attach` / `offset` placement when
+the menu would otherwise clip a screen edge.
+
+```python
+ttk.DropdownButton(
+    app,
+    text="More",
+    items=items,
+    popdown_options={"anchor": "ne", "attach": "se", "offset": (0, 4)},
+).pack()
+```
+
+!!! link "See [ContextMenu → Attach to a widget](contextmenu.md#attach-to-a-widget-instead-of-the-cursor) for the anchor/attach/offset model."
 
 ---
 
 ## Behavior
 
-- The dropdown opens relative to the button and closes when the user clicks away.
-- Item commands fire on click, and the menu closes afterward (typical desktop behavior).
+- **Click**, **Space**, **Enter**, or **Numpad Enter** opens the menu.
+- A `command=` callback (if set on the button) also fires on click —
+  it runs alongside opening the menu, not instead of it.
+- Once the menu is open, **↑** / **↓** move highlight, **Enter**
+  invokes the highlighted item, and **Esc** or a click outside closes
+  the menu.
+- A disabled or readonly DropdownButton ignores activation — neither
+  `command` nor the menu fires.
+- Hover, focus, and pressed visuals come from the active theme; no
+  extra wiring is required.
 
 !!! link "See [State & Interaction](../../capabilities/state-and-interaction.md) for focus, hover, and disabled behavior across widgets."
 
 ---
 
-## Localization
+## Events
 
-If localization is enabled, menu labels can be message tokens just like widget `text`.
+The widget exposes two activation hooks:
+
+- **`command=`** on the button itself — runs every time the button is
+  clicked, *in addition to* opening the menu. Useful for telemetry or
+  "open this view" affordances.
+- **Per-item `command=`** on each `ContextMenuItem` — runs when the
+  user picks that item.
+
+`on_item_click(callback)` registers a single handler that fires for
+*any* item activation. The callback receives a dict
+`{"type": ..., "text": ..., "value": ...}` — useful for centralized
+logging or fan-out routing.
+
+```python
+btn = ttk.DropdownButton(app, text="Actions", items=items)
+btn.pack(pady=10)
+
+def route(info):
+    # info == {"type": "command", "text": "Open", "value": None}
+    print("Clicked:", info["text"])
+
+btn.on_item_click(route)
+```
+
+The widget-level callback runs *in addition to* any per-item
+`command=` — they don't replace each other.
+
+---
+
+## Patterns
+
+### Building items at runtime
+
+Mutating methods are forwarded from the underlying
+[ContextMenu](contextmenu.md). Items can carry a stable `key=` so they
+can be looked up later.
+
+```python
+btn = ttk.DropdownButton(app, text="View")
+btn.pack()
+
+btn.add_command(text="Compact", key="compact", command=lambda: print("compact"))
+btn.add_command(text="Comfortable", key="comfortable", command=lambda: print("comfy"))
+btn.add_separator()
+btn.add_checkbutton(text="Show grid", key="grid", command=lambda: print("toggle grid"))
+
+# rename an item by key
+btn.configure_item("compact", text="Tight")
+
+# replace the whole set
+btn.items([
+    ttk.ContextMenuItem("command", text="Reset", command=lambda: print("reset")),
+])
+```
+
+---
+
+## Localization & reactivity
+
+### Localized labels
+
+When localization is enabled, both the button's `text=` and each
+item's `text=` are resolved as message keys through the active
+catalog. Labels update automatically when the locale changes at
+runtime; if a key has no translation, the literal string is shown — so
+literal strings keep working whether or not localization is on.
 
 ```python
 items = [
-    ttk.ContextMenuItem(text="menu.open", command=lambda: ...),
-    ttk.ContextMenuItem(text="menu.delete", command=lambda: ...),
+    ttk.ContextMenuItem("command", text="menu.open", command=lambda: print("open")),
+    ttk.ContextMenuItem("command", text="menu.delete", command=lambda: print("delete")),
 ]
 ttk.DropdownButton(app, text="button.file", items=items).pack()
 ```
 
-!!! link "See [Localization](../../capabilities/localization.md) for how message tokens are resolved and how language switching works."
+### Reactive labels
+
+Bind a `Signal[str]` via `textsignal` when the button label needs to
+update dynamically.
+
+```python
+label = ttk.Signal("View")
+ttk.DropdownButton(app, textsignal=label, items=[]).pack()
+
+label.set("Layout")
+```
+
+!!! link "See [Signals](../../capabilities/signals/index.md) for reactive bindings, and [Localization](../../capabilities/localization.md) for catalogs and locale switching."
 
 ---
 
-## Additional resources
+## When should I use DropdownButton?
 
-### Related widgets
+Use `DropdownButton` when one toolbar or header slot needs to expose a
+small set of related actions and the user expects to *click* it, not
+right-click it.
 
-- [Button](button.md)
-- [MenuButton](menubutton.md)
-- [ContextMenu](contextmenu.md)
+Prefer a different control when:
 
-### Framework concepts
+- a single action is enough → use [Button](button.md).
+- the control is conceptually "a menu" with no primary action, like a
+  classic menu-bar entry → use [MenuButton](menubutton.md).
+- the menu should appear on right-click on top of arbitrary content →
+  use [ContextMenu](contextmenu.md).
+- the user picks one option from a small set that should stay visible →
+  use [RadioGroup](../selection/radiogroup.md) or
+  [ToggleGroup](../selection/togglegroup.md).
+- the "options" need to feed a value into a form →
+  use [OptionMenu](../selection/optionmenu.md) or
+  [SelectBox](../inputs/selectbox.md).
 
-- [Design System → Variants](../../design-system/variants.md)
-- [Design System → Icons](../../design-system/icons.md)
-- [Icons & Imagery](../../capabilities/icons-and-imagery.md)
-- [Callbacks](../../capabilities/callbacks.md)
-- [State & Interaction](../../capabilities/state-and-interaction.md)
-- [Localization](../../capabilities/localization.md)
+---
 
-### API reference
+## Related widgets
 
-- [`ttkbootstrap.DropdownButton`](../../reference/widgets/DropdownButton.md)
-- [`ttkbootstrap.ContextMenuItem`](../../reference/widgets/ContextMenuItem.md)
+- [Button](button.md) — single-action trigger.
+- [MenuButton](menubutton.md) — opens a Tk menu (no primary action).
+- [ContextMenu](contextmenu.md) — same menu, shown on right-click instead of left.
+- [ButtonGroup](buttongroup.md) — connected row of related buttons.
+- [OptionMenu](../selection/optionmenu.md), [SelectBox](../inputs/selectbox.md) — pick a value for a form.
+
+---
+
+## Reference
+
+- **API reference:**
+    - [`ttkbootstrap.DropdownButton`](../../reference/widgets/DropdownButton.md)
+    - [`ttkbootstrap.ContextMenuItem`](../../reference/widgets/ContextMenuItem.md)
+    - [`ttkbootstrap.ContextMenu`](../../reference/widgets/ContextMenu.md)
+- **Related guides:**
+    - [Design System → Variants](../../design-system/variants.md)
+    - [Design System → Icons](../../design-system/icons.md)
+    - [Icons & Imagery](../../capabilities/icons/index.md)
+    - [Signals](../../capabilities/signals/index.md)
+    - [Localization](../../capabilities/localization.md)
+    - [State & Interaction](../../capabilities/state-and-interaction.md)

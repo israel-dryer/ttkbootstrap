@@ -4,602 +4,453 @@ title: Reactivity
 
 # Reactivity
 
-This guide explains how to connect widgets and application state using signals, callbacks, and events.
+Reactivity is how widgets stay in sync with application state without
+hand-written update plumbing. ttkbootstrap's reactivity primitive is
+the **Signal** — an observable value that widgets bind to and that
+notifies subscribers when it changes.
+
+If you've used React's `useState`, Vue's `ref`, or SwiftUI's
+`@State` / `@Published`, signals will look familiar: a single source
+of truth that the UI reads from, declarative bindings instead of
+imperative `widget.configure(text=...)` calls.
 
 ---
 
-## Three Mechanisms
+## The problem signals solve
 
-ttkbootstrap provides three ways to respond to changes:
+Without signals, keeping a UI in sync with state means writing the
+same shape of glue code over and over:
 
-| Mechanism | Purpose | Use For |
-|-----------|---------|---------|
-| **Signals** | Reactive state | Values that multiple widgets share |
-| **Callbacks** | Direct actions | Button clicks, menu selections |
-| **Events** | Low-level input | Keyboard, mouse, focus |
+```python
+# Imperative — every consumer needs an explicit update
+def on_name_keyrelease(event):
+    name = entry.get()
+    greeting_label.configure(text=f"Hello, {name}")
+    title_label.configure(text=f"Profile: {name}")
+    save_button.configure(state="normal" if name else "disabled")
 
-Each has its place. Understanding when to use each makes applications cleaner.
+entry.bind("<KeyRelease>", on_name_keyrelease)
+```
 
----
+Every new consumer adds another line to the handler. The state
+(`name`) is implicit — it lives in the entry widget, and the rest of
+the UI has to *ask* for it.
 
-## Signals
-
-Signals represent **state that can be observed**.
+With a signal, state becomes explicit and consumers attach themselves
+to it:
 
 ```python
 import ttkbootstrap as ttk
 
 app = ttk.App()
 
-# Create a signal
 name = ttk.Signal("")
 
-# Connect an entry to the signal
-entry = ttk.TextEntry(app, signal=name)
-entry.pack(padx=20, pady=10)
-
-# React to signal changes
-def on_name_changed(value):
-    print(f"Name changed to: {value}")
-
-name.subscribe(on_name_changed)
+ttk.TextEntry(app, textsignal=name).pack()
+ttk.Label(app, textvariable=name.map(lambda n: f"Hello, {n}")).pack()
+ttk.Label(app, textvariable=name.map(lambda n: f"Profile: {n}")).pack()
 
 app.mainloop()
 ```
 
-Key characteristics:
+The entry writes to `name`. The labels read from derived signals. No
+event handler is involved, and adding another consumer never touches
+existing code.
 
-- Signals hold a value that changes over time
-- Multiple widgets can share the same signal
-- Subscribers are notified when the value changes
-- Widgets don't know about each other—they only know the signal
+---
 
-### Creating Signals
+## Creating a signal
+
+A signal is constructed with an initial value. The value's Python
+type determines the underlying tk.Variable (`StringVar`, `IntVar`,
+`DoubleVar`, `BooleanVar`, or a `set`-valued variable).
 
 ```python
-# String signal
-name = ttk.Signal("")
+import ttkbootstrap as ttk
 
-# Boolean signal
-enabled = ttk.Signal(False)
+name = ttk.Signal("")          # str-backed
+count = ttk.Signal(0)          # int-backed
+ratio = ttk.Signal(0.0)        # float-backed
+enabled = ttk.Signal(True)     # bool-backed
+tags = ttk.Signal({"a", "b"})  # set-backed
+```
 
-# Numeric signal
+The type is locked at construction. `set()` enforces an exact type
+match (no implicit `int → float` or `bool → int` coercion):
+
+```python
 count = ttk.Signal(0)
-
-# Any type
-selection = ttk.Signal(None)
+count.set(42)      # OK
+count.set(1.5)     # TypeError — expected int, got float
 ```
 
-### Reading and Writing
+If the initial value isn't yet known, pick the empty value of the
+right type (`""`, `0`, `0.0`, `False`) rather than `None`.
 
-```python
-# Get current value
-current = name.get()
+---
 
-# Set value (notifies subscribers)
-name.set("Alice")
-
-# Alternative property access
-current = name.value
-name.value = "Alice"
-```
-
-### Subscribing
-
-```python
-def on_changed(value):
-    print(f"New value: {value}")
-
-# Subscribe
-name.subscribe(on_changed)
-
-# Unsubscribe
-name.unsubscribe(on_changed)
-```
-
-Subscribers receive the new value whenever it changes.
-
-### Connecting Widgets
-
-Many widgets accept a `signal` parameter:
+## Reading and writing
 
 ```python
 name = ttk.Signal("")
 
-# Entry updates the signal
-entry = ttk.TextEntry(app, signal=name)
+current = name.get()   # read
+name.set("Alice")      # write — notifies subscribers
 
-# Label displays the signal
-label = ttk.Label(app, textvariable=name)
+# Calling the signal is equivalent to .get()
+current = name()
 ```
 
-When the entry changes, the label updates automatically.
+Setting the same value the signal already holds is a no-op —
+subscribers are not notified again. This makes it safe to write
+through to a signal from a subscriber without creating loops, as long
+as the value actually settles.
 
-### Mapping and Transforming
+---
 
-Create **derived signals** by mapping a source signal through a transform function:
+## Binding to widgets
+
+Most ttkbootstrap input widgets accept a signal directly. There are
+two parameter names depending on what the widget represents:
+
+- `textsignal=` for text-valued widgets — `TextEntry`,
+  `PasswordEntry`, `NumericEntry`, `DateEntry`, `SpinnerEntry`,
+  `Label`, `Button`.
+- `signal=` for value-valued widgets — `Scale`, `CheckButton`,
+  `Radiobutton`, `Spinbox`, `Combobox`, `Progressbar`.
 
 ```python
 import ttkbootstrap as ttk
 
 app = ttk.App()
 
-# Source signal
-celsius = ttk.Signal(0)
+name = ttk.Signal("")
+volume = ttk.Signal(0.0)
+muted = ttk.Signal(False)
 
-# Derived signal: transforms celsius to fahrenheit
+ttk.TextEntry(app, textsignal=name).pack()
+ttk.Scale(app, from_=0, to=100, signal=volume).pack(fill="x")
+ttk.CheckButton(app, text="Mute", signal=muted).pack()
+
+app.mainloop()
+```
+
+Binding is two-way: when the user types in the entry, `name` updates;
+when you call `name.set("Alice")` from code, the entry updates.
+
+### Signals as `textvariable=` / `variable=`
+
+Signals are duck-typed as tk variables, so they also work in the
+classic `textvariable=` and `variable=` slots — including on widgets
+that don't have a dedicated `textsignal=` parameter:
+
+```python
+name = ttk.Signal("")
+ttk.Label(app, textvariable=name).pack()   # works directly
+```
+
+Use `textsignal=` / `signal=` when constructing widgets that support
+them (clearer intent), and fall back to `textvariable=` / `variable=`
+on widgets that don't.
+
+### Reaching the signal after construction
+
+Every signal-aware widget exposes its bound signal as a property,
+created lazily if you didn't pass one in:
+
+```python
+entry = ttk.TextEntry(app)
+entry.textsignal.subscribe(lambda v: print(v))   # creates one on demand
+
+scale = ttk.Scale(app, from_=0, to=100)
+scale.signal.set(50.0)
+```
+
+This is useful when you want to keep widget construction terse and
+attach reactivity afterwards.
+
+---
+
+## Deriving signals
+
+Application state is rarely flat. A username drives a validation
+flag; a price drives a formatted display string; a list of items
+drives a count. `Signal.map()` creates a **derived signal** that
+recomputes whenever the source changes:
+
+```python
+celsius = ttk.Signal(0.0)
 fahrenheit = celsius.map(lambda c: c * 9/5 + 32)
 
-# UI
-ttk.Label(app, text="Celsius:").pack()
-ttk.Scale(app, from_=0, to=100, variable=celsius).pack(fill="x", padx=20)
-
-ttk.Label(app, text="Fahrenheit:").pack(pady=(20, 0))
+ttk.Scale(app, from_=0, to=100, signal=celsius).pack(fill="x")
 ttk.Label(app, textvariable=fahrenheit).pack()
-
-app.mainloop()
 ```
 
-When `celsius` changes, `fahrenheit` updates automatically with the transformed value.
+The derived signal is read-only from the application's perspective —
+its value is determined entirely by the source and the transform.
 
-#### Common Mapping Patterns
+`map()` returns another `Signal`, so transforms compose:
 
-**Formatting for display:**
+```python
+raw = ttk.Signal("  hello world  ")
+cleaned = raw.map(str.strip).map(str.title)   # "Hello World"
+```
+
+### Common map patterns
+
+**Format for display:**
 
 ```python
 price = ttk.Signal(29.99)
-
-# Format as currency
-display_price = price.map(lambda p: f"${p:.2f}")
-
-ttk.Label(app, textvariable=display_price)  # Shows "$29.99"
+price_text = price.map(lambda p: f"${p:.2f}")
+ttk.Label(app, textvariable=price_text).pack()
 ```
 
 **Boolean to text:**
 
 ```python
-is_enabled = ttk.Signal(True)
-
-# Map boolean to descriptive text
-status_text = is_enabled.map(lambda v: "Enabled" if v else "Disabled")
-
-ttk.Label(app, textvariable=status_text)
+online = ttk.Signal(True)
+status = online.map(lambda v: "Online" if v else "Offline")
+ttk.Label(app, textvariable=status).pack()
 ```
 
-**Validation state:**
+**Validation flag and message:**
 
 ```python
 username = ttk.Signal("")
-
-# Derive validity
 is_valid = username.map(lambda u: len(u) >= 3)
-
-# Derive message
-validation_msg = username.map(
-    lambda u: "" if len(u) >= 3 else "Username must be at least 3 characters"
+hint = username.map(
+    lambda u: "" if len(u) >= 3 else "At least 3 characters"
 )
 ```
 
-**Chaining transforms:**
+### Combining multiple signals
 
-```python
-raw_input = ttk.Signal("  hello world  ")
-
-# Chain multiple transforms
-cleaned = raw_input.map(str.strip).map(str.title)
-
-# cleaned.get() returns "Hello World"
-```
-
-#### Combining Multiple Signals
-
-For transformations that depend on multiple signals, use `subscribe` with manual updates:
+`map()` operates on a single source. To derive a value from two or
+more signals, subscribe to each and write into a third:
 
 ```python
 width = ttk.Signal(10)
 height = ttk.Signal(20)
 area = ttk.Signal(0)
 
-def update_area(*_):
+def recompute(_=None):
     area.set(width.get() * height.get())
 
-width.subscribe(update_area)
-height.subscribe(update_area)
-update_area()  # Initialize
+width.subscribe(recompute)
+height.subscribe(recompute)
+recompute()   # initialize
 ```
 
-Or create a helper for common cases:
+If you find yourself doing this often, lift it into a helper:
 
 ```python
 def combine(signals, transform):
-    """Create a signal that combines multiple source signals."""
+    """Derive a signal from multiple sources."""
     result = ttk.Signal(transform(*[s.get() for s in signals]))
-
-    def update(*_):
+    def update(_=None):
         result.set(transform(*[s.get() for s in signals]))
-
     for s in signals:
         s.subscribe(update)
-
     return result
 
-# Usage
-width = ttk.Signal(10)
-height = ttk.Signal(20)
 area = combine([width, height], lambda w, h: w * h)
 ```
 
-!!! link "Signal API"
-    See [`ttkbootstrap.Signal`](../reference/utils/Signal.md) for all methods.
-
 ---
 
-## Callbacks
+## Side effects
 
-Callbacks handle **discrete actions**.
+When something needs to happen in response to a change — log a value,
+hit an API, persist to disk — use `subscribe()`. The callback
+receives the new value:
 
 ```python
 import ttkbootstrap as ttk
 
 app = ttk.App()
 
-def on_submit():
-    print("Form submitted!")
+query = ttk.Signal("")
 
-ttk.Button(app, text="Submit", command=on_submit).pack(pady=20)
+def search(value):
+    print(f"Searching for: {value!r}")
+
+query.subscribe(search)
+
+ttk.TextEntry(app, textsignal=query).pack()
 
 app.mainloop()
 ```
 
-Callbacks are:
-
-- fired once per action
-- tied to a specific widget
-- good for commands, not ongoing state
-
-### Common Callback Patterns
-
-#### Button Click
+`subscribe()` returns a **subscription id** (a string). Hold onto it
+if you ever need to detach the callback:
 
 ```python
-def save_file():
-    # ... save logic ...
-    pass
-
-ttk.Button(app, text="Save", command=save_file)
+sub_id = query.subscribe(search)
+# ... later ...
+query.unsubscribe(sub_id)
 ```
 
-#### With Arguments
+To run the callback once with the current value at the moment of
+subscription (useful for initialization), pass `immediate=True`:
 
 ```python
-def delete_item(item_id):
-    print(f"Deleting {item_id}")
-
-# Use lambda to pass arguments
-ttk.Button(app, text="Delete", command=lambda: delete_item(42))
+query.subscribe(search, immediate=True)
 ```
 
-#### Reading State in Callbacks
+To clear every subscriber at once — typically when tearing down a
+view or test fixture — call `unsubscribe_all()`:
 
 ```python
-name = ttk.Signal("")
-
-def on_submit():
-    current_name = name.get()
-    print(f"Submitting: {current_name}")
-
-entry = ttk.TextEntry(app, signal=name)
-button = ttk.Button(app, text="Submit", command=on_submit)
+query.unsubscribe_all()
 ```
-
-The callback reads the signal's current value when invoked.
 
 ---
 
-## Events
+## Two-way binding and shared state
 
-Events handle **low-level input** like keyboard and mouse.
+Because widget binding is two-way, the same signal can drive several
+inputs and several displays at once. There's no preferred "source"
+widget — whichever one was last written to wins, and everyone else
+sees the new value.
 
 ```python
 import ttkbootstrap as ttk
 
 app = ttk.App()
 
-entry = ttk.Entry(app)
-entry.pack(padx=20, pady=20)
+shared = ttk.Signal("type here")
 
-def on_key(event):
-    print(f"Key pressed: {event.keysym}")
-
-entry.bind("<Key>", on_key)
+ttk.TextEntry(app, textsignal=shared).pack(pady=5)
+ttk.TextEntry(app, textsignal=shared).pack(pady=5)
+ttk.Label(app, textvariable=shared.map(str.upper)).pack(pady=5)
 
 app.mainloop()
 ```
 
-Events are:
-
-- tied to Tk's event system
-- useful for keyboard shortcuts, mouse gestures
-- more complex than signals or callbacks
-
-### Common Events
-
-```python
-# Keyboard
-widget.bind("<Return>", on_enter)
-widget.bind("<Escape>", on_escape)
-widget.bind("<Control-s>", on_save)
-
-# Mouse
-widget.bind("<Button-1>", on_left_click)
-widget.bind("<Double-Button-1>", on_double_click)
-widget.bind("<Enter>", on_mouse_enter)  # Hover
-widget.bind("<Leave>", on_mouse_leave)
-
-# Focus
-widget.bind("<FocusIn>", on_focus)
-widget.bind("<FocusOut>", on_blur)
-```
-
-### Virtual Events
-
-Some widgets emit virtual events for semantic actions:
-
-```python
-def on_selection_changed(event):
-    print("Selection changed")
-
-listview.bind("<<SelectionChange>>", on_selection_changed)
-```
-
-#### Convenience Methods
-
-Many ttkbootstrap widgets provide `on_*` and `off_*` methods that abstract common event bindings. **Prefer these over manual binding when available**:
-
-```python
-# Preferred: use convenience methods
-def handle_change(event):
-    print("Value changed:", event.data)
-
-# on_* returns a bind_id for later removal
-bind_id = entry.on_changed(handle_change)
-
-# Later, to remove the binding, pass the bind_id
-entry.off_changed(bind_id)
-```
-
-This is cleaner than manual binding:
-
-```python
-# Manual binding (works, but prefer on_* methods)
-bind_id = entry.bind("<<Changed>>", handle_change)
-entry.unbind("<<Changed>>", bind_id)
-```
-
-#### Generating Virtual Events
-
-Use `event_generate` to programmatically emit a virtual event:
-
-```python
-# Emit an event on a widget
-widget.event_generate("<<MyCustomEvent>>")
-```
-
-**Event scope**: Virtual events propagate up the widget hierarchy. A binding on a parent widget will receive events generated by its children:
-
-```python
-# Parent binds to event
-app.bind("<<FormSubmitted>>", on_form_submitted)
-
-# Child generates event — parent receives it
-submit_button.event_generate("<<FormSubmitted>>")
-```
-
-This enables loose coupling: children emit events, parents handle them.
-
-#### Enhanced Virtual Events with Data
-
-ttkbootstrap extends Tk's virtual events to support **passing data** through the event object:
-
-```python
-# Generate event with data
-widget.event_generate("<<ItemSelected>>", data={"id": 42, "name": "Alice"})
-
-# Handler receives data in event.data
-def on_item_selected(event):
-    print(f"Selected: {event.data['name']} (ID: {event.data['id']})")
-
-widget.bind("<<ItemSelected>>", on_item_selected)
-```
-
-This is particularly useful for:
-
-- Passing selected items from lists or tables
-- Communicating form values on submission
-- Custom widget-to-parent communication
-
-```python
-# Real-world example: custom list widget
-class ItemList(ttk.Frame):
-    def select_item(self, item):
-        self._selected = item
-        # Emit event with the selected item as data
-        self.event_generate("<<ItemSelected>>", data=item)
-
-# Parent handles the event
-def on_selected(event):
-    item = event.data
-    print(f"User selected: {item}")
-
-item_list = ItemList(app)
-item_list.bind("<<ItemSelected>>", on_selected)
-```
-
-!!! link "Events & Bindings"
-    See [Platform → Events & Bindings](../platform/events-and-bindings.md) for the full event system.
+Editing either entry updates the other and the uppercase label —
+because they're all looking at the same signal.
 
 ---
 
-## Choosing the Right Mechanism
+## Wrapping an existing tk.Variable
 
-### Use Signals When
-
-- Multiple widgets need the same value
-- State should persist across interactions
-- You want reactive updates
-
-```python
-# Good: shared username across form
-username = ttk.Signal("")
-entry = ttk.TextEntry(app, signal=username)
-preview = ttk.Label(app, textvariable=username)
-```
-
-### Use Callbacks When
-
-- A button or action triggers something
-- The action happens once, not continuously
-- There's a clear "do this" moment
+If you already have a `tk.StringVar` (or any other tk variable) —
+maybe from third-party code, or from a widget you constructed before
+deciding you wanted reactivity — wrap it with
+`Signal.from_variable()`:
 
 ```python
-# Good: button submits form
-ttk.Button(app, text="Submit", command=submit_form)
-```
-
-### Use Events When
-
-- You need keyboard shortcuts
-- You need mouse interaction details
-- You're handling focus or hover
-
-```python
-# Good: keyboard shortcut
-app.bind("<Control-s>", lambda e: save_file())
-```
-
----
-
-## Combined Patterns
-
-### Form with Submit
-
-```python
+import tkinter as tk
 import ttkbootstrap as ttk
 
-app = ttk.App()
+var = tk.StringVar(value="hello")
+signal = ttk.Signal.from_variable(var)
 
-# State
-username = ttk.Signal("")
-password = ttk.Signal("")
-
-# UI
-form = ttk.PackFrame(app, direction="vertical", gap=10, padding=20)
-form.pack(fill="both", expand=True)
-
-ttk.Label(form, text="Username:").pack()
-ttk.TextEntry(form, signal=username).pack()
-
-ttk.Label(form, text="Password:").pack()
-ttk.PasswordEntry(form, signal=password).pack()
-
-# Submit reads current signal values
-def on_submit():
-    print(f"Login: {username.get()} / {password.get()}")
-
-ttk.Button(form, text="Login", command=on_submit).pack()
-
-app.mainloop()
+signal.subscribe(lambda v: print("changed:", v))
+var.set("world")   # subscribers are notified
 ```
 
-### Live Preview
+The signal and the variable share storage, so writes through either
+side propagate.
+
+---
+
+## Pitfalls
+
+**Hold the subscription id if you need to detach.** `unsubscribe()`
+takes the id returned by `subscribe()`, not the callback function.
+Passing the callback silently does nothing.
 
 ```python
-import ttkbootstrap as ttk
-
-app = ttk.App()
-
-# Signal for shared state
-content = ttk.Signal("Type here...")
-
-main = ttk.PackFrame(app, direction="horizontal", gap=20, padding=20)
-main.pack(fill="both", expand=True)
-
-# Editor
-editor = ttk.ScrolledText(main, width=40, height=10)
-editor.pack(fill="both", expand=True)
-
-# Preview updates reactively
-preview = ttk.Label(main, wraplength=200)
-preview.pack()
-
-# Connect editor changes to preview
-def sync_to_preview(event=None):
-    preview.configure(text=editor.get("1.0", "end-1c"))
-
-editor.bind("<KeyRelease>", sync_to_preview)
-
-app.mainloop()
+fid = signal.subscribe(handler)   # keep fid
+signal.unsubscribe(fid)            # detach using fid
 ```
 
-### Keyboard Shortcuts
+**Don't store and re-use a derived signal you intend to keep.**
+`map()` uses a weak reference internally so derived signals can be
+garbage-collected when no one holds them. If you write
+`label.configure(textvariable=name.map(str.upper))` and don't keep a
+reference to the derived signal, it may be collected and stop
+updating. Bind it through the widget (which keeps it alive) or store
+it explicitly:
 
 ```python
-import ttkbootstrap as ttk
-
-app = ttk.App()
-
-def save():
-    print("Saving...")
-
-def quit_app():
-    app.destroy()
-
-# Global shortcuts
-app.bind("<Control-s>", lambda e: save())
-app.bind("<Control-q>", lambda e: quit_app())
-
-ttk.Label(app, text="Press Ctrl+S to save, Ctrl+Q to quit").pack(pady=20)
-
-app.mainloop()
+upper_name = name.map(str.upper)         # held by you
+ttk.Label(app, textvariable=upper_name)  # also held by widget
 ```
 
----
+**Set with the right type.** `Signal` enforces the type chosen at
+construction. If you need a numeric signal that may hold ints or
+floats, start it with `0.0` (float) — passing `0` (int) locks it to
+ints.
 
-## What Signals Are Built On
+**Avoid circular writes that don't settle.** Two signals that
+update each other in their subscribers will keep firing as long as
+each write changes the value. The redundant-write short-circuit
+(setting a signal to its current value is a no-op) usually breaks
+the loop, but only once both sides converge. Prefer `map()` for
+one-direction derivation.
 
-Signals are implemented using Tk variables (`StringVar`, `IntVar`, etc.) with traces.
-
-This means:
-
-- Signals work with any Tk widget
-- They integrate with Tk's event loop
-- They're not a separate system—they're Tk-native
-
-The Signal API provides a cleaner interface:
-
-| Tk Variables | Signals |
-|--------------|---------|
-| `var.trace_add()` | `signal.subscribe()` |
-| `var.get()` | `signal.get()` / `signal.value` |
-| `var.set()` | `signal.set()` / `signal.value = ...` |
-
-!!! link "Signals Capability"
-    See [Capabilities → Signals](../capabilities/signals/signals.md) for implementation details.
+**Signals can be created before `App()`** — but the underlying tk
+variable needs an interpreter, so creating one too early may bind it
+to a transient root. Practical rule: create signals after `App()`,
+or pass `master=app` if you must create one earlier and want it
+attached to a specific root.
 
 ---
 
-## Summary
+## How signals relate to Tk variables
 
-- **Signals** for shared state and reactive updates
-- **Callbacks** for discrete actions (button clicks)
-- **Events** for low-level input (keyboard, mouse)
+A Signal is a thin layer on top of a tkinter `Variable`. The
+signal's `.var` property exposes the underlying tk variable, and
+`str(signal)` returns its Tcl name — which is why widgets that
+expect a `textvariable=` value accept a signal directly.
 
-Use signals when state is shared. Use callbacks when an action happens. Use events when you need input details.
+| Tk variable                | Signal                          |
+|----------------------------|---------------------------------|
+| `var.get()`                | `signal.get()` or `signal()`    |
+| `var.set(x)`               | `signal.set(x)`                 |
+| `var.trace_add("write", …)`| `signal.subscribe(…)`           |
+| (none — manual logic)      | `signal.map(fn)`                |
+| `var.trace_remove(…, fid)` | `signal.unsubscribe(fid)`       |
+
+Anything you can do with a tk variable still works on the underlying
+storage; signals add the reactivity layer on top.
 
 ---
 
-## Next Steps
+## Reactivity vs. callbacks vs. events
+
+Signals aren't a replacement for every Tk-level mechanism. Three
+distinct things show up in a typical app:
+
+- **Signals** — observable state shared across widgets. Use for
+  values that more than one part of the UI depends on.
+- **Callbacks** — `command=` on buttons and menu items. Use for
+  discrete actions that fire once per user action and don't represent
+  ongoing state.
+- **Events** — Tk's `bind()` system, including virtual events like
+  `<<Changed>>` and convenience methods like `entry.on_changed(…)`.
+  Use for input details (keystrokes, mouse, focus) and for
+  widget-emitted notifications that carry payload data.
+
+The three coexist comfortably: a button's `command=` callback often
+reads the current values of several signals, and a signal change can
+trigger application code that itself calls `event_generate` for a
+custom virtual event.
+
+For the full event surface, see
+[Platform → Events & Bindings](../platform/events-and-bindings.md).
+For the framework-internals view of signals, see
+[Capabilities → Signals](../capabilities/signals/signals.md). For
+the Signal class reference, see
+[`ttkbootstrap.Signal`](../reference/utils/Signal.md).
+
+---
+
+## Next steps
 
 - [App Structure](app-structure.md) — how applications are organized
+- [Forms](forms.md) — building data-entry forms backed by signals
 - [Layout](layout.md) — building layouts with containers
-- [Styling](styling.md) — applying consistent styling

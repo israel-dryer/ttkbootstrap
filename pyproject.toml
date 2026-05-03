@@ -63,6 +63,14 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+docs = [
+    # Static site generator (reads zensical.toml).
+    "zensical>=0.0.37",
+    # API reference is rendered from source docstrings via the
+    # mkdocstrings handler referenced in zensical.toml.
+    "mkdocstrings>=1.0",
+    "mkdocstrings-python>=2.0",
+]
 
 [project.urls]
 Homepage = "https://github.com/israel-dryer/ttkbootstrap"
@@ -81,3 +89,51 @@ where = ["src"]
     # ship compiled gettext catalogs within the package
     "assets/locales/**/LC_MESSAGES/*.mo",
 ]
+
+# -----------------------------------------------------------------------------
+# Ruff: docstring discipline on the public API surface.
+#
+# `D` rules with the Google convention enforce presence and style of docstrings
+# on public modules, classes, methods, and functions. The intent is for every
+# symbol in `_MODULE_EXPORTS` (see `src/ttkbootstrap/__init__.py`) and the
+# files that define them to have spec-grade docstrings. Internal directories
+# are blanket-ignored. Files awaiting cleanup are listed individually so the
+# entry can be removed (and the file enforced) once its docstrings conform.
+#
+# Convention and template: see `analysis/docs-review-and-plan.md`.
+#
+# Run locally:
+#   ruff check --select D src/ttkbootstrap
+#
+# To clean a file: bring its docstrings up to spec, run the command above
+# scoped to that file, and remove the per-file ignore once it passes.
+# -----------------------------------------------------------------------------
+
+[tool.ruff]
+src = ["src"]
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["D"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+# Internal directories — not part of the public API surface.
+"src/ttkbootstrap/style/builders/**" = ["D"]
+"src/ttkbootstrap/style/builders_tk/**" = ["D"]
+"src/ttkbootstrap/widgets/mixins/**" = ["D"]
+"src/ttkbootstrap/widgets/internal/**" = ["D"]
+"src/ttkbootstrap/widgets/parts/**" = ["D"]
+"src/ttkbootstrap/core/capabilities/**" = ["D"]
+"src/ttkbootstrap/core/mixins/**" = ["D"]
+"src/ttkbootstrap/cli/**" = ["D"]
+"src/ttkbootstrap/assets/**" = ["D"]
+"tests/**" = ["D"]
+"docs_scripts/**" = ["D"]
+"development/**" = ["D"]
+"tools/**" = ["D"]
+
+# Public-surface files awaiting docstring cleanup.
+# Remove the entry when `ruff check --select D <file>` is clean.

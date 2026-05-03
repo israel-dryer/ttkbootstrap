@@ -1,17 +1,20 @@
+"""Switch widget — a Checkbutton styled as a toggle switch."""
 from ttkbootstrap.widgets.primitives.checkbutton import CheckButton
 from ttkbootstrap.widgets.types import Master
 
 
 class Switch(CheckButton):
-    """ttkbootstrap wrapper for `ttk.Checkbutton` that renders with a Switch style"""
+    """ttkbootstrap Checkbutton styled as a toggle switch."""
 
     def __init__(self, master: Master = None, **kwargs):
         """Create a themed ttkbootstrap Switch.
 
         Args:
             master: Parent widget. If None, uses the default root window.
+            **kwargs: See `Other Parameters` below.
 
-        Other Parameters:
+        Other Parameters
+        ----------------
             text (str): Text to display on the toggle.
             textvariable (Variable): Tk variable linked to the text.
             textsignal (Signal[str]): Reactive Signal linked to the text (auto-synced with textvariable).
@@ -35,7 +38,7 @@ class Switch(CheckButton):
             surface (str): Optional surface token; otherwise inherited.
             style_options (dict): Optional dict forwarded to the style builder.
             localize (bool | Literal['auto']): Determines the widget's localization mode.
+
         """
-        if 'bootstyle' not in kwargs:
-            kwargs['variant'] = 'switch'
+        kwargs['variant'] = 'switch'
         super().__init__(master, **kwargs)

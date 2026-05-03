@@ -26,6 +26,7 @@ Note:
     The 'background' TTK state is normally used to indicate an inactive
     window. Since this is rarely styled in practice, it's repurposed here
     for keyboard focus tracking.
+
 """
 
 import tkinter as tk
@@ -44,6 +45,7 @@ def _patched_focus_set(self, *, visual_focus: bool = False) -> None:
     """Enhanced focus_set that optionally shows visual focus ring.
 
     Args:
+        self: The widget instance receiving focus.
         visual_focus: If True, show focus as if focused via keyboard. Default is False.
 
     Examples:
@@ -54,6 +56,7 @@ def _patched_focus_set(self, *, visual_focus: bool = False) -> None:
         # Focus with visible ring (e.g., after validation error)
         entry.focus_set(visual_focus=True)
         ```
+
     """
     _original_focus_set(self)
     if visual_focus:
@@ -67,6 +70,7 @@ def _patched_focus_force(self, *, visual_focus: bool = False) -> None:
     """Enhanced focus_force that optionally shows visual focus ring.
 
     Args:
+        self: The widget instance receiving focus.
         visual_focus: If True, show focus as if focused via keyboard. Default is False.
 
     Examples:
@@ -77,6 +81,7 @@ def _patched_focus_force(self, *, visual_focus: bool = False) -> None:
         # Forced focus with visible ring
         entry.focus_force(visual_focus=True)
         ```
+
     """
     _original_focus_force(self)
     if visual_focus:
@@ -141,6 +146,7 @@ def install_visual_focus(root: tk.Misc = None) -> None:
             ]
         )
         ```
+
     """
     global _installed, _root_ref
 
@@ -159,7 +165,7 @@ def install_visual_focus(root: tk.Misc = None) -> None:
 
 
 def _bind_all_with_focus(self, sequence=None, func=None, add=None):
-    """Wrapper for bind_all that installs focus tracking on first call."""
+    """Install focus tracking on the first bind_all call."""
     global _root_ref
 
     # Install our bindings on first bind_all call (when root exists)
@@ -184,6 +190,7 @@ def uninstall_visual_focus() -> None:
     Note:
         After calling this, style maps using 'background focus' will
         no longer show focus rings for keyboard navigation.
+
     """
     global _installed, _root_ref
 
@@ -213,6 +220,7 @@ def is_keyboard_focus(widget: tk.Misc) -> bool:
 
     Returns:
         True if the widget has focus AND was focused via keyboard.
+
     """
     try:
         state = widget.state()

@@ -11,20 +11,20 @@ from ttkbootstrap.runtime.base_window import BaseWindow
 class Toplevel(BaseWindow, WidgetCapabilitiesMixin, tkinter.Toplevel):
     """A themed top-level window.
 
-    This class wraps `tkinter.Toplevel` and adds ttkbootstrap window conveniences
-    (title/geometry helpers, centering, alpha/topmost/toolwindow helpers, etc.).
+    Wraps `tkinter.Toplevel` and adds ttkbootstrap window conveniences
+    (title/geometry helpers, centering, alpha/topmost/toolwindow helpers,
+    transient/override-redirect handling). The standard widget API (events,
+    scheduling, clipboard, geometry managers, winfo, etc.) is inherited
+    from `BaseWindow` and `WidgetCapabilitiesMixin`.
 
-    The standard widget API (events, scheduling, clipboard, geometry managers,
-    winfo, etc.) is available through inheritance and is documented under
-    ttkbootstrap capabilities.
-
-    For additional information on the underlying Tk/Tkinter behavior, see:
-        - Tcl/Tk `toplevel` command documentation
-        - Python `tkinter.Toplevel` documentation
-
-    Examples:
-        >>> win = Toplevel(title="My Toplevel")
-        >>> win.mainloop()
+    Platform:
+        On Windows, `toolwindow`, `alpha`, and `window_style` use platform
+        attributes (`-toolwindow`, `-alpha`, pywinstyles); the latter
+        accepts `mica`, `acrylic`, `aero`, `transparent`, `win7`.
+        On X11, `windowtype` requests a window-manager type via `-type`.
+        On macOS (Aqua), `windowtype` maps to `MacWindowStyle` for
+        `tooltip`, `splash`, `utility`, and `dock`; this must be applied
+        before the window is mapped, which is handled internally.
     """
 
     def __init__(

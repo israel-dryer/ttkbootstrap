@@ -1,196 +1,163 @@
 ---
-title: OverlayWidgetName
+title: WidgetName
 ---
 
-# OverlayWidgetName
+# WidgetName
 
-1–2 paragraphs describing:
+1–2 paragraphs that say:
 
-- what kind of overlay or feedback this widget provides (tooltip, toast, banner, popover)
+- what kind of overlay this is (tooltip, toast, popover, banner)
+- whether it is **blocking** (steals focus, captures input) or
+  **non-blocking** (renders over content, never holds focus)
+- how it appears and disappears (hover, click, programmatic, time)
+- a comparison sentence if useful ("Unlike a Dialog…", "Similar to
+  a Tooltip but…")
 
-- whether it is **blocking or non-blocking**
-
-- how it appears and disappears (hover, time-based, user action)
-
-Keep this focused on *feedback and guidance*, not data entry.
-
----
-
-## Framework integration
-
-**Application behavior**
-
-- Trigger model (hover/click/programmatic)
-
-- Safety behavior (auto-dismiss, outside click, focus rules)
-
-**Design System**
-
-- How the overlay uses theme tokens (surface, borders, typography)
-
-- How emphasis/intent is communicated (colors, icons)
-
-**Signals & Events**
-
-- Lifecycle hooks (shown, dismissed, action selected)
-
-- Recommended patterns for integrating with app state
+The intro carries the "what is this" framing — there's no separate
+`Framework integration` lead. Its content distributes into Common
+options (theme tokens, content fields, duration), Behavior
+(positioning, screen safety, content composition), and Events
+(lifecycle hooks, dismiss callbacks).
 
 ---
 
 ## Basic usage
 
-Show the simplest, most common usage.
+One minimal, runnable example showing the overlay attached to or
+triggered by typical UI.
 
 ```python
+import ttkbootstrap as ttk
+
 # minimal, copy/paste runnable
 ```
 
-If the widget has multiple trigger styles (hover vs programmatic), show only the primary one here.
+If the widget supports multiple trigger styles (hover / programmatic
+/ click), show only the primary one here.
 
 ---
 
-## What problem it solves
+## Lifecycle
 
-Explain why this overlay exists, such as:
+How the overlay enters and leaves the screen — the central concept
+for any overlay widget:
 
-- providing contextual help without clutter
+- **Trigger** — what causes it to appear (hover, programmatic
+  `show()`, click, focus event)
+- **Visibility** — what keeps it on screen (mouse stays over the
+  parent, fixed `duration`, until explicitly hidden)
+- **Dismissal** — what causes it to disappear (mouse leaves, timer
+  fires, close button, outside click, `hide()` /  `destroy()`)
+- **Blocking vs non-blocking** — does it steal focus or capture
+  input? Most overlays in this category are non-blocking; if a widget
+  *is* blocking, contrast it with a Dialog so readers know which to
+  reach for
+- **One-shot vs reusable** — does the overlay instance survive
+  multiple show/hide cycles, or is each presentation a fresh
+  instance?
 
-- giving feedback without interrupting flow
-
-- surfacing transient information
-
-- reducing the need for modal dialogs
-
-Contrast briefly with dialogs or persistent UI elements.
-
----
-
-## Core concepts
-
-Explain how to think about this overlay.
-
-Common subsections include:
-
-- trigger model (hover, click, automatic)
-
-- blocking vs non-blocking behavior
-
-- lifecycle (show, update, dismiss)
-
-- safety behavior (auto-dismiss, outside click, focus rules)
+Include a short example that exercises the lifecycle when it
+matters (e.g. programmatic `show()` then `hide()`, or an
+`on_dismissed` callback wired to teardown).
 
 ---
 
-## Content and presentation
+## Common options
 
-Describe what content can appear:
+Curated — what users actually configure. Overlay widgets typically
+expose:
 
-- title vs message
+- content fields (`text`, `title`, `message`, `icon`)
+- timing (`delay`, `duration`)
+- positioning (`anchor_point`, `window_point`, `auto_flip`,
+  `position`)
+- theme tokens (`accent`, `variant`, `padding`)
+- content layout (`wraplength`, `justify`, `compound`)
+- affordances (`show_close_button`, `buttons`, `alert`)
 
-- icons or imagery
-
-- action buttons (if supported)
-
-- text wrapping and layout rules
-
-Provide short examples if helpful.
-
----
-
-## Positioning
-
-Explain where the overlay appears:
-
-- relative to a widget (anchored)
-
-- relative to cursor
-
-- relative to screen edges
-
-Include auto-flip or screen-safe behavior if supported.
+Theme tokens and content composition live here — no separate
+`Appearance` section. Show short representative examples per
+concern; this is not an API dump.
 
 ---
 
-## Behavior and lifecycle
+## Behavior
 
-Describe interaction behavior:
+Interaction and presentation rules:
 
-- how it is shown
+- **Positioning** — relative to the cursor, an anchor widget, or
+  the screen; how `auto_flip` keeps the overlay on screen near a
+  viewport edge; what happens when the parent is offscreen or
+  unmapped
+- **Content composition** — how `title` / `message` / `icon` /
+  `buttons` combine; what's hidden when a field is unset; whether
+  layout adapts to platform (e.g. macOS chromeless vs X11)
+- **Focus and input** — non-blocking overlays should never steal
+  focus or capture pointer events; if the widget *does* take focus
+  in some mode, name it
+- **Stacking** — what happens if multiple instances are shown at
+  once (do they overlap, queue, or replace each other?)
+- **Reconfiguration** — which options take effect on the next
+  `show()` vs immediately on a visible overlay
 
-- how it is dismissed
-
-- what happens on user interaction
-
-- how long it remains visible
-
-If the widget is fully automatic, state that clearly.
+If the widget composes a `Toplevel`, name the windowing flags
+(`overrideredirect`, `windowtype`, `topmost`, `alpha`) so readers
+know what platform behaviors are inherited.
 
 ---
 
-## Events and callbacks
+## Events
 
-Document lifecycle events or callbacks, such as:
+Document the event surface — both raw virtual events and any
+`on_*` callbacks accepted by the constructor or registered after
+construction.
 
-- dismissed
+For each event or callback:
 
-- clicked
-
-- action selected
+- when it fires
+- the payload (event object, dict, or unwrapped value)
+- whether it round-trips (does programmatic `hide()` fire the same
+  callback as a user-triggered dismiss?)
 
 ```python
 def on_dismissed(data):
     ...
 
-widget.on_dismissed(on_dismissed)
+widget.configure(on_dismissed=on_dismissed)
 ```
 
----
-
-## UX guidance
-
-Prescriptive advice:
-
-- when to prefer overlays vs dialogs
-
-- recommended text length and tone
-
-- accessibility considerations
-
-- avoiding notification fatigue
+If the widget has *no* virtual events and *no* `on_*` callbacks,
+include a deliberate negative `Events` section pointing readers at
+the lifecycle methods (`show()` / `hide()` / `destroy()`) so they
+don't go looking for hooks that don't exist.
 
 ---
 
-## When to use / when not to
+## When should I use WidgetName?
 
-**Use OverlayWidgetName when:**
+Use WidgetName when:
 
 - …
 
-**Avoid OverlayWidgetName when:**
+Prefer OtherWidget when:
 
 - …
 
+This sits near the bottom on purpose: readers reach it after they've
+seen what the widget does and how it's configured, so the
+recommendation lands with context.
+
 ---
 
-## Additional resources
+## Related widgets
 
-**Related widgets**
+- **OtherOverlayWidget** — alternative feedback pattern
+- **Dialog** — blocking decision point
+- **InlineFeedback** — when the message belongs alongside a control
 
-- **Dialog** — blocking decisions
+---
 
-- **Action widgets** — triggers for overlays
+## Reference
 
-- **OtherOverlayWidget** — alternative feedback patterns
-
-**Framework concepts**
-
-- [Windows](../../platform/windows.md)
-
-- [Signals & Events](../../capabilities/signals/index.md)
-
-**API reference**
-
-- **API Reference:** `ttkbootstrap.OverlayWidgetName`
-
-- **Related guides:** Feedback, UX Patterns, Accessibility
+- **API reference:** `ttkbootstrap.WidgetName`
+- **Related guides:** Feedback, UX Patterns, Design System

@@ -16,6 +16,8 @@ from ttkbootstrap.widgets.types import Master
 
 
 class ToolbarKwargs(TypedDict, total=False):
+    """Keyword arguments for Toolbar."""
+
     show_window_controls: bool
     draggable: bool
     button_variant: str
@@ -56,6 +58,7 @@ class Toolbar(Frame):
         )
         toolbar.add_label(text='My App', font='heading-md')
         ```
+
     """
 
     def __init__(
@@ -83,6 +86,7 @@ class Toolbar(Frame):
             padding (int | tuple): Toolbar padding. If None, uses density-based
                 default ((3, 1) for compact, 3 for default).
             **kwargs: Additional arguments passed to Frame.
+
         """
         if padding is None:
             padding = (3, 1) if density == 'compact' else 3
@@ -226,6 +230,7 @@ class Toolbar(Frame):
 
         Returns:
             Button: The created button.
+
         """
         btn = Button(
             self._content_frame,
@@ -259,6 +264,7 @@ class Toolbar(Frame):
 
         Returns:
             Label: The created label.
+
         """
         lbl = Label(
             self._content_frame,
@@ -287,6 +293,7 @@ class Toolbar(Frame):
 
         Returns:
             Separator: The created separator.
+
         """
         sep = Separator(
             self._content_frame,
@@ -306,6 +313,7 @@ class Toolbar(Frame):
 
         Returns:
             Frame: The spacer frame.
+
         """
         spacer = Frame(self._content_frame)
         spacer.pack(side='left', fill='both', expand=True)
@@ -329,7 +337,13 @@ class Toolbar(Frame):
 
         Returns:
             Widget: The added widget.
+
         """
+        if widget.master is not self._content_frame:
+            raise ValueError(
+                f"widget must be parented to toolbar.content, not {widget.master!r}. "
+                "Create the widget with `toolbar.content` as its parent."
+            )
         pack_kwargs.setdefault('side', 'left')
         pack_kwargs.setdefault('padx', 2)
         widget.pack(**pack_kwargs)

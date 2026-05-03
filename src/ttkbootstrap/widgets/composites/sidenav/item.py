@@ -18,6 +18,8 @@ if TYPE_CHECKING:
 
 
 class SideNavItemKwargs(TypedDict, total=False):
+    """Keyword arguments for SideNavItem."""
+
     key: str
     text: str
     icon: Any
@@ -61,6 +63,7 @@ class SideNavItem(Frame):
         nav.add_item('home', text='Home', icon='house')
         nav.add_item('local', text='Local', icon='hdd', group='files')
         ```
+
     """
 
     # Default indent width in pixels per indent level
@@ -105,6 +108,7 @@ class SideNavItem(Frame):
             padding_y (int | None): Vertical padding. Default is 8.
             icon_gap (int | None): Gap between icon and text. Default is 8.
             **kwargs: Additional arguments passed to Frame.
+
         """
         if not key:
             raise ValueError("SideNavItem requires a non-empty 'key'")
@@ -266,6 +270,7 @@ class SideNavItem(Frame):
 
         Args:
             selected: True to show as selected, False otherwise.
+
         """
         self._container.set_selected(selected)
 
@@ -300,6 +305,7 @@ class SideNavItem(Frame):
 
         Args:
             enabled (bool): True to enable, False to disable.
+
         """
         self._is_enabled = enabled
         self._container.set_disabled(not enabled)
@@ -309,6 +315,7 @@ class SideNavItem(Frame):
 
         Args:
             compact (bool): True for compact mode, False for full display.
+
         """
         if self._compact == compact:
             return
@@ -401,6 +408,7 @@ class SideNavItem(Frame):
 
         Returns:
             str: Binding identifier for use with off_invoked().
+
         """
         return self.bind('<<ItemInvoked>>', callback, add='+')
 
@@ -409,5 +417,6 @@ class SideNavItem(Frame):
 
         Args:
             bind_id (str | None): Binding identifier from on_invoked().
+
         """
         self.unbind('<<ItemInvoked>>', bind_id)

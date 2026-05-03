@@ -27,6 +27,8 @@ DisplayMode = Literal['expanded', 'compact', 'minimal']
 
 
 class SideNavKwargs(TypedDict, total=False):
+    """Keyword arguments for SideNav."""
+
     title: str
     show_header: bool
     show_back_button: bool
@@ -90,6 +92,7 @@ class SideNav(Frame):
         # Bind to selection
         nav.on_selection_changed(lambda e: print(f"Selected: {e.data['key']}"))
         ```
+
     """
 
     # Default pane widths
@@ -104,7 +107,7 @@ class SideNav(Frame):
         show_back_button: bool = False,
         collapsible: bool = True,
         display_mode: DisplayMode = 'expanded',
-        is_pane_open: bool = True,
+        is_pane_open: bool = None,
         pane_width: int = None,
         signal: 'Signal[str]' = None,
         variable: Variable = None,
@@ -127,6 +130,7 @@ class SideNav(Frame):
             variable (Variable | None): Tk variable for selection state.
             accent (str): Accent color for selection indicators. Default 'primary'.
             **kwargs: Additional arguments passed to Frame.
+
         """
         super().__init__(master, **kwargs)
 
@@ -137,6 +141,9 @@ class SideNav(Frame):
         self._show_back_button = show_back_button
         self._collapsible = collapsible
         self._display_mode = display_mode
+        # Default: minimal mode starts closed (hidden); other modes start open
+        if is_pane_open is None:
+            is_pane_open = display_mode != 'minimal'
         self._is_pane_open = is_pane_open
         self._pane_width = pane_width
 
@@ -442,6 +449,7 @@ class SideNav(Frame):
 
         Raises:
             ValueError: If a group or item with the given key already exists.
+
         """
         if key in self._groups or key in self._items or key in self._footer_items:
             raise ValueError(f"Key '{key}' already exists")
@@ -494,6 +502,7 @@ class SideNav(Frame):
         Raises:
             ValueError: If an item with the given key already exists.
             ValueError: If the specified group does not exist.
+
         """
         if key in self._items or key in self._groups or key in self._footer_items:
             raise ValueError(f"Key '{key}' already exists")
@@ -552,6 +561,7 @@ class SideNav(Frame):
 
         Returns:
             SideNavHeader: The created header.
+
         """
         header = SideNavHeader(self._content_frame, text=text, **kwargs)
         self._headers.append(header)
@@ -572,6 +582,7 @@ class SideNav(Frame):
 
         Returns:
             SideNavSeparator: The created separator.
+
         """
         sep = SideNavSeparator(self._content_frame, **kwargs)
         sep.grid()
@@ -599,6 +610,7 @@ class SideNav(Frame):
 
         Raises:
             ValueError: If an item with the given key already exists.
+
         """
         if key in self._items or key in self._groups or key in self._footer_items:
             raise ValueError(f"Key '{key}' already exists")
@@ -640,6 +652,7 @@ class SideNav(Frame):
 
         Raises:
             KeyError: If no item with the given key exists.
+
         """
         if key in self._items:
             return self._items[key]
@@ -652,6 +665,7 @@ class SideNav(Frame):
 
         Returns:
             A tuple of all SideNavItem instances.
+
         """
         return tuple(self._items.values())
 
@@ -660,6 +674,7 @@ class SideNav(Frame):
 
         Returns:
             A tuple of all item keys.
+
         """
         return tuple(self._items.keys())
 
@@ -674,6 +689,7 @@ class SideNav(Frame):
 
         Raises:
             KeyError: If no group with the given key exists.
+
         """
         if key not in self._groups:
             raise KeyError(f"No group with key '{key}'")
@@ -684,6 +700,7 @@ class SideNav(Frame):
 
         Returns:
             A tuple of all SideNavGroup instances.
+
         """
         return tuple(self._groups.values())
 
@@ -697,6 +714,7 @@ class SideNav(Frame):
 
         Returns:
             If option is provided, returns the value of that option.
+
         """
         item = self.node(key)
         if option is not None:
@@ -708,6 +726,7 @@ class SideNav(Frame):
 
         Args:
             key (str): The item key to remove.
+
         """
         if key in self._items:
             item = self._items.pop(key)
@@ -736,6 +755,7 @@ class SideNav(Frame):
 
         Args:
             key (str): The group key to remove.
+
         """
         if key not in self._groups:
             return
@@ -759,7 +779,13 @@ class SideNav(Frame):
 
         Args:
             key (str): The item key to select.
+
+        Raises:
+            KeyError: If key does not correspond to a registered item.
+
         """
+        if key not in self._items and key not in self._footer_items:
+            raise KeyError(f"No item with key {key!r}")
         if self._selection_var:
             self._selection_var.set(key)
 
@@ -799,6 +825,7 @@ class SideNav(Frame):
 
         Args:
             mode (DisplayMode): 'expanded', 'compact', or 'minimal'.
+
         """
         if mode != self._display_mode:
             self._display_mode = mode
@@ -829,6 +856,7 @@ class SideNav(Frame):
 
         Returns:
             A tuple of all footer SideNavItem instances.
+
         """
         return tuple(self._footer_items[key] for key in self._footer_order)
 
@@ -837,6 +865,7 @@ class SideNav(Frame):
 
         Returns:
             A tuple of all footer item keys.
+
         """
         return tuple(self._footer_order)
 
@@ -881,6 +910,7 @@ class SideNav(Frame):
 
         Returns:
             str: Binding identifier.
+
         """
         return self.bind('<<SelectionChanged>>', callback, add='+')
 
@@ -896,6 +926,7 @@ class SideNav(Frame):
 
         Returns:
             str: Binding identifier.
+
         """
         return self.bind('<<BackRequested>>', callback, add='+')
 
@@ -911,6 +942,7 @@ class SideNav(Frame):
 
         Returns:
             str: Binding identifier.
+
         """
         return self.bind('<<PaneToggled>>', callback, add='+')
 

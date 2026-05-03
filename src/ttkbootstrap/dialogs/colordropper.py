@@ -32,6 +32,7 @@ class ColorDropperDialog:
     Note:
         Supported on Windows and Linux. macOS is not supported due to ImageGrab
         limitations. On high-DPI displays, ensure the app runs in high-DPI mode.
+
     """
 
     def __init__(self) -> None:
@@ -52,7 +53,7 @@ class ColorDropperDialog:
         self._emitted_result = False
 
     def build_screenshot_canvas(self) -> None:
-        """Build the screenshot canvas"""
+        """Build the screenshot canvas."""
         self.screenshot_canvas: ttk.Canvas = ttk.Canvas(self.toplevel, cursor='tcross')
         self.screenshot_data = ImageGrab.grab()
         self.screenshot_image: ImageTk.PhotoImage = ImageTk.PhotoImage(self.screenshot_data)
@@ -61,8 +62,7 @@ class ColorDropperDialog:
         self.screenshot_canvas.pack(fill=BOTH, expand=YES)
 
     def build_zoom_toplevel(self, master) -> None:
-        """Build the toplevel widget that shows the zoomed version of
-        the pixels underneath the mouse cursor."""
+        """Build the toplevel that shows a zoomed view of pixels under the cursor."""
         height = utility.scale_size(self.toplevel, 100)
         width = utility.scale_size(self.toplevel, 100)
         text_xoffset = utility.scale_size(self.toplevel, 50)
@@ -97,7 +97,7 @@ class ColorDropperDialog:
                 pass
 
     def on_mouse_wheel(self, event: tk.Event) -> None:
-        """Zoom in and out on the image underneath the mouse"""
+        """Zoom in and out on the image underneath the mouse."""
         delta = 0
         if self.toplevel and self.toplevel.winsys.lower() == 'win32':
             delta = -int(event.delta / 120)
@@ -111,8 +111,7 @@ class ColorDropperDialog:
         self._on_mouse_motion()
 
     def on_left_click(self, _: tk.Event) -> Optional[ColorChoice]:
-        """Capture the color underneath the mouse cursor and destroy
-        the toplevel widget"""
+        """Capture the color underneath the mouse cursor and close the dropper."""
         # add logic here to capture the image color
         hx = self.get_hover_color()
         hsl = colorutils.color_to_hsl(hx)
@@ -126,7 +125,7 @@ class ColorDropperDialog:
         return self.result.get()
 
     def on_right_click(self, _: tk.Event) -> None:
-        """Close the color dropper without saving any color information"""
+        """Close the color dropper without saving any color information."""
         if self.zoom_toplevel:
             self.zoom_toplevel.destroy()
         if self.toplevel:
@@ -134,7 +133,7 @@ class ColorDropperDialog:
             self.toplevel.destroy()
 
     def _on_mouse_motion(self, event: Optional[tk.Event] = None) -> None:
-        """Callback for mouse motion"""
+        """Handle mouse motion events."""
         if event is None:
             x, y = self.toplevel.winfo_pointerxy()  # type: ignore[union-attr]
         else:
@@ -201,7 +200,7 @@ class ColorDropperDialog:
         self._emitted_result = True
 
     def show(self) -> None:
-        """Show the toplevel window"""
+        """Show the toplevel window."""
         self._emitted_result = False
         self.toplevel = ttk.Toplevel(alpha=1)
         self.toplevel.wm_attributes('-fullscreen', True)

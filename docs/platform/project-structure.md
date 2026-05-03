@@ -4,82 +4,118 @@ title: Project Structure
 
 # Project Structure
 
-ttkbootstrap is designed to be used like a **framework**, not a loose collection of widgets.
-A good project structure makes it easy to:
+ttkbootstrap is designed to be used as a framework: build views, hold
+shared state, ship through PyInstaller. A predictable project layout
+makes that path smooth — the `ttkb` CLI scaffolds one for you, but the
+underlying structure works just as well if you set it up by hand.
 
-- grow from a prototype into a real application
-- keep UI code maintainable (views, state, services)
-- package reliably with **PyInstaller** (assets, icons, translations)
+This page covers two things: the canonical CLI-generated layouts (the
+default starting point), and the principles that hold whether you use
+the CLI or not — `src/` layout, resource resolution, asset packaging,
+and PyInstaller-friendly conventions.
 
-This guide shows a structure that works well for ttkbootstrap apps and avoids the most common packaging pitfalls.
+For the CLI's commands, see [CLI (`ttkb`)](cli.md). For runtime
+configuration, see [Guides → App Settings](../guides/app-settings.md).
 
 ---
 
-## A practical default layout
+## CLI-generated layouts
 
-This is a solid “start here” structure for most apps:
+`ttkb start <name>` creates one of two layouts depending on the
+`--template` flag:
+
+```
+# basic (default)                       # appshell
+my_app/                                 my_app/
+├── src/my_app/                         ├── src/my_app/
+│   ├── __init__.py                     │   ├── __init__.py
+│   ├── main.py                         │   ├── main.py
+│   └── views/                          │   └── pages/
+│       ├── __init__.py                 │       ├── __init__.py
+│       └── main_view.py                │       ├── home_page.py
+├── assets/                             │       └── settings_page.py
+├── ttkb.toml                           ├── assets/
+└── README.md                           ├── ttkb.toml
+                                        └── README.md
+```
+
+The two differ only in the inner organization (`views/` vs `pages/`)
+and the entry point `main.py` writes — `basic` builds an `App` with a
+single view, `appshell` builds an `AppShell` with sidebar navigation.
+
+Both layouts share three load-bearing properties:
+
+- **`src/` layout** so editable installs and PyInstaller don't pick
+  up the project root by accident.
+- **`ttkb.toml`** at the root for project-level configuration (theme,
+  language, build settings).
+- **`assets/` at the root** for application resources (icons, images,
+  themes, translations).
+
+The CLI tracks which template you used in `[app].template` so other
+commands (`ttkb add page`, `ttkb add view`) know what to scaffold and
+where.
+
+---
+
+## Manual layout
+
+If you'd rather not use the CLI, this is a solid starting structure
+that supports the same packaging story:
 
 ```
 my_app/
-  pyproject.toml
-  README.md
-  src/
-    my_app/
-      __init__.py
-      __main__.py
-      app.py                 # App entry + wiring
-      settings.py            # AppSettings / configuration defaults
-      state.py               # Signals and shared app state
-      views/
-        __init__.py
-        main_window.py       # Top-level UI composition
-      widgets/               # Optional: custom composite widgets
-        __init__.py
-      services/              # Optional: IO, data, network, persistence
-        __init__.py
-      assets/
-        icons/               # App icon files + brand assets
-        images/              # App images
-      i18n/
-        en.po                # Optional: source translations
-        en.mo                # Optional: compiled translations
-  tests/
-  scripts/
-    build.py                 # Optional: helper scripts
-  build/                     # PyInstaller work dir (ignored)
-  dist/                      # PyInstaller output (ignored)
+├── pyproject.toml
+├── README.md
+├── src/
+│   └── my_app/
+│       ├── __init__.py
+│       ├── __main__.py
+│       ├── app.py              # App() construction + wiring
+│       ├── settings.py         # configuration defaults
+│       ├── state.py            # shared signals
+│       ├── views/              # screens / page composition
+│       │   ├── __init__.py
+│       │   └── main_window.py
+│       ├── widgets/            # optional: custom composites
+│       │   └── __init__.py
+│       ├── services/           # optional: IO / data / network
+│       │   └── __init__.py
+│       └── resources.py        # asset path resolution
+├── assets/
+│   ├── icons/
+│   └── images/
+├── i18n/                       # optional translations
+│   ├── en.po
+│   └── en.mo
+├── tests/
+└── scripts/
+    └── build.py                # optional helper
 ```
 
-Why this works:
+The structure differs from the CLI's only in two ways: it uses
+`pyproject.toml` for packaging metadata (which the CLI also generates
+when you call `ttkb promote`), and the entry is `python -m my_app`
+via `__main__.py` rather than running `main.py` directly. Both work.
 
-- `src/` layout prevents accidental imports from your repo root.
-- `app.py` owns framework wiring (theme, settings, menu, app state).
-- `views/` is where you compose screens from widgets and containers.
-- `assets/` and `i18n/` are *explicit* so packaging can include them reliably.
-
-!!! link "See [Guides → App Structure](../guides/app-structure.md) for how windows, layout, and state fit together."
+See [Guides → App Structure](../guides/app-structure.md) for how the
+runtime classes (App, AppShell, AppSettings) wire together inside
+this layout.
 
 ---
 
-## Entry points
+## Entry point conventions
 
-### `__main__.py`
-
-Use `python -m my_app` for development and to give PyInstaller a clear entry.
+Whether you use `main.py` or `__main__.py`, keep the entry function
+small and explicit:
 
 ```python
-# src/my_app/__main__.py
+# src/my_app/__main__.py  (or main.py)
 from .app import main
 
 if __name__ == "__main__":
     main()
 ```
-
----
-
-### `app.py`
-
-Keep `main()` small and explicit.
 
 ```python
 # src/my_app/app.py
@@ -95,94 +131,72 @@ def main() -> None:
     app.mainloop()
 ```
 
+`ttkb run` adds `<project>/src` to `PYTHONPATH` automatically and
+exports `TTKB_THEME` from `[settings].theme`, so the CLI-generated
+`main.py` can pick up the configured theme without hardcoding it.
+
 ---
 
-## Where ttkbootstrap concepts live
+## `ttkb.toml`
 
-### Settings
+When you scaffold with `ttkb start`, the CLI writes a `ttkb.toml` at
+the project root that other CLI commands read:
 
-Put framework-level defaults in one place.
+```toml
+[app]
+name = "MyApp"
+id = "com.example.myapp"
+entry = "src/myapp/main.py"
+template = "basic"            # or "appshell"
 
-- theme choice
-- localization defaults
-- behavior toggles (if you expose them)
+[settings]
+theme = "cosmo"
+language = "en"
+appearance = "system"
 
-```python
-# src/my_app/settings.py
-from dataclasses import dataclass
+[layout]
+default_container = "grid"
 
-@dataclass(frozen=True)
-class Settings:
-    title: str = "My App"
-    theme: str = "cosmo"
+# Added later by `ttkb promote --pyinstaller`:
+[build]
+backend = "pyinstaller"
+windowed = true
+onefile = false
 
-settings = Settings()
+[build.icon]
+# path = "assets/icon.ico"
+
+[build.datas]
+include = ["assets/**", "locales/**", "themes/**", "ttkb.toml"]
 ```
 
-!!! link "See [Guides → App Settings](../guides/app-settings.md) for using `AppSettings` and framework configuration."
+`ttkb.toml` is optional. Without it, your application code is
+authoritative at runtime via `AppSettings` (see
+[Guides → App Settings](../guides/app-settings.md)). With it, you
+also get `ttkb run`, `ttkb add page`, `ttkb add theme`, `ttkb build`,
+and `ttkb doctor` for free.
 
 ---
 
-### State (signals)
+## Resolving asset paths
 
-Signals represent shared state and keep UI reactive without tangled callbacks.
-
-```python
-# src/my_app/state.py
-import ttkbootstrap as ttk
-
-status = ttk.Signal("Ready")
-```
-
-!!! link "See [Guides → Reactivity](../guides/reactivity.md) and [Capabilities → Signals](../capabilities/signals/signals.md)."
-
----
-
-### Views (composition)
-
-Views assemble widgets into real screens. Think “page” or “window content”.
-
-```python
-# src/my_app/views/main_window.py
-import ttkbootstrap as ttk
-
-class MainWindow(ttk.Frame):
-    def __init__(self, master):
-        super().__init__(master, padding=20)
-
-        ttk.Label(self, text="Welcome").pack(anchor="w")
-        ttk.Button(self, text="Continue", accent="primary").pack(pady=(12, 0))
-```
-
-!!! link "See [Guides → Layout](../guides/layout.md) for recommended containers and structure."
-
----
-
-## Assets and packaging strategy (PyInstaller)
-
-Packaging is where structure matters most.
-
-### Keep assets in your package
-
-Put images/icons under `src/my_app/assets/...` so they can be included as package data.
-
-At runtime, avoid hardcoding filesystem paths relative to the working directory.
-
-Instead, resolve assets via a single helper (so dev + PyInstaller behave the same).
+Hardcoding paths relative to the working directory breaks under
+PyInstaller — the working directory at runtime isn't where you
+expect, especially in `--onefile` mode where assets are extracted to
+a temporary directory. The cure is a single helper, used everywhere:
 
 ```python
 # src/my_app/resources.py
-from __future__ import annotations
-
 from pathlib import Path
 
 def resource_path(*parts: str) -> Path:
-    # Works in editable installs and in PyInstaller onefile/onedir builds.
+    """Return an absolute path to a resource bundled with the package.
+
+    Works in editable installs and in PyInstaller onefile/onedir builds.
+    """
     base = Path(__file__).resolve().parent
     return base.joinpath(*parts)
 ```
-
-Use it:
 
 ```python
 from .resources import resource_path
@@ -190,80 +204,103 @@ from .resources import resource_path
 icon_file = resource_path("assets", "icons", "app.png")
 ```
 
-!!! note
-    PyInstaller extraction paths differ between **onefile** and **onedir** builds.
-    Keeping all asset access behind `resource_path()` makes this painless later.
+Two rules to live by:
+
+- Every `open(...)`, `PhotoImage(file=...)`, `Image.open(...)` call
+  goes through `resource_path` (or an analogous helper).
+- The asset directory (`assets/` at project root, or
+  `src/my_app/assets/`) is the *only* place files live. PyInstaller
+  needs an explicit list to include them; the more centralized your
+  asset dir, the simpler the include pattern.
+
+Where your assets actually live (project root vs inside the package)
+depends on whether you used `ttkb start` (root-level `assets/`) or
+the manual layout (often `src/my_app/assets/`). Either works as long
+as `resource_path` agrees.
 
 ---
 
-### Prefer “onedir” during development
+## Building with the CLI
 
-For early packaging work, `--onedir` is simpler to debug.
-
-- easy to inspect bundled files
-- quicker iteration
-- fewer surprises
-
-When stable, you can switch to `--onefile`.
-
----
-
-## A PyInstaller-friendly build checklist
-
-When you plan to distribute, structure with these in mind:
-
-- **One entry point** (`python -m my_app` / `my_app.__main__`)
-- All assets stored under your package (`src/my_app/assets`)
-- Localization files in a predictable location (`src/my_app/i18n`)
-- No dynamic imports that depend on working directory
-- Avoid writing files next to the executable (use user data dirs)
-
-!!! link "See [Build → App Runtime](../build/app-runtime.md) for runtime behavior and distribution patterns."
-!!! link "See [Build → App Configuration](../build/app-configuration.md) for configuration and environment-aware settings."
-
----
-
-## Suggested PyInstaller command (starter)
-
-A minimal starter command (adjust paths for your project):
+The recommended path is to use `ttkb build`, which wraps PyInstaller
+behind a generated spec file:
 
 ```bash
-pyinstaller -n MyApp --onedir --windowed -m my_app
+ttkb promote --pyinstaller     # one-time: adds [build] to ttkb.toml
+                                #           and generates app.spec
+ttkb build                      # rebuilds dist/<AppName>
+ttkb build --clean              # wipes dist/ first
 ```
 
-To include assets and translations, you typically add `--add-data` entries, or a `.spec` file.
+This path produces a standard PyInstaller bundle (`dist/<AppName>`
+on Linux/Windows, `dist/<AppName>.app` on macOS) using the asset-
+include patterns from `[build.datas]`. See
+[Build & Distribute](build-and-ship.md) for the full build /
+sign / package pipeline including macOS notarization and Windows
+code signing.
 
-Example (Windows-style separator shown; on macOS/Linux use `:` instead of `;`):
+---
+
+## Building with PyInstaller directly
+
+If you'd rather drive PyInstaller yourself — to integrate with an
+existing build system, or because your project predates the CLI —
+use `--onedir` for early iteration (it's much easier to debug than
+`--onefile`) and add explicit `--add-data` entries for every asset
+directory:
 
 ```bash
+# macOS / Linux (use ":" as the path separator)
+pyinstaller -n MyApp --onedir --windowed -m my_app \
+    --add-data "src/my_app/assets:my_app/assets" \
+    --add-data "src/my_app/i18n:my_app/i18n"
+
+# Windows (use ";" as the path separator)
 pyinstaller -n MyApp --onedir --windowed -m my_app ^
-  --add-data "src/my_app/assets;my_app/assets" ^
-  --add-data "src/my_app/i18n;my_app/i18n"
+    --add-data "src/my_app/assets;my_app/assets" ^
+    --add-data "src/my_app/i18n;my_app/i18n"
 ```
 
-!!! tip
-    If you use a `.spec` file, treat it as part of your build system and keep it in version control.
+A `.spec` file (`MyApp.spec`) generated on first run lets you
+version-control the build configuration. Treat it like build-
+system code.
+
+When stable, switch to `--onefile` for a single-file distributable.
+Make sure every asset access still goes through your
+`resource_path` helper — it's the only thing that handles the
+onefile temporary-extraction directory cleanly.
 
 ---
 
-## What about “framework” modules?
+## PyInstaller-friendly checklist
 
-As your app grows, you can introduce higher-level organization without changing the basics:
+Whichever path you take, structure the project so packaging stays
+boring:
 
-- `views/` → screens and navigation
-- `widgets/` → reusable composite widgets
-- `services/` → IO and integration points
-- `state.py` → shared signals and state
-- `settings.py` → AppSettings / defaults
-
-Start simple. Add structure when you feel friction.
+- **One entry point.** `python -m my_app` resolved via
+  `__main__.py`, or `main.py` through `ttkb run` / the generated
+  spec.
+- **All assets inside `assets/`** (or `src/my_app/assets/`).
+  PyInstaller needs an explicit include; sprawl makes it fragile.
+- **No working-directory paths.** Always go through `resource_path`
+  (or its equivalent).
+- **No dynamic imports.** PyInstaller's static analysis can't see
+  `importlib.import_module(name)` with a runtime-computed name. If
+  you must, list the modules in `hiddenimports`.
+- **Don't write next to the executable.** Use the platform state
+  directory — see [App.state_path](../reference/app/App.md) and
+  [Platform Differences → Application state directory](platform-differences.md#application-state-directory).
 
 ---
 
 ## Next steps
 
-- [Quick Start](../getting-started/quick-start.md) — build your first app
-- [App Structure](../guides/app-structure.md) — windows, layout, and state
-- [Layout](../guides/layout.md) — containers and composition
-- [CLI](cli.md) — scaffolding and build commands
-- [Build & Distribute](build-and-ship.md) — packaging for distribution
+- [CLI (`ttkb`)](cli.md) — every CLI command and option
+- [Build & Distribute](build-and-ship.md) — packaging, signing,
+  notarization for macOS, Windows, and Linux
+- [App Structure](../guides/app-structure.md) — how App, AppShell,
+  views, and state fit together
+- [App Settings](../guides/app-settings.md) — runtime configuration
+  via `AppSettings`
+- [Quick Start](../getting-started/quick-start.md) — first app from
+  scratch

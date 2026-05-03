@@ -1,3 +1,4 @@
+"""Tk widget style builder for ttkbootstrap."""
 from __future__ import annotations
 
 import threading
@@ -11,7 +12,10 @@ from ttkbootstrap.style.theme_provider import ThemeProvider
 
 
 class TkBuilderCallable(Protocol):
+    """Protocol for Tk widget builder callables."""
+
     def __call__(self, builder: "BootstyleBuilderBuilderTk", widget: Any, **options: Any) -> None:  # noqa: ANN401
+        """Call the builder with the widget."""
         ...
 
 
@@ -33,6 +37,7 @@ class BootstyleBuilderBuilderTk(BootstyleBuilderBase):
     _builders_loaded = False
 
     def __init__(self, theme_provider: Optional[ThemeProvider] = None, style_instance: Optional[Any] = None):
+        """Initialize the Tk style builder."""
         super().__init__(theme_provider, style_instance)
 
     # Color utilities and provider/colors properties are inherited from BootstyleBase
@@ -41,7 +46,6 @@ class BootstyleBuilderBuilderTk(BootstyleBuilderBase):
     @classmethod
     def register_builder(cls, widget_name: str):
         """Register a Tk widget builder by Tk class name (e.g., 'Button')."""
-
         if not isinstance(widget_name, str) or not widget_name:
             raise ValueError("`widget_name` must be a non-empty string")
 
@@ -54,12 +58,14 @@ class BootstyleBuilderBuilderTk(BootstyleBuilderBase):
 
     @classmethod
     def has_builder(cls, widget_name: str) -> bool:
+        """Return True if a builder is registered for widget_name."""
         cls._ensure_builders_loaded()
         with cls._lock:
             return widget_name in cls._registry
 
     @classmethod
     def get_registered_widgets(cls) -> list[str]:
+        """Return a list of registered Tk widget class names."""
         cls._ensure_builders_loaded()
         with cls._lock:
             return list(cls._registry.keys())

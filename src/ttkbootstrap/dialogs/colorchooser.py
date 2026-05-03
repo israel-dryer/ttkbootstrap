@@ -77,6 +77,7 @@ class ColorChooser(ttk.Frame):
             master: Parent widget.
             initial_color: Initial color string; defaults to theme background.
             padding: Padding around the chooser.
+
         """
         super().__init__(master, padding=padding)
         self.tframe = ttk.Frame(self, padding=5)
@@ -144,7 +145,7 @@ class ColorChooser(ttk.Frame):
         self.create_luminance_indicator()
 
     def create_spectrum(self, master: tkinter.Misc) -> ttk.Canvas:
-        """Create the color spectrum canvas"""
+        """Create the color spectrum canvas."""
         # canvas and point dimensions
         width = self.spectrum_width
         height = self.spectrum_height
@@ -165,8 +166,7 @@ class ColorChooser(ttk.Frame):
         return canvas
 
     def create_spectrum_indicator(self) -> None:
-        """Create a square indicator that displays in the position of
-        the selected color"""
+        """Create an indicator at the selected color's position."""
         s = utility.scale_size(self, 10)
         width = utility.scale_size(self, 2)
         values = self.get_variables()
@@ -179,7 +179,7 @@ class ColorChooser(ttk.Frame):
 
     # widget builder methods
     def create_swatches(self, master: tkinter.Misc, colors: List[str]) -> ttk.Frame:
-        """Create a grid of color swatches"""
+        """Create a grid of color swatches."""
         box_padx = 2
         box_pady = 0
         padx_total = (box_padx * 15)
@@ -226,7 +226,7 @@ class ColorChooser(ttk.Frame):
         return container
 
     def create_preview(self, master: tkinter.Misc) -> ttk.Frame:
-        """Create the preview frame for original and new colors"""
+        """Create the preview frame for original and new colors."""
         ng_style = self.notebook.cget('style')
         # set the border color to match the notebook border color
         border_color = self.style.lookup(ng_style, 'bordercolor') or "#000000"
@@ -280,7 +280,7 @@ class ColorChooser(ttk.Frame):
         return container
 
     def create_value_inputs(self, master: tkinter.Misc) -> ttk.Frame:
-        """Create color value input widgets"""
+        """Create color value input widgets."""
         container = ttk.Frame(master)
         for x in range(4):
             container.columnconfigure(x, weight=1)
@@ -342,7 +342,7 @@ class ColorChooser(ttk.Frame):
         return container
 
     def create_luminance_scale(self, master: tkinter.Misc) -> ttk.Canvas:
-        """Create the color luminance canvas"""
+        """Create the color luminance canvas."""
         # widget dimensions
         height = xf = self.spectrum_point
         width = self.spectrum_width
@@ -367,8 +367,7 @@ class ColorChooser(ttk.Frame):
         return canvas
 
     def create_luminance_indicator(self) -> None:
-        """Create an indicator that displays in the position of the
-        luminance value"""
+        """Create an indicator at the luminance value's position."""
         lum = 50
         x1 = int(lum / LUM * self.spectrum_width) - \
              ((self.spectrum_point - 2) // 2)
@@ -382,16 +381,14 @@ class ColorChooser(ttk.Frame):
         self.luminance_scale.tag_lower(tag)
 
     def coords_from_color(self, hexcolor: str) -> Tuple[float, float]:
-        """Get the coordinates on the color spectrum from the color
-        value"""
+        """Get the color spectrum coordinates from a color value."""
         h, s, _ = colorutils.color_to_hsl(hexcolor)
         x = (h / HUE) * self.spectrum_width
         y = (1 - (s / SAT)) * self.spectrum_height
         return x, y
 
     def color_from_coords(self, x: int, y: int):
-        """Get the color value from the mouse position in the color
-        spectrum"""
+        """Get the color value from the mouse position in the spectrum."""
         HEIGHT = self.spectrum_height
         WIDTH = self.spectrum_width
         h = int(min(HUE, max(0, (HUE / WIDTH) * x)))
@@ -402,7 +399,7 @@ class ColorChooser(ttk.Frame):
         return ColorValues(h, s, l, r, g, b, hx)
 
     def set_variables(self, h: int, s: int, l: int, r: int, g: int, b: int, hx: str) -> None:
-        """Update the color value variables"""
+        """Update the color value variables."""
         self.hue.set(h)
         self.sat.set(s)
         self.lum.set(l)
@@ -412,8 +409,7 @@ class ColorChooser(ttk.Frame):
         self.hex.set(hx)
 
     def get_variables(self):
-        """Get the values of all color models and return a
-        tuple of color values"""
+        """Get all color model values as a ColorValues named tuple."""
         h = self.hue.get()
         s = self.sat.get()
         l = self.lum.get()
@@ -424,7 +420,7 @@ class ColorChooser(ttk.Frame):
         return ColorValues(h, s, l, r, g, b, hx)
 
     def update_preview(self) -> None:
-        """Update the color in the preview frame"""
+        """Update the color in the preview frame."""
         hx = self.hex.get()
         fg = colorutils.contrast_color(
             color=hx,
@@ -434,7 +430,7 @@ class ColorChooser(ttk.Frame):
         self.preview_lbl.configure(bg=hx, fg=fg)
 
     def update_luminance_scale(self) -> None:
-        """Update the luminance scale with the change in hue and saturation"""
+        """Update the luminance scale with the change in hue and saturation."""
         values = self.get_variables()
         width = self.spectrum_width
         xf = self.spectrum_point
@@ -450,7 +446,7 @@ class ColorChooser(ttk.Frame):
             self.luminance_scale.itemconfig(tag, fill=fill)
 
     def update_luminance_indicator(self) -> None:
-        """Update the position of the luminance indicator"""
+        """Update the position of the luminance indicator."""
         lum = self.lum.get()
         x = int(lum / LUM * self.spectrum_width) - \
             ((self.spectrum_point - 2) // 2)
@@ -458,7 +454,7 @@ class ColorChooser(ttk.Frame):
         self.luminance_scale.tag_raise('luminance-indicator')
 
     def update_spectrum_indicator(self) -> None:
-        """Move the spectrum indicator to a new location"""
+        """Move the spectrum indicator to a new location."""
         values = self.get_variables()
         x, y = self.coords_from_color(values.hex)
         # move to the new color location
@@ -470,9 +466,7 @@ class ColorChooser(ttk.Frame):
 
     # color events
     def sync_color_values(self, model):
-        """Callback for when a color value changes. A change in one
-        value will automatically update the other values so that all
-        color models remain in sync."""
+        """Handle a color value change, propagating updates across all color models."""
         values = self.get_variables()
         if model == HEX:
             hx = values.hex
@@ -491,8 +485,7 @@ class ColorChooser(ttk.Frame):
         self.update_luminance_indicator()
 
     def on_entry_value_change(self, widget: ttk.Spinbox, model: Any) -> None:
-        """Update the widget colors when the color value input is
-        changed"""
+        """Update widget colors when a color value input changes."""
         is_valid = widget.validate()
         if is_valid:
             self.sync_color_values(model)
@@ -509,8 +502,7 @@ class ColorChooser(ttk.Frame):
         self.update_spectrum_indicator()
 
     def on_spectrum_interaction(self, event: tkinter.Event) -> None:
-        """Update the widget colors when the color spectrum canvas is
-        pressed"""
+        """Update widget colors when the color spectrum is clicked."""
         values = self.color_from_coords(event.x, event.y)
         self.hue.set(values.h)
         self.sat.set(values.s)
@@ -520,8 +512,7 @@ class ColorChooser(ttk.Frame):
         self.update_spectrum_indicator()
 
     def on_luminance_interaction(self, event: tkinter.Event) -> None:
-        """Update the widget colors when the color luminance scale is
-        pressed"""
+        """Update widget colors when the luminance scale is clicked."""
         l = max(0, min(LUM, int((event.x / self.spectrum_width) * LUM)))
         self.lum.set(l)
         self.sync_color_values(HSL)
@@ -542,6 +533,7 @@ class ColorChooserDialog:
 
         `<<DialogResult>>`: Fired when the dialog is closed.
           Provides `event.data` with keys: `result` (ColorChoice|None), `confirmed` (bool).
+
     """
 
     def __init__(
@@ -550,6 +542,7 @@ class ColorChooserDialog:
             title: str = "color.chooser",
             initial_color: Optional[str] = None,
     ) -> None:
+        """Initialize the ColorChooser dialog."""
         self._master = master
         # Title is now automatically localized by BaseWindow._setup_window
         self._title = title

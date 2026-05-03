@@ -180,6 +180,13 @@ class Calendar(ttk.Frame):
         self._max_date = self._coerce_date(max_date)
         self._min_date = self._coerce_date(min_date)
 
+        # Clamp _display_date into the allowed window so the calendar doesn't
+        # open stranded outside min/max with both chevrons permanently disabled.
+        if self._min_date and self._display_date < self._min_date.replace(day=1):
+            self._display_date = self._min_date.replace(day=1)
+        elif self._max_date and self._display_date > self._max_date.replace(day=1):
+            self._display_date = self._max_date.replace(day=1)
+
         self._title_var = ttk.StringVar()
         self._locked_size: Optional[tuple[int, int]] = None
 
@@ -215,6 +222,13 @@ class Calendar(ttk.Frame):
         """
         new_date = self._coerce_date(value)
         if new_date is None:
+            # Clear selection
+            self._selected_date = None
+            self._range_start = None
+            self._range_end = None
+            self._refresh_calendar()
+            return
+        if self._is_disabled(new_date):
             return
         self._selected_date = new_date
         if self._selection_mode == "single":
@@ -268,10 +282,14 @@ class Calendar(ttk.Frame):
             end: The range end date. If None, sets a range-in-progress.
         """
         s, e = self._normalize_range(start, end)
+        if s is not None and self._is_disabled(s):
+            return
+        if e is not None and self._is_disabled(e):
+            return
         self._range_start = s
         self._range_end = e
-        # Update selected_date to the end if complete, else start
-        self._selected_date = e if e else (s if s else self._selected_date)
+        # Update selected_date: end if complete, start if in-progress, None if cleared
+        self._selected_date = e if e else s
         # Navigate display to show the range
         if s:
             self._display_date = date(s.year, s.month, 1)

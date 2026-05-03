@@ -22,6 +22,7 @@ Example:
     root = ttk.Window()
     root.mainloop()
     ```
+
 """
 
 
@@ -41,6 +42,7 @@ def _platform_baseline() -> float:
 
 class _ScalingState:
     """Internal class to store global scaling state."""
+
     _scale_factor: float = 1.0
     _baseline: float = _platform_baseline()
 
@@ -69,6 +71,7 @@ class _ScalingState:
 
         Returns:
             The scale factor to apply to images.
+
         """
         return cls.get_ui_scale() / source_resolution
 
@@ -90,44 +93,16 @@ def enable_high_dpi_awareness(root=None, scaling=None):
         If the `root` argument is provided, then `scaling` must also
         be provided. Otherwise, there is no effect.
 
-    Parameters:
-
-        root (tk.Tk):
-            The root widget
-
-        scaling (float or 'auto'):
-            Sets and queries the current scaling factor used by Tk to
-            convert between physical units (for example, points,
-            inches, or millimeters) and pixels. The number argument is
-            a floating point number that specifies the number of pixels
-            per point on window's display. If the window argument is
-            omitted, it defaults to the main window. If the number
-            argument is omitted, the current value of the scaling
-            factor is returned.
-
-            If set to 'auto', the scale factor will be detected
-            automatically from the system DPI settings.
-
-            A "point" is a unit of measurement equal to 1/72 inch. A
-            scaling factor of 1.0 corresponds to 1 pixel per point,
-            which is equivalent to a standard 72 dpi monitor. A scaling
-            factor of 1.25 would mean 1.25 pixels per point, which is
-            the setting for a 90 dpi monitor; setting the scaling factor
-            to 1.25 on a 72 dpi monitor would cause everything in the
-            application to be displayed 1.25 times as large as normal.
-            The initial value for the scaling factor is set when the
-            application starts, based on properties of the installed
-            monitor, but it can be changed at any time. Measurements
-            made after the scaling factor is changed will use the new
-            scaling factor, but it is undefined whether existing
-            widgets will resize themselves dynamically to accommodate
-            the new scaling factor.
+    Args:
+        root: The root Tk widget.
+        scaling: Scaling factor or 'auto'.
 
     Returns:
-
+    -------
         float:
             The scaling factor that was applied, or None if no scaling
             was applied.
+
     """
     import platform
 
@@ -168,16 +143,15 @@ def detect_scale_factor(root):
     an appropriate scale factor for Tk. The scale factor is measured in
     "pixels per point" (72 points per inch).
 
-    Parameters:
-
-        root (tk.Tk):
-            The root window (must be created before calling)
+    Args:
+        root: The root Tk window.
 
     Returns:
-
+    -------
         float:
             The detected scale factor in pixels per point
             (e.g., 1.333 for 96 DPI, 2.0 for 144 DPI)
+
     """
     import platform
 
@@ -211,52 +185,46 @@ def detect_scale_factor(root):
 
 
 def get_image_name(image):
-    """Extract and return the tcl/tk image name from a PhotoImage
-    object.
+    """Extract and return the Tcl/Tk image name from a PhotoImage object.
 
-    Parameters:
-
-        image (ImageTk.PhotoImage):
-            A photoimage object.
+    Args:
+        image: A PhotoImage object.
 
     Returns:
-
+    -------
         str:
             The tcl/tk name of the photoimage object.
+
     """
     return image._PhotoImage__photo.name
 
 
 def scale_size(widget=None, size=None):
-    """Scale the size based on the scaling factor of tkinter.
-    This is used most frequently to adjust the assets for
-    image-based widget layouts and padding values.
+    """Scale a size value using the tkinter scaling factor.
+
+    Args:
+        widget: Optional widget used to derive the scale factor.
+        size: The size value or sequence to scale.
+
+    Used to adjust asset sizes and padding for image-based widget layouts.
 
     Can be called in two ways:
     1. scale_size(widget, size) - Legacy mode, calculates from widget
     2. scale_size(size) - Uses global scaling state
 
-    Parameters:
-
-        widget (Widget, optional):
-            The widget object. If provided, scaling is calculated from
-            the widget's tk instance. If None, uses global scaling state.
-
-        size (Union[int, List, Tuple]):
-            A single integer or an iterable of integers
-
     Returns:
-
+    -------
         Union[int, List]:
             An integer or list of integers representing the new size.
 
     Examples:
-
+    --------
         >>> # Using widget (legacy mode)
         >>> scaled = scale_size(my_widget, 10)
 
         >>> # Using global state (new mode)
         >>> scaled = scale_size(10)
+
     """
     # Handle both calling conventions
     if widget is not None and size is None:
@@ -296,6 +264,7 @@ def debug_log_exception(message: str = "") -> None:
 
     Args:
         message: Optional context message to print before the traceback.
+
     """
     if not _debug_enabled():
         return
@@ -310,7 +279,7 @@ def debug_log_exception(message: str = "") -> None:
 
 
 def center_on_parent(win, parent=None):
-    """Center `win` on parent or over its master if not given"""
+    """Center a window on its parent, or on screen if no parent is given."""
     win.update_idletasks()  # ensure geometry
     if parent is None:
         parent = getattr(win, 'master', None) or win  # root if no parent
@@ -346,6 +315,7 @@ def bind_right_click(widget, handler, add: str | bool = '+'):
         handler: Event handler callable (or Tcl command string).
         add: Passed through to `bind`. Defaults to `'+'` so the helper
             never silently replaces an existing binding.
+
     """
     widget.bind('<Button-3>', handler, add=add)
     try:
@@ -367,5 +337,6 @@ def clamp(value, min_val, max_val):
 
     Returns:
         The value, constrained between `min_val` and `max_val`.
+
     """
     return min(max(value, min_val), max_val)

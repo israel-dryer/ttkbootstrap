@@ -1,3 +1,4 @@
+"""Color and style token name constants."""
 from __future__ import annotations
 
 COLOR_TOKENS = {

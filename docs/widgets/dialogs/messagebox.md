@@ -4,156 +4,223 @@ title: MessageBox
 
 # MessageBox
 
-`MessageBox` is a **modal feedback dialog** for communicating information and collecting simple user confirmation.
+`MessageBox` is a thin **facade** over [`MessageDialog`](messagedialog.md):
+a handful of static methods (`ok`, `yesno`, `okcancel`, `show_info`,
+`show_error`, …) that build a modal `MessageDialog` with a canned
+button set and icon, call `show()`, and return the pressed button's
+text.
 
-It supports common dialog types like info, warning, error, question/confirm, and can return a result indicating what the user chose.
-
-Use MessageBox for:
-
-- confirmations (Delete? Quit without saving?)
-
-- error reporting (Something failed)
-
-- simple alerts (Action completed)
-
-<!--
-IMAGE: MessageBox examples
-Suggested: 3 small dialogs (info/warning/error) in light/dark
--->
+Reach for `MessageBox` when the message fits one of the stock
+patterns — info, warning, error, question, yes/no, ok/cancel — and
+the few extra lines of `MessageDialog` setup aren't earning their
+keep. Drop down to [`MessageDialog`](messagedialog.md) the moment you
+need a custom button label, a `:danger` accent, or non-default
+modality.
 
 ---
 
-## Quick start
+## Basic usage
 
-### Information
+Every method takes `message` first, then `title`, then optional
+`master` and `alert` flags, then keyword extras forwarded to the
+underlying `MessageDialog`.
 
 ```python
 import ttkbootstrap as ttk
 
 app = ttk.App()
 
-ttk.MessageBox.ok(
-    title="Saved",
-    message="Your changes have been saved.",
-)
+def confirm_quit():
+    answer = ttk.MessageBox.yesno(
+        "Quit without saving your changes?",
+        title="Unsaved changes",
+    )
+    if answer == "Yes":
+        app.destroy()
 
+ttk.Button(app, text="Quit", command=confirm_quit).pack(padx=20, pady=20)
 app.mainloop()
 ```
 
-### Confirm / question
-
-```python
-result = ttk.MessageBox.yesno(
-    title="Delete file?",
-    message="This action can't be undone.",
-)
-print("User chose:", result)  # typically True/False or "Yes"/"No"
-```
+Each call **blocks** the caller until the user picks a button (or
+dismisses the dialog) and then returns the button's text. There is no
+need to instantiate or hold on to anything — the helper builds the
+dialog, shows it, and tears it down.
 
 ---
 
-## When to use
+## Result value
 
-Use `MessageBox` when:
+Every helper returns a `str` (the pressed button's text) or `None`
+when the dialog is dismissed without a button press (close box,
+Escape on cancel-bearing dialogs).
 
-- you need the user to acknowledge or decide something before continuing
+| Helper | Buttons (left → right) | Possible return values |
+|---|---|---|
+| `ok(...)` | `OK` | `"OK"` or `None` |
+| `okcancel(...)` | `Cancel`, `OK` | `"OK"`, `"Cancel"`, or `None` |
+| `yesno(...)` | `No`, `Yes` | `"Yes"`, `"No"`, or `None` |
+| `yesnocancel(...)` | `Cancel`, `No`, `Yes` | `"Yes"`, `"No"`, `"Cancel"`, or `None` |
+| `retrycancel(...)` | `Cancel`, `Retry` | `"Retry"`, `"Cancel"`, or `None` |
+| `show_info(...)` | `OK` (info icon) | `"OK"` or `None` |
+| `show_warning(...)` | `OK` (warning icon, `alert=True`) | `"OK"` or `None` |
+| `show_error(...)` | `OK` (error icon, `alert=True`) | `"OK"` or `None` |
+| `show_question(...)` | `OK` (question icon) | `"OK"` or `None` |
 
-- the decision is simple (1-3 buttons)
+```python
+result = ttk.MessageBox.okcancel("Replace existing file?")
+if result == "OK":
+    write_file()
+elif result == "Cancel":
+    log("user cancelled")
+else:
+    log("user dismissed dialog")  # closed via title bar
+```
 
-- the dialog should be modal
-
-### Consider a different control when...
-
-- you want non-blocking feedback (Saved!, Copied!) - use [Toast](../overlays/toast.md) instead
-
-- feedback is contextual and shouldn't interrupt workflow - use [Tooltip](../overlays/tooltip.md) or inline messaging instead
+Button labels are passed through `MessageCatalog.translate`
+(`localize=True` is always on inside the facade), so the returned
+string reflects the **active locale** when a translation exists. Code
+that branches on `result == "Yes"` will break under translation —
+prefer comparing against a known constant captured at call time, or
+drop down to `MessageDialog` and read the `<<DialogResult>>`
+`confirmed` flag.
 
 ---
 
-## Examples & patterns
+## Common options
 
-### Common dialog types
-
-Most apps stick to a small set of patterns:
-
-- **Info** - success/neutral notification
-
-- **Warning** - proceed with caution
-
-- **Error** - operation failed
-
-- **Question** - user must choose
-
-Use the highest-level helper that matches your intent (e.g., `ok`, `yesno`, `okcancel`) to keep UI consistent.
-
-### Common options
-
-#### `title` and `message`
+| Argument | Purpose |
+|---|---|
+| `message` | Body text. Positional or keyword. Wrapped to `width` characters per line. |
+| `title` | Window title. Defaults to a single space (no title). |
+| `master` | Parent window. Defaults to the application root. |
+| `alert` | If `True`, rings the system bell when the dialog opens. `show_warning` and `show_error` default to `True`; everything else defaults to `False`. |
+| `icon` *(kwarg)* | Override the icon. Bootstrap icon name (`"info-circle-fill"`) or a dict (`{"name": ..., "size": 32, "color": "danger"}`). The semantic helpers (`show_info`, `show_warning`, …) set this for you. |
+| `width` *(kwarg)* | Maximum line length for message wrapping. Default `50`. |
+| `padding` *(kwarg)* | Inner padding around the message body. Default `(20, 20)`. |
+| `position` *(kwarg)* | Override the centered position with absolute screen coordinates `(x, y)`. |
+| `on_result` *(kwarg)* | Callback receiving the `<<DialogResult>>` payload (`{"result": ..., "confirmed": ...}`). Fires before the helper returns. |
 
 ```python
-ttk.MessageBox.ok(title="Notice", message="Hello!")
-```
-
-#### Detail / secondary text (if supported)
-
-Use detail text for stack traces or extra explanation.
-
-```python
-ttk.MessageBox.show(
-    title="Import failed",
-    message="Could not import the file.",
-    detail="The file format was not recognized.",
-    icon="error",
-    buttons=("OK",),
+ttk.MessageBox.show_error(
+    "Could not connect to the server.",
+    title="Connection failed",
+    master=app,
+    width=60,
+    padding=(24, 16),
 )
 ```
 
-#### Parent / positioning (if supported)
-
-Pass a parent to keep the dialog on top of the correct window.
-
-```python
-ttk.MessageBox.ok(parent=app, title="Saved", message="Done.")
-```
-
-### Value model
-
-Message boxes return a **single committed choice** (or no value if dismissed):
-
-- OK-only dialogs - no decision, just acknowledgement
-
-- Yes/No, OK/Cancel - one decision
-
-- Retry/Cancel - one decision for error recovery
-
-Return values vary by implementation (bool, string token, enum). Treat the result as your source of truth.
+The button labels themselves are **fixed per method** — `MessageBox`
+won't let you swap `Yes`/`No` for `Keep`/`Discard`. If you need verb
+labels (or a `:danger` accent on a destructive button), instantiate
+[`MessageDialog`](messagedialog.md) directly.
 
 ---
 
 ## Behavior
 
-- Opens as **modal** (blocks interaction until dismissed)
+### Modality and lifecycle
 
-- Escape typically cancels (when cancel is available)
+Each call builds a fresh modal `MessageDialog` transient to `master`,
+shows it, and destroys it on dismissal. The helper does not return
+until the user dismisses the dialog. Calling code therefore behaves
+like a synchronous prompt — a `print(...)` immediately after the
+helper runs after the user has clicked.
 
-- Enter typically activates the default action (OK/Yes)
+### Default button (Enter)
 
-Keep messages short, actionable, and avoid putting long text in the main message line.
+The **last button** in each canned set is the default — the one
+focused, accented as primary, and bound to **Enter**. So:
+
+- `okcancel` → **OK** is default
+- `yesno` → **Yes** is default
+- `yesnocancel` → **Yes** is default
+- `retrycancel` → **Retry** is default
+
+This matches conventional modal UX: Enter performs the affirmative
+action.
+
+### Cancel binding (Escape)
+
+The **first** button is wired to **Escape** *only when its label
+contains "cancel"* (case-insensitive). That covers `okcancel`,
+`yesnocancel`, and `retrycancel`. **`yesno` has no Escape binding** —
+neither button is "cancel", so closing the dialog from the keyboard
+requires the title-bar close box. Use `yesnocancel` if you want
+keyboard dismissal.
+
+### Localization
+
+`MessageBox` always passes `localize=True` to the underlying dialog,
+so canonical labels (`"OK"`, `"Cancel"`, `"Yes"`, `"No"`, `"Retry"`)
+are looked up in the active `MessageCatalog` before being shown and
+returned. When a translation exists, the returned string is the
+translated label.
+
+---
+
+## Events
+
+`MessageBox` is a thin facade — there is no instance to bind to. Use
+the **`on_result` keyword** to react to the dismissal payload:
+
+```python
+def log_choice(payload):
+    print("confirmed:", payload["confirmed"], "result:", payload["result"])
+
+ttk.MessageBox.yesnocancel(
+    "Save changes before quitting?",
+    title="Unsaved changes",
+    on_result=log_choice,
+)
+```
+
+If you need a longer-lived hook (multiple subscribers, off-binding,
+inspection of the dialog instance), build a `MessageDialog` yourself
+and call `on_dialog_result` on it.
+
+---
+
+## When should I use MessageBox?
+
+Use `MessageBox` when:
+
+- the message fits one of the stock patterns: info / warning / error
+  / yes-no / ok-cancel / retry-cancel.
+- you want one line of code instead of three.
+- the canned button labels are acceptable for your locale and tone.
+
+Prefer a different control when:
+
+- you need custom button labels or a `:danger` accent → use
+  [`MessageDialog`](messagedialog.md).
+- you need to collect a value, not just a button choice → use
+  [`QueryBox`](querybox.md) or [`QueryDialog`](querydialog.md).
+- you need multiple inputs → use [`FormDialog`](formdialog.md).
+- you want non-blocking feedback ("Saved", "Copied") → use
+  [`Toast`](../overlays/toast.md).
 
 ---
 
 ## Additional resources
 
-### Related widgets
+**Related widgets**
 
-- [Toast](../overlays/toast.md) - non-blocking notifications
+- [`MessageDialog`](messagedialog.md) — the underlying modal; use it
+  directly for custom buttons, accents, or default-button overrides.
+- [`QueryBox`](querybox.md) — the same facade pattern, but for
+  collecting a single text/numeric value.
+- [`Toast`](../overlays/toast.md) — non-blocking inline notification
+  for transient feedback.
+- [`Dialog`](dialog.md) — the generic builder underneath everything.
 
-- [Tooltip](../overlays/tooltip.md) - contextual help
+**Framework concepts**
 
-- [MessageDialog](messagedialog.md) - alternative message dialog
+- [Windows](../../platform/windows.md)
+- [Localization](../../capabilities/localization.md)
 
-- [DateDialog](datedialog.md) - modal date selection dialog
+**API reference**
 
-### API reference
-
-- [`ttkbootstrap.MessageBox`](../../reference/dialogs/MessageBox.md)
+- **API reference:** [`ttkbootstrap.MessageBox`](../../reference/dialogs/MessageBox.md)
+- **Related guides:** Dialogs, Localization

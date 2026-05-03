@@ -1,3 +1,4 @@
+"""TTK widget style builder for ttkbootstrap."""
 from __future__ import annotations
 
 import threading
@@ -12,7 +13,10 @@ from ttkbootstrap.style.theme_provider import ThemeProvider
 
 
 class BuilderCallable(Protocol):
+    """Protocol for TTK widget style builder callables."""
+
     def __call__(self, builder: BootstyleBuilderTTk, ttk_style: str, **options: Any) -> None:
+        """Call the builder with the TTK style name."""
         ...
 
 
@@ -66,6 +70,7 @@ class BootstyleBuilderTTk(BootstyleBuilderBase):
         Args:
             theme_provider: Optional ThemeProvider instance (creates one if None)
             style_instance: Optional Style instance (set later to avoid circular import)
+
         """
         super().__init__(theme_provider, style_instance)
 
@@ -74,6 +79,7 @@ class BootstyleBuilderTTk(BootstyleBuilderBase):
 
         Args:
             style_instance: Style instance to use for configuration
+
         """
         self._style = style_instance
 
@@ -98,6 +104,7 @@ class BootstyleBuilderTTk(BootstyleBuilderBase):
             ... def build_button_outline(builder, ttk_style, **options):
             ...     # Builder implementation
             ...     pass
+
         """
         if not isinstance(variant, str) or not variant:
             raise BootstyleBuilderError("`variant` must be a non-empty string")
@@ -134,6 +141,7 @@ class BootstyleBuilderTTk(BootstyleBuilderBase):
 
         Raises:
             BootstyleBuilderError: If builder not found
+
         """
         # Ensure builders are loaded before accessing registry
         BootstyleBuilderTTk._ensure_builders_loaded()
@@ -171,6 +179,7 @@ class BootstyleBuilderTTk(BootstyleBuilderBase):
 
         Raises:
             ValueError: If widget name not recognized
+
         """
         if widget_name not in WIDGET_CLASS_MAP:
             raise ValueError(
@@ -191,6 +200,7 @@ class BootstyleBuilderTTk(BootstyleBuilderBase):
 
         Raises:
             ValueError: If widget class not recognized
+
         """
         if widget_class not in WIDGET_NAME_MAP:
             raise ValueError(
@@ -218,6 +228,7 @@ class BootstyleBuilderTTk(BootstyleBuilderBase):
             ... @BootstyleBuilderTTk.register_builder('default', 'TButton')
             ... def build_button_solid(builder, ttk_style, **options):
             ...     pass
+
         """
         return DEFAULT_VARIANT
 
@@ -230,6 +241,7 @@ class BootstyleBuilderTTk(BootstyleBuilderBase):
 
         Returns:
             List of variant names
+
         """
         cls._ensure_builders_loaded()
         registry = cls._builder_registry.get(widget_class, {})
@@ -241,6 +253,7 @@ class BootstyleBuilderTTk(BootstyleBuilderBase):
 
         Returns:
             List of TTK widget class names
+
         """
         cls._ensure_builders_loaded()
         return list(cls._builder_registry.keys())
@@ -287,6 +300,7 @@ class BootstyleBuilderTTk(BootstyleBuilderBase):
             True
             >>> BootstyleBuilderTTk.has_builder('TButton', 'nonexistent')
             False
+
         """
         cls._ensure_builders_loaded()
         return variant in cls._builder_registry.get(widget_class, {})
@@ -331,12 +345,15 @@ class BootstyleBuilderTTk(BootstyleBuilderBase):
                     pass
 
     def map_style(self, ttk_style: str, **options):
+        """Apply state-based style mapping to a TTK style."""
         self.style.map(ttk_style, **options)
 
     def configure_style(self, ttk_style, **kwargs):
+        """Configure static style options for a TTK style."""
         self.style.configure(ttk_style, **kwargs)
 
     def create_style_element_image(self, element: ElementImage):
+        """Create an image-based TTK style element."""
         name, args, kwargs = element.build()
         try:
             existing = set(self.style.element_names())
@@ -348,6 +365,7 @@ class BootstyleBuilderTTk(BootstyleBuilderBase):
         self.style.element_create(name, "image", *args, **kwargs)
 
     def create_style_layout(self, ttk_style: str, element: Element | list[Element]):
+        """Set the layout for a TTK style."""
         if isinstance(element, list):
             self.style.layout(ttk_style, [e.spec() for e in element])
         else:

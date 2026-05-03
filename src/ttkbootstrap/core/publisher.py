@@ -27,22 +27,25 @@ Example:
     # Publish a message to all TTK subscribers
     Publisher.publish(Channel.TTK)
     ```
+
 """
 from enum import Enum
 from typing import List
 
 
 class Channel(Enum):
-    """A grouping for Publisher subscribers. Indicates whether the
+    """A grouping for Publisher subscribers.
+
+    Indicates whether the
     widget is a legacy `STD` tk widget or a styled `TTK` widget.
 
     Attributes:
-
         STD (1):
             Legacy tkinter widgets.
 
         TTK (2):
             Themed tkinter widgets.
+
     """
 
     STD = 1
@@ -50,22 +53,18 @@ class Channel(Enum):
 
 
 class Subscriber:
-    """A subscriber data class used to store information about a specific
-    subscriber to the `Publisher`."""
+    """A subscriber data class for Publisher subscriptions."""
 
     def __init__(self, name, func, channel):
         """Create a subscriber.
 
-        Parameters:
+        Args:
+            name: The name of the subscriber
 
-            name (str):
-                The name of the subscriber
+            func: The function to call when messaging.
 
-            func (Callable):
-                The function to call when messaging.
+            channel: The subscription channel.
 
-            channel (Channel):
-                The subscription channel.
         """
         self.name = name
         self.func = func
@@ -79,22 +78,20 @@ class Publisher:
 
     @staticmethod
     def subscriber_count():
+        """Return the number of active subscribers."""
         return len(Publisher.__subscribers)
 
     @staticmethod
     def subscribe(name, func, channel):
         """Subscribe to an event.
 
-        Parameters:
+        Args:
+            name: The widget's tkinter/tcl name.
 
-            name (str):
-                The widget's tkinter/tcl name.
+            func: A function to call when passing a message.
 
-            func (Callable):
-                A function to call when passing a message.
+            channel: Indicates the channel grouping the subscribers.
 
-            channel (Channel):
-                Indicates the channel grouping the subscribers.
         """
         subs = Publisher.__subscribers
         subs[name] = Subscriber(name, func, channel)
@@ -103,10 +100,9 @@ class Publisher:
     def unsubscribe(name):
         """Remove a subscriber.
 
-        Parameters:
+        Args:
+            name: The widget's tkinter/tcl name.
 
-            name (str):
-                The widget's tkinter/tcl name.
         """
         subs = Publisher.__subscribers
         try:
@@ -118,9 +114,9 @@ class Publisher:
         """Return a list of subscribers.
 
         Returns:
-
             List:
                 List of key-value tuples
+
         """
         subs = Publisher.__subscribers.values()
         channel_subs = [s for s in subs if s.channel == channel]
@@ -129,13 +125,10 @@ class Publisher:
     def publish_message(channel, *args):
         """Publish a message to all subscribers.
 
-        Parameters:
+        Args:
+            channel: The name of the channel to publish to.
+            *args: Optional arguments forwarded to each subscriber.
 
-            channel (Channel):
-                The name of the channel to subscribe.
-
-            **args:
-                optional arguments to pass to the subscribers.
         """
         subs: list[Subscriber] = Publisher.get_subscribers(channel)
         for sub in subs:

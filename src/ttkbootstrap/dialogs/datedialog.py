@@ -63,6 +63,7 @@ class _ChromeDialog(Dialog):
             window_point: Point on the dialog window (n, s, e, w, ne, nw, se, sw, center).
             offset: Additional (x, y) offset in pixels from the anchor position.
             auto_flip: Smart positioning to keep window on screen.
+
         """
         if modal is None:
             modal = (self._mode == "modal")
@@ -186,7 +187,7 @@ class _DialogCalendar(Calendar):
 
 
 class DateDialog:
-    """Modal dialog that displays a Calendar"""
+    """Modal dialog that displays a Calendar."""
 
     def __init__(
             self,
@@ -223,6 +224,7 @@ class DateDialog:
                 decorations using override-redirect.
             close_on_click_outside: When True, closes the dialog when focus
                 moves outside (popover mode).
+
         """
         self._master = master
         self._first_weekday = first_weekday
@@ -331,6 +333,7 @@ class DateDialog:
                 - True: Flip both vertically and horizontally as needed
                 - 'vertical': Only flip up/down
                 - 'horizontal': Only flip left/right
+
         """
         # Default positioning: bottom-right of parent if no positioning options provided
         if position is None and anchor_to is None and self._master:
@@ -370,6 +373,7 @@ class DateDialog:
 
         Returns:
             The Tk binding identifier, which can be used with `off_result`.
+
         """
         target = self._dialog.toplevel or self._master
         if target is None:
@@ -385,6 +389,7 @@ class DateDialog:
 
         Args:
             funcid: Binding identifier returned by `on_result`.
+
         """
         target = self._dialog.toplevel or self._master
         if target is None:

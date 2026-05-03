@@ -1,230 +1,168 @@
 ---
-title: SelectionWidgetName
+title: WidgetName
 ---
 
-# SelectionWidgetName
+# WidgetName
 
-1–2 paragraphs describing:
+1–2 paragraphs that say:
 
-- what kind of selection this control represents (single, multiple, tri-state, from-a-list)
+- what kind of selection this is (boolean, mutually-exclusive, set,
+  list-of-one, list-of-many)
+- what value type it produces (`bool`, `str`, `set[str]`, ...) and
+  how that value is committed
+- a comparison sentence if useful ("Unlike Switch...", "Like
+  RadioGroup but...")
 
-- what value it produces and how it is typically used (settings, filters, preferences)
-
-If relevant, briefly contrast it with closely related selection controls.
-
----
-
-## Framework integration
-
-**Value model**
-
-- Whether choices are independent or mutually exclusive
-
-- What value type is produced (`bool`, `str`, `set`, etc.)
-
-- When the value is considered committed
-
-**Signals & Events**
-
-- Preferred binding (`signal=...`) when supported
-
-- Change events and virtual events
-
-**Design System**
-
-- Variant expectations (checkbox vs toggle, radio vs button-style radio)
-
-- How states are represented visually (selected, active, disabled)
-
-**Localization**
-
-- How labels and option text participate in localization
-
----
-
-## Overview
-
-Explain the selection model in plain terms:
-
-- whether choices are **independent** or **mutually exclusive**
-
-- how many values can be selected
-
-- whether the control represents a boolean, enum, set, or list-based choice
+The intro carries the "what is this" framing — there's no separate
+`Framework integration` lead. Its content distributes into Common
+options (theme tokens, items, on/off values), Behavior (selection
+model, keyboard, popup), and Events (`command`, signal, virtual
+events).
 
 ---
 
 ## Basic usage
 
-Show a minimal, runnable example demonstrating:
-
-- creating the widget
-
-- setting an initial selection (`value`, `default`, etc.)
-
-- packing or gridding it
+One minimal, runnable example showing the widget producing its
+typical value.
 
 ```python
+import ttkbootstrap as ttk
+
 # minimal, copy/paste runnable
 ```
 
----
-
-## Variants
-
-If the widget supports visual or behavioral variants, document them here.
-
-Examples:
-
-- checkbox vs toggle
-
-- radio vs button-style radio
-
-- dropdown vs inline list
-
-Use a short example per variant.
+If the widget supports multiple variants (checkbox / toggle, radio /
+button-radio), show only the primary form here.
 
 ---
 
-## How the value works
+## Selection model
 
-Describe the value model clearly:
+How the widget represents its selected state — the central concept
+for any selection control:
 
-- what the value represents
+- **Value type** — what the bound variable / signal holds (`bool`,
+  the `onvalue`/`offvalue` strings, the chosen item, a `set` of
+  selected items)
+- **Independent vs mutually-exclusive** — does this widget stand
+  alone (CheckButton), participate in a one-of-many group sharing a
+  variable (RadioButton), or own its own group (RadioGroup,
+  SelectBox)?
+- **Initial state** — what `value=` does at construction, and how it
+  interacts with `signal=` / `variable=` (does the bound variable
+  win?  does `value=` clobber it?)
+- **Indeterminate / empty / no-selection** — is there a third state
+  (tri-state checkbox, "nothing selected" in a SelectBox)?  How is
+  it reached, and is it reachable post-construction?
+- **Commit semantics** — when does the bound state actually change?
+  (click, programmatic `set()`, popup close, Enter)
 
-- its type (`bool`, `str`, `set`, etc.)
-
-- default value semantics
-
-- special values (e.g., `None` for indeterminate)
-
-Explain when the value is considered committed.
-
----
-
-## Binding to signals or variables
-
-Explain state binding options:
-
-- preferred reactive binding (`signal=...`)
-
-- Tk variables (`variable=...`, `textvariable=...`) as alternatives
-
-Show a concise two-way binding example.
+Include a short example that shows the model — typically the
+selection round-trip (read current → set new → observe change).
 
 ---
 
 ## Common options
 
-Curated options only, such as:
+Curated — what users actually configure. Selection widgets typically
+expose:
 
-- `items` (for list-based selection)
+- `text` (label or per-item text)
+- `value` (initial selected value)
+- `onvalue` / `offvalue` (boolean controls)
+- `items` (list-based controls)
+- `signal=` / `variable=` (state binding)
+- `command=` (user-invocation callback)
+- `accent`, `variant`, `surface`, `density` (theme tokens)
+- `state` (`normal` / `disabled` / `readonly`)
+- widget-specific options (`allow_custom_values`, `search_mode`,
+  `multiselect`)
 
-- `value` / `default`
-
-- `state` / `readonly`
-
-- `command`
-
-- widget-specific options (search, allow_custom_values, onvalue/offvalue)
+Theme tokens, density, and per-item visual options live here — no
+separate `Appearance` section. Show short representative examples
+per concern; this is not an API dump.
 
 ---
 
 ## Behavior
 
-Describe interaction behavior:
+Interaction and presentation rules:
 
-- mouse and keyboard interaction
-
-- how selection changes are triggered
-
-- popup open/close behavior for dropdown-style controls
-
-- group behavior (for radio groups)
+- **User input** — click / Space / Enter; per-platform conventions
+  (e.g. radio arrow keys); whether typing is captured (search /
+  type-to-select)
+- **Keyboard contract** — focus-vs-selection (does Tab move focus
+  without changing selection?); group navigation for radio-style
+  controls; Escape semantics for popup controls
+- **Popup behavior** (dropdown / combobox controls) — open / close
+  triggers, focus capture, what dismisses without committing
+- **Group behavior** (radio controls) — how widgets sharing a
+  variable coordinate, what happens when no member is selected at
+  startup
+- **Disabled / readonly** — what input paths are blocked, whether
+  the variable can still be written programmatically, what the
+  visual state looks like
+- **Reconfiguration** — which options take effect immediately
+  (`state`, `accent`) vs require reconstruction (variant, items list
+  for some controls)
+- **Visual states** — `hover`, `focus`, `selected`, `pressed`,
+  `disabled`, `alternate` (indeterminate)
 
 ---
 
 ## Events
 
-Document selection-related events:
+Document the event surface — the `command=` callback, signal /
+variable observation, and any virtual events.
 
-- committed change (`on_changed`, `<<Changed>>`)
+For each:
 
-- live input (`on_input`, `<<Input>>`) when applicable
+- when it fires (user-invocation only, every variable write,
+  popup-close)
+- the payload (no args, the new value, an event object)
+- whether it round-trips (does programmatic `set()` re-fire the
+  same callback as a click?)
 
 ```python
-def on_changed(e):
+def on_changed(value):
     ...
 
-w.on_changed(on_changed)
+widget.signal.subscribe(on_changed)
 ```
 
----
-
-## Validation and constraints
-
-Describe common constraints:
-
-- enforcing valid options
-
-- tri-state or mixed-selection semantics
-
-- dynamic option lists
-
-- cross-field selection rules
+If the widget has *no* virtual events and *no* `on_*` helpers,
+include a deliberate negative `Events` section pointing readers at
+`command=`, `signal.subscribe(...)`, or `variable.trace_add(...)`
+instead, so they don't go looking for hooks that don't exist.
 
 ---
 
-## Colors and styling
+## When should I use WidgetName?
 
-If supported, document `accent` and `variant` usage and variant combinations.
+Use WidgetName when:
 
-Show a few representative examples rather than an exhaustive list.
-
----
-
-## Localization
-
-Explain how labels and option text participate in localization:
-
-- default behavior
-
-- explicitly enabling/disabling localization
-
-- recommended key conventions
-
----
-
-## When should I use SelectionWidgetName?
-
-Use it when:
-
-- …
+- ...
 
 Prefer OtherWidget when:
 
-- …
+- ...
+
+This sits near the bottom on purpose: readers reach it after they've
+seen what the widget does and how it's configured, so the
+recommendation lands with context.
 
 ---
 
-## Additional resources
+## Related widgets
 
-**Related widgets**
+- **OtherSelectionWidget** — alternative selection pattern
+- **GroupingWidget** — manages multiple of these as one control
+- **Form** — bundles fields with validation and layout
 
-- **OtherSelectionWidget** — how it differs
+---
 
-- **AnotherWidget** — complementary behavior
+## Reference
 
-**Framework concepts**
-
-- [Signals & Events](../../capabilities/signals/index.md)
-
-- [Localization](../../capabilities/localization.md)
-
-- [Validation](../../capabilities/validation.md)
-
-**API reference**
-
-- **API Reference:** `ttkbootstrap.SelectionWidgetName`
-
+- **API reference:** `ttkbootstrap.WidgetName`
 - **Related guides:** Selection, Forms, Localization

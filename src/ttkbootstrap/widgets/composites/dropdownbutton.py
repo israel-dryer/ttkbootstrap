@@ -1,3 +1,4 @@
+"""DropdownButton widget — a button with a dropdown context menu."""
 from __future__ import annotations
 
 from typing import Any, Callable, Literal, Optional, TYPE_CHECKING, TypedDict
@@ -14,6 +15,8 @@ if TYPE_CHECKING:
 
 
 class DropdownButtonKwargs(TypedDict, total=False):
+    """Keyword arguments for DropdownButton."""
+
     command: Optional[Callable[[], Any]]
     image: Any
     icon: Any
@@ -43,6 +46,7 @@ class DropdownButtonKwargs(TypedDict, total=False):
 
 
 class DropdownButton(MenuButton):
+    """A button that opens a dropdown context menu when clicked."""
 
     def __init__(
             self,
@@ -58,7 +62,8 @@ class DropdownButton(MenuButton):
             text (str): Label text for the button.
             items (list): Initial list of ContextMenuItem entries.
 
-        Other Parameters:
+        Other Parameters
+        ----------------
             command (Callable): Callback when the button is activated.
             image (PhotoImage): Tk image to display.
             icon (str | dict): Bootstyle icon spec for the button content.
@@ -81,6 +86,7 @@ class DropdownButton(MenuButton):
             popdown_options (dict): Dict forwarded to ContextMenu (e.g., anchor, attach, offset).
             show_dropdown_button (bool): Show/hide the chevron.
             dropdown_button_icon (str | dict): Icon name for the chevron.
+
         """
         style_options = kwargs.pop('style_options', {})
         style_options.update(
@@ -93,6 +99,7 @@ class DropdownButton(MenuButton):
         self._item_click_callback = None
         self._items = items if items else []
         self._popdown_options = kwargs.pop('popdown_options', {})
+        self._command = kwargs.pop('command', None)
 
         # Store the textvariable if provided, or create a new one
         super().__init__(master, text=text, **kwargs)
@@ -104,6 +111,9 @@ class DropdownButton(MenuButton):
         self.bind('<Button-1>', lambda _: self.show_menu(), add="+")
         self.bind('<Return>', lambda _: self.show_menu(), add="+")
         self.bind('<KP_Enter>', lambda _: self.show_menu(), add="+")
+
+        if self._command is not None:
+            self.bind('<Button-1>', lambda _: self._command(), add="+")
 
         # passthrough methods
         self.on_item_click = self._context_menu.on_item_click
@@ -153,7 +163,7 @@ class DropdownButton(MenuButton):
 
     @property
     def context_menu(self):
-        """Returns the context menu widget"""
+        """Return the context menu widget."""
         return self._context_menu
 
     def show_menu(self):

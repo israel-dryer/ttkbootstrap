@@ -4,22 +4,33 @@ title: TabView
 
 # TabView
 
-`TabView` is a **tabbed container** that combines a `Tabs` bar with a `PageStack` for seamless
-tab-based content switching.
+`TabView` is the canonical tabbed surface — a `Frame` that owns a
+[`Tabs`](../navigation/tabs.md) bar wired to a
+[`PageStack`](pagestack.md) so a click on a tab mounts the
+corresponding page. Use it when navigation is **random-access** through
+a visible tab strip (the user picks any tab at any time) and exactly
+one page should be visible at a time.
 
-Each tab corresponds to a page, and selecting a tab automatically navigates to its associated content.
+TabView is a thin coordinator. The tab strip is a real `Tabs` widget
+(orientation, variant, density, close / add affordances all inherited
+from there); the content stack is a real `PageStack` (key-addressed
+pages, history with back/forward). The only logic TabView adds is a
+shared selection variable plumbed through both halves. For tab-driven
+flows that's exactly what you want; for sequential / wizard navigation
+without a tab strip, reach for [`PageStack`](pagestack.md) directly.
 
-<!--
-IMAGE: TabView with content
-Suggested: Horizontal tabs above content area, vertical tabs beside content
-Theme variants: light / dark
--->
+<figure markdown>
+![tabview](../../assets/dark/widgets-tabview.png#only-dark)
+![tabview](../../assets/light/widgets-tabview.png#only-light)
+</figure>
 
 ---
 
-## Quick start
+## Basic usage
 
-Create a tabbed view with pages:
+`add(key, text=...)` registers both a tab and a page in one call and
+returns the page widget — populate it like any `Frame`. The first tab
+added is auto-selected.
 
 ```python
 import ttkbootstrap as ttk
@@ -29,7 +40,6 @@ app = ttk.App()
 tabview = ttk.TabView(app, height=200)
 tabview.pack(fill="both", expand=True, padx=10, pady=10)
 
-# Add tabs with content
 home = tabview.add("home", text="Home", icon="house")
 ttk.Label(home, text="Welcome to the Home page!").pack(padx=20, pady=20)
 
@@ -44,197 +54,218 @@ app.mainloop()
 
 ---
 
-## When to use
+## Navigation model
 
-Use `TabView` when:
+Tabs and pages are keyed by the same **string `key`**. `add(key, ...)`
+registers a `TabItem` whose internal `value` equals the key, and a
+page in the underlying `PageStack` under the same key. Picking a tab —
+either by clicking or by `tabview.select(key)` — writes the key to
+the shared `tk.StringVar`, and a variable trace forwards the change
+to `pagestack.navigate(key)`.
 
-- you need tabs that switch between content panels
+**Auto-select on first add.** `add()` writes the first tab's key
+through the variable, mounting that page immediately. This differs
+from a bare PageStack, which stays empty until you call `navigate()`.
 
-- users access content by category or section
-
-- all tabs are equally important and accessible
-
-Consider a different control when:
-
-- navigation is sequential - use [PageStack](pagestack.md) instead
-
-- you need a standalone tab bar - use [Tabs](../navigation/tabs.md) instead
-
-- content must be visible simultaneously - use [PanedWindow](../layout/panedwindow.md) instead
-
----
-
-## Appearance
-
-### Variants
-
-TabView supports two visual variants:
-
-| Variant | Description |
-|---------|-------------|
-| `bar` | Default style with underline indicator and divider |
-| `pill` | Rounded pill-style tabs without divider |
-
-```python
-# Bar variant (default)
-tabview = ttk.TabView(app, variant="bar")
-
-# Pill variant
-tabview = ttk.TabView(app, variant="pill")
-```
-
-### Orientation
-
-Tabs can appear above or beside the content:
-
-```python
-# Horizontal tabs above content (default)
-tabview = ttk.TabView(app, orient="horizontal")
-
-# Vertical tabs beside content
-tabview = ttk.TabView(app, orient="vertical")
-```
-
-!!! link "Design System"
-    See [Colors & Themes](../../design-system/colors.md) for color customization.
-
----
-
-## Examples and patterns
-
-### Adding tabs and pages
-
-Use `add()` to create a tab and its content page:
-
-```python
-page = tabview.add("profile", text="Profile", icon="person")
-# page is a Frame - add widgets to it
-ttk.Label(page, text="User profile").pack()
-```
-
-The `key` uniquely identifies each tab/page pair.
-
-### Closable tabs
-
-Enable close buttons to allow users to remove tabs:
-
-```python
-tabview = ttk.TabView(app, enable_closing=True)
-```
-
-With `enable_closing=True`, clicking the close button automatically removes
-both the tab and its page. You can also provide a custom close handler:
-
-```python
-def on_close():
-    if confirm_close():
-        tabview.remove("doc1")
-
-tabview.add("doc1", text="Document", closable=True, close_command=on_close)
-```
-
-### Dynamic tabs with add button
-
-Show an "add" button for creating new tabs:
-
-```python
-tabview = ttk.TabView(app, enable_adding=True)
-
-counter = [0]
-
-def on_add(event):
-    counter[0] += 1
-    key = f"doc{counter[0]}"
-    page = tabview.add(key, text=f"Document {counter[0]}", icon="file-text")
-    ttk.Label(page, text=f"Content for Document {counter[0]}").pack()
-
-tabview.on_tab_added(on_add)
-```
-
-### Programmatic navigation
-
-Select tabs programmatically:
+**Random-access selection.** Any tab can be picked at any time;
+there's no "next" or "previous" tab in the bar itself. The underlying
+PageStack still records each navigation in linear history, so
+`back()` / `forward()` from outside the tab strip walk through past
+selections in order:
 
 ```python
 tabview.select("settings")
+print(tabview.current)              # "settings"
+
+tabview.page_stack_widget.back()    # go back one history step
+print(tabview.current)              # whatever was active before "settings"
 ```
 
-Get the current tab:
+**Imperative API only.** TabView itself has no `signal=` or
+`variable=` constructor argument; the selection variable is internal.
+Observe selection via `on_page_changed(...)` (the `<<PageChange>>`
+event from PageStack), or read `tabview.current` synchronously.
 
-```python
-current_key = tabview.current
-```
+**Unknown keys are silent.** `select("phantom")` and
+`navigate("phantom", ...)` are no-ops when the key isn't registered;
+no exception, no event. Validate keys yourself if you depend on
+strict behavior.
 
-Navigate with data:
+`navigate(key, data=...)` temporarily suppresses the selection-variable
+trace, calls `pagestack.navigate(key, data=data)` once, then restores
+the trace — so history grows by exactly one entry per call and
+`<<PageChange>>` fires once.
 
-```python
-tabview.navigate("details", data={"user_id": 123})
-```
+---
 
-### Accessing components
+## Common options
 
-Access the underlying Tabs and PageStack:
+| Option | Default | Notes |
+|---|---|---|
+| `orient` | `"horizontal"` | `"horizontal"` packs tabs above the page area; `"vertical"` packs them on the left. Construction-only on the inner `Tabs` widget. |
+| `variant` | `"bar"` | Visual style. `"bar"` underlines the active tab and adds a divider; `"pill"` is **not implemented for `TabItem`** and crashes on the first `add()`. |
+| `show_divider` | auto | Defaults to `True` for `variant="bar"` and `False` otherwise. Pass `True`/`False` to override. |
+| `compound` | `"left"` | Icon position relative to tab text. Forwarded to every `TabItem`. |
+| `tab_width` | `None` | `None` = auto-size, integer = fixed character width, `"stretch"` = expand horizontally to fill the bar. `"stretch"` is silently ignored in `orient="vertical"`. |
+| `tab_padding` | `(12, 8)` | Internal `(padx, pady)` for every tab. |
+| `tab_anchor` | auto | Defaults to `"w"` for vertical orientation, `"center"` for horizontal. |
+| `enable_closing` | `False` | Default close-button visibility for all tabs: `True` (always), `False` (never), `"hover"` (on hover). Per-tab override via `closable=` in `add()`. |
+| `enable_adding` | `False` | If `True`, shows an add button on the bar that fires `<<TabAdd>>` when clicked. The user is responsible for calling `tabview.add(...)` in the handler — clicking the button doesn't auto-create anything. |
+| `accent` | `None` | Theme accent token forwarded to `Tabs` and through to every `TabItem`. |
+| Frame kwargs | — | `padding`, `surface`, `show_border`, `width`, `height`, etc. all forwarded to the outer `Frame`. |
 
-```python
-tabs_widget = tabview.tabs
-page_stack = tabview.page_stack
-```
+Per-tab options live in `add()`:
 
-Get a specific tab or page:
+| `add()` kwarg | Notes |
+|---|---|
+| `text` | Tab label. |
+| `icon` | Icon name (`"house"`) or `IconSpec` dict (`{"name": ..., "size": ..., "color": ..."}`). |
+| `page` | Existing widget to use as the page. **If passed, kwargs are silently dropped** — same shape as the [`PageStack` bug](pagestack.md#common-options). Configure your page widget before passing it, or omit `page=` and let `add()` build the Frame. |
+| `closable` | `True` / `False` / `"hover"` / `None`. `None` falls through to the widget-level `enable_closing`. |
+| `close_command` | Custom handler for the X button. If omitted and `closable` is enabled, defaults to `lambda: tabview.remove(key)`. |
+| `command` | Callback invoked when the tab is selected (in addition to the variable trace). Receives no arguments. |
+| `**kwargs` | When `page=` is `None`, forwarded to the auto-created Frame (`padding`, `surface`, `show_border`, …). |
 
-```python
-tab = tabview.tab("settings")  # Returns TabItem
-page = tabview.page("settings")  # Returns Frame
-```
-
-### Events
-
-TabView emits navigation events:
-
-- `<<TabAdd>>` - when add button is clicked
-- `<<PageChange>>` - when the visible page changes
-
-```python
-def on_page_change(event):
-    print(f"Now showing: {event.data['page']}")
-
-tabview.on_page_changed(on_page_change)
-```
+`variant='pill'` raises `ValueError` at construction — the pill builder
+is not yet implemented. Use `'bar'` or `'default'`.
+    Stick to `"bar"` until a `pill` builder is registered.
 
 ---
 
 ## Behavior
 
-### UX guidance
+**Wiring.** Internally, TabView creates `self._tab_variable =
+tk.StringVar()` and passes it as `variable=` to `Tabs`. A
+`trace_add('write', ...)` on that variable fires `_on_tab_selected`,
+which calls `self._page_stack.navigate(key)` whenever the key changes
+and the page isn't already mounted. So any path that writes to the
+variable — clicking a tab, calling `tabview.select(key)`, or
+`tabs_widget.set(key)` — mounts the page; you don't need to drive
+both halves explicitly.
 
-- Use descriptive tab labels
+**`select(key)`.** Validates `key` against the internal tab map
+before writing the variable; an unknown key is a silent no-op (the
+variable is not modified, no event fires).
 
-- Include icons for visual recognition
+**`current` property.** Returns the active tab key (and page key —
+they're the same string), or `None` if no tab is selected (e.g. after
+removing the only tab).
 
-- Limit to 5-7 horizontal tabs for scannability
+**Removing tabs.** Call `tabview.remove(key)` to remove a tab and its
+page together. If the removed tab was active, the first remaining tab
+is selected automatically; if none remain, the variable is set to `""`.
 
-- Vertical tabs work well for settings or navigation-heavy interfaces
+```python
+tabview.remove("settings")
+```
 
-- Enable closing only when users should manage tabs (e.g., documents, browser-like interfaces)
+**Coupling.** Tab and page lifetime are joined: every `add(key, ...)`
+creates one of each, every `remove(key)` (when it works) destroys
+both. There's no path to register a page without a tab — use a bare
+`PageStack` if you need that.
 
-!!! tip "Content persistence"
-    Pages are retained when switching tabs. Use PageStack events if you need
-    to refresh content on navigation.
+**Component access.** The inner widgets are reachable as properties:
+
+```python
+tabs = tabview.tabs_widget          # the Tabs widget
+pages = tabview.page_stack_widget   # the PageStack widget
+```
+
+Use these to apply Tabs- or PageStack-specific configuration that
+TabView doesn't surface directly (e.g. `tabs.configure(show_divider=
+False)` after construction, or
+`pages.on_page_changed(callback)` if you want the helper without
+TabView's wrapper).
+
+**Methods worth knowing:**
+
+- `tab(key) -> TabItem` and `page(key) -> Frame` — look up by key.
+- `tabs() -> tuple[TabItem, ...]` and `pages() -> tuple[Frame, ...]`
+  — all items in registration order.
+- `tab_keys() -> tuple[str, ...]` and `page_keys() -> tuple[str,
+  ...]` — same keys, returned by both halves.
+- `configure_tab(key, **kwargs)` — reconfigure a specific tab
+  (e.g. `configure_tab("home", text="Home / Welcome")`).
 
 ---
 
-## Additional resources
+## Events
 
-### Related widgets
+| Helper | Underlying event | Fired on | Payload |
+|---|---|---|---|
+| `on_page_changed(cb)` | `<<PageChange>>` | inner `PageStack` | full navigation payload (see [PageStack events](pagestack.md#events)) |
+| `on_tab_added(cb)` | `<<TabAdd>>` | inner `Tabs` | `event.data is None` |
 
-- [Tabs](../navigation/tabs.md) - standalone tab bar
+Both helpers are thin wrappers over the inner widget's helper —
+`tabview.on_page_changed(cb)` calls `pagestack.on_page_changed(cb)`,
+and `tabview.on_tab_added(cb)` calls `tabs_widget.on_tab_added(cb)`.
 
-- [PageStack](pagestack.md) - history-based navigation
+```python
+def on_change(event):
+    print("now showing:", event.data["page"])
 
-- [Notebook](notebook.md) - traditional ttk tabbed container
+tabview.on_page_changed(on_change)
+```
 
-- [PanedWindow](../layout/panedwindow.md) - resizable multi-view layouts
+`<<TabSelect>>` and `<<TabClose>>` fire on the `TabItem` first, then
+are forwarded to the `Tabs` bar (and from there they also reach
+`TabView`). Bind on the TabView, the Tabs bar, or the individual
+TabItem — all three work. For aggregate "any tab changed" handling,
+prefer `on_page_changed` — it fires on every navigation regardless
+of which tab was clicked.
 
-### API reference
+The page-level `<<PageWillMount>>` / `<<PageMount>>` /
+`<<PageUnmount>>` events from
+[PageStack](pagestack.md#events) also fire, on the page widget (not
+on TabView). Bind those on the page returned by `add()` if you need
+the mount lifecycle.
 
-- [`ttkbootstrap.TabView`](../../reference/widgets/TabView.md)
+---
+
+## When should I use TabView?
+
+Use TabView when:
+
+- a visible tab strip is the right navigation affordance (categorized
+  content, document tabs, settings panes),
+- the page count is small and equally weighted — users skim the
+  labels and pick,
+- you want random-access selection: any tab from any tab,
+- exactly one page should be visible at a time.
+
+Prefer [`PageStack`](pagestack.md) when navigation is sequential and
+the affordance is custom (wizards, drill-in detail flows, app-shell
+content driven by a side rail). Prefer
+[`Tabs`](../navigation/tabs.md) when you want the tab strip alone
+without bundled content (e.g. the tab bar drives external state, or
+the content area is rendered from a different model). Prefer
+[`Notebook`](notebook.md) for OS-styled tabs over a `ttk.Notebook`.
+Prefer [`PanedWindow`](../layout/panedwindow.md) when multiple views
+must be visible at once. Inside an
+[`AppShell`](../application/appshell.md), the shell already owns its
+own `PageStack` driven by the side rail — use
+`shell.add_page(...)` instead of nesting a TabView at the top
+level.
+
+---
+
+## Related widgets
+
+- **[Tabs](../navigation/tabs.md)** — the standalone tab bar that
+  TabView wraps; use directly when you want tab chrome without page
+  coupling.
+- **[PageStack](pagestack.md)** — the content half of TabView; use
+  directly for wizards and other sequential flows.
+- **[Notebook](notebook.md)** — `ttk.Notebook` wrapper for OS-styled
+  tabs.
+- **[AppShell](../application/appshell.md)** — application-level
+  shell with its own page stack and side rail.
+- **[PanedWindow](../layout/panedwindow.md)** — when multiple views
+  should be visible simultaneously.
+
+---
+
+## Reference
+
+- **API reference:** `ttkbootstrap.TabView`
+- **Related guides:** Navigation, Layout, Application shell

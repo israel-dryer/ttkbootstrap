@@ -3,7 +3,7 @@
 Internationalization and localization helpers.
 
 This section covers translation catalogs and localized formatting.
-For broader “how-to” guidance, see **Platform → Localization** and **Capabilities → Localization**.
+For broader "how-to" guidance, see **Guides → Localization** and **Capabilities → Localization**.
 
 ## Core types
 

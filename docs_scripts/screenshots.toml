@@ -1,0 +1,444 @@
+# Screenshot manifest for ttkbootstrap docs.
+#
+# Each [[shots]] entry produces one PNG per requested theme at:
+#   docs/assets/<theme>/<slug>.png
+#
+# Render via:
+#   python -m docs_scripts.render
+#   python -m docs_scripts.render --slug <slug>
+#   python -m docs_scripts.render --page widgets/actions/button.md
+#
+# Fields:
+#   slug    - filename stem; must be unique across the manifest.
+#   page    - docs page that references this image; used by the 6D CI check.
+#   factory - "module:attr" pointing at a callable(app) -> Widget. The
+#             returned widget's bounding box is captured.
+#   themes  - which theme variants to render; default ["light", "dark"].
+#             Use ["light"] (or similar) only for genuinely theme-agnostic
+#             assets such as logos.
+#   padding - px around the returned widget; default 16.
+
+[[shots]]
+slug = "widgets-button-solid"
+page = "widgets/actions/button.md"
+factory = "docs_scripts.shots.button:solid"
+
+[[shots]]
+slug = "widgets-button-outline"
+page = "widgets/actions/button.md"
+factory = "docs_scripts.shots.button:outline"
+
+[[shots]]
+slug = "widgets-button-ghost"
+page = "widgets/actions/button.md"
+factory = "docs_scripts.shots.button:ghost"
+
+[[shots]]
+slug = "widgets-button-link"
+page = "widgets/actions/button.md"
+factory = "docs_scripts.shots.button:link"
+
+[[shots]]
+slug = "widgets-button-text"
+page = "widgets/actions/button.md"
+factory = "docs_scripts.shots.button:text"
+
+[[shots]]
+slug = "widgets-button-icons"
+page = "widgets/actions/button.md"
+factory = "docs_scripts.shots.button:icons"
+
+[[shots]]
+slug = "widgets-button-colors"
+page = "widgets/actions/button.md"
+factory = "docs_scripts.shots.button:colors"
+
+# ----- CheckButton ---------------------------------------------------------
+
+[[shots]]
+slug = "widgets-checkbutton-states"
+page = "widgets/selection/checkbutton.md"
+factory = "docs_scripts.shots.checkbutton:states"
+
+[[shots]]
+slug = "widgets-checkbutton-indeterminate"
+page = "widgets/selection/checkbutton.md"
+factory = "docs_scripts.shots.checkbutton:indeterminate"
+
+[[shots]]
+slug = "widgets-checkbutton-toggle"
+page = "widgets/selection/checkbutton.md"
+factory = "docs_scripts.shots.checkbutton:toggle"
+
+[[shots]]
+slug = "widgets-checkbutton-labeled"
+page = "widgets/selection/checkbutton.md"
+factory = "docs_scripts.shots.checkbutton:labeled"
+
+[[shots]]
+slug = "widgets-checkbutton-colors"
+page = "widgets/selection/checkbutton.md"
+factory = "docs_scripts.shots.checkbutton:colors"
+
+# ----- RadioButton ---------------------------------------------------------
+
+[[shots]]
+slug = "widgets-radiobutton-states"
+page = "widgets/selection/radiobutton.md"
+factory = "docs_scripts.shots.radiobutton:states"
+
+[[shots]]
+slug = "widgets-radiobutton-colors"
+page = "widgets/selection/radiobutton.md"
+factory = "docs_scripts.shots.radiobutton:colors"
+
+# ----- TextEntry -----------------------------------------------------------
+
+[[shots]]
+slug = "widgets-textentry-states"
+page = "widgets/inputs/textentry.md"
+factory = "docs_scripts.shots.textentry:states"
+
+[[shots]]
+slug = "widgets-textentry-addons"
+page = "widgets/inputs/textentry.md"
+factory = "docs_scripts.shots.textentry:addons"
+
+[[shots]]
+slug = "widgets-textentry-localization"
+page = "widgets/inputs/textentry.md"
+factory = "docs_scripts.shots.textentry:localization"
+
+# ----- DateEntry -----------------------------------------------------------
+
+[[shots]]
+slug = "widgets-dateentry-states"
+page = "widgets/inputs/dateentry.md"
+factory = "docs_scripts.shots.dateentry:states"
+
+[[shots]]
+slug = "widgets-dateentry-addons"
+page = "widgets/inputs/dateentry.md"
+factory = "docs_scripts.shots.dateentry:addons"
+
+[[shots]]
+slug = "widgets-dateentry-formats"
+page = "widgets/inputs/dateentry.md"
+factory = "docs_scripts.shots.dateentry:formats"
+
+# ----- NumericEntry --------------------------------------------------------
+
+[[shots]]
+slug = "widgets-numericentry-states"
+page = "widgets/inputs/numericentry.md"
+factory = "docs_scripts.shots.numericentry:states"
+
+[[shots]]
+slug = "widgets-numericentry-addons"
+page = "widgets/inputs/numericentry.md"
+factory = "docs_scripts.shots.numericentry:addons"
+
+[[shots]]
+slug = "widgets-numericentry-formats"
+page = "widgets/inputs/numericentry.md"
+factory = "docs_scripts.shots.numericentry:formats"
+
+# ----- SpinnerEntry --------------------------------------------------------
+
+[[shots]]
+slug = "widgets-spinnerentry-states"
+page = "widgets/inputs/spinnerentry.md"
+factory = "docs_scripts.shots.spinnerentry:states"
+
+[[shots]]
+slug = "widgets-spinnerentry-addons"
+page = "widgets/inputs/spinnerentry.md"
+factory = "docs_scripts.shots.spinnerentry:addons"
+
+[[shots]]
+slug = "widgets-spinnerentry-formats"
+page = "widgets/inputs/spinnerentry.md"
+factory = "docs_scripts.shots.spinnerentry:formats"
+
+# ----- Layout primitives ---------------------------------------------------
+
+[[shots]]
+slug = "widgets-frame"
+page = "widgets/layout/frame.md"
+factory = "docs_scripts.shots.layout:frame"
+
+[[shots]]
+slug = "widgets-labelframe"
+page = "widgets/layout/labelframe.md"
+factory = "docs_scripts.shots.layout:labelframe"
+
+[[shots]]
+slug = "widgets-separator"
+page = "widgets/layout/separator.md"
+factory = "docs_scripts.shots.layout:separator"
+
+[[shots]]
+slug = "widgets-sizegrip"
+page = "widgets/layout/sizegrip.md"
+factory = "docs_scripts.shots.layout:sizegrip"
+
+[[shots]]
+slug = "widgets-accordion"
+page = "widgets/layout/accordion.md"
+factory = "docs_scripts.shots.layout:accordion"
+
+[[shots]]
+slug = "widgets-expander"
+page = "widgets/layout/expander.md"
+factory = "docs_scripts.shots.layout:expander"
+
+[[shots]]
+slug = "widgets-panedwindow"
+page = "widgets/layout/panedwindow.md"
+factory = "docs_scripts.shots.layout:panedwindow"
+
+[[shots]]
+slug = "widgets-scrollbar"
+page = "widgets/layout/scrollbar.md"
+factory = "docs_scripts.shots.layout:scrollbar"
+
+[[shots]]
+slug = "widgets-scrollview"
+page = "widgets/layout/scrollview.md"
+factory = "docs_scripts.shots.layout:scrollview"
+
+# ----- Other inputs (Scale, ScrolledText) ----------------------------------
+
+[[shots]]
+slug = "widgets-scale"
+page = "widgets/inputs/scale.md"
+factory = "docs_scripts.shots.inputs:scale"
+
+[[shots]]
+slug = "widgets-scrolledtext-states"
+page = "widgets/inputs/scrolledtext.md"
+factory = "docs_scripts.shots.inputs:scrolledtext"
+
+# ----- Tabs / Notebook / PageStack / TabView -------------------------------
+
+[[shots]]
+slug = "widgets-tabs"
+page = "widgets/navigation/tabs.md"
+factory = "docs_scripts.shots.views:tabs"
+
+[[shots]]
+slug = "widgets-notebook"
+page = "widgets/views/notebook.md"
+factory = "docs_scripts.shots.views:notebook"
+
+[[shots]]
+slug = "widgets-pagestack"
+page = "widgets/views/pagestack.md"
+factory = "docs_scripts.shots.views:pagestack"
+
+[[shots]]
+slug = "widgets-tabview"
+page = "widgets/views/tabview.md"
+factory = "docs_scripts.shots.views:tabview"
+
+# ----- Data display --------------------------------------------------------
+
+[[shots]]
+slug = "widgets-label"
+page = "widgets/data-display/label.md"
+factory = "docs_scripts.shots.data_display:label"
+
+[[shots]]
+slug = "widgets-badge"
+page = "widgets/data-display/badge.md"
+factory = "docs_scripts.shots.data_display:badge"
+
+[[shots]]
+slug = "widgets-progressbar"
+page = "widgets/data-display/progressbar.md"
+factory = "docs_scripts.shots.data_display:progressbar"
+
+[[shots]]
+slug = "widgets-floodgauge"
+page = "widgets/data-display/floodgauge.md"
+factory = "docs_scripts.shots.data_display:floodgauge"
+
+[[shots]]
+slug = "widgets-meter"
+page = "widgets/data-display/meter.md"
+factory = "docs_scripts.shots.data_display:meter"
+
+# ----- Other selection (Switch, CheckToggle, RadioToggle, OptionMenu, Calendar)
+
+[[shots]]
+slug = "widgets-switch"
+page = "widgets/selection/switch.md"
+factory = "docs_scripts.shots.selection:switch"
+
+[[shots]]
+slug = "widgets-checktoggle"
+page = "widgets/selection/checktoggle.md"
+factory = "docs_scripts.shots.selection:checktoggle"
+
+[[shots]]
+slug = "widgets-radiotoggle"
+page = "widgets/selection/radiotoggle.md"
+factory = "docs_scripts.shots.selection:radiotoggle"
+
+[[shots]]
+slug = "widgets-optionmenu"
+page = "widgets/selection/optionmenu.md"
+factory = "docs_scripts.shots.selection:optionmenu"
+
+[[shots]]
+slug = "widgets-calendar"
+page = "widgets/selection/calendar.md"
+factory = "docs_scripts.shots.selection:calendar"
+
+# ----- Primitives ----------------------------------------------------------
+
+[[shots]]
+slug = "widgets-entry"
+page = "widgets/primitives/entry.md"
+factory = "docs_scripts.shots.primitives:entry"
+
+[[shots]]
+slug = "widgets-combobox"
+page = "widgets/primitives/combobox.md"
+factory = "docs_scripts.shots.primitives:combobox"
+
+[[shots]]
+slug = "widgets-spinbox"
+page = "widgets/primitives/spinbox.md"
+factory = "docs_scripts.shots.primitives:spinbox"
+
+[[shots]]
+slug = "widgets-text"
+page = "widgets/primitives/text.md"
+factory = "docs_scripts.shots.primitives:text"
+
+[[shots]]
+slug = "widgets-canvas"
+page = "widgets/primitives/canvas.md"
+factory = "docs_scripts.shots.primitives:canvas"
+
+# ----- Other inputs (LabeledScale, PasswordEntry, PathEntry, TimeEntry) ---
+
+[[shots]]
+slug = "widgets-labeledscale"
+page = "widgets/inputs/labeledscale.md"
+factory = "docs_scripts.shots.inputs:labeledscale"
+
+[[shots]]
+slug = "widgets-passwordentry"
+page = "widgets/inputs/passwordentry.md"
+factory = "docs_scripts.shots.inputs:passwordentry"
+
+[[shots]]
+slug = "widgets-pathentry"
+page = "widgets/inputs/pathentry.md"
+factory = "docs_scripts.shots.inputs:pathentry"
+
+[[shots]]
+slug = "widgets-timeentry"
+page = "widgets/inputs/timeentry.md"
+factory = "docs_scripts.shots.inputs:timeentry"
+
+# ----- Layout (Card, GridFrame, PackFrame) -------------------------------
+
+[[shots]]
+slug = "widgets-card"
+page = "widgets/layout/card.md"
+factory = "docs_scripts.shots.layout:card"
+
+[[shots]]
+slug = "widgets-gridframe"
+page = "widgets/layout/gridframe.md"
+factory = "docs_scripts.shots.layout:gridframe"
+
+[[shots]]
+slug = "widgets-packframe"
+page = "widgets/layout/packframe.md"
+factory = "docs_scripts.shots.layout:packframe"
+
+# ----- Selection groups (RadioGroup, ToggleGroup) ------------------------
+
+[[shots]]
+slug = "widgets-radiogroup"
+page = "widgets/selection/radiogroup.md"
+factory = "docs_scripts.shots.selection:radiogroup"
+
+[[shots]]
+slug = "widgets-togglegroup"
+page = "widgets/selection/togglegroup.md"
+factory = "docs_scripts.shots.selection:togglegroup"
+
+# ----- Actions (ButtonGroup, MenuButton, DropdownButton) -----------------
+
+[[shots]]
+slug = "widgets-buttongroup"
+page = "widgets/actions/buttongroup.md"
+factory = "docs_scripts.shots.actions:buttongroup"
+
+[[shots]]
+slug = "widgets-menubutton"
+page = "widgets/actions/menubutton.md"
+factory = "docs_scripts.shots.actions:menubutton"
+
+[[shots]]
+slug = "widgets-dropdownbutton"
+page = "widgets/actions/dropdownbutton.md"
+factory = "docs_scripts.shots.actions:dropdownbutton"
+
+# ----- Data display (ListView, TableView, TreeView) ----------------------
+
+[[shots]]
+slug = "widgets-listview"
+page = "widgets/data-display/listview.md"
+factory = "docs_scripts.shots.data_display:listview"
+
+[[shots]]
+slug = "widgets-tableview"
+page = "widgets/data-display/tableview.md"
+factory = "docs_scripts.shots.data_display:tableview"
+
+[[shots]]
+slug = "widgets-treeview"
+page = "widgets/data-display/treeview.md"
+factory = "docs_scripts.shots.data_display:treeview"
+
+# ----- Form (lives under inputs/) ----------------------------------------
+
+[[shots]]
+slug = "widgets-form"
+page = "widgets/inputs/form.md"
+factory = "docs_scripts.shots.forms:form"
+
+# ----- Navigation (Toolbar, SideNav, AppShell) ---------------------------
+
+[[shots]]
+slug = "widgets-toolbar"
+page = "widgets/navigation/toolbar.md"
+factory = "docs_scripts.shots.navigation:toolbar"
+
+[[shots]]
+slug = "widgets-sidenav"
+page = "widgets/navigation/sidenav.md"
+factory = "docs_scripts.shots.navigation:sidenav"
+
+[[shots]]
+slug = "widgets-appshell"
+page = "widgets/application/appshell.md"
+factory = "docs_scripts.shots.navigation:appshell"
+
+# ----- Application (App, Toplevel) ---------------------------------------
+
+[[shots]]
+slug = "widgets-app"
+page = "widgets/application/app.md"
+factory = "docs_scripts.shots.application:app"
+
+[[shots]]
+slug = "widgets-toplevel"
+page = "widgets/application/toplevel.md"
+factory = "docs_scripts.shots.application:toplevel"

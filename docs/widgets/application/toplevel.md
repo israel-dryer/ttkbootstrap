@@ -8,6 +8,11 @@ title: Toplevel
 
 Use it for dialogs, tool palettes, inspectors, or any auxiliary window.
 
+<figure markdown>
+![toplevel](../../assets/dark/widgets-toplevel.png#only-dark)
+![toplevel](../../assets/light/widgets-toplevel.png#only-light)
+</figure>
+
 ---
 
 ## Quick start

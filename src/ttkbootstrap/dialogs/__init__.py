@@ -11,7 +11,6 @@ This package exposes Bootstrap-styled dialogs for common interactions:
 - FilterDialog: multi-select filter dialog with search
 
 Example:
-
     import ttkbootstrap as ttk
     from ttkbootstrap.dialogs import MessageBox, QueryBox
 
@@ -20,6 +19,7 @@ Example:
     answer = MessageBox.yesno("Do you want to continue?")
     name = QueryBox.get_string("Enter your name:")
     root.mainloop()
+
 """
 from .colorchooser import (
     ColorChooser,

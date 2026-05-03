@@ -260,7 +260,7 @@ class Expander(Frame):
 
     def expand(self):
         """Expand the content area."""
-        if self._expanded:
+        if not self._collapsible or self._expanded:
             return
 
         self._expanded = True
@@ -272,7 +272,7 @@ class Expander(Frame):
 
     def collapse(self):
         """Collapse the content area."""
-        if not self._expanded:
+        if not self._collapsible or not self._expanded:
             return
 
         self._expanded = False

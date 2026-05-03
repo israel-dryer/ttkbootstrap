@@ -4,22 +4,27 @@ title: Frame
 
 # Frame
 
-`Frame` is a **basic layout container** for grouping widgets and creating structure.
+`Frame` is a themed container for grouping child widgets and applying
+shared surface, border, and input-fill tokens to a region of the UI.
+It's a thin wrapper over `ttk.Frame` that participates in the
+ttkbootstrap design system: surface tokens cascade to descendants,
+borders pick up theme-aware stroke colors, and input children inside
+the frame can be fill-coordinated with one option.
 
-It's a themed wrapper around `ttk.Frame`, so it participates in ttkbootstrap styling while behaving like a standard ttk container. Use `Frame` when you need a simple container without automatic layout management.
+`Frame` does not manage child placement automatically — you call
+`pack()`, `grid()`, or `place()` on each child yourself. For
+self-managing layouts, see [PackFrame](packframe.md) (axis stacks
+with gaps) or [GridFrame](gridframe.md) (CSS-Grid-style 2D layouts);
+both subclass `Frame` and inherit the same theming surface.
 
-!!! tip "Prefer PackFrame or GridFrame for most layouts"
-    For building layouts with automatic child management, use [PackFrame](packframe.md) (vertical/horizontal stacks with gap spacing) or [GridFrame](gridframe.md) (CSS Grid-like 2D layouts). These provide a more declarative, less error-prone layout experience.
-
-<!--
-IMAGE: Frame used for layout
-Suggested: A simple form section inside a padded Frame (label + entry + button)
-Theme variants: light / dark
--->
+<figure markdown>
+![frame](../../assets/dark/widgets-frame.png#only-dark)
+![frame](../../assets/light/widgets-frame.png#only-light)
+</figure>
 
 ---
 
-## Quick start
+## Basic usage
 
 ```python
 import ttkbootstrap as ttk
@@ -37,109 +42,167 @@ app.mainloop()
 
 ---
 
-## When to use
+## Common options
 
-Use `Frame` when:
+`Frame`'s style surface is small and deliberately distinct from the
+input/action widgets. The tokens that *do* affect rendering are
+`surface`, `show_border`, and `input_background`. The tokens that
+*do not* are `accent` and `variant` — they're accepted by the
+constructor for API uniformity but silently ignored by the Frame
+style builder.
 
-- you need a basic container without automatic layout management
-- you want padding around a cluster of widgets
-- you want to apply a shared background/surface to a region
-- you're manually managing child widgets with `pack()` or `grid()`
+| Option              | Type                | Default        | Notes                                                   |
+| ------------------- | ------------------- | -------------- | ------------------------------------------------------- |
+| `padding`           | int \| tuple        | `0`            | Inner spacing; `(left, top)` or `(l, t, r, b)` accepted |
+| `width`             | int                 | natural        | Requested width in pixels (see propagation note)        |
+| `height`            | int                 | natural        | Requested height in pixels (see propagation note)       |
+| `surface`           | str                 | `"background"` | Surface token: `chrome`, `content`, `card`, `overlay`, `input` |
+| `show_border`       | bool                | `False`        | Draws a 1px theme-aware border around the frame         |
+| `input_background`  | str                 | `"content"`    | Surface token cascaded to input descendants             |
+| `style`             | str                 | `"TFrame"`     | Explicit ttk style name; overrides theme-token styling  |
+| `accent`            | str                 | —              | Accepted but **silently ignored** by the Frame builder  |
+| `variant`           | str                 | —              | Accepted but **silently ignored** by the Frame builder  |
 
-**Consider a different control when:**
-
-- you want automatic vertical/horizontal stacking with gaps -> use [PackFrame](packframe.md)
-- you need a 2D grid layout with auto-placement -> use [GridFrame](gridframe.md)
-- the group needs a visible label (a titled section) -> use [LabelFrame](labelframe.md)
-
----
-
-## Appearance
-
-### Styling
-
-`Frame` is commonly used to create "surface" regions:
-
-- card-like blocks
-
-- sidebar backgrounds
-
-- header/footer regions
-
-If your theme supports bordered/card styles, prefer named styles like `Card.TFrame` for consistency.
-
-!!! link "Design System"
-    For theming details and color tokens, see [Design System](../../design-system/index.md).
-
-### `accent` / `style`
-
-Use `accent` for semantic tokens, or `style=` for a concrete ttk style name.
+### Surface tokens
 
 ```python
-ttk.Frame(app, accent="secondary")
-ttk.Frame(app, style="Card.TFrame")
+ttk.Frame(app, surface="card")        # raised card-like region
+ttk.Frame(app, surface="chrome")      # toolbar / header strip
+ttk.Frame(app, surface="overlay")     # dialog-style fill
 ```
 
----
+`surface` is the canonical knob for region color. Available tokens
+are defined in the active theme; the built-in palette ships
+`chrome`, `content`, `card`, `overlay`, and `input`. For a colored
+fill outside the surface palette, set `style=` to a custom-built
+ttk style name.
 
-## Examples & patterns
-
-### `padding`
-
-Apply inner spacing to the container.
+### Borders
 
 ```python
-ttk.Frame(app, padding=20)
-ttk.Frame(app, padding=(16, 12))
+ttk.Frame(app, surface="card", show_border=True, padding=12)
 ```
 
-### `width` / `height`
+`show_border` draws a 1px stroke in the theme's `stroke` color
+around the frame. Combine with `surface` and `padding` to get
+card-style chrome without any custom styling.
 
-Useful for fixed regions (tool palettes, sidebars). Note: geometry managers may still size the frame
-based on content unless propagation is disabled.
+### `input_background`
 
 ```python
-pane = ttk.Frame(app, width=240, height=400)
-pane.pack_propagate(False)
+form = ttk.Frame(app, surface="card", input_background="content")
+ttk.Entry(form).pack(...)   # fills with the "content" surface,
+                            # not the parent "card" surface
 ```
+
+`input_background` is unique to `Frame` (and its subclasses): it
+cascades to every input descendant — `Entry`, `Combobox`, `Spinbox`,
+`Field` — so they share a fill independent of the container's
+surface. Foreground, border, and focus-ring colors derive from the
+chosen fill so contrast is correct automatically.
+
+The default is `"content"` (the app background), which keeps inputs
+visually distinct on a `card` or `chrome` container. Override to
+`"card"` (or another surface) when you want inputs to flush with
+the container.
 
 ---
 
 ## Behavior
 
-- Frames are **containers only** (no click/selection behavior).
+`Frame` is a non-interactive structural widget. It does not respond
+to clicks, take keyboard focus by default, or emit any virtual
+events; its responsibilities are visual surfacing and child
+hosting.
 
-- Use the frame as the parent for widgets you want visually/structurally grouped.
+**Geometry propagation.** Like `ttk.Frame`, a `Frame` sizes itself
+to its content unless you disable propagation explicitly. The two
+toggles are inherited from Tk:
 
-- With `Frame`, you manually call `pack()` or `grid()` on each child widget.
+```python
+pane = ttk.Frame(app, width=240, height=400)
+pane.pack(side="left")
+pane.pack_propagate(False)   # honor width/height instead of children
+```
 
-- For automatic layout management, use [PackFrame](packframe.md) or [GridFrame](gridframe.md) instead.
+Without `pack_propagate(False)` (or `grid_propagate(False)` if you
+use grid), the explicit `width=`/`height=` are treated as natural-size
+*hints* and are overridden by child requests.
 
-- A `Frame` is not interactive; it exists to:
+**Surface cascade.** When `surface` (or `input_background`) is
+reconfigured at runtime, the change is propagated to descendants
+that haven't set their own surface explicitly. Children that
+inherited from the old surface re-style; children that were
+configured with their own `surface=` are left alone. This is
+the runtime hook behind regional theming — set the token on a
+container, and the region rebuilds itself.
 
-    - group related widgets
-    - apply padding/margins around a region
-    - host manual pack/grid layouts for a subsection of the UI
-    - apply a shared visual surface (when styled)
+```python
+section = ttk.Frame(app, surface="content")
+ttk.Label(section, text="…").pack()
+ttk.Entry(section).pack()
+
+section.configure(surface="card")  # Label and Entry restyle
+```
 
 ---
 
-## Additional resources
+## Events
 
-### Related widgets
+`Frame` has no `on_*` event helpers and emits no virtual events.
+The only event it participates in is the standard Tk `<Configure>`
+notification fired on resize:
 
-- [PackFrame](packframe.md) -- frame with automatic pack-based layout (vertical/horizontal stacks)
-- [GridFrame](gridframe.md) -- frame with automatic grid-based layout (2D grids with auto-placement)
-- [LabelFrame](labelframe.md) -- a framed container with a label
-- [Separator](separator.md) -- a visual divider between regions
-- [PanedWindow](panedwindow.md) -- resizable split regions
+```python
+def on_resize(event):
+    print(event.width, event.height)
 
-### Framework concepts
+frame.bind("<Configure>", on_resize)
+```
 
-- [Layout Properties](../../capabilities/layout-props.md)
+If you need to react to layout changes elsewhere in your UI, bind
+to the relevant child widgets directly — `Frame` is purely a
+container surface.
 
-- [Layout](../../platform/geometry-and-layout.md)
+---
 
-### API reference
+## When should I use Frame?
 
-- [`ttkbootstrap.Frame`](../../reference/widgets/Frame.md)
+Use `Frame` when:
+
+- you want a themed container with `surface` / `show_border` /
+  `input_background` tokens and are willing to call `pack()` /
+  `grid()` on each child manually
+- you need a parent that cascades a surface or input-fill token to
+  a region of the UI
+- you're building an ad-hoc layout that doesn't fit the rigid
+  PackFrame / GridFrame patterns
+
+Prefer **PackFrame** when you want a single-axis stack of children
+with consistent gap spacing. Prefer **GridFrame** when you want a
+named-column 2D grid with auto-placement. Prefer **LabelFrame**
+when the region needs a visible title.
+
+---
+
+## Related widgets
+
+- **PackFrame** — `Frame` subclass with auto-pack of children along
+  one axis, plus `gap` spacing
+- **GridFrame** — `Frame` subclass with CSS-Grid-style declarative
+  rows/columns and auto-placement
+- **LabelFrame** — titled bordered container for labelled groups
+- **Card** — opinionated `Frame` preset with header/body/footer
+  slots
+- **Separator** — visual divider for regions inside a `Frame`
+- **PanedWindow** — resizable split regions when users need to
+  adjust panel sizes
+
+---
+
+## Reference
+
+- **API reference:** [`ttkbootstrap.Frame`](../../reference/widgets/Frame.md)
+- **Related guides:** [Layout](../../platform/geometry-and-layout.md),
+  [Layout Properties](../../capabilities/layout-props.md),
+  [Design System](../../design-system/index.md)

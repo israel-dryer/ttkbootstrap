@@ -108,6 +108,8 @@ class PackMixin:
         Returns:
             When queried, returns the current propagation flag. When set, returns None.
         """
+        if flag is None:
+            return super().pack_propagate()  # type: ignore[misc]
         return super().pack_propagate(flag)  # type: ignore[misc]
 
     def pack_slaves(self) -> list[Any]:

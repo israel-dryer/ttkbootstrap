@@ -1,197 +1,148 @@
 ---
-title: DialogName
+title: WidgetName
 ---
 
-# DialogName
+# WidgetName
 
-1–2 paragraphs describing:
+1–2 paragraphs that say:
 
-- what kind of dialog this is
+- what kind of dialog this is (confirmation, picking, configuration…)
+- whether it's modal, popover-like, or hybrid
+- what it's built on, if relevant (e.g. `Dialog`, `FormDialog`, `Calendar`)
 
-- what task it supports (confirmation, picking, configuration, etc.)
-
-- whether it is modal, popover-like, or hybrid
-
-Mention what it is built on if relevant (e.g., `Dialog`, `FormDialog`, `Calendar`).
-
----
-
-## Framework integration
-
-**Application & Windows**
-
-- Modality expectations (local grab, focus behavior, parent/child relationship)
-
-- Window behaviors (transient, always-on-top, resize rules)
-
-**Design System**
-
-- How the dialog uses theme tokens (surface, borders, typography)
-
-- Button variants and semantic emphasis
-
-**Signals & Events**
-
-- How results are surfaced (`.result`, virtual events, callbacks)
-
-- Reactive usage patterns (optional)
-
-**Localization**
-
-- How labels and messages participate in localization
-
-- Formatting of values (dates/numbers) if applicable
-
-Keep this section about *expected behavior*, not a full list of options.
+The intro carries the "what is this and why does it exist" framing.
+There's no separate `What problem it solves` / `Core concepts` /
+`Framework integration` section — those collapse into the intro plus
+the sections below.
 
 ---
 
 ## Basic usage
 
-Show the most common usage pattern.
-
-This usually includes:
-
-- creating the dialog
-
-- calling `.show()`
-
-- reading the result
+The most common usage pattern: construct, `.show()`, read the result.
 
 ```python
-dlg = DialogName(app, ...)
+import ttkbootstrap as ttk
+
+dlg = WidgetName(...)
 dlg.show()
 
 print(dlg.result)
 ```
 
-If the dialog supports alternate presentation (popover / anchored), show one short example.
-
----
-
-## What problem it solves
-
-Explain why this dialog exists instead of:
-
-- building a fully custom dialog
-
-- embedding the widget inline
-
-- using a simpler `MessageBox`
-
-Focus on developer ergonomics and UX benefits.
-
----
-
-## Core concepts
-
-Explain the dialog’s mental model.
-
-Examples:
-
-- modal vs popover behavior
-
-- blocking vs non-blocking flow
-
-- select vs confirm vs cancel semantics
-
-- safety guarantees (what closes the dialog, what doesn’t)
-
-Use subsections if needed:
-
-### Modal vs popover
-
-### Confirming vs cancelling
+If the dialog supports an alternate presentation (popover, anchored),
+show one short example here.
 
 ---
 
 ## Result value
 
-Explain clearly:
+The dialog's central concern: what comes out of it.
 
-- what `.result` contains
+Document:
 
-- its type
-
-- what `None` means
-
-- when it is set
+- what `.result` contains and its type
+- what `None` means (and when it occurs)
+- when `.result` is set (after `.show()` returns? on button click?)
 
 ```python
 dlg.result  # <type> or None
 ```
 
-!!! note
-    The dialog only produces a result when the user explicitly confirms.
+For dialogs whose result is a structured value (form data, color
+spec, font choice), describe the shape here. For dialogs that don't
+have a `.result` (static-method facades like `MessageBox`), this
+section becomes the "what the call returns" section instead.
 
 ---
 
 ## Common options
 
-Document the options most users will configure, such as:
+Curated — the options users actually configure. Avoid full API dumps.
+
+Typical:
 
 - title
-
-- initial value
-
-- bounds / constraints
-
+- initial value / message
+- bounds, constraints
 - buttons / defaults
+- icons or window chrome
+- modality flags
 
-- visual flags (icons, window chrome, modality)
+Show one or two compact examples. Theme tokens (`accent`, `variant`)
+go here when relevant; localization callouts can be a `!!! note`
+inline rather than a separate section.
 
-Avoid dumping the full API.
+---
+
+## Behavior
+
+Modality, focus, and lifecycle rules:
+
+- modal / popover / sheet behavior
+- default-button binding (Enter)
+- cancel binding (Escape)
+- focus and grab semantics
+- transient relationship to parent
+- `alert=True` and any side effects of `.show()`
+
+If the dialog has a non-blocking variant or auto-dismiss, document
+it here.
 
 ---
 
 ## Events
 
-Explain dialog-level events.
+The lifecycle hooks the dialog exposes.
 
 Common patterns:
 
-- `<<DialogResult>>`
-
-- `on_result(...)`
-
-- payload structure (`confirmed`, `result`)
+- `<<DialogResult>>` virtual event
+- `on_result(...)` / `on_dismissed(...)` helpers
+- payload shape (`{"result": ..., "confirmed": bool}`)
 
 ```python
-def on_result(payload):
+def handle(payload):
     ...
 
-dlg.on_result(on_result)
+dlg.on_dialog_result(handle)
 ```
+
+If the dialog has no events (facades, static methods), state that
+explicitly and link to the underlying class instead.
 
 ---
 
 ## UX guidance
 
-Prescriptive advice:
+*Optional — include only when there's prescriptive advice the reader
+won't derive from the API.*
+
+Examples:
 
 - when to use modal vs popover
+- how to label buttons (verbs > "OK"/"Cancel")
+- destructive-button placement and default-button rules
+- when to ring the system bell
+- focus and accessibility considerations
 
-- how to label buttons
-
-- how to avoid interrupting users
-
-- accessibility and focus considerations
-
-This section is design guidance, not API documentation.
+Skip this section for base classes, builders, or specialty interactions
+where UX advice doesn't apply.
 
 ---
 
-## When to use / when not to
+## When should I use WidgetName?
 
-**Use DialogName when:**
-
-- …
-
-**Avoid DialogName when:**
+Use WidgetName when:
 
 - …
 
-Always point to another concrete widget as the alternative.
+Prefer OtherDialog when:
+
+- …
+
+Always point to a concrete alternative (`MessageBox` / `QueryDialog`
+/ `FormDialog` / inline widget / non-modal toast).
 
 ---
 
@@ -200,23 +151,15 @@ Always point to another concrete widget as the alternative.
 **Related widgets**
 
 - **OtherDialog** — how it differs
-
 - **Dialog** — generic dialog builder
-
-- **Toast** — non-blocking alternative
-
 - **FormDialog** — multi-input dialogs
 
 **Framework concepts**
 
-- [Windows](../../platform/windows.md)
-
-- [Signals & Events](../../capabilities/signals/index.md)
-
-- [Localization](../../capabilities/localization.md)
+- [Windows](../platform/windows.md)
+- [Localization](../capabilities/localization.md)
 
 **API reference**
 
-- **API Reference:** `ttkbootstrap.DialogName`
-
+- **API reference:** `ttkbootstrap.WidgetName`
 - **Related guides:** Dialogs, UX Patterns, Localization
