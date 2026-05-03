@@ -140,12 +140,9 @@ container.update_idletasks()
 ## Image performance
 
 The `Image` utility caches by absolute path or content hash, so
-repeated `Image.open("logo.png")` calls return the same
-`PhotoImage`. Constructing `tk.PhotoImage(file="logo.png")`
-directly does no caching — every call decodes the file.
-
-In a loop or per-row context, the difference is the cost of the
-PNG decode times the row count. Cache aggressively.
+repeated `Image.open("logo.png")` calls return the same `PhotoImage`
+with no redundant decodes. In a loop or per-row context, the savings
+are the cost of the PNG decode times the row count.
 
 For dynamic image generation (resizing, recoloring), use Pillow to
 produce the variant once and feed it to `Image.from_pil` with a

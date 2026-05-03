@@ -116,8 +116,8 @@ img_a = Image.from_pil(pil_a, key='red-square')
 img_b = Image.from_pil(pil_b, key='red-square')
 print(img_a is img_b)  # → True (same cache slot)
 
-# Stash a manually-constructed PhotoImage
-custom = ttk.PhotoImage(width=32, height=32)
+# Stash a generated image under an explicit key
+custom = Image.transparent(32, 32)
 Image.set_cached('logo:32', custom)
 later = Image.get_cached('logo:32')
 print(later is custom)  # → True

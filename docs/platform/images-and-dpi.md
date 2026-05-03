@@ -33,27 +33,21 @@ Tk images live in the Tcl interpreter, not the Python widget tree:
   and Tk frees the image even though widgets still point at it.
 
 The result: a label that previously showed an icon goes blank, with
-no exception, no log message, and no clue in the widget's
-configuration. The fix is the **pinning idiom** — keep a Python
-reference somewhere that outlives the widget:
+no exception, no log message, and no clue in the widget's configuration.
+
+The `Image` utility handles this automatically by keeping its own cache.
+Load images through `Image.open` (or `Image.from_pil`, `Image.from_bytes`,
+`Image.transparent`) and the cache holds the reference for you:
 
 ```python
-# Wrong — img is GC'd at end of build_ui; the label renders blank
-def build_ui():
-    img = ttk.PhotoImage(file="logo.png")
-    ttk.Label(app, image=img).pack()
+from ttkbootstrap import Image
 
-# Right — pin on the widget itself
-img = ttk.PhotoImage(file="logo.png")
-label = ttk.Label(app, image=img)
-label.image_ref = img       # framework idiom: pin reference on widget
+ttk.Label(app, image=Image.open("logo.png")).pack()
+# No local variable needed — cache keeps the PhotoImage alive.
 ```
 
-The `Image` utility (next section) handles this for you by keeping
-its own cache.
-
 See [Widget Lifecycle → Image and font references](widget-lifecycle.md#image-and-font-references)
-for the same gotcha framed in terms of construction and destruction.
+for the full explanation.
 
 ---
 
@@ -250,29 +244,19 @@ icon design principles.
 
 ## Common pitfalls
 
-**Image reference lost:**
-```python
-# Wrong — image is garbage collected before it's displayed
-def build_ui():
-    img = ttk.PhotoImage(file="logo.png")  # local variable, not kept
-    ttk.Label(app, image=img).pack()
-```
+**Image reference lost:** load images through `Image.open` — the cache
+holds the reference so it can never be garbage-collected out from
+under a widget:
 
 ```python
-# Correct — keep the reference on a persistent object
-self.logo = ttk.PhotoImage(file="logo.png")
-ttk.Label(app, image=self.logo).pack()
+from ttkbootstrap import Image
+
+ttk.Label(app, image=Image.open("logo.png")).pack()
 ```
 
-**Image created inside a constructor repeatedly:**
-```python
-# Wrong — creates a new image object on every call
-def refresh_row(data):
-    icon = ttk.PhotoImage(file="row-icon.png")  # N copies in memory
-    ...
-```
-
-Use the `Image` utility with caching, or create the image once and reuse.
+**Image created inside a loop or constructor repeatedly:** `Image.open`
+caches by resolved path, so repeated calls return the same `PhotoImage`
+with no redundant decodes or memory copies.
 
 **Ignoring DPI on Windows:** load images through `Image.open` rather than
 directly via `tk.PhotoImage`. `Image.open` goes through the framework's

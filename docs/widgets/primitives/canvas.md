@@ -588,20 +588,16 @@ Notes worth remembering:
 ### Embed an image (PIL)
 
 `tk.Canvas` accepts only `PhotoImage` / `BitmapImage`. For PNG /
-JPEG / arbitrary RGBA images, route through Pillow:
+JPEG / arbitrary RGBA images, route through `Image.from_pil` — the
+cache retains the reference automatically:
 
 ```python
-from PIL import Image, ImageTk
+from PIL import Image as PILImage
+from ttkbootstrap import Image
 
-img = ImageTk.PhotoImage(Image.open("logo.png"))
-c.image_ref = img                              # keep a reference!
+img = Image.from_pil(PILImage.open("logo.png"))
 c.create_image(50, 50, image=img, anchor="nw")
 ```
-
-The `image_ref = img` stash is not optional. Canvas keeps only a
-weak association with the image; if the only reference is the local
-`img` name, it gets garbage-collected the moment the function
-returns and the image disappears with no error.
 
 ### Render only what's visible
 
@@ -667,9 +663,8 @@ limits are easy to hit if you're sloppy. Practical guidance:
 - **Batch then yield.** Run all mutations in one handler and let Tk
   redraw at idle. Calls to `update()` inside a tight loop force a
   redraw per call and tank throughput.
-- **Image references survive in Python, not Tcl.** Cache
-  `PhotoImage` instances on a long-lived object (the canvas itself
-  is fine — `c.image_ref = img`) so the GC doesn't reclaim them
+- **Load images through `Image.open` / `Image.from_pil`.** The
+  cache retains the reference so images can't be garbage-collected
   between frames.
 
 ---

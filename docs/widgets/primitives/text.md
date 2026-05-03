@@ -238,17 +238,16 @@ Text or one of its ancestors.
 `image_create` accepts `align=`, `padx=` / `pady=`, and `name=`
 (string — when provided, becomes the embed's identifier so you can
 reconfigure it later via `image_configure(name, …)` or remove it via
-`delete(name)`). The image reference must be retained by Python —
-stash it on a long-lived object (e.g. `text.image_ref = img`) so the
-GC doesn't reclaim it.
+`delete(name)`). Load images through `Image.open` so the cache retains the reference
+automatically — no manual pinning needed.
 
 ```python
+from ttkbootstrap import Image
+
 button = ttk.Button(text, text="Run", accent="primary")
 text.window_create("end", window=button, padx=4, pady=4)
 
-img = ImageTk.PhotoImage(Image.open("icon.png"))
-text.image_ref = img
-text.image_create("end", image=img, padx=4)
+text.image_create("end", image=Image.open("icon.png"), padx=4)
 ```
 
 To find every embedded object: `text.dump("1.0", "end",
