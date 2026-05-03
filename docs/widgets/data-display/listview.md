@@ -7,7 +7,7 @@ title: ListView
 `ListView` is a **virtualized scrolling list** for flat record sets.
 It builds a fixed pool of row widgets and recycles them as the user
 scrolls, so a list of ten thousand records costs the same as a list
-of fifty. Each row is a [ListItem](../primitives/listitem.md) by
+of fifty. Each row is a `ListItem` by
 default — a row template with optional icon, title, body text,
 caption, and trailing badge — and you can substitute any
 `update_data(record)`-compatible widget through `row_factory`.
@@ -338,8 +338,7 @@ Prefer:
 
 ## Related widgets
 
-- **[ListItem](../primitives/listitem.md)** — the default row
-  template ListView builds from
+- **`ListItem`** — the default row template ListView builds from
 - **[TableView](tableview.md)** — column-aligned records
 - **[TreeView](treeview.md)** — hierarchical records
 - **[Scrollbar](../layout/scrollbar.md)** — the scrollbar

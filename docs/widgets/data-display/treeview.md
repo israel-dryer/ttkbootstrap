@@ -191,7 +191,7 @@ window.
 expand/collapse — the row is not selected by that click. Double
 clicking a parent row also toggles expansion. Right-click does
 nothing built in; bind `<Button-3>` (or `<Button-2>` on macOS) to
-open a [ContextMenu](../navigation/contextmenu.md).
+open a [ContextMenu](../actions/contextmenu.md).
 
 **Scrolling.** TreeView shows scrollbars only when the parent
 provides them — there is no built-in scrollbar (unlike
@@ -326,7 +326,7 @@ Prefer:
 - **[ListView](listview.md)** — virtualized flat list of rich rows
 - **[ScrollView](../layout/scrollview.md)** — supplies scrollbars
   for a TreeView that exceeds its visible area
-- **[ContextMenu](../navigation/contextmenu.md)** — pair with
+- **[ContextMenu](../actions/contextmenu.md)** — pair with
   `<Button-3>` for per-row right-click actions
 
 ---

@@ -176,4 +176,4 @@ group.
 
 - **API reference:** `ttkbootstrap.Card`
 - **Related guides:** [Layout](../../guides/layout.md),
-  [Design System: Surfaces](../../design-system/surfaces.md)
+  [Design System: Colors](../../design-system/colors.md)

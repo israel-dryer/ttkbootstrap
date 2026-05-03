@@ -352,7 +352,7 @@ Prefer a custom layout with `Signal`-bound widgets when:
 - [`Tabs`](tabs.md) — horizontal tab-bar selection alternative.
 - [`PageStack`](../views/pagestack.md) — the typical content target
   driven by `SideNav`'s selection signal.
-- [`Toolbar`](toolbar.md) — what `SideNav` builds for its internal
+- [`Toolbar`](../application/toolbar.md) — what `SideNav` builds for its internal
   header and what `AppShell` builds at the top.
 - [`ContextMenu`](../actions/contextmenu.md) — the popup flyout type
   used by `SideNavGroup` in `compact` mode.

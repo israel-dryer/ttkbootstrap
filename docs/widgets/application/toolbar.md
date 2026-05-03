@@ -123,7 +123,7 @@ reads as a separate band against the page background. `density="compact"`
 shrinks every button added through `add_button()` and tightens
 toolbar padding to `(3, 1)`.
 
-!!! link "See [Design System → Surfaces](../../design-system/surfaces.md) for the full surface palette and intended uses."
+!!! link "See [Design System → Surfaces](../../design-system/colors.md) for the full surface palette and intended uses."
 
 ### Window controls and dragging
 
@@ -317,4 +317,4 @@ Prefer a different control when:
     - [Toolbars](../../guides/toolbars.md) — composition recipes
     - [App Structure](../../guides/app-structure.md) — where Toolbar
       fits in a typical layout
-    - [Design System → Surfaces](../../design-system/surfaces.md)
+    - [Design System → Surfaces](../../design-system/colors.md)

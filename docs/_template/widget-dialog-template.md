@@ -156,8 +156,8 @@ Always point to a concrete alternative (`MessageBox` / `QueryDialog`
 
 **Framework concepts**
 
-- [Windows](../../platform/windows.md)
-- [Localization](../../capabilities/localization.md)
+- [Windows](../platform/windows.md)
+- [Localization](../capabilities/localization.md)
 
 **API reference**
 

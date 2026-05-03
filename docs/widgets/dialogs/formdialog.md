@@ -169,7 +169,7 @@ Pressing any non-cancel button runs `Form.validate()` first:
 Validation only runs on submission — fields can also have live
 ("input"-trigger) rules that surface inline errors as the user
 types, but those don't block the dialog by themselves. See
-[Validation rules](../../capabilities/validation.md) for how to
+[Validation rules](../../capabilities/validation/index.md) for how to
 attach rules to a `Field`.
 
 The cancel button skips validation entirely; cancelling always
@@ -316,7 +316,7 @@ Prefer a different control when:
 
 - [Windows](../../platform/windows.md)
 - [Localization](../../capabilities/localization.md)
-- [Validation rules](../../capabilities/validation.md)
+- [Validation rules](../../capabilities/validation/index.md)
 
 **API reference**
 

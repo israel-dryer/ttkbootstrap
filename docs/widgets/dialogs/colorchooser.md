@@ -307,7 +307,7 @@ Prefer a different control when:
 
 - [Windows](../../platform/windows.md)
 - [Localization](../../capabilities/localization.md)
-- [Theming and accent tokens](../../design-system/accent-tokens.md)
+- [Colors and tokens](../../design-system/colors.md)
 
 **API reference**
 

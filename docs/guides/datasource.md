@@ -572,5 +572,5 @@ class APIDataSource:
 - [Tables and lists](tables-and-lists.md) — selection, CRUD, and
   filtering integrated end-to-end with TableView, ListView, and
   TreeView
-- [ListView](../widgets/composites/listview.md) — data-aware list widget
-- [TableView](../widgets/composites/tableview.md) — data-aware table widget
+- [ListView](../widgets/data-display/listview.md) — data-aware list widget
+- [TableView](../widgets/data-display/tableview.md) — data-aware table widget

@@ -167,7 +167,7 @@ Prefer:
 
 - [Badge](badge.md) — for compact, high-contrast pill-style
   status/count chips
-- [Field label slot](../forms/field.md) — when labelling a form
+- [Form](../inputs/form.md) — when labelling a form
   control (handles sizing, alignment, and required-marker
   conventions)
 - [Button](../actions/button.md) — when the text is interactive

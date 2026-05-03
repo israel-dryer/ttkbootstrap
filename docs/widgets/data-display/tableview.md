@@ -14,7 +14,7 @@ down to chosen values, and CRUD operations open a generated
 [FormDialog](../dialogs/formdialog.md) when editing is enabled.
 
 Unlike [ListView](listview.md) (a virtualized list of rich rows) and
-[TreeView](../primitives/treeview.md) (the underlying hierarchical
+[TreeView](treeview.md) (the underlying hierarchical
 control), TableView is built around **column-aligned scanning and
 comparison**: heading clicks sort, status labels show the active
 filter and sort, and the footer pager moves through pages of
@@ -329,7 +329,7 @@ Prefer:
 - [ListView](listview.md) — when each record is best shown as a
   rich row (icon, title, body text) rather than a row of cells, or
   when the data is flat and the user reads top-to-bottom
-- [TreeView](../primitives/treeview.md) — when records nest
+- [TreeView](treeview.md) — when records nest
   hierarchically (folder structures, parent/child relationships).
   TableView is built on TreeView but exposes only flat rows plus
   optional grouping.
@@ -343,13 +343,13 @@ Prefer:
 
 - **[ListView](listview.md)** — virtualized flat list with rich
   row layouts
-- **[TreeView](../primitives/treeview.md)** — the underlying
+- **[TreeView](treeview.md)** — the underlying
   hierarchical tree widget TableView builds on
 - **[FormDialog](../dialogs/formdialog.md)** — the dialog
   TableView opens for add/edit
 - **[FilterDialog](../dialogs/filterdialog.md)** — the dialog
   used by per-column "Filter…"
-- **[ContextMenu](../navigation/contextmenu.md)** — the header
+- **[ContextMenu](../actions/contextmenu.md)** — the header
   and row right-click menus
 
 ---

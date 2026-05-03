@@ -305,7 +305,7 @@ no-ops if no `master` is set.
   large lists.
 - **Don't reach for `FilterDialog` for single-select.** The widget
   is exclusively multi-select; a single-select picker is better
-  served by [`Combobox`](../selection/combobox.md) or
+  served by [`Combobox`](../primitives/combobox.md) or
   [`SelectBox`](../inputs/selectbox.md).
 
 ---
@@ -329,7 +329,7 @@ Prefer a different control when:
 - the option set is **small (≤5 items)** → render
   [`CheckButton`](../selection/checkbutton.md) widgets inline.
 - the user picks **exactly one value** → use
-  [`Combobox`](../selection/combobox.md), 
+  [`Combobox`](../primitives/combobox.md), 
   [`SelectBox`](../inputs/selectbox.md), or
   [`QueryDialog`](querydialog.md) with `items=`.
 - you need **live filtering as the user toggles** (no Apply

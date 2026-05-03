@@ -15,7 +15,7 @@ for passing directly to any widget's `font=` option.
 It's the right shape for occasional "let the user pick a font" tasks
 inside a settings or preferences flow. For toolbars or other always-
 visible font controls, build inline pickers from
-[`Combobox`](../selection/combobox.md) and [`SpinnerEntry`](../inputs/spinnerentry.md)
+[`Combobox`](../primitives/combobox.md) and [`SpinnerEntry`](../inputs/spinnerentry.md)
 instead — opening a modal on every interaction is overkill.
 
 ---
@@ -217,7 +217,7 @@ before close.
 - **Don't open this on every keystroke.** A modal font picker is a
   commit-once interaction. For continuously-varying font controls
   (toolbar font menus, live size sliders), build an inline picker
-  from [`Combobox`](../selection/combobox.md) (family) plus
+  from [`Combobox`](../primitives/combobox.md) (family) plus
   [`SpinnerEntry`](../inputs/spinnerentry.md) (size) plus
   [`CheckButton`](../actions/buttongroup.md) (weight/slant) — the
   modal is the wrong shape for that.
@@ -250,7 +250,7 @@ Prefer a different control when:
   family + `SpinnerEntry` for size + a couple of toggle buttons in
   the toolbar; the modal is the wrong shape.
 - you only need to pick the **family** (size is fixed, no
-  weight/slant) → a [`Combobox`](../selection/combobox.md) populated
+  weight/slant) → a [`Combobox`](../primitives/combobox.md) populated
   with `tkinter.font.families()` is lighter and inline.
 - the dialog needs a **custom layout** (e.g. extra fields, a font-
   source picker, embedded license preview) → drop down to

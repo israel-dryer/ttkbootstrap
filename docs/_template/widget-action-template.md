@@ -101,8 +101,8 @@ How the widget participates in:
 
 Link out to:
 
-- [Signals & Events](../../capabilities/signals/index.md)
-- [Localization](../../capabilities/localization.md)
+- [Signals & Events](../capabilities/signals/index.md)
+- [Localization](../capabilities/localization.md)
 
 ---
 
