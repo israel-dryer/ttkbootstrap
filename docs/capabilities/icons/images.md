@@ -186,47 +186,6 @@ already gave you a `PhotoImage` and you want it findable by name.
 
 ---
 
-## The pinning idiom
-
-Tk's reference-keeping issue affects every `PhotoImage`, not just ones
-loaded through `Image`. The minimal idiom for raw `tkinter.PhotoImage` is
-to attach the image to a long-lived object — typically the widget itself
-or a module-level container:
-
-```python
-import ttkbootstrap as ttk
-import tkinter as tk
-
-app = ttk.App()
-label = ttk.Label(app)
-label.image = tk.PhotoImage(width=20, height=20)   # pin via attribute
-label.configure(image=label.image)                  # then wire it
-label.pack()
-```
-
-`Image.*` does the equivalent automatically by stashing every loaded
-image in `Image._cache`. As long as the cache outlives the widgets —
-the default behavior — you can drop the local Python variable freely:
-
-```python
-import ttkbootstrap as ttk
-from ttkbootstrap import Image
-
-app = ttk.App()
-ttk.Label(app, image=Image.open('logo.png')).pack()
-# No local variable; the cache keeps the PhotoImage alive.
-app.mainloop()
-```
-
-The only failure modes are explicit ones: `clear_cache()`, replacing the
-cached image at the same key (the previous one becomes unreachable), or
-overwriting `Image._cache` directly. None of these can be triggered by
-ordinary code paths, so most apps treat `Image.*` as zero-effort
-pinning. See [Platform → Images & DPI](../../platform/images-and-dpi.md)
-for the wider explanation of Tk image lifetime.
-
----
-
 ## When `Image` is the wrong tool
 
 `Image` is a general-purpose loader; it doesn't integrate with the
@@ -243,10 +202,6 @@ framework's styling pipeline. Specifically:
   call `Style.element_create(...)` with a list of `(state, image)`
   tuples. There's no first-class mechanism for swapping `Image.*`
   results based on widget state.
-- **For one-shot raw `PhotoImage`** that doesn't need caching at all
-  (e.g., a generated image you're about to throw away), use
-  `tkinter.PhotoImage` or `PIL.ImageTk.PhotoImage` directly and pin it
-  yourself. `Image.*` adds a cache slot you don't need.
 
 Use `Image.*` when you have arbitrary raster content (logos,
 photographs, custom illustrations, raster icons that aren't Bootstrap

@@ -122,27 +122,25 @@ specific limits.
 
 ## Image and font references
 
-Tk's most-tripped-over rule: **`PhotoImage` and `BootstrapIcon` are
-garbage-collected if you don't keep a Python reference to them**, and
-the widget displaying them will quietly show nothing.
+Load images through `Image.open` (or `Image.from_pil`, `Image.from_bytes`,
+`Image.transparent`) rather than constructing `PhotoImage` directly.
+The `Image` cache keeps every loaded image alive for the life of the
+application, so you never need to manage references manually:
 
 ```python
-# Wrong — img is dropped immediately; the label renders blank
-label = ttk.Label(app, image=ttk.PhotoImage(file="logo.png"))
+from ttkbootstrap import Image
 
-# Right — keep the reference alive on the widget itself
-img = ttk.PhotoImage(file="logo.png")
-label = ttk.Label(app, image=img)
-label.image_ref = img       # idiom: pin the reference on the widget
+ttk.Label(app, image=Image.open('logo.png')).pack()
+# Cache holds the reference; no local variable needed.
 ```
 
 The same applies to images embedded in `Canvas` (`create_image(...)`)
-and `Text` (`image_create(...)`). Pin the reference on whatever object
-outlives the embed.
+and `Text` (`image_create(...)`): pass the result of `Image.open` and
+the cache handles lifetime automatically.
 
-Font and variable references are usually fine because Tcl keeps named
+Font and variable references are usually fine because Tk keeps named
 fonts and `*Var` instances alive internally as long as a widget
-references them. The pinning idiom is for *images*.
+references them.
 
 ---
 
