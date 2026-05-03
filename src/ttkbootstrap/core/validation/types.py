@@ -1,7 +1,7 @@
 """Type definitions for widget validation rules."""
 from typing import Callable, Literal, Optional, TypedDict
 
-RuleType = Literal["required", "email", "pattern", "stringLength", "custom", "compare"]
+RuleType = Literal["required", "email", "pattern", "stringLength", "custom"]
 RuleTriggerType = Literal['key', 'blur', 'always', 'manual']
 
 
