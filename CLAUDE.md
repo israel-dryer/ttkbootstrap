@@ -34,7 +34,7 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-03, bug-fix session 3 DONE — next-session entry point)
+### Current handoff (2026-05-03, bug-fix session 4 DONE — next-session entry point)
 
 **Read this section first.** The full per-page session notes below
 this handoff are historical context — useful when picking up
@@ -64,58 +64,59 @@ pass is also complete (commit `e07c372`).
    orphan `Examples:`, no broken cross-links, both `Attributes:`
    and `Args:` rendering side-by-side.
 
-**Bug-fix session 3 (2026-05-03) — CLOSED. Commit: `417abe4`.**
+**Bug-fix session 4 (2026-05-03) — CLOSED. Commit: `1ca3743`.**
 
-Fixed (8 bugs, docs updated to match each):
+Fixed (10 bugs, docs updated to match each):
 
-- `ToggleGroup.set(value)` now raises `ValueError` for unknown keys
-  in both single (str) and multi (set) modes
-  (`composites/togglegroup.py:267`).
-- `OptionMenu.set(value)` now raises `ValueError` if value is not in
-  `options` (`primitives/optionmenu.py:181`).
-- `SelectBox.value = "not_in_items"` now raises `ValueError` when
-  `allow_custom_values=False` (`composites/selectbox.py:528`).
-- `SideNav.select(key)` now raises `KeyError` for unregistered keys
-  (`composites/sidenav/view.py:774`).
-- `Accordion.add()` TypeError fixed — `accent`/`variant` kwargs are
-  always popped before precedence resolution so per-call and
-  accordion defaults no longer collide (`composites/accordion.py:128`).
-- `Accordion.remove(key)` now fires `<<AccordionChange>>` even when
-  removing the last expander; payload is `{"expanded": []}`
-  (`accordion.py:210`).
-- `Accordion.configure(show_separators=...)` now retroactively
-  rebuilds the separator strip for all existing expanders
-  (`accordion.py:368`).
-- `Expander.collapsible=False` now gates `expand()`, `collapse()`,
-  and `configure(expanded=...)` in addition to the UI affordance
-  (`composites/expander.py:261`).
+- `AppSettings.light_theme`/`dark_theme` now default to
+  `'bootstrap-light'`/`'bootstrap-dark'` instead of `docs-light`/
+  `docs-dark` (`runtime/app.py:302-303`). Docs updated in 5 pages.
+- `Signal.map()` GC-sensitivity fixed — closure now holds a strong
+  reference to the derived signal so inline `textvariable=sig.map(fn)`
+  patterns keep working after construction (`core/signals/signal.py:234`).
+- `Toast.show()` called twice no longer leaks the first Toplevel —
+  `_build_toast()` destroys the previous Toplevel before creating a
+  new one (`composites/toast.py:219`).
+- `Toast.configure(bootstyle=...)` now syncs `_accent` so the next
+  `show()` paints with the updated styling (`composites/toast.py:152`).
+- `CheckButton.set(None)` now enters the indeterminate (`alternate`)
+  ttk state instead of raising `TypeError` (`primitives/checkbutton.py:111`).
+- `Switch(bootstyle='primary')` now always sets `variant='switch'`
+  regardless of `bootstyle` presence (`primitives/switch.py:43`).
+- `Entry.configure(surface=...)` no longer raises `TclError` — added
+  `_delegate_surface` that calls `rebuild_style()` (`primitives/entry.py`).
+  Same fix applied to `Combobox` and `Spinbox`.
+- `Entry.configure(density=...)` now rebuilds the ttk style (not just
+  the font) — `_delegate_density` now calls `rebuild_style()` after
+  updating `_style_options` (`primitives/entry.py`). Same fix applied
+  to `Combobox` and `Spinbox`.
+- `pack_propagate()` / `grid_propagate()` query (no-arg call) now
+  returns the current propagation state — fixed by calling
+  `super().pack_propagate()` / `super().grid_propagate()` without
+  args when `flag is None` (`core/capabilities/pack.py:112`,
+  `core/capabilities/grid.py:113`).
 
 **Next session (no display needed): continue the bug list.**
 
 The per-page session notes below still contain further bugs. The
 remaining higher-value bugs without a display requirement (search for
 `"Surfaced by"` and `"!!! warning"` / `"!!! danger"` blocks in the
-per-page notes):
+per-page notes). Notable remaining items:
 
-- `AppSettings.light_theme`/`dark_theme` defaults are `docs-light`/
-  `docs-dark` (counterintuitive; should be `bootstrap-light`/
-  `bootstrap-dark`).
-- `follow_system_appearance` is silently no-op on Windows/Linux.
-- `Signal.map()` weakref: inline `textvariable=sig.map(fn)` can stop
-  updating after the derived signal is GC'd.
-- `Toast.show()` called twice leaks the first Toplevel.
-- `Toast.configure(bootstyle=...)` is a no-op for styling.
-- `CheckButton.set(None)` raises TypeError — no programmatic
-  re-entry path for the indeterminate state.
-- `Switch(bootstyle='primary')` bypasses `variant='switch'`.
-- `Entry.configure(surface=...)` raises TclError.
-- `Entry.configure(density=...)` updates font only.
-- `pack_propagate()` / `grid_propagate()` always return `None` on query.
+- `follow_system_appearance` is silently no-op on Windows/Linux
+  (documented; no code fix possible without OS-level hooks).
+- Various dialog localization bugs (`MessageDialog`, `FormDialog`,
+  `FilterDialog` show literal `button.ok`/`button.cancel` keys when
+  `localize=False`).
+- Various `ListView`/`TableView` event payload mismatches.
+- `Notebook.remove()` / `forget()` MRO conflict (`TypeError`).
+- `TabView.remove(key)` always raises `KeyError`.
+- `Calendar.set(None)` / `set_range(None, None)` are no-ops.
 
 Run `python tools/check_doc_snippets.py --run` before and after each
 fix to guard against regressions.
 
-**Bug-fix session 2 (2026-05-03) — CLOSED. Commit: `1bdd489`.**
+**Bug-fix session 3 (2026-05-03) — CLOSED. Commit: `417abe4`.**
 
 Fixed (10 bugs, docs updated to match each):
 
