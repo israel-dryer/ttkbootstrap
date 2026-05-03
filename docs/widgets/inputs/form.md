@@ -212,10 +212,8 @@ Useful for IDs you want to round-trip without showing the user.
 | `accent` | `None` | Forwarded to the outer `Frame` (container surface tinting) |
 | `buttons` | `None` | Optional footer buttons (`DialogButton`, mapping, or string) |
 
-!!! note "`columns=` is not a valid kwarg"
-    Use `col_count` (the actual constructor argument). Passing
-    `columns=2` raises `TclError: unknown option "-columns"` because
-    the kwarg falls through to the underlying ttk frame.
+!!! note "`columns=` is accepted as an alias for `col_count=`"
+    Both spellings work. `col_count` is the canonical argument name.
 
 `editor_options` flows verbatim into the editor's constructor, so
 options live where the editor expects them:
@@ -280,7 +278,7 @@ form = ttk.Form(app, items=[{
 }])
 ```
 
-!!! note "`TabsItem.label` is silently ignored"
+!!! note "`TabsItem.label` is reserved but not rendered"
     The dataclass accepts a top-level `label` on a `TabsItem`, but
     nothing in the build path renders it. The `label` on each
     individual `TabItem` is the one that becomes the tab caption.
@@ -323,16 +321,11 @@ var = form.field_variable("name")  # → tk.Variable; None on miss
 sig = form.field("name").signal    # → Signal or Variable on the inner editor
 ```
 
-!!! warning "`form.field_signal()` returns `None` for most editors"
-    The helper at `composites/form.py:598-603` reads
-    `getattr(widget, "_signal", None)` (with underscore), but Field
-    exposes the attribute as `signal` (no underscore). So
-    `field_signal(key)` returns the signal only for `CheckButton` /
-    `Switch` / `Scale` / `RadioToggle` — every Field-based editor
-    (`TextEntry`, `NumericEntry`, `SelectBox`, `DateEntry`,
-    `PasswordEntry`, `Spinbox`) returns `None`. Same shape for
-    `field_textsignal`. **Use `form.field(key).signal` instead** —
-    it works for every editor.
+`field_signal(key)` and `field_textsignal(key)` work for all editor
+types — both the Field-based editors (`TextEntry`, `NumericEntry`,
+`SelectBox`, `DateEntry`, `PasswordEntry`) and the raw SignalMixin
+subclasses (`CheckButton`, `Switch`, `Scale`). `form.field(key).signal`
+is the equivalent direct path when you already have the Field widget.
 
 ### Footer buttons
 

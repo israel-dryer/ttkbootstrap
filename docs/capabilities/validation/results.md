@@ -71,9 +71,7 @@ print(result.message)    # 'Enter at least 3 characters.'
 ```
 
 `ValidationRule.validate()` always returns a `ValidationResult` and
-never raises. If a rule type has no implementation branch — currently
-only `'compare'` — the result is `is_valid=True, message=''`,
-regardless of input.
+never raises.
 
 !!! danger "`if result:` is always True"
 
@@ -157,15 +155,10 @@ In other words: `ValidationResult` shows up only when you call
 `ValidationRule.validate(value)` directly. The widget API hides it
 behind dicts and bools.
 
-!!! warning "`widget.validation()` return value diverges from its docstring"
-
-    `ValidationMixin.validate()`'s docstring at
-    `widgets/mixins/validation_mixin.py:99-100` claims the return is
-    "`True` if validation was performed (regardless of result)". The
-    actual return is `True` only when validation was performed **and**
-    every rule passed; it is `False` on the first invalid result and
-    on the no-rules case. Treat the return as "did this value pass?"
-    and listen to the events for "did validation run?".
+The return value of `ValidationMixin.validate()` is `True` when at
+least one rule ran and every rule passed; `False` on the first failed
+rule or when no rules matched the trigger. Treat it as "did this value
+pass?" and listen to the events for "did validation run?".
 
 ---
 

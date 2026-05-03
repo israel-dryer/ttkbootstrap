@@ -29,11 +29,10 @@ event surface.
 | `'pattern'`      | `always`        | `pattern=str`   | `re.match(pattern, value)` succeeds (anchored at start, not end) |
 | `'stringLength'` | `blur`          | `min=int` and/or `max=int` | `min ≤ len(value) ≤ max` |
 | `'custom'`       | `manual`        | `func=callable` | `func(value)` returns truthy |
-| `'compare'`      | `blur`          | —               | **Not implemented.** Always returns `is_valid=True` regardless of input. |
 
-All six are exposed through the `RuleType` literal at
-`core/validation/types.py:4`. The first five have implementation branches
-in `ValidationRule.validate()`; `'compare'` is a silent no-op.
+All five are exposed through the `RuleType` literal at
+`core/validation/types.py:4`, each with a corresponding implementation
+branch in `ValidationRule.validate()`.
 
 ---
 
@@ -127,15 +126,6 @@ r.validate("hello").is_valid              # True
 r.validate("a" * 21).is_valid             # False
 ```
 
-!!! warning "Use `min` / `max`, not `min_length` / `max_length`"
-    `ValidationRule.validate()` reads `params.get("min")` and
-    `params.get("max")` (`core/validation/validation_rules.py:73-74`).
-    Passing `min_length=` / `max_length=` (the names used in the
-    `ValidationMixin.add_validation_rule` example docstring at
-    `widgets/mixins/validation_mixin.py:78`) silently writes them
-    into `params` but never reads them — the rule falls back to its
-    `min=0` / `max=∞` defaults and accepts every string.
-
 Default messages depend on which bound is set:
 
 - `stringLength(min=5)` → `"Enter at least 5 characters."`
@@ -174,24 +164,6 @@ This is the escape hatch for everything not covered above — async
 checks driven from focus-out, cross-field checks that capture the
 peer widget in the closure, or composite checks that combine library
 rules manually.
-
----
-
-## `'compare'` (not implemented)
-
-Listed in the `RuleType` literal but has no branch in
-`ValidationRule.validate()` (`core/validation/validation_rules.py:48-86`).
-Every input returns `is_valid=True`:
-
-```python
-r = ttk.ValidationRule("compare")
-r.validate("anything").is_valid    # True (always)
-r.validate(None).is_valid          # True (always)
-```
-
-Use a `'custom'` rule that captures the reference value or peer widget
-in the closure until this is either implemented or removed from the
-literal.
 
 ---
 
@@ -246,8 +218,7 @@ Three layers, in priority order:
 1. **`message=` argument at construction.** Wins always when non-empty.
 2. **`_default_message()` for the rule type.** Generated lazily from
    `params` (see the per-rule sections above).
-3. **`"Invalid input."`** — fallback for unknown rule types (currently
-   only `'compare'`).
+3. **`"Invalid input."`** — fallback (not reachable with the current five rule types).
 
 ```python
 ttk.ValidationRule("required", "Please enter your name.")

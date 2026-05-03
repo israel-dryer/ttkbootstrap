@@ -161,14 +161,8 @@ returning a result.
   `widget.validation(value)` only when the result is in.
 - **No cross-field rules.** Compose with `'custom'`: capture the other
   widget in the closure and read its value inside the predicate.
-- **No `'compare'` rule.** The `RuleType` literal lists `'compare'`
-  but `ValidationRule.validate()` has no branch for it; constructing
-  one and calling `validate(...)` returns `is_valid=True` for any
-  input. Use `'custom'` instead.
-- **`'stringLength'` uses `min` / `max`, not `min_length` /
-  `max_length`.** Passing the long names is silently ignored — the
-  rule falls back to its `min=0` / `max=∞` defaults and accepts
-  everything.
+- **No `'compare'` rule.** Use a `'custom'` rule that captures the
+  reference value or peer widget in the closure.
 
 ---
 

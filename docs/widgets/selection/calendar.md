@@ -74,8 +74,9 @@ on today's month and `_selected_date` is set to `date.today()` but
 
 **No-selection.** In range mode the range can be `(None, None)`
 (after `cal.range = None` or `cal.set_range(None, None)`). In single
-mode there is no "cleared" state — `value=None` is silently ignored
-by `set()` and the property setter.
+mode, `cal.set(None)` and `cal.value = None` clear the selection —
+`_selected_date` reverts to the initial date and the range markers
+are cleared.
 
 **Commit semantics.** A user click on a day cell commits immediately
 and emits `<<DateSelect>>`. Programmatic `set()`, `set_range()`, the
@@ -186,14 +187,10 @@ rejects any candidate whose first-of-month falls outside
 `[min_date, max_date]` (using `replace(day=1)` for the bounds
 check), so the user can never scroll past a configured edge.
 
-!!! warning "min/max + no `value=` can lock navigation"
-    When you pass `min_date` / `max_date` but omit `value=` /
-    `start_date=`, the display opens on today's month — and if today
-    is outside the configured window, both chevrons are blocked
-    immediately because every candidate fails the clamp. The user
-    sees an unselectable view with no way to navigate.
-    Always pair `min_date` / `max_date` with an in-range `value=`
-    (or `start_date=`).
+When `min_date` / `max_date` are set but `value=` / `start_date=` are
+omitted, the display date is automatically clamped into the allowed
+window at construction — so the calendar always opens on a navigable
+month even if today falls outside the range.
 
 **Click rules in range mode.**
 
