@@ -34,35 +34,28 @@ Read that first when picking up any docs work. It captures:
 Do not re-derive any of those from scratch — propose updates to the
 plan doc instead so they survive across sessions.
 
-### Current handoff (2026-05-03, bug-fix sessions 5–6 DONE — next-session entry point)
+### Current handoff — branch complete, two items deferred
 
-**Read this section first.** The full per-page session notes below
-this handoff are historical context — useful when picking up
-specific work, not required reading to get oriented.
+The `docs/review-and-cleanup` branch is **complete**. All editorial
+work, bug fixes, and doc cleanup that can be done without a running
+display has shipped. The branch is ready to merge.
 
-Pass 2 (editorial review) is COMPLETE across every section. Phases
-1–7 and 9A–9D are also complete. The cross-cutting link consistency
-pass is also complete (commit `e07c372`).
+**Deferred — requires a running display:**
 
-**Remaining work gated on a running display:**
-
-1. **Phase 6F — popup / animated screenshot capture.** Surfaces
-   today as 1 known `IMAGE:` placeholder (`selectbox.md`) plus
-   missing imagery on the 11 dialog pages and 7 animated-widget
-   pages (Toast, Tooltip, Accordion, Expander, PageStack,
-   FloodGauge, Meter). Needs (a) a renderer mode that captures a
-   `Toplevel` bbox after the popup is realized but before any
-   modal `grab_set` blocks the parent loop, and (b) an MP4/GIF
-   recording path for animations. The plan doc
-   (`analysis/docs-review-and-plan.md` § Phase 6F) has the full
-   list and the renderer mode needed.
+1. **Phase 6F — popup / animated screenshot capture.**
+   1 known `IMAGE:` placeholder (`selectbox.md`) plus missing imagery
+   on the 11 dialog pages and 7 animated-widget pages (Toast, Tooltip,
+   Accordion, Expander, PageStack, FloodGauge, Meter).
+   Needs: (a) a renderer mode that captures a `Toplevel` bbox after
+   the popup is realized but before `grab_set` blocks the loop, and
+   (b) an MP4/GIF recording path for animations.
+   Reference: `analysis/docs-review-and-plan.md` § Phase 6F.
 
 2. **Phase 8C — rendered docstring review for 22 priority symbols.**
-   Run `zensical serve -o` and visually verify mkdocstrings
-   rendering matches the spec model on `App`, `AppShell`, `Form`,
-   `TableView`, `MessageDialog`, `BaseDataSource`, etc. — no
-   orphan `Examples:`, no broken cross-links, both `Attributes:`
-   and `Args:` rendering side-by-side.
+   Run `zensical serve -o` and visually verify mkdocstrings rendering
+   on `App`, `AppShell`, `Form`, `TableView`, `MessageDialog`,
+   `BaseDataSource`, etc. Check: no orphan `Examples:` sections, no
+   broken cross-links, `Attributes:` and `Args:` render side-by-side.
 
 **Bug-fix sessions 5–6 (2026-05-03) — CLOSED.**
 
