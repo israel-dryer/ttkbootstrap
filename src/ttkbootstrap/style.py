@@ -5290,24 +5290,31 @@ class Bootstyle:
             # must be called AFTER instantiation in order to use winfo_class
             #    in the `get_ttkstyle_name` method
 
-            if style:
-                if Style.get_instance().style_exists_in_theme(style):
-                    self.configure(style=style)
-                else:
+            try:
+                if style:
+                    if Style.get_instance().style_exists_in_theme(style):
+                        self.configure(style=style)
+                    else:
+                        ttkstyle = Bootstyle.update_ttk_widget_style(
+                            self, style, **kwargs
+                        )
+                        self.configure(style=ttkstyle)
+                elif bootstyle:
                     ttkstyle = Bootstyle.update_ttk_widget_style(
-                        self, style, **kwargs
+                        self, bootstyle, **kwargs
                     )
                     self.configure(style=ttkstyle)
-            elif bootstyle:
-                ttkstyle = Bootstyle.update_ttk_widget_style(
-                    self, bootstyle, **kwargs
-                )
-                self.configure(style=ttkstyle)
-            else:
-                ttkstyle = Bootstyle.update_ttk_widget_style(
-                    self, "default", **kwargs
-                )
-                self.configure(style=ttkstyle)
+                else:
+                    ttkstyle = Bootstyle.update_ttk_widget_style(
+                        self, "default", **kwargs
+                    )
+                    self.configure(style=ttkstyle)
+            except AttributeError:
+                # Third-party widgets (e.g. tkcalendar.Calendar) override
+                # configure() and may access instance attributes that are not
+                # yet set when ttk.Frame.__init__ calls back into the
+                # subclass configure before the subclass __init__ completes.
+                pass
 
         return __init__
 
@@ -5393,7 +5400,12 @@ class Bootstyle:
             widget_color = Bootstyle.ttkstyle_widget_color(ttkstyle)
             method_name = Bootstyle.ttkstyle_method_name(widget, ttkstyle)
             builder: StyleBuilderTTK = style._get_builder()
-            builder_method = builder.name_to_method(method_name)
+            try:
+                builder_method = builder.name_to_method(method_name)
+            except AttributeError:
+                # Style name is from a third-party widget (e.g. tkcalendar) and
+                # doesn't map to any ttkbootstrap builder; pass it through as-is.
+                return style_string
             builder_method(builder, widget_color)
 
         # subscribe popdown style to theme changes
