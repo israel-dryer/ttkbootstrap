@@ -592,7 +592,7 @@ class Meter(Frame):
         rads = math.atan2(dy, dx)
         degs = math.degrees(rads)
 
-        if degs > self._arcoffset:
+        if degs > self._arcoffset - max(0, (360 - self._arcrange) / 2):
             factor = degs - self._arcoffset
         else:
             factor = 360 + degs - self._arcoffset
