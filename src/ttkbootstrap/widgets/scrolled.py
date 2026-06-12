@@ -322,6 +322,8 @@ class ScrolledFrame(ttk.Frame):
             **kwargs (dict[str, Any]):
                 Other keyword arguments passed to the content frame.
         """
+        self._scroll_enabled = True
+
         # content frame container
         self.container: ttk.Frame = ttk.Frame(
             master=master,
@@ -447,6 +449,8 @@ class ScrolledFrame(ttk.Frame):
 
     def _add_scroll_binding(self, parent: tkinter.Misc) -> None:
         """Recursive adding of scroll binding to all descendants."""
+        if not self._scroll_enabled:
+            return
         children = parent.winfo_children()
         for widget in [parent, *children]:
             bindings = widget.bind()
@@ -477,11 +481,13 @@ class ScrolledFrame(ttk.Frame):
     def enable_scrolling(self) -> None:
         """Enable mousewheel scrolling on the frame and all of its
         children."""
+        self._scroll_enabled = True
         self._add_scroll_binding(self)
 
     def disable_scrolling(self) -> None:
         """Disable mousewheel scrolling on the frame and all of its
         children."""
+        self._scroll_enabled = False
         self._del_scroll_binding(self)
 
     def hide_scrollbars(self) -> None:
@@ -520,13 +526,13 @@ class ScrolledFrame(ttk.Frame):
 
     def _on_enter(self, event: tkinter.Event) -> None:
         """Callback for when the mouse enters the widget."""
-        self.enable_scrolling()
+        self._add_scroll_binding(self)
         if self.autohide:
             self.show_scrollbars()
 
     def _on_leave(self, event: tkinter.Event) -> None:
         """Callback for when the mouse leaves the widget."""
-        self.disable_scrolling()
+        self._del_scroll_binding(self)
         if self.autohide:
             self.hide_scrollbars()
 
