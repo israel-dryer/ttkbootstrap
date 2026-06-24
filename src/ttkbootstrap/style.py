@@ -1376,6 +1376,15 @@ class StyleBuilderTTK:
             borderwidth=1,
             focuscolor="",
         )
+        # build the default button style up front so that native ttk
+        # widgets the application never instantiates directly -- e.g. the
+        # ttk::button widgets in Tk's file/message dialogs on Linux -- pick
+        # up the theme instead of falling back to the bare clam appearance.
+        # Without this, an app that only creates styled buttons (e.g.
+        # Outline.Toolbutton) would leave the base "TButton" unthemed and
+        # any linked dialog would lose its button coloring (see #1062).
+        self.create_button_style()
+
         # this is general style applied to the tableview
         self.create_link_button_style()
         self.style.configure("symbol.Link.TButton", font="-size 16")
