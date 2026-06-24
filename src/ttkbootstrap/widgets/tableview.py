@@ -1603,7 +1603,7 @@ class Tableview(ttk.Frame):
                 for col_index in column_indices:
                     try:
                         col_value = str(row.values[col_index]).lower()
-                        if search_text_escaped in col_value:
+                        if re.search(search_text_escaped, col_value):
                             self.tablerows_filtered.append(row)
                             break
                     except IndexError:
@@ -1612,7 +1612,7 @@ class Tableview(ttk.Frame):
             else:
                 # Search all columns
                 for col in row.values:
-                    if search_text_escaped in str(col).lower():
+                    if re.search(search_text_escaped, str(col).lower()):
                         self.tablerows_filtered.append(row)
                         break
 
