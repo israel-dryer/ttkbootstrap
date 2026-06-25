@@ -18,7 +18,7 @@ Features:
 Example:
     ```python
     import ttkbootstrap as ttk
-    from ttkbootstrap.toast import ToastNotification
+    from ttkbootstrap.widgets.toast import ToastNotification
 
     app = ttk.Window()
 
@@ -65,7 +65,7 @@ class ToastNotification:
 
         ```python
         import ttkbootstrap as ttk
-        from ttkbootstrap.toast import ToastNotification
+        from ttkbootstrap.widgets.toast import ToastNotification
 
         app = ttk.Window()
 

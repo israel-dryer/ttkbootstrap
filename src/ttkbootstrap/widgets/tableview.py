@@ -21,7 +21,7 @@ Features:
 Example:
     ```python
     import ttkbootstrap as ttk
-    from ttkbootstrap.tableview import Tableview
+    from ttkbootstrap.widgets.tableview import Tableview
 
     app = ttk.Window()
 
@@ -480,7 +480,7 @@ class Tableview(ttk.Frame):
         Adding data with the constructor
         ```python
         import ttkbootstrap as ttk
-        from ttkbootstrap.tableview import Tableview
+        from ttkbootstrap.widgets.tableview import Tableview
         from ttkbootstrap.constants import *
 
         app = ttk.Window()

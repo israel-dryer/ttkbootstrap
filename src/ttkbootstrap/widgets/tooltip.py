@@ -19,7 +19,7 @@ Example:
     ```python
     import ttkbootstrap as ttk
     from ttkbootstrap.constants import *
-    from ttkbootstrap.tooltip import ToolTip
+    from ttkbootstrap.widgets.tooltip import ToolTip
 
     app = ttk.Window()
 
@@ -64,7 +64,7 @@ class ToolTip:
         ```python
         import ttkbootstrap as ttk
         from ttkbootstrap.constants import *
-        from ttkbootstrap.tooltip import ToolTip
+        from ttkbootstrap.widgets.tooltip import ToolTip
 
         app = ttk.Window()
         b1 = ttk.Button(app, text="default tooltip")
