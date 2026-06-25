@@ -243,9 +243,45 @@ Restructure (keep mkdocs + mkdocstrings; adopt the *IA*, not Sphinx):
   declarative `Theme` API and addressable ramp tokens.
 - Widget pages: visual-first, light+dark screenshots, lead with semantic styling.
 
----
+### I. Style-construction toolkit (public + dogfooded internally)
 
-## Sequencing
+Public helpers that make building image/state-based ttk styles tractable — the
+delivery vehicle for "make custom styles easy," and the same code that
+de-duplicates the ~40 hand-written asset/layout sites in `style.py`. Modeled on
+bootstack's layout + image-layout builders. **Acceptance test:** rewriting
+`create_scale_assets`/`create_radiobutton_style` on the toolkit must come out
+shorter and clearer, or the abstraction is wrong.
+
+Warts it targets (observed in `style.py`): per-state asset boilerplate
+(`Image.new`→draw→`PhotoImage(resize)`→`get_image_name`→`theme_images[]`, 4× per
+family, e.g. ~`1883–1934`, ~`3837–3880`); hand-coded supersample/downscale with
+inconsistent oversample canvases + magic coords; positional image-element state
+tuples with bare statespecs (~`3911`); hand-nested layout tuple/dict pyramids
+(~`1976`, ~`3920`); bare-string `map` statespecs (~`3793`); name/orientation
+surgery + the `DEFAULT/""` dance; ad-hoc `update_hsv(±0.1)` state colors.
+
+- **Tier 1 (mechanical, low-risk):**
+  - `image_asset(key, render_fn, *, size, oversample)` — supersample-draw +
+    LANCZOS downscale + cache + return name. **This is the same chokepoint as the
+    content-addressed image cache (Workstream A / PR 2)** — `render_fn` is pure,
+    `key` is the memo key. Shape recipes on top: `circle/rounded_rect/rect_asset`.
+  - `image_element(name, default=, states={spec: img}, **opts)` — named, validated
+    state→image map over `element_create(..., "image", ...)`.
+  - `layout()` builder — nested `El(name, side=, sticky=, children=[...])` →
+    ttk's tuple/dict tree (bootstack layout analog; biggest readability win).
+  - `statespec`/`when` + `state_map()` — validate the `!`/AND grammar vs bare
+    strings; the natural home for loud-failure validation (cf. Workstream D).
+  - `StyleName(base, color, orient)` → `.ttkstyle`/`.element`; absorbs the
+    `DEFAULT/""` + `.TS→.S` rules.
+- **Tier 2 (opinionated, after E):** `state_colors(base)` from ramp steps
+  (depends on the semantic-anchor model) replacing scattered `update_hsv`;
+  composite recipes (indicator, thumb+track) built on Tier 1.
+
+Sequencing: **land Tier 1 with the `style/` split (Workstream G)** — both touch
+the same 40 sites; building helpers + migrating builders in one pass avoids
+double-churn, and the helpers get a stable home (`style/assets.py`,
+`style/layout.py`). Keep it thin (helpers, not a DSL); it is a new *public*
+compat surface, so small + orthogonal. Tier 2 follows E.
 
 1. **(this) Plan documented** on `docs/2.0-plan`.
 2. **Maintenance release from `master`** for the recently merged fixes

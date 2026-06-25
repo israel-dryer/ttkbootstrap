@@ -3,7 +3,7 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-06-25._
+_Last updated: 2026-06-25 (engine design session held)._
 
 ## Where we are
 
@@ -54,31 +54,55 @@ Suite: `python -m pytest -q` → **20 passed**, headless, order-independent.
 
 ## The hard rule
 
-**Do not start the `style.py` engine rewrite (the split into a `style/` package,
-the mixin API, the theme/anchor model, the version-stamped theme walk) as ad-hoc
-coding.** The user wants a **dedicated design discussion first**. Independent,
-low-risk cleanup can proceed without it.
+**Do not start the `style.py` engine rewrite as ad-hoc coding.** The design
+discussion has now been held (see below) — the agreed design lives in
+`development/2_0_engine_design.md`. Implementation proceeds **PR by PR per that
+doc**, starting with PR 1; do not exceed PR 1's scope without revisiting the doc.
 
-## Next session: the engine design session
+## Engine design session — DONE (2026-06-25)
 
-All independent slices are **done** (see Merged). The next session is the
-**dedicated design discussion** for the keystone — open it before writing any
-engine code. Suggested agenda:
+The dedicated design discussion is complete. Full design:
+**`development/2_0_engine_design.md`**. Decisions locked this session:
 
-1. **Lock the three open decisions** below (strictness default, multi-root
-   posture, theme-drift) — they shape the engine's public contract.
-2. **Settle the repaint model**: confirm the version-stamped theme walk (DFS
-   `winfo_children()` + `_theme_version` stamp, repaint only stale) replaces
-   `Publisher` wholesale, and decide what happens to the widget-constructor
-   wrappers that subscribe today.
-3. **Decide packaging**: keep one `style.py` vs split into a `style/` package,
-   and whether the mixin API (Workstream C) lands in the same pass or after.
-4. **Sequence it** into reviewable PRs (engine walk + image-cache, then mixin
-   API, then theme/anchor model) rather than one mega-change.
+1. **Style rebuild = lazy, version-stamped** — rebuild a `(theme, style)` only
+   when a stale *mounted* widget references it; O(mounted), not O(all-styles).
+2. **Multi-root = enforce single-root with a clear `RuntimeError`** — close the
+   silent-no-op trap; full multi-root out of 2.0 scope.
+3. **Packaging = engine PR in-place, split later** — rewrite repaint/image paths
+   inside `style.py` first; `style/` package split is a follow-on PR.
+4. **Image cache = content-addressed memoization** — key the asset builders on
+   their pixel-determining inputs (resolved hex, scaled size, state, geometry),
+   NOT the theme name, so cross-theme-identical assets dedupe and never
+   re-render. This also moots theme-return rebuild cost and decouples eviction
+   from theme-switch timing.
 
-Verification already in place to lean on: `tests/widgets/test_lifecycle.py` is a
-destroy/recreate harness that will catch repaint/leak regressions when the
-engine changes, and `tests/widget_styles/` checks built styles.
+Resolved repaint model: monotonic `Style._theme_version`; DFS over
+`winfo_children()` repaints+restamps only stale widgets (ttk → ensure its
+`(theme,style)` fresh; tk-legacy → re-run `update_tk_widget_style` inline);
+the `__init__wrapper` keeps its initial paint but **drops `Publisher.subscribe`**.
+This deletes `Publisher` wholesale (the leak class disappears — no registry, no
+strong refs).
+
+### Agreed PR sequence
+- **PR 1 — repaint engine (in-place):** version stamp + theme walk; delete
+  `Publisher` (subscribe sites `style.py` ~`5427`/`5552`, publish ~`710`/`716`,
+  unsubscribe `window.py` ~`106`); lazy per-theme style rebuild; single-root
+  `RuntimeError`. **← next actionable slice.**
+- **PR 2 — image cache:** route ~40 `theme_images[...]=` sites through
+  `_get_or_create_image`; single content-addressed cache + `clear_image_cache()`;
+  builder-purity audit.
+- **PR 3+ —** mixin API (C), then `style/` split (G), then theme/anchor (E) +
+  bootstyle canonical (D).
+
+### Two pre-flight checks for implementation (not yet settled)
+- (a) Is the **combobox popdown** toplevel reached by the root `winfo_children()`
+  DFS, or does it need an explicit per-Combobox repaint in the walk?
+- (b) **Builder-purity audit**: any asset builder reading color/size from
+  `self.colors`/`self.theme` internally (not via args) must lift that input into
+  the cache key, else stale images survive a theme change.
+
+Verification to lean on: `tests/widgets/test_lifecycle.py` (destroy/recreate
+harness) + `tests/widget_styles/` (built-style values).
 
 ## The keystone (needs the design session)
 
@@ -93,9 +117,11 @@ belongs in the design session, not a quick PR. Wiring today:
 (unsubscribe on `<Destroy>`).
 
 ## Open decisions (from the plan)
+- ~~Multi-root~~ — **LOCKED**: enforce single-root with a clear `RuntimeError`.
 - bootstyle strictness default: warn-by-default + opt-in strict (lean) vs strict.
-- Multi-root: enforce single-root with a clear error (lean) vs defer.
+  (Deferred to Workstream D — does not gate the engine PRs.)
 - Built-in theme drift from auto-ramps (lean: accept) vs pin specific themes.
+  (Deferred to Workstream E — does not gate the engine PRs.)
 
 ## Conventions established this effort
 - `internal/` (no underscore) for private plumbing; warn-shim old public paths,
