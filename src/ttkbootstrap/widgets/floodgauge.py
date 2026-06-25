@@ -124,8 +124,10 @@ class Floodgauge(Canvas):
 
         super().__init__(master, **canvas_kwargs)
 
-        self.variable.trace_add("write", lambda n, i, m: self._on_var_change())
-        self.textvariable.trace_add("write", lambda n, i, m: self._on_text_change())
+        self._var_traceid = None
+        self._textvar_traceid = None
+        self._bind_variable(self.variable)
+        self._bind_textvariable(self.textvariable)
 
         self.value = self.variable.get()
         self.text = self.textvariable.get()
@@ -212,6 +214,57 @@ class Floodgauge(Canvas):
     def _on_text_change(self) -> None:
         self.text = self.textvariable.get()
         self._draw()
+
+    def _bind_variable(self, variable: IntVar) -> None:
+        """Trace `variable` for value changes, dropping any prior trace.
+
+        The trace id is retained so it can be removed when the variable is
+        swapped via `configure` or when the widget is destroyed, preventing
+        traces from accumulating (and from keeping an external variable's
+        write callback pointed at a dead widget).
+        """
+        if self._var_traceid is not None:
+            try:
+                self.variable.trace_remove("write", self._var_traceid)
+            except TclError:
+                pass
+        self.variable = variable
+        self._var_traceid = variable.trace_add(
+            "write", lambda n, i, m: self._on_var_change()
+        )
+
+    def _bind_textvariable(self, textvariable: StringVar) -> None:
+        """Trace `textvariable` for changes, dropping any prior trace."""
+        if self._textvar_traceid is not None:
+            try:
+                self.textvariable.trace_remove("write", self._textvar_traceid)
+            except TclError:
+                pass
+        self.textvariable = textvariable
+        self._textvar_traceid = textvariable.trace_add(
+            "write", lambda n, i, m: self._on_text_change()
+        )
+
+    def destroy(self) -> None:
+        """Cancel the animation loop and detach variable traces.
+
+        Without this, a running `after()` loop keeps firing on the destroyed
+        canvas (raising `TclError`) and an external `variable`/`textvariable`
+        keeps the widget alive through its write trace.
+        """
+        self.stop()
+        for variable, traceid in (
+            (self.variable, self._var_traceid),
+            (self.textvariable, self._textvar_traceid),
+        ):
+            if traceid is not None:
+                try:
+                    variable.trace_remove("write", traceid)
+                except TclError:
+                    pass
+        self._var_traceid = None
+        self._textvar_traceid = None
+        super().destroy()
 
     def step(self, amount: int = 1) -> None:
         """Increment the progress value.
@@ -356,11 +409,9 @@ class Floodgauge(Canvas):
             else:
                 self.configure(width=self.thickness)
         if "variable" in kwargs:
-            self.variable = kwargs.pop("variable")
-            self.variable.trace_add("write", lambda n, i, m: self._on_var_change())
+            self._bind_variable(kwargs.pop("variable"))
         if "textvariable" in kwargs:
-            self.textvariable = kwargs.pop("textvariable")
-            self.textvariable.trace_add("write", lambda n, i, m: self._on_text_change())
+            self._bind_textvariable(kwargs.pop("textvariable"))
 
         result = super().configure(**kwargs)
         self._draw()

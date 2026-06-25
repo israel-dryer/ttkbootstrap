@@ -8,7 +8,7 @@ _Last updated: 2026-06-25._
 ## Where we are
 
 Integration branch: **`2.0`** (cut all 2.0 PRs against it, not `master`).
-Suite: `python -m pytest -q` → **12 passed**, headless, order-independent.
+Suite: `python -m pytest -q` → **18 passed**, headless, order-independent.
 
 ### Merged into `2.0`
 - **#1068** — Tier-0 cleanup:
@@ -28,6 +28,21 @@ Suite: `python -m pytest -q` → **12 passed**, headless, order-independent.
   - `utility` stays public (`enable_high_dpi_awareness`, `scale_size`); its two
     internal helpers (`get_image_name`, `center_on_parent`) moved to
     `internal/utility.py`, forwarded from `utility.py` via `__getattr__` + warning.
+- **Workstream B (widget-level lifecycle leaks)** — `destroy()`/unsubscribe paths:
+  - Canvas `Floodgauge`: trace ids tracked; removed on `destroy()` and when a
+    `variable`/`textvariable` is swapped via `configure` (was unbounded trace
+    accumulation + external vars pinning a dead widget). `destroy()` also cancels
+    the running `after()` animation loop.
+  - `Meter`: `_set_interactive_bind()` unbinds before rebinding (no orphaned
+    indicator binds when toggling `interactive`); `destroy()` detaches the
+    `amountusedvar` write trace.
+  - `Combobox` popdown: self-unsubscribes from `Publisher` via a once-bound
+    `<Destroy>` handler (`style.py` ~`5434`), so cleanup no longer depends solely
+    on the `Window` global `<Destroy>` binding (absent under a vanilla `tk.Tk()`).
+  - New `tests/widgets/test_lifecycle.py` (6 headless regression tests).
+  - **Not done (left for the engine session):** the `Publisher` mechanism itself
+    (keystone, below). `FloodgaugeLegacy` has the same trace-leak pattern but is
+    slated for deprecation — left alone.
 
 ## The hard rule
 
@@ -43,12 +58,10 @@ low-risk cleanup can proceed without it.
    lean: **add a `DeprecationWarning` in 2.0, remove in 3.0** rather than delete
    cold. Exported from `__init__.py`, `widgets/__init__.py`, `__init__.pyi`,
    defined in `widgets/floodgauge.py`.
-2. **Lifecycle leaks (Workstream B)** — `destroy()`/unsubscribe paths for
-   Floodgauge `after()` loops + variable traces, Meter binding IDs, Combobox
-   `Publisher.subscribe` with no unsubscribe. Self-contained; pairs well with a
-   destroy/recreate stress harness.
-3. **Wart:** ~30 demos in `examples/` still carry `test_` prefixes (no longer
+2. **Wart:** ~30 demos in `examples/` still carry `test_` prefixes (no longer
    collected, just misleading names). Trivial rename.
+
+(Workstream B widget-level lifecycle leaks — **done**, see Merged section above.)
 
 ## The keystone (needs the design session)
 

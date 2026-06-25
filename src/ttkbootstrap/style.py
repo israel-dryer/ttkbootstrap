@@ -5431,6 +5431,17 @@ class Bootstyle:
                     ),
                     channel=Channel.STD,
                 )
+                # Drop the subscription when the combobox is destroyed, even
+                # when not using a ttkbootstrap Window (whose global <Destroy>
+                # binding would otherwise be the only thing that unsubscribes).
+                # Bind once; this resolver runs on every style update.
+                if not getattr(widget, "_tb_popdown_unsub_bound", False):
+                    widget.bind(
+                        "<Destroy>",
+                        lambda e, n=winfo_pathname: Publisher.unsubscribe(n),
+                        add="+",
+                    )
+                    widget._tb_popdown_unsub_bound = True
                 builder.update_combobox_popdown_style(widget)
         except:
             pass

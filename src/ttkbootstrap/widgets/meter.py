@@ -38,7 +38,7 @@ Example:
     ```
 """
 import math
-from tkinter import Event, Misc
+from tkinter import Event, Misc, TclError
 from typing import Any, Optional, Union
 
 from PIL import Image, ImageDraw, ImageTk
@@ -239,7 +239,9 @@ class Meter(Frame):
         # widget variables
         self.amountminvar = IntVar(value=amountmin)
         self.amountusedvar = IntVar(value=amountused)
-        self.amountusedvar.trace_add("write", self._update_meter)
+        self._amountused_traceid = self.amountusedvar.trace_add(
+            "write", self._update_meter
+        )
         self.amountuseddisplayvar = StringVar(value=amountformat.format(amountused))
         self.amounttotalvar = IntVar(value=amounttotal)
         self.labelvar = StringVar(value=subtext)
@@ -275,6 +277,20 @@ class Meter(Frame):
         self._draw_meter()
         amount_used = self.amountusedvar.get()
         self.amountuseddisplayvar.set(self._amountformat.format(amount_used))
+
+    def destroy(self) -> None:
+        """Detach the value-variable trace before teardown.
+
+        The trace's write callback holds a reference back to the meter, so
+        leaving it attached keeps the widget alive after destroy.
+        """
+        if self._amountused_traceid is not None:
+            try:
+                self.amountusedvar.trace_remove("write", self._amountused_traceid)
+            except TclError:
+                pass
+            self._amountused_traceid = None
+        super().destroy()
 
     def _setup_widget(self) -> None:
         """Initialize and configure all meter components.
@@ -400,6 +416,12 @@ class Meter(Frame):
         seq1 = "<B1-Motion>"
         seq2 = "<Button-1>"
 
+        # Drop any existing binds first so repeated calls (e.g. toggling
+        # `interactive` via configure) don't leak orphaned bind callbacks.
+        for seq in (seq1, seq2):
+            if seq in self._bindids:
+                self.indicator.unbind(seq, self._bindids.pop(seq))
+
         if self._interactive:
             self._bindids[seq1] = self.indicator.bind(
                 seq1, self._on_dial_interact
@@ -407,12 +429,6 @@ class Meter(Frame):
             self._bindids[seq2] = self.indicator.bind(
                 seq2, self._on_dial_interact
             )
-            return
-
-        if seq1 in self._bindids:
-            self.indicator.unbind(seq1, self._bindids.get(seq1))
-            self.indicator.unbind(seq2, self._bindids.get(seq2))
-            self._bindids.clear()
 
     def _set_arc_offset_range(
         self, metertype: str, arcoffset: Optional[int], arcrange: Optional[int]
