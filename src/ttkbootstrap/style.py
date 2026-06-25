@@ -604,6 +604,12 @@ class Style(ttk.Style):
         # widget is repainted at most once per switch. Replaces the old
         # Publisher broadcast.
         self._theme_version = 0
+        # Content-addressed image cache shared across themes/builders. Keyed on
+        # the pixel-determining inputs of each asset (resolved colors, scaled
+        # size, geometry), NOT the theme name, so cross-theme-identical assets
+        # dedupe and are rendered once. Replaces the per-builder theme_images
+        # dicts that pinned a fresh PhotoImage per theme (the image leak).
+        self._image_cache = {}
         self._load_themes()
         self._dynamic_foreground = False
         super().__init__()
@@ -949,6 +955,52 @@ class Style(ttk.Style):
             Bootstyle.update_ttk_widget_style(widget)
         else:
             Bootstyle.update_tk_widget_style(widget)
+
+    def _get_or_create_image(self, key, factory):
+        """Return the Tcl name of a cached asset image, building on a miss.
+
+        Content-addressed memoization: `key` must capture every
+        pixel-determining input of the asset (resolved colors, scaled pixel
+        size, geometry/variant) so identical assets dedupe across themes and
+        are rendered exactly once. The cache holds a strong reference to the
+        `PhotoImage`, keeping its Tcl image alive for as long as styles
+        reference it by name.
+
+        Parameters:
+
+            key:
+                A hashable tuple of the asset's pixel-determining inputs.
+
+            factory (Callable[[], ImageTk.PhotoImage]):
+                A zero-arg builder that renders the image. Called only on a
+                cache miss; must be pure with respect to `key`.
+
+        Returns:
+
+            str:
+                The tcl/tk image name to use in the style.
+        """
+        cached = self._image_cache.get(key)
+        if cached is not None:
+            return cached[0]
+        image = factory()
+        name = util.get_image_name(image)
+        self._image_cache[key] = (name, image)
+        return name
+
+    def clear_image_cache(self):
+        """Drop all cached widget asset images.
+
+        Releases the cached `PhotoImage` objects (and their underlying Tcl
+        images). This is a memory-reclamation and diagnostics escape hatch, not
+        a live refresh: styles are built once per `(theme, style)`, so styles
+        built before the clear keep referencing the freed image names until
+        they are rebuilt -- which happens when a not-yet-built theme is
+        activated, not on a same-theme switch. Clear when image widgets for the
+        affected styles are not currently displayed (e.g. before moving to a
+        fresh theme), or to reclaim memory at shutdown.
+        """
+        self._image_cache.clear()
 
     def load_user_theme(self, theme: ThemeDefinition):
         """Load a user theme definition"""
@@ -1328,7 +1380,6 @@ class StyleBuilderTTK:
 
     def __init__(self, build: bool = True):
         self.style: Style = Style.get_instance()
-        self.theme_images = {}
         self.builder_tk = StyleBuilderTK()
 
         if build:
@@ -1609,9 +1660,10 @@ class StyleBuilderTTK:
 
         # horizontal separator
         h_element = h_ttkstyle.replace(".TS", ".S")
-        h_img = ImageTk.PhotoImage(Image.new("RGB", hsize, background))
-        h_name = util.get_image_name(h_img)
-        self.theme_images[h_name] = h_img
+        h_name = self.style._get_or_create_image(
+            ("separator", background, tuple(hsize)),
+            lambda: ImageTk.PhotoImage(Image.new("RGB", hsize, background)),
+        )
 
         self.style.element_create(f"{h_element}.separator", "image", h_name)
         self.style.layout(
@@ -1620,9 +1672,10 @@ class StyleBuilderTTK:
 
         # vertical separator
         v_element = v_ttkstyle.replace(".TS", ".S")
-        v_img = ImageTk.PhotoImage(Image.new("RGB", vsize, background))
-        v_name = util.get_image_name(v_img)
-        self.theme_images[v_name] = v_img
+        v_name = self.style._get_or_create_image(
+            ("separator", background, tuple(vsize)),
+            lambda: ImageTk.PhotoImage(Image.new("RGB", vsize, background)),
+        )
         self.style.element_create(f"{v_element}.separator", "image", v_name)
         self.style.layout(
             v_ttkstyle, [(f"{v_element}.separator", {"sticky": tk.NS})]
@@ -1660,23 +1713,27 @@ class StyleBuilderTTK:
 
         barcolor_light = Colors.update_hsv(barcolor, sd=-0.2, vd=value_delta)
 
-        # horizontal progressbar
-        img = Image.new("RGBA", (100, 100), barcolor_light)
-        draw = ImageDraw.Draw(img)
-        draw.polygon(
-            xy=[(0, 0), (48, 0), (100, 52), (100, 100)],
-            fill=barcolor,
+        def make_striped(rotate):
+            img = Image.new("RGBA", (100, 100), barcolor_light)
+            draw = ImageDraw.Draw(img)
+            draw.polygon(
+                xy=[(0, 0), (48, 0), (100, 52), (100, 100)],
+                fill=barcolor,
+            )
+            draw.polygon(xy=[(0, 52), (48, 100), (0, 100)], fill=barcolor)
+            resized = img.resize((thickness, thickness), Resampling.LANCZOS)
+            if rotate:
+                resized = resized.rotate(90)
+            return ImageTk.PhotoImage(resized)
+
+        h_name = self.style._get_or_create_image(
+            ("progressbar.striped", barcolor, barcolor_light, thickness, "h"),
+            lambda: make_striped(False),
         )
-        draw.polygon(xy=[(0, 52), (48, 100), (0, 100)], fill=barcolor)
-
-        _resized = img.resize((thickness, thickness), Resampling.LANCZOS)
-        h_img = ImageTk.PhotoImage(_resized)
-        h_name = h_img._PhotoImage__photo.name
-        v_img = ImageTk.PhotoImage(_resized.rotate(90))
-        v_name = v_img._PhotoImage__photo.name
-
-        self.theme_images[h_name] = h_img
-        self.theme_images[v_name] = v_img
+        v_name = self.style._get_or_create_image(
+            ("progressbar.striped", barcolor, barcolor_light, thickness, "v"),
+            lambda: make_striped(True),
+        )
         return h_name, v_name
 
     def create_striped_progressbar_style(self, colorname=DEFAULT):
@@ -1928,59 +1985,42 @@ class StyleBuilderTTK:
         pressed_color = Colors.update_hsv(normal_color, vd=-0.1)
         hover_color = Colors.update_hsv(normal_color, vd=0.1)
 
-        # normal state
-        _normal = Image.new("RGBA", (100, 100))
-        draw = ImageDraw.Draw(_normal)
-        draw.ellipse((0, 0, 95, 95), fill=normal_color)
-        normal_img = ImageTk.PhotoImage(
-            _normal.resize((size, size), Resampling.LANCZOS)
-        )
-        normal_name = util.get_image_name(normal_img)
-        self.theme_images[normal_name] = normal_img
+        def make_thumb(fill):
+            img = Image.new("RGBA", (100, 100))
+            ImageDraw.Draw(img).ellipse((0, 0, 95, 95), fill=fill)
+            return ImageTk.PhotoImage(
+                img.resize((size, size), Resampling.LANCZOS)
+            )
 
-        # pressed state
-        _pressed = Image.new("RGBA", (100, 100))
-        draw = ImageDraw.Draw(_pressed)
-        draw.ellipse((0, 0, 95, 95), fill=pressed_color)
-        pressed_img = ImageTk.PhotoImage(
-            _pressed.resize((size, size), Resampling.LANCZOS)
-        )
-        pressed_name = util.get_image_name(pressed_img)
-        self.theme_images[pressed_name] = pressed_img
+        h_size = self.scale_size((40, 5))
+        v_size = self.scale_size((5, 40))
 
-        # hover state
-        _hover = Image.new("RGBA", (100, 100))
-        draw = ImageDraw.Draw(_hover)
-        draw.ellipse((0, 0, 95, 95), fill=hover_color)
-        hover_img = ImageTk.PhotoImage(
-            _hover.resize((size, size), Resampling.LANCZOS)
+        # thumb states (same geometry; keyed by fill color + size)
+        normal_name = self.style._get_or_create_image(
+            ("scale.thumb", normal_color, size),
+            lambda: make_thumb(normal_color),
         )
-        hover_name = util.get_image_name(hover_img)
-        self.theme_images[hover_name] = hover_img
-
-        # disabled state
-        _disabled = Image.new("RGBA", (100, 100))
-        draw = ImageDraw.Draw(_disabled)
-        draw.ellipse((0, 0, 95, 95), fill=disabled_color)
-        disabled_img = ImageTk.PhotoImage(
-            _disabled.resize((size, size), Resampling.LANCZOS)
+        pressed_name = self.style._get_or_create_image(
+            ("scale.thumb", pressed_color, size),
+            lambda: make_thumb(pressed_color),
         )
-        disabled_name = util.get_image_name(disabled_img)
-        self.theme_images[disabled_name] = disabled_img
-
-        # vertical track
-        h_track_img = ImageTk.PhotoImage(
-            Image.new("RGB", self.scale_size((40, 5)), track_color)
+        hover_name = self.style._get_or_create_image(
+            ("scale.thumb", hover_color, size),
+            lambda: make_thumb(hover_color),
         )
-        h_track_name = util.get_image_name(h_track_img)
-        self.theme_images[h_track_name] = h_track_img
-
-        # horizontal track
-        v_track_img = ImageTk.PhotoImage(
-            Image.new("RGB", self.scale_size((5, 40)), track_color)
+        disabled_name = self.style._get_or_create_image(
+            ("scale.thumb", disabled_color, size),
+            lambda: make_thumb(disabled_color),
         )
-        v_track_name = util.get_image_name(v_track_img)
-        self.theme_images[v_track_name] = v_track_img
+        # tracks (solid fill)
+        h_track_name = self.style._get_or_create_image(
+            ("scale.track", track_color, tuple(h_size)),
+            lambda: ImageTk.PhotoImage(Image.new("RGB", h_size, track_color)),
+        )
+        v_track_name = self.style._get_or_create_image(
+            ("scale.track", track_color, tuple(v_size)),
+            lambda: ImageTk.PhotoImage(Image.new("RGB", v_size, track_color)),
+        )
 
         return (
             normal_name,
@@ -2192,31 +2232,29 @@ class StyleBuilderTTK:
         """
 
         def draw_simple_arrow(color: str, y_offset: int = 0):
-            img = Image.new("RGBA", (13, 11))
-            draw = ImageDraw.Draw(img)
             size = self.scale_size([13, 11])
 
-            # Draw the arrow shape (triangle) pointing upwards, offset by the specified y_offset
-            draw.polygon([(3, 6 + y_offset), (9, 6 + y_offset), (6, 3 + y_offset)], fill=color)
+            def render(rotate):
+                # arrow (triangle) pointing up, offset by y_offset, then rotated
+                img = Image.new("RGBA", (13, 11))
+                ImageDraw.Draw(img).polygon(
+                    [(3, 6 + y_offset), (9, 6 + y_offset), (6, 3 + y_offset)],
+                    fill=color,
+                )
+                img = img.resize(size, Resampling.BICUBIC)
+                if rotate:
+                    img = img.rotate(rotate)
+                return ImageTk.PhotoImage(img)
 
-            img = img.resize(size, Resampling.BICUBIC)
-
-            up_img = ImageTk.PhotoImage(img)
-            up_name = util.get_image_name(up_img)
-            self.theme_images[up_name] = up_img
-
-            down_img = ImageTk.PhotoImage(img.rotate(180))
-            down_name = util.get_image_name(down_img)
-            self.theme_images[down_name] = down_img
-
-            left_img = ImageTk.PhotoImage(img.rotate(90))
-            left_name = util.get_image_name(left_img)
-            self.theme_images[left_name] = left_img
-
-            right_img = ImageTk.PhotoImage(img.rotate(-90))
-            right_name = util.get_image_name(right_img)
-            self.theme_images[right_name] = right_img
-
+            base = ("arrow.simple", color, y_offset, tuple(size))
+            up_name = self.style._get_or_create_image(
+                base + ("up",), lambda: render(0))
+            down_name = self.style._get_or_create_image(
+                base + ("down",), lambda: render(180))
+            left_name = self.style._get_or_create_image(
+                base + ("left",), lambda: render(90))
+            right_name = self.style._get_or_create_image(
+                base + ("right",), lambda: render(-90))
             return up_name, down_name, left_name, right_name
 
         normal_names = draw_simple_arrow(arrowcolor, y_offset=y_offset)
@@ -2245,36 +2283,32 @@ class StyleBuilderTTK:
         """
 
         def draw_arrow(color: str):
-            img = Image.new("RGBA", (11, 11))
-            draw = ImageDraw.Draw(img)
             size = self.scale_size([11, 11])
 
-            draw.line([2, 6, 2, 9], fill=color)
-            draw.line([3, 5, 3, 8], fill=color)
-            draw.line([4, 4, 4, 7], fill=color)
-            draw.line([5, 3, 5, 6], fill=color)
-            draw.line([6, 4, 6, 7], fill=color)
-            draw.line([7, 5, 7, 8], fill=color)
-            draw.line([8, 6, 8, 9], fill=color)
+            def render(rotate):
+                img = Image.new("RGBA", (11, 11))
+                draw = ImageDraw.Draw(img)
+                draw.line([2, 6, 2, 9], fill=color)
+                draw.line([3, 5, 3, 8], fill=color)
+                draw.line([4, 4, 4, 7], fill=color)
+                draw.line([5, 3, 5, 6], fill=color)
+                draw.line([6, 4, 6, 7], fill=color)
+                draw.line([7, 5, 7, 8], fill=color)
+                draw.line([8, 6, 8, 9], fill=color)
+                img = img.resize(size, Resampling.BICUBIC)
+                if rotate:
+                    img = img.rotate(rotate)
+                return ImageTk.PhotoImage(img)
 
-            img = img.resize(size, Resampling.BICUBIC)
-
-            up_img = ImageTk.PhotoImage(img)
-            up_name = util.get_image_name(up_img)
-            self.theme_images[up_name] = up_img
-
-            down_img = ImageTk.PhotoImage(img.rotate(180))
-            down_name = util.get_image_name(down_img)
-            self.theme_images[down_name] = down_img
-
-            left_img = ImageTk.PhotoImage(img.rotate(90))
-            left_name = util.get_image_name(left_img)
-            self.theme_images[left_name] = left_img
-
-            right_img = ImageTk.PhotoImage(img.rotate(-90))
-            right_name = util.get_image_name(right_img)
-            self.theme_images[right_name] = right_img
-
+            base = ("arrow.chevron", color, tuple(size))
+            up_name = self.style._get_or_create_image(
+                base + ("up",), lambda: render(0))
+            down_name = self.style._get_or_create_image(
+                base + ("down",), lambda: render(180))
+            left_name = self.style._get_or_create_image(
+                base + ("left",), lambda: render(90))
+            right_name = self.style._get_or_create_image(
+                base + ("right",), lambda: render(-90))
             return up_name, down_name, left_name, right_name
 
         normal_names = draw_arrow(arrowcolor)
@@ -2303,16 +2337,20 @@ class StyleBuilderTTK:
         hsize = self.scale_size([28, 9])
 
         def rounded_rect(size, fill):
-            x = size[0] * 10
-            y = size[1] * 10
-            img = Image.new("RGBA", (x, y))
-            draw = ImageDraw.Draw(img)
-            radius = min([x, y]) // 2
-            draw.rounded_rectangle([0, 0, x - 1, y - 1], radius, fill)
-            image = ImageTk.PhotoImage(img.resize(size, Resampling.BICUBIC))
-            name = util.get_image_name(image)
-            self.theme_images[name] = image
-            return name
+            def render():
+                x = size[0] * 10
+                y = size[1] * 10
+                img = Image.new("RGBA", (x, y))
+                draw = ImageDraw.Draw(img)
+                radius = min([x, y]) // 2
+                draw.rounded_rectangle([0, 0, x - 1, y - 1], radius, fill)
+                return ImageTk.PhotoImage(
+                    img.resize(size, Resampling.BICUBIC)
+                )
+
+            return self.style._get_or_create_image(
+                ("scrollbar.round", fill, tuple(size)), render
+            )
 
         # create images
         h_normal_img = rounded_rect(hsize, thumbcolor)
@@ -2500,13 +2538,17 @@ class StyleBuilderTTK:
         hsize = self.scale_size([28, 9])
 
         def draw_rect(size, fill):
-            x = size[0] * 10
-            y = size[1] * 10
-            img = Image.new("RGBA", (x, y), fill)
-            image = ImageTk.PhotoImage(img.resize(size), Resampling.BICUBIC)
-            name = util.get_image_name(image)
-            self.theme_images[name] = image
-            return name
+            def render():
+                x = size[0] * 10
+                y = size[1] * 10
+                img = Image.new("RGBA", (x, y), fill)
+                return ImageTk.PhotoImage(
+                    img.resize(size), Resampling.BICUBIC
+                )
+
+            return self.style._get_or_create_image(
+                ("scrollbar.rect", fill, tuple(size)), render
+            )
 
         # create images
         h_normal_img = draw_rect(hsize, thumbcolor)
@@ -3315,52 +3357,58 @@ class StyleBuilderTTK:
             on_border = self.colors.light
             on_indicator = on_border
 
-        # toggle off
-        _off = Image.new("RGBA", (226, 130))
-        draw = ImageDraw.Draw(_off)
-        draw.rectangle(
-            xy=[1, 1, 225, 129], outline=off_border, width=6, fill=off_fill
-        )
-        draw.rectangle([18, 18, 110, 110], fill=off_indicator)
+        def make_off():
+            img = Image.new("RGBA", (226, 130))
+            draw = ImageDraw.Draw(img)
+            draw.rectangle(
+                xy=[1, 1, 225, 129], outline=off_border, width=6, fill=off_fill
+            )
+            draw.rectangle([18, 18, 110, 110], fill=off_indicator)
+            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
 
-        off_img = ImageTk.PhotoImage(_off.resize(size, Resampling.LANCZOS))
-        off_name = util.get_image_name(off_img)
-        self.theme_images[off_name] = off_img
+        def make_on():
+            img = Image.new("RGBA", (226, 130))
+            draw = ImageDraw.Draw(img)
+            draw.rectangle(
+                xy=[1, 1, 225, 129], outline=on_border, width=6, fill=on_fill
+            )
+            draw.rectangle([18, 18, 110, 110], fill=on_indicator)
+            img = img.transpose(Transpose.ROTATE_180)
+            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
 
-        # toggle on
-        toggle_on = Image.new("RGBA", (226, 130))
-        draw = ImageDraw.Draw(toggle_on)
-        draw.rectangle(
-            xy=[1, 1, 225, 129], outline=on_border, width=6, fill=on_fill
-        )
-        draw.rectangle([18, 18, 110, 110], fill=on_indicator)
-        _on = toggle_on.transpose(Transpose.ROTATE_180)
-        on_img = ImageTk.PhotoImage(_on.resize(size, Resampling.LANCZOS))
-        on_name = util.get_image_name(on_img)
-        self.theme_images[on_name] = on_img
+        def make_disabled():
+            img = Image.new("RGBA", (226, 130))
+            draw = ImageDraw.Draw(img)
+            draw.rectangle([1, 1, 225, 129], outline=disabled_fg, width=6)
+            draw.rectangle([18, 18, 110, 110], fill=disabled_fg)
+            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
 
-        # toggle disabled
-        _disabled = Image.new("RGBA", (226, 130))
-        draw = ImageDraw.Draw(_disabled)
-        draw.rectangle([1, 1, 225, 129], outline=disabled_fg, width=6)
-        draw.rectangle([18, 18, 110, 110], fill=disabled_fg)
-        disabled_img = ImageTk.PhotoImage(
-            _disabled.resize(size, Resampling.LANCZOS)
-        )
-        disabled_name = util.get_image_name(disabled_img)
-        self.theme_images[disabled_name] = disabled_img
+        def make_on_disabled():
+            img = Image.new("RGBA", (226, 130))
+            draw = ImageDraw.Draw(img)
+            draw.rectangle(
+                xy=[1, 1, 225, 129], outline=disabled_fg, width=6, fill=off_fill
+            )
+            draw.rectangle([18, 18, 110, 110], fill=disabled_fg)
+            img = img.transpose(Transpose.ROTATE_180)
+            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
 
-        # toggle on / disabled
-        toggle_on_disabled = Image.new("RGBA", (226, 130))
-        draw = ImageDraw.Draw(toggle_on_disabled)
-        draw.rectangle(
-            xy=[1, 1, 225, 129], outline=disabled_fg, width=6, fill=off_fill
+        off_name = self.style._get_or_create_image(
+            ("toggle.square.off", off_border, off_fill, off_indicator, tuple(size)),
+            make_off,
         )
-        draw.rectangle([18, 18, 110, 110], fill=disabled_fg)
-        _on_disabled = toggle_on_disabled.transpose(Transpose.ROTATE_180)
-        on_dis_img = ImageTk.PhotoImage(_on_disabled.resize(size, Resampling.LANCZOS))
-        on_disabled_name = util.get_image_name(on_dis_img)
-        self.theme_images[on_disabled_name] = on_dis_img
+        on_name = self.style._get_or_create_image(
+            ("toggle.square.on", on_border, on_fill, on_indicator, tuple(size)),
+            make_on,
+        )
+        disabled_name = self.style._get_or_create_image(
+            ("toggle.square.disabled", disabled_fg, tuple(size)),
+            make_disabled,
+        )
+        on_disabled_name = self.style._get_or_create_image(
+            ("toggle.square.on_disabled", disabled_fg, off_fill, tuple(size)),
+            make_on_disabled,
+        )
 
         return off_name, on_name, disabled_name, on_disabled_name
 
@@ -3410,65 +3458,72 @@ class StyleBuilderTTK:
             on_border = self.colors.light
             on_indicator = on_border
 
-        # toggle off
-        _off = Image.new("RGBA", (226, 130))
-        draw = ImageDraw.Draw(_off)
-        draw.rounded_rectangle(
-            xy=[1, 1, 225, 129],
-            radius=(128 / 2),
-            outline=off_border,
-            width=6,
-            fill=off_fill,
-        )
-        draw.ellipse([20, 18, 112, 110], fill=off_indicator)
-        off_img = ImageTk.PhotoImage(_off.resize(size, Resampling.LANCZOS))
-        off_name = util.get_image_name(off_img)
-        self.theme_images[off_name] = off_img
+        def make_off():
+            img = Image.new("RGBA", (226, 130))
+            draw = ImageDraw.Draw(img)
+            draw.rounded_rectangle(
+                xy=[1, 1, 225, 129],
+                radius=(128 / 2),
+                outline=off_border,
+                width=6,
+                fill=off_fill,
+            )
+            draw.ellipse([20, 18, 112, 110], fill=off_indicator)
+            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
 
-        # toggle on
-        _on = Image.new("RGBA", (226, 130))
-        draw = ImageDraw.Draw(_on)
-        draw.rounded_rectangle(
-            xy=[1, 1, 225, 129],
-            radius=(128 / 2),
-            outline=on_border,
-            width=6,
-            fill=on_fill,
-        )
-        draw.ellipse([20, 18, 112, 110], fill=on_indicator)
-        _on = _on.transpose(Transpose.ROTATE_180)
-        on_img = ImageTk.PhotoImage(_on.resize(size, Resampling.LANCZOS))
-        on_name = util.get_image_name(on_img)
-        self.theme_images[on_name] = on_img
+        def make_on():
+            img = Image.new("RGBA", (226, 130))
+            draw = ImageDraw.Draw(img)
+            draw.rounded_rectangle(
+                xy=[1, 1, 225, 129],
+                radius=(128 / 2),
+                outline=on_border,
+                width=6,
+                fill=on_fill,
+            )
+            draw.ellipse([20, 18, 112, 110], fill=on_indicator)
+            img = img.transpose(Transpose.ROTATE_180)
+            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
 
-        # toggle on / disabled
-        _on_disabled = Image.new("RGBA", (226, 130))
-        draw = ImageDraw.Draw(_on_disabled)
-        draw.rounded_rectangle(
-            xy=[1, 1, 225, 129],
-            radius=(128 / 2),
-            outline=disabled_fg,
-            width=6,
-            fill=off_fill,
-        )
-        draw.ellipse([20, 18, 112, 110], fill=disabled_fg)
-        _on_disabled = _on_disabled.transpose(Transpose.ROTATE_180)
-        on_dis_img = ImageTk.PhotoImage(_on_disabled.resize(size, Resampling.LANCZOS))
-        on_disabled_name = util.get_image_name(on_dis_img)
-        self.theme_images[on_disabled_name] = on_dis_img
+        def make_on_disabled():
+            img = Image.new("RGBA", (226, 130))
+            draw = ImageDraw.Draw(img)
+            draw.rounded_rectangle(
+                xy=[1, 1, 225, 129],
+                radius=(128 / 2),
+                outline=disabled_fg,
+                width=6,
+                fill=off_fill,
+            )
+            draw.ellipse([20, 18, 112, 110], fill=disabled_fg)
+            img = img.transpose(Transpose.ROTATE_180)
+            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
 
-        # toggle disabled
-        _disabled = Image.new("RGBA", (226, 130))
-        draw = ImageDraw.Draw(_disabled)
-        draw.rounded_rectangle(
-            xy=[1, 1, 225, 129], radius=(128 / 2), outline=disabled_fg, width=6
+        def make_disabled():
+            img = Image.new("RGBA", (226, 130))
+            draw = ImageDraw.Draw(img)
+            draw.rounded_rectangle(
+                xy=[1, 1, 225, 129], radius=(128 / 2), outline=disabled_fg, width=6
+            )
+            draw.ellipse([20, 18, 112, 110], fill=disabled_fg)
+            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
+
+        off_name = self.style._get_or_create_image(
+            ("toggle.round.off", off_border, off_fill, off_indicator, tuple(size)),
+            make_off,
         )
-        draw.ellipse([20, 18, 112, 110], fill=disabled_fg)
-        disabled_img = ImageTk.PhotoImage(
-            _disabled.resize(size, Resampling.LANCZOS)
+        on_name = self.style._get_or_create_image(
+            ("toggle.round.on", on_border, on_fill, on_indicator, tuple(size)),
+            make_on,
         )
-        disabled_name = util.get_image_name(disabled_img)
-        self.theme_images[disabled_name] = disabled_img
+        on_disabled_name = self.style._get_or_create_image(
+            ("toggle.round.on_disabled", disabled_fg, off_fill, tuple(size)),
+            make_on_disabled,
+        )
+        disabled_name = self.style._get_or_create_image(
+            ("toggle.round.disabled", disabled_fg, tuple(size)),
+            make_disabled,
+        )
 
         return off_name, on_name, disabled_name, on_disabled_name
 
@@ -3882,51 +3937,59 @@ class StyleBuilderTTK:
             if colorname == LIGHT:
                 on_indicator = self.colors.dark
 
-        # radio off
-        _off = Image.new("RGBA", (134, 134))
-        draw = ImageDraw.Draw(_off)
-        draw.ellipse(
-            xy=[1, 1, 133, 133], outline=off_border, width=6, fill=off_fill
-        )
-        off_img = ImageTk.PhotoImage(_off.resize(size, Resampling.LANCZOS))
-        off_name = util.get_image_name(off_img)
-        self.theme_images[off_name] = off_img
+        # geometry differs (outline vs filled) for the light-on-light case
+        light_outline = colorname == LIGHT and self.is_light_theme
 
-        # radio on
-        _on = Image.new("RGBA", (134, 134))
-        draw = ImageDraw.Draw(_on)
-        if colorname == LIGHT and self.is_light_theme:
-            draw.ellipse(xy=[1, 1, 133, 133], outline=off_border, width=6)
-        else:
-            draw.ellipse(xy=[1, 1, 133, 133], fill=on_fill)
-        draw.ellipse([40, 40, 94, 94], fill=on_indicator)
-        on_img = ImageTk.PhotoImage(_on.resize(size, Resampling.LANCZOS))
-        on_name = util.get_image_name(on_img)
-        self.theme_images[on_name] = on_img
+        def make_off():
+            img = Image.new("RGBA", (134, 134))
+            ImageDraw.Draw(img).ellipse(
+                xy=[1, 1, 133, 133], outline=off_border, width=6, fill=off_fill
+            )
+            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
 
-        # radio on/disabled
-        _on_dis = Image.new("RGBA", (134, 134))
-        draw = ImageDraw.Draw(_on_dis)
-        if colorname == LIGHT and self.is_light_theme:
-            draw.ellipse(xy=[1, 1, 133, 133], outline=off_border, width=6)
-        else:
-            draw.ellipse(xy=[1, 1, 133, 133], fill=disabled)
-        draw.ellipse([40, 40, 94, 94], fill=off_fill)
-        on_dis_img = ImageTk.PhotoImage(_on_dis.resize(size, Resampling.LANCZOS))
-        on_disabled_name = util.get_image_name(on_dis_img)
-        self.theme_images[on_disabled_name] = on_dis_img
+        def make_on():
+            img = Image.new("RGBA", (134, 134))
+            draw = ImageDraw.Draw(img)
+            if light_outline:
+                draw.ellipse(xy=[1, 1, 133, 133], outline=off_border, width=6)
+            else:
+                draw.ellipse(xy=[1, 1, 133, 133], fill=on_fill)
+            draw.ellipse([40, 40, 94, 94], fill=on_indicator)
+            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
 
-        # radio disabled
-        _disabled = Image.new("RGBA", (134, 134))
-        draw = ImageDraw.Draw(_disabled)
-        draw.ellipse(
-            xy=[1, 1, 133, 133], outline=disabled, width=3, fill=off_fill
+        def make_on_disabled():
+            img = Image.new("RGBA", (134, 134))
+            draw = ImageDraw.Draw(img)
+            if light_outline:
+                draw.ellipse(xy=[1, 1, 133, 133], outline=off_border, width=6)
+            else:
+                draw.ellipse(xy=[1, 1, 133, 133], fill=disabled)
+            draw.ellipse([40, 40, 94, 94], fill=off_fill)
+            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
+
+        def make_disabled():
+            img = Image.new("RGBA", (134, 134))
+            ImageDraw.Draw(img).ellipse(
+                xy=[1, 1, 133, 133], outline=disabled, width=3, fill=off_fill
+            )
+            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
+
+        off_name = self.style._get_or_create_image(
+            ("radio.off", off_border, off_fill, tuple(size)), make_off
         )
-        disabled_img = ImageTk.PhotoImage(
-            _disabled.resize(size, Resampling.LANCZOS)
+        on_name = self.style._get_or_create_image(
+            ("radio.on", light_outline, on_fill, on_indicator, off_border,
+             tuple(size)),
+            make_on,
         )
-        disabled_name = util.get_image_name(disabled_img)
-        self.theme_images[disabled_name] = disabled_img
+        on_disabled_name = self.style._get_or_create_image(
+            ("radio.on_disabled", light_outline, off_border, disabled, off_fill,
+             tuple(size)),
+            make_on_disabled,
+        )
+        disabled_name = self.style._get_or_create_image(
+            ("radio.disabled", disabled, off_fill, tuple(size)), make_disabled
+        )
 
         return off_name, on_name, disabled_name, on_disabled_name
 
@@ -4014,41 +4077,44 @@ class StyleBuilderTTK:
             str:
                 The PhotoImage name.
         """
-        fill = foreground
-        image = Image.new("RGBA", (210, 220))
-        draw = ImageDraw.Draw(image)
-
-        draw.rounded_rectangle(
-            [10, 30, 200, 210], radius=20, outline=fill, width=10
-        )
-
-        calendar_image_coordinates = [
-            # page spirals
-            [40, 10, 50, 50],
-            [100, 10, 110, 50],
-            [160, 10, 170, 50],
-            # row 1
-            [70, 90, 90, 110],
-            [110, 90, 130, 110],
-            [150, 90, 170, 110],
-            # row 2
-            [30, 130, 50, 150],
-            [70, 130, 90, 150],
-            [110, 130, 130, 150],
-            [150, 130, 170, 150],
-            # row 3
-            [30, 170, 50, 190],
-            [70, 170, 90, 190],
-            [110, 170, 130, 190],
-        ]
-        for xy in calendar_image_coordinates:
-            draw.rectangle(xy=xy, fill=fill)
-
         size = self.scale_size([21, 22])
-        tk_img = ImageTk.PhotoImage(image.resize(size, Resampling.LANCZOS))
-        tk_name = util.get_image_name(tk_img)
-        self.theme_images[tk_name] = tk_img
-        return tk_name
+
+        def render():
+            fill = foreground
+            image = Image.new("RGBA", (210, 220))
+            draw = ImageDraw.Draw(image)
+
+            draw.rounded_rectangle(
+                [10, 30, 200, 210], radius=20, outline=fill, width=10
+            )
+
+            calendar_image_coordinates = [
+                # page spirals
+                [40, 10, 50, 50],
+                [100, 10, 110, 50],
+                [160, 10, 170, 50],
+                # row 1
+                [70, 90, 90, 110],
+                [110, 90, 130, 110],
+                [150, 90, 170, 110],
+                # row 2
+                [30, 130, 50, 150],
+                [70, 130, 90, 150],
+                [110, 130, 130, 150],
+                [150, 130, 170, 150],
+                # row 3
+                [30, 170, 50, 190],
+                [70, 170, 90, 190],
+                [110, 170, 130, 190],
+            ]
+            for xy in calendar_image_coordinates:
+                draw.rectangle(xy=xy, fill=fill)
+
+            return ImageTk.PhotoImage(image.resize(size, Resampling.LANCZOS))
+
+        return self.style._get_or_create_image(
+            ("date_button", foreground, tuple(size)), render
+        )
 
     def create_date_button_style(self, colorname=DEFAULT):
         """Create a date button style for the ttk.Button widget.
@@ -4541,100 +4607,87 @@ class StyleBuilderTTK:
             check_color = self.colors.selectfg
 
         size = self.scale_size([14, 14])
+        # Font choice is OS-fixed for the process; `indicator`/`font_offset`
+        # capture which fallback was selected so text glyphs key correctly.
+        glyph = (indicator, font_offset)
 
-        # checkbutton off
-        checkbutton_off = Image.new("RGBA", (134, 134))
-        draw = ImageDraw.Draw(checkbutton_off)
-        draw.rounded_rectangle(
-            [2, 2, 132, 132],
-            radius=16,
-            outline=off_border,
-            width=6,
-            fill=off_fill,
-        )
-        off_img = ImageTk.PhotoImage(
-            checkbutton_off.resize(size, Resampling.LANCZOS)
-        )
-        off_name = util.get_image_name(off_img)
-        self.theme_images[off_name] = off_img
+        def make_off():
+            img = Image.new("RGBA", (134, 134))
+            ImageDraw.Draw(img).rounded_rectangle(
+                [2, 2, 132, 132], radius=16, outline=off_border, width=6,
+                fill=off_fill,
+            )
+            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
 
-        # checkbutton on
-        checkbutton_on = Image.new("RGBA", (134, 134))
-        draw = ImageDraw.Draw(checkbutton_on)
-        draw.rounded_rectangle(
-            [2, 2, 132, 132],
-            radius=16,
-            fill=on_fill,
-            outline=on_border,
-            width=3,
-        )
+        def make_on():
+            img = Image.new("RGBA", (134, 134))
+            draw = ImageDraw.Draw(img)
+            draw.rounded_rectangle(
+                [2, 2, 132, 132], radius=16, fill=on_fill, outline=on_border,
+                width=3,
+            )
+            draw.text((20, font_offset), indicator, font=fnt, fill=check_color)
+            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
 
-        draw.text((20, font_offset), indicator, font=fnt, fill=check_color)
-        on_img = ImageTk.PhotoImage(checkbutton_on.resize(size, Resampling.LANCZOS))
-        on_name = util.get_image_name(on_img)
-        self.theme_images[on_name] = on_img
+        def make_on_disabled():
+            img = Image.new("RGBA", (134, 134))
+            draw = ImageDraw.Draw(img)
+            draw.rounded_rectangle(
+                [2, 2, 132, 132], radius=16, fill=disabled_fg,
+                outline=disabled_fg, width=3,
+            )
+            draw.text((20, font_offset), indicator, font=fnt, fill=off_fill)
+            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
 
-        # checkbutton on/disabled
-        checkbutton_on_disabled = Image.new("RGBA", (134, 134))
-        draw = ImageDraw.Draw(checkbutton_on_disabled)
-        draw.rounded_rectangle(
-            [2, 2, 132, 132],
-            radius=16,
-            fill=disabled_fg,
-            outline=disabled_fg,
-            width=3,
-        )
+        def make_alt():
+            img = Image.new("RGBA", (134, 134))
+            draw = ImageDraw.Draw(img)
+            draw.rounded_rectangle(
+                [2, 2, 132, 132], radius=16, fill=on_fill, outline=on_border,
+                width=3,
+            )
+            draw.line([36, 67, 100, 67], fill=check_color, width=12)
+            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
 
-        draw.text((20, font_offset), indicator, font=fnt, fill=off_fill)
-        on_dis_img = ImageTk.PhotoImage(checkbutton_on_disabled.resize(size, Resampling.LANCZOS))
-        on_dis_name = util.get_image_name(on_dis_img)
-        self.theme_images[on_dis_name] = on_dis_img
+        def make_alt_disabled():
+            img = Image.new("RGBA", (134, 134))
+            draw = ImageDraw.Draw(img)
+            draw.rounded_rectangle(
+                [2, 2, 132, 132], radius=16, fill=disabled_fg,
+                outline=disabled_fg, width=3,
+            )
+            draw.line([36, 67, 100, 67], fill=off_fill, width=12)
+            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
 
-        # checkbutton alt
-        checkbutton_alt = Image.new("RGBA", (134, 134))
-        draw = ImageDraw.Draw(checkbutton_alt)
-        draw.rounded_rectangle(
-            [2, 2, 132, 132],
-            radius=16,
-            fill=on_fill,
-            outline=on_border,
-            width=3,
-        )
-        draw.line([36, 67, 100, 67], fill=check_color, width=12)
-        alt_img = ImageTk.PhotoImage(
-            checkbutton_alt.resize(size, Resampling.LANCZOS)
-        )
-        alt_name = util.get_image_name(alt_img)
-        self.theme_images[alt_name] = alt_img
+        def make_disabled():
+            img = Image.new("RGBA", (134, 134))
+            ImageDraw.Draw(img).rounded_rectangle(
+                [2, 2, 132, 132], radius=16, outline=disabled_fg, width=3
+            )
+            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
 
-        # checkbutton alt/disabled
-        checkbutton_alt_disabled = Image.new("RGBA", (134, 134))
-        draw = ImageDraw.Draw(checkbutton_alt_disabled)
-        draw.rounded_rectangle(
-            [2, 2, 132, 132],
-            radius=16,
-            fill=disabled_fg,
-            outline=disabled_fg,
-            width=3,
+        off_name = self.style._get_or_create_image(
+            ("checkbutton.off", off_border, off_fill, tuple(size)), make_off
         )
-        draw.line([36, 67, 100, 67], fill=off_fill, width=12)
-        alt_dis_img = ImageTk.PhotoImage(
-            checkbutton_alt_disabled.resize(size, Resampling.LANCZOS)
+        on_name = self.style._get_or_create_image(
+            ("checkbutton.on", on_fill, on_border, check_color, glyph, tuple(size)),
+            make_on,
         )
-        alt_dis_name = util.get_image_name(alt_dis_img)
-        self.theme_images[alt_dis_name] = alt_dis_img
-
-        # checkbutton disabled
-        checkbutton_disabled = Image.new("RGBA", (134, 134))
-        draw = ImageDraw.Draw(checkbutton_disabled)
-        draw.rounded_rectangle(
-            [2, 2, 132, 132], radius=16, outline=disabled_fg, width=3
+        on_dis_name = self.style._get_or_create_image(
+            ("checkbutton.on_disabled", disabled_fg, off_fill, glyph, tuple(size)),
+            make_on_disabled,
         )
-        disabled_img = ImageTk.PhotoImage(
-            checkbutton_disabled.resize(size, Resampling.LANCZOS)
+        alt_name = self.style._get_or_create_image(
+            ("checkbutton.alt", on_fill, on_border, check_color, tuple(size)),
+            make_alt,
         )
-        disabled_name = util.get_image_name(disabled_img)
-        self.theme_images[disabled_name] = disabled_img
+        alt_dis_name = self.style._get_or_create_image(
+            ("checkbutton.alt_disabled", disabled_fg, off_fill, tuple(size)),
+            make_alt_disabled,
+        )
+        disabled_name = self.style._get_or_create_image(
+            ("checkbutton.disabled", disabled_fg, tuple(size)), make_disabled
+        )
 
         return off_name, on_name, disabled_name, alt_name, on_dis_name, alt_dis_name
 
@@ -4896,31 +4949,32 @@ class StyleBuilderTTK:
 
         size = [w, h]
 
-        im = Image.new("RGBA", size)
-        draw = ImageDraw.Draw(im)
+        def render():
+            im = Image.new("RGBA", size)
+            draw = ImageDraw.Draw(im)
 
-        draw.rectangle((chunk * 2 + pad, pad, chunk * 3, chunk), fill=color)
-        draw.rectangle(
-            (chunk * 2 + pad, chunk + pad, chunk * 3, chunk * 2), fill=color
-        )
-        draw.rectangle(
-            (chunk * 2 + pad, chunk * 2 + pad, chunk * 3, chunk * 3),
-            fill=color,
-        )
+            draw.rectangle((chunk * 2 + pad, pad, chunk * 3, chunk), fill=color)
+            draw.rectangle(
+                (chunk * 2 + pad, chunk + pad, chunk * 3, chunk * 2), fill=color
+            )
+            draw.rectangle(
+                (chunk * 2 + pad, chunk * 2 + pad, chunk * 3, chunk * 3),
+                fill=color,
+            )
 
-        draw.rectangle(
-            (chunk + pad, chunk + pad, chunk * 2, chunk * 2), fill=color
-        )
-        draw.rectangle(
-            (chunk + pad, chunk * 2 + pad, chunk * 2, chunk * 3), fill=color
-        )
+            draw.rectangle(
+                (chunk + pad, chunk + pad, chunk * 2, chunk * 2), fill=color
+            )
+            draw.rectangle(
+                (chunk + pad, chunk * 2 + pad, chunk * 2, chunk * 3), fill=color
+            )
 
-        draw.rectangle((pad, chunk * 2 + pad, chunk, chunk * 3), fill=color)
+            draw.rectangle((pad, chunk * 2 + pad, chunk, chunk * 3), fill=color)
+            return ImageTk.PhotoImage(im)
 
-        _img = ImageTk.PhotoImage(im)
-        _name = util.get_image_name(_img)
-        self.theme_images[_name] = _img
-        return _name
+        return self.style._get_or_create_image(
+            ("sizegrip", color, tuple(size)), render
+        )
 
     def create_sizegrip_style(self, colorname=DEFAULT):
         """Create a style for the ttk.Sizegrip widget.

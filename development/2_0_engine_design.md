@@ -179,6 +179,58 @@ Implemented on `feat/2.0-pr1-repaint-engine` off `2.0`. Suite: 24 passed.
   virtual event (fired by `theme_use`), independent of the deleted Publisher —
   verified still firing.
 
+## Pre-flight check (b) — RESOLVED (PR 2 session)
+
+Builder-purity audit of all 13 asset builders (all ~40 `theme_images[...]`
+sites) completed via four parallel sub-audits. Findings:
+- **Pure builders** (receive pre-resolved hex args; key directly on them):
+  `create_simple_arrow_assets`, `create_arrow_assets` (dead code, unused),
+  `create_round_scrollbar_assets`, `create_scrollbar_assets`,
+  `create_date_button_assets`, `create_sizegrip_assets`.
+- **Impure builders** (resolve colors internally from `self.colors` /
+  `self.is_light_theme` / `make_transparent` / `update_hsv`):
+  `create_separator_style`, `create_striped_progressbar_assets`,
+  `create_scale_assets`, `create_square_toggle_assets`,
+  `create_round_toggle_assets`, `create_radiobutton_assets`,
+  `create_checkbutton_assets`.
+
+Resolution: every image is keyed on the **resolved local values its draw
+closure actually uses** (resolved hex colors + scaled size + a variant/geometry
+tag), never on `colorname`. Because the resolved hex differs across themes, the
+key differs across themes by construction — `is_light_theme` is subsumed (it
+only *selects* a color, whose hex is already in the key). Two special cases
+lifted explicitly: the radiobutton's outline-vs-fill **geometry branch**
+(`colorname == LIGHT and is_light_theme`) is captured as a boolean in the key;
+the checkbutton's OS-font glyph is captured via `(indicator, font_offset)`
+(process-constant, but keyed for safety). Verified pixel-level: a scale thumb's
+center pixel tracks each theme's resolved primary (no stale image).
+
+## PR 2 — DONE (this session)
+
+Implemented on `feat/2.0-pr2-image-cache` off `2.0` (PR 1 already merged).
+Suite: 28 passed.
+- Single content-addressed cache `Style._image_cache` + private
+  `Style._get_or_create_image(key, factory)` (memoize on a miss; hold a strong
+  ref to keep the PhotoImage/Tcl image alive) + `Style.clear_image_cache()`.
+- All ~40 `theme_images[...] =` sites routed through the helper; the
+  per-builder `theme_images` dict **removed** (it was the image leak: old
+  builders pinned in `_theme_objects` kept a full set of PhotoImages per
+  visited theme). The fragile `_PhotoImage__photo.name` accesses are gone too.
+- `_get_or_create_image` kept **private** for PR 2; the public custom-style
+  toolkit (`image_asset` + shape recipes) is deferred to Workstream I, which
+  will wrap this same chokepoint.
+- Leak verified: 20 cosmo↔darkly round-trips hold the cache flat (was unbounded
+  growth before). New tests in `tests/widget_styles/test_image_cache.py`:
+  dedup, fresh-pixels-on-switch (purity gate), theme-return-is-a-cache-hit,
+  clear-empties.
+
+Note on `clear_image_cache`: it is a memory/diagnostics hatch, **not** a live
+refresh — styles are built once per `(theme, style)`, so a same-theme switch
+after a clear does not re-render existing styles (they still "exist", now
+pointing at freed image names). Recovery is activating a not-yet-built theme.
+Docstring states this. A safe live-refresh would need the deferred
+mark-and-sweep-during-the-walk eviction.
+
 ## PR sequence
 
 - **PR 1 — repaint engine (in-place):** version stamp + theme walk; delete
@@ -186,7 +238,9 @@ Implemented on `feat/2.0-pr1-repaint-engine` off `2.0`. Suite: 24 passed.
   `theme_use`); lazy per-theme style rebuild; single-root `RuntimeError`.
   Behavior-focused; leans on `tests/widgets/test_lifecycle.py` as the regression
   net. Add a destroy/recreate + theme-switch stress assertion for subscriber/leak
-  count going to zero. **← DONE (see above).**
+  count going to zero. **← DONE.**
+- **PR 2 — image cache:** content-addressed cache + `clear_image_cache()`;
+  builder-purity audit. **← DONE (see above).**
 - **PR 2 — image cache:** route the ~40 image sites through
   `_get_or_create_image`; single content-addressed cache on `Style`;
   `clear_image_cache()`; the builder-purity audit. Depends on PR 1's
