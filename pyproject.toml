@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ttkbootstrap"
-version = "1.20.3"
+version = "1.20.4"
 description = "A supercharged theme extension for tkinter that enables on-demand modern flat style themes inspired by Bootstrap."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -54,3 +54,11 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 "ttkbootstrap" = ["themes/*.json", "assets/*"]
+
+[tool.pytest.ini_options]
+# Only the headless suite under tests/ is collected. Interactive mainloop()
+# demos live in examples/ and are not tests.
+testpaths = ["tests"]
+markers = [
+    "gui: requires a Tk display (deselect with -m 'not gui')",
+]

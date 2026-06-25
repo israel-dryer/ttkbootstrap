@@ -5,9 +5,8 @@ Search terms containing regex-special characters (``.``, ``(``, ``+``,
 with ``re.escape`` but then matched with ``in``, so any special
 character broke the search entirely.
 
-Runnable headlessly with pytest, or directly as a script.
+Runnable headlessly with pytest.
 """
-import ttkbootstrap as ttk
 from ttkbootstrap.widgets.tableview import Tableview
 
 COLDATA = ["Name", "Value"]
@@ -20,13 +19,10 @@ ROWDATA = [
 ]
 
 
-def _make_table():
-    app = ttk.Window()
-    app.withdraw()
-    table = Tableview(
+def _make_table(app):
+    return Tableview(
         master=app, coldata=COLDATA, rowdata=ROWDATA, paginated=False
     )
-    return app, table
 
 
 def _search(table, criteria, *columns):
@@ -36,38 +32,22 @@ def _search(table, criteria, *columns):
     return names
 
 
-def test_special_characters_match_literally():
-    app, table = _make_table()
-    try:
-        assert _search(table, "a.b") == ["alpha"]
-        assert _search(table, "(d)") == ["beta"]
-        assert _search(table, "x+y") == ["gamma"]
-        assert _search(table, "$5") == ["delta"]
-    finally:
-        app.destroy()
+def test_special_characters_match_literally(root):
+    table = _make_table(root)
+    assert _search(table, "a.b") == ["alpha"]
+    assert _search(table, "(d)") == ["beta"]
+    assert _search(table, "x+y") == ["gamma"]
+    assert _search(table, "$5") == ["delta"]
 
 
-def test_plain_text_still_matches():
-    app, table = _make_table()
-    try:
-        assert _search(table, "plain") == ["eps"]
-    finally:
-        app.destroy()
+def test_plain_text_still_matches(root):
+    table = _make_table(root)
+    assert _search(table, "plain") == ["eps"]
 
 
-def test_column_specific_search():
-    app, table = _make_table()
-    try:
-        # 'a.b' is literal special-char text in the Value column only
-        assert _search(table, "a.b", "Value") == ["alpha"]
-        # scoping the same query to the Name column finds nothing
-        assert _search(table, "a.b", "Name") == []
-    finally:
-        app.destroy()
-
-
-if __name__ == "__main__":
-    test_special_characters_match_literally()
-    test_plain_text_still_matches()
-    test_column_specific_search()
-    print("All Tableview search regression tests passed.")
+def test_column_specific_search(root):
+    table = _make_table(root)
+    # 'a.b' is literal special-char text in the Value column only
+    assert _search(table, "a.b", "Value") == ["alpha"]
+    # scoping the same query to the Name column finds nothing
+    assert _search(table, "a.b", "Name") == []

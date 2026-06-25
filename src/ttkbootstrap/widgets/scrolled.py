@@ -18,7 +18,7 @@ Example:
     ```python
     import ttkbootstrap as ttk
     from ttkbootstrap.constants import *
-    from ttkbootstrap.scrolled import ScrolledText, ScrolledFrame
+    from ttkbootstrap.widgets.scrolled import ScrolledText, ScrolledFrame
 
     app = ttk.Window()
 
@@ -63,7 +63,7 @@ class ScrolledText(ttk.Frame):
         ```python
         import ttkbootstrap as ttk
         from ttkbootstrap.constants import *
-        from ttkbootstrap.scrolled import ScrolledText
+        from ttkbootstrap.widgets.scrolled import ScrolledText
 
         app = ttk.Window()
 
@@ -265,7 +265,7 @@ class ScrolledFrame(ttk.Frame):
         ```python
         import ttkbootstrap as ttk
         from ttkbootstrap.constants import *
-        from ttkbootstrap.scrolled import ScrolledFrame
+        from ttkbootstrap.widgets.scrolled import ScrolledFrame
 
         app = ttk.Window()
 
