@@ -3,7 +3,7 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-06-25 (engine design session held)._
+_Last updated: 2026-06-25 (engine design session held; design committed `a732faa`)._
 
 ## Where we are
 
@@ -104,17 +104,27 @@ strong refs).
 Verification to lean on: `tests/widgets/test_lifecycle.py` (destroy/recreate
 harness) + `tests/widget_styles/` (built-style values).
 
-## The keystone (needs the design session)
+## Next session: PR 1 — repaint engine (implementation)
 
-**Workstream A — engine repaint.** The opening concrete item is **eliminating
-`Publisher`** (now `internal/publisher.py`): it is solely the legacy-tk-widget +
-combobox-popdown repaint plumbing (only the `STD` channel is used; `TTK` is dead
-code). Replace it with bootstack's **version-stamped theme walk** (DFS
-`winfo_children()`, stamp `_theme_version`, repaint only stale). This rewrites
-core `theme_use` paths and the widget-constructor wrappers in `style.py`, so it
-belongs in the design session, not a quick PR. Wiring today:
-`style.py` ~`709`/`715` (publish), ~`5426`/`5540` (subscribe), `window.py` ~`106`
-(unsubscribe on `<Destroy>`).
+Design is locked and committed; the keystone now moves from design to code.
+**Start a fresh session** — the design lives durably in
+`development/2_0_engine_design.md`, so a new session loses no context and gains a
+full budget + clean slate for a substantial core change.
+
+Suggested opening prompt:
+> Start PR 1 (repaint engine) from `development/2_0_engine_design.md` — branch off
+> `2.0`, begin with the combobox-popdown DFS reachability probe (pre-flight check a).
+
+Scope (do not exceed without revisiting the design doc): version stamp + theme
+walk; delete `Publisher` (subscribe `style.py` ~`5427`/`5552`, publish ~`710`/`716`,
+unsubscribe `window.py` ~`106`); lazy per-theme style rebuild; single-root
+`RuntimeError`. PR 2 (content-addressed image cache) and PR 3+ (mixin → split →
+theme/anchor) follow — see the PR sequence above. The image cache is **default-on**.
+
+First moves: resolve pre-flight check (a) (instrument the DFS to see whether
+`.popdown` appears under the root); then build the walk. Lean on
+`tests/widgets/test_lifecycle.py` as the regression net and add a
+create/destroy/theme-switch assertion that residual per-widget refs hit zero.
 
 ## Open decisions (from the plan)
 - ~~Multi-root~~ — **LOCKED**: enforce single-root with a clear `RuntimeError`.
