@@ -23,13 +23,19 @@ docs. ttkbootstrap stays a **styling extension for vanilla tkinter** — not a
 widget library (the forward-looking framework is a separate project, bootstack).
 
 The full worklist (locked decisions + workstreams) lives in
-**`development/2_0_plan.md` on the `docs/2.0-plan` branch.** Headlines: mixin-
-hybrid API (replace the import-time monkey-patch), single canonical `bootstyle`
-string (no tuple/list/alt-order), semantic-anchor theme model, deterministic
-version-stamped theme walk + image-cache cleanup (mechanisms borrowed from
-bootstack, not its API), and a centralized `_compat.py` quarantine for all
-legacy normalization + deprecation warnings. Consult that doc before starting
-2.0 work.
+**`development/2_0_plan.md`**, and the integration branch is **`2.0`** (cut PRs
+against it, not `master`). Headlines: mixin-hybrid API (replace the import-time
+monkey-patch), single canonical `bootstyle` string (no tuple/list/alt-order),
+semantic-anchor theme model, deterministic version-stamped theme walk +
+image-cache cleanup (mechanisms borrowed from bootstack, not its API), and a
+centralized compat quarantine for all legacy normalization + deprecation
+warnings. Consult that doc before starting 2.0 work.
+
+**Current handoff state** (read `development/2_0_handoff.md` first): the
+`style.py` engine rewrite is **reserved for a dedicated design session** — do
+not start it ad hoc. Independent cleanup already merged into `2.0`: deprecated
+top-level shims removed (#1068), headless tests split from interactive demos
+(#1068), and the public/internal split (#1069).
 
 ## Repository layout
 
@@ -48,19 +54,33 @@ src/ttkbootstrap/
                      #   scrolled, tooltip, toast, labeledscale
   dialogs/           # Messagebox, Querybox, colorchooser, datepicker, fontdialog, etc.
   localization/      # msgcat-based i18n (msgs.py holds translations)
-tests/               # mostly INTERACTIVE demo scripts (run by hand, call mainloop);
-                     #   a few headless test_*.py use a withdrawn root and assert
+  internal/          # PRIVATE plumbing (no underscore in the name): publisher.py, utility.py.
+                     #   No back-compat guarantee. See "internal/ vs public" below.
+  utility.py         # PUBLIC utility funcs: enable_high_dpi_awareness, scale_size
+  publisher.py       # deprecation shim -> internal/publisher.py (warns; removed in 3.0)
+tests/               # HEADLESS pytest only (4 test_*.py + conftest.py). CI-runnable.
+examples/            # interactive mainloop() demos (moved out of tests/ in #1068)
 docs/, gallery/, cookbook/   # documentation and examples
 ```
 
-### Deprecated module shims (important)
+### internal/ vs public (important — new in 2.0)
 
-Several top-level modules are thin deprecation shims that re-export from
-`widgets/` and emit a `DeprecationWarning`:
-`ttkbootstrap.scrolled`, `ttkbootstrap.tableview`, `ttkbootstrap.toast`,
-`ttkbootstrap.tooltip` (~14 lines each). **Edit the real implementation in
-`src/ttkbootstrap/widgets/`**, not the shim. New code should import from
-`ttkbootstrap.widgets.<name>`.
+Implementation-detail modules live in **`src/ttkbootstrap/internal/`** (the
+name is `internal`, *not* `_internal`). Anything under it has no
+back-compat guarantee.
+
+When moving something public→internal, leave a thin shim at the old public path
+that re-exports from `internal/` and emits a `DeprecationWarning` ("…moved to
+ttkbootstrap.internal.X; removed in 3.0") — e.g. `ttkbootstrap.publisher`. For a
+module that stays public but sheds internal helpers (e.g. `utility.py`), forward
+the moved names via module-level `__getattr__` with the same warning instead of
+a whole shim module. **Importing `ttkbootstrap` itself must stay warning-free**
+— shims warn only when an old path is actually used.
+
+The older top-level shims (`ttkbootstrap.scrolled/tableview/toast/tooltip`,
+`dialogs/dialogs.py`) were **removed** in #1068 — import from
+`ttkbootstrap.widgets.<name>` / `ttkbootstrap.dialogs`. Edit real
+implementations in `src/ttkbootstrap/widgets/`, never a shim.
 
 ## The style engine (`style.py`)
 
@@ -94,33 +114,36 @@ base style eagerly in `create_default_style()`.
 
 ## Gotchas
 
-- **`Style` is a process-wide singleton tied to one Tk root.** Creating a
-  second `ttk.Window`/root in the same process is unsupported and produces
-  wrong results (e.g. styles not tracking theme changes). Tests must use a
-  single root — see `tests/widget_styles/test_default_button_style.py`.
+- **`Style` is a process-wide singleton (`Style.instance`) tied to the first Tk
+  root.** Creating and destroying separate roots in one process leaves the
+  singleton mis-bound, so later theming silently no-ops. Tests share ONE root
+  via the `root` fixture in `tests/conftest.py` — see "Writing tests" below.
+  (Properly fixing the singleton is part of the deferred `style.py` engine
+  rewrite.)
 - **Themes are clam-derived** (`theme_create(name, TTK_CLAM)`). An unstyled
   base ttk style shows clam's default appearance until ttkbootstrap configures it.
 
 ## Dev environment & commands
 
-A virtualenv with an editable install lives at `.venv-home/`
-(`.venv-home/Scripts/python.exe`). The package is also importable by running
-with `PYTHONPATH=src`.
+A virtualenv with an editable install lives at `.venv/` (Python 3.x on macOS;
+`python` on PATH resolves to it). The package is also importable with
+`PYTHONPATH=src`.
 
-- Run a headless test (script form):
-  `PYTHONPATH=src .venv-home/Scripts/python.exe tests/widget_styles/test_default_button_style.py`
-- pytest is **not** installed in the env by default. Tests under `tests/` that
-  begin with `test_` and use `def test_*()` + `assert` are pytest-compatible;
-  the rest are interactive demos that call `mainloop()` and require a display.
+- Run the headless suite: `python -m pytest -q` (config in `pyproject.toml`
+  under `[tool.pytest.ini_options]`; `testpaths = ["tests"]`).
+- pytest is installed in `.venv`. If a fresh env lacks it: `pip install pytest`.
+- The interactive demos in `examples/` call `mainloop()` and need a display —
+  they are NOT collected by pytest.
 - Build docs: `mkdocs serve` (deps in `requirements.txt`).
 
 ### Writing tests
 
-Prefer headless tests: create one `ttk.Window`, call `app.withdraw()`, assert,
-then `app.destroy()` in a `finally`. Make the file runnable both via pytest and
-as a `python <file>` script (a `if __name__ == "__main__":` block that calls the
-test functions). Query a built style's value with
-`app.tk.call("ttk::style", "lookup", "<Style>", "-<option>")`.
+`tests/` is headless-only. New GUI tests should **take the `root` fixture** from
+`tests/conftest.py` (one shared session root; widgets and theme are reset per
+test) instead of creating their own `ttk.Window` — creating your own root
+re-triggers the singleton mis-binding above. Query a built style's value with
+`app.tk.call("ttk::style", "lookup", "<Style>", "-<option>")`. Put any
+interactive/visual demo in `examples/`, not `tests/`.
 
 ## Conventions
 
@@ -130,4 +153,5 @@ test functions). Query a built style's value with
   where both are viable (perf and cross-platform consistency).
 - Commit messages: imperative subject; reference the issue (`fixes #NNNN`)
   where applicable.
-- Branch + PR per change (default branch is `master`).
+- Branch + PR per change. **2.0 cleanup work targets the `2.0` branch**;
+  maintenance/bugfixes target `master`.
