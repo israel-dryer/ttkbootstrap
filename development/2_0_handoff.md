@@ -59,12 +59,26 @@ the mixin API, the theme/anchor model, the version-stamped theme walk) as ad-hoc
 coding.** The user wants a **dedicated design discussion first**. Independent,
 low-risk cleanup can proceed without it.
 
-## Suggested next slices (independent, no design session needed)
+## Next session: the engine design session
 
-All the independent slices identified this effort are **done** (see the Merged
-section). What remains is the keystone below — the `style.py` engine repaint /
-`Publisher` elimination — which needs the dedicated design session before any
-coding starts.
+All independent slices are **done** (see Merged). The next session is the
+**dedicated design discussion** for the keystone — open it before writing any
+engine code. Suggested agenda:
+
+1. **Lock the three open decisions** below (strictness default, multi-root
+   posture, theme-drift) — they shape the engine's public contract.
+2. **Settle the repaint model**: confirm the version-stamped theme walk (DFS
+   `winfo_children()` + `_theme_version` stamp, repaint only stale) replaces
+   `Publisher` wholesale, and decide what happens to the widget-constructor
+   wrappers that subscribe today.
+3. **Decide packaging**: keep one `style.py` vs split into a `style/` package,
+   and whether the mixin API (Workstream C) lands in the same pass or after.
+4. **Sequence it** into reviewable PRs (engine walk + image-cache, then mixin
+   API, then theme/anchor model) rather than one mega-change.
+
+Verification already in place to lean on: `tests/widgets/test_lifecycle.py` is a
+destroy/recreate harness that will catch repaint/leak regressions when the
+engine changes, and `tests/widget_styles/` checks built styles.
 
 ## The keystone (needs the design session)
 

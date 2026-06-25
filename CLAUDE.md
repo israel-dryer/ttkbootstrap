@@ -31,11 +31,16 @@ image-cache cleanup (mechanisms borrowed from bootstack, not its API), and a
 centralized compat quarantine for all legacy normalization + deprecation
 warnings. Consult that doc before starting 2.0 work.
 
-**Current handoff state** (read `development/2_0_handoff.md` first): the
-`style.py` engine rewrite is **reserved for a dedicated design session** — do
-not start it ad hoc. Independent cleanup already merged into `2.0`: deprecated
-top-level shims removed (#1068), headless tests split from interactive demos
-(#1068), and the public/internal split (#1069).
+**Current handoff state** (read `development/2_0_handoff.md` first): all the
+independent cleanup slices are **merged** into `2.0` — deprecated top-level shims
+removed + headless/demo test split (#1068), public/internal split (#1069),
+widget lifecycle-leak fixes (Workstream B, #1070), `FloodgaugeLegacy` runtime
+`DeprecationWarning` (#1071), and the `examples/` `test_`-prefix rename (#1072).
+What remains is the **keystone**: the `style.py` engine repaint / `Publisher`
+elimination (version-stamped theme walk, image-cache cleanup, mixin API,
+singleton posture). It is **reserved for a dedicated design session** — do not
+start it ad hoc. The next session should open that design discussion, working
+from `development/2_0_plan.md` (Workstream A).
 
 ## Repository layout
 
