@@ -47,6 +47,10 @@ Suite: `python -m pytest -q` → **20 passed**, headless, order-independent.
   stays warning-free, and so does `import ttkbootstrap` (warning fires on init,
   not import). New `tests/widgets/test_deprecations.py` (2 tests). Its lifecycle
   trace leaks were left as-is — the widget is on the way out.
+- **Example demo rename** — dropped the misleading `test_` prefix from the ~31
+  interactive demos under `examples/` (moved out of `tests/` in #1068 but kept
+  their prefixes). Pure renames; `examples/widgets/test_tableview.py` →
+  `tableview_yscrollbar.py` to avoid colliding with the existing `tableview.py`.
 
 ## The hard rule
 
@@ -57,11 +61,10 @@ low-risk cleanup can proceed without it.
 
 ## Suggested next slices (independent, no design session needed)
 
-1. **Wart:** ~30 demos in `examples/` still carry `test_` prefixes (no longer
-   collected, just misleading names). Trivial rename.
-
-(Workstream B lifecycle leaks and the `FloodgaugeLegacy` deprecation — **done**,
-see Merged section above.)
+All the independent slices identified this effort are **done** (see the Merged
+section). What remains is the keystone below — the `style.py` engine repaint /
+`Publisher` elimination — which needs the dedicated design session before any
+coding starts.
 
 ## The keystone (needs the design session)
 
