@@ -3,16 +3,19 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-06-25 (PR 1 — repaint engine — merged into `2.0`, #1073)._
+_Last updated: 2026-06-25 (PR 2 — image cache — implemented on
+`feat/2.0-pr2-image-cache`)._
 
 ## Where we are
 
 Integration branch: **`2.0`** (cut all 2.0 PRs against it, not `master`).
-Suite: `python -m pytest -q` → **24 passed**, headless, order-independent.
+Suite: `python -m pytest -q` → **28 passed**, headless, order-independent.
 
-PR 1 (the engine keystone) is **merged** into `2.0` (#1073). Details in
-`development/2_0_engine_design.md` ("PR 1 — DONE"). Next actionable slice is
-**PR 2 — content-addressed image cache**.
+PR 1 (engine repaint) is **merged** into `2.0` (#1073). PR 2 (content-addressed
+image cache) is **implemented and green** on `feat/2.0-pr2-image-cache` (off
+`2.0`); not yet merged. Details in `development/2_0_engine_design.md`
+("PR 2 — DONE" + "Pre-flight check (b)"). Next actionable slice is **PR 3 —
+the mixin API (Workstream C)**.
 
 ### Merged into `2.0`
 - **#1068** — Tier-0 cleanup:
@@ -127,20 +130,38 @@ Full write-up + the pre-flight (a) resolution in
   walk stamps/repaints mounted widgets, theme-switch-cycle leak check,
   autostyle-skip, single-root raise.
 
-## Next session: PR 2 — content-addressed image cache
+## PR 2 — DONE (2026-06-25)
 
-Scope (from `development/2_0_engine_design.md`, "Image cache"): route the ~40
-`theme_images[...] =` sites (~`1565`–`4873`) through a `_get_or_create_image(key,
-render_fn)` helper backed by a single content-addressed cache on `Style`; add
-`clear_image_cache()`; cache is **default-on**.
+Implemented on `feat/2.0-pr2-image-cache` (off `2.0`); suite **28 passed**.
+Full write-up + pre-flight (b) resolution in `development/2_0_engine_design.md`.
+Headlines:
+- Single content-addressed cache `Style._image_cache` + private
+  `Style._get_or_create_image(key, factory)` + `Style.clear_image_cache()`.
+- All ~40 `theme_images[...] =` sites routed through the helper; per-builder
+  `theme_images` dict removed (the image leak) and the fragile
+  `_PhotoImage__photo.name` accesses gone.
+- Keys are the resolved local colors + scaled size + variant/geometry tag
+  (never `colorname`), so theme differences are captured by construction.
+- `_get_or_create_image` kept **private**; public toolkit (`image_asset`) is
+  Workstream I.
+- Verified pixel-level (no stale image after switch) and bounded (20 theme
+  round-trips hold the cache flat). New `tests/widget_styles/test_image_cache.py`.
 
-First move: **pre-flight check (b) — builder-purity audit.** Every asset builder
-must be pure w.r.t. its keyed args; any color/size read from
-`self.colors`/`self.theme` *inside* a builder (not passed as an arg) must be
-lifted into the cache key, or the cache returns a stale image after a theme
-switch. With the cache default-on this is a hard gate, not optional. Lean on
-`tests/widgets/test_lifecycle.py` + `tests/widget_styles/` and add an assertion
-that a theme switch yields the correct (new) asset pixels, not a stale cache hit.
+To merge: PR `feat/2.0-pr2-image-cache` → `2.0`.
+
+## Next session: PR 3 — the mixin API (Workstream C)
+
+This leaves the engine (Workstream A) keystone complete. PR 3 moves to the API
+delivery: the `BootMixin` hybrid (see `development/2_0_plan.md` Workstream C and
+the locked decisions). Replaces the import-time monkey-patch with concrete
+typed subclasses (`class Button(BootMixin, ttk.Button)`), a `bootify(cls)`
+factory, `apply_bootstyle(widget, style)`, and opt-in `enable_global_api()`;
+deletes the ~450-line `TYPE_CHECKING` stub block and the 55 KB `__init__.pyi`,
+and removes the late-binding closure bug in `setup_ttkbootstrap_api`. After C
+comes the `style/` package split (G) — which is also where the **public**
+`image_asset`/style-construction toolkit (Workstream I) wraps PR 2's
+`_get_or_create_image` chokepoint — then the theme/anchor model (E) + bootstyle
+canonical grammar (D) carrying the `_compat` adapters.
 
 ## Open decisions (from the plan)
 - ~~Multi-root~~ — **LOCKED**: enforce single-root with a clear `RuntimeError`.
