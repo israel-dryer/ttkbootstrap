@@ -49,7 +49,6 @@ from typing import Any, Optional, Tuple, Union
 from ttkbootstrap import utility
 from ttkbootstrap.constants import *
 from ttkbootstrap.icons import Icon
-from ttkbootstrap.internal.publisher import Publisher
 from ttkbootstrap.style import Style
 
 
@@ -66,6 +65,34 @@ def get_default_root(what: Optional[str] = None) -> tkinter.Tk:
         root = tkinter.Tk()
         assert tkinter._default_root is root
     return tkinter._default_root
+
+
+def _require_single_root(new_root: tkinter.Misc) -> None:
+    """Raise if a Style is already bound to a different, still-live root.
+
+    The Style engine is a process-wide singleton tied to the first root that
+    created it; a second concurrent root silently no-ops all theming. Enforce
+    a single root with a clear error. Destroying the existing root clears the
+    singleton, so sequential roots (e.g. one app after another) are allowed.
+    """
+    existing = Style.get_instance()
+    if existing is None:
+        return
+    other = getattr(existing, "master", None)
+    if other is None or other is new_root:
+        return
+    try:
+        still_alive = bool(other.winfo_exists())
+    except tkinter.TclError:
+        still_alive = False
+    if still_alive:
+        raise RuntimeError(
+            "ttkbootstrap supports a single application root window. A Style "
+            "is already bound to an existing live root; create one "
+            "Window/Tk per process and reuse it (or destroy the existing "
+            "root before creating a new one). Multi-root support is out of "
+            "scope."
+        )
 
 
 def apply_class_bindings(window: tkinter.Widget) -> None:
@@ -103,7 +130,6 @@ def apply_class_bindings(window: tkinter.Widget) -> None:
 def apply_all_bindings(window: tkinter.Widget) -> None:
     """Add bindings to all widgets in the application"""
     window.bind_all('<Map>', on_map_child, '+')
-    window.bind_all('<Destroy>', lambda e: Publisher.unsubscribe(e.widget))
 
 
 def on_visibility(event: tkinter.Event) -> None:
@@ -272,6 +298,11 @@ class Window(tkinter.Tk):
                 Any other keyword arguments that are passed through to tkinter.Tk() constructor
                 List of available keywords available at: https://docs.python.org/3/library/tkinter.html#tkinter.Tk
         """
+        # ttkbootstrap supports a single application root. The Style engine is
+        # a process-wide singleton bound to the first root; a second live root
+        # would silently no-op all theming. Fail loudly before any side effects.
+        _require_single_root(self)
+
         if hdpi:
             utility.enable_high_dpi_awareness()
 
@@ -343,7 +374,9 @@ class Window(tkinter.Tk):
 
     def destroy(self) -> None:
         """Destroy the window and all its children."""
-        self._style.instance = None
+        # Clear the process-wide singleton (a class attribute) so a later root
+        # rebinds the Style cleanly instead of reusing this destroyed one.
+        Style.instance = None
         super().destroy()
 
     def place_window_center(self) -> None:

@@ -1,12 +1,22 @@
-"""Lifecycle/leak regression tests (2.0 Workstream B).
+"""Lifecycle/leak regression tests (2.0 Workstreams A & B).
 
-Widgets that schedule `after()` loops, add variable traces, or subscribe to
-the `Publisher` must release those resources when they are reconfigured or
-destroyed. Otherwise a destroyed widget keeps firing callbacks (raising
-`TclError`) or is kept alive by an external variable's trace.
+Widgets that schedule `after()` loops or add variable traces must release
+those resources when they are reconfigured or destroyed. Otherwise a destroyed
+widget keeps firing callbacks (raising `TclError`) or is kept alive by an
+external variable's trace.
+
+Workstream A (the engine repaint rewrite) also removed the `Publisher`: the
+theme walk now repaints the live widget tree directly, so nothing subscribes a
+per-widget closure at construction (the old leak class). The combobox tests
+below assert that the engine holds no `Publisher` subscriptions and that a
+theme switch still repaints every mounted widget via the version-stamped walk.
 
 Runnable headlessly with pytest.
 """
+import tkinter as tk
+
+import pytest
+
 import ttkbootstrap as ttk
 from ttkbootstrap.internal.publisher import Publisher
 from ttkbootstrap.widgets.floodgauge import Floodgauge
@@ -82,16 +92,104 @@ def test_meter_value_trace_released_on_destroy(root):
 
 
 # --------------------------------------------------------------------------- #
-# Combobox popdown subscription
+# Engine repaint walk (Workstream A) — Publisher elimination
 # --------------------------------------------------------------------------- #
-def test_combobox_unsubscribes_on_destroy(root):
-    """A combobox releases its Publisher popdown subscription on destroy."""
-    base = Publisher.subscriber_count()
-    cb = ttk.Combobox(root, values=["a", "b"])
-    cb.pack()
-    root.update_idletasks()
-    assert Publisher.subscriber_count() > base
+def test_engine_holds_no_publisher_subscriptions(root):
+    """The engine no longer subscribes per-widget closures to the Publisher.
 
-    cb.destroy()
+    The old leak class was a strong ref held by a Publisher closure for every
+    styled widget. Creating widgets (incl. a combobox, the last subscriber)
+    must leave the subscriber count untouched.
+    """
+    base = Publisher.subscriber_count()
+    widgets = [
+        ttk.Button(root, bootstyle="primary"),
+        ttk.Combobox(root, values=["a", "b"]),
+        ttk.Frame(root),
+    ]
+    for w in widgets:
+        w.pack()
     root.update_idletasks()
-    assert Publisher.subscriber_count() == base
+    assert Publisher.subscriber_count() == base == 0
+
+
+def test_theme_walk_stamps_and_repaints_mounted_widgets(root):
+    """A theme switch repaints the live tree and restamps every widget."""
+    style = root.style
+    btn = ttk.Button(root, bootstyle="primary")
+    frame = ttk.Frame(root)
+    nested = ttk.Label(frame, bootstyle="info")
+    cb = ttk.Combobox(root, values=["a", "b"])
+    for w in (btn, frame, cb):
+        w.pack()
+    nested.pack()
+    root.update_idletasks()
+
+    start = style.theme.name
+    other = "darkly" if start != "darkly" else "cosmo"
+    bg_before = style.lookup("primary.TButton", "background")
+
+    style.theme_use(other)
+    root.update_idletasks()
+
+    # every mounted widget, including a deeply nested one, is now current
+    version = style._theme_version
+    for w in (btn, frame, nested, cb):
+        assert getattr(w, "_theme_version", None) == version
+
+    # the (theme, style) pair was actually rebuilt for the new theme
+    assert style.lookup("primary.TButton", "background") != bg_before
+
+
+def test_autostyle_false_widget_skipped_by_walk(root):
+    """A tk widget created with autostyle=False is never touched by the walk."""
+    style = root.style
+    start = style.theme.name
+    other = "darkly" if start != "darkly" else "cosmo"
+
+    plain = tk.Label(root, autostyle=False, background="#abcdef")
+    styled = tk.Label(root)
+    plain.pack()
+    styled.pack()
+    root.update_idletasks()
+    styled_before = styled.cget("background")
+
+    style.theme_use(other)
+    root.update_idletasks()
+
+    # opted-out widget keeps its manual color and is never stamped
+    assert plain.cget("background") == "#abcdef"
+    assert not hasattr(plain, "_theme_version")
+    # a normal autostyled widget still repaints
+    assert styled.cget("background") != styled_before
+
+
+def test_theme_switch_cycles_do_not_leak_subscribers(root):
+    """Repeated create/destroy/theme-switch cycles leave no residual refs."""
+    style = root.style
+    start = style.theme.name
+    other = "darkly" if start != "darkly" else "cosmo"
+
+    for _ in range(5):
+        w = ttk.Combobox(root, values=["a", "b"])
+        w.pack()
+        root.update_idletasks()
+        style.theme_use(other)
+        style.theme_use(start)
+        w.destroy()
+        root.update_idletasks()
+
+    assert Publisher.subscriber_count() == 0
+
+
+# --------------------------------------------------------------------------- #
+# Single-root enforcement (Workstream A)
+# --------------------------------------------------------------------------- #
+def test_second_live_root_raises(root):
+    """Creating a second root while one is live raises a clear RuntimeError.
+
+    The guard fires before the second Tk interpreter is built, so the shared
+    session root and Style singleton are left untouched.
+    """
+    with pytest.raises(RuntimeError, match="single application root"):
+        ttk.Window()

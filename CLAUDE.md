@@ -36,11 +36,14 @@ independent cleanup slices are **merged** into `2.0` — deprecated top-level sh
 removed + headless/demo test split (#1068), public/internal split (#1069),
 widget lifecycle-leak fixes (Workstream B, #1070), `FloodgaugeLegacy` runtime
 `DeprecationWarning` (#1071), and the `examples/` `test_`-prefix rename (#1072).
-What remains is the **keystone**: the `style.py` engine repaint / `Publisher`
-elimination (version-stamped theme walk, image-cache cleanup, mixin API,
-singleton posture). It is **reserved for a dedicated design session** — do not
-start it ad hoc. The next session should open that design discussion, working
-from `development/2_0_plan.md` (Workstream A).
+The engine keystone (Workstream A) is now in progress: the design is locked in
+`development/2_0_engine_design.md`, and **PR 1 — the repaint engine** (version
+-stamped theme walk replacing `Publisher`, lazy per-theme style rebuild,
+single-root `RuntimeError`) is **implemented and green** on branch
+`feat/2.0-pr1-repaint-engine` (off `2.0`, not yet merged). Next is **PR 2** —
+the content-addressed image cache — then PR 3+ (mixin API → `style/` split →
+theme/anchor + bootstyle canonical). Proceed PR by PR per the design doc; don't
+exceed a PR's scope without revisiting it.
 
 ## Repository layout
 
