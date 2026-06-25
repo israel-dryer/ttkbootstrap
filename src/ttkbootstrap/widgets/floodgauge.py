@@ -31,6 +31,7 @@ Example:
     root.mainloop()
     ```
 """
+import warnings
 from tkinter import Event, Misc, TclError
 from typing import Any, Optional, Union
 
@@ -473,8 +474,9 @@ class Floodgauge(Canvas):
 
 class FloodgaugeLegacy(Progressbar):
     """
-    DEPRECATED: This widget is retained for backward compatibility. You may
-    use this is you have an issues with the canvas-based widget.
+    DEPRECATED: This widget is retained for backward compatibility and will be
+    removed in 3.0. Instantiating it emits a `DeprecationWarning`. Use the
+    canvas-based `Floodgauge` instead.
 
     Use the canvas-based `Floodgauge` widget instead for:
     - Full control over styling and draw order
@@ -565,6 +567,13 @@ class FloodgaugeLegacy(Progressbar):
             **kwargs:
                 Other configuration options from the option database.
         """
+        warnings.warn(
+            "FloodgaugeLegacy is deprecated and will be removed in 3.0; "
+            "use the canvas-based ttkbootstrap.Floodgauge instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
         # progress bar value variables
         if 'variable' in kwargs:
             self._variable = kwargs.pop('variable')
