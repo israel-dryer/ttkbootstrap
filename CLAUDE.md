@@ -41,12 +41,12 @@ The engine keystone (Workstream A) is now in progress: the design is locked in
 -stamped theme walk replacing `Publisher`, lazy per-theme style rebuild,
 single-root `RuntimeError`) is **merged** into `2.0` (#1073). **PR 2** — the
 content-addressed image cache (`Style._image_cache` + `_get_or_create_image` +
-`clear_image_cache`; per-builder `theme_images` leak removed) — is **implemented
-and green** on `feat/2.0-pr2-image-cache` (off `2.0`, not yet merged). That
-completes the engine (Workstream A) keystone. Next is **PR 3** — the mixin API
-(Workstream C) — then `style/` split (G, where the public style toolkit lands) →
-theme/anchor (E) + bootstyle canonical (D). Proceed PR by PR per the design doc;
-don't exceed a PR's scope without revisiting it.
+`clear_image_cache`; per-builder `theme_images` leak removed) — is **merged**
+into `2.0` (#1074). That **completes the engine (Workstream A) keystone**. Next
+is **PR 3** — the mixin API (Workstream C) — then `style/` split (G, where the
+public style toolkit lands) → theme/anchor (E) + bootstyle canonical (D).
+Proceed PR by PR per the design doc; don't exceed a PR's scope without
+revisiting it.
 
 ## Repository layout
 

@@ -3,19 +3,18 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-06-25 (PR 2 — image cache — implemented on
-`feat/2.0-pr2-image-cache`)._
+_Last updated: 2026-06-25 (PR 2 — image cache — merged into `2.0`, #1074)._
 
 ## Where we are
 
 Integration branch: **`2.0`** (cut all 2.0 PRs against it, not `master`).
 Suite: `python -m pytest -q` → **28 passed**, headless, order-independent.
 
-PR 1 (engine repaint) is **merged** into `2.0` (#1073). PR 2 (content-addressed
-image cache) is **implemented and green** on `feat/2.0-pr2-image-cache` (off
-`2.0`); not yet merged. Details in `development/2_0_engine_design.md`
-("PR 2 — DONE" + "Pre-flight check (b)"). Next actionable slice is **PR 3 —
-the mixin API (Workstream C)**.
+The engine keystone (Workstream A) is **complete and merged**: PR 1 (repaint,
+#1073) + PR 2 (content-addressed image cache, #1074). Details in
+`development/2_0_engine_design.md` ("PR 1 — DONE" / "PR 2 — DONE" + both
+pre-flight checks). Next actionable slice is **PR 3 — the mixin API
+(Workstream C)**.
 
 ### Merged into `2.0`
 - **#1068** — Tier-0 cleanup:
@@ -130,9 +129,9 @@ Full write-up + the pre-flight (a) resolution in
   walk stamps/repaints mounted widgets, theme-switch-cycle leak check,
   autostyle-skip, single-root raise.
 
-## PR 2 — DONE (2026-06-25)
+## PR 2 — MERGED (2026-06-25, #1074)
 
-Implemented on `feat/2.0-pr2-image-cache` (off `2.0`); suite **28 passed**.
+Merged into `2.0` (was `feat/2.0-pr2-image-cache`); suite **28 passed**.
 Full write-up + pre-flight (b) resolution in `development/2_0_engine_design.md`.
 Headlines:
 - Single content-addressed cache `Style._image_cache` + private
@@ -146,8 +145,6 @@ Headlines:
   Workstream I.
 - Verified pixel-level (no stale image after switch) and bounded (20 theme
   round-trips hold the cache flat). New `tests/widget_styles/test_image_cache.py`.
-
-To merge: PR `feat/2.0-pr2-image-cache` → `2.0`.
 
 ## Next session: PR 3 — the mixin API (Workstream C)
 
