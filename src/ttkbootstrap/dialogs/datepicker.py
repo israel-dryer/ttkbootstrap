@@ -9,7 +9,7 @@ from typing import Any, List, Optional, Tuple
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from ttkbootstrap.localization import MessageCatalog
-from ttkbootstrap.utility import center_on_parent
+from ttkbootstrap.internal.utility import center_on_parent
 
 
 class DatePickerDialog:

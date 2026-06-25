@@ -9,7 +9,7 @@ from tkinter import BaseWidget
 from typing import Any, Optional, Tuple
 
 import ttkbootstrap as ttk
-from ttkbootstrap.utility import center_on_parent
+from ttkbootstrap.internal.utility import center_on_parent
 
 
 class Dialog(BaseWidget):

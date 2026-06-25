@@ -49,7 +49,7 @@ from typing import Any, Optional, Tuple, Union
 from ttkbootstrap import utility
 from ttkbootstrap.constants import *
 from ttkbootstrap.icons import Icon
-from ttkbootstrap.publisher import Publisher
+from ttkbootstrap.internal.publisher import Publisher
 from ttkbootstrap.style import Style
 
 
