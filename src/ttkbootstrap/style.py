@@ -63,9 +63,10 @@ from typing import Any, Callable
 from PIL import Image, ImageColor, ImageDraw, ImageFont, ImageTk
 from PIL.Image import Resampling, Transpose
 
-from ttkbootstrap import colorutils, utility as util
+from ttkbootstrap import colorutils
+from ttkbootstrap.internal import utility as util
 from ttkbootstrap.constants import *
-from ttkbootstrap.publisher import Channel, Publisher
+from ttkbootstrap.internal.publisher import Channel, Publisher
 from ttkbootstrap.themes.standard import STANDARD_THEMES
 
 try:
