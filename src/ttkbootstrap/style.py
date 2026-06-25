@@ -18,7 +18,7 @@ Key Features:
     - Custom theme creation and management
     - Widget-specific style boosting (outline, link, toggle, etc.)
     - Color utilities for HSV manipulation
-    - Publisher-subscriber pattern for theme change notifications
+    - Version-stamped theme walk for theme change repaints
     - Support for user-defined themes
 
 Color Keywords:
@@ -58,7 +58,7 @@ import re
 import tkinter as tk
 from math import ceil
 from tkinter import TclError, font, ttk
-from typing import Any, Callable
+from typing import Any
 
 from PIL import Image, ImageColor, ImageDraw, ImageFont, ImageTk
 from PIL.Image import Resampling, Transpose
@@ -66,7 +66,6 @@ from PIL.Image import Resampling, Transpose
 from ttkbootstrap import colorutils
 from ttkbootstrap.internal import utility as util
 from ttkbootstrap.constants import *
-from ttkbootstrap.internal.publisher import Channel, Publisher
 from ttkbootstrap.themes.standard import STANDARD_THEMES
 
 try:
@@ -600,6 +599,11 @@ class Style(ttk.Style):
         self._style_registry = set()  # all styles used
         self._theme_styles = {}  # styles used in theme
         self._theme_names = set()
+        # Monotonic counter bumped on every theme switch. The theme walk
+        # repaints (and restamps) only widgets stamped older than this, so a
+        # widget is repainted at most once per switch. Replaces the old
+        # Publisher broadcast.
+        self._theme_version = 0
         self._load_themes()
         self._dynamic_foreground = False
         super().__init__()
@@ -706,16 +710,22 @@ class Style(ttk.Style):
         if themename in existing_themes:
             self.theme = self._theme_definitions.get(themename)
             super().theme_use(themename)
-            self._create_ttk_styles_on_theme_change()
-            Publisher.publish_message(Channel.STD)
         # setup a new theme
         elif themename in self._theme_names:
             self.theme = self._theme_definitions.get(themename)
+            # Creating the builder also runs theme_create + theme_use for the
+            # new theme and builds its default (".") styles.
             self._theme_objects[themename] = StyleBuilderTTK()
-            self._create_ttk_styles_on_theme_change()
-            Publisher.publish_message(Channel.STD)
         else:
             raise TclError(themename, "is not a valid theme.")
+
+        # Repaint the live widget tree for the new theme. Each theme has its
+        # own clam-derived Tcl style DB, so a style configured under one theme
+        # is invisible under another; the walk rebuilds the (theme, style)
+        # pairs that mounted widgets actually reference -- O(mounted), not
+        # O(all-styles-ever-used) -- and restyles legacy tk widgets inline.
+        self._theme_version += 1
+        self._theme_walk()
 
     def theme_create(self, themename: str, parent: str = None, settings: dict = None) -> None:
         """
@@ -891,15 +901,54 @@ class Style(ttk.Style):
         theme = self.theme.name
         self._theme_styles[theme].add(ttkstyle)
 
-    def _create_ttk_styles_on_theme_change(self):
-        """Create existing styles when the theme changes"""
-        for ttkstyle in self._style_registry:
-            if not self.style_exists_in_theme(ttkstyle):
-                color = Bootstyle.ttkstyle_widget_color(ttkstyle)
-                method_name = Bootstyle.ttkstyle_method_name(string=ttkstyle)
-                builder: StyleBuilderTTK = self._get_builder()
-                method: Callable = builder.name_to_method(method_name)
-                method(builder, color)
+    def _theme_walk(self):
+        """Repaint the live widget tree for the current theme.
+
+        Depth-first over `winfo_children()` from the root, repainting only
+        widgets stamped older than `_theme_version` (so each widget is touched
+        at most once per switch). ttk widgets get their `(theme, style)`
+        rebuilt on demand; legacy tk widgets are restyled inline. Because the
+        walk reaches every mounted widget through the tree, it replaces both
+        the Publisher broadcast (legacy tk widgets) and the
+        rebuild-every-registered-style scan (ttk widgets).
+        """
+        root = self.master
+        if root is None:
+            return
+
+        version = self._theme_version
+        stack = [root]
+        while stack:
+            widget = stack.pop()
+            # Honor autostyle=False: such widgets opted out of theming and are
+            # never repainted, but their (autostyled) descendants still are.
+            if not getattr(widget, "_tb_no_autostyle", False):
+                if getattr(widget, "_theme_version", None) != version:
+                    self._repaint_widget(widget)
+                    try:
+                        widget._theme_version = version
+                    except (AttributeError, TypeError):
+                        # Builtin/extension widgets that forbid new attributes
+                        # are simply repainted on every switch -- correct, just
+                        # not skippable.
+                        pass
+            try:
+                stack.extend(widget.winfo_children())
+            except TclError:
+                pass
+
+    def _repaint_widget(self, widget):
+        """Restyle a single widget for the current theme.
+
+        ttk widgets ensure their style exists under the active theme (rebuilt
+        lazily by the builder if stale); legacy tk widgets re-run their tk
+        update method. The combobox popdown -- a Tcl toplevel the DFS cannot
+        reach -- is refreshed inside `update_ttk_widget_style`.
+        """
+        if isinstance(widget, ttk.Widget):
+            Bootstyle.update_ttk_widget_style(widget)
+        else:
+            Bootstyle.update_tk_widget_style(widget)
 
     def load_user_theme(self, theme: ThemeDefinition):
         """Load a user theme definition"""
@@ -5319,6 +5368,9 @@ class Bootstyle:
                         self, "default", **kwargs
                     )
                     self.configure(style=ttkstyle)
+                # Stamp the widget current so the next theme walk only repaints
+                # it once the theme actually changes.
+                Bootstyle.stamp_theme_version(self)
             except AttributeError:
                 # Third-party widgets (e.g. tkcalendar.Calendar) override
                 # configure() and may access instance attributes that are not
@@ -5418,32 +5470,15 @@ class Bootstyle:
                 return style_string
             builder_method(builder, widget_color)
 
-        # subscribe popdown style to theme changes
+        # Repaint the combobox popdown. It is a Tcl-level toplevel that the
+        # theme walk's winfo_children() DFS cannot reach, so it is refreshed
+        # here instead -- the walk calls this method for every ttk widget on a
+        # theme change, which keeps the popdown in sync without a subscription.
         try:
             if widget.winfo_class() == "TCombobox":
                 builder: StyleBuilderTTK = style._get_builder()
-                winfo_id = hex(widget.winfo_id())
-                winfo_pathname = widget.winfo_pathname(winfo_id)
-                Publisher.subscribe(
-                    name=winfo_pathname,
-                    func=lambda w=widget: builder.update_combobox_popdown_style(
-                        w
-                    ),
-                    channel=Channel.STD,
-                )
-                # Drop the subscription when the combobox is destroyed, even
-                # when not using a ttkbootstrap Window (whose global <Destroy>
-                # binding would otherwise be the only thing that unsubscribes).
-                # Bind once; this resolver runs on every style update.
-                if not getattr(widget, "_tb_popdown_unsub_bound", False):
-                    widget.bind(
-                        "<Destroy>",
-                        lambda e, n=winfo_pathname: Publisher.unsubscribe(n),
-                        add="+",
-                    )
-                    widget._tb_popdown_unsub_bound = True
                 builder.update_combobox_popdown_style(widget)
-        except:
+        except (AttributeError, TclError):
             pass
 
         return ttkstyle
@@ -5503,6 +5538,23 @@ class Bootstyle:
             widget.__init__ = _init
 
     @staticmethod
+    def stamp_theme_version(widget):
+        """Stamp a widget with the current theme version.
+
+        Freshly built widgets are already painted for the active theme, so
+        stamping them lets the next theme walk skip them until the theme
+        actually changes. No-ops cleanly before a `Style` exists or for
+        widgets that forbid new attributes.
+        """
+        style = Style.get_instance()
+        if style is None:
+            return
+        try:
+            widget._theme_version = style._theme_version
+        except (AttributeError, TypeError):
+            pass
+
+    @staticmethod
     def update_tk_widget_style(widget):
         """Lookup the widget name and call the appropriate update
         method
@@ -5549,11 +5601,14 @@ class Bootstyle:
             func(self, *args, **kwargs)
 
             if autostyle:
-                Publisher.subscribe(
-                    name=str(self),
-                    func=lambda w=self: Bootstyle.update_tk_widget_style(w),
-                    channel=Channel.STD,
-                )
                 Bootstyle.update_tk_widget_style(self)
+                # Stamp the widget current so the next theme walk only
+                # repaints it once the theme actually changes.
+                Bootstyle.stamp_theme_version(self)
+            else:
+                # Opt out of theming entirely: the theme walk must skip this
+                # widget on switch, matching the pre-2.0 behavior where an
+                # unstyled widget never subscribed for repaints.
+                self._tb_no_autostyle = True
 
         return __init__wrapper

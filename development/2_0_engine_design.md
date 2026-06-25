@@ -140,6 +140,45 @@ builder rather than passed as an argument must be lifted into the key, or the
 cache returns a stale image after a theme change. The ~40 sites funnel through a
 `_get_or_create_image(key, render_fn)` helper.
 
+## Pre-flight check (a) — RESOLVED (PR 1 session)
+
+The combobox popdown is **not** reachable by the root `winfo_children()` DFS.
+At the Tcl level the popdown *is* a child of the combobox
+(`winfo children .!combobox` → `.!combobox.popdown`), but tkinter's Python-side
+`winfo_children()` skips it because the popdown is created lazily by ttk at the
+Tcl level and never registered in tkinter's per-widget `children` dict. So the
+generic walk cannot reach it. **Resolution (as designed):** the walk calls
+`Bootstyle.update_ttk_widget_style` for every ttk widget, and that method now
+repaints the popdown inline when it sees a `TCombobox` (no subscription). Probe
+preserved at scratchpad `probe_popdown.py`.
+
+## PR 1 — DONE (this session)
+
+Implemented on `feat/2.0-pr1-repaint-engine` off `2.0`. Suite: 24 passed.
+- `Style._theme_version` monotonic counter; `theme_use` bumps it then runs
+  `_theme_walk()` (DFS from `self.master`, repaint+restamp stale widgets via
+  `_repaint_widget`: ttk → `update_ttk_widget_style`, tk → `update_tk_widget_style`).
+- `_create_ttk_styles_on_theme_change` (rebuild-every-registered-style) deleted;
+  rebuild is now lazy/O(mounted) driven by `style_exists_in_theme` per visited
+  widget. (`_style_versions` from the design was **not** added — per-theme Tcl
+  style DBs already make `style_exists_in_theme` the staleness signal, so a
+  parallel style-version dict would be a redundant second source of truth.)
+- `Publisher` usage removed from the engine: subscribe sites, the publish calls
+  in `theme_use`, and `window.py`'s `<Destroy>` unsubscribe binding. The
+  `internal/publisher.py` module + its top-level `ttkbootstrap.publisher` shim
+  are **kept** (now unused by core) to honor the "removed in 3.0" deprecation
+  promise on that public path; delete both in 3.0.
+- `autostyle=False` tk widgets now set `_tb_no_autostyle` and the walk skips
+  them — preserves the pre-2.0 "opted-out widget never repaints" behavior that
+  previously fell out of never-subscribing.
+- Single-root: `Window.__init__` calls `_require_single_root` (raises
+  `RuntimeError` if a Style is bound to a different live root); `Window.destroy`
+  now clears the **class** attr `Style.instance` (was a no-op instance attr),
+  so sequential roots work and the singleton rebinds cleanly.
+- Composite widgets (Meter/Floodgauge) repaint via Tk's native `<<ThemeChanged>>`
+  virtual event (fired by `theme_use`), independent of the deleted Publisher —
+  verified still firing.
+
 ## PR sequence
 
 - **PR 1 — repaint engine (in-place):** version stamp + theme walk; delete
@@ -147,7 +186,7 @@ cache returns a stale image after a theme change. The ~40 sites funnel through a
   `theme_use`); lazy per-theme style rebuild; single-root `RuntimeError`.
   Behavior-focused; leans on `tests/widgets/test_lifecycle.py` as the regression
   net. Add a destroy/recreate + theme-switch stress assertion for subscriber/leak
-  count going to zero.
+  count going to zero. **← DONE (see above).**
 - **PR 2 — image cache:** route the ~40 image sites through
   `_get_or_create_image`; single content-addressed cache on `Style`;
   `clear_image_cache()`; the builder-purity audit. Depends on PR 1's

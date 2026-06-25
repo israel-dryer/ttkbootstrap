@@ -3,12 +3,18 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-06-25 (engine design session held; design committed `a732faa`)._
+_Last updated: 2026-06-25 (PR 1 — repaint engine — implemented on
+`feat/2.0-pr1-repaint-engine`)._
 
 ## Where we are
 
 Integration branch: **`2.0`** (cut all 2.0 PRs against it, not `master`).
-Suite: `python -m pytest -q` → **20 passed**, headless, order-independent.
+Suite: `python -m pytest -q` → **24 passed**, headless, order-independent.
+
+PR 1 (the engine keystone) is **implemented and green** on branch
+`feat/2.0-pr1-repaint-engine` (off `2.0`); not yet merged. Details in
+`development/2_0_engine_design.md` ("PR 1 — DONE"). Next actionable slice is
+**PR 2 — content-addressed image cache**.
 
 ### Merged into `2.0`
 - **#1068** — Tier-0 cleanup:
@@ -104,27 +110,41 @@ strong refs).
 Verification to lean on: `tests/widgets/test_lifecycle.py` (destroy/recreate
 harness) + `tests/widget_styles/` (built-style values).
 
-## Next session: PR 1 — repaint engine (implementation)
+## PR 1 — DONE (2026-06-25)
 
-Design is locked and committed; the keystone now moves from design to code.
-**Start a fresh session** — the design lives durably in
-`development/2_0_engine_design.md`, so a new session loses no context and gains a
-full budget + clean slate for a substantial core change.
+Implemented on `feat/2.0-pr1-repaint-engine` (off `2.0`); suite **24 passed**.
+Full write-up + the pre-flight (a) resolution in
+`development/2_0_engine_design.md`. Headlines:
+- Monotonic `Style._theme_version`; `theme_use` bumps it then runs `_theme_walk`
+  (DFS from the root, repaint+restamp only stale widgets). Deleted
+  `_create_ttk_styles_on_theme_change`; rebuild is now lazy/O(mounted).
+- `Publisher` removed from the engine (no subscribe/publish/unsubscribe). Module
+  + the `ttkbootstrap.publisher` shim kept unused until the 3.0 removal date.
+- Combobox popdown repainted inline in `update_ttk_widget_style` (pre-flight (a):
+  the popdown is **not** reachable by the Python `winfo_children()` DFS).
+- `autostyle=False` tk widgets set `_tb_no_autostyle`; the walk skips them.
+- Single-root enforced: `Window.__init__` → `_require_single_root` raises a clear
+  `RuntimeError`; `Window.destroy` now clears the class-level `Style.instance`.
+- New tests in `tests/widgets/test_lifecycle.py`: no-Publisher-subscriptions,
+  walk stamps/repaints mounted widgets, theme-switch-cycle leak check,
+  autostyle-skip, single-root raise.
 
-Suggested opening prompt:
-> Start PR 1 (repaint engine) from `development/2_0_engine_design.md` — branch off
-> `2.0`, begin with the combobox-popdown DFS reachability probe (pre-flight check a).
+To merge: PR `feat/2.0-pr1-repaint-engine` → `2.0`.
 
-Scope (do not exceed without revisiting the design doc): version stamp + theme
-walk; delete `Publisher` (subscribe `style.py` ~`5427`/`5552`, publish ~`710`/`716`,
-unsubscribe `window.py` ~`106`); lazy per-theme style rebuild; single-root
-`RuntimeError`. PR 2 (content-addressed image cache) and PR 3+ (mixin → split →
-theme/anchor) follow — see the PR sequence above. The image cache is **default-on**.
+## Next session: PR 2 — content-addressed image cache
 
-First moves: resolve pre-flight check (a) (instrument the DFS to see whether
-`.popdown` appears under the root); then build the walk. Lean on
-`tests/widgets/test_lifecycle.py` as the regression net and add a
-create/destroy/theme-switch assertion that residual per-widget refs hit zero.
+Scope (from `development/2_0_engine_design.md`, "Image cache"): route the ~40
+`theme_images[...] =` sites (~`1565`–`4873`) through a `_get_or_create_image(key,
+render_fn)` helper backed by a single content-addressed cache on `Style`; add
+`clear_image_cache()`; cache is **default-on**.
+
+First move: **pre-flight check (b) — builder-purity audit.** Every asset builder
+must be pure w.r.t. its keyed args; any color/size read from
+`self.colors`/`self.theme` *inside* a builder (not passed as an arg) must be
+lifted into the cache key, or the cache returns a stale image after a theme
+switch. With the cache default-on this is a hard gate, not optional. Lean on
+`tests/widgets/test_lifecycle.py` + `tests/widget_styles/` and add an assertion
+that a theme switch yields the correct (new) asset pixels, not a stale cache hit.
 
 ## Open decisions (from the plan)
 - ~~Multi-root~~ — **LOCKED**: enforce single-root with a clear `RuntimeError`.
