@@ -8,7 +8,7 @@ _Last updated: 2026-06-25._
 ## Where we are
 
 Integration branch: **`2.0`** (cut all 2.0 PRs against it, not `master`).
-Suite: `python -m pytest -q` → **18 passed**, headless, order-independent.
+Suite: `python -m pytest -q` → **20 passed**, headless, order-independent.
 
 ### Merged into `2.0`
 - **#1068** — Tier-0 cleanup:
@@ -41,8 +41,12 @@ Suite: `python -m pytest -q` → **18 passed**, headless, order-independent.
     on the `Window` global `<Destroy>` binding (absent under a vanilla `tk.Tk()`).
   - New `tests/widgets/test_lifecycle.py` (6 headless regression tests).
   - **Not done (left for the engine session):** the `Publisher` mechanism itself
-    (keystone, below). `FloodgaugeLegacy` has the same trace-leak pattern but is
-    slated for deprecation — left alone.
+    (keystone, below).
+- **`FloodgaugeLegacy` deprecation** — instantiating it now emits a runtime
+  `DeprecationWarning` (3.0 removal); was docstring-only. Canvas `Floodgauge`
+  stays warning-free, and so does `import ttkbootstrap` (warning fires on init,
+  not import). New `tests/widgets/test_deprecations.py` (2 tests). Its lifecycle
+  trace leaks were left as-is — the widget is on the way out.
 
 ## The hard rule
 
@@ -53,15 +57,11 @@ low-risk cleanup can proceed without it.
 
 ## Suggested next slices (independent, no design session needed)
 
-1. **`FloodgaugeLegacy`** — plan lists it for outright 2.0 removal, but it only
-   has a docstring deprecation (never a runtime `DeprecationWarning`). User's
-   lean: **add a `DeprecationWarning` in 2.0, remove in 3.0** rather than delete
-   cold. Exported from `__init__.py`, `widgets/__init__.py`, `__init__.pyi`,
-   defined in `widgets/floodgauge.py`.
-2. **Wart:** ~30 demos in `examples/` still carry `test_` prefixes (no longer
+1. **Wart:** ~30 demos in `examples/` still carry `test_` prefixes (no longer
    collected, just misleading names). Trivial rename.
 
-(Workstream B widget-level lifecycle leaks — **done**, see Merged section above.)
+(Workstream B lifecycle leaks and the `FloodgaugeLegacy` deprecation — **done**,
+see Merged section above.)
 
 ## The keystone (needs the design session)
 
