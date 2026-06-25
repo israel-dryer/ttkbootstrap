@@ -3,16 +3,14 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-06-25 (PR 1 — repaint engine — implemented on
-`feat/2.0-pr1-repaint-engine`)._
+_Last updated: 2026-06-25 (PR 1 — repaint engine — merged into `2.0`, #1073)._
 
 ## Where we are
 
 Integration branch: **`2.0`** (cut all 2.0 PRs against it, not `master`).
 Suite: `python -m pytest -q` → **24 passed**, headless, order-independent.
 
-PR 1 (the engine keystone) is **implemented and green** on branch
-`feat/2.0-pr1-repaint-engine` (off `2.0`); not yet merged. Details in
+PR 1 (the engine keystone) is **merged** into `2.0` (#1073). Details in
 `development/2_0_engine_design.md` ("PR 1 — DONE"). Next actionable slice is
 **PR 2 — content-addressed image cache**.
 
@@ -110,9 +108,9 @@ strong refs).
 Verification to lean on: `tests/widgets/test_lifecycle.py` (destroy/recreate
 harness) + `tests/widget_styles/` (built-style values).
 
-## PR 1 — DONE (2026-06-25)
+## PR 1 — MERGED (2026-06-25, #1073)
 
-Implemented on `feat/2.0-pr1-repaint-engine` (off `2.0`); suite **24 passed**.
+Merged into `2.0` (was `feat/2.0-pr1-repaint-engine`); suite **24 passed**.
 Full write-up + the pre-flight (a) resolution in
 `development/2_0_engine_design.md`. Headlines:
 - Monotonic `Style._theme_version`; `theme_use` bumps it then runs `_theme_walk`
@@ -128,8 +126,6 @@ Full write-up + the pre-flight (a) resolution in
 - New tests in `tests/widgets/test_lifecycle.py`: no-Publisher-subscriptions,
   walk stamps/repaints mounted widgets, theme-switch-cycle leak check,
   autostyle-skip, single-root raise.
-
-To merge: PR `feat/2.0-pr1-repaint-engine` → `2.0`.
 
 ## Next session: PR 2 — content-addressed image cache
 

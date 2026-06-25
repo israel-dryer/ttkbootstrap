@@ -39,8 +39,7 @@ widget lifecycle-leak fixes (Workstream B, #1070), `FloodgaugeLegacy` runtime
 The engine keystone (Workstream A) is now in progress: the design is locked in
 `development/2_0_engine_design.md`, and **PR 1 — the repaint engine** (version
 -stamped theme walk replacing `Publisher`, lazy per-theme style rebuild,
-single-root `RuntimeError`) is **implemented and green** on branch
-`feat/2.0-pr1-repaint-engine` (off `2.0`, not yet merged). Next is **PR 2** —
+single-root `RuntimeError`) is **merged** into `2.0` (#1073). Next is **PR 2** —
 the content-addressed image cache — then PR 3+ (mixin API → `style/` split →
 theme/anchor + bootstyle canonical). Proceed PR by PR per the design doc; don't
 exceed a PR's scope without revisiting it.
