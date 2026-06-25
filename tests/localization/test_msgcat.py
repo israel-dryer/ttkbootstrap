@@ -1,8 +1,6 @@
 
 from ttkbootstrap.localization.msgcat import MessageCatalog
-from ttkbootstrap.localization.msgs import initialize_localities
 
-initialize_localities()
 
 def test_msgcat():
     """Basic translate() checks."""
@@ -180,8 +178,8 @@ def test_string_escaping():
     assert result == "test with string: '{string with curly braces}'"
 
     # escape test \
-    result = MessageCatalog.translate(template, 'string \ with backslash')
-    assert result == "test with string: 'string \ with backslash'"
+    result = MessageCatalog.translate(template, r'string \ with backslash')
+    assert result == r"test with string: 'string \ with backslash'"
 
 
 def test_set():

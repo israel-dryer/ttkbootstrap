@@ -54,3 +54,11 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 "ttkbootstrap" = ["themes/*.json", "assets/*"]
+
+[tool.pytest.ini_options]
+# Only the headless suite under tests/ is collected. Interactive mainloop()
+# demos live in examples/ and are not tests.
+testpaths = ["tests"]
+markers = [
+    "gui: requires a Tk display (deselect with -m 'not gui')",
+]
