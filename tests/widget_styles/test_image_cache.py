@@ -13,9 +13,14 @@ import ttkbootstrap as ttk
 
 
 def _scale_thumb(style, primary):
-    """Return the cached (name, PhotoImage) for the scale thumb of `primary`."""
+    """Return the cached (name, PhotoImage) for the scale thumb of `primary`.
+
+    The thumb is now built via the toolkit's `Assets.circle` recipe (Workstream
+    I / PR 5), so its key is `("circle", fill, size, outline, width)`; the normal
+    thumb is the unoutlined circle filled with the theme primary.
+    """
     for key, value in style._image_cache.items():
-        if key[0] == "scale.thumb" and key[1] == primary:
+        if key[0] == "circle" and key[1] == primary and key[3] is None:
             return value
     return None
 

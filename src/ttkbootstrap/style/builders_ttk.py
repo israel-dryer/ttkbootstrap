@@ -14,6 +14,10 @@ from PIL.Image import Resampling, Transpose
 from ttkbootstrap.constants import *
 from ttkbootstrap.style.theme import Colors, ThemeDefinition
 from ttkbootstrap.style.builders_tk import StyleBuilderTK
+from ttkbootstrap.style.assets import Assets
+from ttkbootstrap.style.layout import (
+    El, layout, image_element, state_map, StyleName,
+)
 
 
 class StyleBuilderTTK:
@@ -68,6 +72,19 @@ class StyleBuilderTTK:
         """If the current theme is _light_, returns `True`, otherwise
         returns `False`."""
         return self.style.theme.type == LIGHT
+
+    @property
+    def assets(self) -> Assets:
+        """A key-safe `Assets` facade bound to the engine image cache.
+
+        Lazily constructed once per builder; the underlying cache lives on the
+        shared `Style` singleton, so dedup is process-wide regardless of which
+        builder created an asset.
+        """
+        cached = self.__dict__.get("_assets")
+        if cached is None:
+            cached = self.__dict__["_assets"] = Assets(self.style)
+        return cached
 
     def scale_size(self, size):
         """Scale the size of images and other assets based on the
@@ -617,12 +634,10 @@ class StyleBuilderTTK:
                 layout when building the style.
         """
         size = self.scale_size(size)
+        a = self.assets
         if self.is_light_theme:
             disabled_color = self.colors.border
-            if colorname == LIGHT:
-                track_color = self.colors.bg
-            else:
-                track_color = self.colors.light
+            track_color = self.colors.bg if colorname == LIGHT else self.colors.light
         else:
             disabled_color = self.colors.selectbg
             track_color = Colors.update_hsv(self.colors.selectbg, vd=-0.2)
@@ -631,54 +646,20 @@ class StyleBuilderTTK:
             normal_color = self.colors.primary
         else:
             normal_color = self.colors.get(colorname)
-
         pressed_color = Colors.update_hsv(normal_color, vd=-0.1)
         hover_color = Colors.update_hsv(normal_color, vd=0.1)
-
-        def make_thumb(fill):
-            img = Image.new("RGBA", (100, 100))
-            ImageDraw.Draw(img).ellipse((0, 0, 95, 95), fill=fill)
-            return ImageTk.PhotoImage(
-                img.resize((size, size), Resampling.LANCZOS)
-            )
 
         h_size = self.scale_size((40, 5))
         v_size = self.scale_size((5, 40))
 
-        # thumb states (same geometry; keyed by fill color + size)
-        normal_name = self.style._get_or_create_image(
-            ("scale.thumb", normal_color, size),
-            lambda: make_thumb(normal_color),
-        )
-        pressed_name = self.style._get_or_create_image(
-            ("scale.thumb", pressed_color, size),
-            lambda: make_thumb(pressed_color),
-        )
-        hover_name = self.style._get_or_create_image(
-            ("scale.thumb", hover_color, size),
-            lambda: make_thumb(hover_color),
-        )
-        disabled_name = self.style._get_or_create_image(
-            ("scale.thumb", disabled_color, size),
-            lambda: make_thumb(disabled_color),
-        )
-        # tracks (solid fill)
-        h_track_name = self.style._get_or_create_image(
-            ("scale.track", track_color, tuple(h_size)),
-            lambda: ImageTk.PhotoImage(Image.new("RGB", h_size, track_color)),
-        )
-        v_track_name = self.style._get_or_create_image(
-            ("scale.track", track_color, tuple(v_size)),
-            lambda: ImageTk.PhotoImage(Image.new("RGB", v_size, track_color)),
-        )
-
+        # ( normal, pressed, hover, disabled thumbs; horizontal, vertical track )
         return (
-            normal_name,
-            pressed_name,
-            hover_name,
-            disabled_name,
-            h_track_name,
-            v_track_name,
+            a.circle(normal_color, size),
+            a.circle(pressed_color, size),
+            a.circle(hover_color, size),
+            a.circle(disabled_color, size),
+            a.rect(track_color, h_size),
+            a.rect(track_color, v_size),
         )
 
     def create_scale_style(self, colorname=DEFAULT):
@@ -689,81 +670,39 @@ class StyleBuilderTTK:
             colorname (str):
                 The color label used to style the widget.
         """
-        STYLE = "TScale"
-
-        if any([colorname == DEFAULT, colorname == ""]):
-            h_ttkstyle = f"Horizontal.{STYLE}"
-            v_ttkstyle = f"Vertical.{STYLE}"
-        else:
-            h_ttkstyle = f"{colorname}.Horizontal.{STYLE}"
-            v_ttkstyle = f"{colorname}.Vertical.{STYLE}"
+        h = StyleName("TScale", colorname, orient="Horizontal")
+        v = StyleName("TScale", colorname, orient="Vertical")
 
         # ( normal, pressed, hover, disabled, htrack, vtrack )
         images = self.create_scale_assets(colorname)
 
         # horizontal scale
-        h_element = h_ttkstyle.replace(".TS", ".S")
-        self.style.element_create(
-            f"{h_element}.slider",
-            "image",
-            images[0],
-            ("disabled", images[3]),
-            ("pressed", images[1]),
-            ("hover", images[2]),
-        )
-        self.style.element_create(f"{h_element}.track", "image", images[4])
-        self.style.layout(
-            h_ttkstyle,
-            [
-                (
-                    f"{h_element}.focus",
-                    {
-                        "expand": "1",
-                        "sticky": tk.NSEW,
-                        "children": [
-                            (f"{h_element}.track", {"sticky": tk.EW}),
-                            (
-                                f"{h_element}.slider",
-                                {"side": tk.LEFT, "sticky": ""},
-                            ),
-                        ],
-                    },
-                )
-            ],
-        )
+        image_element(
+            self.style, f"{h.element}.slider", default=images[0],
+            states={"disabled": images[3], "pressed": images[1],
+                    "hover": images[2]})
+        self.style.element_create(f"{h.element}.track", "image", images[4])
+        layout(
+            self.style, h.ttkstyle,
+            El(f"{h.element}.focus", expand=1, sticky=NSEW, children=[
+                El(f"{h.element}.track", sticky=EW),
+                El(f"{h.element}.slider", side=LEFT, sticky="")]))
+
         # vertical scale
-        v_element = v_ttkstyle.replace(".TS", ".S")
-        self.style.element_create(
-            f"{v_element}.slider",
-            "image",
-            images[0],
-            ("disabled", images[3]),
-            ("pressed", images[1]),
-            ("hover", images[2]),
-        )
-        self.style.element_create(f"{v_element}.track", "image", images[5])
-        self.style.layout(
-            v_ttkstyle,
-            [
-                (
-                    f"{v_element}.focus",
-                    {
-                        "expand": "1",
-                        "sticky": tk.NSEW,
-                        "children": [
-                            (f"{v_element}.track", {"sticky": tk.NS}),
-                            (
-                                f"{v_element}.slider",
-                                {"side": tk.TOP, "sticky": ""},
-                            ),
-                        ],
-                    },
-                )
-            ],
-        )
+        image_element(
+            self.style, f"{v.element}.slider", default=images[0],
+            states={"disabled": images[3], "pressed": images[1],
+                    "hover": images[2]})
+        self.style.element_create(f"{v.element}.track", "image", images[5])
+        layout(
+            self.style, v.ttkstyle,
+            El(f"{v.element}.focus", expand=1, sticky=NSEW, children=[
+                El(f"{v.element}.track", sticky=NS),
+                El(f"{v.element}.slider", side=TOP, sticky="")]))
+
         # register ttkstyles
-        self.style._register_ttkstyle(h_ttkstyle)
-        self.style._register_ttkstyle(v_ttkstyle)
+        self.style._register_ttkstyle(h.ttkstyle)
+        self.style._register_ttkstyle(v.ttkstyle)
 
     def create_floodgauge_style(self, colorname=DEFAULT):
         """Create a ttk style for the ttkbootstrap.widgets.Floodgauge
@@ -2575,71 +2514,43 @@ class StyleBuilderTTK:
             tuple[str]:
                 A tuple of PhotoImage names
         """
-        prime_color = self.colors.get(colorname)
-        on_fill = prime_color
+        a = self.assets
+        on_fill = self.colors.get(colorname)
         off_fill = self.colors.bg
         on_indicator = self.colors.selectfg
         size = self.scale_size([14, 14])
         off_border = Colors.make_transparent(0.4, self.colors.fg, self.colors.bg)
         disabled = Colors.make_transparent(0.3, self.colors.fg, self.colors.bg)
 
-        if self.is_light_theme:
-            if colorname == LIGHT:
-                on_indicator = self.colors.dark
+        if self.is_light_theme and colorname == LIGHT:
+            on_indicator = self.colors.dark
 
         # geometry differs (outline vs filled) for the light-on-light case
         light_outline = colorname == LIGHT and self.is_light_theme
 
-        def make_off():
-            img = Image.new("RGBA", (134, 134))
-            ImageDraw.Draw(img).ellipse(
-                xy=[1, 1, 133, 133], outline=off_border, width=6, fill=off_fill
-            )
-            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
-
-        def make_on():
-            img = Image.new("RGBA", (134, 134))
-            draw = ImageDraw.Draw(img)
+        # Concentric "on" / "on_disabled" states need a composite draw, so they
+        # use the `image` escape hatch -- the colors each draw closes over are
+        # listed beside it as key parts (so the key can't drift from the pixels).
+        def draw_on(d, w, h):
             if light_outline:
-                draw.ellipse(xy=[1, 1, 133, 133], outline=off_border, width=6)
+                d.ellipse((0, 0, w - 1, h - 1), outline=off_border, width=round(w * 0.045))
             else:
-                draw.ellipse(xy=[1, 1, 133, 133], fill=on_fill)
-            draw.ellipse([40, 40, 94, 94], fill=on_indicator)
-            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
+                d.ellipse((0, 0, w - 1, h - 1), fill=on_fill)
+            d.ellipse((w * 0.30, h * 0.30, w * 0.70, h * 0.70), fill=on_indicator)
 
-        def make_on_disabled():
-            img = Image.new("RGBA", (134, 134))
-            draw = ImageDraw.Draw(img)
+        def draw_on_disabled(d, w, h):
             if light_outline:
-                draw.ellipse(xy=[1, 1, 133, 133], outline=off_border, width=6)
+                d.ellipse((0, 0, w - 1, h - 1), outline=off_border, width=round(w * 0.045))
             else:
-                draw.ellipse(xy=[1, 1, 133, 133], fill=disabled)
-            draw.ellipse([40, 40, 94, 94], fill=off_fill)
-            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
+                d.ellipse((0, 0, w - 1, h - 1), fill=disabled)
+            d.ellipse((w * 0.30, h * 0.30, w * 0.70, h * 0.70), fill=off_fill)
 
-        def make_disabled():
-            img = Image.new("RGBA", (134, 134))
-            ImageDraw.Draw(img).ellipse(
-                xy=[1, 1, 133, 133], outline=disabled, width=3, fill=off_fill
-            )
-            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
-
-        off_name = self.style._get_or_create_image(
-            ("radio.off", off_border, off_fill, tuple(size)), make_off
-        )
-        on_name = self.style._get_or_create_image(
-            ("radio.on", light_outline, on_fill, on_indicator, off_border,
-             tuple(size)),
-            make_on,
-        )
-        on_disabled_name = self.style._get_or_create_image(
-            ("radio.on_disabled", light_outline, off_border, disabled, off_fill,
-             tuple(size)),
-            make_on_disabled,
-        )
-        disabled_name = self.style._get_or_create_image(
-            ("radio.disabled", disabled, off_fill, tuple(size)), make_disabled
-        )
+        # the unselected "off" / "disabled" states are a single outlined circle
+        ring = max(1, round(size[0] * 0.045))
+        off_name = a.circle(off_fill, size, outline=off_border, width=ring)
+        disabled_name = a.circle(off_fill, size, outline=disabled, width=ring)
+        on_name = a.image(size, draw_on, light_outline, on_fill, on_indicator, off_border)
+        on_disabled_name = a.image(size, draw_on_disabled, light_outline, disabled, off_fill, off_border)
 
         return off_name, on_name, disabled_name, on_disabled_name
 
@@ -2652,65 +2563,25 @@ class StyleBuilderTTK:
                 The color label used to style the widget.
         """
 
-        STYLE = "TRadiobutton"
-
+        sn = StyleName("TRadiobutton", colorname)
         disabled_fg = Colors.make_transparent(0.30, self.colors.fg, self.colors.bg)
 
-        if any([colorname == DEFAULT, colorname == ""]):
-            ttkstyle = STYLE
-            colorname = PRIMARY
-        else:
-            ttkstyle = f"{colorname}.{STYLE}"
-
-        # ( off, on, disabled )
-        images = self.create_radiobutton_assets(colorname)
-        width = self.scale_size(20)
-        borderpad = self.scale_size(4)
-        self.style.element_create(
-            f"{ttkstyle}.indicator",
-            "image",
-            images[1],
-            ("disabled selected", images[3]),
-            ("disabled", images[2]),
-            ("!selected", images[0]),
-            width=width,
-            border=borderpad,
-            sticky=tk.W,
-        )
-        self.style.map(ttkstyle, foreground=[("disabled", disabled_fg)])
-        self.style._build_configure(ttkstyle)
-        self.style.layout(
-            ttkstyle,
-            [
-                (
-                    "Radiobutton.padding",
-                    {
-                        "children": [
-                            (
-                                f"{ttkstyle}.indicator",
-                                {"side": tk.LEFT, "sticky": ""},
-                            ),
-                            (
-                                "Radiobutton.focus",
-                                {
-                                    "children": [
-                                        (
-                                            "Radiobutton.label",
-                                            {"sticky": tk.NSEW},
-                                        )
-                                    ],
-                                    "side": tk.LEFT,
-                                    "sticky": "",
-                                },
-                            ),
-                        ],
-                        "sticky": tk.NSEW,
-                    },
-                )
-            ],
-        )
-        # register ttkstyle
-        self.style._register_ttkstyle(ttkstyle)
+        # ( off, on, disabled, on_disabled )
+        images = self.create_radiobutton_assets(sn.colorname)
+        image_element(
+            self.style, f"{sn.ttkstyle}.indicator", default=images[1],
+            states={"disabled selected": images[3], "disabled": images[2],
+                    "!selected": images[0]},
+            width=self.scale_size(20), border=self.scale_size(4), sticky=W)
+        state_map(self.style, sn.ttkstyle, foreground={"disabled": disabled_fg})
+        self.style._build_configure(sn.ttkstyle)
+        layout(
+            self.style, sn.ttkstyle,
+            El("Radiobutton.padding", sticky=NSEW, children=[
+                El(f"{sn.ttkstyle}.indicator", side=LEFT, sticky=""),
+                El("Radiobutton.focus", side=LEFT, sticky="", children=[
+                    El("Radiobutton.label", sticky=NSEW)])]))
+        self.style._register_ttkstyle(sn.ttkstyle)
 
     def create_date_button_assets(self, foreground):
         """Create the image assets used to build the date button

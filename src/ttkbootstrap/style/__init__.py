@@ -19,6 +19,15 @@ from ttkbootstrap.style.bootstyle import (
     apply_bootstyle,
     enable_global_api,
 )
+from ttkbootstrap.style.assets import Assets
+from ttkbootstrap.style.layout import (
+    El,
+    layout,
+    image_element,
+    statespec,
+    state_map,
+    StyleName,
+)
 
 __all__ = [
     "Colors",
@@ -33,4 +42,12 @@ __all__ = [
     "bootify",
     "apply_bootstyle",
     "enable_global_api",
+    # Style-construction toolkit (Workstream I)
+    "Assets",
+    "El",
+    "layout",
+    "image_element",
+    "statespec",
+    "state_map",
+    "StyleName",
 ]

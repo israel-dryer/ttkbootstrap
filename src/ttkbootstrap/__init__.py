@@ -59,6 +59,9 @@ from tkinter.ttk import (
 from ttkbootstrap.style import (
     Bootstyle, Style, BootMixin, AutoStyleMixin,
     bootify, apply_bootstyle, enable_global_api,
+    # Style-construction toolkit (Workstream I): the public "build your own
+    # style" surface, dogfooded by the builders.
+    Assets, El, layout, image_element, statespec, state_map, StyleName,
 )
 
 
@@ -209,6 +212,15 @@ __all__ = [
     "bootify",
     "apply_bootstyle",
     "enable_global_api",
+
+    # Style-construction toolkit
+    "Assets",
+    "El",
+    "layout",
+    "image_element",
+    "statespec",
+    "state_map",
+    "StyleName",
 
     # Windows
     "Toplevel",
