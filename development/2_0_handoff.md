@@ -3,8 +3,8 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-06-25 (PR 3 — mixin API — implemented on
-`feat/2.0-pr3-mixin-api`, awaiting merge)._
+_Last updated: 2026-06-25 (PR 3 — mixin API (Workstream C) — merged into
+`2.0`, #1075)._
 
 ## Where we are
 
@@ -13,8 +13,8 @@ Suite: `python -m pytest -q` → **42 passed**, headless, order-independent.
 
 The engine keystone (Workstream A) is **complete and merged**: PR 1 (repaint,
 #1073) + PR 2 (content-addressed image cache, #1074). **PR 3 — the mixin API
-(Workstream C)** is **implemented** on `feat/2.0-pr3-mixin-api` (see "PR 3"
-below); next after it merges is the `style/` package split (Workstream G).
+(Workstream C)** is now **merged** (#1075; see "PR 3" below). Next actionable
+slice is the **`style/` package split (Workstream G)**.
 
 ### Merged into `2.0`
 - **#1068** — Tier-0 cleanup:
@@ -146,12 +146,13 @@ Headlines:
 - Verified pixel-level (no stale image after switch) and bounded (20 theme
   round-trips hold the cache flat). New `tests/widget_styles/test_image_cache.py`.
 
-## PR 3 — IMPLEMENTED (2026-06-25, `feat/2.0-pr3-mixin-api`)
+## PR 3 — MERGED (2026-06-25, #1075)
 
-Replaces the import-time monkey-patch with the mixin-hybrid API (Workstream C).
-Suite: **42 passed**. Design pass + the one open fork (tk-side scope) were
-resolved up front: **full retirement of the import-time patch** — the blessed
-tk widgets get a mixin too, not just ttk.
+Merged into `2.0` (was `feat/2.0-pr3-mixin-api`). Replaces the import-time
+monkey-patch with the mixin-hybrid API (Workstream C). Suite: **42 passed**.
+Design pass + the one open fork (tk-side scope) were resolved up front: **full
+retirement of the import-time patch** — the blessed tk widgets get a mixin too,
+not just ttk.
 
 Headlines:
 - **Two mixins in `style.py`** (after `Bootstyle`): `BootMixin` (ttk — intercepts

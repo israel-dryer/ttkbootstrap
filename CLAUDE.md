@@ -43,14 +43,14 @@ single-root `RuntimeError`) is **merged** into `2.0` (#1073). **PR 2** — the
 content-addressed image cache (`Style._image_cache` + `_get_or_create_image` +
 `clear_image_cache`; per-builder `theme_images` leak removed) — is **merged**
 into `2.0` (#1074). That **completes the engine (Workstream A) keystone**.
-**PR 3** — the mixin API (Workstream C) — is **implemented** on
-`feat/2.0-pr3-mixin-api` (awaiting merge): the import-time monkey-patch is
-retired in favor of concrete `BootMixin`/`AutoStyleMixin` subclasses re-exported
-from `__init__.py`, plus `bootify`/`apply_bootstyle`/opt-in `enable_global_api`;
-the ~450-line `TYPE_CHECKING` stub block + `__init__.pyi` are deleted. Next is
-the `style/` split (G, where the public style toolkit lands) → theme/anchor (E) +
-bootstyle canonical (D). Proceed PR by PR per the design doc; don't exceed a
-PR's scope without revisiting it.
+**PR 3** — the mixin API (Workstream C) — is **merged** into `2.0` (#1075): the
+import-time monkey-patch is retired in favor of concrete
+`BootMixin`/`AutoStyleMixin` subclasses re-exported from `__init__.py`, plus
+`bootify`/`apply_bootstyle`/opt-in `enable_global_api`; the ~450-line
+`TYPE_CHECKING` stub block + `__init__.pyi` are deleted. Next is the `style/`
+split (G, where the public style toolkit lands) → theme/anchor (E) + bootstyle
+canonical (D). Proceed PR by PR per the design doc; don't exceed a PR's scope
+without revisiting it.
 
 ## Repository layout
 
