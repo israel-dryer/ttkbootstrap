@@ -4,20 +4,22 @@
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
 _Last updated: 2026-06-25 (Workstream I — style-construction toolkit — **PR 5
-implemented on the working tree** per `development/2_0_toolkit_design.md`; suite
-**75 passed**; not yet branched/PR'd/merged)._
+merged** into `2.0` (#1077) per `development/2_0_toolkit_design.md`; suite
+**75 passed**)._
 
 ## Where we are
 
 Integration branch: **`2.0`** (cut all 2.0 PRs against it, not `master`).
-Suite: `python -m pytest -q` → **61 passed**, headless, order-independent.
+Suite: `python -m pytest -q` → **75 passed**, headless, order-independent.
 
 The engine keystone (Workstream A) is **complete and merged**: PR 1 (repaint,
 #1073) + PR 2 (content-addressed image cache, #1074). **PR 3 — the mixin API
 (Workstream C)** is **merged** (#1075). **PR 4 — the `style/` package split
-(Workstream G)** is **merged** (#1076; pure move, see "PR 4" below). The
-**style-construction toolkit (Workstream I)** design pass is **done** (see
-"Workstream I" below); next actionable slice is **PR 5** — implementing it.
+(Workstream G)** is **merged** (#1076; pure move, see "PR 4" below). **PR 5 —
+the style-construction toolkit (Workstream I, Tier 1)** is **merged** (#1077; see
+"PR 5" below). Next: migrate the remaining ~50 asset/layout sites onto the
+toolkit (fast-follow, mechanical), then Workstream E (theme/anchor model) + D
+(bootstyle canonical grammar); Tier-2 toolkit follows E.
 
 ### Merged into `2.0`
 - **#1068** — Tier-0 cleanup:
@@ -230,11 +232,11 @@ Workstream I toolkit is a separate follow-on PR. Merged into `2.0` (was
   force-evaluation sweep. **Reuse it for E/D code moves.** Details in the design
   doc's "Implementation — DONE" section.
 
-## PR 5 — IMPLEMENTED (2026-06-25, on working tree; not yet merged)
+## PR 5 — MERGED (2026-06-25, #1077, Workstream I Tier-1 toolkit)
 
-Workstream I Tier-1 toolkit, per `development/2_0_toolkit_design.md`. Suggested
-branch `feat/2.0-pr5-toolkit` (cut against `2.0`). Suite: **75 passed** (was 61;
-+14 in `tests/test_toolkit.py`). Headlines:
+Merged into `2.0` (was `feat/2.0-pr5-toolkit`), per
+`development/2_0_toolkit_design.md`. Suite: **75 passed** (was 61; +14 in
+`tests/test_toolkit.py`). Headlines:
 
 - **New `style/assets.py`** — `Assets(style)` facade over PR 2's
   `Style._get_or_create_image`. Recipes `circle`/`rect`/`rounded_rect` + the
@@ -270,9 +272,10 @@ branch `feat/2.0-pr5-toolkit` (cut against `2.0`). Suite: **75 passed** (was 61;
   they're leaves — assets→PIL, layout→constants, no engine edge) and the PEP 649
   annotation force-evaluation sweep (3.14) over the two new modules + migrated
   builders — both clean.
-- **Remaining before merge**: a spot visual diff on scale/radio/check to confirm
-  the snapped pipeline reads equal-or-better (sharper/DPI-stable, not color
-  drift) — can't run a GUI headless here. Then branch + PR against `2.0`.
+- **Open follow-up (merged without it)**: a spot visual diff on scale/radio/check
+  to confirm the snapped pipeline reads equal-or-better (sharper/DPI-stable, not
+  color drift) — couldn't run a GUI in the headless dev env. Worth an eyeball
+  before the next release.
 - **Deferred (out of PR 5 scope)**: migrating the *remaining* ~25 asset / ~25
   layout sites onto the toolkit (mechanical, same shapes repeated) — design doc
   step 4, a fast-follow. Tier 2 (`state_colors` from ramp steps; composite

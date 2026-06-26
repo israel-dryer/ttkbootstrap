@@ -52,9 +52,17 @@ package split (Workstream G) — is **merged** into `2.0` (#1076): `style.py`
 became a `style/` package (`theme`/`builders_tk`/`builders_ttk`/`engine`/
 `bootstyle`) via a pure, behavior-preserving move; `ttkbootstrap.style` stays a
 valid public path (no shim). Design pass: `development/2_0_style_split_design.md`.
-Next is the public style-construction toolkit (I, lands in `style/assets.py` +
-`style/layout.py`) → theme/anchor (E) + bootstyle canonical (D). Proceed PR by
-PR per the design doc; don't exceed a PR's scope without revisiting it.
+**PR 5** — the public style-construction toolkit (Workstream I, Tier 1) — is
+**merged** into `2.0` (#1077): new `style/assets.py` (`Assets` facade —
+`circle`/`rect`/`rounded_rect` recipes + an `image()` escape hatch wrapping PR
+2's image cache, with keys *derived* from the render inputs and bootstack's
+snapped/oversampled render pipeline) + `style/layout.py` (`El`/`layout`,
+`image_element`, `statespec`/`state_map`, `StyleName`), re-exported from
+`ttkbootstrap.style` and top-level `ttkbootstrap`. The scale + radiobutton
+builders are migrated onto it as the acceptance proof. Design pass:
+`development/2_0_toolkit_design.md`. Next: migrate the remaining ~50 asset/layout
+sites (mechanical fast-follow) → theme/anchor (E) + bootstyle canonical (D).
+Proceed PR by PR per the design doc; don't exceed a PR's scope without revisiting it.
 
 ## Repository layout
 
