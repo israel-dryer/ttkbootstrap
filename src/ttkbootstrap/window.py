@@ -49,7 +49,7 @@ from typing import Any, Optional, Tuple, Union
 from ttkbootstrap import utility
 from ttkbootstrap.constants import *
 from ttkbootstrap.icons import Icon
-from ttkbootstrap.style import Style
+from ttkbootstrap.style import Style, Bootstyle
 
 
 def get_default_root(what: Optional[str] = None) -> tkinter.Tk:
@@ -509,6 +509,12 @@ class Toplevel(tkinter.Toplevel):
 
         super().__init__(**kwargs)
         self.winsys: str = self.tk.call('tk', 'windowingsystem')
+
+        # Toplevel subclasses tkinter.Toplevel directly (not the AutoStyleMixin
+        # tk.Toplevel), so paint it with the active theme at construction --
+        # otherwise it shows the native background until the next theme switch.
+        Bootstyle.update_tk_widget_style(self)
+        Bootstyle.stamp_theme_version(self)
 
         if iconphoto != '':
             try:

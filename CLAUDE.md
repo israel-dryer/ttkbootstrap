@@ -42,19 +42,24 @@ The engine keystone (Workstream A) is now in progress: the design is locked in
 single-root `RuntimeError`) is **merged** into `2.0` (#1073). **PR 2** — the
 content-addressed image cache (`Style._image_cache` + `_get_or_create_image` +
 `clear_image_cache`; per-builder `theme_images` leak removed) — is **merged**
-into `2.0` (#1074). That **completes the engine (Workstream A) keystone**. Next
-is **PR 3** — the mixin API (Workstream C) — then `style/` split (G, where the
-public style toolkit lands) → theme/anchor (E) + bootstyle canonical (D).
-Proceed PR by PR per the design doc; don't exceed a PR's scope without
-revisiting it.
+into `2.0` (#1074). That **completes the engine (Workstream A) keystone**.
+**PR 3** — the mixin API (Workstream C) — is **implemented** on
+`feat/2.0-pr3-mixin-api` (awaiting merge): the import-time monkey-patch is
+retired in favor of concrete `BootMixin`/`AutoStyleMixin` subclasses re-exported
+from `__init__.py`, plus `bootify`/`apply_bootstyle`/opt-in `enable_global_api`;
+the ~450-line `TYPE_CHECKING` stub block + `__init__.pyi` are deleted. Next is
+the `style/` split (G, where the public style toolkit lands) → theme/anchor (E) +
+bootstyle canonical (D). Proceed PR by PR per the design doc; don't exceed a
+PR's scope without revisiting it.
 
 ## Repository layout
 
 ```
 src/ttkbootstrap/
-  __init__.py        # public exports; re-exports ttk widgets + TYPE_CHECKING stubs that
-                     #   advertise the `bootstyle`/`autostyle` kwargs. Calls
-                     #   Bootstyle.setup_ttkbootstrap_api() at import to install overrides.
+  __init__.py        # public exports; defines the concrete BootMixin/AutoStyleMixin widget
+                     #   subclasses (e.g. `class Button(BootMixin, ttk.Button)`) that carry the
+                     #   `bootstyle`/`autostyle` api. No import-time monkey-patch (2.0, PR 3) —
+                     #   opt into it via enable_global_api().
   style.py           # THE CORE — theme/style engine (see below). Largest, most important file.
   window.py          # Window / Toplevel classes
   constants.py       # re-exported constants (PRIMARY, SUCCESS, BOTH, YES, ...) via `from ...constants import *`
@@ -105,9 +110,11 @@ Everything visual flows through here. Key classes:
   `create_button_style`, `create_outline_toolbutton_style`). These build a
   ttk style and call `_register_ttkstyle()`.
 - **`StyleBuilderTK`** — styles legacy `tk.*` widgets (Menu, Text, Canvas, …).
-- **`Bootstyle`** — installs the API: overrides ttk widget `__init__` /
-  `configure` / `__setitem__` so `bootstyle=`/`style=` resolve to a built
-  ttk style via `update_ttk_widget_style()`.
+- **`Bootstyle`** — the resolver: `update_ttk_widget_style()` maps a
+  `bootstyle=`/`style=` string to a built ttk style. Two delivery paths feed it
+  (2.0, PR 3): the default `BootMixin`/`AutoStyleMixin` concrete subclasses
+  (in `__init__.py`), and the opt-in global monkey-patch
+  (`enable_global_api()` → `setup_ttkbootstrap_api()`).
 
 ### Lazy style building — the model to keep in mind
 

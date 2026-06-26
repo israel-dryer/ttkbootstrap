@@ -5139,12 +5139,12 @@ class Bootstyle:
 
     This class provides utilities to parse those tokens from strings and
     widget state, determine the target widget class and orientation, and
-    resolve the requested color and variant. It also wires ttkbootstrap
-    into tkinter/ttk via ``setup_ttkbootstrap_api`` so that widgets accept
-    the ``bootstyle=...`` keyword at construction or during configure().
+    resolve the requested color and variant. Its `update_ttk_widget_style`
+    resolver is the engine shared by both api-delivery paths: the default
+    `BootMixin` subclasses and the opt-in global patch (`enable_global_api`).
 
     Typical end users will not call these methods directly; they are used
-    internally by the Style engine and by widget constructor overrides.
+    internally by the Style engine, the mixins, and the global patch.
     """
     @staticmethod
     def ttkstyle_widget_class(widget=None, string=""):
@@ -5386,6 +5386,13 @@ class Bootstyle:
 
         def __init__(self, *args, **kwargs):
 
+            # Blessed subclasses (BootMixin) own bootstyle resolution; when the
+            # global API is also enabled, defer to the mixin to avoid
+            # double-applying a style.
+            if isinstance(self, BootMixin):
+                func(self, *args, **kwargs)
+                return
+
             # capture bootstyle and style arguments
             if "bootstyle" in kwargs:
                 bootstyle = kwargs.pop("bootstyle")
@@ -5445,6 +5452,11 @@ class Bootstyle:
         """
 
         def configure(self, cnf=None, **kwargs):
+            # Blessed subclasses (BootMixin) own bootstyle resolution; defer to
+            # the mixin's configure when the global API is also enabled.
+            if isinstance(self, BootMixin):
+                return func(self, cnf, **kwargs)
+
             # get configuration
             if cnf in ("bootstyle", "style"):
                 return self.cget("style")
@@ -5539,9 +5551,14 @@ class Bootstyle:
 
     @staticmethod
     def setup_ttkbootstrap_api():
-        """Setup ttkbootstrap for use with tkinter and ttk. This method
-        is called when ttkbootstrap is imported to perform all of the
-        necessary method overrides that implement the bootstyle api."""
+        """Monkey-patch the stock tkinter/ttk widget classes with the
+        bootstyle/autostyle api.
+
+        As of 2.0 this is the legacy *global* path and is no longer run at
+        import time; the default api is delivered through concrete subclasses
+        (`BootMixin`/`AutoStyleMixin`). Call `enable_global_api` to opt back
+        into patching the stock classes (e.g. for code that creates vanilla
+        ``tkinter.ttk`` widgets)."""
         from ttkbootstrap.widgets import TTK_WIDGETS
         from ttkbootstrap.widgets import TK_WIDGETS
 
@@ -5645,6 +5662,12 @@ class Bootstyle:
 
         def __init__wrapper(self, *args, **kwargs):
 
+            # Blessed subclasses (AutoStyleMixin) own autostyle handling; defer
+            # to the mixin when the global API is also enabled.
+            if isinstance(self, AutoStyleMixin):
+                func(self, *args, **kwargs)
+                return
+
             # check for autostyle flag
             if "autostyle" in kwargs:
                 autostyle = kwargs.pop("autostyle")
@@ -5666,3 +5689,182 @@ class Bootstyle:
                 self._tb_no_autostyle = True
 
         return __init__wrapper
+
+
+class BootMixin:
+    """Mixin that adds the ``bootstyle`` API to a ttk widget class.
+
+    This is the 2.0 delivery vehicle for the styling API. Instead of
+    monkey-patching ttk widget classes at import time, ttkbootstrap ships
+    concrete subclasses such as ``class Button(BootMixin, ttk.Button)`` and
+    re-exports them. Mixing this in front of any ttk-derived class gives that
+    class:
+
+    - a ``bootstyle=`` (and bare ``style=``) keyword on the constructor,
+    - ``configure``/``config`` that accept and report ``bootstyle``,
+    - ``widget["bootstyle"]`` / ``widget["bootstyle"] = ...`` access.
+
+    All resolution flows through the unchanged `Bootstyle.update_ttk_widget_style`
+    engine, so the mixin only changes *delivery* — not how a style string maps
+    to a ttk style. Because the accessors are real methods that use ``super()``
+    (not closures captured in a loop), the late-binding bug of the old
+    monkey-patch is gone.
+    """
+
+    def __init__(self, *args, **kwargs):
+        # capture bootstyle and style arguments
+        bootstyle = kwargs.pop("bootstyle", "")
+        style = kwargs.pop("style", "") or ""
+
+        # instantiate the underlying ttk widget first so winfo_class() is
+        # available to the resolver below
+        super().__init__(*args, **kwargs)
+
+        try:
+            if style:
+                if Style.get_instance().style_exists_in_theme(style):
+                    super().configure(style=style)
+                else:
+                    ttkstyle = Bootstyle.update_ttk_widget_style(
+                        self, style, **kwargs
+                    )
+                    super().configure(style=ttkstyle)
+            elif bootstyle:
+                ttkstyle = Bootstyle.update_ttk_widget_style(
+                    self, bootstyle, **kwargs
+                )
+                super().configure(style=ttkstyle)
+            else:
+                ttkstyle = Bootstyle.update_ttk_widget_style(
+                    self, "default", **kwargs
+                )
+                super().configure(style=ttkstyle)
+            # Stamp the widget current so the next theme walk only repaints it
+            # once the theme actually changes.
+            Bootstyle.stamp_theme_version(self)
+        except AttributeError:
+            # Third-party widgets (e.g. tkcalendar.Calendar) override
+            # configure() and may touch instance attributes not yet set when
+            # ttk.Frame.__init__ calls back into the subclass configure before
+            # the subclass __init__ completes.
+            pass
+
+    def configure(self, cnf=None, **kwargs):
+        # query a single option
+        if cnf in ("bootstyle", "style"):
+            return self.cget("style")
+        if cnf is not None:
+            return super().configure(cnf)
+
+        # set configuration
+        bootstyle = kwargs.pop("bootstyle", "")
+        if "style" in kwargs:
+            style = kwargs.get("style")
+            Bootstyle.update_ttk_widget_style(self, style, **kwargs)
+        elif bootstyle:
+            ttkstyle = Bootstyle.update_ttk_widget_style(
+                self, bootstyle, **kwargs
+            )
+            kwargs.update(style=ttkstyle)
+
+        return super().configure(cnf, **kwargs)
+
+    config = configure
+
+    def __setitem__(self, key, value):
+        if key in ("bootstyle", "style"):
+            return self.configure(**{key: value})
+        return super().__setitem__(key, value)
+
+    def __getitem__(self, key):
+        if key in ("bootstyle", "style"):
+            return self.cget("style")
+        return super().__getitem__(key)
+
+
+class AutoStyleMixin:
+    """Mixin that auto-applies the theme to a legacy ``tk`` widget class.
+
+    The tk counterpart to `BootMixin`. Legacy tk widgets have no ttk style;
+    instead they are painted with the active theme's colors at construction
+    via `Bootstyle.update_tk_widget_style`. Concrete subclasses such as
+    ``class Canvas(AutoStyleMixin, tk.Canvas)`` are re-exported from
+    ttkbootstrap.
+
+    Passing ``autostyle=False`` opts the widget out of theming entirely: it
+    keeps its native tk look and the theme walk skips it on switch (the
+    ``_tb_no_autostyle`` flag), matching the pre-2.0 behavior where an
+    unstyled widget never subscribed for repaints.
+    """
+
+    def __init__(self, *args, **kwargs):
+        autostyle = kwargs.pop("autostyle", True)
+        super().__init__(*args, **kwargs)
+        if autostyle:
+            Bootstyle.update_tk_widget_style(self)
+            Bootstyle.stamp_theme_version(self)
+        else:
+            self._tb_no_autostyle = True
+
+
+def bootify(cls):
+    """Return a ``bootstyle``-enabled subclass of any ttk widget class.
+
+    Use this to wrap a third-party ttk-derived widget that ttkbootstrap does
+    not ship a blessed subclass for:
+
+    ```python
+    ThemedCalendar = bootify(tkcalendar.Calendar)
+    cal = ThemedCalendar(root, bootstyle="info")
+    ```
+
+    The result is ``type(cls.__name__, (BootMixin, cls), {})`` — i.e. the same
+    construction used for the built-in blessed widgets, so it gains the full
+    ``bootstyle`` API without mutating the original class.
+    """
+    return type(cls.__name__, (BootMixin, cls), {})
+
+
+def apply_bootstyle(widget, bootstyle):
+    """Apply a bootstyle to an existing widget instance, no class mutation.
+
+    For per-instance styling of a widget whose class was never wrapped (for
+    example a plain ``tkinter.ttk`` widget): resolves the bootstyle to a ttk
+    style, assigns it, and stamps the widget current for the theme walk.
+
+    ```python
+    from tkinter import ttk
+    b = ttk.Button(root, text="Save")
+    apply_bootstyle(b, "success")
+    ```
+
+    Returns the resolved ttk style name.
+    """
+    ttkstyle = Bootstyle.update_ttk_widget_style(widget, bootstyle)
+    widget.configure(style=ttkstyle)
+    Bootstyle.stamp_theme_version(widget)
+    return ttkstyle
+
+
+_global_api_installed = False
+
+
+def enable_global_api():
+    """Re-apply the legacy global monkey-patch (opt-in).
+
+    In 2.0 the default styling API is delivered through concrete subclasses
+    (`BootMixin`/`AutoStyleMixin`), so importing ttkbootstrap no longer mutates
+    the stock ``tkinter``/``tkinter.ttk`` classes. Call this once if you have
+    code that creates *vanilla* ttk/tk widgets (e.g. ``from tkinter import
+    ttk; ttk.Button(..., bootstyle=...)``) and want the ``bootstyle``/
+    ``autostyle`` keywords on them anyway.
+
+    Idempotent. The installed wrappers defer to `BootMixin`/`AutoStyleMixin`
+    instances (the blessed subclasses), so enabling the global API never
+    double-resolves a style for a widget that already carries a mixin.
+    """
+    global _global_api_installed
+    if _global_api_installed:
+        return
+    Bootstyle.setup_ttkbootstrap_api()
+    _global_api_installed = True

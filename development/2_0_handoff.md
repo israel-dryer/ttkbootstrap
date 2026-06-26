@@ -3,18 +3,18 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-06-25 (PR 2 — image cache — merged into `2.0`, #1074)._
+_Last updated: 2026-06-25 (PR 3 — mixin API — implemented on
+`feat/2.0-pr3-mixin-api`, awaiting merge)._
 
 ## Where we are
 
 Integration branch: **`2.0`** (cut all 2.0 PRs against it, not `master`).
-Suite: `python -m pytest -q` → **28 passed**, headless, order-independent.
+Suite: `python -m pytest -q` → **42 passed**, headless, order-independent.
 
 The engine keystone (Workstream A) is **complete and merged**: PR 1 (repaint,
-#1073) + PR 2 (content-addressed image cache, #1074). Details in
-`development/2_0_engine_design.md` ("PR 1 — DONE" / "PR 2 — DONE" + both
-pre-flight checks). Next actionable slice is **PR 3 — the mixin API
-(Workstream C)**.
+#1073) + PR 2 (content-addressed image cache, #1074). **PR 3 — the mixin API
+(Workstream C)** is **implemented** on `feat/2.0-pr3-mixin-api` (see "PR 3"
+below); next after it merges is the `style/` package split (Workstream G).
 
 ### Merged into `2.0`
 - **#1068** — Tier-0 cleanup:
@@ -146,17 +146,63 @@ Headlines:
 - Verified pixel-level (no stale image after switch) and bounded (20 theme
   round-trips hold the cache flat). New `tests/widget_styles/test_image_cache.py`.
 
-## Next session: PR 3 — the mixin API (Workstream C)
+## PR 3 — IMPLEMENTED (2026-06-25, `feat/2.0-pr3-mixin-api`)
 
-This leaves the engine (Workstream A) keystone complete. PR 3 moves to the API
-delivery: the `BootMixin` hybrid (see `development/2_0_plan.md` Workstream C and
-the locked decisions). Replaces the import-time monkey-patch with concrete
-typed subclasses (`class Button(BootMixin, ttk.Button)`), a `bootify(cls)`
-factory, `apply_bootstyle(widget, style)`, and opt-in `enable_global_api()`;
-deletes the ~450-line `TYPE_CHECKING` stub block and the 55 KB `__init__.pyi`,
-and removes the late-binding closure bug in `setup_ttkbootstrap_api`. After C
-comes the `style/` package split (G) — which is also where the **public**
-`image_asset`/style-construction toolkit (Workstream I) wraps PR 2's
+Replaces the import-time monkey-patch with the mixin-hybrid API (Workstream C).
+Suite: **42 passed**. Design pass + the one open fork (tk-side scope) were
+resolved up front: **full retirement of the import-time patch** — the blessed
+tk widgets get a mixin too, not just ttk.
+
+Headlines:
+- **Two mixins in `style.py`** (after `Bootstyle`): `BootMixin` (ttk — intercepts
+  `bootstyle`/`style` on `__init__`/`configure`/`config`/`__setitem__`/
+  `__getitem__` via `super()`, reusing the unchanged `update_ttk_widget_style` +
+  `stamp_theme_version`) and `AutoStyleMixin` (tk — autostyle at construction,
+  honoring `autostyle=False` → `_tb_no_autostyle` opt-out, same flag the PR 1
+  theme walk skips). Real `super()` methods, so the old late-binding closure bug
+  is gone. (Side finding: the legacy `__setitem__`/`__getitem__` overrides never
+  actually installed — `widget.__getitem` raised `AttributeError` swallowed by a
+  bare `except: continue` — so the mixin's correct accessors are a net gain.)
+- **Concrete subclasses re-exported from `__init__.py`**: 19 ttk (`class
+  Button(BootMixin, ttk.Button)` …; `OptionMenu` restores tkinter's
+  `__getitem__`/`__setitem__` for menu-item access) + 6 tk (`Tk`, `Menu`, `Text`,
+  `Canvas`, `TkFrame`, `LabelFrame` with `AutoStyleMixin`). Defined **before** the
+  widgets/dialogs/window imports, since those import widget names from
+  `ttkbootstrap` — so the whole internal tree flows through the mixins with **no
+  global patch**.
+- **Import-time `setup_ttkbootstrap_api()` call removed**; it is now the body of
+  the opt-in `enable_global_api()` (idempotent; its wrappers defer to
+  `BootMixin`/`AutoStyleMixin` instances via an `isinstance` guard, so the global
+  path never double-resolves a blessed widget). `import ttkbootstrap` stays
+  warning-free.
+- **New delivery primitives** (all re-exported): `bootify(cls)` →
+  `type(cls.__name__, (BootMixin, cls), {})`; `apply_bootstyle(widget, bootstyle)`
+  for per-instance styling with no class mutation; `enable_global_api()`.
+- **Typing**: deleted the ~450-line inline `TYPE_CHECKING` block **and** the
+  54 KB `__init__.pyi`. Concrete classes carry a one-line docstring each;
+  `bootstyle` is now statically visible. Accepted trade-off (per the locked
+  decision): native per-widget kwargs degrade from the hand-maintained stubs to
+  typeshed-inherited + `**kwargs`.
+- **Two regressions found + fixed during the sweep:** `Toplevel` (subclasses
+  `tkinter.Toplevel` directly, so it missed the retired tk patch) now paints
+  itself via `Bootstyle.update_tk_widget_style`/`stamp_theme_version` in
+  `window.py`; `tableview.py`'s 8 context menus switched from raw `tk.Menu` to the
+  blessed `ttk.Menu`. `Window` was already fine (its `Style(themename)` themes the
+  root).
+- **Back-compat preserved:** the legacy tuple/list `bootstyle` form still resolves
+  (used internally by `Meter`/`DateEntry`/tooltip/datepicker) — canonical-string
+  enforcement is Workstream D, untouched here.
+- **Tests:** new `tests/test_mixin_api.py` (14 tests: subclass shape, stock
+  tkinter stays unpatched, bootstyle/configure/item-access resolution, tuple
+  back-compat, OptionMenu item access, autostyle opt-out, `bootify`,
+  `apply_bootstyle`, `enable_global_api` idempotency). `test_lifecycle.py`'s
+  autostyle-opt-out test updated to use the blessed `ttk.Canvas`.
+
+## Next: `style/` package split (Workstream G)
+
+After PR 3 merges: split `style.py` into the `style/` package (engine /
+builders_ttk / builders_tk / bootstyle / theme), which is also where the
+**public** `image_asset`/style-construction toolkit (Workstream I) wraps PR 2's
 `_get_or_create_image` chokepoint — then the theme/anchor model (E) + bootstyle
 canonical grammar (D) carrying the `_compat` adapters.
 

@@ -2642,12 +2642,12 @@ class TableCellRightClickMenu(tk.Menu):
                 "command": self.delete_selected_rows,
             },
         }
-        sort_menu = tk.Menu(self, tearoff=False)
+        sort_menu = ttk.Menu(self, tearoff=False)
         sort_menu.add_command(cnf=config["sortascending"])
         sort_menu.add_command(cnf=config["sortdescending"])
         self.add_cascade(menu=sort_menu, label=f'''⇅  {MessageCatalog.translate("Sort")}''')
 
-        filter_menu = tk.Menu(self, tearoff=False)
+        filter_menu = ttk.Menu(self, tearoff=False)
         filter_menu.add_command(cnf=config["clearfilter"])
         filter_menu.add_separator()
         filter_menu.add_command(cnf=config["filterbyvalue"])
@@ -2655,21 +2655,21 @@ class TableCellRightClickMenu(tk.Menu):
         filter_menu.add_command(cnf=config["showrows"])
         self.add_cascade(menu=filter_menu, label=f'''⧨  {MessageCatalog.translate("Filter")}''')
 
-        export_menu = tk.Menu(self, tearoff=False)
+        export_menu = ttk.Menu(self, tearoff=False)
         export_menu.add_command(cnf=config["exportall"])
         export_menu.add_command(cnf=config["exportpage"])
         export_menu.add_command(cnf=config["exportselection"])
         export_menu.add_command(cnf=config["exportfiltered"])
         self.add_cascade(menu=export_menu, label=f'''↔  {MessageCatalog.translate("Export")}''')
 
-        move_menu = tk.Menu(self, tearoff=False)
+        move_menu = ttk.Menu(self, tearoff=False)
         move_menu.add_command(cnf=config["moveup"])
         move_menu.add_command(cnf=config["movedown"])
         move_menu.add_command(cnf=config["movetotop"])
         move_menu.add_command(cnf=config["movetobottom"])
         self.add_cascade(menu=move_menu, label=f'''⇵  {MessageCatalog.translate("Move")}''')
 
-        align_menu = tk.Menu(self, tearoff=False)
+        align_menu = ttk.Menu(self, tearoff=False)
         align_menu.add_command(cnf=config["alignleft"])
         align_menu.add_command(cnf=config["aligncenter"])
         align_menu.add_command(cnf=config["alignright"])
@@ -2845,14 +2845,14 @@ class TableHeaderRightClickMenu(tk.Menu):
         self.add_separator()
 
         # MOVE MENU
-        move_menu = tk.Menu(self, tearoff=False)
+        move_menu = ttk.Menu(self, tearoff=False)
         move_menu.add_command(cnf=config["movetoleft"])
         move_menu.add_command(cnf=config["movetoright"])
         move_menu.add_command(cnf=config["movetofirst"])
         move_menu.add_command(cnf=config["movetolast"])
         self.add_cascade(menu=move_menu, label=f'''⇄  {MessageCatalog.translate("Move")}''')
 
-        align_menu = tk.Menu(self, tearoff=False)
+        align_menu = ttk.Menu(self, tearoff=False)
         align_menu.add_command(cnf=config["alignleft"])
         align_menu.add_command(cnf=config["aligncenter"])
         align_menu.add_command(cnf=config["alignright"])
@@ -2875,7 +2875,7 @@ class TableHeaderRightClickMenu(tk.Menu):
         if self._show_menu is not None:
             self._show_menu.delete(0, END)
         else:
-            self._show_menu = tk.Menu(self, tearoff=False)
+            self._show_menu = ttk.Menu(self, tearoff=False)
 
         self._show_menu.add_command(
             label=MessageCatalog.translate("Show All"), command=self.show_all_columns
