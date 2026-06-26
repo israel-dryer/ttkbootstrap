@@ -142,13 +142,18 @@ def test_theme_walk_stamps_and_repaints_mounted_widgets(root):
 
 
 def test_autostyle_false_widget_skipped_by_walk(root):
-    """A tk widget created with autostyle=False is never touched by the walk."""
+    """A tk widget created with autostyle=False is never touched by the walk.
+
+    The blessed tk widgets (`ttk.Canvas` etc.) carry `AutoStyleMixin`, so the
+    `autostyle=` keyword is delivered through the concrete subclass rather than
+    a global monkey-patch.
+    """
     style = root.style
     start = style.theme.name
     other = "darkly" if start != "darkly" else "cosmo"
 
-    plain = tk.Label(root, autostyle=False, background="#abcdef")
-    styled = tk.Label(root)
+    plain = ttk.Canvas(root, autostyle=False, background="#abcdef")
+    styled = ttk.Canvas(root)
     plain.pack()
     styled.pack()
     root.update_idletasks()
