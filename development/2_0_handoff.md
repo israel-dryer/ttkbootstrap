@@ -3,18 +3,21 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-06-25 (PR 3 — mixin API (Workstream C) — merged into
-`2.0`, #1075)._
+_Last updated: 2026-06-25 (PR 4 — `style/` package split (Workstream G) —
+implemented on `feat/2.0-pr4-style-split`, not yet committed)._
 
 ## Where we are
 
 Integration branch: **`2.0`** (cut all 2.0 PRs against it, not `master`).
-Suite: `python -m pytest -q` → **42 passed**, headless, order-independent.
+Suite: `python -m pytest -q` → **61 passed** on the PR 4 branch (42 on `2.0`),
+headless, order-independent.
 
 The engine keystone (Workstream A) is **complete and merged**: PR 1 (repaint,
 #1073) + PR 2 (content-addressed image cache, #1074). **PR 3 — the mixin API
-(Workstream C)** is now **merged** (#1075; see "PR 3" below). Next actionable
-slice is the **`style/` package split (Workstream G)**.
+(Workstream C)** is **merged** (#1075). **PR 4 — the `style/` package split
+(Workstream G)** is **implemented on a branch** (pure move; see "PR 4" below),
+pending commit/PR. Next actionable slice after it lands is the **style-
+construction toolkit (Workstream I)**.
 
 ### Merged into `2.0`
 - **#1068** — Tier-0 cleanup:
@@ -199,13 +202,42 @@ Headlines:
   `apply_bootstyle`, `enable_global_api` idempotency). `test_lifecycle.py`'s
   autostyle-opt-out test updated to use the blessed `ttk.Canvas`.
 
-## Next: `style/` package split (Workstream G)
+## PR 4 — IMPLEMENTED on branch (2026-06-25, Workstream G — `style/` split)
 
-After PR 3 merges: split `style.py` into the `style/` package (engine /
-builders_ttk / builders_tk / bootstyle / theme), which is also where the
-**public** `image_asset`/style-construction toolkit (Workstream I) wraps PR 2's
-`_get_or_create_image` chokepoint — then the theme/anchor model (E) + bootstyle
-canonical grammar (D) carrying the `_compat` adapters.
+Design pass first (per the hard rule): `development/2_0_style_split_design.md`.
+Scope decision (asked + answered): **pure, behavior-preserving move**; the
+Workstream I toolkit is a separate follow-on PR. Implemented on
+`feat/2.0-pr4-style-split` off `2.0`; **not yet committed/PR'd** (awaiting the
+go-ahead). Suite: **61 passed**.
+
+- `style.py` → `style/` package: `theme.py` (Colors, ThemeDefinition),
+  `builders_tk.py` (StyleBuilderTK), `builders_ttk.py` (StyleBuilderTTK — the
+  bulk), `engine.py` (Style), `bootstyle.py` (Keywords, Bootstyle,
+  BootMixin/AutoStyleMixin, bootify/apply_bootstyle/enable_global_api),
+  `__init__.py` (re-exports the full public surface).
+- Strict downward import layering (theme→builders_tk→builders_ttk→engine→
+  bootstyle); the only cycles are **6 function-local back-edges** (Colors→Style,
+  the two builders' `__init__`→Style, engine→Bootstyle ×2). No import-time cycle;
+  each submodule imports standalone.
+- **No shim needed** — `ttkbootstrap.style` stays a valid public path; every
+  existing `from ttkbootstrap.style import …` resolves unchanged;
+  `import ttkbootstrap` stays warning-free. Submodule paths (`style.engine`, …)
+  are implementation detail (treat like `internal/`).
+- New `tests/test_style_package.py` (structural guards: public surface, legacy
+  imports, standalone-submodule cycle guard, consumer imports).
+- **Python 3.14 / PEP 649 gotcha** found + handled: lazy annotations masked a
+  missing annotation-only import (`ThemeDefinition` in `builders_tk`). A
+  "does it import?" check is insufficient on 3.14 — added an annotation
+  force-evaluation sweep. **Reuse it for E/D code moves.** Details in the design
+  doc's "Implementation — DONE" section.
+
+## Next: Workstream I (style-construction toolkit), then E + D
+
+The `style/` package now has a stable home for the **public** `image_asset` /
+`layout()` toolkit (Workstream I), which wraps PR 2's `_get_or_create_image`
+chokepoint and lands in `style/assets.py` + `style/layout.py` — its own design
+pass (new public surface). Then the theme/anchor model (E) + bootstyle canonical
+grammar (D), carrying the `_compat` adapters.
 
 ## Open decisions (from the plan)
 - ~~Multi-root~~ — **LOCKED**: enforce single-root with a clear `RuntimeError`.
