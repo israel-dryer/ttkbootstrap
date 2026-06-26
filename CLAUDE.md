@@ -47,10 +47,14 @@ into `2.0` (#1074). That **completes the engine (Workstream A) keystone**.
 import-time monkey-patch is retired in favor of concrete
 `BootMixin`/`AutoStyleMixin` subclasses re-exported from `__init__.py`, plus
 `bootify`/`apply_bootstyle`/opt-in `enable_global_api`; the ~450-line
-`TYPE_CHECKING` stub block + `__init__.pyi` are deleted. Next is the `style/`
-split (G, where the public style toolkit lands) → theme/anchor (E) + bootstyle
-canonical (D). Proceed PR by PR per the design doc; don't exceed a PR's scope
-without revisiting it.
+`TYPE_CHECKING` stub block + `__init__.pyi` are deleted. **PR 4** — the `style/`
+package split (Workstream G) — is **merged** into `2.0` (#1076): `style.py`
+became a `style/` package (`theme`/`builders_tk`/`builders_ttk`/`engine`/
+`bootstyle`) via a pure, behavior-preserving move; `ttkbootstrap.style` stays a
+valid public path (no shim). Design pass: `development/2_0_style_split_design.md`.
+Next is the public style-construction toolkit (I, lands in `style/assets.py` +
+`style/layout.py`) → theme/anchor (E) + bootstyle canonical (D). Proceed PR by
+PR per the design doc; don't exceed a PR's scope without revisiting it.
 
 ## Repository layout
 
@@ -60,7 +64,11 @@ src/ttkbootstrap/
                      #   subclasses (e.g. `class Button(BootMixin, ttk.Button)`) that carry the
                      #   `bootstyle`/`autostyle` api. No import-time monkey-patch (2.0, PR 3) —
                      #   opt into it via enable_global_api().
-  style.py           # THE CORE — theme/style engine (see below). Largest, most important file.
+  style/             # THE CORE — theme/style engine package (see below). Split from the old
+                     #   style.py in 2.0 (PR 4); public import path `ttkbootstrap.style` unchanged.
+                     #   theme.py (Colors, ThemeDefinition), builders_tk.py (StyleBuilderTK),
+                     #   builders_ttk.py (StyleBuilderTTK — the bulk), engine.py (Style),
+                     #   bootstyle.py (Keywords, Bootstyle, BootMixin/AutoStyleMixin, delivery fns).
   window.py          # Window / Toplevel classes
   constants.py       # re-exported constants (PRIMARY, SUCCESS, BOTH, YES, ...) via `from ...constants import *`
   colorutils.py      # color math (Colors helpers, make_transparent, contrast)
@@ -98,19 +106,26 @@ The older top-level shims (`ttkbootstrap.scrolled/tableview/toast/tooltip`,
 `ttkbootstrap.widgets.<name>` / `ttkbootstrap.dialogs`. Edit real
 implementations in `src/ttkbootstrap/widgets/`, never a shim.
 
-## The style engine (`style.py`)
+## The style engine (`style/` package)
 
-Everything visual flows through here. Key classes:
+Everything visual flows through here. Split from the old monolithic `style.py`
+in 2.0 (PR 4) into a `style/` package; `ttkbootstrap.style` re-exports the full
+surface, so the import path is unchanged. The submodules layer downward
+(`theme` → `builders_tk` → `builders_ttk` → `engine` → `bootstyle`), with a few
+function-local back-edge imports. Key classes (by module):
 
-- **`Style`** — singleton (`Style.get_instance()`), subclasses `ttk.Style`.
-  Owns theme definitions, the active theme, and the style registry
-  (`_style_registry`, `_theme_styles`). `theme_use()` switches themes and
-  rebuilds every registered style.
-- **`StyleBuilderTTK`** — holds `create_*_style(colorname)` methods (e.g.
-  `create_button_style`, `create_outline_toolbutton_style`). These build a
-  ttk style and call `_register_ttkstyle()`.
-- **`StyleBuilderTK`** — styles legacy `tk.*` widgets (Menu, Text, Canvas, …).
-- **`Bootstyle`** — the resolver: `update_ttk_widget_style()` maps a
+- **`Style`** (`engine.py`) — singleton (`Style.get_instance()`), subclasses
+  `ttk.Style`. Owns theme definitions and the active theme. `theme_use()`
+  switches themes and runs the version-stamped theme walk (PR 1) that repaints
+  only stale mounted widgets — styles rebuild lazily/O(mounted), not all up front.
+- **`StyleBuilderTTK`** (`builders_ttk.py`) — holds `create_*_style(colorname)`
+  methods (e.g. `create_button_style`, `create_outline_toolbutton_style`). These
+  build a ttk style and call `_register_ttkstyle()`.
+- **`StyleBuilderTK`** (`builders_tk.py`) — styles legacy `tk.*` widgets (Menu,
+  Text, Canvas, …).
+- **`Colors` / `ThemeDefinition`** (`theme.py`) — the color model + theme
+  container.
+- **`Bootstyle`** (`bootstyle.py`) — the resolver: `update_ttk_widget_style()` maps a
   `bootstyle=`/`style=` string to a built ttk style. Two delivery paths feed it
   (2.0, PR 3): the default `BootMixin`/`AutoStyleMixin` concrete subclasses
   (in `__init__.py`), and the opt-in global monkey-patch

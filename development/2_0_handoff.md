@@ -4,20 +4,18 @@
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
 _Last updated: 2026-06-25 (PR 4 — `style/` package split (Workstream G) —
-implemented on `feat/2.0-pr4-style-split`, not yet committed)._
+merged into `2.0`, #1076)._
 
 ## Where we are
 
 Integration branch: **`2.0`** (cut all 2.0 PRs against it, not `master`).
-Suite: `python -m pytest -q` → **61 passed** on the PR 4 branch (42 on `2.0`),
-headless, order-independent.
+Suite: `python -m pytest -q` → **61 passed**, headless, order-independent.
 
 The engine keystone (Workstream A) is **complete and merged**: PR 1 (repaint,
 #1073) + PR 2 (content-addressed image cache, #1074). **PR 3 — the mixin API
 (Workstream C)** is **merged** (#1075). **PR 4 — the `style/` package split
-(Workstream G)** is **implemented on a branch** (pure move; see "PR 4" below),
-pending commit/PR. Next actionable slice after it lands is the **style-
-construction toolkit (Workstream I)**.
+(Workstream G)** is **merged** (#1076; pure move, see "PR 4" below). Next
+actionable slice is the **style-construction toolkit (Workstream I)**.
 
 ### Merged into `2.0`
 - **#1068** — Tier-0 cleanup:
@@ -202,13 +200,12 @@ Headlines:
   `apply_bootstyle`, `enable_global_api` idempotency). `test_lifecycle.py`'s
   autostyle-opt-out test updated to use the blessed `ttk.Canvas`.
 
-## PR 4 — IMPLEMENTED on branch (2026-06-25, Workstream G — `style/` split)
+## PR 4 — MERGED (2026-06-25, #1076, Workstream G — `style/` split)
 
 Design pass first (per the hard rule): `development/2_0_style_split_design.md`.
 Scope decision (asked + answered): **pure, behavior-preserving move**; the
-Workstream I toolkit is a separate follow-on PR. Implemented on
-`feat/2.0-pr4-style-split` off `2.0`; **not yet committed/PR'd** (awaiting the
-go-ahead). Suite: **61 passed**.
+Workstream I toolkit is a separate follow-on PR. Merged into `2.0` (was
+`feat/2.0-pr4-style-split`). Suite: **61 passed**.
 
 - `style.py` → `style/` package: `theme.py` (Colors, ThemeDefinition),
   `builders_tk.py` (StyleBuilderTK), `builders_ttk.py` (StyleBuilderTTK — the
