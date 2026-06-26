@@ -3,8 +3,9 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-06-25 (PR 4 — `style/` package split (Workstream G) —
-merged into `2.0`, #1076)._
+_Last updated: 2026-06-25 (Workstream I — style-construction toolkit — **PR 5
+implemented on the working tree** per `development/2_0_toolkit_design.md`; suite
+**75 passed**; not yet branched/PR'd/merged)._
 
 ## Where we are
 
@@ -14,8 +15,9 @@ Suite: `python -m pytest -q` → **61 passed**, headless, order-independent.
 The engine keystone (Workstream A) is **complete and merged**: PR 1 (repaint,
 #1073) + PR 2 (content-addressed image cache, #1074). **PR 3 — the mixin API
 (Workstream C)** is **merged** (#1075). **PR 4 — the `style/` package split
-(Workstream G)** is **merged** (#1076; pure move, see "PR 4" below). Next
-actionable slice is the **style-construction toolkit (Workstream I)**.
+(Workstream G)** is **merged** (#1076; pure move, see "PR 4" below). The
+**style-construction toolkit (Workstream I)** design pass is **done** (see
+"Workstream I" below); next actionable slice is **PR 5** — implementing it.
 
 ### Merged into `2.0`
 - **#1068** — Tier-0 cleanup:
@@ -228,13 +230,89 @@ Workstream I toolkit is a separate follow-on PR. Merged into `2.0` (was
   force-evaluation sweep. **Reuse it for E/D code moves.** Details in the design
   doc's "Implementation — DONE" section.
 
-## Next: Workstream I (style-construction toolkit), then E + D
+## PR 5 — IMPLEMENTED (2026-06-25, on working tree; not yet merged)
 
-The `style/` package now has a stable home for the **public** `image_asset` /
-`layout()` toolkit (Workstream I), which wraps PR 2's `_get_or_create_image`
-chokepoint and lands in `style/assets.py` + `style/layout.py` — its own design
-pass (new public surface). Then the theme/anchor model (E) + bootstyle canonical
-grammar (D), carrying the `_compat` adapters.
+Workstream I Tier-1 toolkit, per `development/2_0_toolkit_design.md`. Suggested
+branch `feat/2.0-pr5-toolkit` (cut against `2.0`). Suite: **75 passed** (was 61;
++14 in `tests/test_toolkit.py`). Headlines:
+
+- **New `style/assets.py`** — `Assets(style)` facade over PR 2's
+  `Style._get_or_create_image`. Recipes `circle`/`rect`/`rounded_rect` + the
+  `image(size, draw_fn, *key_parts)` escape hatch. The cache key is *derived
+  from the render inputs* (resolved hex + snapped size + geometry), so it cannot
+  drift from the pixels — the hazard PR 2's purity audit managed by hand. Ports
+  bootstack's snap-at-the-source pipeline: even-pixel-snap the size, adaptive
+  oversample (3×/2×/1× by size), LANCZOS + `UnsharpMask`. No public
+  `oversample`/`inset` knobs. `rect` is solid-fill (no AA, no snap → keeps exact
+  size, e.g. the 40×5 scale track).
+- **New `style/layout.py`** — `El`/`layout` (lowers an `El` tree to ttk's nested
+  `(name, opts)` form; children via constructor kwarg, not bootstack's fluent
+  positional parenting), `image_element` (named, validated state→image map),
+  `statespec`/`state_map` (validate the `!neg`/space-AND grammar against
+  `TTK_STATES` — the Workstream D loud-failure seam; keep the token set here),
+  `StyleName` (absorbs the `DEFAULT/""`→PRIMARY, `f"{color}.{STYLE}"`, and
+  `.TS→.S` element-name dance).
+- **Acceptance test met**: `create_scale_assets`/`create_scale_style` and
+  `create_radiobutton_assets`/`create_radiobutton_style` migrated onto the
+  toolkit — shorter and clearer (radio style 69→29 lines incl. docstring; the
+  30-line layout pyramid → 5 readable lines). Behavior-preserved: layouts query
+  identical to the originals (`expand`=`'1'`, `sticky`=`'nswe'`, same element
+  names + radio pyramid, same `foreground`/disabled map). The migrated radio
+  keeps the original `sticky=""` on indicator/focus (the design's example
+  omitted it; kept for behavior-exactness).
+- **Public surface** re-exported from `style/__init__.py` *and* top-level
+  `ttkbootstrap` (`Assets`, `El`, `layout`, `image_element`, `statespec`,
+  `state_map`, `StyleName`); `import ttkbootstrap` stays warning-free.
+- **`test_image_cache.py` helper** updated: the scale thumb's key tag moved from
+  `"scale.thumb"` to the recipe's `("circle", fill, size, None, 0)`; assertions
+  unchanged (still color-at-pixel, robust to the snapped-pipeline AA change).
+- **Gates re-run**: standalone-import cycle guard (assets/layout import alone;
+  they're leaves — assets→PIL, layout→constants, no engine edge) and the PEP 649
+  annotation force-evaluation sweep (3.14) over the two new modules + migrated
+  builders — both clean.
+- **Remaining before merge**: a spot visual diff on scale/radio/check to confirm
+  the snapped pipeline reads equal-or-better (sharper/DPI-stable, not color
+  drift) — can't run a GUI headless here. Then branch + PR against `2.0`.
+- **Deferred (out of PR 5 scope)**: migrating the *remaining* ~25 asset / ~25
+  layout sites onto the toolkit (mechanical, same shapes repeated) — design doc
+  step 4, a fast-follow. Tier 2 (`state_colors` from ramp steps; composite
+  recipes) waits on Workstream E.
+
+## Workstream I — DESIGN PASS DONE (2026-06-25), implementation done (see "PR 5")
+
+Design pass held (per the hard rule — new public surface, like the engine/split
+got one). Full design: **`development/2_0_toolkit_design.md`**. The next session
+**implements PR 5 from that doc**; do not exceed its scope without revisiting it.
+
+Tier-1 toolkit lands in **`style/assets.py`** (`Assets` facade: `circle`/`rect`/
+`rounded_rect` shape recipes + an `image(size, draw_fn, *key_parts)` escape hatch,
+all wrapping PR 2's `_get_or_create_image`) + **`style/layout.py`** (`layout()`/
+`El`, `image_element`, `statespec`/`state_map`, `StyleName`). Re-exported from
+`style/__init__.py` and top-level `ttkbootstrap` (public custom-style API).
+
+Decisions locked this session:
+- **PR scope = one PR** (assets + layout together; the acceptance test spans both).
+- **The key is derived from the recipe, never hand-written** — kills the
+  hand-built-key purity hazard that PR 2's whole audit existed to manage.
+- **Fidelity = adopt bootstack's snap-at-the-source pipeline** (not the earlier
+  (A)/(B) drift tradeoff). Per user steer, mined `bootstack/src` and ported four
+  mechanisms into `Assets`: round the DPI factor; **even-pixel-snap** the final
+  size before keying/rendering (kills fractional-DPI LANCZOS blur); **adaptive
+  oversample** (3×/2×/1× by size) + snap draw origin to oversample multiples;
+  LANCZOS + `UnsharpMask`. Result is *crisper, DPI-stable* assets, not color drift
+  → PR 2's color-at-pixel purity tests still pass. No public `oversample`/`inset`
+  knobs. (bootstack refs in the design doc's fidelity section.)
+- **`El`/`image_element` mirror bootstack's `Element.spec()`/`ElementImage.build()`**
+  (same author, keep models in sync), with two deliberate divergences: constructor
+  `children=[...]` (not fluent positional parenting) and validating `statespec`
+  (the Workstream D loud-failure seam).
+
+Acceptance test pre-validated in the doc: `create_scale_assets` ~64→~22 lines,
+`create_radiobutton_style` ~67→~18, both clearer. Carry the **PEP 649 annotation
+force-evaluation sweep** into the new modules + migrated builders (3.14 gotcha).
+
+Then E (theme/anchor model) + D (bootstyle canonical grammar), carrying the
+`_compat` adapters. Tier-2 toolkit (`state_colors` from ramp steps) follows E.
 
 ## Open decisions (from the plan)
 - ~~Multi-root~~ — **LOCKED**: enforce single-root with a clear `RuntimeError`.
