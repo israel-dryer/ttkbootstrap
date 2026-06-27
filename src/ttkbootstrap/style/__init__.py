@@ -28,6 +28,7 @@ from ttkbootstrap.style.layout import (
     state_map,
     StyleName,
 )
+from ttkbootstrap.style.icons import Icon, icon_element, IconRenderer
 
 __all__ = [
     "Colors",
@@ -50,4 +51,8 @@ __all__ = [
     "statespec",
     "state_map",
     "StyleName",
+    # Icon-rendered assets (Workstream I, Tier 1.5)
+    "Icon",
+    "icon_element",
+    "IconRenderer",
 ]

@@ -121,6 +121,27 @@ class Assets:
         return self.style._get_or_create_image(
             key, lambda: ImageTk.PhotoImage(Image.new("RGB", size, fill)))
 
+    def icon(self, name, size, color):
+        """Render a Bootstrap Icons glyph as a cached widget asset.
+
+        `size` is the final (DPI-scaled) pixel size; `color` is a resolved color
+        string. Returns the Tcl image name (the same contract as the shape
+        recipes). The key is `("icon", name, snapped_size, color)` -- theme
+        -independent by construction (the resolved color is *in* the key), so two
+        themes that resolve a glyph to the same color share one image.
+
+        `IconRenderer` is imported lazily here so `assets.py` keeps no module
+        -level edge to `icons.py` (which imports this module), and the font is
+        never read at import time.
+        """
+        from ttkbootstrap.style.icons import IconRenderer
+
+        size = _wh(size)
+        size = (_even(size[0]), _even(size[1]))
+        key = ("icon", name, size, color)
+        return self.style._get_or_create_image(
+            key, lambda: ImageTk.PhotoImage(IconRenderer.render(name, size, color)))
+
     def image(self, size, draw_fn, *key_parts):
         """Escape hatch for custom composite draws (concentric circles, glyphs).
 

@@ -193,9 +193,9 @@ default).
 | | disabled on | `check-square-fill` | `disabled` |
 | | disabled alt | `dash-square-fill` | `disabled` |
 | **radiobutton** | off (`!selected`) | `circle` | `fg-muted` |
-| | on (`selected`) | `record-circle` | `accent` |
+| | on (`selected`) | `record-circle-fill` | `accent` |
 | | disabled off | `circle` | `disabled` |
-| | disabled on | `record-circle` | `disabled` |
+| | disabled on | `record-circle-fill` | `disabled` |
 | **switch (round/square toggle)** | off (`!selected`) | `toggle-off` | `fg-muted` |
 | | on (`selected`) | `toggle-on` | `accent` |
 | | disabled off | `toggle-off` | `disabled` |
@@ -321,6 +321,59 @@ a focused, reviewable visual diff.
   theme round-trip — the suite asserts color-at-pixel, not appearance. This must
   be a human eyeball before 6b merges.
 
+## PR 6a — IMPLEMENTED (icon engine, no builder change)
+
+Landed on `feat/2.0-pr6a-icon-engine`; suite **89 passed** (was 75; +14 in
+`tests/widget_styles/test_icons.py`). Engine only — no builders touched, nothing
+visual in the library changed yet. Independently diff-reviewed (no leaks; cache /
+leaf-layering invariants hold).
+
+- **Vendored** `src/ttkbootstrap/assets/icons/` (`bootstrap.ttf` + `glyphmap.json`
+  + `icon_metrics.json`) under MIT (LICENSE + README), the regen tool at
+  `tools/generate_icon_metrics.py`, and `assets/icons/*` added to pyproject
+  package-data (the `assets/*` glob does not recurse).
+- **`style/icons.py`** (`IconRenderer` + `Icon` + `icon_element`): faithful port
+  of bootstack's metrics fit-and-center, with ttkbootstrap-specific tuning below.
+  Leaf module (PIL + stdlib + the two leaf toolkit modules; `Style` reached only
+  function-locally). Unknown glyph **raises** (bootstack returns transparent).
+- **`Assets.icon`** routes through `Style._get_or_create_image` with key
+  `("icon", name, even-snapped size, resolved color)`. It takes an *already
+  -resolved* color (like `circle`/`rect`); keyword resolution lives in
+  `Icon`/`icon_element` (see the corrected composition example above).
+
+### Render tuning — RESOLVED via the live visual spot-check (light↔dark)
+
+The headless "one gap" spot-check was done on a Retina display, iterating on the
+glyph crispness:
+
+- **Supersample (icon-specific): 6× for <32 px, 3× for 32–63, 1× for ≥64** — richer
+  than bootstack's 3/2/1 (and the geometric recipes', which are unchanged). The
+  factor scales *inversely* with the size tier, so the supersampled canvas stays
+  bounded (≤ ~186 px) and 6× costs the same as a 1× render of a 96 px icon
+  (~0.15 ms warm; all images cache, so theme switches are free).
+- **`UnsharpMask(0.5, 50, 0)` — gentle.** Curve smoothness comes from the
+  supersample, *not* the sharpen; a hard sharpen (we tried 1.0/120) stair-stepped
+  the thin rings. So: high supersample + light sharpen = smooth curves, defined
+  straight strokes. (Tracked through 0.6/60 → 1.0/120 → 0.8/90 → **0.5/50 @ 6×**.)
+- **Radio "on" → `record-circle-fill`** (updated in the table above), not the
+  outline `record-circle`: it matches the `check-square-fill` knockout pattern and
+  renders crisp (solid) instead of relying on a thin ring.
+
+### Finding for PR 6b — the public custom-style path needs registration
+
+A hand-built custom style applied to a ttkbootstrap widget via `style="X.TWidget"`
+is **silently re-resolved as a bootstyle string** (→ base `TWidget`) unless the
+style name was registered with `Style._register_ttkstyle(...)` —
+`BootMixin.__init__` only honors `style=` when `style_exists_in_theme()` is True,
+which keys on `_theme_styles` + `_style_registry` (both populated by
+`_register_ttkstyle`). The real builders already call it; the design's public
+mock #2 (`ttk.Checkbutton(app, style="Favorite.TCheckbutton")`) and the
+`examples/icon_preview.py` demo did **not**, and silently fell back to the plain
+indicator. **PR 6b / Tier-2 must give the public toolkit a non-private way to
+register a hand-built style** (e.g. have the terminal `layout()` register the
+style name, or add a public `register_style`), and the doc's mock #2 needs that
+step. (`_register_ttkstyle` is private; users shouldn't need it.)
+
 ## Open decisions for sign-off
 1. ~~Public surface~~ — **RESOLVED:** `Icon` atom + `icon_element` state-map sugar
    (see "Public surface" above).
@@ -333,7 +386,8 @@ a focused, reviewable visual diff.
    sizegrip glyph choice.
 
 Everything is locked except the two minor glyph picks (5), which can be settled
-during PR 6b against the visual spot-check. **Ready for PR 6a.**
+during PR 6b against the visual spot-check. **PR 6a is implemented (see the "PR 6a
+— IMPLEMENTED" section); next is PR 6b.**
 
 ## API feel — mock usage (define before implementing)
 
@@ -400,11 +454,15 @@ from ttkbootstrap.style import Assets, image_element
 
 a = Assets(style)
 image_element(style, "MyStyle.indicator",
-    default=a.icon("check-circle-fill", 20, "success"),
+    default=a.icon("check-circle-fill", 20, "#28a745"),  # resolved hex
     states={"!selected": a.circle("#ccc", 20)})   # icon + geometric recipe, same call
 ```
 
-This is the proof that `icon_element` is *sugar*, not a silo: anything it does,
-you can also assemble by hand from `a.icon` + `image_element`.
+`Assets.icon` takes an **already-resolved** color (a hex), exactly like the
+sibling recipes `circle(fill, …)`/`rect(fill, …)` — the bootstyle-keyword
+resolution lives one layer up, in the public `Icon`/`icon_element` (use
+`Icon("check-circle-fill", 20, "success")` for the keyword form). This is the
+proof that `icon_element` is *sugar*, not a silo: anything it does, you can also
+assemble by hand from `a.icon` + `image_element`.
 
-The surface ergonomics are now locked (a/b/c above) — ready for PR 6a.
+The surface ergonomics are now locked (a/b/c above) — implemented in PR 6a.
