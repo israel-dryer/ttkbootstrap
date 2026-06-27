@@ -60,8 +60,18 @@ snapped/oversampled render pipeline) + `style/layout.py` (`El`/`layout`,
 `image_element`, `statespec`/`state_map`, `StyleName`), re-exported from
 `ttkbootstrap.style` and top-level `ttkbootstrap`. The scale + radiobutton
 builders are migrated onto it as the acceptance proof. Design pass:
-`development/2_0_toolkit_design.md`. Next: migrate the remaining ~50 asset/layout
-sites (mechanical fast-follow) → theme/anchor (E) + bootstyle canonical (D).
+`development/2_0_toolkit_design.md`. **PR 6** — the asset/layout fast-follow
+migration — was implemented on `feat/2.0-pr6-toolkit-migration` but is **HELD /
+superseded**: its migrated hand-drawn glyphs (checkmark, calendar, arrows,
+sizegrip) looked poor, so 2.0 will instead **render glyph-shaped assets from a
+vendored Bootstrap Icons font** (metrics-based fit ported from bootstack; reuses
+the PR-5 pipeline + PR-2 cache; no new pip dep). The icon **design pass is DONE
+and API-locked** in `development/2_0_icons_design.md` (public `Icon` atom +
+style-level `icon_element` state→icon sugar; flat single-glyph aesthetic).
+**Next: PR 6a** — the icon engine (`style/icons.py` + `Assets.icon` + `Icon`/
+`icon_element`, vendored assets, tests; no builder changes) — then **PR 6b**
+(migrate glyph builders + land the held branch's geometric/`layout` cleanup; gate
+on a human visual spot-check), then theme/anchor (E) + bootstyle canonical (D).
 Proceed PR by PR per the design doc; don't exceed a PR's scope without revisiting it.
 
 ## Repository layout

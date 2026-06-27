@@ -3,9 +3,11 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-06-25 (Workstream I — style-construction toolkit — **PR 5
-merged** into `2.0` (#1077) per `development/2_0_toolkit_design.md`; suite
-**75 passed**)._
+_Last updated: 2026-06-27 (Workstream I — **icon-rendered assets design pass
+DONE**, `development/2_0_icons_design.md`, API fully locked. The PR-6 toolkit
+fast-follow was implemented on `feat/2.0-pr6-toolkit-migration` but is **HELD /
+superseded** by the icon work — see "PR 6 — HELD" below. Suite still **75
+passed**.)_
 
 ## Where we are
 
@@ -17,9 +19,52 @@ The engine keystone (Workstream A) is **complete and merged**: PR 1 (repaint,
 (Workstream C)** is **merged** (#1075). **PR 4 — the `style/` package split
 (Workstream G)** is **merged** (#1076; pure move, see "PR 4" below). **PR 5 —
 the style-construction toolkit (Workstream I, Tier 1)** is **merged** (#1077; see
-"PR 5" below). Next: migrate the remaining ~50 asset/layout sites onto the
-toolkit (fast-follow, mechanical), then Workstream E (theme/anchor model) + D
-(bootstyle canonical grammar); Tier-2 toolkit follows E.
+"PR 5" below).
+
+**Next actionable slice → PR 6a (icon engine).** The asset/layout fast-follow
+took a turn: the migrated hand-drawn glyphs (checkmark, calendar, arrows,
+sizegrip) looked poor, so 2.0 will **render glyph-shaped assets from a vendored
+Bootstrap Icons font** instead. Design pass is DONE and fully locked in
+**`development/2_0_icons_design.md`**; see "PR 6 — HELD + icon pivot" below for
+the state and the PR 6a/6b plan. After icons: Workstream E (theme/anchor model) +
+D (bootstyle canonical grammar); Tier-2 toolkit follows E.
+
+## PR 6 — HELD + icon pivot (2026-06-27)
+
+The fast-follow toolkit migration was implemented on
+`feat/2.0-pr6-toolkit-migration` (9 commits, suite 75 passed): geometric recipes
+(`circle`/`rect`/`rounded_rect`), all 21 `layout()` pyramids, `image_element`/
+`state_map` conversions, and `image()`-escape-hatch glyph draws for check/radio/
+date/arrows/sizegrip/stripes. **It is NOT merged and is HELD** — the hand-drawn
+*glyph* draws looked poor, prompting the icon-font pivot.
+
+**Decision (LOCKED with user):** render glyph-shaped widget assets from a
+**vendored Bootstrap Icons font** (`bootstrap.ttf` + `glyphmap.json` +
+`icon_metrics.json` from `bootstack/src/bootstack/assets/icons/`, ~610 KB, MIT,
+no new pip dep), porting bootstack's metrics-based fit-and-center renderer (the
+alignment fix = precomputed em-fraction ink bbox, kills the `getbbox` skew /
+`font_offset` fudge) and reusing the PR-5 `style/assets.py` snap/oversample/
+UnsharpMask pipeline + the PR-2 `_get_or_create_image` cache. Full design +
+locked API + acceptance proof: **`development/2_0_icons_design.md`**. Memory:
+`project_2_0_icon_assets`.
+
+Locked headlines: flat single-glyph indicator aesthetic; public surface =
+`Icon(name,size,color)` atom + style-level `icon_element(...)` state→icon sugar
+(spec grammar adopted from ttkbootstrap-icons' `StatefulIconMixin`, but **not**
+its per-widget theme-follow delivery — that fights the no-`Publisher` engine);
+switch = one look; arrows = chevron. Geometric assets (tracks/troughs, stripes,
+plain scale thumb) stay on the recipes.
+
+**PR plan (replaces the held PR 6):**
+- **PR 6a — icon engine (no behavior change):** vendor the 3 assets + regen tool
+  + license; `style/icons.py` (`IconRenderer`); `Assets.icon`; public `Icon` +
+  `icon_element`; re-exports; tests. Touches **no** builders → suite stays green.
+  **← next actionable.**
+- **PR 6b — migrate glyph builders + land the kept geometric/layout cleanup**
+  (cherry-pick the geometric/`layout`/`image_element` commits from the held
+  branch; drop the hand-drawn glyph commits). Gate the merge on a **human visual
+  spot-check** (light↔dark) — the headless suite asserts color-at-pixel, not
+  appearance.
 
 ### Merged into `2.0`
 - **#1068** — Tier-0 cleanup:
