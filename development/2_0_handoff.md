@@ -25,12 +25,13 @@ the style-construction toolkit (Workstream I, Tier 1)** is **merged** (#1077; se
 "PR 5" below). **PR 6a — the icon engine (Workstream I, Tier 1.5)** is **merged**
 (#1079; see "PR 6a — MERGED" below).
 
-**Current slice → PR 6b is CODE-COMPLETE on `feat/2.0-pr6b-glyph-builders`
-(NOT merged).** The merge gate is the **human visual spot-check** (light↔dark) —
-run `python -m ttkbootstrap` (the widget gallery has a theme dropdown) and eyeball
-the migrated indicators; settle the open glyph picks (below) against it. Once it
-reads well, merge to `2.0`. After 6b: Workstream E (theme/anchor model) + D
-(bootstyle canonical grammar); Tier-2 toolkit follows E.
+**Current slice → PR 6b is merge-ready; a PR is open against `2.0`** (branch
+`feat/2.0-pr6b-glyph-builders`). Two human spot-check rounds done (light↔dark via
+`python -m ttkbootstrap`); the bones (icon engine wired into every glyph builder +
+geometric/layout cleanup + public registration path) are in. Remaining visual
+polish is deferred to a **follow-up PR** (see "FOLLOW-UP" below). After 6b:
+Workstream E (theme/anchor model) + D (bootstyle canonical grammar); Tier-2
+toolkit follows E.
 
 ## PR 6b — CODE-COMPLETE (2026-06-28, `feat/2.0-pr6b-glyph-builders`, NOT merged)
 
@@ -81,16 +82,16 @@ combobox/spinbox arrows switched from outline `chevron-*` to solid `caret-*-fill
 recolors on hover, solid doesn't); **datepicker header** `◀/▶` text →
 `caret-left/right-fill` images in the bar's contrasting fg. Suite 92, warning-free.
 
-### ⚠️ OPEN FOLLOW-UP — visual polish (deferred 2026-06-28, user)
-PR 6b is functionally complete and good enough to continue, **but the user wants
-another visual-polish pass before final merge — NOT yet merge-ready.** Likely
-candidates (confirm against a fresh `python -m ttkbootstrap` + a date picker):
-menubutton caret **size/right-padding** (currently the `[13,11]` caret + 10px pad,
-up from the tiny native `arrowsize=4` — may read large); datepicker arrow size
-(14px) next to the bold title; toggle final sizing; any remaining glyph picks
-(`grip-horizontal` sizegrip, LIGHT-on-light readability). Treat this as the
-remaining gate item: do the polish pass, re-spot-check, *then* update this handoff
-to "ready to merge" and merge to `2.0`.
+### FOLLOW-UP (deferred to a separate PR) — visual polish
+**Decision (user, 2026-06-28): PR 6b's job was the *bones* — the icon engine
+wired into every glyph builder + the geometric/layout cleanup + the public
+registration path. That is done, so PR 6b is merge-ready and a PR is open against
+`2.0`. The remaining work is value/asset tweaking, deferred to a follow-up PR.**
+Polish candidates (eyeball a fresh `python -m ttkbootstrap` + a date picker):
+menubutton caret **size/right-padding** (currently `[13,11]` caret + 10px pad, up
+from the tiny native `arrowsize=4` — may read large); datepicker arrow size (14px)
+next to the bold title; toggle final sizing; remaining glyph picks
+(`grip-horizontal` sizegrip, LIGHT-on-light readability).
 
 ## PR 6a — MERGED (2026-06-27, #1079, Workstream I Tier 1.5 — icon engine)
 
