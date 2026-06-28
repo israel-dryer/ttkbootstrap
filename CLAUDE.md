@@ -71,14 +71,18 @@ pipeline + PR-2 cache; no new pip dep), per the API-locked design in
 from `ttkbootstrap.style` and top-level `ttkbootstrap`; no builder changes, suite
 89 passed. Render tuning (icon-specific 6×/3×/1× supersample + gentle 0.5/50
 sharpen) and `record-circle-fill` for radio-on were settled via a live visual
-spot-check; `examples/icon_preview.py` is the tool. **Next: PR 6b** — migrate the
-glyph builders (check/radio/switch/date/arrows/sizegrip) onto `a.icon`/
-`icon_element` + land the held branch's geometric/`layout` cleanup; **gate on a
-human visual spot-check** and **add a public style-registration path** (a
-hand-built style applied via `style=` is silently ignored unless registered with
-the private `_register_ttkstyle` — the PR-6a review finding). Then theme/anchor
-(E) + bootstyle canonical (D). Proceed PR by PR per the design doc; don't exceed a
-PR's scope without revisiting it.
+spot-check; `examples/icon_preview.py` is the tool. **PR 6b** — the glyph-builder
+migration — is **merged** into `2.0` (#1080): check/radio/toggle×2/date/arrows/
+sizegrip wired onto `a.icon`/`icon_element` (six `create_*_assets` glyph methods
+deleted), the held branch's geometric/`layout` cleanup landed, and the public
+style-registration path added (`register_style` + `layout()` auto-registers — the
+PR-6a finding). Two light↔dark spot-check rounds settled the arrows on solid
+`caret-*-fill` (incl. menubutton + datepicker header), toggle sizing, and
+`calendar3`; suite 92. That completes the Workstream I icon work. **Next:** an
+optional small visual-polish PR (value/asset tweaks — see
+`development/2_0_handoff.md` "FOLLOW-UP"), then theme/anchor (E) + bootstyle
+canonical (D), each with a design pass first. Proceed PR by PR per the design doc;
+don't exceed a PR's scope without revisiting it.
 
 ## Repository layout
 

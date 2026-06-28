@@ -3,19 +3,17 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-06-28 (Workstream I — **PR 6b CODE-COMPLETE on
-`feat/2.0-pr6b-glyph-builders`, NOT merged — pending a human visual
-spot-check**. Glyph builders (check/radio/toggle×2/date/arrows/sizegrip) migrated
-onto `a.icon`/`icon_element`; the held branch's geometric/layout cleanup
-re-applied; the PR-6a public style-registration finding fixed
-(`register_style` + `layout()` auto-registers). Suite **92 passed**,
-warning-free import, cycle guard + PEP 649 sweep clean. See "PR 6b —
-CODE-COMPLETE" below for the spot-check checklist + open glyph picks.)_
+_Last updated: 2026-06-28 (Workstream I — **PR 6b MERGED** (#1080): glyph builders
+(check/radio/toggle×2/date/arrows/sizegrip) wired onto `a.icon`/`icon_element`;
+held-branch geometric/layout cleanup; public `register_style` (PR-6a finding
+fixed); two light↔dark spot-check rounds (caret-fill arrows incl. menubutton +
+datepicker). Suite **92 passed**. **Visual polish deferred to a follow-up PR** —
+see "FOLLOW-UP" below. Next: the polish follow-up and/or Workstream E + D.)_
 
 ## Where we are
 
 Integration branch: **`2.0`** (cut all 2.0 PRs against it, not `master`).
-Suite: `python -m pytest -q` → **89 passed**, headless, order-independent.
+Suite: `python -m pytest -q` → **92 passed**, headless, order-independent.
 
 The engine keystone (Workstream A) is **complete and merged**: PR 1 (repaint,
 #1073) + PR 2 (content-addressed image cache, #1074). **PR 3 — the mixin API
@@ -25,15 +23,16 @@ the style-construction toolkit (Workstream I, Tier 1)** is **merged** (#1077; se
 "PR 5" below). **PR 6a — the icon engine (Workstream I, Tier 1.5)** is **merged**
 (#1079; see "PR 6a — MERGED" below).
 
-**Current slice → PR 6b is merge-ready; a PR is open against `2.0`** (branch
-`feat/2.0-pr6b-glyph-builders`). Two human spot-check rounds done (light↔dark via
-`python -m ttkbootstrap`); the bones (icon engine wired into every glyph builder +
-geometric/layout cleanup + public registration path) are in. Remaining visual
-polish is deferred to a **follow-up PR** (see "FOLLOW-UP" below). After 6b:
-Workstream E (theme/anchor model) + D (bootstyle canonical grammar); Tier-2
-toolkit follows E.
+**PR 6b is MERGED (#1080)** — the icon engine is wired into every glyph builder,
+the geometric/layout cleanup landed, and the public registration path is in. That
+completes the Workstream I icon work for 2.0.
 
-## PR 6b — CODE-COMPLETE (2026-06-28, `feat/2.0-pr6b-glyph-builders`, NOT merged)
+**Next actionable → either the deferred visual-polish PR (small, value/asset
+tweaks; see "FOLLOW-UP" below) or Workstream E (theme/anchor model) + D (bootstyle
+canonical grammar).** Tier-2 toolkit (`state_colors` from ramp steps) follows E.
+Both E and D want a design pass first per the hard rule.
+
+## PR 6b — MERGED (2026-06-28, #1080, Workstream I — glyph builders on icons)
 
 Built hybrid: Opus settled the public API + the held-branch keep/drop split and
 implemented the registration path; a Sonnet agent did the mechanical glyph/layout
