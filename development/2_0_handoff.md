@@ -72,6 +72,26 @@ import, standalone cycle guard + PEP 649 sweep clean.
   separator + striped-progressbar tile alignment; round vs square scrollbar
   thumb shape.
 
+### Spot-check round 2 — DONE (2026-06-28, commits `a8a5f5d`, `9590798`)
+From the user's first visual pass: toggle sized up to the glyph's true ~1.6:1
+aspect (`[24,15]→[32,20]`, element width 28→36); date button → `calendar3`;
+combobox/spinbox arrows switched from outline `chevron-*` to solid `caret-*-fill`
++ right `-padding(6)`; **menubutton** (solid + outline) native clam triangle →
+`caret-down-fill` image indicator (new `_build_menubutton_arrow` helper; outline
+recolors on hover, solid doesn't); **datepicker header** `◀/▶` text →
+`caret-left/right-fill` images in the bar's contrasting fg. Suite 92, warning-free.
+
+### ⚠️ OPEN FOLLOW-UP — visual polish (deferred 2026-06-28, user)
+PR 6b is functionally complete and good enough to continue, **but the user wants
+another visual-polish pass before final merge — NOT yet merge-ready.** Likely
+candidates (confirm against a fresh `python -m ttkbootstrap` + a date picker):
+menubutton caret **size/right-padding** (currently the `[13,11]` caret + 10px pad,
+up from the tiny native `arrowsize=4` — may read large); datepicker arrow size
+(14px) next to the bold title; toggle final sizing; any remaining glyph picks
+(`grip-horizontal` sizegrip, LIGHT-on-light readability). Treat this as the
+remaining gate item: do the polish pass, re-spot-check, *then* update this handoff
+to "ready to merge" and merge to `2.0`.
+
 ## PR 6a — MERGED (2026-06-27, #1079, Workstream I Tier 1.5 — icon engine)
 
 Merged into `2.0` (was `feat/2.0-pr6a-icon-engine`). Engine only — touches **no**
