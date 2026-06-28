@@ -2381,9 +2381,6 @@ class StyleBuilderTTK:
             bordercolor=background,
             darkcolor=background,
             lightcolor=background,
-            arrowsize=self.scale_size(4),
-            arrowcolor=foreground,
-            arrowpadding=(0, 0, 15, 0),
             relief=tk.RAISED,
             focusthickness=0,
             focuscolor=self.colors.selectfg,
@@ -2391,7 +2388,6 @@ class StyleBuilderTTK:
         )
         self.style.map(
             ttkstyle,
-            arrowcolor=[("disabled", disabled_fg)],
             foreground=[("disabled", disabled_fg)],
             background=[
                 ("disabled", disabled_bg),
@@ -2414,8 +2410,36 @@ class StyleBuilderTTK:
                 ("hover !disabled", hover),
             ],
         )
+        # caret-down-fill indicator (replaces the native clam triangle); the
+        # solid menubutton arrow keeps one color (only the background changes on
+        # hover), so just a normal + disabled image.
+        self._build_menubutton_arrow(ttkstyle, foreground, disabled_fg, foreground)
         # register ttkstyle
         self.style._register_ttkstyle(ttkstyle)
+
+    def _build_menubutton_arrow(self, ttkstyle, normal, disabled, active):
+        """Build the caret-down indicator element + layout for a Menubutton style.
+
+        Replaces ttk's native `Menubutton.indicator` triangle with a Bootstrap
+        `caret-down-fill` image element so the menubutton arrow matches the
+        caret-fill arrows used elsewhere. `normal`/`disabled`/`active` are the
+        arrow colors per state (`active` == `normal` when the arrow does not
+        recolor on hover/press).
+        """
+        arrows = self.create_simple_arrow_assets(normal, disabled, active)
+        down, down_disabled, down_active = arrows[0][1], arrows[1][1], arrows[2][1]
+        image_element(
+            self.style, f"{ttkstyle}.indicator", default=down,
+            states={"disabled": down_disabled,
+                    "pressed !disabled": down_active,
+                    "hover !disabled": down_active},
+            sticky="", padding=(0, 0, self.scale_size(10), 0))
+        layout(self.style, ttkstyle,
+            El("Menubutton.border", sticky=NSEW, children=[
+                El("Menubutton.focus", sticky=NSEW, children=[
+                    El(f"{ttkstyle}.indicator", side=tk.RIGHT, sticky=""),
+                    El("Menubutton.padding", sticky=tk.EW, children=[
+                        El("Menubutton.label", side=LEFT, sticky="")])])]))
 
     def create_outline_menubutton_style(self, colorname=DEFAULT):
         """Create an outline button style for the ttk.Menubutton widget
@@ -2453,9 +2477,6 @@ class StyleBuilderTTK:
             focusthickness=0,
             focuscolor=foreground,
             padding=(10, 5),
-            arrowcolor=foreground,
-            arrowpadding=(0, 0, 15, 0),
-            arrowsize=self.scale_size(4),
         )
         self.style.map(
             ttkstyle,
@@ -2481,12 +2502,10 @@ class StyleBuilderTTK:
                 ("pressed !disabled", pressed),
                 ("hover !disabled", hover),
             ],
-            arrowcolor=[
-                ("disabled", disabled_fg),
-                ("pressed", foreground_pressed),
-                ("hover", foreground_pressed),
-            ],
         )
+        # caret-down-fill indicator; the outline arrow recolors on hover/press
+        # (foreground -> the contrasting fill color), so pass that as `active`.
+        self._build_menubutton_arrow(ttkstyle, foreground, disabled_fg, foreground_pressed)
         # register ttkstyle
         self.style._register_ttkstyle(ttkstyle)
 

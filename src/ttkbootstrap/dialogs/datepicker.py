@@ -140,6 +140,11 @@ class DatePickerDialog:
         self.title.configure(bootstyle=f"{self.bootstyle}-inverse")
         self.prev_period.configure(style=f"Chevron.{self.bootstyle}.TButton")
         self.next_period.configure(style=f"Chevron.{self.bootstyle}.TButton")
+        # caret-fill nav arrows, in the title bar's contrasting foreground color
+        # (matches the filled-triangle arrows used elsewhere in the app)
+        arrow_color = ttk.Style.get_instance().colors.get_foreground(self.bootstyle)
+        self.prev_period.configure(image=ttk.Icon("caret-left-fill", 14, arrow_color))
+        self.next_period.configure(image=ttk.Icon("caret-right-fill", 14, arrow_color))
 
     def _draw_calendar(self) -> None:
         self._update_widget_bootstyle()
@@ -189,7 +194,7 @@ class DatePickerDialog:
     def _draw_titlebar(self) -> None:
         """Draw the calendar title bar and navigation controls."""
         # create and pack the title and action buttons
-        self.prev_period = ttk.Button(master=self.frm_title, text="◀", command=self.on_prev_month)
+        self.prev_period = ttk.Button(master=self.frm_title, command=self.on_prev_month)
         self.prev_period.pack(side=LEFT)
 
         self.title = ttk.Label(
@@ -200,7 +205,7 @@ class DatePickerDialog:
         )
         self.title.pack(side=LEFT, fill=X, expand=YES)
 
-        self.next_period = ttk.Button(master=self.frm_title, text="▶", command=self.on_next_month)
+        self.next_period = ttk.Button(master=self.frm_title, command=self.on_next_month)
         self.next_period.pack(side=LEFT)
 
         # bind "year" callbacks to action buttons
