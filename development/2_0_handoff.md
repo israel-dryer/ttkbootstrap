@@ -3,11 +3,14 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-06-27 (Workstream I — **PR 6a, the icon engine, MERGED**
-(#1079): vendored Bootstrap Icons font + `style/icons.py` (`IconRenderer`) +
-`Assets.icon` + public `Icon`/`icon_element`. Engine-only, no builders touched.
-Suite **89 passed**. Render tuning + `record-circle-fill` settled via a live
-visual spot-check; see "PR 6a — MERGED" below. Next: PR 6b.)_
+_Last updated: 2026-06-28 (Workstream I — **PR 6b CODE-COMPLETE on
+`feat/2.0-pr6b-glyph-builders`, NOT merged — pending a human visual
+spot-check**. Glyph builders (check/radio/toggle×2/date/arrows/sizegrip) migrated
+onto `a.icon`/`icon_element`; the held branch's geometric/layout cleanup
+re-applied; the PR-6a public style-registration finding fixed
+(`register_style` + `layout()` auto-registers). Suite **92 passed**,
+warning-free import, cycle guard + PEP 649 sweep clean. See "PR 6b —
+CODE-COMPLETE" below for the spot-check checklist + open glyph picks.)_
 
 ## Where we are
 
@@ -22,13 +25,73 @@ the style-construction toolkit (Workstream I, Tier 1)** is **merged** (#1077; se
 "PR 5" below). **PR 6a — the icon engine (Workstream I, Tier 1.5)** is **merged**
 (#1079; see "PR 6a — MERGED" below).
 
-**Next actionable slice → PR 6b (migrate glyph builders + land the held
-geometric/layout cleanup).** This is the visible change: check/radio/switch/date/
-arrows/sizegrip onto `a.icon`/`icon_element`, plus the kept geometric/`layout`/
-`image_element` migrations from the held branch. **Gate the merge on a human
-visual spot-check** (light↔dark) and **add the public style-registration path**
-the PR-6a review surfaced (see below). After 6b: Workstream E (theme/anchor
-model) + D (bootstyle canonical grammar); Tier-2 toolkit follows E.
+**Current slice → PR 6b is merge-ready; a PR is open against `2.0`** (branch
+`feat/2.0-pr6b-glyph-builders`). Two human spot-check rounds done (light↔dark via
+`python -m ttkbootstrap`); the bones (icon engine wired into every glyph builder +
+geometric/layout cleanup + public registration path) are in. Remaining visual
+polish is deferred to a **follow-up PR** (see "FOLLOW-UP" below). After 6b:
+Workstream E (theme/anchor model) + D (bootstyle canonical grammar); Tier-2
+toolkit follows E.
+
+## PR 6b — CODE-COMPLETE (2026-06-28, `feat/2.0-pr6b-glyph-builders`, NOT merged)
+
+Built hybrid: Opus settled the public API + the held-branch keep/drop split and
+implemented the registration path; a Sonnet agent did the mechanical glyph/layout
+migration against the locked `development/2_0_icons_design.md`; Opus reviewed the
+diff. Three commits; suite **92 passed**, warning-free import, font not loaded at
+import, standalone cycle guard + PEP 649 sweep clean.
+
+- **`f282262` — public style-registration path** (the PR-6a finding). New
+  `register_style(style, ttkstyle)` in `style/layout.py`; **`layout()` now
+  auto-registers** the style it applies (defining a layout is what gives a style
+  its identity — mirrors ttk's own `style.layout`), so a toolkit-built style
+  whose terminal step is `layout()` resolves via `style="..."` with no extra
+  step. Re-exported from `ttkbootstrap.style` + top-level. +3 tests.
+- **`435ec23` — Part A: glyph builders → icons** (−715/+155). check/radio/
+  round-toggle/square-toggle/date/arrows/sizegrip migrated onto `icon_element`/
+  `a.icon` per the design's glyph+color tables; the six `create_*_assets` glyph
+  methods deleted; `ImageFont`/`Transpose` imports removed. Toggles are **one
+  look** (`toggle-on`/`toggle-off`; square is a visual alias). Radio on =
+  `record-circle-fill`. Existing state-color math + scaled sizes preserved.
+  **Deviation (correct):** element names use the full `{ttkstyle}.indicator`
+  prefix (not `sn.element`) so `icon_element`'s foreground lookup targets the
+  configured style — matches PR 5's radiobutton convention.
+- **`b63db19` — Part B: geometric/layout cleanup** (−353/+150). Separator,
+  progressbar (+stripes), scrollbars (round/square), combobox, floodgauge,
+  spinbox, treeview, calendar layouts re-applied onto `rect`/`rounded_rect`/
+  `image`/`image_element`/`layout`/`El`/`state_map` (re-applied fresh from the
+  held branch as reference — not cherry-picked; the file had drifted).
+
+- **Open glyph picks — settle on the spot-check:** `calendar-event` (date) vs
+  `calendar`; `grip-horizontal` (sizegrip) vs a corner-grip glyph; LIGHT-on-light
+  knockout readability (existing contrast logic preserved as a safety net);
+  toggle aspect ratio (rendered at `[24,15]`). Change a pick by editing the one
+  glyph name in the builder.
+- **Spot-check checklist:** check/radio/toggle indicators across all states
+  (esp. disabled = muted) on a light theme and a dark theme; combobox/spinbox/
+  scrollbar chevrons (normal/active/disabled); date button calendar; sizegrip;
+  separator + striped-progressbar tile alignment; round vs square scrollbar
+  thumb shape.
+
+### Spot-check round 2 — DONE (2026-06-28, commits `a8a5f5d`, `9590798`)
+From the user's first visual pass: toggle sized up to the glyph's true ~1.6:1
+aspect (`[24,15]→[32,20]`, element width 28→36); date button → `calendar3`;
+combobox/spinbox arrows switched from outline `chevron-*` to solid `caret-*-fill`
++ right `-padding(6)`; **menubutton** (solid + outline) native clam triangle →
+`caret-down-fill` image indicator (new `_build_menubutton_arrow` helper; outline
+recolors on hover, solid doesn't); **datepicker header** `◀/▶` text →
+`caret-left/right-fill` images in the bar's contrasting fg. Suite 92, warning-free.
+
+### FOLLOW-UP (deferred to a separate PR) — visual polish
+**Decision (user, 2026-06-28): PR 6b's job was the *bones* — the icon engine
+wired into every glyph builder + the geometric/layout cleanup + the public
+registration path. That is done, so PR 6b is merge-ready and a PR is open against
+`2.0`. The remaining work is value/asset tweaking, deferred to a follow-up PR.**
+Polish candidates (eyeball a fresh `python -m ttkbootstrap` + a date picker):
+menubutton caret **size/right-padding** (currently `[13,11]` caret + 10px pad, up
+from the tiny native `arrowsize=4` — may read large); datepicker arrow size (14px)
+next to the bold title; toggle final sizing; remaining glyph picks
+(`grip-horizontal` sizegrip, LIGHT-on-light readability).
 
 ## PR 6a — MERGED (2026-06-27, #1079, Workstream I Tier 1.5 — icon engine)
 

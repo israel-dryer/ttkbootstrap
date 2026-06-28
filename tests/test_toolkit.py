@@ -20,7 +20,8 @@ import pytest
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import PRIMARY
 from ttkbootstrap.style import (
-    Assets, El, layout, image_element, statespec, state_map, StyleName,
+    Assets, El, layout, register_style, image_element, statespec, state_map,
+    StyleName,
 )
 
 
@@ -165,3 +166,40 @@ def test_layout_applies_el_tree(root):
     root.update_idletasks()
     spec = root.style.layout("success.TRadiobutton")
     assert spec  # a non-empty, applied layout
+
+
+# --------------------------------------------------------------------------- #
+# Public style registration (the PR-6a finding: a hand-built style applied via
+# style="..." is silently re-resolved to its base unless registered)
+# --------------------------------------------------------------------------- #
+def test_register_style_marks_style_known(root):
+    style = root.style
+    name = "Custom.TButton"
+    assert not style.style_exists_in_theme(name)
+    register_style(style, name)
+    assert style.style_exists_in_theme(name)
+
+
+def test_layout_auto_registers(root):
+    # layout() is the terminal step of a hand-built style; it should register the
+    # name itself so style="..." resolves with no extra call.
+    style = root.style
+    name = "Auto.TButton"
+    assert not style.style_exists_in_theme(name)
+    layout(style, name, El("Button.padding", sticky="nsew", children=[
+        El("Button.label", sticky="nsew")]))
+    assert style.style_exists_in_theme(name)
+
+
+def test_registered_style_is_honored_via_style_kwarg(root):
+    # The finding end-to-end: BootMixin honors style="X" only for a registered
+    # style, else it re-resolves to the base. A toolkit-built style whose terminal
+    # step is layout() must therefore survive on the widget unchanged.
+    style = root.style
+    name = "Fancy.TButton"
+    layout(style, name, El("Button.padding", sticky="nsew", children=[
+        El("Button.label", sticky="nsew")]))
+    btn = ttk.Button(root, style=name)
+    btn.pack()
+    root.update_idletasks()
+    assert btn.cget("style") == name
