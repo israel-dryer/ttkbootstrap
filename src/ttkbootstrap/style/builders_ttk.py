@@ -213,7 +213,9 @@ class StyleBuilderTTK:
             states={"disabled": downarrow_disabled_image,
                     "pressed !disabled": downarrow_focused_image,
                     "focus !disabled": downarrow_focused_image,
-                    "hover !disabled": downarrow_focused_image})
+                    "hover !disabled": downarrow_focused_image},
+            # right padding so the caret isn't flush against the border
+            padding=(0, 0, self.scale_size(6), 0))
         #  self.style.element_create(f"{element}.downarrow", "from", TTK_DEFAULT)  # doesn't work in python 3.13
         self.style.element_create(f"{element}.padding", "from", TTK_CLAM)
         self.style.element_create(f"{element}.textarea", "from", TTK_CLAM)
@@ -694,12 +696,11 @@ class StyleBuilderTTK:
         self.style._register_ttkstyle(v_ttkstyle)
 
     def create_simple_arrow_assets(self, arrowcolor: str, disabledcolor: str, activecolor: str, y_offset: int = 0):
-        """Create chevron arrow assets using Bootstrap Icons glyphs.
+        """Create caret arrow assets using Bootstrap Icons glyphs.
 
-        Used for Combobox and Spinbox indicators. Replaces the old hand-drawn
-        triangles with `chevron-up/down/left/right` for a lighter, modern
-        open-arrow weight (RESOLVED: chevron over caret-*-fill per the icons
-        design).
+        Used for Combobox and Spinbox indicators. Uses the solid `caret-*-fill`
+        triangles so the indicators read consistently with the filled-triangle
+        arrows elsewhere in the app (menubutton, datepicker header).
 
         The `y_offset` parameter is accepted for API compatibility but is no
         longer used (it was specific to the old hand-drawn triangle approach).
@@ -717,10 +718,10 @@ class StyleBuilderTTK:
         size = self.scale_size([13, 11])
 
         def make_arrows(color):
-            up = a.icon("chevron-up", size, color)
-            down = a.icon("chevron-down", size, color)
-            left = a.icon("chevron-left", size, color)
-            right = a.icon("chevron-right", size, color)
+            up = a.icon("caret-up-fill", size, color)
+            down = a.icon("caret-down-fill", size, color)
+            left = a.icon("caret-left-fill", size, color)
+            right = a.icon("caret-right-fill", size, color)
             return up, down, left, right
 
         return make_arrows(arrowcolor), make_arrows(disabledcolor), make_arrows(activecolor)
@@ -1095,16 +1096,20 @@ class StyleBuilderTTK:
         downarrow_disabled_image = arrow_images[1][1]
         downarrow_focus_image = arrow_images[2][1]
 
+        # right padding so the carets aren't flush against the border
+        arrow_pad = (0, 0, self.scale_size(6), 0)
         image_element(
             self.style, f"{element}.uparrow", default=uparrow_image,
             states={"disabled": uparrow_disabled_image,
                     "pressed !disabled": uparrow_focus_image,
-                    "hover !disabled": uparrow_focus_image})
+                    "hover !disabled": uparrow_focus_image},
+            padding=arrow_pad)
         image_element(
             self.style, f"{element}.downarrow", default=downarrow_image,
             states={"disabled": downarrow_disabled_image,
                     "pressed !disabled": downarrow_focus_image,
-                    "hover !disabled": downarrow_focus_image})
+                    "hover !disabled": downarrow_focus_image},
+            padding=arrow_pad)
         layout(self.style, ttkstyle,
                El(f"{element}.field", side=tk.TOP, sticky=tk.EW, children=[
                    El("null", side=tk.RIGHT, sticky="", children=[
@@ -1604,9 +1609,10 @@ class StyleBuilderTTK:
         else:
             accent = self.colors.get(colorname)
 
-        # Toggle icons are wider than tall (approx 1.6:1); keep the same
-        # logical size the old hand-drawn assets used so geometry is unchanged.
-        toggle_size = self.scale_size([24, 15])
+        # Toggle glyphs are ~1.6:1 (w:h); match that aspect so the pill fills the
+        # frame without slack. Sized up from the old hand-drawn assets for a more
+        # legible switch.
+        toggle_size = self.scale_size([32, 20])
 
         self.style._build_configure(
             ttkstyle,
@@ -1629,7 +1635,7 @@ class StyleBuilderTTK:
                     "disabled":          {"name": "toggle-off", "color": disabled_fg},
                     "!selected":         {"name": "toggle-off", "color": fg_muted},
                 },
-                width=self.scale_size(28), border=self.scale_size(4), sticky=W)
+                width=self.scale_size(36), border=self.scale_size(4), sticky=W)
         except Exception:
             """This method is used as the default Toggle style, so it is
             necessary to catch Tcl errors when it tries to create an element
@@ -1675,7 +1681,7 @@ class StyleBuilderTTK:
         else:
             accent = self.colors.get(colorname)
 
-        toggle_size = self.scale_size([24, 15])
+        toggle_size = self.scale_size([32, 20])
 
         self.style._build_configure(
             ttkstyle, relief=tk.FLAT, borderwidth=0, foreground=self.colors.fg
@@ -1695,7 +1701,7 @@ class StyleBuilderTTK:
                 "disabled":          {"name": "toggle-off", "color": disabled_fg},
                 "!selected":         {"name": "toggle-off", "color": fg_muted},
             },
-            width=self.scale_size(28), border=self.scale_size(4), sticky=W)
+            width=self.scale_size(36), border=self.scale_size(4), sticky=W)
         layout(self.style, ttkstyle,
             El("Toolbutton.border", sticky=NSEW, children=[
                 El("Toolbutton.padding", sticky=NSEW, children=[
@@ -1995,10 +2001,8 @@ class StyleBuilderTTK:
             btn_foreground = Colors.get_foreground(self.colors, colorname)
 
         # Calendar icon in the button foreground color.
-        # Visual-check item: `calendar-event` vs `calendar` -- settle on the
-        # human spot-check.
         size = self.scale_size([21, 22])
-        img_normal = self.assets.icon("calendar-event", size, btn_foreground)
+        img_normal = self.assets.icon("calendar3", size, btn_foreground)
 
         pressed = Colors.update_hsv(background, vd=-0.1)
         hover = Colors.update_hsv(background, vd=0.10)
