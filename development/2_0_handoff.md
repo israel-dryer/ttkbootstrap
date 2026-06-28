@@ -32,6 +32,20 @@ tweaks; see "FOLLOW-UP" below) or Workstream E (theme/anchor model) + D (bootsty
 canonical grammar).** Tier-2 toolkit (`state_colors` from ramp steps) follows E.
 Both E and D want a design pass first per the hard rule.
 
+**New strand (user, 2026-06-28): recolorable raster widget assets.** Use pre-made
+image assets recolored on demand (the bootstack approach) for radio/checkbox/
+switch/scale/scrollbar/progressbar. **Decided: these REPLACE the current
+rendering** for those six (icon quality not good enough for general widget
+indicators) — radio/checkbox/switch un-wire their PR-6b `icon_element`/`a.icon`
+calls; scale/scrollbar/progressbar swap their geometric recipe calls. **The icon
+engine stays** for all other widgets (date/carets/sizegrip). This is a *new recipe on the existing PR-2 cache + PR-5
+`Assets` + PR-6a icon surface* — `Assets.recolor` + a `recolor_element` mirroring
+`icon_element`, a vendored `assets/widgets/` dir, then per-widget builder
+migration. Design brief (proposal, design-pass-not-yet-held):
+**`development/2_0_recolor_assets_design.md`** — settle its open questions with
+the user before coding. Cross-machine handoff for this lives in the repo-root
+**`AGENTS.md`** (memories don't travel between machines).
+
 ## PR 6b — MERGED (2026-06-28, #1080, Workstream I — glyph builders on icons)
 
 Built hybrid: Opus settled the public API + the held-branch keep/drop split and
