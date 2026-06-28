@@ -3,31 +3,70 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-06-27 (Workstream I — **icon-rendered assets design pass
-DONE**, `development/2_0_icons_design.md`, API fully locked. The PR-6 toolkit
-fast-follow was implemented on `feat/2.0-pr6-toolkit-migration` but is **HELD /
-superseded** by the icon work — see "PR 6 — HELD" below. Suite still **75
-passed**.)_
+_Last updated: 2026-06-27 (Workstream I — **PR 6a, the icon engine, MERGED**
+(#1079): vendored Bootstrap Icons font + `style/icons.py` (`IconRenderer`) +
+`Assets.icon` + public `Icon`/`icon_element`. Engine-only, no builders touched.
+Suite **89 passed**. Render tuning + `record-circle-fill` settled via a live
+visual spot-check; see "PR 6a — MERGED" below. Next: PR 6b.)_
 
 ## Where we are
 
 Integration branch: **`2.0`** (cut all 2.0 PRs against it, not `master`).
-Suite: `python -m pytest -q` → **75 passed**, headless, order-independent.
+Suite: `python -m pytest -q` → **89 passed**, headless, order-independent.
 
 The engine keystone (Workstream A) is **complete and merged**: PR 1 (repaint,
 #1073) + PR 2 (content-addressed image cache, #1074). **PR 3 — the mixin API
 (Workstream C)** is **merged** (#1075). **PR 4 — the `style/` package split
 (Workstream G)** is **merged** (#1076; pure move, see "PR 4" below). **PR 5 —
 the style-construction toolkit (Workstream I, Tier 1)** is **merged** (#1077; see
-"PR 5" below).
+"PR 5" below). **PR 6a — the icon engine (Workstream I, Tier 1.5)** is **merged**
+(#1079; see "PR 6a — MERGED" below).
 
-**Next actionable slice → PR 6a (icon engine).** The asset/layout fast-follow
-took a turn: the migrated hand-drawn glyphs (checkmark, calendar, arrows,
-sizegrip) looked poor, so 2.0 will **render glyph-shaped assets from a vendored
-Bootstrap Icons font** instead. Design pass is DONE and fully locked in
-**`development/2_0_icons_design.md`**; see "PR 6 — HELD + icon pivot" below for
-the state and the PR 6a/6b plan. After icons: Workstream E (theme/anchor model) +
-D (bootstyle canonical grammar); Tier-2 toolkit follows E.
+**Next actionable slice → PR 6b (migrate glyph builders + land the held
+geometric/layout cleanup).** This is the visible change: check/radio/switch/date/
+arrows/sizegrip onto `a.icon`/`icon_element`, plus the kept geometric/`layout`/
+`image_element` migrations from the held branch. **Gate the merge on a human
+visual spot-check** (light↔dark) and **add the public style-registration path**
+the PR-6a review surfaced (see below). After 6b: Workstream E (theme/anchor
+model) + D (bootstyle canonical grammar); Tier-2 toolkit follows E.
+
+## PR 6a — MERGED (2026-06-27, #1079, Workstream I Tier 1.5 — icon engine)
+
+Merged into `2.0` (was `feat/2.0-pr6a-icon-engine`). Engine only — touches **no**
+builders, so nothing visual changed yet; suite **89 passed** (was 75; +14 in
+`tests/widget_styles/test_icons.py`). Independently diff-reviewed (no leaks;
+cache/leaf-layering invariants hold). Per `development/2_0_icons_design.md` (see
+its "PR 6a — IMPLEMENTED" section).
+
+- **Vendored** `src/ttkbootstrap/assets/icons/` (`bootstrap.ttf` + `glyphmap.json`
+  + `icon_metrics.json`, MIT, LICENSE+README) + regen tool
+  `tools/generate_icon_metrics.py`; `assets/icons/*` added to pyproject
+  package-data (the `assets/*` glob does not recurse). No new pip dep.
+- **`style/icons.py`** (leaf: PIL+stdlib + the two leaf toolkit modules; `Style`
+  reached only function-locally): `IconRenderer` lazy-loads font/glyphmap/metrics
+  once (persists for process lifetime), renders one glyph via bootstack's
+  metrics fit-and-center; **unknown glyph raises**. Public `Icon(name,size,color)`
+  atom (keyword-or-hex, resolved once) + `icon_element(...)` state→icon sugar.
+- **`Assets.icon`** routes through `Style._get_or_create_image`, key
+  `("icon", name, even-snapped size, resolved color)`; takes an already-resolved
+  color (like `circle`/`rect`), keyword resolution lives in `Icon`.
+- **Render tuning** (settled via a live light↔dark spot-check on Retina):
+  icon-specific **6×/3×/1× supersample** (vs bootstack's 3/2/1) + gentle
+  **`UnsharpMask(0.5/50)`** — curve smoothness comes from supersampling, not the
+  sharpen. **Radio "on" → `record-circle-fill`** (solid knockout), not the thin
+  `record-circle`. `examples/icon_preview.py` is the spot-check tool.
+- **Gates:** `icons` added to the standalone-import cycle guard; PEP 649
+  annotation sweep clean; import warning-free + font not loaded at import.
+- **Finding carried to PR 6b (IMPORTANT):** a hand-built custom style applied via
+  `style="X.TWidget"` is **silently re-resolved to base `TWidget`** unless the
+  name was registered with the private `Style._register_ttkstyle(...)` —
+  `BootMixin` only honors `style=` for `style_exists_in_theme()` styles. The real
+  builders register; the design's public mock #2 + the demo did not. **PR 6b /
+  Tier-2 must give the public toolkit a non-private registration path** (e.g.
+  `layout()` registers the style name, or a public `register_style`). Details in
+  the design doc's "Finding for PR 6b" section.
+- **Open minor glyph picks (defer to 6b spot-check):** `calendar` vs
+  `calendar-event`; sizegrip glyph.
 
 ## PR 6 — HELD + icon pivot (2026-06-27)
 
@@ -59,12 +98,13 @@ plain scale thumb) stay on the recipes.
 - **PR 6a — icon engine (no behavior change):** vendor the 3 assets + regen tool
   + license; `style/icons.py` (`IconRenderer`); `Assets.icon`; public `Icon` +
   `icon_element`; re-exports; tests. Touches **no** builders → suite stays green.
-  **← next actionable.**
+  **✅ MERGED (#1079) — see "PR 6a — MERGED" above.**
 - **PR 6b — migrate glyph builders + land the kept geometric/layout cleanup**
   (cherry-pick the geometric/`layout`/`image_element` commits from the held
   branch; drop the hand-drawn glyph commits). Gate the merge on a **human visual
   spot-check** (light↔dark) — the headless suite asserts color-at-pixel, not
-  appearance.
+  appearance. **Also add the public style-registration path** (PR-6a finding).
+  **← next actionable.**
 
 ### Merged into `2.0`
 - **#1068** — Tier-0 cleanup:

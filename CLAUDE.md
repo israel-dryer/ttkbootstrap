@@ -60,19 +60,25 @@ snapped/oversampled render pipeline) + `style/layout.py` (`El`/`layout`,
 `image_element`, `statespec`/`state_map`, `StyleName`), re-exported from
 `ttkbootstrap.style` and top-level `ttkbootstrap`. The scale + radiobutton
 builders are migrated onto it as the acceptance proof. Design pass:
-`development/2_0_toolkit_design.md`. **PR 6** — the asset/layout fast-follow
-migration — was implemented on `feat/2.0-pr6-toolkit-migration` but is **HELD /
-superseded**: its migrated hand-drawn glyphs (checkmark, calendar, arrows,
-sizegrip) looked poor, so 2.0 will instead **render glyph-shaped assets from a
-vendored Bootstrap Icons font** (metrics-based fit ported from bootstack; reuses
-the PR-5 pipeline + PR-2 cache; no new pip dep). The icon **design pass is DONE
-and API-locked** in `development/2_0_icons_design.md` (public `Icon` atom +
-style-level `icon_element` state→icon sugar; flat single-glyph aesthetic).
-**Next: PR 6a** — the icon engine (`style/icons.py` + `Assets.icon` + `Icon`/
-`icon_element`, vendored assets, tests; no builder changes) — then **PR 6b**
-(migrate glyph builders + land the held branch's geometric/`layout` cleanup; gate
-on a human visual spot-check), then theme/anchor (E) + bootstyle canonical (D).
-Proceed PR by PR per the design doc; don't exceed a PR's scope without revisiting it.
+`development/2_0_toolkit_design.md`. The held **PR 6** (asset/layout fast-follow on
+`feat/2.0-pr6-toolkit-migration`) was **superseded**: its hand-drawn glyphs
+looked poor, so 2.0 instead **renders glyph-shaped assets from a vendored
+Bootstrap Icons font** (metrics-based fit ported from bootstack; reuses the PR-5
+pipeline + PR-2 cache; no new pip dep), per the API-locked design in
+`development/2_0_icons_design.md`. **PR 6a** — the icon engine — is **merged** into
+`2.0` (#1079): vendored `assets/icons/` font + `style/icons.py` (`IconRenderer`) +
+`Assets.icon` + public `Icon` atom / `icon_element` state→icon sugar, re-exported
+from `ttkbootstrap.style` and top-level `ttkbootstrap`; no builder changes, suite
+89 passed. Render tuning (icon-specific 6×/3×/1× supersample + gentle 0.5/50
+sharpen) and `record-circle-fill` for radio-on were settled via a live visual
+spot-check; `examples/icon_preview.py` is the tool. **Next: PR 6b** — migrate the
+glyph builders (check/radio/switch/date/arrows/sizegrip) onto `a.icon`/
+`icon_element` + land the held branch's geometric/`layout` cleanup; **gate on a
+human visual spot-check** and **add a public style-registration path** (a
+hand-built style applied via `style=` is silently ignored unless registered with
+the private `_register_ttkstyle` — the PR-6a review finding). Then theme/anchor
+(E) + bootstyle canonical (D). Proceed PR by PR per the design doc; don't exceed a
+PR's scope without revisiting it.
 
 ## Repository layout
 
