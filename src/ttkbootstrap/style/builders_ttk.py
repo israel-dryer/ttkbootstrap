@@ -8,13 +8,14 @@ import tkinter as tk
 from math import ceil
 from tkinter import font, ttk
 
-from PIL import Image, ImageDraw, ImageFont, ImageTk
-from PIL.Image import Resampling, Transpose
+from PIL import Image, ImageDraw, ImageTk
+from PIL.Image import Resampling
 
 from ttkbootstrap.constants import *
 from ttkbootstrap.style.theme import Colors, ThemeDefinition
 from ttkbootstrap.style.builders_tk import StyleBuilderTK
 from ttkbootstrap.style.assets import Assets
+from ttkbootstrap.style.icons import icon_element
 from ttkbootstrap.style.layout import (
     El, layout, image_element, state_map, StyleName,
 )
@@ -805,52 +806,36 @@ class StyleBuilderTTK:
         self.style._register_ttkstyle(v_ttkstyle)
 
     def create_simple_arrow_assets(self, arrowcolor: str, disabledcolor: str, activecolor: str, y_offset: int = 0):
-        """
-        Create simple arrow assets (small triangles) that can be used for various widgets.
-        Originally created to replace Combobox.downarrow to fix layout issues in python 3.13.
-        Also used for the Spinbox widget.
+        """Create chevron arrow assets using Bootstrap Icons glyphs.
+
+        Used for Combobox and Spinbox indicators. Replaces the old hand-drawn
+        triangles with `chevron-up/down/left/right` for a lighter, modern
+        open-arrow weight (RESOLVED: chevron over caret-*-fill per the icons
+        design).
+
+        The `y_offset` parameter is accepted for API compatibility but is no
+        longer used (it was specific to the old hand-drawn triangle approach).
 
         Args:
             arrowcolor: The color value to use as the arrow fill color.
             disabledcolor: A second color value to use when the arrow is disabled.
             activecolor: A third color value to use when the arrow has focus.
-            y_offset: (optional) The vertical padding to apply to the arrow images (useful in spinnboxes).
+            y_offset: Accepted for API compatibility; ignored.
         Returns:
-            A nested tuple containing the names of the created arrow images in the order (up, down, left, right)
-            for each color.
+            A nested tuple (normal, disabled, active), each a 4-tuple of Tcl
+            image names in the order (up, down, left, right).
         """
+        a = self.assets
+        size = self.scale_size([13, 11])
 
-        def draw_simple_arrow(color: str, y_offset: int = 0):
-            size = self.scale_size([13, 11])
+        def make_arrows(color):
+            up = a.icon("chevron-up", size, color)
+            down = a.icon("chevron-down", size, color)
+            left = a.icon("chevron-left", size, color)
+            right = a.icon("chevron-right", size, color)
+            return up, down, left, right
 
-            def render(rotate):
-                # arrow (triangle) pointing up, offset by y_offset, then rotated
-                img = Image.new("RGBA", (13, 11))
-                ImageDraw.Draw(img).polygon(
-                    [(3, 6 + y_offset), (9, 6 + y_offset), (6, 3 + y_offset)],
-                    fill=color,
-                )
-                img = img.resize(size, Resampling.BICUBIC)
-                if rotate:
-                    img = img.rotate(rotate)
-                return ImageTk.PhotoImage(img)
-
-            base = ("arrow.simple", color, y_offset, tuple(size))
-            up_name = self.style._get_or_create_image(
-                base + ("up",), lambda: render(0))
-            down_name = self.style._get_or_create_image(
-                base + ("down",), lambda: render(180))
-            left_name = self.style._get_or_create_image(
-                base + ("left",), lambda: render(90))
-            right_name = self.style._get_or_create_image(
-                base + ("right",), lambda: render(-90))
-            return up_name, down_name, left_name, right_name
-
-        normal_names = draw_simple_arrow(arrowcolor, y_offset=y_offset)
-        pressed_names = draw_simple_arrow(disabledcolor, y_offset=y_offset)
-        active_names = draw_simple_arrow(activecolor, y_offset=y_offset)
-
-        return normal_names, pressed_names, active_names
+        return make_arrows(arrowcolor), make_arrows(disabledcolor), make_arrows(activecolor)
 
     def create_arrow_assets(self, arrowcolor, pressed, active):
         """Create arrow assets used for various widget buttons.
@@ -1910,97 +1895,6 @@ class StyleBuilderTTK:
         # register ttkstyle
         self.style._register_ttkstyle(ttkstyle)
 
-    def create_square_toggle_assets(self, colorname=DEFAULT):
-        """Create the image assets used to build a square toggle
-        style.
-
-        Parameters:
-
-            colorname (str):
-                The color label used to style the widget.
-
-        Returns:
-
-            tuple[str]:
-                A tuple of PhotoImage names.
-        """
-        size = self.scale_size([24, 15])
-        if any([colorname == DEFAULT, colorname == ""]):
-            colorname = PRIMARY
-
-        # set default style color values
-        prime_color = self.colors.get(colorname)
-        on_border = prime_color
-        on_indicator = self.colors.selectfg
-        on_fill = prime_color
-        off_fill = self.colors.bg
-        disabled_fg = Colors.make_transparent(0.3, self.colors.fg, self.colors.bg)
-        off_border = Colors.make_transparent(0.4, self.colors.fg, self.colors.bg)
-        off_indicator = Colors.make_transparent(0.4, self.colors.fg, self.colors.bg)
-
-        # override defaults for light and dark colors
-        if colorname == LIGHT:
-            on_border = self.colors.dark
-            on_indicator = on_border
-        elif colorname == DARK:
-            on_border = self.colors.light
-            on_indicator = on_border
-
-        def make_off():
-            img = Image.new("RGBA", (226, 130))
-            draw = ImageDraw.Draw(img)
-            draw.rectangle(
-                xy=[1, 1, 225, 129], outline=off_border, width=6, fill=off_fill
-            )
-            draw.rectangle([18, 18, 110, 110], fill=off_indicator)
-            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
-
-        def make_on():
-            img = Image.new("RGBA", (226, 130))
-            draw = ImageDraw.Draw(img)
-            draw.rectangle(
-                xy=[1, 1, 225, 129], outline=on_border, width=6, fill=on_fill
-            )
-            draw.rectangle([18, 18, 110, 110], fill=on_indicator)
-            img = img.transpose(Transpose.ROTATE_180)
-            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
-
-        def make_disabled():
-            img = Image.new("RGBA", (226, 130))
-            draw = ImageDraw.Draw(img)
-            draw.rectangle([1, 1, 225, 129], outline=disabled_fg, width=6)
-            draw.rectangle([18, 18, 110, 110], fill=disabled_fg)
-            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
-
-        def make_on_disabled():
-            img = Image.new("RGBA", (226, 130))
-            draw = ImageDraw.Draw(img)
-            draw.rectangle(
-                xy=[1, 1, 225, 129], outline=disabled_fg, width=6, fill=off_fill
-            )
-            draw.rectangle([18, 18, 110, 110], fill=disabled_fg)
-            img = img.transpose(Transpose.ROTATE_180)
-            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
-
-        off_name = self.style._get_or_create_image(
-            ("toggle.square.off", off_border, off_fill, off_indicator, tuple(size)),
-            make_off,
-        )
-        on_name = self.style._get_or_create_image(
-            ("toggle.square.on", on_border, on_fill, on_indicator, tuple(size)),
-            make_on,
-        )
-        disabled_name = self.style._get_or_create_image(
-            ("toggle.square.disabled", disabled_fg, tuple(size)),
-            make_disabled,
-        )
-        on_disabled_name = self.style._get_or_create_image(
-            ("toggle.square.on_disabled", disabled_fg, off_fill, tuple(size)),
-            make_on_disabled,
-        )
-
-        return off_name, on_name, disabled_name, on_disabled_name
-
     def create_toggle_style(self, colorname=DEFAULT):
         """Create a round toggle style for the ttk.Checkbutton widget.
 
@@ -2009,112 +1903,6 @@ class StyleBuilderTTK:
             colorname (str):
         """
         self.create_round_toggle_style(colorname)
-
-    def create_round_toggle_assets(self, colorname=DEFAULT):
-        """Create image assets for the round toggle style.
-
-        Parameters:
-
-            colorname (str):
-                The color label assigned to the colors property.
-
-        Returns:
-
-            tuple[str]:
-                A tuple of PhotoImage names.
-        """
-        size = self.scale_size([24, 15])
-
-        if any([colorname == DEFAULT, colorname == ""]):
-            colorname = PRIMARY
-
-        # set default style color values
-        prime_color = self.colors.get(colorname)
-        on_border = prime_color
-        on_indicator = self.colors.selectfg
-        on_fill = prime_color
-        off_fill = self.colors.bg
-
-        disabled_fg = Colors.make_transparent(0.3, self.colors.fg, self.colors.bg)
-        off_border = Colors.make_transparent(0.4, self.colors.fg, self.colors.bg)
-        off_indicator = Colors.make_transparent(0.4, self.colors.fg, self.colors.bg)
-
-        # override defaults for light and dark colors
-        if colorname == LIGHT:
-            on_border = self.colors.dark
-            on_indicator = on_border
-        elif colorname == DARK:
-            on_border = self.colors.light
-            on_indicator = on_border
-
-        def make_off():
-            img = Image.new("RGBA", (226, 130))
-            draw = ImageDraw.Draw(img)
-            draw.rounded_rectangle(
-                xy=[1, 1, 225, 129],
-                radius=(128 / 2),
-                outline=off_border,
-                width=6,
-                fill=off_fill,
-            )
-            draw.ellipse([20, 18, 112, 110], fill=off_indicator)
-            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
-
-        def make_on():
-            img = Image.new("RGBA", (226, 130))
-            draw = ImageDraw.Draw(img)
-            draw.rounded_rectangle(
-                xy=[1, 1, 225, 129],
-                radius=(128 / 2),
-                outline=on_border,
-                width=6,
-                fill=on_fill,
-            )
-            draw.ellipse([20, 18, 112, 110], fill=on_indicator)
-            img = img.transpose(Transpose.ROTATE_180)
-            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
-
-        def make_on_disabled():
-            img = Image.new("RGBA", (226, 130))
-            draw = ImageDraw.Draw(img)
-            draw.rounded_rectangle(
-                xy=[1, 1, 225, 129],
-                radius=(128 / 2),
-                outline=disabled_fg,
-                width=6,
-                fill=off_fill,
-            )
-            draw.ellipse([20, 18, 112, 110], fill=disabled_fg)
-            img = img.transpose(Transpose.ROTATE_180)
-            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
-
-        def make_disabled():
-            img = Image.new("RGBA", (226, 130))
-            draw = ImageDraw.Draw(img)
-            draw.rounded_rectangle(
-                xy=[1, 1, 225, 129], radius=(128 / 2), outline=disabled_fg, width=6
-            )
-            draw.ellipse([20, 18, 112, 110], fill=disabled_fg)
-            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
-
-        off_name = self.style._get_or_create_image(
-            ("toggle.round.off", off_border, off_fill, off_indicator, tuple(size)),
-            make_off,
-        )
-        on_name = self.style._get_or_create_image(
-            ("toggle.round.on", on_border, on_fill, on_indicator, tuple(size)),
-            make_on,
-        )
-        on_disabled_name = self.style._get_or_create_image(
-            ("toggle.round.on_disabled", disabled_fg, off_fill, tuple(size)),
-            make_on_disabled,
-        )
-        disabled_name = self.style._get_or_create_image(
-            ("toggle.round.disabled", disabled_fg, tuple(size)),
-            make_disabled,
-        )
-
-        return off_name, on_name, disabled_name, on_disabled_name
 
     def create_round_toggle_style(self, colorname=DEFAULT):
         """Create a round toggle style for the ttk.Checkbutton widget.
@@ -2125,8 +1913,8 @@ class StyleBuilderTTK:
                 The color label used to style the widget.
         """
         STYLE = "Round.Toggle"
-
         disabled_fg = Colors.make_transparent(0.30, self.colors.fg, self.colors.bg)
+        fg_muted = Colors.make_transparent(0.40, self.colors.fg, self.colors.bg)
 
         if any([colorname == DEFAULT, colorname == ""]):
             ttkstyle = STYLE
@@ -2134,29 +1922,19 @@ class StyleBuilderTTK:
         else:
             ttkstyle = f"{colorname}.{STYLE}"
 
-        # ( off, on, disabled )
-        images = self.create_round_toggle_assets(colorname)
+        # Resolve the "on" accent; LIGHT/DARK on their own background need a
+        # contrasting indicator (visual-check item: verify toggle aspect ratio
+        # and LIGHT-on-light on the human spot-check).
+        if colorname == LIGHT:
+            accent = self.colors.dark
+        elif colorname == DARK:
+            accent = self.colors.light
+        else:
+            accent = self.colors.get(colorname)
 
-        try:
-            width = self.scale_size(28)
-            borderpad = self.scale_size(4)
-            self.style.element_create(
-                f"{ttkstyle}.indicator",
-                "image",
-                images[1],
-                ("disabled selected", images[3]),
-                ("disabled", images[2]),
-                ("!selected", images[0]),
-                width=width,
-                border=borderpad,
-                sticky=tk.W,
-            )
-        except:
-            """This method is used as the default Toggle style, so it
-            is neccessary to catch Tcl Errors when it tries to create
-            and element that was already created by the Toggle or
-            Round Toggle style"""
-            pass
+        # Toggle icons are wider than tall (approx 1.6:1); keep the same
+        # logical size the old hand-drawn assets used so geometry is unchanged.
+        toggle_size = self.scale_size([24, 15])
 
         self.style._build_configure(
             ttkstyle,
@@ -2171,102 +1949,62 @@ class StyleBuilderTTK:
             foreground=[("disabled", disabled_fg)],
             background=[("selected", self.colors.bg)],
         )
-        self.style.layout(
-            ttkstyle,
-            [
-                (
-                    "Toolbutton.border",
-                    {
-                        "sticky": tk.NSEW,
-                        "children": [
-                            (
-                                "Toolbutton.padding",
-                                {
-                                    "sticky": tk.NSEW,
-                                    "children": [
-                                        (
-                                            f"{ttkstyle}.indicator",
-                                            {"side": tk.LEFT},
-                                        ),
-                                        (
-                                            "Toolbutton.label",
-                                            {"side": tk.LEFT},
-                                        ),
-                                    ],
-                                },
-                            )
-                        ],
-                    },
-                )
-            ],
-        )
+        try:
+            icon_element(self.style, f"{ttkstyle}.indicator", size=toggle_size,
+                default={"name": "toggle-on", "color": accent},
+                states={
+                    "disabled selected": {"name": "toggle-on",  "color": disabled_fg},
+                    "disabled":          {"name": "toggle-off", "color": disabled_fg},
+                    "!selected":         {"name": "toggle-off", "color": fg_muted},
+                },
+                width=self.scale_size(28), border=self.scale_size(4), sticky=W)
+        except Exception:
+            """This method is used as the default Toggle style, so it is
+            necessary to catch Tcl errors when it tries to create an element
+            that was already created by the Toggle or Round Toggle style."""
+            pass
+
+        layout(self.style, ttkstyle,
+            El("Toolbutton.border", sticky=NSEW, children=[
+                El("Toolbutton.padding", sticky=NSEW, children=[
+                    El(f"{ttkstyle}.indicator", side=LEFT),
+                    El("Toolbutton.label", side=LEFT)])]))
         # register ttkstyle
         self.style._register_ttkstyle(ttkstyle)
 
     def create_square_toggle_style(self, colorname=DEFAULT):
         """Create a square toggle style for the ttk.Checkbutton widget.
 
+        Note: as of 2.0 both round and square toggles render the same Bootstrap
+        Icons toggle glyphs (`toggle-on`/`toggle-off`). The `square-toggle`
+        bootstyle keyword remains for back-compat but produces the same rounded
+        indicator as `round-toggle`.
+
         Parameters:
 
             colorname (str):
                 The color label used to style the widget.
         """
-
         STYLE = "Square.Toggle"
-
         disabled_fg = Colors.make_transparent(0.30, self.colors.fg, self.colors.bg)
+        fg_muted = Colors.make_transparent(0.40, self.colors.fg, self.colors.bg)
 
         if any([colorname == DEFAULT, colorname == ""]):
             ttkstyle = STYLE
+            colorname = PRIMARY
         else:
             ttkstyle = f"{colorname}.{STYLE}"
 
-        # ( off, on, disabled )
-        images = self.create_square_toggle_assets(colorname)
+        # Resolve the "on" accent (same logic as round-toggle).
+        if colorname == LIGHT:
+            accent = self.colors.dark
+        elif colorname == DARK:
+            accent = self.colors.light
+        else:
+            accent = self.colors.get(colorname)
 
-        width = self.scale_size(28)
-        borderpad = self.scale_size(4)
+        toggle_size = self.scale_size([24, 15])
 
-        self.style.element_create(
-            f"{ttkstyle}.indicator",
-            "image",
-            images[1],
-            ("disabled selected", images[3]),
-            ("disabled", images[2]),
-            ("!selected", images[0]),
-            width=width,
-            border=borderpad,
-            sticky=tk.W,
-        )
-        self.style.layout(
-            ttkstyle,
-            [
-                (
-                    "Toolbutton.border",
-                    {
-                        "sticky": tk.NSEW,
-                        "children": [
-                            (
-                                "Toolbutton.padding",
-                                {
-                                    "sticky": tk.NSEW,
-                                    "children": [
-                                        (
-                                            f"{ttkstyle}.indicator",
-                                            {"side": tk.LEFT},
-                                        ),
-                                        (
-                                            "Toolbutton.label",
-                                            {"side": tk.LEFT},
-                                        ),
-                                    ],
-                                },
-                            )
-                        ],
-                    },
-                )
-            ],
-        )
         self.style._build_configure(
             ttkstyle, relief=tk.FLAT, borderwidth=0, foreground=self.colors.fg
         )
@@ -2278,6 +2016,19 @@ class StyleBuilderTTK:
                 ("!selected", self.colors.bg),
             ],
         )
+        icon_element(self.style, f"{ttkstyle}.indicator", size=toggle_size,
+            default={"name": "toggle-on", "color": accent},
+            states={
+                "disabled selected": {"name": "toggle-on",  "color": disabled_fg},
+                "disabled":          {"name": "toggle-off", "color": disabled_fg},
+                "!selected":         {"name": "toggle-off", "color": fg_muted},
+            },
+            width=self.scale_size(28), border=self.scale_size(4), sticky=W)
+        layout(self.style, ttkstyle,
+            El("Toolbutton.border", sticky=NSEW, children=[
+                El("Toolbutton.padding", sticky=NSEW, children=[
+                    El(f"{ttkstyle}.indicator", side=LEFT),
+                    El("Toolbutton.label", side=LEFT)])]))
         # register ttkstyle
         self.style._register_ttkstyle(ttkstyle)
 
@@ -2502,58 +2253,6 @@ class StyleBuilderTTK:
         # register ttkstyle
         self.style._register_ttkstyle(ttkstyle)
 
-    def create_radiobutton_assets(self, colorname=DEFAULT):
-        """Create the image assets used to build the radiobutton style.
-
-        Parameters:
-
-            colorname (str):
-
-        Returns:
-
-            tuple[str]:
-                A tuple of PhotoImage names
-        """
-        a = self.assets
-        on_fill = self.colors.get(colorname)
-        off_fill = self.colors.bg
-        on_indicator = self.colors.selectfg
-        size = self.scale_size([14, 14])
-        off_border = Colors.make_transparent(0.4, self.colors.fg, self.colors.bg)
-        disabled = Colors.make_transparent(0.3, self.colors.fg, self.colors.bg)
-
-        if self.is_light_theme and colorname == LIGHT:
-            on_indicator = self.colors.dark
-
-        # geometry differs (outline vs filled) for the light-on-light case
-        light_outline = colorname == LIGHT and self.is_light_theme
-
-        # Concentric "on" / "on_disabled" states need a composite draw, so they
-        # use the `image` escape hatch -- the colors each draw closes over are
-        # listed beside it as key parts (so the key can't drift from the pixels).
-        def draw_on(d, w, h):
-            if light_outline:
-                d.ellipse((0, 0, w - 1, h - 1), outline=off_border, width=round(w * 0.045))
-            else:
-                d.ellipse((0, 0, w - 1, h - 1), fill=on_fill)
-            d.ellipse((w * 0.30, h * 0.30, w * 0.70, h * 0.70), fill=on_indicator)
-
-        def draw_on_disabled(d, w, h):
-            if light_outline:
-                d.ellipse((0, 0, w - 1, h - 1), outline=off_border, width=round(w * 0.045))
-            else:
-                d.ellipse((0, 0, w - 1, h - 1), fill=disabled)
-            d.ellipse((w * 0.30, h * 0.30, w * 0.70, h * 0.70), fill=off_fill)
-
-        # the unselected "off" / "disabled" states are a single outlined circle
-        ring = max(1, round(size[0] * 0.045))
-        off_name = a.circle(off_fill, size, outline=off_border, width=ring)
-        disabled_name = a.circle(off_fill, size, outline=disabled, width=ring)
-        on_name = a.image(size, draw_on, light_outline, on_fill, on_indicator, off_border)
-        on_disabled_name = a.image(size, draw_on_disabled, light_outline, disabled, off_fill, off_border)
-
-        return off_name, on_name, disabled_name, on_disabled_name
-
     def create_radiobutton_style(self, colorname=DEFAULT):
         """Create a style for the ttk.Radiobutton widget.
 
@@ -2562,19 +2261,33 @@ class StyleBuilderTTK:
             colorname (str):
                 The color label used to style the widget.
         """
-
         sn = StyleName("TRadiobutton", colorname)
-        disabled_fg = Colors.make_transparent(0.30, self.colors.fg, self.colors.bg)
+        fg = self.colors.fg
+        disabled = Colors.make_transparent(0.30, fg, self.colors.bg)
+        fg_muted = Colors.make_transparent(0.40, fg, self.colors.bg)
 
-        # ( off, on, disabled, on_disabled )
-        images = self.create_radiobutton_assets(sn.colorname)
-        image_element(
-            self.style, f"{sn.ttkstyle}.indicator", default=images[1],
-            states={"disabled selected": images[3], "disabled": images[2],
-                    "!selected": images[0]},
+        # Resolve the "on" accent; LIGHT/DARK on their own background need a
+        # contrasting indicator so the knockout interior stays readable
+        # (visual-check item: verify LIGHT-on-light reads on the human spot-check).
+        if sn.colorname == LIGHT and self.is_light_theme:
+            accent = self.colors.dark
+        elif sn.colorname == DARK and not self.is_light_theme:
+            accent = self.colors.light
+        else:
+            accent = self.colors.get(sn.colorname)
+
+        # Foreground map FIRST -- color-less icon specs resolve against it.
+        self.style._build_configure(sn.ttkstyle, foreground=fg)
+        state_map(self.style, sn.ttkstyle, foreground={"disabled": disabled})
+
+        icon_element(self.style, f"{sn.ttkstyle}.indicator", size=self.scale_size(20),
+            default={"name": "record-circle-fill", "color": accent},
+            states={
+                "disabled selected": "record-circle-fill",   # follows fg(disabled)
+                "disabled":          "circle",               # follows fg(disabled)
+                "!selected":         {"name": "circle", "color": fg_muted},
+            },
             width=self.scale_size(20), border=self.scale_size(4), sticky=W)
-        state_map(self.style, sn.ttkstyle, foreground={"disabled": disabled_fg})
-        self.style._build_configure(sn.ttkstyle)
         layout(
             self.style, sn.ttkstyle,
             El("Radiobutton.padding", sticky=NSEW, children=[
@@ -2582,60 +2295,6 @@ class StyleBuilderTTK:
                 El("Radiobutton.focus", side=LEFT, sticky="", children=[
                     El("Radiobutton.label", sticky=NSEW)])]))
         self.style._register_ttkstyle(sn.ttkstyle)
-
-    def create_date_button_assets(self, foreground):
-        """Create the image assets used to build the date button
-        style. This button style applied to the button in the
-        ttkbootstrap.widgets.DateEntry.
-
-        Parameters:
-
-            foreground (str):
-                The color value used to draw the calendar image.
-
-        Returns:
-
-            str:
-                The PhotoImage name.
-        """
-        size = self.scale_size([21, 22])
-
-        def render():
-            fill = foreground
-            image = Image.new("RGBA", (210, 220))
-            draw = ImageDraw.Draw(image)
-
-            draw.rounded_rectangle(
-                [10, 30, 200, 210], radius=20, outline=fill, width=10
-            )
-
-            calendar_image_coordinates = [
-                # page spirals
-                [40, 10, 50, 50],
-                [100, 10, 110, 50],
-                [160, 10, 170, 50],
-                # row 1
-                [70, 90, 90, 110],
-                [110, 90, 130, 110],
-                [150, 90, 170, 110],
-                # row 2
-                [30, 130, 50, 150],
-                [70, 130, 90, 150],
-                [110, 130, 130, 150],
-                [150, 130, 170, 150],
-                # row 3
-                [30, 170, 50, 190],
-                [70, 170, 90, 190],
-                [110, 170, 130, 190],
-            ]
-            for xy in calendar_image_coordinates:
-                draw.rectangle(xy=xy, fill=fill)
-
-            return ImageTk.PhotoImage(image.resize(size, Resampling.LANCZOS))
-
-        return self.style._get_or_create_image(
-            ("date_button", foreground, tuple(size)), render
-        )
 
     def create_date_button_style(self, colorname=DEFAULT):
         """Create a date button style for the ttk.Button widget.
@@ -2663,7 +2322,11 @@ class StyleBuilderTTK:
             background = self.colors.get(colorname)
             btn_foreground = Colors.get_foreground(self.colors, colorname)
 
-        img_normal = self.create_date_button_assets(btn_foreground)
+        # Calendar icon in the button foreground color.
+        # Visual-check item: `calendar-event` vs `calendar` -- settle on the
+        # human spot-check.
+        size = self.scale_size([21, 22])
+        img_normal = self.assets.icon("calendar-event", size, btn_foreground)
 
         pressed = Colors.update_hsv(background, vd=-0.1)
         hover = Colors.update_hsv(background, vd=0.10)
@@ -2702,7 +2365,6 @@ class StyleBuilderTTK:
                 ("hover !disabled", hover),
             ],
         )
-
         self.style._register_ttkstyle(ttkstyle)
 
     def create_calendar_style(self, colorname=DEFAULT):
@@ -2998,219 +2660,44 @@ class StyleBuilderTTK:
             colorname (str):
                 The color label used to style the widget.
         """
-        STYLE = "TCheckbutton"
+        sn = StyleName("TCheckbutton", colorname)
+        size = self.scale_size(20)
+        fg = self.colors.fg
+        disabled = Colors.make_transparent(0.3, fg, self.colors.bg)
+        fg_muted = Colors.make_transparent(0.4, fg, self.colors.bg)
 
-        disabled_fg = Colors.make_transparent(0.3, self.colors.fg, self.colors.bg)
-
-        if any([colorname == DEFAULT, colorname == ""]):
-            colorname = PRIMARY
-            ttkstyle = STYLE
+        # Resolve the "on" accent; LIGHT/DARK on their own background need a
+        # contrasting indicator so the knockout interior stays readable
+        # (visual-check item: verify LIGHT-on-light reads on the human spot-check).
+        if sn.colorname == LIGHT and self.is_light_theme:
+            accent = self.colors.dark
+        elif sn.colorname == DARK and not self.is_light_theme:
+            accent = self.colors.light
         else:
-            ttkstyle = f"{colorname}.TCheckbutton"
+            accent = self.colors.get(sn.colorname)
 
-        # ( off, on, disabled )
-        images = self.create_checkbutton_assets(colorname)
+        # Foreground map FIRST -- color-less icon specs resolve against it.
+        self.style._build_configure(sn.ttkstyle, foreground=fg)
+        state_map(self.style, sn.ttkstyle, foreground={"disabled": disabled})
 
-        element = ttkstyle.replace(".TC", ".C")
-        width = self.scale_size(20)
-        borderpad = self.scale_size(4)
-        self.style.element_create(
-            f"{element}.indicator",
-            "image",
-            images[1],
-            ("disabled selected", images[4]),
-            ("disabled alternate", images[5]),
-            ("disabled", images[2]),
-            ("alternate", images[3]),
-            ("!selected", images[0]),
-            width=width,
-            border=borderpad,
-            sticky=tk.W,
-        )
-        self.style._build_configure(ttkstyle, foreground=self.colors.fg)
-        self.style.map(ttkstyle, foreground=[("disabled", disabled_fg)])
-        self.style.layout(
-            ttkstyle,
-            [
-                (
-                    "Checkbutton.padding",
-                    {
-                        "children": [
-                            (
-                                f"{element}.indicator",
-                                {"side": tk.LEFT, "sticky": ""},
-                            ),
-                            (
-                                "Checkbutton.focus",
-                                {
-                                    "children": [
-                                        (
-                                            "Checkbutton.label",
-                                            {"sticky": tk.NSEW},
-                                        )
-                                    ],
-                                    "side": tk.LEFT,
-                                    "sticky": "",
-                                },
-                            ),
-                        ],
-                        "sticky": tk.NSEW,
-                    },
-                )
-            ],
-        )
+        # Element name carries the ttkstyle prefix so `icon_element`'s
+        # foreground lookup targets the style we just configured.
+        icon_element(self.style, f"{sn.ttkstyle}.indicator", size=size,
+            default={"name": "check-square-fill", "color": accent},
+            states={
+                "disabled selected":  "check-square-fill",   # follows fg(disabled)
+                "disabled alternate": "dash-square-fill",    # follows fg(disabled)
+                "disabled":           "square",              # follows fg(disabled)
+                "alternate":          {"name": "dash-square-fill", "color": accent},
+                "!selected":          {"name": "square", "color": fg_muted},
+            },
+            border=self.scale_size(4), sticky=W)
+        layout(self.style, sn.ttkstyle, El("Checkbutton.padding", sticky=NSEW, children=[
+            El(f"{sn.ttkstyle}.indicator", side=LEFT, sticky=""),
+            El("Checkbutton.focus", side=LEFT, sticky="", children=[
+                El("Checkbutton.label", sticky=NSEW)])]))
         # register ttkstyle
-        self.style._register_ttkstyle(ttkstyle)
-
-    def create_checkbutton_assets(self, colorname=DEFAULT):
-        """Create the image assets used to build the standard
-        checkbutton style.
-
-        Parameters:
-
-            colorname (str):
-                The color label used to style the widget.
-
-        Returns:
-
-            tuple[str]:
-                A tuple of PhotoImage names.
-        """
-        # set platform specific checkfont
-        winsys = self.style.tk.call("tk", "windowingsystem")
-        indicator = "✓"
-        if winsys == "win32":
-            # Windows font
-            fnt = ImageFont.truetype("seguisym.ttf", 120)
-            font_offset = -20
-            # TODO consider using ImageFont.getsize for offsets
-        elif winsys == "x11":
-            # Linux fonts
-            try:
-                # this should be available on most Linux distros
-                fnt = ImageFont.truetype("FreeSerif.ttf", 130)
-                font_offset = 10
-            except:
-                try:
-                    # this should be available as a backup on Linux 
-                    # distros that don't have the FreeSerif.ttf file
-                    fnt = ImageFont.truetype("DejaVuSans.ttf", 160)
-                    font_offset = -15
-                except:
-                    # If all else fails, use the default ImageFont
-                    # this won't actually show anything in practice 
-                    # because of how I'm scaling the image, but it 
-                    # will prevent the program from crashing. I need 
-                    # a better solution for a missing font
-                    fnt = ImageFont.load_default()
-                    font_offset = 0
-                    indicator = "x"
-        else:
-            # Mac OS font
-            fnt = ImageFont.truetype("LucidaGrande.ttc", 120)
-            font_offset = -10
-
-        prime_color = self.colors.get(colorname)
-        on_border = prime_color
-        on_fill = prime_color
-        off_fill = self.colors.bg
-        off_border = self.colors.selectbg
-        off_border = Colors.make_transparent(0.4, self.colors.fg, self.colors.bg)
-        disabled_fg = Colors.make_transparent(0.3, self.colors.fg, self.colors.bg)
-
-        if colorname == LIGHT:
-            check_color = self.colors.dark
-            on_border = check_color
-        elif colorname == DARK:
-            check_color = self.colors.light
-            on_border = check_color
-        else:
-            check_color = self.colors.selectfg
-
-        size = self.scale_size([14, 14])
-        # Font choice is OS-fixed for the process; `indicator`/`font_offset`
-        # capture which fallback was selected so text glyphs key correctly.
-        glyph = (indicator, font_offset)
-
-        def make_off():
-            img = Image.new("RGBA", (134, 134))
-            ImageDraw.Draw(img).rounded_rectangle(
-                [2, 2, 132, 132], radius=16, outline=off_border, width=6,
-                fill=off_fill,
-            )
-            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
-
-        def make_on():
-            img = Image.new("RGBA", (134, 134))
-            draw = ImageDraw.Draw(img)
-            draw.rounded_rectangle(
-                [2, 2, 132, 132], radius=16, fill=on_fill, outline=on_border,
-                width=3,
-            )
-            draw.text((20, font_offset), indicator, font=fnt, fill=check_color)
-            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
-
-        def make_on_disabled():
-            img = Image.new("RGBA", (134, 134))
-            draw = ImageDraw.Draw(img)
-            draw.rounded_rectangle(
-                [2, 2, 132, 132], radius=16, fill=disabled_fg,
-                outline=disabled_fg, width=3,
-            )
-            draw.text((20, font_offset), indicator, font=fnt, fill=off_fill)
-            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
-
-        def make_alt():
-            img = Image.new("RGBA", (134, 134))
-            draw = ImageDraw.Draw(img)
-            draw.rounded_rectangle(
-                [2, 2, 132, 132], radius=16, fill=on_fill, outline=on_border,
-                width=3,
-            )
-            draw.line([36, 67, 100, 67], fill=check_color, width=12)
-            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
-
-        def make_alt_disabled():
-            img = Image.new("RGBA", (134, 134))
-            draw = ImageDraw.Draw(img)
-            draw.rounded_rectangle(
-                [2, 2, 132, 132], radius=16, fill=disabled_fg,
-                outline=disabled_fg, width=3,
-            )
-            draw.line([36, 67, 100, 67], fill=off_fill, width=12)
-            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
-
-        def make_disabled():
-            img = Image.new("RGBA", (134, 134))
-            ImageDraw.Draw(img).rounded_rectangle(
-                [2, 2, 132, 132], radius=16, outline=disabled_fg, width=3
-            )
-            return ImageTk.PhotoImage(img.resize(size, Resampling.LANCZOS))
-
-        off_name = self.style._get_or_create_image(
-            ("checkbutton.off", off_border, off_fill, tuple(size)), make_off
-        )
-        on_name = self.style._get_or_create_image(
-            ("checkbutton.on", on_fill, on_border, check_color, glyph, tuple(size)),
-            make_on,
-        )
-        on_dis_name = self.style._get_or_create_image(
-            ("checkbutton.on_disabled", disabled_fg, off_fill, glyph, tuple(size)),
-            make_on_disabled,
-        )
-        alt_name = self.style._get_or_create_image(
-            ("checkbutton.alt", on_fill, on_border, check_color, tuple(size)),
-            make_alt,
-        )
-        alt_dis_name = self.style._get_or_create_image(
-            ("checkbutton.alt_disabled", disabled_fg, off_fill, tuple(size)),
-            make_alt_disabled,
-        )
-        disabled_name = self.style._get_or_create_image(
-            ("checkbutton.disabled", disabled_fg, tuple(size)), make_disabled
-        )
-
-        return off_name, on_name, disabled_name, alt_name, on_dis_name, alt_dis_name
+        self.style._register_ttkstyle(sn.ttkstyle)
 
     def create_menubutton_style(self, colorname=DEFAULT):
         """Create a solid style for the ttk.Menubutton widget.
@@ -3447,56 +2934,6 @@ class StyleBuilderTTK:
         self.style._register_ttkstyle(h_ttkstyle)
         self.style._register_ttkstyle(v_ttkstyle)
 
-    def create_sizegrip_assets(self, color):
-        """Create image assets used to build the sizegrip style.
-
-        Parameters:
-
-            color (str):
-                The color _value_ used to draw the image.
-
-        Returns:
-
-            str:
-                The PhotoImage name.
-        """
-
-        box = self.scale_size(1)
-        pad = box * 2
-        chunk = box + pad  # 4
-
-        w = chunk * 3 + pad  # 14
-        h = chunk * 3 + pad  # 14
-
-        size = [w, h]
-
-        def render():
-            im = Image.new("RGBA", size)
-            draw = ImageDraw.Draw(im)
-
-            draw.rectangle((chunk * 2 + pad, pad, chunk * 3, chunk), fill=color)
-            draw.rectangle(
-                (chunk * 2 + pad, chunk + pad, chunk * 3, chunk * 2), fill=color
-            )
-            draw.rectangle(
-                (chunk * 2 + pad, chunk * 2 + pad, chunk * 3, chunk * 3),
-                fill=color,
-            )
-
-            draw.rectangle(
-                (chunk + pad, chunk + pad, chunk * 2, chunk * 2), fill=color
-            )
-            draw.rectangle(
-                (chunk + pad, chunk * 2 + pad, chunk * 2, chunk * 3), fill=color
-            )
-
-            draw.rectangle((pad, chunk * 2 + pad, chunk, chunk * 3), fill=color)
-            return ImageTk.PhotoImage(im)
-
-        return self.style._get_or_create_image(
-            ("sizegrip", color, tuple(size)), render
-        )
-
     def create_sizegrip_style(self, colorname=DEFAULT):
         """Create a style for the ttk.Sizegrip widget.
 
@@ -3518,7 +2955,10 @@ class StyleBuilderTTK:
             ttkstyle = f"{colorname}.{STYLE}"
             grip_color = self.colors.get(colorname)
 
-        image = self.create_sizegrip_assets(grip_color)
+        # Visual-check item: `grip-horizontal` vs a corner-grip glyph -- settle
+        # on the human spot-check.
+        size = self.scale_size(16)
+        image = self.assets.icon("grip-horizontal", size, grip_color)
 
         self.style.element_create(
             f"{ttkstyle}.Sizegrip.sizegrip", "image", image
