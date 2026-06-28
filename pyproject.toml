@@ -53,7 +53,7 @@ Documentation = "https://ttkbootstrap.readthedocs.io/en/latest/"
 where = ["src"]
 
 [tool.setuptools.package-data]
-"ttkbootstrap" = ["themes/*.json", "assets/*"]
+"ttkbootstrap" = ["themes/*.json", "assets/*", "assets/icons/*"]
 
 [tool.pytest.ini_options]
 # Only the headless suite under tests/ is collected. Interactive mainloop()
