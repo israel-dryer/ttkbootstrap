@@ -23,6 +23,7 @@ from ttkbootstrap.style.assets import Assets
 from ttkbootstrap.style.layout import (
     El,
     layout,
+    register_style,
     image_element,
     statespec,
     state_map,
@@ -47,6 +48,7 @@ __all__ = [
     "Assets",
     "El",
     "layout",
+    "register_style",
     "image_element",
     "statespec",
     "state_map",

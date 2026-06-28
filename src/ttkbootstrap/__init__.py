@@ -61,7 +61,7 @@ from ttkbootstrap.style import (
     bootify, apply_bootstyle, enable_global_api,
     # Style-construction toolkit (Workstream I): the public "build your own
     # style" surface, dogfooded by the builders.
-    Assets, El, layout, image_element, statespec, state_map, StyleName,
+    Assets, El, layout, register_style, image_element, statespec, state_map, StyleName,
     # Icon-rendered assets: glyph atoms + per-state icon element sugar.
     Icon, icon_element,
 )
@@ -219,6 +219,7 @@ __all__ = [
     "Assets",
     "El",
     "layout",
+    "register_style",
     "image_element",
     "statespec",
     "state_map",

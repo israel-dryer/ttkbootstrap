@@ -88,13 +88,42 @@ class El:
         return (self.name, options)
 
 
+def register_style(style, ttkstyle):
+    """Register a hand-built ttk style name with the ttkbootstrap engine.
+
+    A custom style applied to a ttkbootstrap widget via `style="My.TButton"` is
+    **silently re-resolved to its base style** unless the engine knows the name --
+    `bootstyle` resolution only honors `style=` for a *registered* style. Building
+    a style with the toolkit (`element_create`/`image_element`/`icon_element`/
+    `map`) does not register it on its own; call this (or `layout()`, which calls
+    it for you) so `style="<ttkstyle>"` resolves to what you built.
+
+    ```python
+    state_map(style, "My.TButton", background={"pressed": "#333"})
+    register_style(style, "My.TButton")   # now style="My.TButton" resolves
+    ```
+
+    Registration is per *active* theme (it mirrors the built-in builders). A
+    hand-built style is not auto-rebuilt on a theme switch, so re-build + re
+    -register it if you change themes -- engine-managed theme-follow for custom
+    styles is a separate effort.
+    """
+    style._register_ttkstyle(ttkstyle)
+
+
 def layout(style, ttkstyle, root):
     """Apply an `El` (or list of `El`s) as the layout for `ttkstyle`.
 
-    Pure structural sugar over `style.layout(ttkstyle, [...])`.
+    Structural sugar over `style.layout(ttkstyle, [...])`. Defining a layout is
+    what gives a style its identity, so this also **registers** `ttkstyle` with
+    the engine (via `register_style`) -- a hand-built style whose terminal step is
+    `layout()` resolves through `style="<ttkstyle>"` with no extra step. (Built-in
+    builders that also call `_register_ttkstyle` explicitly are unaffected --
+    registration is an idempotent set add.)
     """
     roots = [root] if isinstance(root, El) else list(root)
     style.layout(ttkstyle, [element.spec() for element in roots])
+    register_style(style, ttkstyle)
 
 
 def image_element(style, name, *, default, states=None, **options):
