@@ -208,15 +208,12 @@ class StyleBuilderTTK:
         downarrow_image = arrow_images[0][1]
         downarrow_disabled_image = arrow_images[1][1]
         downarrow_focused_image = arrow_images[2][1]
-        self.style.element_create(
-            f"{element}.downarrow",
-            "image",
-            downarrow_image,
-            ("disabled", downarrow_disabled_image),
-            ("pressed !disabled", downarrow_focused_image),
-            ("focus !disabled", downarrow_focused_image),
-            ("hover !disabled", downarrow_focused_image),
-        )
+        image_element(
+            self.style, f"{element}.downarrow", default=downarrow_image,
+            states={"disabled": downarrow_disabled_image,
+                    "pressed !disabled": downarrow_focused_image,
+                    "focus !disabled": downarrow_focused_image,
+                    "hover !disabled": downarrow_focused_image})
         #  self.style.element_create(f"{element}.downarrow", "from", TTK_DEFAULT)  # doesn't work in python 3.13
         self.style.element_create(f"{element}.padding", "from", TTK_CLAM)
         self.style.element_create(f"{element}.textarea", "from", TTK_CLAM)
@@ -259,37 +256,11 @@ class StyleBuilderTTK:
                 ("readonly", readonly),
             ],
         )
-        self.style.layout(
-            ttkstyle,
-            [
-                (
-                    "combo.Spinbox.field",
-                    {
-                        "side": tk.TOP,
-                        "sticky": tk.EW,
-                        "children": [
-                            (
-                                "Combobox.downarrow",
-                                {"side": tk.RIGHT, "sticky": tk.S},
-                            ),
-                            (
-                                "Combobox.padding",
-                                {
-                                    "expand": "1",
-                                    "sticky": tk.NSEW,
-                                    "children": [
-                                        (
-                                            "Combobox.textarea",
-                                            {"sticky": tk.NSEW},
-                                        )
-                                    ],
-                                },
-                            ),
-                        ],
-                    },
-                )
-            ],
-        )
+        layout(self.style, ttkstyle,
+               El("combo.Spinbox.field", side=tk.TOP, sticky=tk.EW, children=[
+                   El("Combobox.downarrow", side=tk.RIGHT, sticky=tk.S),
+                   El("Combobox.padding", expand="1", sticky=tk.NSEW, children=[
+                       El("Combobox.textarea", sticky=tk.NSEW)])]))
         self.style._register_ttkstyle(ttkstyle)
         try:
             self.create_scrollbar_style()
@@ -326,28 +297,21 @@ class StyleBuilderTTK:
             h_ttkstyle = f"{colorname}.{HSTYLE}"
             v_ttkstyle = f"{colorname}.{VSTYLE}"
 
+        a = self.assets
+
         # horizontal separator
         h_element = h_ttkstyle.replace(".TS", ".S")
-        h_name = self.style._get_or_create_image(
-            ("separator", background, tuple(hsize)),
-            lambda: ImageTk.PhotoImage(Image.new("RGB", hsize, background)),
-        )
-
+        h_name = a.rect(background, hsize)
         self.style.element_create(f"{h_element}.separator", "image", h_name)
-        self.style.layout(
-            h_ttkstyle, [(f"{h_element}.separator", {"sticky": tk.EW})]
-        )
+        layout(self.style, h_ttkstyle,
+               El(f"{h_element}.separator", sticky=tk.EW))
 
         # vertical separator
         v_element = v_ttkstyle.replace(".TS", ".S")
-        v_name = self.style._get_or_create_image(
-            ("separator", background, tuple(vsize)),
-            lambda: ImageTk.PhotoImage(Image.new("RGB", vsize, background)),
-        )
+        v_name = a.rect(background, vsize)
         self.style.element_create(f"{v_element}.separator", "image", v_name)
-        self.style.layout(
-            v_ttkstyle, [(f"{v_element}.separator", {"sticky": tk.NS})]
-        )
+        layout(self.style, v_ttkstyle,
+               El(f"{v_element}.separator", sticky=tk.NS))
         self.style._register_ttkstyle(h_ttkstyle)
         self.style._register_ttkstyle(v_ttkstyle)
 
@@ -380,28 +344,24 @@ class StyleBuilderTTK:
             value_delta = 0.1
 
         barcolor_light = Colors.update_hsv(barcolor, sd=-0.2, vd=value_delta)
+        a = self.assets
 
-        def make_striped(rotate):
-            img = Image.new("RGBA", (100, 100), barcolor_light)
-            draw = ImageDraw.Draw(img)
-            draw.polygon(
-                xy=[(0, 0), (48, 0), (100, 52), (100, 100)],
-                fill=barcolor,
-            )
-            draw.polygon(xy=[(0, 52), (48, 100), (0, 100)], fill=barcolor)
-            resized = img.resize((thickness, thickness), Resampling.LANCZOS)
-            if rotate:
-                resized = resized.rotate(90)
-            return ImageTk.PhotoImage(resized)
+        # Diagonal stripe pattern over a barcolor_light field; the original
+        # polygons were hand-fit to a 100-unit canvas, re-expressed here as
+        # w/h-relative ratios. The vertical variant is the horizontal one
+        # rotated 90 deg CCW.
+        def draw_h(d, w, h):
+            d.rectangle((0, 0, w, h), fill=barcolor_light)
+            d.polygon([(0, 0), (0.48 * w, 0), (w, 0.52 * h), (w, h)], fill=barcolor)
+            d.polygon([(0, 0.52 * h), (0.48 * w, h), (0, h)], fill=barcolor)
 
-        h_name = self.style._get_or_create_image(
-            ("progressbar.striped", barcolor, barcolor_light, thickness, "h"),
-            lambda: make_striped(False),
-        )
-        v_name = self.style._get_or_create_image(
-            ("progressbar.striped", barcolor, barcolor_light, thickness, "v"),
-            lambda: make_striped(True),
-        )
+        def draw_v(d, w, h):
+            d.rectangle((0, 0, w, h), fill=barcolor_light)
+            d.polygon([(0, h), (0, 0.52 * h), (0.52 * w, 0), (w, 0)], fill=barcolor)
+            d.polygon([(0.52 * w, h), (w, 0.52 * h), (w, h)], fill=barcolor)
+
+        h_name = a.image((thickness, thickness), draw_h, barcolor, barcolor_light)
+        v_name = a.image((thickness, thickness), draw_v, barcolor, barcolor_light)
         return h_name, v_name
 
     def create_striped_progressbar_style(self, colorname=DEFAULT):
@@ -447,23 +407,9 @@ class StyleBuilderTTK:
             width=thickness,
             sticky=tk.EW,
         )
-        self.style.layout(
-            h_ttkstyle,
-            [
-                (
-                    f"{h_element}.trough",
-                    {
-                        "sticky": tk.NSEW,
-                        "children": [
-                            (
-                                f"{h_element}.pbar",
-                                {"side": tk.LEFT, "sticky": tk.NS},
-                            )
-                        ],
-                    },
-                )
-            ],
-        )
+        layout(self.style, h_ttkstyle,
+               El(f"{h_element}.trough", sticky=tk.NSEW, children=[
+                   El(f"{h_element}.pbar", side=tk.LEFT, sticky=tk.NS)]))
         self.style._build_configure(
             h_ttkstyle,
             troughcolor=troughcolor,
@@ -481,23 +427,9 @@ class StyleBuilderTTK:
             width=thickness,
             sticky=tk.NS,
         )
-        self.style.layout(
-            v_ttkstyle,
-            [
-                (
-                    f"{v_element}.trough",
-                    {
-                        "sticky": tk.NSEW,
-                        "children": [
-                            (
-                                f"{v_element}.pbar",
-                                {"side": tk.BOTTOM, "sticky": tk.EW},
-                            )
-                        ],
-                    },
-                )
-            ],
-        )
+        layout(self.style, v_ttkstyle,
+               El(f"{v_element}.trough", sticky=tk.NSEW, children=[
+                   El(f"{v_element}.pbar", side=tk.BOTTOM, sticky=tk.EW)]))
         self.style._build_configure(
             v_ttkstyle,
             troughcolor=troughcolor,
@@ -571,20 +503,9 @@ class StyleBuilderTTK:
             self.style.element_create(trough_element, "from", TTK_CLAM)
             self.style.element_create(pbar_element, "from", TTK_DEFAULT)
 
-        self.style.layout(
-            h_ttkstyle,
-            [
-                (
-                    trough_element,
-                    {
-                        "sticky": "nswe",
-                        "children": [
-                            (pbar_element, {"side": "left", "sticky": "ns"})
-                        ],
-                    },
-                )
-            ],
-        )
+        layout(self.style, h_ttkstyle,
+               El(trough_element, sticky="nswe", children=[
+                   El(pbar_element, side="left", sticky="ns")]))
         self.style._build_configure(h_ttkstyle, background=background)
 
         # vertical progressbar
@@ -595,20 +516,9 @@ class StyleBuilderTTK:
             self.style.element_create(trough_element, "from", TTK_CLAM)
             self.style.element_create(pbar_element, "from", TTK_DEFAULT)
             self.style._build_configure(v_ttkstyle, background=background)
-        self.style.layout(
-            v_ttkstyle,
-            [
-                (
-                    trough_element,
-                    {
-                        "sticky": "nswe",
-                        "children": [
-                            (pbar_element, {"side": "bottom", "sticky": "we"})
-                        ],
-                    },
-                )
-            ],
-        )
+        layout(self.style, v_ttkstyle,
+               El(trough_element, sticky="nswe", children=[
+                   El(pbar_element, side="bottom", sticky="we")]))
 
         # register ttkstyles
         self.style._register_ttkstyle(h_ttkstyle)
@@ -739,21 +649,10 @@ class StyleBuilderTTK:
         h_element = h_ttkstyle.replace(".TF", ".F")
         self.style.element_create(f"{h_element}.trough", "from", TTK_CLAM)
         self.style.element_create(f"{h_element}.pbar", "from", TTK_DEFAULT)
-        self.style.layout(
-            h_ttkstyle,
-            [
-                (
-                    f"{h_element}.trough",
-                    {
-                        "children": [
-                            (f"{h_element}.pbar", {"sticky": tk.NS}),
-                            ("Floodgauge.label", {"sticky": ""}),
-                        ],
-                        "sticky": tk.NSEW,
-                    },
-                )
-            ],
-        )
+        layout(self.style, h_ttkstyle,
+               El(f"{h_element}.trough", sticky=tk.NSEW, children=[
+                   El(f"{h_element}.pbar", sticky=tk.NS),
+                   El("Floodgauge.label", sticky="")]))
         self.style._build_configure(
             h_ttkstyle,
             thickness=50,
@@ -772,21 +671,10 @@ class StyleBuilderTTK:
         v_element = v_ttkstyle.replace(".TF", ".F")
         self.style.element_create(f"{v_element}.trough", "from", TTK_CLAM)
         self.style.element_create(f"{v_element}.pbar", "from", TTK_DEFAULT)
-        self.style.layout(
-            v_ttkstyle,
-            [
-                (
-                    f"{v_element}.trough",
-                    {
-                        "children": [
-                            (f"{v_element}.pbar", {"sticky": tk.EW}),
-                            ("Floodgauge.label", {"sticky": ""}),
-                        ],
-                        "sticky": tk.NSEW,
-                    },
-                )
-            ],
-        )
+        layout(self.style, v_ttkstyle,
+               El(f"{v_element}.trough", sticky=tk.NSEW, children=[
+                   El(f"{v_element}.pbar", sticky=tk.EW),
+                   El("Floodgauge.label", sticky="")]))
         self.style._build_configure(
             v_ttkstyle,
             thickness=50,
@@ -907,33 +795,23 @@ class StyleBuilderTTK:
                 The color value to use when the thumb is active or
                 hovered.
         """
+        a = self.assets
         vsize = self.scale_size([9, 28])
         hsize = self.scale_size([28, 9])
 
-        def rounded_rect(size, fill):
-            def render():
-                x = size[0] * 10
-                y = size[1] * 10
-                img = Image.new("RGBA", (x, y))
-                draw = ImageDraw.Draw(img)
-                radius = min([x, y]) // 2
-                draw.rounded_rectangle([0, 0, x - 1, y - 1], radius, fill)
-                return ImageTk.PhotoImage(
-                    img.resize(size, Resampling.BICUBIC)
-                )
-
-            return self.style._get_or_create_image(
-                ("scrollbar.round", fill, tuple(size)), render
-            )
+        # A fully-rounded "pill": radius = half the short axis (the old draw
+        # used a 10x canvas with radius min//2, downscaled -- same shape).
+        def pill(size, fill):
+            return a.rounded_rect(fill, size, min(size) / 2)
 
         # create images
-        h_normal_img = rounded_rect(hsize, thumbcolor)
-        h_pressed_img = rounded_rect(hsize, pressed)
-        h_active_img = rounded_rect(hsize, active)
+        h_normal_img = pill(hsize, thumbcolor)
+        h_pressed_img = pill(hsize, pressed)
+        h_active_img = pill(hsize, active)
 
-        v_normal_img = rounded_rect(vsize, thumbcolor)
-        v_pressed_img = rounded_rect(vsize, pressed)
-        v_active_img = rounded_rect(vsize, active)
+        v_normal_img = pill(vsize, thumbcolor)
+        v_pressed_img = pill(vsize, pressed)
+        v_active_img = pill(vsize, active)
 
         return (
             h_normal_img,
@@ -996,45 +874,18 @@ class StyleBuilderTTK:
             relief=tk.FLAT,
             borderwidth=0,
         )
-        self.style.element_create(
-            f"{h_ttkstyle}.thumb",
-            "image",
-            scroll_images[0],
-            ("pressed", scroll_images[1]),
-            ("active", scroll_images[2]),
-            border=self.scale_size(9),
-            padding=0,
-            sticky=tk.EW,
-        )
-        self.style.layout(
-            h_ttkstyle,
-            [
-                (
-                    "Horizontal.Scrollbar.trough",
-                    {
-                        "sticky": "we",
-                        "children": [
-                            (
-                                "Horizontal.Scrollbar.leftarrow",
-                                {"side": "left", "sticky": ""},
-                            ),
-                            (
-                                "Horizontal.Scrollbar.rightarrow",
-                                {"side": "right", "sticky": ""},
-                            ),
-                            (
-                                f"{h_ttkstyle}.thumb",
-                                {"expand": "1", "sticky": "nswe"},
-                            ),
-                        ],
-                    },
-                )
-            ],
-        )
+        image_element(
+            self.style, f"{h_ttkstyle}.thumb", default=scroll_images[0],
+            states={"pressed": scroll_images[1], "active": scroll_images[2]},
+            border=self.scale_size(9), padding=0, sticky=tk.EW)
+        layout(self.style, h_ttkstyle,
+               El("Horizontal.Scrollbar.trough", sticky="we", children=[
+                   El("Horizontal.Scrollbar.leftarrow", side="left", sticky=""),
+                   El("Horizontal.Scrollbar.rightarrow", side="right", sticky=""),
+                   El(f"{h_ttkstyle}.thumb", expand="1", sticky="nswe")]))
         self.style._build_configure(h_ttkstyle, arrowcolor=background)
-        self.style.map(
-            h_ttkstyle, arrowcolor=[("pressed", pressed), ("active", active)]
-        )
+        state_map(self.style, h_ttkstyle,
+                  arrowcolor={"pressed": pressed, "active": active})
 
         # vertical scrollbar
         self.style._build_configure(
@@ -1048,45 +899,18 @@ class StyleBuilderTTK:
             background=troughcolor,
             relief=tk.FLAT,
         )
-        self.style.element_create(
-            f"{v_ttkstyle}.thumb",
-            "image",
-            scroll_images[3],
-            ("pressed", scroll_images[4]),
-            ("active", scroll_images[5]),
-            border=self.scale_size(9),
-            padding=0,
-            sticky=tk.NS,
-        )
-        self.style.layout(
-            v_ttkstyle,
-            [
-                (
-                    "Vertical.Scrollbar.trough",
-                    {
-                        "sticky": "ns",
-                        "children": [
-                            (
-                                "Vertical.Scrollbar.uparrow",
-                                {"side": "top", "sticky": ""},
-                            ),
-                            (
-                                "Vertical.Scrollbar.downarrow",
-                                {"side": "bottom", "sticky": ""},
-                            ),
-                            (
-                                f"{v_ttkstyle}.thumb",
-                                {"expand": "1", "sticky": "nswe"},
-                            ),
-                        ],
-                    },
-                )
-            ],
-        )
+        image_element(
+            self.style, f"{v_ttkstyle}.thumb", default=scroll_images[3],
+            states={"pressed": scroll_images[4], "active": scroll_images[5]},
+            border=self.scale_size(9), padding=0, sticky=tk.NS)
+        layout(self.style, v_ttkstyle,
+               El("Vertical.Scrollbar.trough", sticky="ns", children=[
+                   El("Vertical.Scrollbar.uparrow", side="top", sticky=""),
+                   El("Vertical.Scrollbar.downarrow", side="bottom", sticky=""),
+                   El(f"{v_ttkstyle}.thumb", expand="1", sticky="nswe")]))
         self.style._build_configure(v_ttkstyle, arrowcolor=background)
-        self.style.map(
-            v_ttkstyle, arrowcolor=[("pressed", pressed), ("active", active)]
-        )
+        state_map(self.style, v_ttkstyle,
+                  arrowcolor={"pressed": pressed, "active": active})
 
         # register ttkstyles
         self.style._register_ttkstyle(h_ttkstyle)
@@ -1108,30 +932,19 @@ class StyleBuilderTTK:
                 The color value to use when the thumb is active or
                 hovered.
         """
+        a = self.assets
         vsize = self.scale_size([9, 28])
         hsize = self.scale_size([28, 9])
 
-        def draw_rect(size, fill):
-            def render():
-                x = size[0] * 10
-                y = size[1] * 10
-                img = Image.new("RGBA", (x, y), fill)
-                return ImageTk.PhotoImage(
-                    img.resize(size), Resampling.BICUBIC
-                )
+        # Solid-fill rectangles (the old 10x oversample + resize was a no-op
+        # for a flat fill).
+        h_normal_img = a.rect(thumbcolor, hsize)
+        h_pressed_img = a.rect(pressed, hsize)
+        h_active_img = a.rect(active, hsize)
 
-            return self.style._get_or_create_image(
-                ("scrollbar.rect", fill, tuple(size)), render
-            )
-
-        # create images
-        h_normal_img = draw_rect(hsize, thumbcolor)
-        h_pressed_img = draw_rect(hsize, pressed)
-        h_active_img = draw_rect(hsize, active)
-
-        v_normal_img = draw_rect(vsize, thumbcolor)
-        v_pressed_img = draw_rect(vsize, pressed)
-        v_active_img = draw_rect(vsize, active)
+        v_normal_img = a.rect(thumbcolor, vsize)
+        v_pressed_img = a.rect(pressed, vsize)
+        v_active_img = a.rect(active, vsize)
 
         return (
             h_normal_img,
@@ -1194,44 +1007,18 @@ class StyleBuilderTTK:
             relief=tk.FLAT,
             borderwidth=0,
         )
-        self.style.element_create(
-            f"{h_ttkstyle}.thumb",
-            "image",
-            scroll_images[0],
-            ("pressed", scroll_images[1]),
-            ("active", scroll_images[2]),
-            border=(3, 0),
-            sticky=tk.NSEW,
-        )
-        self.style.layout(
-            h_ttkstyle,
-            [
-                (
-                    "Horizontal.Scrollbar.trough",
-                    {
-                        "sticky": "we",
-                        "children": [
-                            (
-                                "Horizontal.Scrollbar.leftarrow",
-                                {"side": "left", "sticky": ""},
-                            ),
-                            (
-                                "Horizontal.Scrollbar.rightarrow",
-                                {"side": "right", "sticky": ""},
-                            ),
-                            (
-                                f"{h_ttkstyle}.thumb",
-                                {"expand": "1", "sticky": "nswe"},
-                            ),
-                        ],
-                    },
-                )
-            ],
-        )
+        image_element(
+            self.style, f"{h_ttkstyle}.thumb", default=scroll_images[0],
+            states={"pressed": scroll_images[1], "active": scroll_images[2]},
+            border=(3, 0), sticky=tk.NSEW)
+        layout(self.style, h_ttkstyle,
+               El("Horizontal.Scrollbar.trough", sticky="we", children=[
+                   El("Horizontal.Scrollbar.leftarrow", side="left", sticky=""),
+                   El("Horizontal.Scrollbar.rightarrow", side="right", sticky=""),
+                   El(f"{h_ttkstyle}.thumb", expand="1", sticky="nswe")]))
         self.style._build_configure(h_ttkstyle, arrowcolor=background)
-        self.style.map(
-            h_ttkstyle, arrowcolor=[("pressed", pressed), ("active", active)]
-        )
+        state_map(self.style, h_ttkstyle,
+                  arrowcolor={"pressed": pressed, "active": active})
 
         # vertical scrollbar
         self.style._build_configure(
@@ -1246,44 +1033,18 @@ class StyleBuilderTTK:
             relief=tk.FLAT,
             borderwidth=0,
         )
-        self.style.element_create(
-            f"{v_ttkstyle}.thumb",
-            "image",
-            scroll_images[3],
-            ("pressed", scroll_images[4]),
-            ("active", scroll_images[5]),
-            border=(0, 3),
-            sticky=tk.NSEW,
-        )
-        self.style.layout(
-            v_ttkstyle,
-            [
-                (
-                    "Vertical.Scrollbar.trough",
-                    {
-                        "sticky": "ns",
-                        "children": [
-                            (
-                                "Vertical.Scrollbar.uparrow",
-                                {"side": "top", "sticky": ""},
-                            ),
-                            (
-                                "Vertical.Scrollbar.downarrow",
-                                {"side": "bottom", "sticky": ""},
-                            ),
-                            (
-                                f"{v_ttkstyle}.thumb",
-                                {"expand": "1", "sticky": "nswe"},
-                            ),
-                        ],
-                    },
-                )
-            ],
-        )
+        image_element(
+            self.style, f"{v_ttkstyle}.thumb", default=scroll_images[3],
+            states={"pressed": scroll_images[4], "active": scroll_images[5]},
+            border=(0, 3), sticky=tk.NSEW)
+        layout(self.style, v_ttkstyle,
+               El("Vertical.Scrollbar.trough", sticky="ns", children=[
+                   El("Vertical.Scrollbar.uparrow", side="top", sticky=""),
+                   El("Vertical.Scrollbar.downarrow", side="bottom", sticky=""),
+                   El(f"{v_ttkstyle}.thumb", expand="1", sticky="nswe")]))
         self.style._build_configure(v_ttkstyle, arrowcolor=background)
-        self.style.map(
-            v_ttkstyle, arrowcolor=[("pressed", pressed), ("active", active)]
-        )
+        state_map(self.style, v_ttkstyle,
+                  arrowcolor={"pressed": pressed, "active": active})
 
         # register ttkstyles
         self.style._register_ttkstyle(h_ttkstyle)
@@ -1334,68 +1095,23 @@ class StyleBuilderTTK:
         downarrow_disabled_image = arrow_images[1][1]
         downarrow_focus_image = arrow_images[2][1]
 
-        self.style.element_create(
-            f"{element}.uparrow",
-            "image",
-            uparrow_image,
-            ("disabled", uparrow_disabled_image),
-            ("pressed !disabled", uparrow_focus_image),
-            ("hover !disabled", uparrow_focus_image),
-        )
-        self.style.element_create(
-            f"{element}.downarrow",
-            "image",
-            downarrow_image,
-            ("disabled", downarrow_disabled_image),
-            ("pressed !disabled", downarrow_focus_image),
-            ("hover !disabled", downarrow_focus_image),
-        )
-        self.style.layout(
-            ttkstyle,
-            [
-                (
-                    f"{element}.field",
-                    {
-                        "side": tk.TOP,
-                        "sticky": tk.EW,
-                        "children": [
-                            (
-                                "null",
-                                {
-                                    "side": tk.RIGHT,
-                                    "sticky": "",
-                                    "children": [
-                                        (
-                                            f"{element}.uparrow",
-                                            {"side": tk.TOP, "sticky": tk.E},
-                                        ),
-                                        (
-                                            f"{element}.downarrow",
-                                            {
-                                                "side": tk.BOTTOM,
-                                                "sticky": tk.E,
-                                            },
-                                        ),
-                                    ],
-                                },
-                            ),
-                            (
-                                f"{element}.padding",
-                                {
-                                    "sticky": tk.NSEW,
-                                    "children": [
-                                        (
-                                            f"{element}.textarea",
-                                            {"sticky": tk.NSEW},
-                                        )
-                                    ],
-                                },
-                            ),
-                        ],
-                    },
-                )
-            ],
-        )
+        image_element(
+            self.style, f"{element}.uparrow", default=uparrow_image,
+            states={"disabled": uparrow_disabled_image,
+                    "pressed !disabled": uparrow_focus_image,
+                    "hover !disabled": uparrow_focus_image})
+        image_element(
+            self.style, f"{element}.downarrow", default=downarrow_image,
+            states={"disabled": downarrow_disabled_image,
+                    "pressed !disabled": downarrow_focus_image,
+                    "hover !disabled": downarrow_focus_image})
+        layout(self.style, ttkstyle,
+               El(f"{element}.field", side=tk.TOP, sticky=tk.EW, children=[
+                   El("null", side=tk.RIGHT, sticky="", children=[
+                       El(f"{element}.uparrow", side=tk.TOP, sticky=tk.E),
+                       El(f"{element}.downarrow", side=tk.BOTTOM, sticky=tk.E)]),
+                   El(f"{element}.padding", sticky=tk.NSEW, children=[
+                       El(f"{element}.textarea", sticky=tk.NSEW)])]))
         self.style._build_configure(
             ttkstyle,
             bordercolor=bordercolor,
@@ -1519,32 +1235,10 @@ class StyleBuilderTTK:
                 ("selected", self.colors.selectfg),
             ],
         )
-        self.style.layout(
-            body_style,
-            [
-                (
-                    "Button.border",
-                    {
-                        "sticky": tk.NSEW,
-                        "border": "1",
-                        "children": [
-                            (
-                                "Treeview.padding",
-                                {
-                                    "sticky": tk.NSEW,
-                                    "children": [
-                                        (
-                                            "Treeview.treearea",
-                                            {"sticky": tk.NSEW},
-                                        )
-                                    ],
-                                },
-                            )
-                        ],
-                    },
-                )
-            ],
-        )
+        layout(self.style, body_style,
+               El("Button.border", sticky=tk.NSEW, border="1", children=[
+                   El("Treeview.padding", sticky=tk.NSEW, children=[
+                       El("Treeview.treearea", sticky=tk.NSEW)])]))
         # register ttkstyles
         self.style._register_ttkstyle(body_style)
 
@@ -1632,32 +1326,10 @@ class StyleBuilderTTK:
             lightcolor=[("focus", focuscolor)],
             darkcolor=[("focus", focuscolor)],
         )
-        self.style.layout(
-            body_style,
-            [
-                (
-                    "Button.border",
-                    {
-                        "sticky": tk.NSEW,
-                        "border": "1",
-                        "children": [
-                            (
-                                "Treeview.padding",
-                                {
-                                    "sticky": tk.NSEW,
-                                    "children": [
-                                        (
-                                            "Treeview.treearea",
-                                            {"sticky": tk.NSEW},
-                                        )
-                                    ],
-                                },
-                            )
-                        ],
-                    },
-                )
-            ],
-        )
+        layout(self.style, body_style,
+               El("Button.border", sticky=tk.NSEW, border="1", children=[
+                   El("Treeview.padding", sticky=tk.NSEW, children=[
+                       El("Treeview.treearea", sticky=tk.NSEW)])]))
 
         try:
             self.style.element_create("Treeitem.indicator", "from", TTK_ALT)
@@ -2409,36 +2081,11 @@ class StyleBuilderTTK:
             padding=(10, 5),
             anchor=tk.CENTER,
         )
-        self.style.layout(
-            ttkstyle,
-            [
-                (
-                    "Toolbutton.border",
-                    {
-                        "sticky": tk.NSEW,
-                        "children": [
-                            (
-                                "Toolbutton.focus",
-                                {
-                                    "sticky": tk.NSEW,
-                                    "children": [
-                                        (
-                                            "Toolbutton.padding",
-                                            {
-                                                "sticky": tk.NSEW,
-                                                "children": [
-                                                    ("Toolbutton.label", {"sticky": tk.NSEW})
-                                                ],
-                                            },
-                                        )
-                                    ],
-                                },
-                            )
-                        ],
-                    },
-                )
-            ],
-        )
+        layout(self.style, ttkstyle,
+               El("Toolbutton.border", sticky=tk.NSEW, children=[
+                   El("Toolbutton.focus", sticky=tk.NSEW, children=[
+                       El("Toolbutton.padding", sticky=tk.NSEW, children=[
+                           El("Toolbutton.label", sticky=tk.NSEW)])])]))
 
         self.style.map(
             ttkstyle,
