@@ -94,7 +94,7 @@ ProgressMode = Literal["determinate", "indeterminate"]
 
 BootColor = Literal["primary", "secondary", "success", "danger", "warning", "info", "light", "dark"]
 
-BootType = Literal["outline", "link", "toggle", "inverse", "striped", "toolbutton", "square"]
+BootType = Literal["outline", "link", "toggle", "inverse", "striped", "thin", "toolbutton", "square"]
 
 TreeviewDisplay = Literal["tree", "headings", "tree headings"]
 
@@ -277,6 +277,7 @@ LINK: Final[BootType] = "link"
 TOGGLE: Final[BootType] = "toggle"
 INVERSE: Final[BootType] = "inverse"
 STRIPED: Final[BootType] = "striped"
+THIN: Final[BootType] = "thin"
 TOOLBUTTON: Final[BootType] = "toolbutton"
 SQUARE: Final[BootType] = "square"
 
@@ -318,6 +319,6 @@ __all__ = [
     "DEFAULT", "DEFAULT_THEME", "TTK_CLAM", "TTK_ALT", "TTK_DEFAULT",
     "FULL", "SEMI", "DETERMINATE", "INDETERMINATE",
     "PRIMARY", "SECONDARY", "SUCCESS", "DANGER", "WARNING", "INFO", "LIGHT", "DARK",
-    "OUTLINE", "LINK", "TOGGLE", "INVERSE", "STRIPED", "TOOLBUTTON", "SQUARE",
+    "OUTLINE", "LINK", "TOGGLE", "INVERSE", "STRIPED", "THIN", "TOOLBUTTON", "SQUARE",
     "TREE", "HEADINGS", "TREEHEADINGS",
 ]

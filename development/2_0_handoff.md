@@ -3,17 +3,17 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-06-28 (Workstream I — **PR 6b MERGED** (#1080): glyph builders
-(check/radio/toggle×2/date/arrows/sizegrip) wired onto `a.icon`/`icon_element`;
-held-branch geometric/layout cleanup; public `register_style` (PR-6a finding
-fixed); two light↔dark spot-check rounds (caret-fill arrows incl. menubutton +
-datepicker). Suite **92 passed**. **Visual polish deferred to a follow-up PR** —
-see "FOLLOW-UP" below. Next: the polish follow-up and/or Workstream E + D.)_
+_Last updated: 2026-06-28 (recolorable element assets complete on
+`feat/2.0-recolor-elements`; headless gates pass and the user approved the
+light↔dark visual preview. Ready for commit/PR.)_
 
 ## Where we are
 
 Integration branch: **`2.0`** (cut all 2.0 PRs against it, not `master`).
-Suite: `python -m pytest -q` → **92 passed**, headless, order-independent.
+Expected suite after this branch: **104 passed**, headless, order-independent.
+On this machine Python 3.12 reports **102 passed / 2 unrelated failures** because
+its Tcl install cannot read `tk8.6/msgs/nl.msg` and `tk8.6/msgs/fr.msg`;
+excluding that environment-specific localization module gives **98 passed**.
 
 The engine keystone (Workstream A) is **complete and merged**: PR 1 (repaint,
 #1073) + PR 2 (content-addressed image cache, #1074). **PR 3 — the mixin API
@@ -32,19 +32,83 @@ tweaks; see "FOLLOW-UP" below) or Workstream E (theme/anchor model) + D (bootsty
 canonical grammar).** Tier-2 toolkit (`state_colors` from ramp steps) follows E.
 Both E and D want a design pass first per the hard rule.
 
-**New strand (user, 2026-06-28): recolorable raster widget assets.** Use pre-made
-image assets recolored on demand (the bootstack approach) for radio/checkbox/
-switch/scale/scrollbar/progressbar. **Decided: these REPLACE the current
-rendering** for those six (icon quality not good enough for general widget
-indicators) — radio/checkbox/switch un-wire their PR-6b `icon_element`/`a.icon`
-calls; scale/scrollbar/progressbar swap their geometric recipe calls. **The icon
-engine stays** for all other widgets (date/carets/sizegrip). This is a *new recipe on the existing PR-2 cache + PR-5
-`Assets` + PR-6a icon surface* — `Assets.recolor` + a `recolor_element` mirroring
-`icon_element`, a vendored `assets/widgets/` dir, then per-widget builder
-migration. Design brief (proposal, design-pass-not-yet-held):
-**`development/2_0_recolor_assets_design.md`** — settle its open questions with
-the user before coding. Cross-machine handoff for this lives in the repo-root
-**`AGENTS.md`** (memories don't travel between machines).
+**Recolorable raster widget assets — COMPLETE, VISUALLY APPROVED.** Branch:
+`feat/2.0-recolor-elements`. Locked design:
+**`development/2_0_recolor_assets_design.md`**. Radio/checkbox/switch/scale/
+scrollbar/progressbar now use bootstack-derived templates from
+`assets/elements/`; icons remain for date/carets/sizegrip.
+
+- New leaf `style/elements.py`: lazy JSON manifest/source cache; black/white
+  structural channels + optional magenta fill; source alpha preserved; no
+  cyan/teal or surface preblend. Horizontal flip handles switch-off; quarter
+  turns generate vertical slider/scrollbar/progressbar assets and rotate their
+  border/padding metadata. `Assets.recolor` is the only new public surface.
+- `StyleBuilderTTK.configure()` now owns the builder-to-engine raw configure
+  seam; all 44 recipes call the local alias, and only that alias reaches
+  `Style._build_configure` to bypass public bootstyle resolution.
+- Cache key covers asset, final scaled size, every resolved target color, and
+  transform. Manifest sources are authored at 2x and resized once.
+- Standard + round scrollbars are arrowless raster-thumb layouts; their native
+  troughs blend into `colors.bg` and require no trough image asset.
+  Selected radio is an accent annulus. Existing striped progressbars remain on
+  the stripe renderer. New `bootstyle="thin"` progressbar + public `THIN`
+  constant use `progressbar-thin.png`. Checkbutton, radiobutton, and both switch
+  layouts use a cached transparent spacer between the indicator and label.
+  Progressbar images and layout children stretch only along their orientation
+  (`EW` horizontal, `NS` vertical), preventing cross-axis image repetition;
+  their style background is the theme surface (`colors.bg`), not the bar color.
+  Standard and round scrollbar thumbs now follow the same contract: no
+  element-level sticky, axis-only layout sticky, and a surface background.
+- Verification: recolor/channel/alpha/transform/metadata/cache/layout/package
+  tests added; targeted **38 passed**; remaining headless suite excluding the
+  broken local Tcl localization file **98 passed**; warning-free import,
+  standalone module guard, Python 3.10 grammar parse, and 684-namespace
+  annotation evaluation clean.
+- Manual gate passed (user, 2026-06-28): `examples/recolor_assets_preview.py`
+  approved after indicator spacing, progressbar stretch/surface, and scrollbar
+  thumb-only/native-trough corrections.
+
+## Next session — modularize the ttk style builders (design first)
+
+Goal: replace the 2,600+ line `style/builders_ttk.py` recipe monolith with a
+private, decorator-backed registry and one module per widget family, following
+bootstack's organization without adopting its style grammar or widget API.
+
+Locked scope from the 2026-06-28 discussion:
+
+- Keep the existing bootstyle grammar, generated ttk style names, lazy build
+  behavior, theme lifecycle, visuals, and public APIs unchanged.
+- Keep `StyleBuilderTTK` as the small per-theme context/coordinator: style,
+  colors/theme/assets, scaling/configuration helpers, theme setup, and registry
+  dispatch.
+- Add a private `style/builders/` package with explicit module imports,
+  deterministic `(variant, widget-family)` registration, and family-local asset
+  helpers. Put only genuinely shared helpers (such as arrow/spacer assets) in
+  `builders/utils.py`.
+- Preserve recipes that build/register multiple ttk styles (horizontal +
+  vertical pairs, headers, chevrons, and related styles). Do not assume one
+  registry call produces only the requested style name.
+- Do not copy bootstack's swallowed loader exceptions or silent duplicate
+  replacement: imports should fail visibly and duplicate registry keys should
+  fail tests.
+
+Workflow:
+
+1. After the recolorable-assets PR merges, branch
+   `refactor/2.0-builder-modules` from the updated `2.0` branch.
+2. Write `development/2_0_builder_split_design.md` and lock registry keys,
+   loading/import layering, module boundaries, and the builder callable
+   contract before implementation.
+3. Implement on that single branch across several sessions/commits: registry +
+   simple families; controls; image-heavy/oriented families; compound families;
+   then remove `name_to_method()` and all convention-based reflection.
+4. Gate with registry completeness/duplicate tests, lazy per-theme rebuilding,
+   third-party style passthrough, import-cycle and PEP 649 annotation sweeps,
+   warning-free import, and the full headless suite.
+
+Use one implementation branch/PR. Splitting this into parallel branches would
+create avoidable conflicts in `builders_ttk.py`, `bootstyle.py`, and package
+imports; the coherent unit is the complete behavior-preserving modularization.
 
 ## PR 6b — MERGED (2026-06-28, #1080, Workstream I — glyph builders on icons)
 

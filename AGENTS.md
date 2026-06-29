@@ -49,14 +49,15 @@ Integration branch is **`2.0`** (cut all 2.0 PRs against it, NOT `master`).
 Merged into `2.0`: engine repaint + content-addressed image cache (PRs 1–2),
 mixin API replacing the import-time monkey-patch (PR 3), the `style/` package
 split (PR 4), the public asset/layout toolkit (PR 5), the icon engine (PR 6a),
-and the glyph-builder migration (PR 6b). Headless suite at last handoff: **92
-passed**. Next candidates: a small visual-polish PR, then Workstream E
+and the glyph-builder migration (PR 6b). The recolorable element branch raises
+the expected headless suite to **104 passed** and has passed its visual gate.
+Next candidates: a small visual-polish PR, then Workstream E
 (theme/anchor model) and D (bootstyle canonical grammar) — **each needs a design
 pass first**.
 
 ## Current task this handoff: recolorable raster widget assets
 
-The user wants to use **pre-made image assets that get recolored on demand**
+Branch: **`feat/2.0-recolor-elements`**. The user wants to use **pre-made image assets that get recolored on demand**
 (the bootstack approach) for a specific set of widgets — **radio, checkbox,
 switch, slider (scale), scrollbar, progressbar**. **Decision (2026-06-28): these
 recolored rasters REPLACE the current rendering for those six widgets** (the
@@ -65,11 +66,12 @@ only radio/checkbox/switch use icons today; scale/scrollbar/progressbar are
 geometric draws. **The icon engine stays for every other widget** (date button,
 combobox/spinbox/menubutton carets, sizegrip).
 
-A full design brief is in **`development/2_0_recolor_assets_design.md`**. Read it
-before writing code. **Do a design pass / discuss with the user before
-implementing** — this adds new public surface and a new asset directory, and the
-project rule is *no ad-hoc refactors of the style engine* (see below). The brief
-is a proposal to refine with the user, not a locked spec.
+The implemented design is **`development/2_0_recolor_assets_design.md`**. The
+branch contains its manifest renderer, cache-safe transforms, six widget
+migrations, arrowless thumb-only scrollbars, and the new thin progressbar
+variant. Headless gates and the human light↔dark check pass. See
+`development/2_0_handoff.md` for exact verification results and the local Tcl
+localization-test caveat.
 
 ## How to work here
 

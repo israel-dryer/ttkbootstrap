@@ -47,6 +47,7 @@ class Keywords:
         "round",
         "square",
         "striped",
+        "thin",
         "focus",
         "input",
         "date",

@@ -16,6 +16,8 @@ and the snap are internal and adaptive.
 from PIL import Image, ImageDraw, ImageFilter, ImageTk
 from PIL.Image import Resampling
 
+from ttkbootstrap.style.elements import RecolorRenderer, RecolorResult
+
 
 def _wh(size):
     """Normalize `size` (int -> square, or `(w, h)`) to an int `(w, h)` tuple."""
@@ -141,6 +143,32 @@ class Assets:
         key = ("icon", name, size, color)
         return self.style._get_or_create_image(
             key, lambda: ImageTk.PhotoImage(IconRenderer.render(name, size, color)))
+
+    def recolor(self, name, *, white, black, magenta=None, transform=None):
+        """Recolor a manifest-backed ttk element raster and cache the result.
+
+        `white`, `black`, and optional `magenta` are resolved color strings for
+        the source template's semantic channels. Source alpha is preserved.
+        `transform` may flip the image horizontally or rotate it by a quarter
+        turn; dimensions and border/padding metadata transform with the pixels.
+
+        Returns a `RecolorResult` containing the Tcl image name and scaled
+        manifest metadata. The manifest's 2x source dimensions are converted to
+        the current Tk image scale internally, so callers do not pass a size.
+        """
+        winsys = self.style.master.tk.call("tk", "windowingsystem")
+        baseline = 1.000492368291482 if winsys == "aqua" else 1.33398982438864281
+        tk_scaling = float(self.style.master.tk.call("tk", "scaling"))
+        scale = (tk_scaling / baseline) / RecolorRenderer.source_dpi()
+        meta = RecolorRenderer.metadata(name, scale, transform)
+        size = (meta.width, meta.height)
+        key = ("recolor", name, size, white, black, magenta, transform)
+        image = self.style._get_or_create_image(
+            key,
+            lambda: ImageTk.PhotoImage(RecolorRenderer.render(
+                name, size, white, black, magenta, transform)),
+        )
+        return RecolorResult(image=image, meta=meta)
 
     def image(self, size, draw_fn, *key_parts):
         """Escape hatch for custom composite draws (concentric circles, glyphs).
