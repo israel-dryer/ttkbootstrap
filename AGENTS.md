@@ -41,7 +41,9 @@ Read these, in order, before any 2.0 work:
    - `development/2_0_toolkit_design.md` — the public style-construction toolkit (I).
    - `development/2_0_icons_design.md` — the Bootstrap-Icons glyph renderer (I).
    - `development/2_0_recolor_assets_design.md` — **recolorable raster widget
-     assets** (the new strand the user is starting; see "Current task" below).
+     assets** (merged in #1081).
+   - `development/2_0_builder_split_design.md` — modular `StyleBuilderTTK`
+     recipe registry (approved, implemented, and visually approved).
 
 ### Where things stand (snapshot — confirm against the handoff, it's authoritative)
 
@@ -49,29 +51,25 @@ Integration branch is **`2.0`** (cut all 2.0 PRs against it, NOT `master`).
 Merged into `2.0`: engine repaint + content-addressed image cache (PRs 1–2),
 mixin API replacing the import-time monkey-patch (PR 3), the `style/` package
 split (PR 4), the public asset/layout toolkit (PR 5), the icon engine (PR 6a),
-and the glyph-builder migration (PR 6b). The recolorable element branch raises
-the expected headless suite to **104 passed** and has passed its visual gate.
-Next candidates: a small visual-polish PR, then Workstream E
-(theme/anchor model) and D (bootstyle canonical grammar) — **each needs a design
-pass first**.
+the glyph-builder migration (PR 6b), and recolorable raster widget assets
+(#1081). The modular `StyleBuilderTTK` branch raises the expected suite to
+**147 passed** and is headless-clean apart from the documented local Tcl
+catalog defect. Its human light↔dark smoke gate passed. Workstream E
+(theme/anchor model) and D
+(bootstyle canonical grammar) remain later candidates and each needs its own
+design pass first.
 
-## Current task this handoff: recolorable raster widget assets
+## Current task this handoff: modularize `StyleBuilderTTK`
 
-Branch: **`feat/2.0-recolor-elements`**. The user wants to use **pre-made image assets that get recolored on demand**
-(the bootstack approach) for a specific set of widgets — **radio, checkbox,
-switch, slider (scale), scrollbar, progressbar**. **Decision (2026-06-28): these
-recolored rasters REPLACE the current rendering for those six widgets** (the
-font-glyph icon quality wasn't good enough for general widget indicators). Note
-only radio/checkbox/switch use icons today; scale/scrollbar/progressbar are
-geometric draws. **The icon engine stays for every other widget** (date button,
-combobox/spinbox/menubutton carets, sizegrip).
+Branch: **`refactor/2.0-builder-modules`**, cut from `2.0` after the recolorable
+raster-assets PR merged as **#1081**. The 2,689-line
+`style/builders_ttk.py` recipe monolith is now a 161-line coordinator plus a
+private frozen decorator registry and 22 widget-family modules.
 
-The implemented design is **`development/2_0_recolor_assets_design.md`**. The
-branch contains its manifest renderer, cache-safe transforms, six widget
-migrations, arrowless thumb-only scrollbars, and the new thin progressbar
-variant. Headless gates and the human light↔dark check pass. See
-`development/2_0_handoff.md` for exact verification results and the local Tcl
-localization-test caveat.
+The approved design and exact verification results are in
+**`development/2_0_builder_split_design.md`**. Headless, structural, and human
+light↔dark smoke gates pass. Preserve the existing
+bootstyle grammar, generated style names, lazy per-theme behavior, and visuals.
 
 ## How to work here
 

@@ -248,24 +248,24 @@ def create_checkbutton_style(self, colorname=DEFAULT):
     disabled = Colors.make_transparent(0.3, self.colors.fg, self.colors.bg)
 
     # foreground map FIRST, so icon specs that omit a color resolve against it
-    self.style._build_configure(sn.ttkstyle, foreground=self.colors.fg)
-    state_map(self.style, sn.ttkstyle, foreground={"disabled": disabled})
+    self.style._build_configure(sn.ttk_style, foreground=self.colors.fg)
+    state_map(self.style, sn.ttk_style, foreground={"disabled": disabled})
 
     icon_element(self.style, f"{sn.element}.indicator", size=size,
-        default={"name": "check-square-fill", "color": sn.colorname},  # selected → accent
-        states={
-            "disabled selected":  "check-square-fill",   # name only → color follows fg(disabled)
-            "disabled alternate": "dash-square-fill",     #   (free dimming — no color repeated)
-            "disabled":           "square",
-            "alternate":          {"name": "dash-square-fill", "color": sn.colorname},
-            "!selected":          "square",               # off → color follows foreground
-        },
-        border=self.scale_size(4), sticky=W)
-    layout(self.style, sn.ttkstyle, El("Checkbutton.padding", sticky=NSEW, children=[
+                 default={"name": "check-square-fill", "color": sn.colorname},  # selected → accent
+                 states={
+                     "disabled selected": "check-square-fill",  # name only → color follows fg(disabled)
+                     "disabled alternate": "dash-square-fill",  # (free dimming — no color repeated)
+                     "disabled": "square",
+                     "alternate": {"name": "dash-square-fill", "color": sn.colorname},
+                     "!selected": "square",  # off → color follows foreground
+                 },
+                 border=self.scale_size(4), sticky=W)
+    layout(self.style, sn.ttk_style, El("Checkbutton.padding", sticky=NSEW, children=[
         El(f"{sn.element}.indicator", side=LEFT, sticky=""),
         El("Checkbutton.focus", side=LEFT, sticky="", children=[
             El("Checkbutton.label", sticky=NSEW)])]))
-    self.style._register_ttkstyle(sn.ttkstyle)
+    self.style._register_ttkstyle(sn.ttk_style)
 ```
 
 The disabled states just **name** the glyph — their color follows the

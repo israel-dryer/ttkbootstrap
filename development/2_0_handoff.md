@@ -3,14 +3,15 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-06-28 (recolorable element assets complete on
-`feat/2.0-recolor-elements`; headless gates pass and the user approved the
-light↔dark visual preview. Ready for commit/PR.)_
+_Last updated: 2026-06-29 (`StyleBuilderTTK` modularization implemented and
+visually approved on `refactor/2.0-builder-modules`; all gates pass and the
+branch is ready for commit/PR.)_
 
 ## Where we are
 
 Integration branch: **`2.0`** (cut all 2.0 PRs against it, not `master`).
-Expected suite after this branch: **104 passed**, headless, order-independent.
+Expected suite on `2.0`: **104 passed**, headless, order-independent.
+Expected suite after this branch: **147 passed**.
 On this machine Python 3.12 reports **102 passed / 2 unrelated failures** because
 its Tcl install cannot read `tk8.6/msgs/nl.msg` and `tk8.6/msgs/fr.msg`;
 excluding that environment-specific localization module gives **98 passed**.
@@ -27,13 +28,18 @@ the style-construction toolkit (Workstream I, Tier 1)** is **merged** (#1077; se
 the geometric/layout cleanup landed, and the public registration path is in. That
 completes the Workstream I icon work for 2.0.
 
-**Next actionable → either the deferred visual-polish PR (small, value/asset
-tweaks; see "FOLLOW-UP" below) or Workstream E (theme/anchor model) + D (bootstyle
-canonical grammar).** Tier-2 toolkit (`state_colors` from ramp steps) follows E.
-Both E and D want a design pass first per the hard rule.
+**The recolorable raster-assets PR is MERGED (#1081).** The expected suite is
+now 104 tests and the light↔dark manual gate passed. See the implementation
+summary immediately below.
 
-**Recolorable raster widget assets — COMPLETE, VISUALLY APPROVED.** Branch:
-`feat/2.0-recolor-elements`. Locked design:
+**Current actionable → commit and open the builder-modularization PR.** The branch is
+`refactor/2.0-builder-modules`, based on merge commit `080e3d19`. The approved
+design and exact verification results are in
+`development/2_0_builder_split_design.md`. The deferred visual-polish PR and
+Workstreams E/D remain later candidates.
+
+**Recolorable raster widget assets — MERGED #1081, VISUALLY APPROVED.** Source
+branch: `feat/2.0-recolor-elements`. Locked design:
 **`development/2_0_recolor_assets_design.md`**. Radio/checkbox/switch/scale/
 scrollbar/progressbar now use bootstack-derived templates from
 `assets/elements/`; icons remain for date/carets/sizegrip.
@@ -44,8 +50,8 @@ scrollbar/progressbar now use bootstack-derived templates from
   turns generate vertical slider/scrollbar/progressbar assets and rotate their
   border/padding metadata. `Assets.recolor` is the only new public surface.
 - `StyleBuilderTTK.configure()` now owns the builder-to-engine raw configure
-  seam; all 44 recipes call the local alias, and only that alias reaches
-  `Style._build_configure` to bypass public bootstyle resolution.
+  seam; all 44 raw configuration sites call the local alias, and only that
+  alias reaches `Style._build_configure` to bypass public bootstyle resolution.
 - Cache key covers asset, final scaled size, every resolved target color, and
   transform. Manifest sources are authored at 2x and resized once.
 - Standard + round scrollbars are arrowless raster-thumb layouts; their native
@@ -68,7 +74,7 @@ scrollbar/progressbar now use bootstack-derived templates from
   approved after indicator spacing, progressbar stretch/surface, and scrollbar
   thumb-only/native-trough corrections.
 
-## Next session — modularize the ttk style builders (design first)
+## Builder modularization — IMPLEMENTED, VISUALLY APPROVED
 
 Goal: replace the 2,600+ line `style/builders_ttk.py` recipe monolith with a
 private, decorator-backed registry and one module per widget family, following
@@ -92,19 +98,26 @@ Locked scope from the 2026-06-28 discussion:
   replacement: imports should fail visibly and duplicate registry keys should
   fail tests.
 
-Workflow:
+Implementation summary:
 
-1. After the recolorable-assets PR merges, branch
-   `refactor/2.0-builder-modules` from the updated `2.0` branch.
-2. Write `development/2_0_builder_split_design.md` and lock registry keys,
-   loading/import layering, module boundaries, and the builder callable
-   contract before implementation.
-3. Implement on that single branch across several sessions/commits: registry +
-   simple families; controls; image-heavy/oriented families; compound families;
-   then remove `name_to_method()` and all convention-based reflection.
-4. Gate with registry completeness/duplicate tests, lazy per-theme rebuilding,
-   third-party style passthrough, import-cycle and PEP 649 annotation sweeps,
-   warning-free import, and the full headless suite.
+- Approved design: `development/2_0_builder_split_design.md`.
+- `StyleBuilderTTK`: 2,689-line monolith → 161-line per-theme coordinator.
+- Private frozen registry: 36 exact `(variant, widget-family)` keys; explicit
+  loader; duplicate, late, invalid, and non-callable registration fail visibly.
+- Recipes: 22 family modules plus `builders/utils.py`; only caret and indicator
+  spacer helpers are shared. Multi-output recipes and the three existing recipe
+  dependencies are preserved.
+- Dispatch: `Bootstyle` uses registry lookup; `name_to_method()` and all ttk
+  recipe reflection are removed. Third-party passthrough remains lookup-only,
+  while exceptions inside registered recipes propagate.
+- Tests: +18 registry/dispatch/lazy/multi-output tests and +25 standalone module
+  cases. Targeted registry/package suite **66 passed**.
+- Structural gates: warning-free import; Python 3.10 parsed 35 style modules;
+  25 fresh-process builder imports; 222 annotation targets force-evaluated.
+- Full local suite: **146 passed / 1 environment failure** at missing
+  `tk8.6/msgs/nl.msg`; excluding the six-test localization module gives
+  **141 passed**. Expected on a complete Tcl install: **147 passed**.
+- Manual gate passed (user, 2026-06-29): the current light↔dark set runs well.
 
 Use one implementation branch/PR. Splitting this into parallel branches would
 create avoidable conflicts in `builders_ttk.py`, `bootstyle.py`, and package

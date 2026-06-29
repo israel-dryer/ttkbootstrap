@@ -40,6 +40,33 @@ SUBMODULES = [
     "ttkbootstrap.style.elements",
     "ttkbootstrap.style.layout",
     "ttkbootstrap.style.icons",
+    # Private builder registry/loader and every family module must remain
+    # standalone-importable; none may reach upward into engine/bootstyle.
+    "ttkbootstrap.style.builders",
+    "ttkbootstrap.style.builders.registry",
+    "ttkbootstrap.style.builders.utils",
+    "ttkbootstrap.style.builders.button",
+    "ttkbootstrap.style.builders.calendar",
+    "ttkbootstrap.style.builders.checkbutton",
+    "ttkbootstrap.style.builders.combobox",
+    "ttkbootstrap.style.builders.entry",
+    "ttkbootstrap.style.builders.floodgauge",
+    "ttkbootstrap.style.builders.frame",
+    "ttkbootstrap.style.builders.label",
+    "ttkbootstrap.style.builders.labelframe",
+    "ttkbootstrap.style.builders.menubutton",
+    "ttkbootstrap.style.builders.notebook",
+    "ttkbootstrap.style.builders.panedwindow",
+    "ttkbootstrap.style.builders.progressbar",
+    "ttkbootstrap.style.builders.radiobutton",
+    "ttkbootstrap.style.builders.scale",
+    "ttkbootstrap.style.builders.scrollbar",
+    "ttkbootstrap.style.builders.separator",
+    "ttkbootstrap.style.builders.sizegrip",
+    "ttkbootstrap.style.builders.spinbox",
+    "ttkbootstrap.style.builders.toggle",
+    "ttkbootstrap.style.builders.toolbutton",
+    "ttkbootstrap.style.builders.treeview",
 ]
 
 

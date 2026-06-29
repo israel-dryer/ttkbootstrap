@@ -57,7 +57,7 @@ class El:
 
     ```python
     El("Radiobutton.padding", sticky=NSEW, children=[
-        El(f"{ttkstyle}.indicator", side=LEFT),
+        El(f"{ttk_style}.indicator", side=LEFT),
         El("Radiobutton.focus", side=LEFT, children=[
             El("Radiobutton.label", sticky=NSEW)])])
     ```
@@ -88,7 +88,7 @@ class El:
         return (self.name, options)
 
 
-def register_style(style, ttkstyle):
+def register_style(style, ttk_style):
     """Register a hand-built ttk style name with the ttkbootstrap engine.
 
     A custom style applied to a ttkbootstrap widget via `style="My.TButton"` is
@@ -96,7 +96,7 @@ def register_style(style, ttkstyle):
     `bootstyle` resolution only honors `style=` for a *registered* style. Building
     a style with the toolkit (`element_create`/`image_element`/`icon_element`/
     `map`) does not register it on its own; call this (or `layout()`, which calls
-    it for you) so `style="<ttkstyle>"` resolves to what you built.
+    it for you) so `style="<ttk_style>"` resolves to what you built.
 
     ```python
     state_map(style, "My.TButton", background={"pressed": "#333"})
@@ -108,22 +108,22 @@ def register_style(style, ttkstyle):
     -register it if you change themes -- engine-managed theme-follow for custom
     styles is a separate effort.
     """
-    style._register_ttkstyle(ttkstyle)
+    style._register_ttkstyle(ttk_style)
 
 
-def layout(style, ttkstyle, root):
+def layout(style, ttk_style, root):
     """Apply an `El` (or list of `El`s) as the layout for `ttkstyle`.
 
-    Structural sugar over `style.layout(ttkstyle, [...])`. Defining a layout is
-    what gives a style its identity, so this also **registers** `ttkstyle` with
+    Structural sugar over `style.layout(ttk_style, [...])`. Defining a layout is
+    what gives a style its identity, so this also **registers** `ttk_style` with
     the engine (via `register_style`) -- a hand-built style whose terminal step is
-    `layout()` resolves through `style="<ttkstyle>"` with no extra step. (Built-in
-    builders that also call `_register_ttkstyle` explicitly are unaffected --
+    `layout()` resolves through `style="<ttk_style>"` with no extra step. (Built-in
+    builders that also call `_register_ttk_style` explicitly are unaffected --
     registration is an idempotent set add.)
     """
     roots = [root] if isinstance(root, El) else list(root)
-    style.layout(ttkstyle, [element.spec() for element in roots])
-    register_style(style, ttkstyle)
+    style.layout(ttk_style, [element.spec() for element in roots])
+    register_style(style, ttk_style)
 
 
 def image_element(style, name, *, default, states=None, **options):
@@ -137,7 +137,7 @@ def image_element(style, name, *, default, states=None, **options):
     pass through to `element_create`.
 
     ```python
-    image_element(style, f"{ttkstyle}.indicator", default=on,
+    image_element(style, f"{ttk_style}.indicator", default=on,
         states={"disabled selected": on_disabled, "disabled": disabled,
                 "!selected": off},
         width=20, border=4, sticky=W)
@@ -150,7 +150,7 @@ def image_element(style, name, *, default, states=None, **options):
     style.element_create(name, "image", *args, **options)
 
 
-def state_map(style, ttkstyle, **options):
+def state_map(style, ttk_style, **options):
     """Validated `style.map` analog.
 
     Each keyword is a ttk option (e.g. `foreground=`) whose value is an ordered
@@ -159,7 +159,7 @@ def state_map(style, ttkstyle, **options):
     `foreground=[("disabled", fg)]` lists.
 
     ```python
-    state_map(style, ttkstyle, foreground={"disabled": disabled_fg})
+    state_map(style, ttk_style, foreground={"disabled": disabled_fg})
     ```
     """
     mapping = {}
@@ -167,7 +167,7 @@ def state_map(style, ttkstyle, **options):
         items = spec.items() if isinstance(spec, dict) else spec
         mapping[option] = [(*statespec(state_string), value)
                            for state_string, value in items]
-    style.map(ttkstyle, **mapping)
+    style.map(ttk_style, **mapping)
 
 
 class StyleName:
@@ -179,7 +179,7 @@ class StyleName:
 
       .colorname  PRIMARY when the input is DEFAULT/"" (the per-widget default),
                   else the input unchanged.
-      .ttkstyle   the full ttk style name ("Horizontal.TScale",
+      .ttk_style   the full ttk style name ("Horizontal.TScale",
                   "info.Horizontal.TScale", "TRadiobutton", ...).
       .element    the element-name prefix with the class token's leading "T"
                   dropped ("info.Horizontal.TScale" -> "info.Horizontal.Scale"),
@@ -188,22 +188,27 @@ class StyleName:
     ```python
     sn = StyleName("TScale", colorname, orient="Horizontal")
     sn.colorname    # PRIMARY when colorname was DEFAULT/"", else as given
-    sn.ttkstyle     # "Horizontal.TScale" or "primary.Horizontal.TScale"
+    sn.ttk_style     # "Horizontal.TScale" or "primary.Horizontal.TScale"
     sn.element      # "Horizontal.Scale"
     ```
     """
 
-    __slots__ = ("colorname", "ttkstyle", "element")
+    __slots__ = ("colorname", "ttk_style", "element")
 
-    def __init__(self, ttkclass, colorname=DEFAULT, orient=None):
+    def __init__(self, ttk_class, colorname=DEFAULT, orient=None):
         is_default = colorname in (DEFAULT, "")
         self.colorname = PRIMARY if is_default else colorname
 
         orient_prefix = f"{orient}." if orient else ""
         if is_default:
-            self.ttkstyle = f"{orient_prefix}{ttkclass}"
+            self.ttk_style = f"{orient_prefix}{ttk_class}"
         else:
-            self.ttkstyle = f"{colorname}.{orient_prefix}{ttkclass}"
+            self.ttk_style = f"{colorname}.{orient_prefix}{ttk_class}"
 
-        element_class = ttkclass[1:] if ttkclass.startswith("T") else ttkclass
-        self.element = self.ttkstyle.replace(ttkclass, element_class)
+        element_class = ttk_class[1:] if ttk_class.startswith("T") else ttk_class
+        self.element = self.ttk_style.replace(ttk_class, element_class)
+
+    @property
+    def ttkstyle(self):
+        '''Backward-compatible spelling of ``ttk_style``.'''
+        return self.ttk_style
