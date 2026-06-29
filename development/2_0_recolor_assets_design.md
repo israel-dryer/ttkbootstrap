@@ -1,10 +1,8 @@
 # 2.0 — Recolorable raster widget assets (design brief)
 
-> **Status: PROPOSAL / design-pass-not-yet-held.** This is a brief to refine
-> with the user before implementing, per the project's hard rule (new public
-> surface + engine-adjacent work gets a design pass first, like the engine /
-> split / toolkit / icons strands did). Do not start coding the public surface
-> until the open questions below are settled with the user.
+> **Status: IMPLEMENTED + VISUALLY APPROVED (2026-06-28).** The staged
+> `assets/elements/` templates are the source set; the decisions at the end of
+> this document are implemented on `feat/2.0-recolor-elements`.
 
 ## Goal
 
@@ -17,8 +15,8 @@ the font-glyph icons (`style/icons.py`) and geometric draws
 **Target widgets (user's list):** radio, checkbox, switch (toggle), slider
 (`Scale`), scrollbar, progressbar.
 
-This mirrors bootstack, where a single grayscale/template asset is recolored for
-any theme color rather than shipping one image per color.
+This ports bootstack's manifest-driven element-image mechanism, adapted to
+ttkbootstrap's content-addressed cache and true-alpha compositing.
 
 ### DECISION (user, 2026-06-28): recolored rasters REPLACE the current rendering
 
@@ -55,100 +53,76 @@ pipeline*, not new infrastructure:
   Keys must **never** include the theme name — identical assets across themes
   dedupe by construction.
 - `style/assets.py` `Assets` (PR 5): the key-safe front door. Every recipe
-  *derives* its cache key from the same inputs it renders from, so the key can't
-  drift from the pixels. It already ports bootstack's snap-at-the-source
-  pipeline: even-pixel-snap the final size, adaptive supersample (3×/2×/1×),
-  LANCZOS downscale, `UnsharpMask`. **Reuse `_render` / the snap helpers.**
-- `style/icons.py` `Assets.icon` + `icon_element` (PR 6a/6b): the exact
-  precedent to copy. `icon` takes an *already-resolved* color and routes through
-  the cache with key `("icon", name, snapped_size, color)`; `icon_element` is the
-  per-widget-state sugar that renders one image per ttk state and bakes a
-  validated, first-match-wins image element. **The recolor surface should be the
-  same shape with a raster source instead of a font glyph.**
+  derives its cache key from the same inputs it renders from. Reuse its even-size
+  helper, but resize the authored 2x raster directly rather than procedurally
+  supersampling it.
+- `style/icons.py` `Assets.icon` (PR 6a/6b): the cache-routing precedent.
+  Recolor differs at the element layer because its templates are multi-channel,
+  manifest-sized, and carry stretch metadata; `icon_element` is not generalized.
 - `style/layout.py` (PR 5/6b): `image_element` (validated state→image element),
   `state_map`/`statespec` (the `!neg` / space-AND grammar), `layout()`/`El`, and
   **`register_style`** (`layout()` auto-registers so a toolkit-built style
   resolves via `style="..."`). Recolor assets plug straight into these.
 
-So the work is: (1) a recolor recipe on `Assets`, (2) a `recolor_element`
-mirroring `icon_element`, (3) a vendored asset directory + packaging, (4)
-migrating the six target builders.
+So the work is: (1) a manifest-driven recolor recipe on `Assets`, (2) the
+vendored `assets/elements/` directory + packaging, and (3) migrating the six
+target builders. Unlike the original proposal, there is no top-level atom or
+`recolor_element`: multi-channel, manifest-sized element templates do not share
+the icon surface's single-color grammar.
 
 ## Proposed design
 
 ### 1. The recolor recipe — `Assets.recolor(...)`
 
-Add to `style/assets.py`, modeled on `Assets.icon`:
+Add to `style/assets.py`, modeled on `Assets.icon` but sized from the manifest:
 
 ```python
-def recolor(self, name, size, color, *, method="tint"):
-    """Recolor a vendored template image to `color`, cached.
-
-    `name` selects a source asset (see assets/widgets/); `size` is the final
-    (DPI-scaled) pixel size; `color` is an already-resolved color string (keyword
-    resolution lives in the public atom, like Icon). Returns the Tcl image name.
-    """
-    size = _wh(size); size = (_even(size[0]), _even(size[1]))
-    key = ("recolor", name, size, color, method)        # NOTE: no theme name
-    return self.style._get_or_create_image(
-        key, lambda: ImageTk.PhotoImage(RecolorRenderer.render(name, size, color, method)))
+def recolor(self, name, *, white, black, magenta=None, transform=None):
+    """Recolor a manifest element template and return its cached image result."""
 ```
 
-- Takes a **resolved** color (consistent with `circle`/`rect`/`icon`); a public
-  atom resolves keywords (see #2).
-- Key is `("recolor", name, snapped_size, color, method)` — theme-independent.
-- Renders through a `RecolorRenderer` (new, in a leaf module, mirroring
-  `IconRenderer`): load the source once (class-level cache), apply the recolor,
-  then the shared snap/supersample/LANCZOS/UnsharpMask pipeline.
+- Colors are already-resolved strings. `white` and `black` are required
+  structural-channel targets; `magenta` is an optional third fill-channel
+  target (currently used by the slider handle). There is no cyan/teal channel.
+- `transform` supports horizontal flip and quarter-turn rotations. Switch off
+  uses a horizontal flip; vertical slider tracks, scrollbar parts, and
+  progressbars use a quarter-turn. The transform is in the cache key and
+  transforms metadata with the pixels.
+- Final dimensions come from manifest width/height + `default_dpi` + current Tk
+  scaling. Callers do not supply a second, drift-prone size.
+- The cache key contains the asset name, snapped size, all target colors, and
+  transform; it never contains the theme name.
+- `RecolorRenderer` lazy-loads JSON and PNG sources and returns the image plus
+  scaled manifest metadata. The fixed 2x source is recolored at source
+  resolution and resized once; it does not use the procedural supersampler.
 
-### 2. The public atoms / state sugar
+### 2. Public surface
 
-Mirror the icon surface so users get a consistent vocabulary:
+The only public addition is **`Assets.recolor(...)`**. It returns an immutable
+result containing the Tcl image name and scaled manifest metadata (`width`,
+`height`, `border`, `padding`). This keeps custom-style construction possible
+without turning the built-in template keys into a new top-level image API.
 
-- **`RecoloredImage(name, size, color=None)`** (working name) — the atom: resolve
-  the keyword color once against the active theme, return a cached Tk image
-  usable as `image=`. Same shape as `Icon(...)`.
-- **`recolor_element(style, name, *, size, default, states=None, **options)`** —
-  the per-state sugar, a near-copy of `icon_element`: each per-state spec renders
-  via `Assets.recolor` and assembles a validated image element. Reuse
-  `icon_element`'s spec grammar verbatim (bare string = asset name, color follows
-  the configured foreground; `{name?, color?}` dict otherwise) and its
-  `<ttkstyle>.<element>` naming + foreground-lookup rule.
+There is deliberately no `RecoloredImage` atom and no `recolor_element` sugar.
+Icons are independently useful single-color content images; these templates are
+multi-channel ttk element parts whose size and stretch rules come from a
+manifest. Builders and public users compose `Assets.recolor` with the existing
+`image_element`. `icon_element` stays untouched.
 
-**Strongly consider generalizing instead of copy-pasting.** `icon_element` and
-`recolor_element` differ only in the per-spec renderer (`assets.icon` vs
-`assets.recolor`). Factor the shared body into one internal helper that takes the
-render callable, and keep `icon_element` / `recolor_element` as thin wrappers.
-Confirm this refactor with the user (it touches the just-merged icon code).
+### 3. Source-channel recolor operation
 
-Re-export the public names from `style/__init__.py` **and** top-level
-`ttkbootstrap` (the pattern every toolkit PR followed). Keep `import ttkbootstrap`
-warning-free and the source-asset load lazy (font is loaded on first render
-today — match that: don't read PNGs at import).
+The templates have four semantic source channels: **black, white, optional
+magenta, and transparent alpha**. Black and white are structural regions;
+magenta is a third fill region, not a focus/edge channel. Focus is represented
+by rendering another state image with different target colors.
 
-### 3. The recolor operation itself (the one real new decision)
-
-How a source image maps to `color`. Pick per asset type:
-
-- **Flat tint (monochrome source).** Source is a single-color/alpha silhouette
-  (like a glyph). Replace RGB with `color`, **keep the source alpha**. Cheapest,
-  matches the flat 2.0 aesthetic, and is what most of these widgets want
-  (indicator dots, toggle knobs, scrollbar thumbs, progressbar fills).
-  Implementation: split alpha, build `Image.new("RGBA", size, color)`, reattach
-  the source alpha.
-- **Luminance-preserving recolor (shaded source).** If a source has shading you
-  want to retain (subtle gradients/bevels — probably not needed for the flat
-  look), multiply a solid `color` layer against the source luminance, or map via
-  a palette. Heavier; only if a flat tint looks wrong.
-- **Multi-region / palette replace.** If one source needs two theme colors (e.g.
-  a track + a thumb in one image), use an indexed-palette source and replace
-  named palette entries. Adds complexity — prefer **one asset per recolorable
-  region** and compose at the layout level instead.
-
-**Recommendation:** start with **flat tint** only; it covers the target widgets
-and keeps the renderer tiny. Add luminance-preserving later only if a real asset
-needs it. Whatever methods exist must be **in the cache key** (the `method` arg
-above) so two methods on the same source don't collide.
+- Grayscale source pixels interpolate from `black` at 0 to `white` at 255. This
+  preserves authored antialiasing between structural regions.
+- Magenta-region pixels interpolate from `magenta` to `white` across the
+  magenta-to-white transition in the slider source. This is the fill boundary,
+  not a focus ring.
+- Source alpha is copied unchanged. Fully transparent pixels remain transparent.
+- No cyan/teal channel exists, and no transparent-background replacement exists.
 
 ### 3a. Surface / compositing — CONSTRAINT (settled, user 2026-06-28)
 
@@ -178,16 +152,10 @@ Therefore:
 
 **The supported escape hatch — widget on a custom surface.** Handling a widget
 that sits on a non-default background is the *user's* job via a **style
-override** — set the style's `background` (their surface) and, if contrast needs
-it, `foreground`. This is the same workflow as today, but it composes *better*
-here: because `recolor_element` derives the indicator color from the style's
-**configured foreground** (and the cache is keyed on the resolved color), the
-override is self-consistent in one step —
-
-1. user overrides the style → sets `background` + a contrasting `foreground`;
-2. the indicator color *follows that foreground* → new resolved color → new cache
-   key → it re-renders in the right color automatically (no manual asset regen);
-3. true-alpha edges composite cleanly over the new background.
+override** — set the style's `background`/`foreground`, render the template with
+those resolved values through `Assets.recolor`, and install it with
+`image_element`. The resolved colors produce a distinct cache key, while
+true-alpha edges composite cleanly over the custom background.
 
 Contrast this with legacy `make_transparent`-baked assets, where the surface was
 in the pixels, so overriding `background` alone left the indicator's fringe still
@@ -197,12 +165,13 @@ foreground — that's their value judgment, same as today.
 
 ### 4. Where the assets live + packaging
 
-- New dir: **`src/ttkbootstrap/assets/widgets/`** (sibling of `assets/icons/`),
-  with a `README.md` + `LICENSE` describing provenance (port from bootstack's
-  asset set if that's the source). Source images as PNG with alpha.
+- New dir: **`src/ttkbootstrap/assets/elements/`** (sibling of `assets/icons/`),
+  with a `README.md` describing the bootstack-derived/adapted provenance and
+  source-channel contract. `manifest.json` is authoritative for dimensions,
+  source DPI, border, and padding.
 - **Packaging gotcha (already hit once):** the `assets/*` glob in
   `pyproject.toml` package-data does **not** recurse. `assets/icons/*` had to be
-  added explicitly (PR 6a). Add **`assets/widgets/*`** the same way, and add a
+  added explicitly (PR 6a). Add **`assets/elements/*`** the same way, and add a
   test that the files resolve from an installed layout (resolve paths relative to
   `__file__`, like `_ICONS_DIR` in `icons.py`, so it works from a wheel).
 - A regen/import tool under `tools/` (like `tools/generate_icon_metrics.py`) if
@@ -213,7 +182,7 @@ foreground — that's their value judgment, same as today.
 For each of radio / checkbox / switch / scale / scrollbar / progressbar:
 
 - Replace the `create_*_assets` glyph/draw calls (or `a.icon(...)` /
-  `a.circle(...)`) with `a.recolor(...)` / `recolor_element(...)`, preserving the
+  `a.circle(...)`) with `a.recolor(...)` + `image_element(...)`, preserving the
   existing **state-color math** (the `Colors.update_hsv(..., vd=±0.05)`
   pressed/active derivations) and the **scaled sizes** (`self.scale_size(...)`).
 - Keep element names carrying the **full `{ttkstyle}.indicator` prefix** so the
@@ -226,6 +195,16 @@ For each of radio / checkbox / switch / scale / scrollbar / progressbar:
 - Reference call sites to copy: `builders_ttk.py` round-scrollbar
   assets+style (~`783`), radiobutton `icon_element` (~`2334`), toggle indicators
   (~`1631`/`1697`), striped progressbar (~`320`).
+
+Approved visual behavior:
+
+- Selected radio is an accent annulus, not a center dot.
+- Standard scrollbars are arrowless and use a recolored raster thumb; the native
+  trough blends into the widget surface with `troughcolor=colors.bg`.
+- Existing striped progressbars retain their stripe renderer.
+- Add a distinct **thin progressbar** variant using `progressbar-thin.png`,
+  selected with `bootstyle="thin"`; add `THIN` to the public constants and the
+  current bootstyle grammar.
 
 ### 6. Gates (every prior toolkit PR ran these — keep them)
 
@@ -241,25 +220,20 @@ For each of radio / checkbox / switch / scale / scrollbar / progressbar:
   `examples/icon_preview.py`) showing all six widgets across states on a light
   and a dark theme. This is a merge gate, same as PR 6b.
 
-## Open questions for the user (settle before coding)
+## Locked decisions (user, 2026-06-28)
 
-1. ~~**Replace or coexist?**~~ **RESOLVED (user, 2026-06-28): replace.** For the
-   six listed widgets the recolored rasters replace the current rendering (icon
-   quality not good enough for general widget indicators). The icon engine and
-   glyph icons stay for all *other* widgets (date/carets/sizegrip). See the
-   decision + per-widget table at the top.
-2. **Asset source.** Are the source images coming from bootstack's asset set, to
-   be hand-authored, or generated? This decides the `tools/` step and the
-   LICENSE/README provenance.
-3. **Recolor method scope.** Is flat tint enough (recommended), or is a
-   shaded/luminance-preserving or multi-region asset in scope?
-4. **One element per region vs multi-color source** for scrollbar (track+thumb)
-   and progressbar (trough+bar) — recommend one asset per recolorable region.
-5. **Generalize `icon_element` → shared core** (recommended) vs a standalone
-   `recolor_element` copy? The former edits recently-merged icon code.
-6. **Scope/sequencing.** One design PR + renderer first (no builder changes, like
-   PR 6a was for icons), then per-widget migration PRs gated on the visual
-   spot-check? That worked well for the icon strand and is the recommended shape.
+1. Recolored rasters replace current rendering for the six target widgets;
+   icons remain for date/carets/sizegrip.
+2. Use the staged bootstack-derived/adapted `assets/elements/` source set.
+3. Use black/white structural channels, optional magenta fill, and preserved
+   alpha; no cyan/teal channel and no alpha flattening.
+4. Selected radio is an annulus; scrollbars are arrowless; striped progressbars
+   remain striped; a new thin progressbar variant is included.
+5. Public surface is `Assets.recolor` only; do not refactor `icon_element`.
+6. Transforms are first-class: switch off is flipped horizontally, and vertical
+   slider/scrollbar/progressbar parts are rotated from horizontal sources.
+7. Land the renderer/assets foundation first, then migrate indicator widgets,
+   then scale/scrollbar/progressbar, with visual checks before merge.
 
 ## Pointers (read these in the code)
 

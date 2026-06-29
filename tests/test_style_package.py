@@ -35,9 +35,9 @@ SUBMODULES = [
     "ttkbootstrap.style.builders_ttk",
     "ttkbootstrap.style.engine",
     "ttkbootstrap.style.bootstyle",
-    # Toolkit leaves (Workstream I): assets/layout/icons import standalone -- no
-    # engine edge at module top level (icons reaches Style only function-locally).
+    # Toolkit leaves import standalone -- no engine edge at module top level.
     "ttkbootstrap.style.assets",
+    "ttkbootstrap.style.elements",
     "ttkbootstrap.style.layout",
     "ttkbootstrap.style.icons",
 ]

@@ -15,7 +15,6 @@ from ttkbootstrap.constants import *
 from ttkbootstrap.style.theme import Colors, ThemeDefinition
 from ttkbootstrap.style.builders_tk import StyleBuilderTK
 from ttkbootstrap.style.assets import Assets
-from ttkbootstrap.style.icons import icon_element
 from ttkbootstrap.style.layout import (
     El, layout, image_element, state_map, StyleName,
 )
@@ -87,6 +86,15 @@ class StyleBuilderTTK:
             cached = self.__dict__["_assets"] = Assets(self.style)
         return cached
 
+    def configure(self, style, **options):
+        """Configure a style without re-entering public bootstyle resolution.
+
+        This is the builder-facing alias for the engine's raw configuration
+        seam. Keeping the private call here prevents every recipe from coupling
+        directly to `Style` internals.
+        """
+        self.style._build_configure(style, **options)
+
     def scale_size(self, size):
         """Scale the size of images and other assets based on the
         scaling factor of ttk to ensure that the image matches the
@@ -110,6 +118,15 @@ class StyleBuilderTTK:
         elif isinstance(size, tuple) or isinstance(size, list):
             return [ceil(x * factor) for x in size]
 
+    def _create_indicator_spacer_asset(self):
+        """Return the shared transparent image used between indicator and label."""
+        size = self.scale_size((6, 1))
+
+        def draw_spacer(_draw, _width, _height):
+            pass
+
+        return self.assets.image(size, draw_spacer, "indicator-spacer")
+
     def create_theme(self):
         """Create and style a new ttk theme. A wrapper around internal
         style methods.
@@ -131,7 +148,7 @@ class StyleBuilderTTK:
         method should be called *first* before any other style is applied
         during theme creation.
         """
-        self.style._build_configure(
+        self.configure(
             style=".",
             background=self.colors.bg,
             darkcolor=self.colors.border,
@@ -223,7 +240,7 @@ class StyleBuilderTTK:
         if all([colorname, colorname != DEFAULT]):
             bordercolor = focuscolor
 
-        self.style._build_configure(
+        self.configure(
             ttkstyle,
             bordercolor=bordercolor,
             darkcolor=self.colors.inputbg,
@@ -412,7 +429,7 @@ class StyleBuilderTTK:
         layout(self.style, h_ttkstyle,
                El(f"{h_element}.trough", sticky=tk.NSEW, children=[
                    El(f"{h_element}.pbar", side=tk.LEFT, sticky=tk.NS)]))
-        self.style._build_configure(
+        self.configure(
             h_ttkstyle,
             troughcolor=troughcolor,
             thickness=thickness,
@@ -432,7 +449,7 @@ class StyleBuilderTTK:
         layout(self.style, v_ttkstyle,
                El(f"{v_element}.trough", sticky=tk.NSEW, children=[
                    El(f"{v_element}.pbar", side=tk.BOTTOM, sticky=tk.EW)]))
-        self.style._build_configure(
+        self.configure(
             v_ttkstyle,
             troughcolor=troughcolor,
             bordercolor=bordercolor,
@@ -450,83 +467,82 @@ class StyleBuilderTTK:
             colorname (str):
                 The primary widget color.
         """
-        H_STYLE = "Horizontal.TProgressbar"
-        V_STYLE = "Vertical.TProgressbar"
+        self._create_recolored_progressbar_style(
+            colorname, asset_name="progressbar_default", type_name="")
 
-        thickness = self.scale_size(10)
+    def create_thin_progressbar_style(self, colorname=DEFAULT):
+        """Create the compact raster-backed ttk.Progressbar style."""
+        self._create_recolored_progressbar_style(
+            colorname, asset_name="progressbar_thin", type_name="Thin.")
 
+    def _create_recolored_progressbar_style(
+            self, colorname, *, asset_name, type_name):
+        """Build horizontal and vertical progressbars from one source asset."""
+        h_base = f"{type_name}Horizontal.TProgressbar"
+        v_base = f"{type_name}Vertical.TProgressbar"
         if self.is_light_theme:
-            if colorname == LIGHT:
-                troughcolor = self.colors.bg
-                bordercolor = self.colors.light
-            else:
-                troughcolor = self.colors.light
-                bordercolor = troughcolor
+            troughcolor = (
+                self.colors.bg if colorname == LIGHT else self.colors.light)
         else:
             troughcolor = Colors.update_hsv(self.colors.selectbg, vd=-0.2)
-            bordercolor = troughcolor
 
-        if any([colorname == DEFAULT, colorname == ""]):
-            background = self.colors.primary
-            h_ttkstyle = H_STYLE
-            v_ttkstyle = V_STYLE
+        if colorname in (DEFAULT, ""):
+            barcolor = self.colors.primary
+            h_ttkstyle, v_ttkstyle = h_base, v_base
         else:
-            background = self.colors.get(colorname)
-            h_ttkstyle = f"{colorname}.{H_STYLE}"
-            v_ttkstyle = f"{colorname}.{V_STYLE}"
+            barcolor = self.colors.get(colorname)
+            h_ttkstyle = f"{colorname}.{h_base}"
+            v_ttkstyle = f"{colorname}.{v_base}"
 
-        self.style._build_configure(
-            h_ttkstyle,
-            thickness=thickness,
-            borderwidth=1,
-            bordercolor=bordercolor,
-            lightcolor=self.colors.border,
-            pbarrelief=tk.FLAT,
-            troughcolor=troughcolor,
-        )
-        existing_elements = self.style.element_names()
+        a = self.assets
+        h_trough = a.recolor(
+            asset_name, white=troughcolor, black=troughcolor)
+        h_bar = a.recolor(asset_name, white=barcolor, black=barcolor)
+        v_trough = a.recolor(
+            asset_name, white=troughcolor, black=troughcolor,
+            transform="rotate-90")
+        v_bar = a.recolor(
+            asset_name, white=barcolor, black=barcolor,
+            transform="rotate-90")
 
-        self.style._build_configure(
-            v_ttkstyle,
-            thickness=thickness,
-            borderwidth=1,
-            bordercolor=bordercolor,
-            lightcolor=self.colors.border,
-            pbarrelief=tk.FLAT,
-            troughcolor=troughcolor,
-        )
-        existing_elements = self.style.element_names()
-
-        # horizontal progressbar
         h_element = h_ttkstyle.replace(".TP", ".P")
-        trough_element = f"{h_element}.trough"
-        pbar_element = f"{h_element}.pbar"
-        if trough_element not in existing_elements:
-            self.style.element_create(trough_element, "from", TTK_CLAM)
-            self.style.element_create(pbar_element, "from", TTK_DEFAULT)
-
+        h_trough_name = f"{h_element}.trough"
+        h_bar_name = f"{h_element}.pbar"
+        image_element(
+            self.style, h_trough_name, default=h_trough.image,
+            border=h_trough.meta.border, padding=h_trough.meta.padding,
+            sticky=tk.NSEW)
+        image_element(
+            self.style, h_bar_name, default=h_bar.image,
+            border=h_bar.meta.border, padding=h_bar.meta.padding)
         layout(self.style, h_ttkstyle,
-               El(trough_element, sticky="nswe", children=[
-                   El(pbar_element, side="left", sticky="ns")]))
-        self.style._build_configure(h_ttkstyle, background=background)
+               El(h_trough_name, sticky=tk.NSEW, children=[
+                   El(h_bar_name, side=tk.LEFT, sticky=tk.EW)]))
 
-        # vertical progressbar
         v_element = v_ttkstyle.replace(".TP", ".P")
-        trough_element = f"{v_element}.trough"
-        pbar_element = f"{v_element}.pbar"
-        if trough_element not in existing_elements:
-            self.style.element_create(trough_element, "from", TTK_CLAM)
-            self.style.element_create(pbar_element, "from", TTK_DEFAULT)
-            self.style._build_configure(v_ttkstyle, background=background)
+        v_trough_name = f"{v_element}.trough"
+        v_bar_name = f"{v_element}.pbar"
+        image_element(
+            self.style, v_trough_name, default=v_trough.image,
+            border=v_trough.meta.border, padding=v_trough.meta.padding,
+            sticky=tk.NSEW)
+        image_element(
+            self.style, v_bar_name, default=v_bar.image,
+            border=v_bar.meta.border, padding=v_bar.meta.padding)
         layout(self.style, v_ttkstyle,
-               El(trough_element, sticky="nswe", children=[
-                   El(pbar_element, side="bottom", sticky="we")]))
+               El(v_trough_name, sticky=tk.NSEW, children=[
+                   El(v_bar_name, side=tk.BOTTOM, sticky=tk.NS)]))
 
-        # register ttkstyles
+        self.configure(
+            h_ttkstyle, background=self.colors.bg, troughcolor=troughcolor,
+            thickness=h_trough.meta.height, borderwidth=0)
+        self.configure(
+            v_ttkstyle, background=self.colors.bg, troughcolor=troughcolor,
+            thickness=v_trough.meta.width, borderwidth=0)
         self.style._register_ttkstyle(h_ttkstyle)
         self.style._register_ttkstyle(v_ttkstyle)
 
-    def create_scale_assets(self, colorname=DEFAULT, size=14):
+    def create_scale_assets(self, colorname=DEFAULT):
         """Create the assets used for the ttk.Scale widget.
 
         The slider handle is automatically adjusted to fit the
@@ -537,16 +553,11 @@ class StyleBuilderTTK:
             colorname (str):
                 The color label.
 
-            size (int):
-                The size diameter of the slider circle; default=16.
-
         Returns:
 
-            tuple[str]:
-                A tuple of PhotoImage names to be used in the image
-                layout when building the style.
+            tuple[RecolorResult, ...]:
+                Recolored handle and track assets.
         """
-        size = self.scale_size(size)
         a = self.assets
         if self.is_light_theme:
             disabled_color = self.colors.border
@@ -562,17 +573,19 @@ class StyleBuilderTTK:
         pressed_color = Colors.update_hsv(normal_color, vd=-0.1)
         hover_color = Colors.update_hsv(normal_color, vd=0.1)
 
-        h_size = self.scale_size((40, 5))
-        v_size = self.scale_size((5, 40))
-
         # ( normal, pressed, hover, disabled thumbs; horizontal, vertical track )
         return (
-            a.circle(normal_color, size),
-            a.circle(pressed_color, size),
-            a.circle(hover_color, size),
-            a.circle(disabled_color, size),
-            a.rect(track_color, h_size),
-            a.rect(track_color, v_size),
+            a.recolor("slider_handle", white=self.colors.bg,
+                      black=disabled_color, magenta=normal_color),
+            a.recolor("slider_handle", white=self.colors.bg,
+                      black=disabled_color, magenta=pressed_color),
+            a.recolor("slider_handle", white=self.colors.bg,
+                      black=disabled_color, magenta=hover_color),
+            a.recolor("slider_handle", white=self.colors.bg,
+                      black=disabled_color, magenta=disabled_color),
+            a.recolor("slider_track", white=track_color, black=track_color),
+            a.recolor("slider_track", white=track_color, black=track_color,
+                      transform="rotate-90"),
         )
 
     def create_scale_style(self, colorname=DEFAULT):
@@ -591,10 +604,13 @@ class StyleBuilderTTK:
 
         # horizontal scale
         image_element(
-            self.style, f"{h.element}.slider", default=images[0],
-            states={"disabled": images[3], "pressed": images[1],
-                    "hover": images[2]})
-        self.style.element_create(f"{h.element}.track", "image", images[4])
+            self.style, f"{h.element}.slider", default=images[0].image,
+            states={"disabled": images[3].image, "pressed": images[1].image,
+                    "hover": images[2].image},
+            border=images[0].meta.border, padding=images[0].meta.padding)
+        self.style.element_create(
+            f"{h.element}.track", "image", images[4].image,
+            border=images[4].meta.border, padding=images[4].meta.padding)
         layout(
             self.style, h.ttkstyle,
             El(f"{h.element}.focus", expand=1, sticky=NSEW, children=[
@@ -603,15 +619,19 @@ class StyleBuilderTTK:
 
         # vertical scale
         image_element(
-            self.style, f"{v.element}.slider", default=images[0],
-            states={"disabled": images[3], "pressed": images[1],
-                    "hover": images[2]})
-        self.style.element_create(f"{v.element}.track", "image", images[5])
+            self.style, f"{v.element}.slider", default=images[0].image,
+            states={"disabled": images[3].image, "pressed": images[1].image,
+                    "hover": images[2].image},
+            border=images[0].meta.border, padding=images[0].meta.padding)
+        self.style.element_create(
+            f"{v.element}.track", "image", images[5].image,
+            border=images[5].meta.border, padding=images[5].meta.padding)
         layout(
             self.style, v.ttkstyle,
             El(f"{v.element}.focus", expand=1, sticky=NSEW, children=[
                 El(f"{v.element}.track", sticky=NS),
                 El(f"{v.element}.slider", side=TOP, sticky="")]))
+
 
         # register ttkstyles
         self.style._register_ttkstyle(h.ttkstyle)
@@ -655,7 +675,7 @@ class StyleBuilderTTK:
                El(f"{h_element}.trough", sticky=tk.NSEW, children=[
                    El(f"{h_element}.pbar", sticky=tk.NS),
                    El("Floodgauge.label", sticky="")]))
-        self.style._build_configure(
+        self.configure(
             h_ttkstyle,
             thickness=50,
             borderwidth=1,
@@ -677,7 +697,7 @@ class StyleBuilderTTK:
                El(f"{v_element}.trough", sticky=tk.NSEW, children=[
                    El(f"{v_element}.pbar", sticky=tk.EW),
                    El("Floodgauge.label", sticky="")]))
-        self.style._build_configure(
+        self.configure(
             v_ttkstyle,
             thickness=50,
             borderwidth=1,
@@ -796,32 +816,7 @@ class StyleBuilderTTK:
                 The color value to use when the thumb is active or
                 hovered.
         """
-        a = self.assets
-        vsize = self.scale_size([9, 28])
-        hsize = self.scale_size([28, 9])
-
-        # A fully-rounded "pill": radius = half the short axis (the old draw
-        # used a 10x canvas with radius min//2, downscaled -- same shape).
-        def pill(size, fill):
-            return a.rounded_rect(fill, size, min(size) / 2)
-
-        # create images
-        h_normal_img = pill(hsize, thumbcolor)
-        h_pressed_img = pill(hsize, pressed)
-        h_active_img = pill(hsize, active)
-
-        v_normal_img = pill(vsize, thumbcolor)
-        v_pressed_img = pill(vsize, pressed)
-        v_active_img = pill(vsize, active)
-
-        return (
-            h_normal_img,
-            h_pressed_img,
-            h_active_img,
-            v_normal_img,
-            v_pressed_img,
-            v_active_img,
-        )
+        return self.create_scrollbar_assets(thumbcolor, pressed, active)
 
     def create_round_scrollbar_style(self, colorname=DEFAULT):
         """Create a round style for the ttk.Scrollbar widget.
@@ -847,71 +842,52 @@ class StyleBuilderTTK:
             v_ttkstyle = f"{colorname}.Round.Vertical.{STYLE}"
             background = self.colors.get(colorname)
 
-        if self.is_light_theme:
-            if colorname == LIGHT:
-                troughcolor = self.colors.bg
-            else:
-                troughcolor = self.colors.light
-        else:
-            troughcolor = Colors.update_hsv(self.colors.selectbg, vd=-0.2)
-
         pressed = Colors.update_hsv(background, vd=-0.05)
         active = Colors.update_hsv(background, vd=0.05)
 
         scroll_images = self.create_round_scrollbar_assets(
             background, pressed, active
         )
-
         # horizontal scrollbar
-        self.style._build_configure(
+        self.configure(
             h_ttkstyle,
-            troughcolor=troughcolor,
-            darkcolor=troughcolor,
-            bordercolor=troughcolor,
-            lightcolor=troughcolor,
-            arrowcolor=background,
-            arrowsize=self.scale_size(11),
-            background=troughcolor,
+            troughcolor=self.colors.bg,
+            darkcolor=self.colors.bg,
+            bordercolor=self.colors.bg,
+            lightcolor=self.colors.bg,
+            background=self.colors.bg,
             relief=tk.FLAT,
             borderwidth=0,
         )
         image_element(
-            self.style, f"{h_ttkstyle}.thumb", default=scroll_images[0],
-            states={"pressed": scroll_images[1], "active": scroll_images[2]},
-            border=self.scale_size(9), padding=0, sticky=tk.EW)
+            self.style, f"{h_ttkstyle}.thumb", default=scroll_images[0].image,
+            states={"pressed": scroll_images[1].image,
+                    "active": scroll_images[2].image},
+            border=scroll_images[0].meta.border,
+            padding=scroll_images[0].meta.padding)
         layout(self.style, h_ttkstyle,
                El("Horizontal.Scrollbar.trough", sticky="we", children=[
-                   El("Horizontal.Scrollbar.leftarrow", side="left", sticky=""),
-                   El("Horizontal.Scrollbar.rightarrow", side="right", sticky=""),
-                   El(f"{h_ttkstyle}.thumb", expand="1", sticky="nswe")]))
-        self.style._build_configure(h_ttkstyle, arrowcolor=background)
-        state_map(self.style, h_ttkstyle,
-                  arrowcolor={"pressed": pressed, "active": active})
+                   El(f"{h_ttkstyle}.thumb", expand="1", sticky="we")]))
 
         # vertical scrollbar
-        self.style._build_configure(
+        self.configure(
             v_ttkstyle,
-            troughcolor=troughcolor,
-            darkcolor=troughcolor,
-            bordercolor=troughcolor,
-            lightcolor=troughcolor,
-            arrowcolor=background,
-            arrowsize=self.scale_size(11),
-            background=troughcolor,
+            troughcolor=self.colors.bg,
+            darkcolor=self.colors.bg,
+            bordercolor=self.colors.bg,
+            lightcolor=self.colors.bg,
+            background=self.colors.bg,
             relief=tk.FLAT,
         )
         image_element(
-            self.style, f"{v_ttkstyle}.thumb", default=scroll_images[3],
-            states={"pressed": scroll_images[4], "active": scroll_images[5]},
-            border=self.scale_size(9), padding=0, sticky=tk.NS)
+            self.style, f"{v_ttkstyle}.thumb", default=scroll_images[3].image,
+            states={"pressed": scroll_images[4].image,
+                    "active": scroll_images[5].image},
+            border=scroll_images[3].meta.border,
+            padding=scroll_images[3].meta.padding)
         layout(self.style, v_ttkstyle,
                El("Vertical.Scrollbar.trough", sticky="ns", children=[
-                   El("Vertical.Scrollbar.uparrow", side="top", sticky=""),
-                   El("Vertical.Scrollbar.downarrow", side="bottom", sticky=""),
-                   El(f"{v_ttkstyle}.thumb", expand="1", sticky="nswe")]))
-        self.style._build_configure(v_ttkstyle, arrowcolor=background)
-        state_map(self.style, v_ttkstyle,
-                  arrowcolor={"pressed": pressed, "active": active})
+                   El(f"{v_ttkstyle}.thumb", expand="1", sticky="ns")]))
 
         # register ttkstyles
         self.style._register_ttkstyle(h_ttkstyle)
@@ -934,27 +910,22 @@ class StyleBuilderTTK:
                 hovered.
         """
         a = self.assets
-        vsize = self.scale_size([9, 28])
-        hsize = self.scale_size([28, 9])
-
-        # Solid-fill rectangles (the old 10x oversample + resize was a no-op
-        # for a flat fill).
-        h_normal_img = a.rect(thumbcolor, hsize)
-        h_pressed_img = a.rect(pressed, hsize)
-        h_active_img = a.rect(active, hsize)
-
-        v_normal_img = a.rect(thumbcolor, vsize)
-        v_pressed_img = a.rect(pressed, vsize)
-        v_active_img = a.rect(active, vsize)
-
-        return (
-            h_normal_img,
-            h_pressed_img,
-            h_active_img,
-            v_normal_img,
-            v_pressed_img,
-            v_active_img,
-        )
+        h_normal = a.recolor(
+            "scrollbar_thumb", white=thumbcolor, black=thumbcolor)
+        h_pressed = a.recolor(
+            "scrollbar_thumb", white=pressed, black=pressed)
+        h_active = a.recolor(
+            "scrollbar_thumb", white=active, black=active)
+        v_normal = a.recolor(
+            "scrollbar_thumb", white=thumbcolor, black=thumbcolor,
+            transform="rotate-90")
+        v_pressed = a.recolor(
+            "scrollbar_thumb", white=pressed, black=pressed,
+            transform="rotate-90")
+        v_active = a.recolor(
+            "scrollbar_thumb", white=active, black=active,
+            transform="rotate-90")
+        return h_normal, h_pressed, h_active, v_normal, v_pressed, v_active
 
     def create_scrollbar_style(self, colorname=DEFAULT):
         """Create a standard style for the ttk.Scrollbar widget.
@@ -980,72 +951,57 @@ class StyleBuilderTTK:
             v_ttkstyle = f"{colorname}.Vertical.{STYLE}"
             background = self.colors.get(colorname)
 
-        if self.is_light_theme:
-            if colorname == LIGHT:
-                troughcolor = self.colors.bg
-            else:
-                troughcolor = self.colors.light
-        else:
-            troughcolor = Colors.update_hsv(self.colors.selectbg, vd=-0.2)
-
         pressed = Colors.update_hsv(background, vd=-0.05)
         active = Colors.update_hsv(background, vd=0.05)
 
         scroll_images = self.create_scrollbar_assets(
             background, pressed, active
         )
-
         # horizontal scrollbar
-        self.style._build_configure(
+        self.configure(
             h_ttkstyle,
-            troughcolor=troughcolor,
-            darkcolor=troughcolor,
-            bordercolor=troughcolor,
-            lightcolor=troughcolor,
+            troughcolor=self.colors.bg,
+            darkcolor=self.colors.bg,
+            bordercolor=self.colors.bg,
+            lightcolor=self.colors.bg,
             arrowcolor=background,
             arrowsize=self.scale_size(11),
-            background=troughcolor,
+            background=self.colors.bg,
             relief=tk.FLAT,
             borderwidth=0,
         )
         image_element(
-            self.style, f"{h_ttkstyle}.thumb", default=scroll_images[0],
-            states={"pressed": scroll_images[1], "active": scroll_images[2]},
-            border=(3, 0), sticky=tk.NSEW)
+            self.style, f"{h_ttkstyle}.thumb", default=scroll_images[0].image,
+            states={"pressed": scroll_images[1].image,
+                    "active": scroll_images[2].image},
+            border=scroll_images[0].meta.border,
+            padding=scroll_images[0].meta.padding)
         layout(self.style, h_ttkstyle,
                El("Horizontal.Scrollbar.trough", sticky="we", children=[
-                   El("Horizontal.Scrollbar.leftarrow", side="left", sticky=""),
-                   El("Horizontal.Scrollbar.rightarrow", side="right", sticky=""),
-                   El(f"{h_ttkstyle}.thumb", expand="1", sticky="nswe")]))
-        self.style._build_configure(h_ttkstyle, arrowcolor=background)
-        state_map(self.style, h_ttkstyle,
-                  arrowcolor={"pressed": pressed, "active": active})
+                   El(f"{h_ttkstyle}.thumb", expand="1", sticky="we")]))
 
         # vertical scrollbar
-        self.style._build_configure(
+        self.configure(
             v_ttkstyle,
-            troughcolor=troughcolor,
-            darkcolor=troughcolor,
-            bordercolor=troughcolor,
-            lightcolor=troughcolor,
+            troughcolor=self.colors.bg,
+            darkcolor=self.colors.bg,
+            bordercolor=self.colors.bg,
+            lightcolor=self.colors.bg,
             arrowcolor=background,
             arrowsize=self.scale_size(11),
-            background=troughcolor,
+            background=self.colors.bg,
             relief=tk.FLAT,
             borderwidth=0,
         )
         image_element(
-            self.style, f"{v_ttkstyle}.thumb", default=scroll_images[3],
-            states={"pressed": scroll_images[4], "active": scroll_images[5]},
-            border=(0, 3), sticky=tk.NSEW)
+            self.style, f"{v_ttkstyle}.thumb", default=scroll_images[3].image,
+            states={"pressed": scroll_images[4].image,
+                    "active": scroll_images[5].image},
+            border=scroll_images[3].meta.border,
+            padding=scroll_images[3].meta.padding)
         layout(self.style, v_ttkstyle,
                El("Vertical.Scrollbar.trough", sticky="ns", children=[
-                   El("Vertical.Scrollbar.uparrow", side="top", sticky=""),
-                   El("Vertical.Scrollbar.downarrow", side="bottom", sticky=""),
-                   El(f"{v_ttkstyle}.thumb", expand="1", sticky="nswe")]))
-        self.style._build_configure(v_ttkstyle, arrowcolor=background)
-        state_map(self.style, v_ttkstyle,
-                  arrowcolor={"pressed": pressed, "active": active})
+                   El(f"{v_ttkstyle}.thumb", expand="1", sticky="ns")]))
 
         # register ttkstyles
         self.style._register_ttkstyle(h_ttkstyle)
@@ -1117,7 +1073,7 @@ class StyleBuilderTTK:
                        El(f"{element}.downarrow", side=tk.BOTTOM, sticky=tk.E)]),
                    El(f"{element}.padding", sticky=tk.NSEW, children=[
                        El(f"{element}.textarea", sticky=tk.NSEW)])]))
-        self.style._build_configure(
+        self.configure(
             ttkstyle,
             bordercolor=bordercolor,
             darkcolor=self.colors.inputbg,
@@ -1195,7 +1151,7 @@ class StyleBuilderTTK:
             hover = Colors.update_hsv(background, vd=0.1)
 
         # treeview header
-        self.style._build_configure(
+        self.configure(
             header_style,
             background=background,
             foreground=foreground,
@@ -1219,7 +1175,7 @@ class StyleBuilderTTK:
                 ("active !disabled", hover),
             ],
         )
-        self.style._build_configure(
+        self.configure(
             body_style,
             background=self.colors.inputbg,
             fieldbackground=self.colors.inputbg,
@@ -1289,7 +1245,7 @@ class StyleBuilderTTK:
             bordercolor = focuscolor
 
         # treeview header
-        self.style._build_configure(
+        self.configure(
             header_style,
             background=background,
             foreground=foreground,
@@ -1302,7 +1258,7 @@ class StyleBuilderTTK:
             bordercolor=[("focus !disabled", background)],
         )
         # treeview body
-        self.style._build_configure(
+        self.configure(
             body_style,
             background=self.colors.inputbg,
             fieldbackground=self.colors.inputbg,
@@ -1361,7 +1317,7 @@ class StyleBuilderTTK:
             ttkstyle = f"{colorname}.{STYLE}"
             background = self.colors.get(colorname)
 
-        self.style._build_configure(ttkstyle, background=background)
+        self.configure(ttkstyle, background=background)
 
         # register style
         self.style._register_ttkstyle(ttkstyle)
@@ -1391,7 +1347,7 @@ class StyleBuilderTTK:
         pressed = Colors.make_transparent(0.80, background, self.colors.bg)
         hover = Colors.make_transparent(0.90, background, self.colors.bg)
 
-        self.style._build_configure(
+        self.configure(
             ttkstyle,
             foreground=foreground,
             background=background,
@@ -1453,7 +1409,7 @@ class StyleBuilderTTK:
         pressed = foreground
         hover = foreground
 
-        self.style._build_configure(
+        self.configure(
             ttkstyle,
             foreground=foreground,
             background=self.colors.bg,
@@ -1523,7 +1479,7 @@ class StyleBuilderTTK:
 
         disabled_fg = Colors.make_transparent(0.30, self.colors.fg, self.colors.bg)
 
-        self.style._build_configure(
+        self.configure(
             ttkstyle,
             foreground=foreground,
             background=self.colors.bg,
@@ -1609,12 +1565,7 @@ class StyleBuilderTTK:
         else:
             accent = self.colors.get(colorname)
 
-        # Toggle glyphs are ~1.6:1 (w:h); match that aspect so the pill fills the
-        # frame without slack. Sized up from the old hand-drawn assets for a more
-        # legible switch.
-        toggle_size = self.scale_size([32, 20])
-
-        self.style._build_configure(
+        self.configure(
             ttkstyle,
             relief=tk.FLAT,
             borderwidth=0,
@@ -1627,15 +1578,30 @@ class StyleBuilderTTK:
             foreground=[("disabled", disabled_fg)],
             background=[("selected", self.colors.bg)],
         )
+        a = self.assets
+        on = a.recolor(
+            "switch_round", white=accent, black=self.colors.bg)
+        off = a.recolor(
+            "switch_round", white=fg_muted, black=self.colors.bg,
+            transform="flip-x")
+        disabled_on = a.recolor(
+            "switch_round", white=disabled_fg, black=self.colors.bg)
+        disabled_off = a.recolor(
+            "switch_round", white=disabled_fg, black=self.colors.bg,
+            transform="flip-x")
+        spacer_name = f"{ttkstyle}.spacer"
         try:
-            icon_element(self.style, f"{ttkstyle}.indicator", size=toggle_size,
-                default={"name": "toggle-on", "color": accent},
+            image_element(
+                self.style, f"{ttkstyle}.indicator", default=on.image,
                 states={
-                    "disabled selected": {"name": "toggle-on",  "color": disabled_fg},
-                    "disabled":          {"name": "toggle-off", "color": disabled_fg},
-                    "!selected":         {"name": "toggle-off", "color": fg_muted},
+                    "disabled selected": disabled_on.image,
+                    "disabled": disabled_off.image,
+                    "!selected": off.image,
                 },
-                width=self.scale_size(36), border=self.scale_size(4), sticky=W)
+                border=on.meta.border, padding=on.meta.padding, sticky=W)
+            image_element(
+                self.style, spacer_name,
+                default=self._create_indicator_spacer_asset(), sticky=EW)
         except Exception:
             """This method is used as the default Toggle style, so it is
             necessary to catch Tcl errors when it tries to create an element
@@ -1646,6 +1612,7 @@ class StyleBuilderTTK:
             El("Toolbutton.border", sticky=NSEW, children=[
                 El("Toolbutton.padding", sticky=NSEW, children=[
                     El(f"{ttkstyle}.indicator", side=LEFT),
+                    El(spacer_name, side=LEFT),
                     El("Toolbutton.label", side=LEFT)])]))
         # register ttkstyle
         self.style._register_ttkstyle(ttkstyle)
@@ -1653,10 +1620,7 @@ class StyleBuilderTTK:
     def create_square_toggle_style(self, colorname=DEFAULT):
         """Create a square toggle style for the ttk.Checkbutton widget.
 
-        Note: as of 2.0 both round and square toggles render the same Bootstrap
-        Icons toggle glyphs (`toggle-on`/`toggle-off`). The `square-toggle`
-        bootstyle keyword remains for back-compat but produces the same rounded
-        indicator as `round-toggle`.
+        The square toggle uses its own recolorable raster template.
 
         Parameters:
 
@@ -1681,9 +1645,7 @@ class StyleBuilderTTK:
         else:
             accent = self.colors.get(colorname)
 
-        toggle_size = self.scale_size([32, 20])
-
-        self.style._build_configure(
+        self.configure(
             ttkstyle, relief=tk.FLAT, borderwidth=0, foreground=self.colors.fg
         )
         self.style.map(
@@ -1694,18 +1656,34 @@ class StyleBuilderTTK:
                 ("!selected", self.colors.bg),
             ],
         )
-        icon_element(self.style, f"{ttkstyle}.indicator", size=toggle_size,
-            default={"name": "toggle-on", "color": accent},
+        a = self.assets
+        on = a.recolor(
+            "switch_square", white=accent, black=self.colors.bg)
+        off = a.recolor(
+            "switch_square", white=fg_muted, black=self.colors.bg,
+            transform="flip-x")
+        disabled_on = a.recolor(
+            "switch_square", white=disabled_fg, black=self.colors.bg)
+        disabled_off = a.recolor(
+            "switch_square", white=disabled_fg, black=self.colors.bg,
+            transform="flip-x")
+        spacer_name = f"{ttkstyle}.spacer"
+        image_element(
+            self.style, f"{ttkstyle}.indicator", default=on.image,
             states={
-                "disabled selected": {"name": "toggle-on",  "color": disabled_fg},
-                "disabled":          {"name": "toggle-off", "color": disabled_fg},
-                "!selected":         {"name": "toggle-off", "color": fg_muted},
+                "disabled selected": disabled_on.image,
+                "disabled": disabled_off.image,
+                "!selected": off.image,
             },
-            width=self.scale_size(36), border=self.scale_size(4), sticky=W)
+            border=on.meta.border, padding=on.meta.padding, sticky=W)
+        image_element(
+            self.style, spacer_name,
+            default=self._create_indicator_spacer_asset(), sticky=EW)
         layout(self.style, ttkstyle,
             El("Toolbutton.border", sticky=NSEW, children=[
                 El("Toolbutton.padding", sticky=NSEW, children=[
                     El(f"{ttkstyle}.indicator", side=LEFT),
+                    El(spacer_name, side=LEFT),
                     El("Toolbutton.label", side=LEFT)])]))
         # register ttkstyle
         self.style._register_ttkstyle(ttkstyle)
@@ -1738,7 +1716,7 @@ class StyleBuilderTTK:
         disabled_bg = Colors.make_transparent(0.10, self.colors.fg, self.colors.bg)
         disabled_fg = Colors.make_transparent(0.30, self.colors.fg, self.colors.bg)
 
-        self.style._build_configure(
+        self.configure(
             ttkstyle,
             foreground=self.colors.selectfg,
             background=toggle_off,
@@ -1817,7 +1795,7 @@ class StyleBuilderTTK:
         pressed = foreground
         hover = foreground
 
-        self.style._build_configure(
+        self.configure(
             ttkstyle,
             foreground=foreground,
             background=self.colors.bg,
@@ -1898,7 +1876,7 @@ class StyleBuilderTTK:
             focuscolor = self.colors.get(colorname)
             bordercolor = focuscolor
 
-        self.style._build_configure(
+        self.configure(
             ttkstyle,
             bordercolor=bordercolor,
             darkcolor=self.colors.inputbg,
@@ -1954,22 +1932,34 @@ class StyleBuilderTTK:
         else:
             accent = self.colors.get(sn.colorname)
 
-        # Foreground map FIRST -- color-less icon specs resolve against it.
-        self.style._build_configure(sn.ttkstyle, foreground=fg)
+        self.configure(sn.ttkstyle, foreground=fg)
         state_map(self.style, sn.ttkstyle, foreground={"disabled": disabled})
 
-        icon_element(self.style, f"{sn.ttkstyle}.indicator", size=self.scale_size(20),
-            default={"name": "record-circle-fill", "color": accent},
+        a = self.assets
+        selected = a.recolor("radiobutton", white=accent, black=accent)
+        unselected = a.recolor(
+            "radiobutton", white=self.colors.bg, black=fg_muted)
+        disabled_selected = a.recolor(
+            "radiobutton", white=disabled, black=disabled)
+        disabled_unselected = a.recolor(
+            "radiobutton", white=self.colors.bg, black=disabled)
+        image_element(
+            self.style, f"{sn.ttkstyle}.indicator", default=selected.image,
             states={
-                "disabled selected": "record-circle-fill",   # follows fg(disabled)
-                "disabled":          "circle",               # follows fg(disabled)
-                "!selected":         {"name": "circle", "color": fg_muted},
+                "disabled selected": disabled_selected.image,
+                "disabled": disabled_unselected.image,
+                "!selected": unselected.image,
             },
-            width=self.scale_size(20), border=self.scale_size(4), sticky=W)
+            border=selected.meta.border, padding=selected.meta.padding, sticky=W)
+        spacer_name = f"{sn.ttkstyle}.spacer"
+        image_element(
+            self.style, spacer_name,
+            default=self._create_indicator_spacer_asset(), sticky=EW)
         layout(
             self.style, sn.ttkstyle,
             El("Radiobutton.padding", sticky=NSEW, children=[
                 El(f"{sn.ttkstyle}.indicator", side=LEFT, sticky=""),
+                El(spacer_name, side=LEFT),
                 El("Radiobutton.focus", side=LEFT, sticky="", children=[
                     El("Radiobutton.label", sticky=NSEW)])]))
         self.style._register_ttkstyle(sn.ttkstyle)
@@ -2007,7 +1997,7 @@ class StyleBuilderTTK:
         pressed = Colors.update_hsv(background, vd=-0.1)
         hover = Colors.update_hsv(background, vd=0.10)
 
-        self.style._build_configure(
+        self.configure(
             ttkstyle,
             foreground=foreground,
             background=background,
@@ -2071,7 +2061,7 @@ class StyleBuilderTTK:
             disabled_fg = Colors.update_hsv(self.colors.inputbg, vd=-0.3)
             pressed = Colors.update_hsv(prime_color, vd=0.1)
 
-        self.style._build_configure(
+        self.configure(
             ttkstyle,
             foreground=self.colors.fg,
             background=self.colors.bg,
@@ -2127,7 +2117,7 @@ class StyleBuilderTTK:
                 ("hover !disabled", self.colors.selectfg),
             ]
         )
-        self.style._build_configure(chevron_style, font="-size 14")
+        self.configure(chevron_style, font="-size 14")
 
         # register ttkstyle
         self.style._register_ttkstyle(ttkstyle)
@@ -2156,7 +2146,7 @@ class StyleBuilderTTK:
 
         background = self.colors.bg
 
-        self.style._build_configure(
+        self.configure(
             ttkstyle, foreground=foreground, background=background
         )
         # register ttkstyle
@@ -2196,7 +2186,7 @@ class StyleBuilderTTK:
             textcolor = self.colors.get(colorname)
             background = self.colors.bg
 
-        self.style._build_configure(
+        self.configure(
             ttkstyle,
             foreground=textcolor,
             background=background,
@@ -2225,7 +2215,7 @@ class StyleBuilderTTK:
             background = self.colors.bg
 
         # standard label
-        self.style._build_configure(
+        self.configure(
             ttkstyle, foreground=foreground, background=background
         )
         # register ttkstyle
@@ -2253,7 +2243,7 @@ class StyleBuilderTTK:
             background = self.colors.get(colorname)
             foreground = self.colors.get_foreground(colorname)
 
-        self.style._build_configure(
+        self.configure(
             ttkstyle, foreground=foreground, background=background
         )
         # register ttkstyle
@@ -2286,12 +2276,12 @@ class StyleBuilderTTK:
             ttkstyle = f"{colorname}.{STYLE}"
 
         # create widget style
-        self.style._build_configure(
+        self.configure(
             f"{ttkstyle}.Label",
             foreground=foreground,
             background=background,
         )
-        self.style._build_configure(
+        self.configure(
             ttkstyle,
             relief=tk.RAISED,
             borderwidth=1,
@@ -2312,7 +2302,6 @@ class StyleBuilderTTK:
                 The color label used to style the widget.
         """
         sn = StyleName("TCheckbutton", colorname)
-        size = self.scale_size(20)
         fg = self.colors.fg
         disabled = Colors.make_transparent(0.3, fg, self.colors.bg)
         fg_muted = Colors.make_transparent(0.4, fg, self.colors.bg)
@@ -2328,23 +2317,39 @@ class StyleBuilderTTK:
             accent = self.colors.get(sn.colorname)
 
         # Foreground map FIRST -- color-less icon specs resolve against it.
-        self.style._build_configure(sn.ttkstyle, foreground=fg)
+        self.configure(sn.ttkstyle, foreground=fg)
         state_map(self.style, sn.ttkstyle, foreground={"disabled": disabled})
 
-        # Element name carries the ttkstyle prefix so `icon_element`'s
-        # foreground lookup targets the style we just configured.
-        icon_element(self.style, f"{sn.ttkstyle}.indicator", size=size,
-            default={"name": "check-square-fill", "color": accent},
+        a = self.assets
+        checked = a.recolor(
+            "checkbox_checked", white=self.colors.bg, black=accent)
+        unchecked = a.recolor(
+            "checkbox_unchecked", white=self.colors.bg, black=fg_muted)
+        indeterminate = a.recolor(
+            "checkbox_indeterminate", white=self.colors.bg, black=accent)
+        disabled_checked = a.recolor(
+            "checkbox_checked", white=self.colors.bg, black=disabled)
+        disabled_unchecked = a.recolor(
+            "checkbox_unchecked", white=self.colors.bg, black=disabled)
+        disabled_indeterminate = a.recolor(
+            "checkbox_indeterminate", white=self.colors.bg, black=disabled)
+        image_element(
+            self.style, f"{sn.ttkstyle}.indicator", default=checked.image,
             states={
-                "disabled selected":  "check-square-fill",   # follows fg(disabled)
-                "disabled alternate": "dash-square-fill",    # follows fg(disabled)
-                "disabled":           "square",              # follows fg(disabled)
-                "alternate":          {"name": "dash-square-fill", "color": accent},
-                "!selected":          {"name": "square", "color": fg_muted},
+                "disabled selected": disabled_checked.image,
+                "disabled alternate": disabled_indeterminate.image,
+                "disabled": disabled_unchecked.image,
+                "alternate": indeterminate.image,
+                "!selected": unchecked.image,
             },
-            border=self.scale_size(4), sticky=W)
+            border=checked.meta.border, padding=checked.meta.padding, sticky=W)
+        spacer_name = f"{sn.ttkstyle}.spacer"
+        image_element(
+            self.style, spacer_name,
+            default=self._create_indicator_spacer_asset(), sticky=EW)
         layout(self.style, sn.ttkstyle, El("Checkbutton.padding", sticky=NSEW, children=[
             El(f"{sn.ttkstyle}.indicator", side=LEFT, sticky=""),
+            El(spacer_name, side=LEFT),
             El("Checkbutton.focus", side=LEFT, sticky="", children=[
                 El("Checkbutton.label", sticky=NSEW)])]))
         # register ttkstyle
@@ -2374,7 +2379,7 @@ class StyleBuilderTTK:
         pressed = Colors.make_transparent(0.80, background, self.colors.bg)
         hover = Colors.make_transparent(0.90, background, self.colors.bg)
 
-        self.style._build_configure(
+        self.configure(
             ttkstyle,
             foreground=foreground,
             background=background,
@@ -2466,7 +2471,7 @@ class StyleBuilderTTK:
         pressed = foreground
         hover = foreground
 
-        self.style._build_configure(
+        self.configure(
             ttkstyle,
             foreground=foreground,
             background=self.colors.bg,
@@ -2538,7 +2543,7 @@ class StyleBuilderTTK:
         ttkstyle_tab = f"{ttkstyle}.Tab"
 
         # create widget style
-        self.style._build_configure(
+        self.configure(
             ttkstyle,
             background=self.colors.bg,
             bordercolor=bordercolor,
@@ -2546,7 +2551,7 @@ class StyleBuilderTTK:
             darkcolor=self.colors.bg,
             tabmargins=(0, 1, 1, 0),
         )
-        self.style._build_configure(
+        self.configure(
             ttkstyle_tab, focuscolor="", foreground=foreground, padding=(6, 5)
         )
         self.style.map(
@@ -2594,11 +2599,11 @@ class StyleBuilderTTK:
             h_ttkstyle = f"{colorname}.{H_STYLE}"
             v_ttkstyle = f"{colorname}.{V_STYLE}"
 
-        self.style._build_configure(
+        self.configure(
             "Sash", gripcount=0, sashthickness=self.scale_size(2)
         )
-        self.style._build_configure(h_ttkstyle, background=sashcolor)
-        self.style._build_configure(v_ttkstyle, background=sashcolor)
+        self.configure(h_ttkstyle, background=sashcolor)
+        self.configure(v_ttkstyle, background=sashcolor)
 
         # register ttkstyle
         self.style._register_ttkstyle(h_ttkstyle)
