@@ -1,0 +1,183 @@
+"""TTK toggle style recipes."""
+
+import tkinter as tk
+
+from ttkbootstrap.constants import *
+from ttkbootstrap.style import StyleBuilderTTK
+from ttkbootstrap.style.layout import El, image_element, layout
+from ttkbootstrap.style.theme import Colors
+from ttkbootstrap.style.builders.registry import register_builder
+from ttkbootstrap.style.builders.utils import indicator_spacer
+
+
+@register_builder("default", "toggle")
+def build_toggle_style(builder: StyleBuilderTTK, colorname=DEFAULT):
+    """Create a round toggle style for the ttk.Checkbutton widget.
+
+    Parameters:
+
+        builder (StyleBuilderTTK):
+            The style builder.
+        colorname (str):
+    """
+    builder.build_style("round", "toggle", colorname, required=True)
+
+
+@register_builder("round", "toggle")
+def build_round_toggle_style(builder: StyleBuilderTTK, colorname=DEFAULT):
+    """Create a round toggle style for the ttk.Checkbutton widget.
+
+    Parameters:
+
+        builder (StyleBuilderTTK):
+            The style builder
+        colorname (str):
+            The color label used to style the widget.
+    """
+    ttk_class = "Round.Toggle"
+    disabled_fg = Colors.make_transparent(0.30, builder.colors.fg, builder.colors.bg)
+    fg_muted = Colors.make_transparent(0.40, builder.colors.fg, builder.colors.bg)
+
+    if any([colorname == DEFAULT, colorname == ""]):
+        ttk_style = ttk_class
+        colorname = PRIMARY
+    else:
+        ttk_style = f"{colorname}.{ttk_class}"
+
+    # Resolve the "on" accent; LIGHT/DARK on their own background need a
+    # contrasting indicator (visual-check item: verify toggle aspect ratio
+    # and LIGHT-on-light on the human spot-check).
+    if colorname == LIGHT:
+        accent = builder.colors.dark
+    elif colorname == DARK:
+        accent = builder.colors.light
+    else:
+        accent = builder.colors.get(colorname)
+
+    builder.configure(
+        ttk_style,
+        relief=tk.FLAT,
+        borderwidth=0,
+        padding=0,
+        foreground=builder.colors.fg,
+        background=builder.colors.bg,
+    )
+    builder.style.map(
+        ttk_style,
+        foreground=[("disabled", disabled_fg)],
+        background=[("selected", builder.colors.bg)],
+    )
+    a = builder.assets
+    on = a.recolor(
+        "switch_round", white=accent, black=builder.colors.bg)
+    off = a.recolor(
+        "switch_round", white=fg_muted, black=builder.colors.bg,
+        transform="flip-x")
+    disabled_on = a.recolor(
+        "switch_round", white=disabled_fg, black=builder.colors.bg)
+    disabled_off = a.recolor(
+        "switch_round", white=disabled_fg, black=builder.colors.bg,
+        transform="flip-x")
+    spacer_name = f"{ttk_style}.spacer"
+    try:
+        image_element(
+            builder.style, f"{ttk_style}.indicator", default=on.image,
+            states={
+                "disabled selected": disabled_on.image,
+                "disabled": disabled_off.image,
+                "!selected": off.image,
+            },
+            border=on.meta.border, padding=on.meta.padding, sticky=W)
+        image_element(
+            builder.style, spacer_name,
+            default=indicator_spacer(builder), sticky=EW)
+    except Exception:
+        """This method is used as the default Toggle style, so it is
+        necessary to catch Tcl errors when it tries to create an element
+        that was already created by the Toggle or Round Toggle style."""
+        pass
+
+    layout(builder.style, ttk_style,
+        El("Toolbutton.border", sticky=NSEW, children=[
+            El("Toolbutton.padding", sticky=NSEW, children=[
+                El(f"{ttk_style}.indicator", side=LEFT),
+                El(spacer_name, side=LEFT),
+                El("Toolbutton.label", side=LEFT)])]))
+    # register ttkstyle
+    builder.register_ttkstyle(ttk_style)
+
+
+@register_builder("square", "toggle")
+def build_square_toggle_style(builder: StyleBuilderTTK, colorname=DEFAULT):
+    """Create a square toggle style for the ttk.Checkbutton widget.
+
+    The square toggle uses its own recolorable raster template.
+
+    Parameters:
+
+        builder (StyleBuilderTTK):
+            The style builder.
+        colorname (str):
+            The color label used to style the widget.
+    """
+    ttk_class = "Square.Toggle"
+    disabled_fg = Colors.make_transparent(0.30, builder.colors.fg, builder.colors.bg)
+    fg_muted = Colors.make_transparent(0.40, builder.colors.fg, builder.colors.bg)
+
+    if any([colorname == DEFAULT, colorname == ""]):
+        ttk_style = ttk_class
+        colorname = PRIMARY
+    else:
+        ttk_style = f"{colorname}.{ttk_class}"
+
+    # Resolve the "on" accent (same logic as round-toggle).
+    if colorname == LIGHT:
+        accent = builder.colors.dark
+    elif colorname == DARK:
+        accent = builder.colors.light
+    else:
+        accent = builder.colors.get(colorname)
+
+    builder.configure(
+        ttk_style, relief=tk.FLAT, borderwidth=0, foreground=builder.colors.fg
+    )
+    builder.style.map(
+        ttk_style,
+        foreground=[("disabled", disabled_fg)],
+        background=[
+            ("selected", builder.colors.bg),
+            ("!selected", builder.colors.bg),
+        ],
+    )
+    a = builder.assets
+    on = a.recolor(
+        "switch_square", white=accent, black=builder.colors.bg)
+    off = a.recolor(
+        "switch_square", white=fg_muted, black=builder.colors.bg,
+        transform="flip-x")
+    disabled_on = a.recolor(
+        "switch_square", white=disabled_fg, black=builder.colors.bg)
+    disabled_off = a.recolor(
+        "switch_square", white=disabled_fg, black=builder.colors.bg,
+        transform="flip-x")
+    spacer_name = f"{ttk_style}.spacer"
+    image_element(
+        builder.style, f"{ttk_style}.indicator", default=on.image,
+        states={
+            "disabled selected": disabled_on.image,
+            "disabled": disabled_off.image,
+            "!selected": off.image,
+        },
+        border=on.meta.border, padding=on.meta.padding, sticky=W)
+    image_element(
+        builder.style, spacer_name,
+        default=indicator_spacer(builder), sticky=EW)
+    layout(builder.style, ttk_style,
+        El("Toolbutton.border", sticky=NSEW, children=[
+            El("Toolbutton.padding", sticky=NSEW, children=[
+                El(f"{ttk_style}.indicator", side=LEFT),
+                El(spacer_name, side=LEFT),
+                El("Toolbutton.label", side=LEFT)])]))
+
+    # register ttk style
+    builder.register_ttkstyle(ttk_style)

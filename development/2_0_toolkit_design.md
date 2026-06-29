@@ -215,9 +215,9 @@ place both can import.
 
 ```python
 sn = StyleName("TScale", colorname, orient="Horizontal")
-sn.colorname    # PRIMARY when input was DEFAULT/"" (per-widget default), else as given
-sn.ttkstyle     # "Horizontal.TScale" or "primary.Horizontal.TScale"
-sn.element      # "Horizontal.Scale"  (drops the T from the ttk class token)
+sn.colorname  # PRIMARY when input was DEFAULT/"" (per-widget default), else as given
+sn.ttk_style  # "Horizontal.TScale" or "primary.Horizontal.TScale"
+sn.element  # "Horizontal.Scale"  (drops the T from the ttk class token)
 ```
 
 Absorbs `if any([colorname == DEFAULT, colorname == ""])`, the
@@ -290,19 +290,19 @@ def create_radiobutton_style(self, colorname=DEFAULT):
     sn = StyleName("TRadiobutton", colorname)
     disabled_fg = Colors.make_transparent(0.30, self.colors.fg, self.colors.bg)
     off, on, disabled, on_disabled = self.create_radiobutton_assets(sn.colorname)
-    image_element(self.style, f"{sn.ttkstyle}.indicator", default=on,
-        states={"disabled selected": on_disabled,
-                "disabled": disabled,
-                "!selected": off},
-        width=self.scale_size(20), border=self.scale_size(4), sticky=W)
-    state_map(self.style, sn.ttkstyle, foreground={"disabled": disabled_fg})
-    self.style._build_configure(sn.ttkstyle)
-    layout(self.style, sn.ttkstyle,
-        El("Radiobutton.padding", sticky=NSEW, children=[
-            El(f"{sn.ttkstyle}.indicator", side=LEFT),
-            El("Radiobutton.focus", side=LEFT, children=[
-                El("Radiobutton.label", sticky=NSEW)])]))
-    self.style._register_ttkstyle(sn.ttkstyle)
+    image_element(self.style, f"{sn.ttk_style}.indicator", default=on,
+                  states={"disabled selected": on_disabled,
+                          "disabled": disabled,
+                          "!selected": off},
+                  width=self.scale_size(20), border=self.scale_size(4), sticky=W)
+    state_map(self.style, sn.ttk_style, foreground={"disabled": disabled_fg})
+    self.style._build_configure(sn.ttk_style)
+    layout(self.style, sn.ttk_style,
+           El("Radiobutton.padding", sticky=NSEW, children=[
+               El(f"{sn.ttk_style}.indicator", side=LEFT),
+               El("Radiobutton.focus", side=LEFT, children=[
+                   El("Radiobutton.label", sticky=NSEW)])]))
+    self.style._register_ttkstyle(sn.ttk_style)
 ```
 
 The 30-line layout pyramid → 5 readable lines; the positional statespecs → a named

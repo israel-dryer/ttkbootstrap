@@ -12,6 +12,7 @@ from tkinter import TclError, ttk
 from ttkbootstrap.style.engine import Style
 from ttkbootstrap.style.builders_ttk import StyleBuilderTTK
 from ttkbootstrap.style.builders_tk import StyleBuilderTK
+from ttkbootstrap.style.builders.registry import DEFAULT_VARIANT
 
 
 class Keywords:
@@ -488,15 +489,18 @@ class Bootstyle:
         ttkstyle = Bootstyle.ttkstyle_name(widget, style_string, **kwargs)
         if not style.style_exists_in_theme(ttkstyle):
             widget_color = Bootstyle.ttkstyle_widget_color(ttkstyle)
-            method_name = Bootstyle.ttkstyle_method_name(widget, ttkstyle)
+            widget_type = (
+                Bootstyle.ttkstyle_widget_type(ttkstyle)
+                or DEFAULT_VARIANT
+            )
+            widget_family = Bootstyle.ttkstyle_widget_class(widget, ttkstyle)
             builder: StyleBuilderTTK = style._get_builder()
-            try:
-                builder_method = builder.name_to_method(method_name)
-            except AttributeError:
+            if not builder.build_style(
+                widget_type, widget_family, widget_color
+            ):
                 # Style name is from a third-party widget (e.g. tkcalendar) and
                 # doesn't map to any ttkbootstrap builder; pass it through as-is.
                 return style_string
-            builder_method(builder, widget_color)
 
         # Repaint the combobox popdown. It is a Tcl-level toplevel that the
         # theme walk's winfo_children() DFS cannot reach, so it is refreshed

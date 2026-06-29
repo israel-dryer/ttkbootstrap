@@ -74,22 +74,23 @@ def test_el_expand_and_border_options():
 def test_stylename_default_to_primary():
     sn = StyleName("TRadiobutton")
     assert sn.colorname == PRIMARY
-    assert sn.ttkstyle == "TRadiobutton"
+    assert sn.ttkstyle == sn.ttk_style
+    assert sn.ttk_style == "TRadiobutton"
     assert sn.element == "Radiobutton"
 
     empty = StyleName("TRadiobutton", "")
     assert empty.colorname == PRIMARY
-    assert empty.ttkstyle == "TRadiobutton"
+    assert empty.ttk_style == "TRadiobutton"
 
 
 def test_stylename_color_and_orient():
     sn = StyleName("TScale", "info", orient="Horizontal")
     assert sn.colorname == "info"
-    assert sn.ttkstyle == "info.Horizontal.TScale"
+    assert sn.ttk_style == "info.Horizontal.TScale"
     assert sn.element == "info.Horizontal.Scale"  # .TS -> .S
 
     default = StyleName("TScale", orient="Horizontal")
-    assert default.ttkstyle == "Horizontal.TScale"
+    assert default.ttk_style == "Horizontal.TScale"
     assert default.element == "Horizontal.Scale"
 
 
