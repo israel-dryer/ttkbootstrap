@@ -43,7 +43,8 @@ Read these, in order, before any 2.0 work:
    - `development/2_0_recolor_assets_design.md` — **recolorable raster widget
      assets** (merged in #1081).
    - `development/2_0_builder_split_design.md` — modular `StyleBuilderTTK`
-     recipe registry (approved, implemented, and visually approved).
+     recipe registry (approved, implemented, visually approved, and open as
+     draft PR #1082).
 
 ### Where things stand (snapshot — confirm against the handoff, it's authoritative)
 
@@ -52,17 +53,19 @@ Merged into `2.0`: engine repaint + content-addressed image cache (PRs 1–2),
 mixin API replacing the import-time monkey-patch (PR 3), the `style/` package
 split (PR 4), the public asset/layout toolkit (PR 5), the icon engine (PR 6a),
 the glyph-builder migration (PR 6b), and recolorable raster widget assets
-(#1081). The modular `StyleBuilderTTK` branch raises the expected suite to
-**147 passed** and is headless-clean apart from the documented local Tcl
-catalog defect. Its human light↔dark smoke gate passed. Workstream E
-(theme/anchor model) and D
-(bootstyle canonical grammar) remain later candidates and each needs its own
-design pass first.
+(#1081). Draft PR **#1082** modularizes `StyleBuilderTTK`; its expected suite is
+**147 passed**, all structural/headless gates pass apart from the documented
+local Tcl catalog defect, and its human light↔dark smoke gate passed. After
+#1082, design scaling/asset-geometry normalization first, then a focused
+Workstream E slice for private color ramps plus the minimal builder helpers
+(`active`, `pressed`, `border`, `disabled`, `on_color`). Canonical bootstyle
+grammar (D) remains later and needs its own design pass.
 
 ## Current task this handoff: modularize `StyleBuilderTTK`
 
 Branch: **`refactor/2.0-builder-modules`**, cut from `2.0` after the recolorable
-raster-assets PR merged as **#1081**. The 2,689-line
+raster-assets PR merged as **#1081**; draft PR **#1082** targets `2.0`. The
+2,689-line
 `style/builders_ttk.py` recipe monolith is now a 161-line coordinator plus a
 private frozen decorator registry and 22 widget-family modules.
 
@@ -70,6 +73,7 @@ The approved design and exact verification results are in
 **`development/2_0_builder_split_design.md`**. Headless, structural, and human
 light↔dark smoke gates pass. Preserve the existing
 bootstyle grammar, generated style names, lazy per-theme behavior, and visuals.
+Current action: review and merge #1082.
 
 ## How to work here
 
@@ -123,7 +127,8 @@ src/ttkbootstrap/
   style/             # THE CORE engine package (split from style.py in 2.0):
     theme.py         #   Colors, ThemeDefinition
     builders_tk.py   #   StyleBuilderTK (legacy tk.* widgets)
-    builders_ttk.py  #   StyleBuilderTTK (the bulk — create_*_style / create_*_assets)
+    builders_ttk.py  #   StyleBuilderTTK per-theme coordinator + registry dispatch
+    builders/        #   private widget-family ttk style recipes + frozen registry
     engine.py        #   Style singleton: theme walk, _image_cache, _get_or_create_image
     bootstyle.py     #   Keywords, Bootstyle resolver, BootMixin/AutoStyleMixin
     assets.py        #   PUBLIC toolkit: Assets (circle/rect/rounded_rect/icon/image)

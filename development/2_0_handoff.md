@@ -5,7 +5,7 @@
 
 _Last updated: 2026-06-29 (`StyleBuilderTTK` modularization implemented and
 visually approved on `refactor/2.0-builder-modules`; all gates pass and the
-branch is ready for commit/PR.)_
+branch is open as draft PR #1082 against `2.0`.)_
 
 ## Where we are
 
@@ -32,11 +32,20 @@ completes the Workstream I icon work for 2.0.
 now 104 tests and the light↔dark manual gate passed. See the implementation
 summary immediately below.
 
-**Current actionable → commit and open the builder-modularization PR.** The branch is
-`refactor/2.0-builder-modules`, based on merge commit `080e3d19`. The approved
+**Current actionable → review and merge builder-modularization draft PR #1082.**
+The branch is `refactor/2.0-builder-modules`, based on merge commit `080e3d19`. The approved
 design and exact verification results are in
-`development/2_0_builder_split_design.md`. The deferred visual-polish PR and
-Workstreams E/D remain later candidates.
+`development/2_0_builder_split_design.md`.
+
+**Next after #1082:** first write and discuss a scaling/asset-geometry design.
+It must unify logical UI units, physical pixels, source-image pixels, rounding,
+and even-snap behavior; restore intended element dimensions (especially the
+scale thumb); and specify 100/125/150/200% tests before implementation. Then
+design a focused Workstream E slice: cheap private ramps plus only the builder
+helpers ttkbootstrap needs (`active`, `pressed`, `border`, `disabled`, and
+`on_color`). Keep those helpers on `StyleBuilderTTK`; defer a public palette API
+unless a simple concrete need emerges. Canonical bootstyle grammar (D) follows
+later with its own design pass.
 
 **Recolorable raster widget assets — MERGED #1081, VISUALLY APPROVED.** Source
 branch: `feat/2.0-recolor-elements`. Locked design:
@@ -100,6 +109,7 @@ Locked scope from the 2026-06-28 discussion:
 
 Implementation summary:
 
+- Draft PR: **#1082**, targeting `2.0`; commit `96bcab40`.
 - Approved design: `development/2_0_builder_split_design.md`.
 - `StyleBuilderTTK`: 2,689-line monolith → 161-line per-theme coordinator.
 - Private frozen registry: 36 exact `(variant, widget-family)` keys; explicit
