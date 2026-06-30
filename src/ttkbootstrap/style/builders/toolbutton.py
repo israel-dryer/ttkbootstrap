@@ -47,9 +47,9 @@ def build_toolbutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         darkcolor=toggle_off,
         lightcolor=toggle_off,
         relief=tk.RAISED,
-        focusthickness=1,
+        focusthickness=builder.scale_size(1),
         focuscolor=foreground,
-        padding=(10, 5),
+        padding=builder.scale_size((10, 5)),
         anchor=tk.CENTER,
     )
     builder.style.map(
@@ -133,11 +133,11 @@ def build_outline_toolbutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         relief=tk.RAISED,
         focusthickness=0,
         focuscolor=foreground,
-        padding=(10, 5),
+        padding=builder.scale_size((10, 5)),
         anchor=tk.CENTER,
         arrowcolor=foreground,
-        arrowpadding=(0, 0, 15, 0),
-        arrowsize=3,
+        arrowpadding=builder.scale_size((0, 0, 15, 0)),
+        arrowsize=builder.scale_size(3),
     )
     builder.style.map(
         ttk_style,

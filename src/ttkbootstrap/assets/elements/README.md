@@ -8,6 +8,7 @@ structural channels, magenta is an optional third fill channel, and alpha stays
 transparent. Magenta is currently used only for the slider handle center; it is
 not a focus channel. There is no cyan/teal channel.
 
-`manifest.json` records source dimensions, source DPI, and ttk image-element
-border/padding metadata. Horizontal sources may be flipped or quarter-turned at
-render time; transformed pixels and metadata always use the same transform.
+`manifest.json` records source-pixel dimensions separately from logical UI
+size and logical ttk border/padding metadata. Horizontal sources may be flipped
+or quarter-turned at render time; transformed pixels and metadata always use the
+same transform.

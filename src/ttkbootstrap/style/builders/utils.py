@@ -2,7 +2,7 @@
 
 def indicator_spacer(builder):
     """Return the shared transparent image used between indicator and label."""
-    size = builder.scale_size((6, 1))
+    size = (6, 1)
 
     def draw_spacer(_draw, _width, _height):
         pass
@@ -30,7 +30,7 @@ def simple_arrow_assets(builder, arrowcolor: str, disabledcolor: str, activecolo
         image names in the order (up, down, left, right).
     """
     a = builder.assets
-    size = builder.scale_size([13, 11])
+    size = [13, 11]
 
     def make_arrows(color):
         up = a.icon("caret-up-fill", size, color)

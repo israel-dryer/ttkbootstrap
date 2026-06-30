@@ -22,15 +22,15 @@ def build_calendar_style(builder: StyleBuilderTTK, colorname=DEFAULT):
             The color label used to style the widget.
     """
 
-    style_class = "TCalendar"
+    ttk_class = "TCalendar"
 
     if any([colorname == DEFAULT, colorname == ""]):
         prime_color = builder.colors.primary
-        ttk_style = style_class
+        ttk_style = ttk_class
         chevron_style = "Chevron.TButton"
     else:
         prime_color = builder.colors.get(colorname)
-        ttk_style = f"{colorname}.{style_class}"
+        ttk_style = f"{colorname}.{ttk_class}"
         chevron_style = f"Chevron.{colorname}.TButton"
 
     if builder.is_light_theme:
@@ -48,10 +48,10 @@ def build_calendar_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         darkcolor=builder.colors.bg,
         lightcolor=builder.colors.bg,
         relief=tk.RAISED,
-        focusthickness=1,
+        focusthickness=builder.scale_size(1),
         focuscolor=builder.colors.fg,
-        borderwidth=1,
-        padding=(10, 5),
+        borderwidth=builder.scale_size(1),
+        padding=builder.scale_size((10, 5)),
         anchor=tk.CENTER,
     )
     layout(builder.style, ttk_style,

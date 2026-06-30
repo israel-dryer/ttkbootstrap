@@ -88,7 +88,7 @@ def build_spinbox_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         background=builder.colors.inputbg,
         relief=tk.FLAT,
         insertcolor=builder.colors.inputfg,
-        padding=(10, 5),
+        padding=builder.scale_size((10, 5)),
     )
 
     builder.style.map(

@@ -9,7 +9,7 @@ from ttkbootstrap.style.theme import Colors
 from ttkbootstrap.style.builders.registry import register_builder
 
 
-def _create_striped_progressbar_assets(builder, thickness, colorname=DEFAULT):
+def _create_striped_progressbar_assets(builder, colorname=DEFAULT):
     """Create the striped progressbar image and return as a
     `PhotoImage`
 
@@ -54,8 +54,8 @@ def _create_striped_progressbar_assets(builder, thickness, colorname=DEFAULT):
         d.polygon([(0, h), (0, 0.52 * h), (0.52 * w, 0), (w, 0)], fill=bar_color)
         d.polygon([(0.52 * w, h), (w, 0.52 * h), (w, h)], fill=bar_color)
 
-    h_name = a.image((thickness, thickness), draw_h, bar_color, bar_color_light)
-    v_name = a.image((thickness, thickness), draw_v, bar_color, bar_color_light)
+    h_name = a.image((12, 12), draw_h, bar_color, bar_color_light)
+    v_name = a.image((12, 12), draw_v, bar_color, bar_color_light)
     return h_name, v_name
 
 
@@ -70,17 +70,17 @@ def build_striped_progressbar_style(builder: StyleBuilderTTK, colorname=DEFAULT)
         colorname (str):
             The primary widget color label.
     """
-    h_style_class = "Striped.Horizontal.TProgressbar"
-    v_style_class = "Striped.Vertical.TProgressbar"
+    h_ttk_class = "Striped.Horizontal.TProgressbar"
+    v_ttk_class = "Striped.Vertical.TProgressbar"
 
     thickness = builder.scale_size(12)
 
     if any([colorname == DEFAULT, colorname == ""]):
-        h_ttk_style = h_style_class
-        v_ttk_style = v_style_class
+        h_ttk_style = h_ttk_class
+        v_ttk_style = v_ttk_class
     else:
-        h_ttk_style = f"{colorname}.{h_style_class}"
-        v_ttk_style = f"{colorname}.{v_style_class}"
+        h_ttk_style = f"{colorname}.{h_ttk_class}"
+        v_ttk_style = f"{colorname}.{v_ttk_class}"
 
     if builder.is_light_theme:
         if colorname == LIGHT:
@@ -94,7 +94,7 @@ def build_striped_progressbar_style(builder: StyleBuilderTTK, colorname=DEFAULT)
         border_color = trough_color
 
     # ( horizontal, vertical )
-    images = _create_striped_progressbar_assets(builder, thickness, colorname)
+    images = _create_striped_progressbar_assets(builder, colorname)
 
     # horizontal progressbar
     h_element = h_ttk_style.replace(".TP", ".P")
@@ -113,7 +113,7 @@ def build_striped_progressbar_style(builder: StyleBuilderTTK, colorname=DEFAULT)
         troughcolor=trough_color,
         thickness=thickness,
         bordercolor=border_color,
-        borderwidth=1,
+        borderwidth=builder.scale_size(1),
     )
 
     # vertical progressbar
@@ -133,7 +133,7 @@ def build_striped_progressbar_style(builder: StyleBuilderTTK, colorname=DEFAULT)
         troughcolor=trough_color,
         bordercolor=border_color,
         thickness=thickness,
-        borderwidth=1,
+        borderwidth=builder.scale_size(1),
     )
     builder.register_ttkstyle(h_ttk_style)
     builder.register_ttkstyle(v_ttk_style)

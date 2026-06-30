@@ -39,12 +39,9 @@ def build_radiobutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
 
     a = builder.assets
     selected = a.recolor("radiobutton", white=accent, black=accent)
-    unselected = a.recolor(
-        "radiobutton", white=builder.colors.bg, black=fg_muted)
-    disabled_selected = a.recolor(
-        "radiobutton", white=disabled, black=disabled)
-    disabled_unselected = a.recolor(
-        "radiobutton", white=builder.colors.bg, black=disabled)
+    unselected = a.recolor("radiobutton", white=builder.colors.bg, black=fg_muted)
+    disabled_selected = a.recolor("radiobutton", white=disabled, black=disabled)
+    disabled_unselected = a.recolor("radiobutton", white=builder.colors.bg, black=disabled)
     image_element(
         builder.style, f"{sn.ttk_style}.indicator", default=selected.image,
         states={
@@ -54,9 +51,7 @@ def build_radiobutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         },
         border=selected.meta.border, padding=selected.meta.padding, sticky=W)
     spacer_name = f"{sn.ttk_style}.spacer"
-    image_element(
-        builder.style, spacer_name,
-        default=indicator_spacer(builder), sticky=EW)
+    image_element(builder.style, spacer_name, default=indicator_spacer(builder), sticky=EW)
     layout(
         builder.style, sn.ttk_style,
         El("Radiobutton.padding", sticky=NSEW, children=[
@@ -64,4 +59,5 @@ def build_radiobutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
             El(spacer_name, side=LEFT),
             El("Radiobutton.focus", side=LEFT, sticky="", children=[
                 El("Radiobutton.label", sticky=NSEW)])]))
+
     builder.register_ttkstyle(sn.ttk_style)

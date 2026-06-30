@@ -1,6 +1,5 @@
 """Per-theme coordinator for private ttk widget-family style recipes."""
 
-from math import ceil
 from tkinter import ttk
 
 from ttkbootstrap.constants import *
@@ -60,20 +59,8 @@ class StyleBuilderTTK:
         self.style._build_configure(style, **options)
 
     def scale_size(self, size):
-        """Scale an integer or sequence using Tk's active scaling factor."""
-        winsys = self.style.master.tk.call("tk", "windowingsystem")
-        if winsys == "aqua":
-            baseline = 1.000492368291482
-        else:
-            baseline = 1.33398982438864281
-        scaling = self.style.master.tk.call("tk", "scaling")
-        factor = scaling / baseline
-
-        if isinstance(size, (int, float)):
-            return ceil(size * factor)
-        if isinstance(size, (tuple, list)):
-            return [ceil(x * factor) for x in size]
-        return None
+        """Convert logical UI units using the root-bound scaling service."""
+        return self.style.scaling.logical(size)
 
     def build_style(
         self,
@@ -129,7 +116,7 @@ class StyleBuilderTTK:
             selectforeground=self.colors.selectfg,
             selectbackground=self.colors.selectbg,
             fieldbg=self.colors.bg,
-            borderwidth=1,
+            borderwidth=self.scale_size(1),
             focuscolor="",
         )
 
@@ -151,7 +138,7 @@ class StyleBuilderTTK:
             background="#fffddd",
             foreground="#333",
             bordercolor="#888",
-            borderwidth=1,
+            borderwidth=self.scale_size(1),
             darkcolor="#fffddd",
             lightcolor="#fffddd",
             relief=RAISED,

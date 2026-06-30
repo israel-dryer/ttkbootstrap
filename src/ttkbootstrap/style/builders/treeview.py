@@ -59,11 +59,11 @@ def build_table_treeview_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         background=background,
         foreground=foreground,
         relief=RAISED,
-        borderwidth=1,
+        borderwidth=builder.scale_size(1),
         darkcolor=background,
         bordercolor=border_color,
         lightcolor=background,
-        padding=5,
+        padding=builder.scale_size(5),
     )
     builder.style.map(
         header_style,
@@ -86,7 +86,7 @@ def build_table_treeview_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         bordercolor=border_color,
         lightcolor=builder.colors.inputbg,
         darkcolor=builder.colors.inputbg,
-        borderwidth=2,
+        borderwidth=builder.scale_size(2),
         padding=0,
         rowheight=row_height,
         relief=tk.RAISED,
@@ -100,7 +100,7 @@ def build_table_treeview_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         ],
     )
     layout(builder.style, body_style,
-           El("Button.border", sticky=tk.NSEW, border="1", children=[
+           El("Button.border", sticky=tk.NSEW, border=builder.scale_size(1), children=[
                El("Treeview.padding", sticky=tk.NSEW, children=[
                    El("Treeview.treearea", sticky=tk.NSEW)])]))
 
@@ -158,7 +158,7 @@ def build_treeview_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         background=background,
         foreground=foreground,
         relief=tk.FLAT,
-        padding=5,
+        padding=builder.scale_size(5),
     )
     builder.style.map(
         header_style,
@@ -174,7 +174,7 @@ def build_treeview_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         bordercolor=border_color,
         lightcolor=builder.colors.inputbg,
         darkcolor=builder.colors.inputbg,
-        borderwidth=2,
+        borderwidth=builder.scale_size(2),
         padding=0,
         rowheight=row_height,
         relief=tk.RAISED,
@@ -196,7 +196,7 @@ def build_treeview_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         darkcolor=[("focus", focus_color)],
     )
     layout(builder.style, body_style,
-           El("Button.border", sticky=tk.NSEW, border="1", children=[
+           El("Button.border", sticky=tk.NSEW, border=builder.scale_size(1), children=[
                El("Treeview.padding", sticky=tk.NSEW, children=[
                    El("Treeview.treearea", sticky=tk.NSEW)])]))
 

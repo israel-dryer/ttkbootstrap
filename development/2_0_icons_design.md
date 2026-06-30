@@ -1,5 +1,10 @@
 # ttkbootstrap 2.0 — Icon-Rendered Assets Design (Workstream I, Tier 1.5)
 
+> **Scaling update (2026-06-29):**
+> `development/2_0_scaling_design.md` supersedes this document's historical
+> caller-scaled/even-snap rules. Public icon APIs accept logical UI units;
+> `IconRenderer.render()` remains an exact physical-pixel raster leaf.
+
 > Design pass (2026-06-27). Pairs with `development/2_0_plan.md` (Workstream I),
 > `development/2_0_toolkit_design.md` (PR 5 toolkit this builds on),
 > `development/2_0_engine_design.md` (PR 2 `_get_or_create_image` chokepoint),

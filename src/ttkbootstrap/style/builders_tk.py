@@ -179,13 +179,13 @@ class StyleBuilderTK:
 
         widget.configure(
             relief=tk.FLAT,
-            highlightthickness=1,
+            highlightthickness=self.style.scaling.logical(1),
             foreground=self.colors.inputfg,
             highlightbackground=bordercolor,
             highlightcolor=self.colors.primary,
             background=self.colors.inputbg,
             insertbackground=self.colors.inputfg,
-            insertwidth=1,
+            insertwidth=self.style.scaling.logical(1),
         )
 
     def update_scale_style(self, widget: tk.Scale):
@@ -208,7 +208,7 @@ class StyleBuilderTK:
             sliderrelief=tk.FLAT,
             borderwidth=0,
             activebackground=activecolor,
-            highlightthickness=1,
+            highlightthickness=self.style.scaling.logical(1),
             highlightcolor=bordercolor,
             highlightbackground=bordercolor,
             troughcolor=self.colors.inputbg,
@@ -229,14 +229,14 @@ class StyleBuilderTK:
 
         widget.configure(
             relief=tk.FLAT,
-            highlightthickness=1,
+            highlightthickness=self.style.scaling.logical(1),
             foreground=self.colors.inputfg,
             highlightbackground=bordercolor,
             highlightcolor=self.colors.primary,
             background=self.colors.inputbg,
             buttonbackground=self.colors.inputbg,
             insertbackground=self.colors.inputfg,
-            insertwidth=1,
+            insertwidth=self.style.scaling.logical(1),
             # these options should work, but do not have any affect
             buttonuprelief=tk.FLAT,
             buttondownrelief=tk.SUNKEN,
@@ -262,7 +262,7 @@ class StyleBuilderTK:
             selectforeground=self.colors.selectfg,
             highlightcolor=self.colors.primary,
             highlightbackground=bordercolor,
-            highlightthickness=1,
+            highlightthickness=self.style.scaling.logical(1),
             activestyle="none",
             relief=tk.FLAT,
         )
@@ -319,7 +319,7 @@ class StyleBuilderTK:
         widget.configure(
             highlightcolor=bordercolor,
             foreground=self.colors.fg,
-            borderwidth=1,
+            borderwidth=self.style.scaling.logical(1),
             highlightthickness=0,
             background=self.colors.bg,
         )
@@ -350,10 +350,10 @@ class StyleBuilderTK:
             insertbackground=self.colors.inputfg,
             selectbackground=self.colors.selectbg,
             selectforeground=self.colors.selectfg,
-            insertwidth=1,
-            highlightthickness=1,
+            insertwidth=self.style.scaling.logical(1),
+            highlightthickness=self.style.scaling.logical(1),
             relief=tk.FLAT,
-            padx=5,
-            pady=5,
+            padx=self.style.scaling.logical(5),
+            pady=self.style.scaling.logical(5),
             # font="TkDefaultFont",
         )

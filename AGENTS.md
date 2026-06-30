@@ -43,8 +43,10 @@ Read these, in order, before any 2.0 work:
    - `development/2_0_recolor_assets_design.md` — **recolorable raster widget
      assets** (merged in #1081).
    - `development/2_0_builder_split_design.md` — modular `StyleBuilderTTK`
-     recipe registry (approved, implemented, visually approved, and open as
-     draft PR #1082).
+     recipe registry (approved, implemented, visually approved, and merged as
+     #1082).
+   - `development/2_0_scaling_design.md` — scaling and asset-geometry
+     normalization (approved, implemented, and visually approved).
 
 ### Where things stand (snapshot — confirm against the handoff, it's authoritative)
 
@@ -52,28 +54,33 @@ Integration branch is **`2.0`** (cut all 2.0 PRs against it, NOT `master`).
 Merged into `2.0`: engine repaint + content-addressed image cache (PRs 1–2),
 mixin API replacing the import-time monkey-patch (PR 3), the `style/` package
 split (PR 4), the public asset/layout toolkit (PR 5), the icon engine (PR 6a),
-the glyph-builder migration (PR 6b), and recolorable raster widget assets
-(#1081). Draft PR **#1082** modularizes `StyleBuilderTTK`; its expected suite is
-**147 passed**, all structural/headless gates pass apart from the documented
-local Tcl catalog defect, and its human light↔dark smoke gate passed. After
-#1082, design scaling/asset-geometry normalization first, then a focused
+the glyph-builder migration (PR 6b), recolorable raster widget assets (#1081),
+and the `StyleBuilderTTK` modularization (#1082). The expected suite on `2.0` is
+**147 passed**. Scaling and asset-geometry normalization is implemented on
+`refactor/2.0-scaling`; its 177-test expected suite and structural gates pass
+apart from the documented local Tcl catalog defect. Its human
+100/125/150/200% light↔dark gate passed. After the scaling PR, take a focused
 Workstream E slice for private color ramps plus the minimal builder helpers
 (`active`, `pressed`, `border`, `disabled`, `on_color`). Canonical bootstyle
 grammar (D) remains later and needs its own design pass.
 
-## Current task this handoff: modularize `StyleBuilderTTK`
+## Current task this handoff: prepare the scaling PR
 
-Branch: **`refactor/2.0-builder-modules`**, cut from `2.0` after the recolorable
-raster-assets PR merged as **#1081**; draft PR **#1082** targets `2.0`. The
-2,689-line
-`style/builders_ttk.py` recipe monolith is now a 161-line coordinator plus a
-private frozen decorator registry and 22 widget-family modules.
+Branch: **`refactor/2.0-scaling`**, cut from `2.0` after the builder
+modularization merged as **#1082**. The approved design and implementation are
+in **`development/2_0_scaling_design.md`** and the current working tree. One
+root-bound service now owns logical-to-physical conversion; toolkit assets and
+icons accept logical sizes; manifest v2 separates source pixels from approved
+logical geometry; final image frames are not even-snapped; builder geometry is
+scaled once and guarded structurally.
 
-The approved design and exact verification results are in
-**`development/2_0_builder_split_design.md`**. Headless, structural, and human
-light↔dark smoke gates pass. Preserve the existing
-bootstyle grammar, generated style names, lazy per-theme behavior, and visuals.
-Current action: review and merge #1082.
+Automated result: **176 passed / 1 environment failure** on Python 3.12 because
+this Tcl install cannot read `tk8.6/msgs/nl.msg`; excluding localization gives
+**171 passed**. Warning-free import, 36 fresh-process style imports, Python 3.10
+grammar for 88 files, and 226 forced annotation targets pass. The human
+light↔dark gate passed at 100%, 125%, 150%, and 200%. The branch is ready for
+intentional commit/PR preparation. Color ramps and builder state-color helpers
+remain out of scope.
 
 ## How to work here
 

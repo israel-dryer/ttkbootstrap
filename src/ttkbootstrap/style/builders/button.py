@@ -19,14 +19,14 @@ def build_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         colorname (str):
             The color label used to style the widget.
     """
-    style_class = "TButton"
+    ttk_class = "TButton"
 
     if any([colorname == DEFAULT, colorname == ""]):
-        ttk_style = style_class
+        ttk_style = ttk_class
         foreground = builder.colors.get_foreground(PRIMARY)
         background = builder.colors.primary
     else:
-        ttk_style = f"{colorname}.{style_class}"
+        ttk_style = f"{colorname}.{ttk_class}"
         foreground = builder.colors.get_foreground(colorname)
         background = builder.colors.get(colorname)
 
@@ -44,9 +44,9 @@ def build_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         darkcolor=background,
         lightcolor=background,
         relief=tk.RAISED,
-        focusthickness=1,
+        focusthickness=builder.scale_size(1),
         focuscolor=foreground,
-        padding=(10, 5),
+        padding=builder.scale_size((10, 5)),
         anchor=tk.CENTER,
     )
     builder.style.map(
@@ -85,15 +85,15 @@ def build_outline_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         colorname (str):
             The color label used to style the widget.
     """
-    style_class = "Outline.TButton"
+    ttk_class = "Outline.TButton"
 
     disabled_fg = Colors.make_transparent(0.30, builder.colors.fg, builder.colors.bg)
 
     if any([colorname == DEFAULT, colorname == ""]):
-        ttk_style = style_class
+        ttk_style = ttk_class
         colorname = PRIMARY
     else:
-        ttk_style = f"{colorname}.{style_class}"
+        ttk_style = f"{colorname}.{ttk_class}"
 
     foreground = builder.colors.get(colorname)
     background = builder.colors.get_foreground(colorname)
@@ -110,9 +110,9 @@ def build_outline_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         darkcolor=builder.colors.bg,
         lightcolor=builder.colors.bg,
         relief=tk.RAISED,
-        focusthickness=1,
+        focusthickness=builder.scale_size(1),
         focuscolor=foreground,
-        padding=(10, 5),
+        padding=builder.scale_size((10, 5)),
         anchor=tk.CENTER,
     )
     builder.style.map(
@@ -184,14 +184,14 @@ def build_link_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         darkcolor=builder.colors.bg,
         lightcolor=builder.colors.bg,
         relief=tk.RAISED,
-        focusthickness=1,
+        focusthickness=builder.scale_size(1),
         focuscolor=foreground,
         anchor=tk.CENTER,
-        padding=(10, 5),
+        padding=builder.scale_size((10, 5)),
     )
     builder.style.map(
         ttk_style,
-        shiftrelief=[("pressed !disabled", -1)],
+        shiftrelief=[("pressed !disabled", builder.scale_size(-1))],
         foreground=[
             ("disabled", disabled_fg),
             ("pressed !disabled", pressed),
@@ -256,7 +256,7 @@ def build_date_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         btn_foreground = Colors.get_foreground(builder.colors, colorname)
 
     # Calendar icon in the button foreground color.
-    size = builder.scale_size([21, 22])
+    size = [21, 22]
     img_normal = builder.assets.icon("calendar3", size, btn_foreground)
 
     pressed = Colors.update_hsv(background, vd=-0.1)
@@ -272,7 +272,7 @@ def build_date_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         relief=tk.RAISED,
         focusthickness=0,
         focuscolor=foreground,
-        padding=(2, 2),
+        padding=builder.scale_size((2, 2)),
         anchor=tk.CENTER,
         image=img_normal,
     )

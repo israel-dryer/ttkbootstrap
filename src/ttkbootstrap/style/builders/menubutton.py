@@ -21,14 +21,14 @@ def build_menubutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         colorname (str):
             The color label used to style the widget.
     """
-    style_class = "TMenubutton"
+    ttk_class = "TMenubutton"
 
     if any([colorname == DEFAULT, colorname == ""]):
-        ttk_style = style_class
+        ttk_style = ttk_class
         background = builder.colors.primary
         foreground = builder.colors.get_foreground(PRIMARY)
     else:
-        ttk_style = f"{colorname}.{style_class}"
+        ttk_style = f"{colorname}.{ttk_class}"
         background = builder.colors.get(colorname)
         foreground = builder.colors.get_foreground(colorname)
 
@@ -47,7 +47,7 @@ def build_menubutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         relief=tk.RAISED,
         focusthickness=0,
         focuscolor=builder.colors.selectfg,
-        padding=(10, 5),
+        padding=builder.scale_size((10, 5)),
     )
     builder.style.map(
         ttk_style,
@@ -118,15 +118,15 @@ def build_outline_menubutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         colorname (str):
             The color label used to style the widget.
     """
-    style_class = "Outline.TMenubutton"
+    ttk_class = "Outline.TMenubutton"
 
     disabled_fg = Colors.make_transparent(0.30, builder.colors.fg, builder.colors.bg)
 
     if any([colorname == DEFAULT, colorname == ""]):
-        ttk_style = style_class
+        ttk_style = ttk_class
         colorname = PRIMARY
     else:
-        ttk_style = f"{colorname}.{style_class}"
+        ttk_style = f"{colorname}.{ttk_class}"
 
     foreground = builder.colors.get(colorname)
     background = builder.colors.get_foreground(colorname)
@@ -145,7 +145,7 @@ def build_outline_menubutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         relief=tk.RAISED,
         focusthickness=0,
         focuscolor=foreground,
-        padding=(10, 5),
+        padding=builder.scale_size((10, 5)),
     )
     builder.style.map(
         ttk_style,

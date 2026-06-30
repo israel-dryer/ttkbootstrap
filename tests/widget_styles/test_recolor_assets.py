@@ -28,7 +28,7 @@ def test_magenta_is_an_optional_fill_channel():
     assert image.getpixel((21, 10)) == (0x12, 0x34, 0x56, 255)
 
 
-def test_flip_and_rotation_transform_pixels_and_metadata():
+def test_flip_and_rotation_transform_pixels_and_metadata(root):
     normal = RecolorRenderer.render(
         "switch_round", (76, 36), white="#ff0000", black="#00ff00")
     flipped = RecolorRenderer.render(
@@ -37,9 +37,9 @@ def test_flip_and_rotation_transform_pixels_and_metadata():
     assert normal.getpixel((19, 18)) == flipped.getpixel((56, 18))
     assert normal.getpixel((57, 18)) == flipped.getpixel((18, 18))
 
-    horizontal = RecolorRenderer.metadata("progressbar_default", 0.5)
+    horizontal = RecolorRenderer.metadata("progressbar_default", root.style.scaling)
     vertical = RecolorRenderer.metadata(
-        "progressbar_default", 0.5, "rotate-90")
+        "progressbar_default", root.style.scaling, "rotate-90")
     assert (horizontal.width, horizontal.height, horizontal.border) == (16, 8, (4, 0))
     assert (vertical.width, vertical.height, vertical.border) == (8, 16, (0, 4))
 

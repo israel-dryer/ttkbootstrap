@@ -1,17 +1,17 @@
 {
-  "version": 1,
-  "default_dpi": 2.0,
+  "version": 2,
+  "default_source_scale": 2.0,
   "images": {
-    "checkbox_checked": {"file": "checkbox-checked.png", "width": 36, "height": 36, "border": 0, "padding": 0},
-    "checkbox_unchecked": {"file": "checkbox-unchecked.png", "width": 36, "height": 36, "border": 0, "padding": 0},
-    "checkbox_indeterminate": {"file": "checkbox-indeterminate.png", "width": 36, "height": 36, "border": 0, "padding": 0},
-    "radiobutton": {"file": "radio.png", "width": 36, "height": 36, "border": 0, "padding": 0},
-    "switch_round": {"file": "switch-round.png", "width": 76, "height": 36, "border": 0, "padding": 0},
-    "switch_square": {"file": "switch-square.png", "width": 76, "height": 36, "border": 0, "padding": 0},
-    "slider_handle": {"file": "slider-handle.png", "width": 44, "height": 44, "border": 0, "padding": 0},
-    "slider_track": {"file": "slider-track.png", "width": 24, "height": 12, "border": [4, 0], "padding": 0},
-    "progressbar_default": {"file": "progressbar-default.png", "width": 32, "height": 16, "border": [8, 0], "padding": 0},
-    "progressbar_thin": {"file": "progressbar-thin.png", "width": 16, "height": 8, "border": [4, 0], "padding": 0},
-    "scrollbar_thumb": {"file": "scrollbar-thumb.png", "width": 36, "height": 16, "border": [8, 0], "padding": 0}
+    "checkbox_checked": {"file": "checkbox-checked.png", "source_size": [36, 36], "size": [18, 18], "border": 0, "padding": 0},
+    "checkbox_unchecked": {"file": "checkbox-unchecked.png", "source_size": [36, 36], "size": [18, 18], "border": 0, "padding": 0},
+    "checkbox_indeterminate": {"file": "checkbox-indeterminate.png", "source_size": [36, 36], "size": [18, 18], "border": 0, "padding": 0},
+    "radiobutton": {"file": "radio.png", "source_size": [36, 36], "size": [18, 18], "border": 0, "padding": 0},
+    "switch_round": {"file": "switch-round.png", "source_size": [76, 36], "size": [38, 18], "border": 0, "padding": 0},
+    "switch_square": {"file": "switch-square.png", "source_size": [76, 36], "size": [38, 18], "border": 0, "padding": 0},
+    "slider_handle": {"file": "slider-handle.png", "source_size": [44, 44], "size": [22, 22], "border": 0, "padding": 0},
+    "slider_track": {"file": "slider-track.png", "source_size": [24, 12], "size": [12, 6], "border": [2, 0], "padding": 0},
+    "progressbar_default": {"file": "progressbar-default.png", "source_size": [32, 16], "size": [16, 8], "border": [4, 0], "padding": 0},
+    "progressbar_thin": {"file": "progressbar-thin.png", "source_size": [16, 8], "size": [8, 4], "border": [2, 0], "padding": 0},
+    "scrollbar_thumb": {"file": "scrollbar-thumb.png", "source_size": [36, 16], "size": [18, 8], "border": [4, 0], "padding": 0}
   }
 }

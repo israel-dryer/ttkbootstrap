@@ -16,13 +16,13 @@ def build_frame_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         colorname (str):
             The color label used to style the widget.
     """
-    style_class = "TFrame"
+    ttk_class = "TFrame"
 
     if any([colorname == DEFAULT, colorname == ""]):
-        ttk_style = style_class
+        ttk_style = ttk_class
         background = builder.colors.bg
     else:
-        ttk_style = f"{colorname}.{style_class}"
+        ttk_style = f"{colorname}.{ttk_class}"
         background = builder.colors.get(colorname)
 
     builder.configure(ttk_style, background=background)
