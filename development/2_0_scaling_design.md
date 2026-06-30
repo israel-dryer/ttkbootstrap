@@ -2,6 +2,7 @@
 
 **Status:** implemented and visually approved on 2026-06-29
 **Branch:** `refactor/2.0-scaling`, from `2.0` at `fa1cede8`
+**Draft PR:** #1083 against `2.0`
 **Date:** 2026-06-29
 
 ## Decision summary

@@ -64,7 +64,7 @@ Workstream E slice for private color ramps plus the minimal builder helpers
 (`active`, `pressed`, `border`, `disabled`, `on_color`). Canonical bootstyle
 grammar (D) remains later and needs its own design pass.
 
-## Current task this handoff: prepare the scaling PR
+## Current task this handoff: review and merge scaling PR #1083
 
 Branch: **`refactor/2.0-scaling`**, cut from `2.0` after the builder
 modularization merged as **#1082**. The approved design and implementation are
@@ -79,8 +79,8 @@ this Tcl install cannot read `tk8.6/msgs/nl.msg`; excluding localization gives
 **171 passed**. Warning-free import, 36 fresh-process style imports, Python 3.10
 grammar for 88 files, and 226 forced annotation targets pass. The human
 light↔dark gate passed at 100%, 125%, 150%, and 200%. The branch is ready for
-intentional commit/PR preparation. Color ramps and builder state-color helpers
-remain out of scope.
+review as draft PR **#1083** against `2.0`. Color ramps and builder state-color
+helpers remain out of scope.
 
 ## How to work here
 

@@ -4,8 +4,8 @@
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
 _Last updated: 2026-06-29 (scaling and asset-geometry normalization approved,
-implemented, and visually approved on `refactor/2.0-scaling`; ready for
-intentional commit/PR preparation.)_
+implemented, and visually approved on `refactor/2.0-scaling`; open as draft PR
+#1083 against `2.0`.)_
 
 ## Where we are
 
@@ -35,9 +35,10 @@ implementation summary immediately below.
 **PR #1082 is MERGED.** `2.0` now includes the 161-line coordinator, frozen
 registry, and 22 widget-family modules. Merge commit: `fa1cede8`.
 
-**Current actionable → prepare the scaling branch commit/PR.** Branch:
-`refactor/2.0-scaling`, cut from `2.0` at `fa1cede8`. Approved design:
-`development/2_0_scaling_design.md`. Automated and human gates pass.
+**Current actionable → review and merge draft PR #1083.** Branch:
+`refactor/2.0-scaling`, cut from `2.0` at `fa1cede8`; implementation commit
+`b491a0be`. Approved design: `development/2_0_scaling_design.md`. Automated and
+human gates pass.
 
 **Next after scaling:** design a focused Workstream E slice: cheap private ramps
 plus only the builder helpers ttkbootstrap needs (`active`, `pressed`,
@@ -46,7 +47,7 @@ plus only the builder helpers ttkbootstrap needs (`active`, `pressed`,
 unless a simple concrete need emerges. Canonical bootstyle grammar (D) follows
 later with its own design pass.
 
-## Scaling and asset geometry — IMPLEMENTED, VISUALLY APPROVED
+## Scaling and asset geometry — DRAFT PR #1083, VISUALLY APPROVED
 
 Approved decisions: public size-bearing `Assets`/Icon APIs take logical UI
 units; `IconRenderer.render()` remains a physical-pixel leaf; final
