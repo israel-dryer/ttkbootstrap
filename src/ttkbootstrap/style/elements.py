@@ -65,7 +65,7 @@ class RecolorRenderer:
 
     @classmethod
     def source_dpi(cls):
-        return float(cls._load_manifest().get("default_dpi", 2.0))
+        return float(cls._load_manifest().get("default_source_scale", 2.0))
 
     @classmethod
     def _source(cls, name):
@@ -75,8 +75,7 @@ class RecolorRenderer:
             path = _ELEMENTS_DIR / info["file"]
             with Image.open(path) as source:
                 image = source.convert("RGBA")
-            expected = (int(info.get("width", image.width)),
-                        int(info.get("height", image.height)))
+            expected = tuple(info.get("source_size", image.size))
             if image.size != expected:
                 raise ValueError(
                     f"element asset {name!r} is {image.size}, manifest says {expected}"
@@ -113,33 +112,29 @@ class RecolorRenderer:
         return values
 
     @staticmethod
-    def _scale_spec(value, scale):
+    def _scale_spec(value, scaling):
         def scaled(item):
-            return max(1, int(item * scale + 0.5)) if item > 0 else 0
+            return scaling.logical(item, minimum=1) if item > 0 else 0
 
         if isinstance(value, int):
             return scaled(value)
         return tuple(scaled(item) for item in value)
 
     @classmethod
-    def metadata(cls, name, scale, transform=None):
+    def metadata(cls, name, scaling, transform=None):
         cls._validate_transform(transform)
         info = cls.info(name)
-        width, height = int(info["width"]), int(info["height"])
+        width, height = info["size"]
         if transform in ("rotate-90", "rotate-270"):
             width, height = height, width
-
-        def even(value):
-            value = max(1, int(value * scale + 0.5))
-            return value if value % 2 == 0 else value + 1
 
         border = cls._rotate_spec(info.get("border", 0), transform)
         padding = cls._rotate_spec(info.get("padding", 0), transform)
         return ElementMeta(
-            width=even(width),
-            height=even(height),
-            border=cls._scale_spec(border, scale),
-            padding=cls._scale_spec(padding, scale),
+            width=scaling.logical(width, minimum=1),
+            height=scaling.logical(height, minimum=1),
+            border=cls._scale_spec(border, scaling),
+            padding=cls._scale_spec(padding, scaling),
         )
 
     @staticmethod

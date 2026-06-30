@@ -1,23 +1,37 @@
-"""Visual gate for the 2.0 recolorable ttk element assets.
+"""Visual gate for 2.0 scaling and recolorable ttk element assets.
 
-Run with `python examples/recolor_assets_preview.py`, then switch between the
-light and dark themes and inspect normal, selected, disabled, and oriented
-variants of every migrated widget family.
+Run once per nominal scale, then switch between the light and dark themes:
+
+`python examples/recolor_assets_preview.py --scale 1.25`
+
+Supported factors are 1.0, 1.25, 1.5, and 2.0. Inspect normal, selected,
+disabled, and oriented raster variants on the Assets tab and representative
+Tk-facing builder geometry on the Geometry tab.
 """
+import argparse
+import platform
 import tkinter as tk
 
 import ttkbootstrap as ttk
 
 
 class Preview:
-    def __init__(self, app):
+    def __init__(self, app, factor):
         self.app = app
+        self.factor = factor
         self.style = app.style
         self.variables = []
         self.body = ttk.Frame(app, padding=16)
         self.body.pack(fill="both", expand=True)
         self._build_header()
-        self._build_widgets()
+        tabs = ttk.Notebook(self.body)
+        tabs.pack(fill="both", expand=True)
+        assets = ttk.Frame(tabs, padding=8)
+        geometry = ttk.Frame(tabs, padding=8)
+        tabs.add(assets, text="Assets")
+        tabs.add(geometry, text="Geometry")
+        self._build_widgets(assets)
+        self._build_geometry(geometry)
 
     def _build_header(self):
         header = ttk.Frame(self.body)
@@ -29,9 +43,9 @@ class Preview:
         self.switch.pack(side="right")
         self._refresh_header()
 
-    def _build_widgets(self):
+    def _build_widgets(self, parent):
         indicators = ttk.Labelframe(
-            self.body, text="Indicators", padding=12)
+            parent, text="Indicators", padding=12)
         indicators.pack(fill="x", pady=6)
         for column, color in enumerate(("primary", "success", "warning", "light")):
             group = ttk.Frame(indicators)
@@ -61,7 +75,7 @@ class Preview:
             disabled.state(["disabled", "selected"])
 
         motion = ttk.Labelframe(
-            self.body, text="Scale / scrollbar", padding=12)
+            parent, text="Scale / scrollbar", padding=12)
         motion.pack(fill="both", expand=True, pady=6)
         ttk.Scale(motion, from_=0, to=100, value=55,
                   bootstyle="primary").pack(fill="x", pady=8)
@@ -86,10 +100,48 @@ class Preview:
                 progress, value=65, bootstyle=style_name).pack(
                     fill="x", pady=(2, 10))
 
+    def _build_geometry(self, parent):
+        buttons = ttk.Labelframe(parent, text="Buttons and fields", padding=12)
+        buttons.pack(fill="x", pady=6)
+        ttk.Button(buttons, text="Primary", bootstyle="primary").grid(
+            row=0, column=0, padx=6, pady=6)
+        ttk.Button(buttons, text="Outline", bootstyle="success-outline").grid(
+            row=0, column=1, padx=6, pady=6)
+        ttk.DateEntry(buttons, bootstyle="primary").grid(
+            row=0, column=2, padx=6, pady=6)
+        ttk.Entry(buttons).grid(row=1, column=0, padx=6, pady=6, sticky="ew")
+        ttk.Combobox(buttons, values=("Combobox", "Second value")).grid(
+            row=1, column=1, padx=6, pady=6, sticky="ew")
+        ttk.Spinbox(buttons, from_=0, to=10).grid(
+            row=1, column=2, padx=6, pady=6, sticky="ew")
+        for column in range(3):
+            buttons.columnconfigure(column, weight=1)
+
+        panes = ttk.Panedwindow(parent, orient="horizontal")
+        panes.pack(fill="x", pady=8)
+        left = ttk.Frame(panes, padding=12, bootstyle="light")
+        right = ttk.Frame(panes, padding=12, bootstyle="secondary")
+        ttk.Label(left, text="Panedwindow left").pack()
+        ttk.Label(right, text="Panedwindow right", bootstyle="inverse").pack()
+        panes.add(left, weight=1)
+        panes.add(right, weight=1)
+
+        tree = ttk.Treeview(
+            parent, columns=("value",), show="tree headings", height=5)
+        tree.heading("#0", text="Treeview")
+        tree.heading("value", text="Value")
+        tree.column("#0", width=180)
+        tree.column("value", width=180)
+        for index in range(4):
+            tree.insert("", "end", text=f"Row {index + 1}", values=(index * 25,))
+        tree.pack(fill="both", expand=True, pady=8)
+        ttk.Sizegrip(parent).pack(anchor="se")
+
     def _refresh_header(self):
         current = self.style.theme.name
         other = "darkly" if current == "flatly" else "flatly"
-        self.title.configure(text=f"Recolorable element assets — {current}")
+        percent = round(self.factor * 100)
+        self.title.configure(text=f"Scaling preview — {percent}% — {current}")
         self.switch.configure(text=f"Switch to {other}")
 
     def _toggle_theme(self):
@@ -99,8 +151,13 @@ class Preview:
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--scale", type=float, choices=(1.0, 1.25, 1.5, 2.0), default=1.0)
+    args = parser.parse_args()
+    baseline = 1.0 if platform.system() == "Darwin" else 4 / 3
     app = ttk.Window(
-        title="ttkbootstrap 2.0 — recolorable assets",
-        themename="flatly", size=(820, 720))
-    Preview(app)
+        title="ttkbootstrap 2.0 — scaling preview",
+        themename="flatly", size=(900, 760), scaling=baseline * args.scale)
+    Preview(app, args.scale)
     app.mainloop()

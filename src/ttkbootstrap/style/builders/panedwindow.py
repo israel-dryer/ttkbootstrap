@@ -16,8 +16,8 @@ def build_panedwindow_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         colorname (str):
             The color label used to style the widget.
     """
-    h_style_class = "Horizontal.TPanedwindow"
-    v_style_class = "Vertical.TPanedwindow"
+    h_ttk_class = "Horizontal.TPanedwindow"
+    v_ttk_class = "Vertical.TPanedwindow"
 
     if builder.is_light_theme:
         default_color = builder.colors.border
@@ -26,12 +26,12 @@ def build_panedwindow_style(builder: StyleBuilderTTK, colorname=DEFAULT):
 
     if any([colorname == DEFAULT, colorname == ""]):
         sash_color = default_color
-        h_ttk_style = h_style_class
-        v_ttk_style = v_style_class
+        h_ttk_style = h_ttk_class
+        v_ttk_style = v_ttk_class
     else:
         sash_color = builder.colors.get(colorname)
-        h_ttk_style = f"{colorname}.{h_style_class}"
-        v_ttk_style = f"{colorname}.{v_style_class}"
+        h_ttk_style = f"{colorname}.{h_ttk_class}"
+        v_ttk_style = f"{colorname}.{v_ttk_class}"
 
     builder.configure(
         "Sash", gripcount=0, sashthickness=builder.scale_size(2)

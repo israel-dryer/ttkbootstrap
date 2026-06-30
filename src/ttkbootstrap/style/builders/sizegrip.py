@@ -33,7 +33,7 @@ def build_sizegrip_style(builder: StyleBuilderTTK, colorname=DEFAULT):
 
     # Visual-check item: `grip-horizontal` vs a corner-grip glyph -- settle
     # on the human spot-check.
-    size = builder.scale_size(16)
+    size = 16
     image = builder.assets.icon("grip-horizontal", size, grip_color)
 
     builder.style.element_create(

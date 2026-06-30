@@ -16,7 +16,7 @@ def build_entry_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         colorname (str):
             The color label used to style the widget.
     """
-    style_class = "TEntry"
+    ttk_class = "TEntry"
 
     # general default colors
     if builder.is_light_theme:
@@ -30,11 +30,11 @@ def build_entry_style(builder: StyleBuilderTTK, colorname=DEFAULT):
 
     if any([colorname == DEFAULT, not colorname]):
         # default style
-        ttk_style = style_class
+        ttk_style = ttk_class
         focus_color = builder.colors.primary
     else:
         # colored style
-        ttk_style = f"{colorname}.{style_class}"
+        ttk_style = f"{colorname}.{ttk_class}"
         focus_color = builder.colors.get(colorname)
         border_color = focus_color
 
@@ -46,7 +46,7 @@ def build_entry_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         fieldbackground=builder.colors.inputbg,
         foreground=builder.colors.inputfg,
         insertcolor=builder.colors.inputfg,
-        padding=5,
+        padding=builder.scale_size(5),
     )
     builder.style.map(
         ttk_style,

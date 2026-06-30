@@ -7,34 +7,14 @@ render an asset *and* derive its cache key from the same inputs, so a key can
 never drift from the pixels it names -- the purity hazard PR 2's whole audit
 existed to manage.
 
-The renderer ports bootstack's snap-at-the-source pipeline: even-pixel-snap the
-final size, adaptive supersample (3x/2x/1x by size), LANCZOS downscale, then an
-UnsharpMask to restore edge crispness. The result is crisper, DPI-stable assets
--- callers pass only the logical (already DPI-scaled) size; the oversample factor
-and the snap are internal and adaptive.
+The renderer uses adaptive supersampling, LANCZOS downscaling, and sharpening
+while preserving exact root-scaled output dimensions. Callers pass logical UI
+sizes.
 """
 from PIL import Image, ImageDraw, ImageFilter, ImageTk
 from PIL.Image import Resampling
 
 from ttkbootstrap.style.elements import RecolorRenderer, RecolorResult
-
-
-def _wh(size):
-    """Normalize `size` (int -> square, or `(w, h)`) to an int `(w, h)` tuple."""
-    if isinstance(size, (int, float)):
-        return (int(size), int(size))
-    return (int(size[0]), int(size[1]))
-
-
-def _even(n):
-    """Snap a pixel length up to the next even integer.
-
-    bootstack's fractional-DPI fix: an even final size avoids the half-pixel
-    LANCZOS blur seen at 125%/150% scaling. Applied to the anti-aliased recipes
-    only -- `rect` has no edges to blur and keeps its exact size.
-    """
-    return n if n % 2 == 0 else n + 1
-
 
 def _oversample(w, h):
     """Adaptive supersample factor by the larger dimension (bootstack: 3/2/1)."""
@@ -47,9 +27,9 @@ def _oversample(w, h):
 
 
 def _render(size, draw_fn):
-    """Render `draw_fn` onto an oversampled canvas, then snap-downscale + sharpen.
+    """Render `draw_fn` onto an oversampled canvas, then downscale and sharpen.
 
-    `size` is the even-snapped final `(w, h)`. `draw_fn(draw, w, h)` draws onto an
+    `size` is the exact final physical `(w, h)`. `draw_fn(draw, w, h)` draws onto an
     `ImageDraw.Draw` over the oversampled `(w, h)` canvas (final size x the
     adaptive factor), so any coordinates are expressed relative to the canvas it
     is handed. After the LANCZOS downscale an UnsharpMask restores edge
@@ -75,20 +55,20 @@ class Assets:
     manage). Builders reach a shared instance via `self.assets`; public users
     construct `Assets(Style.get_instance())`.
 
-    Sizes are the final widget pixel size (already DPI-scaled by the caller, e.g.
-    via `scale_size`); the anti-aliased recipes even-pixel-snap and supersample
-    internally, so two logical sizes that snap equal share one image. Every
+    Sizes are logical UI units converted once by the root-bound scaling service;
+    final image dimensions are exact and may be odd. Every
     method returns the Tcl image name (the `_get_or_create_image` contract), and
     the resolved colors are *in* the key, so cross-theme-identical assets dedupe.
     """
 
     def __init__(self, style):
         self.style = style
+        self.scaling = style.scaling
 
     def circle(self, fill, size, *, outline=None, width=0):
-        """A filled (optionally outlined) circle. `width` is in final pixels."""
-        size = _wh(size)
-        size = (_even(size[0]), _even(size[1]))
+        """A filled circle; `size` and `width` are logical UI units."""
+        size = self.scaling.image_size(size)
+        width = self.scaling.logical(width, minimum=1 if width > 0 else 0)
         key = ("circle", fill, size, outline, width)
 
         def factory():
@@ -100,9 +80,10 @@ class Assets:
         return self.style._get_or_create_image(key, factory)
 
     def rounded_rect(self, fill, size, radius, *, outline=None, width=0):
-        """A rounded rectangle. `radius` and `width` are in final pixels."""
-        size = _wh(size)
-        size = (_even(size[0]), _even(size[1]))
+        """A rounded rectangle with geometry in logical UI units."""
+        size = self.scaling.image_size(size)
+        radius = self.scaling.logical(radius)
+        width = self.scaling.logical(width, minimum=1 if width > 0 else 0)
         key = ("rounded_rect", fill, size, radius, outline, width)
 
         def factory():
@@ -118,7 +99,7 @@ class Assets:
 
     def rect(self, fill, size):
         """A solid axis-aligned rectangle (no anti-aliasing, no size snap)."""
-        size = _wh(size)
+        size = self.scaling.image_size(size)
         key = ("rect", fill, size)
         return self.style._get_or_create_image(
             key, lambda: ImageTk.PhotoImage(Image.new("RGB", size, fill)))
@@ -126,9 +107,9 @@ class Assets:
     def icon(self, name, size, color):
         """Render a Bootstrap Icons glyph as a cached widget asset.
 
-        `size` is the final (DPI-scaled) pixel size; `color` is a resolved color
+        `size` is the logical UI size; `color` is a resolved color
         string. Returns the Tcl image name (the same contract as the shape
-        recipes). The key is `("icon", name, snapped_size, color)` -- theme
+        recipes). The key is `("icon", name, physical_size, color)` -- theme
         -independent by construction (the resolved color is *in* the key), so two
         themes that resolve a glyph to the same color share one image.
 
@@ -138,8 +119,7 @@ class Assets:
         """
         from ttkbootstrap.style.icons import IconRenderer
 
-        size = _wh(size)
-        size = (_even(size[0]), _even(size[1]))
+        size = self.scaling.image_size(size)
         key = ("icon", name, size, color)
         return self.style._get_or_create_image(
             key, lambda: ImageTk.PhotoImage(IconRenderer.render(name, size, color)))
@@ -153,14 +133,10 @@ class Assets:
         turn; dimensions and border/padding metadata transform with the pixels.
 
         Returns a `RecolorResult` containing the Tcl image name and scaled
-        manifest metadata. The manifest's 2x source dimensions are converted to
-        the current Tk image scale internally, so callers do not pass a size.
+        logical manifest metadata. Source-image dimensions only validate the
+        vendored PNG; callers do not pass a size.
         """
-        winsys = self.style.master.tk.call("tk", "windowingsystem")
-        baseline = 1.000492368291482 if winsys == "aqua" else 1.33398982438864281
-        tk_scaling = float(self.style.master.tk.call("tk", "scaling"))
-        scale = (tk_scaling / baseline) / RecolorRenderer.source_dpi()
-        meta = RecolorRenderer.metadata(name, scale, transform)
+        meta = RecolorRenderer.metadata(name, self.scaling, transform)
         size = (meta.width, meta.height)
         key = ("recolor", name, size, white, black, magenta, transform)
         image = self.style._get_or_create_image(
@@ -175,12 +151,11 @@ class Assets:
 
         `draw_fn(draw, w, h)` draws onto the oversampled `(w, h)` canvas, so the
         old hand-fit canvas constants become `w`-relative expressions. The key is
-        `(draw_fn.__qualname__, snapped_size, *key_parts)` -- list in `key_parts`
+        `(draw_fn.__qualname__, physical_size, *key_parts)` -- list in `key_parts`
         every color/value the draw closes over; they sit *beside* the draw so the
         key cannot silently drift from it, and the `__qualname__` keeps two
         different draws from colliding on equal `key_parts`.
         """
-        size = _wh(size)
-        size = (_even(size[0]), _even(size[1]))
+        size = self.scaling.image_size(size)
         key = (draw_fn.__qualname__, size, *key_parts)
         return self.style._get_or_create_image(key, lambda: _render(size, draw_fn))

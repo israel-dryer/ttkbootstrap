@@ -30,7 +30,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 from PIL.Image import Resampling
 
-from ttkbootstrap.style.assets import Assets, _wh
+from ttkbootstrap.style.assets import Assets
 from ttkbootstrap.style.layout import statespec, image_element
 
 
@@ -44,6 +44,13 @@ _ICONS_DIR = Path(__file__).parent.parent / "assets" / "icons"
 # center in a square frame.
 _ICON_Y_BIAS = 0.02
 _ICON_PAD_FACTOR = 0.10
+
+
+def _physical_size(size):
+    """Normalize an exact physical scalar or pair to `(width, height)`."""
+    if isinstance(size, (int, float)):
+        return int(size), int(size)
+    return int(size[0]), int(size[1])
 
 
 def _icon_oversample(w, h):
@@ -135,7 +142,7 @@ class IconRenderer:
         Raises `ValueError` for a name absent from the Bootstrap Icons glyphmap
         (a typo fails loudly rather than rendering a blank image).
         """
-        w, h = _wh(size)
+        w, h = _physical_size(size)
         _, glyphmap = cls._load_assets()
         glyph = glyphmap.get(name)
         if glyph is None:
@@ -236,8 +243,8 @@ def Icon(name, size=16, color=None):
             An unknown name raises `ValueError`.
 
         size (int | tuple[int, int]):
-            The final pixel size (already DPI-scaled by the caller). Snapped to an
-            even size internally.
+            The logical UI size. It is converted once by the root-bound service;
+            final dimensions may be odd.
 
         color (str):
             A bootstyle keyword ("primary", "success", "fg", ...) resolved against
@@ -306,8 +313,9 @@ def icon_element(style, name, *, size, default, states=None, **options):
     ```
 
     `states` is an ordered dict; ttk matches its specs first-match-wins, so the
-    insertion order *is* the match order. `options` (border, sticky, width, ...)
-    pass through to `element_create`.
+    insertion order *is* the match order. Numeric `border`, `padding`, `width`,
+    and `height` options are logical UI units and convert with the image frame;
+    other options pass through to `element_create`.
     """
     if "." not in name:
         raise ValueError(
@@ -315,6 +323,10 @@ def icon_element(style, name, *, size, default, states=None, **options):
             f"looked up on the ttkstyle prefix), got {name!r}")
     ttkstyle = name.rsplit(".", 1)[0]
     assets = Assets(style)
+    for option in ("border", "padding", "width", "height"):
+        value = options.get(option)
+        if isinstance(value, (int, float, tuple, list)):
+            options[option] = assets.scaling.logical(value, minimum=1)
 
     default_name = _spec_name(default)
     if default_name is None:

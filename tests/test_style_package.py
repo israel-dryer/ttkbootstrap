@@ -31,6 +31,7 @@ PUBLIC_NAMES = [
 
 SUBMODULES = [
     "ttkbootstrap.style.theme",
+    "ttkbootstrap.style.scaling",
     "ttkbootstrap.style.builders_tk",
     "ttkbootstrap.style.builders_ttk",
     "ttkbootstrap.style.engine",

@@ -13,6 +13,7 @@ from ttkbootstrap.constants import *
 from ttkbootstrap.themes.standard import STANDARD_THEMES
 
 from ttkbootstrap.style.theme import ThemeDefinition
+from ttkbootstrap.style.scaling import Scaling
 from ttkbootstrap.style.builders_ttk import StyleBuilderTTK
 
 try:
@@ -87,6 +88,7 @@ class Style(ttk.Style):
         self._load_themes()
         self._dynamic_foreground = False
         super().__init__()
+        self.scaling = Scaling.for_widget(self.master)
 
         Style.instance = self
         self.theme_use(theme)

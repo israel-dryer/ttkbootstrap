@@ -1,5 +1,10 @@
 # ttkbootstrap 2.0 — Style-Construction Toolkit Design (Workstream I, Tier 1)
 
+> **Scaling update (2026-06-29):**
+> `development/2_0_scaling_design.md` supersedes this document's historical
+> final-pixel input and even-size-snap rules. Size-bearing `Assets` APIs now
+> accept logical UI units and preserve exact scaled output dimensions.
+
 > Output of the Workstream I design pass (2026-06-25). Pairs with
 > `development/2_0_plan.md` (durable worklist, Workstream I at lines ~246–284),
 > `development/2_0_handoff.md` (session state), and the engine design

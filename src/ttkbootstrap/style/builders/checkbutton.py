@@ -60,9 +60,7 @@ def build_checkbutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
 
     spacer_name = f"{sn.ttk_style}.spacer"
 
-    image_element(
-        builder.style, spacer_name,
-        default=indicator_spacer(builder), sticky=EW)
+    image_element(builder.style, spacer_name, default=indicator_spacer(builder), sticky=EW)
 
     layout(builder.style, sn.ttk_style, El("Checkbutton.padding", sticky=NSEW, children=[
         El(f"{sn.ttk_style}.indicator", side=LEFT, sticky=""),

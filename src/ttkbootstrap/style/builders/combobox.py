@@ -20,7 +20,7 @@ def build_combobox_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         colorname (str):
             The color label to use as the primary widget color.
     """
-    style_class = "TCombobox"
+    ttk_class = "TCombobox"
 
     if builder.is_light_theme:
         disabled_fg = builder.colors.border
@@ -32,11 +32,11 @@ def build_combobox_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         readonly = border_color
 
     if any([colorname == DEFAULT, colorname == ""]):
-        ttk_style = style_class
+        ttk_style = ttk_class
         element = f"{ttk_style.replace('TC', 'C')}"
         focus_color = builder.colors.primary
     else:
-        ttk_style = f"{colorname}.{style_class}"
+        ttk_style = f"{colorname}.{ttk_class}"
         element = f"{ttk_style.replace('TC', 'C')}"
         focus_color = builder.colors.get(colorname)
 
@@ -74,7 +74,7 @@ def build_combobox_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         background=builder.colors.inputbg,
         insertcolor=builder.colors.inputfg,
         relief=tk.FLAT,
-        padding=5,
+        padding=builder.scale_size(5),
     )
     builder.style.map(
         ttk_style,

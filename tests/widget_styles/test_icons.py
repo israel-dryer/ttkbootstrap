@@ -3,7 +3,7 @@
 Covers the glyph renderer and its public surface in `ttkbootstrap.style.icons`:
 
 - `IconRenderer.render` rasterizes a known glyph to a non-empty RGBA of the
-  requested (even-snapped) size, and centers a metrics-present glyph in its frame;
+  requested exact size, and centers a metrics-present glyph in its frame;
 - an unknown glyph name fails loudly (a typo is not a blank image);
 - `Assets.icon` / `Icon` derive a complete, color-bearing cache key, so identical
   `(name, size, color)` dedupe to one Tcl image and a single differing color is a
@@ -33,7 +33,7 @@ def _cached_image(style, name):
 # --------------------------------------------------------------------------- #
 # Renderer (pure -- no Tk root)
 # --------------------------------------------------------------------------- #
-def test_render_known_glyph_is_nonempty_rgba_of_even_size():
+def test_render_known_glyph_is_nonempty_rgba_of_requested_size():
     img = IconRenderer.render("check-square-fill", (20, 20), "#3498db")
     assert img.mode == "RGBA"
     assert img.size == (20, 20)
@@ -100,13 +100,44 @@ def test_icon_key_completeness(root):
     assert n1 != n3          # one differing color -> different key -> different name
 
 
-def test_icon_even_snaps_size(root):
+def test_icon_odd_size_stays_exact(root):
     a = Assets(root.style)
     odd = a.icon("square", 15, "#000000")
     even = a.icon("square", 16, "#000000")
-    assert odd == even       # 15 snaps up to 16 -> same image/key
+    assert odd != even
     img = _cached_image(root.style, odd)
-    assert (img.width(), img.height()) == (16, 16)
+    assert (img.width(), img.height()) == (15, 15)
+
+
+def test_icon_element_scales_geometry_options_once(root, monkeypatch):
+    import ttkbootstrap.style.icons as icons
+
+    captured = {}
+
+    def capture(_style, _name, **options):
+        captured.update(options)
+
+    monkeypatch.setattr(icons, "image_element", capture)
+    tk = root.tk
+    before = float(tk.call("tk", "scaling"))
+    try:
+        tk.call("tk", "scaling", root.style.scaling.baseline * 1.5)
+        icons.icon_element(
+            root.style,
+            "Scaling.TWidget.icon",
+            size=15,
+            default={"name": "square", "color": "#123456"},
+            border=1,
+            padding=(0, 2),
+            width=20,
+        )
+        image = _cached_image(root.style, captured["default"])
+        assert (image.width(), image.height()) == (23, 23)
+        assert captured["border"] == 2
+        assert captured["padding"] == [0, 3]
+        assert captured["width"] == 30
+    finally:
+        tk.call("tk", "scaling", before)
 
 
 def test_icon_atom_resolves_color_keyword(root):

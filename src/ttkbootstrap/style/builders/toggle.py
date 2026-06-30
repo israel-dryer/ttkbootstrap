@@ -68,16 +68,10 @@ def build_round_toggle_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         background=[("selected", builder.colors.bg)],
     )
     a = builder.assets
-    on = a.recolor(
-        "switch_round", white=accent, black=builder.colors.bg)
-    off = a.recolor(
-        "switch_round", white=fg_muted, black=builder.colors.bg,
-        transform="flip-x")
-    disabled_on = a.recolor(
-        "switch_round", white=disabled_fg, black=builder.colors.bg)
-    disabled_off = a.recolor(
-        "switch_round", white=disabled_fg, black=builder.colors.bg,
-        transform="flip-x")
+    on = a.recolor("switch_round", white=accent, black=builder.colors.bg)
+    off = a.recolor("switch_round", white=fg_muted, black=builder.colors.bg, transform="flip-x")
+    disabled_on = a.recolor("switch_round", white=disabled_fg, black=builder.colors.bg)
+    disabled_off = a.recolor("switch_round", white=disabled_fg, black=builder.colors.bg, transform="flip-x")
     spacer_name = f"{ttk_style}.spacer"
     try:
         image_element(
@@ -138,9 +132,7 @@ def build_square_toggle_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     else:
         accent = builder.colors.get(colorname)
 
-    builder.configure(
-        ttk_style, relief=tk.FLAT, borderwidth=0, foreground=builder.colors.fg
-    )
+    builder.configure(ttk_style, relief=tk.FLAT, borderwidth=0, foreground=builder.colors.fg)
     builder.style.map(
         ttk_style,
         foreground=[("disabled", disabled_fg)],
@@ -150,16 +142,10 @@ def build_square_toggle_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         ],
     )
     a = builder.assets
-    on = a.recolor(
-        "switch_square", white=accent, black=builder.colors.bg)
-    off = a.recolor(
-        "switch_square", white=fg_muted, black=builder.colors.bg,
-        transform="flip-x")
-    disabled_on = a.recolor(
-        "switch_square", white=disabled_fg, black=builder.colors.bg)
-    disabled_off = a.recolor(
-        "switch_square", white=disabled_fg, black=builder.colors.bg,
-        transform="flip-x")
+    on = a.recolor("switch_square", white=accent, black=builder.colors.bg)
+    off = a.recolor("switch_square", white=fg_muted, black=builder.colors.bg, transform="flip-x")
+    disabled_on = a.recolor("switch_square", white=disabled_fg, black=builder.colors.bg)
+    disabled_off = a.recolor("switch_square", white=disabled_fg, black=builder.colors.bg, transform="flip-x")
     spacer_name = f"{ttk_style}.spacer"
     image_element(
         builder.style, f"{ttk_style}.indicator", default=on.image,

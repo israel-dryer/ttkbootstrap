@@ -22,17 +22,17 @@ def build_floodgauge_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         colorname (str):
             The color label used to style the widget.
     """
-    horizontal_style_class = "Horizontal.TFloodgauge"
-    vertical_style_class = "Vertical.TFloodgauge"
+    h_ttk_class = "Horizontal.TFloodgauge"
+    v_ttk_class = "Vertical.TFloodgauge"
     flood_font = "-size 14"
 
     if any([colorname == DEFAULT, colorname == ""]):
-        h_ttk_style = horizontal_style_class
-        v_ttk_style = vertical_style_class
+        h_ttk_style = h_ttk_class
+        v_ttk_style = v_ttk_class
         background = builder.colors.primary
     else:
-        h_ttk_style = f"{colorname}.{horizontal_style_class}"
-        v_ttk_style = f"{colorname}.{vertical_style_class}"
+        h_ttk_style = f"{colorname}.{h_ttk_class}"
+        v_ttk_style = f"{colorname}.{v_ttk_class}"
         background = builder.colors.get(colorname)
 
     if colorname == LIGHT:
@@ -52,8 +52,8 @@ def build_floodgauge_style(builder: StyleBuilderTTK, colorname=DEFAULT):
                El("Floodgauge.label", sticky="")]))
     builder.configure(
         h_ttk_style,
-        thickness=50,
-        borderwidth=1,
+        thickness=builder.scale_size(50),
+        borderwidth=builder.scale_size(1),
         bordercolor=background,
         lightcolor=background,
         pbarrelief=tk.FLAT,
@@ -74,8 +74,8 @@ def build_floodgauge_style(builder: StyleBuilderTTK, colorname=DEFAULT):
                El("Floodgauge.label", sticky="")]))
     builder.configure(
         v_ttk_style,
-        thickness=50,
-        borderwidth=1,
+        thickness=builder.scale_size(50),
+        borderwidth=builder.scale_size(1),
         bordercolor=background,
         lightcolor=background,
         pbarrelief=tk.FLAT,

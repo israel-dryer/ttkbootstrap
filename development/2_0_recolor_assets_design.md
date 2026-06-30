@@ -1,5 +1,10 @@
 # 2.0 — Recolorable raster widget assets (design brief)
 
+> **Scaling update (2026-06-29):**
+> `development/2_0_scaling_design.md` supersedes source-density-derived widget
+> geometry. Manifest v2 records source pixels and approved logical geometry
+> separately and does not even-snap final image frames.
+
 > **Status: IMPLEMENTED + VISUALLY APPROVED (2026-06-28).** The staged
 > `assets/elements/` templates are the source set; the decisions at the end of
 > this document are implemented on `feat/2.0-recolor-elements`.

@@ -3,18 +3,18 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-06-29 (`StyleBuilderTTK` modularization implemented and
-visually approved on `refactor/2.0-builder-modules`; all gates pass and the
-branch is open as draft PR #1082 against `2.0`.)_
+_Last updated: 2026-06-29 (scaling and asset-geometry normalization approved,
+implemented, and visually approved on `refactor/2.0-scaling`; open as draft PR
+#1083 against `2.0`.)_
 
 ## Where we are
 
 Integration branch: **`2.0`** (cut all 2.0 PRs against it, not `master`).
-Expected suite on `2.0`: **104 passed**, headless, order-independent.
-Expected suite after this branch: **147 passed**.
-On this machine Python 3.12 reports **102 passed / 2 unrelated failures** because
-its Tcl install cannot read `tk8.6/msgs/nl.msg` and `tk8.6/msgs/fr.msg`;
-excluding that environment-specific localization module gives **98 passed**.
+Expected suite on `2.0`: **147 passed**, headless, order-independent. Expected
+after the scaling branch: **177 passed**. On this machine Python 3.12 reports
+**176 passed / 1 environment failure** because its Tcl install cannot read
+`tk8.6/msgs/nl.msg`; excluding the six-test localization module gives **171
+passed**.
 
 The engine keystone (Workstream A) is **complete and merged**: PR 1 (repaint,
 #1073) + PR 2 (content-addressed image cache, #1074). **PR 3 — the mixin API
@@ -28,24 +28,59 @@ the style-construction toolkit (Workstream I, Tier 1)** is **merged** (#1077; se
 the geometric/layout cleanup landed, and the public registration path is in. That
 completes the Workstream I icon work for 2.0.
 
-**The recolorable raster-assets PR is MERGED (#1081).** The expected suite is
-now 104 tests and the light↔dark manual gate passed. See the implementation
-summary immediately below.
+**The recolorable raster-assets PR is MERGED (#1081).** At that merge the
+expected suite was 104 tests, and the light↔dark manual gate passed. See the
+implementation summary immediately below.
 
-**Current actionable → review and merge builder-modularization draft PR #1082.**
-The branch is `refactor/2.0-builder-modules`, based on merge commit `080e3d19`. The approved
-design and exact verification results are in
-`development/2_0_builder_split_design.md`.
+**PR #1082 is MERGED.** `2.0` now includes the 161-line coordinator, frozen
+registry, and 22 widget-family modules. Merge commit: `fa1cede8`.
 
-**Next after #1082:** first write and discuss a scaling/asset-geometry design.
-It must unify logical UI units, physical pixels, source-image pixels, rounding,
-and even-snap behavior; restore intended element dimensions (especially the
-scale thumb); and specify 100/125/150/200% tests before implementation. Then
-design a focused Workstream E slice: cheap private ramps plus only the builder
-helpers ttkbootstrap needs (`active`, `pressed`, `border`, `disabled`, and
+**Current actionable → review and merge draft PR #1083.** Branch:
+`refactor/2.0-scaling`, cut from `2.0` at `fa1cede8`; implementation commit
+`b491a0be`. Approved design: `development/2_0_scaling_design.md`. Automated and
+human gates pass.
+
+**Next after scaling:** design a focused Workstream E slice: cheap private ramps
+plus only the builder helpers ttkbootstrap needs (`active`, `pressed`,
+`border`, `disabled`, and
 `on_color`). Keep those helpers on `StyleBuilderTTK`; defer a public palette API
 unless a simple concrete need emerges. Canonical bootstyle grammar (D) follows
 later with its own design pass.
+
+## Scaling and asset geometry — DRAFT PR #1083, VISUALLY APPROVED
+
+Approved decisions: public size-bearing `Assets`/Icon APIs take logical UI
+units; `IconRenderer.render()` remains a physical-pixel leaf; final
+layout-facing images keep exact dimensions with no even snap; #1081 geometry is
+locked at checkbox/radio 18×18, switches 38×18, scale thumb 22×22 and track
+12×6, progressbar thickness 8/4/12, and scrollbar thumb 18×8 at 100%.
+
+- New private `style/scaling.py`: one service attached to the Tk root; 96-DPI
+  Windows/X11 and 72-DPI Aqua baselines; nominal quarter-step normalization;
+  round-half-away conversion; direct source-pixel conversion; no global state.
+- `Style`, both builders, public `utility.scale_size`, `Assets`, icons, and
+  recolored rasters share that service. `Window(scaling=...)` remains applied
+  before `Style` and the first lazy build. Windows stays system-DPI-aware;
+  per-monitor-v2/live rebuilds remain out of scope.
+- Size-bearing toolkit inputs are logical. Builders no longer pre-scale asset
+  inputs. `icon_element` also scales numeric border/padding/width/height once.
+  Exact odd image frames are preserved; the icon renderer owns its physical
+  frame normalization.
+- Element manifest v2 records `source_size` separately from approved logical
+  `size`, `border`, and `padding`. Rotations transform logical metadata with the
+  pixels. Cache keys remain based on final physical dimensions and colors.
+- Tk-facing builder padding, borders, focus/insert widths, sash and arrow
+  geometry, progress/floodgauge thickness, Treeview geometry, and legacy-tk
+  widths now scale once. AST guards reject new unscaled numeric builder geometry
+  and pre-scaled logical toolkit inputs.
+- Verification: focused scaling/toolkit/icon/recolor suite **68 passed**;
+  expected full suite **177 tests**; local full result **176 passed / 1 known Tcl
+  `nl.msg` environment failure**; excluding localization **171 passed**.
+  Warning-free import; 36 fresh-process style imports; Python 3.10 parsed 88
+  source/test files; 226 annotation targets force-evaluated. Preview constructs
+  successfully in separate processes at all four factors.
+- Human gate passed (user, 2026-06-29): both preview tabs and flatly↔darkly
+  switching approved at 100%, 125%, 150%, and 200%.
 
 **Recolorable raster widget assets — MERGED #1081, VISUALLY APPROVED.** Source
 branch: `feat/2.0-recolor-elements`. Locked design:
@@ -83,7 +118,7 @@ scrollbar/progressbar now use bootstack-derived templates from
   approved after indicator spacing, progressbar stretch/surface, and scrollbar
   thumb-only/native-trough corrections.
 
-## Builder modularization — IMPLEMENTED, VISUALLY APPROVED
+## Builder modularization — MERGED #1082, VISUALLY APPROVED
 
 Goal: replace the 2,600+ line `style/builders_ttk.py` recipe monolith with a
 private, decorator-backed registry and one module per widget family, following
@@ -109,7 +144,8 @@ Locked scope from the 2026-06-28 discussion:
 
 Implementation summary:
 
-- Draft PR: **#1082**, targeting `2.0`; commit `96bcab40`.
+- Merged PR: **#1082**, targeting `2.0`; merge commit `fa1cede8`
+  (implementation commit `96bcab40`, handoff commit `f8c20dd8`).
 - Approved design: `development/2_0_builder_split_design.md`.
 - `StyleBuilderTTK`: 2,689-line monolith → 161-line per-theme coordinator.
 - Private frozen registry: 36 exact `(variant, widget-family)` keys; explicit

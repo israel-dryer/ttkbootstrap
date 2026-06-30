@@ -18,16 +18,16 @@ def build_meter_subtxt_label_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         colorname (str):
             The color label used to style the widget.
     """
-    style_class = "Metersubtxt.TLabel"
+    ttk_class = "Metersubtxt.TLabel"
 
     if any([colorname == DEFAULT, colorname == ""]):
-        ttk_style = style_class
+        ttk_style = ttk_class
         if builder.is_light_theme:
             foreground = builder.colors.secondary
         else:
             foreground = builder.colors.light
     else:
-        ttk_style = f"{colorname}.{style_class}"
+        ttk_style = f"{colorname}.{ttk_class}"
         foreground = builder.colors.get(colorname)
 
     background = builder.colors.bg
@@ -54,7 +54,7 @@ def build_meter_label_style(builder: StyleBuilderTTK, colorname=DEFAULT):
             The color label used to style the widget.
     """
 
-    style_class = "Meter.TLabel"
+    ttk_class = "Meter.TLabel"
 
     # text color = `foreground`
     # trough color = `space`
@@ -68,11 +68,11 @@ def build_meter_label_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         trough_color = Colors.update_hsv(builder.colors.selectbg, vd=-0.2)
 
     if any([colorname == DEFAULT, colorname == ""]):
-        ttk_style = style_class
+        ttk_style = ttk_class
         background = builder.colors.bg
         textcolor = builder.colors.primary
     else:
-        ttk_style = f"{colorname}.{style_class}"
+        ttk_style = f"{colorname}.{ttk_class}"
         textcolor = builder.colors.get(colorname)
         background = builder.colors.bg
 
@@ -97,14 +97,14 @@ def build_label_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         colorname (str):
             The color label used to style the widget.
     """
-    style_class = "TLabel"
+    ttk_class = "TLabel"
 
     if any([colorname == DEFAULT, colorname == ""]):
-        ttk_style = style_class
+        ttk_style = ttk_class
         foreground = builder.colors.fg
         background = builder.colors.bg
     else:
-        ttk_style = f"{colorname}.{style_class}"
+        ttk_style = f"{colorname}.{ttk_class}"
         foreground = builder.colors.get(colorname)
         background = builder.colors.bg
 
@@ -130,14 +130,14 @@ def build_inverse_label_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         colorname (str):
             The color label used to style the widget.
     """
-    style_class = "Inverse.TLabel"
+    ttk_class = "Inverse.TLabel"
 
     if any([colorname == DEFAULT, colorname == ""]):
-        ttk_style = style_class
+        ttk_style = ttk_class
         background = builder.colors.fg
         foreground = builder.colors.bg
     else:
-        ttk_style = f"{colorname}.{style_class}"
+        ttk_style = f"{colorname}.{ttk_class}"
         background = builder.colors.get(colorname)
         foreground = builder.colors.get_foreground(colorname)
 

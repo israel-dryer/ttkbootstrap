@@ -87,42 +87,46 @@ def enable_high_dpi_awareness(root=None, scaling=None):
             widgets will resize themselves dynamically to accommodate 
             the new scaling factor.
     """
+    # Keep the existing system-DPI-aware behavior. Per-monitor-v2 awareness
+    # requires live style rebuilding when a window crosses displays, which is
+    # outside ttkbootstrap's current scaling contract.
     try:
         from ctypes import windll
-        windll.user32.SetProcessDPIAware()
-    except:
+        try:
+            windll.shcore.SetProcessDpiAwareness(1)
+        except Exception:
+            windll.user32.SetProcessDPIAware()
+    except Exception:
         pass
 
     try:
-        if root and scaling:
+        if root is not None and scaling is not None:
             root.tk.call('tk', 'scaling', scaling)
-    except:
+    except Exception:
         pass
 
 
 def scale_size(widget, size):
     """Scale the size based on the scaling factor of tkinter. 
     This is used most frequently to adjust the assets for 
-    image-based widget layouts and font sizes.
+    image-based widget layouts and pixel-valued geometry.
+
+    `size` is expressed in logical UI units. Conversion uses the scaling
+    service attached to the widget's root and rounds half away from zero.
 
     Parameters:
 
         widget (Widget):
             The widget object.
 
-        size (Union[int, List, Tuple]):
-            A single integer or an iterable of integers
+        size (int | float | list | tuple):
+            A number or sequence of numbers in logical UI units.
 
     Returns:
 
-        Union[int, List]:
+        int | list:
             An integer or list of integers representing the new size.
     """
-    BASELINE = 1.33398982438864281
-    scaling = widget.tk.call('tk', 'scaling')
-    factor = scaling / BASELINE
+    from ttkbootstrap.style.scaling import Scaling
 
-    if isinstance(size, int):
-        return int(size * factor)
-    elif isinstance(size, tuple) or isinstance(size, list):
-        return [int(x * factor) for x in size]
+    return Scaling.for_widget(widget).logical(size)

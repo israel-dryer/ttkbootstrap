@@ -16,7 +16,7 @@ def build_notebook_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         colorname (str):
             The color label used to style the widget.
     """
-    style_class = "TNotebook"
+    ttk_class = "TNotebook"
 
     if builder.is_light_theme:
         border_color = builder.colors.border
@@ -28,11 +28,11 @@ def build_notebook_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     if any([colorname == DEFAULT, colorname == ""]):
         background = builder.colors.inputbg
         select_fg = builder.colors.fg
-        ttk_style = style_class
+        ttk_style = ttk_class
     else:
         select_fg = builder.colors.get_foreground(colorname)
         background = builder.colors.get(colorname)
-        ttk_style = f"{colorname}.{style_class}"
+        ttk_style = f"{colorname}.{ttk_class}"
 
     ttk_style_tab = f"{ttk_style}.Tab"
 
@@ -43,10 +43,13 @@ def build_notebook_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         bordercolor=border_color,
         lightcolor=builder.colors.bg,
         darkcolor=builder.colors.bg,
-        tabmargins=(0, 1, 1, 0),
+        tabmargins=builder.scale_size((0, 1, 1, 0)),
     )
     builder.configure(
-        ttk_style_tab, focuscolor="", foreground=foreground, padding=(6, 5)
+        ttk_style_tab,
+        focuscolor="",
+        foreground=foreground,
+        padding=builder.scale_size((6, 5)),
     )
     builder.style.map(
         ttk_style_tab,
@@ -62,7 +65,10 @@ def build_notebook_style(builder: StyleBuilderTTK, colorname=DEFAULT):
             ("selected", border_color),
             ("!selected", border_color),
         ],
-        padding=[("selected", (6, 5)), ("!selected", (6, 5))],
+        padding=[
+            ("selected", builder.scale_size((6, 5))),
+            ("!selected", builder.scale_size((6, 5))),
+        ],
         foreground=[("selected", foreground), ("!selected", select_fg)],
     )
 

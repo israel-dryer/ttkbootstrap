@@ -4,9 +4,8 @@ Covers the public helpers in `ttkbootstrap.style.assets` / `.layout`:
 
 - the shape recipes derive a complete, color-bearing cache key (so identical
   inputs dedupe and a single differing color is a different image);
-- the even-pixel snap (an odd logical size and the next even one resolve to the
-  same image, and the rendered image is even-sized) -- bootstack's fractional-DPI
-  fix; `rect` is exempt and keeps its exact size;
+- exact layout-facing dimensions: odd logical sizes remain odd and receive
+  distinct cache entries;
 - the `image` escape hatch keys on its declared `*key_parts`;
 - `El` lowers to ttk's nested `(name, opts)` tuple form;
 - `statespec` validates the state grammar (and raises on a typo);
@@ -113,13 +112,13 @@ def test_circle_outline_and_width_in_key(root):
     assert plain != outlined
 
 
-def test_even_size_snap(root):
+def test_odd_size_stays_exact(root):
     a = Assets(root.style)
     odd = a.circle("#123456", 15)
     even = a.circle("#123456", 16)
-    assert odd == even       # 15 snaps up to 16 -> same image/key
+    assert odd != even
     img = _cached_image(root.style, odd)
-    assert (img.width(), img.height()) == (16, 16)  # rendered size is even
+    assert (img.width(), img.height()) == (15, 15)
 
 
 def test_rect_keeps_exact_size(root):

@@ -18,13 +18,13 @@ def build_labelframe_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         colorname (str):
             The color label used to style the widget.
     """
-    style_class = "TLabelframe"
+    ttk_class = "TLabelframe"
 
     background = builder.colors.bg
 
     if any([colorname == DEFAULT, colorname == ""]):
         foreground = builder.colors.fg
-        ttk_style = style_class
+        ttk_style = ttk_class
 
         if builder.is_light_theme:
             border_color = builder.colors.border
@@ -34,7 +34,7 @@ def build_labelframe_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     else:
         foreground = builder.colors.get(colorname)
         border_color = foreground
-        ttk_style = f"{colorname}.{style_class}"
+        ttk_style = f"{colorname}.{ttk_class}"
 
     # create widget style
     builder.configure(
@@ -45,7 +45,7 @@ def build_labelframe_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     builder.configure(
         ttk_style,
         relief=tk.RAISED,
-        borderwidth=1,
+        borderwidth=builder.scale_size(1),
         bordercolor=border_color,
         lightcolor=background,
         darkcolor=background,
