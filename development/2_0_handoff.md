@@ -5,9 +5,11 @@
 
 _Last updated: 2026-07-01 (focused Workstream E private ramps and builder
 color helpers implemented on `refactor/2.0-color-helpers`; `on_color` retuned to
-a white-preferred, saturation-aware policy after visual feedback; automated
-gates pass. Theme appearance approved; a quick re-confirm of the retuned vivid
-accents remains before merge.)_
+a white-preferred, saturation-aware policy after visual feedback. pytest
+installed and the suite ACTUALLY RUN this session — 188 passed / 1 known Tcl
+`nl.msg` env failure; two stale `test_color_helpers` assertions corrected (see
+below). Six-theme human visual gate PASSED. Branch is merge-ready — open the PR
+against `2.0`.)_
 
 ## Where we are
 
@@ -39,14 +41,26 @@ registry, and 22 widget-family modules. Merge commit: `fa1cede8`.
 **PR #1083 is MERGED.** Scaling and asset-geometry normalization landed on
 `2.0` as merge commit `c1f9ed73`; its automated and four-scale human gates pass.
 
-**Current actionable → run the color-helper human visual gate.** Branch:
+**Current actionable → open the color-helper PR against `2.0`.** Branch:
 `refactor/2.0-color-helpers`, cut from `2.0` at `c1f9ed73`. Approved design:
-`development/2_0_color_helpers_design.md`. Run
-`python examples/color_states_preview.py`, exercise the five color columns,
-and switch through flatly/minty/morph/darkly/solar/vapor. Automated gates pass.
-Canonical bootstyle grammar (D) remains later and needs its own design pass.
+`development/2_0_color_helpers_design.md`. The six-theme human visual gate
+(`python examples/color_states_preview.py`) PASSED (user, 2026-07-01). Automated
+gates pass (188/1). Canonical bootstyle grammar (D) remains later and needs its
+own design pass.
 
-## Private color ramps and builder helpers — IMPLEMENTED, VISUAL GATE PENDING
+**pytest gap closed + two stale tests fixed (2026-07-01).** The prior session's
+env had no pytest, so `test_color_helpers` was written but never run. Installing
+it surfaced two assertions written against the OLD clam-face pattern
+(`bordercolor`/`darkcolor`/`lightcolor` = face, faking flatness under
+`relief=RAISED`) that no longer hold: the branch's solid **button** and
+**toolbutton** recipes are now genuine flat fills (`relief=FLAT`, no clam border
+regions), so `config['bordercolor']` `KeyError`'d. Fix was test-only — the flat
+recipes are correct and intended; the assertions now verify `relief=='flat'` +
+`'bordercolor' not in config` (button) and no-`bordercolor` + `selected` fills
+with the accent (toolbutton). `menubutton`/`calendar` still use the clam-face
+pattern and their assertions were left intact. No production recipe changed.
+
+## Private color ramps and builder helpers — IMPLEMENTED, VISUAL GATE PASSED
 
 - Private immutable 50–950 ramps use bootstack's Bootstrap-compatible weights
   and a bounded 256-entry cache; no public palette API was added.
@@ -94,8 +108,8 @@ visual feedback that black-on-saturated-accent — e.g. sandstone `info`
 - Interim `on_color` iterations (raw max-contrast, plain white-preferred@3.0)
   were superseded; the design doc's `on_color` section is current. Test
   `test_on_color_is_safe_and_independent_of_legacy_toggle` now asserts the 2.3
-  white floor, not 3.0. Verified by direct computation (pytest not installed in
-  the dev env — run `python -m pytest -q` before merge).
+  white floor, not 3.0. Now verified by an actual `python -m pytest -q` run
+  (2026-07-01): 188 passed / 1 known Tcl `nl.msg` env failure.
 
 ### Fast-follow scoped (next PR, after this branch merges)
 

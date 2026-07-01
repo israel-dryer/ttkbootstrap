@@ -232,9 +232,10 @@ def test_solid_button_recipe_uses_helper_state_contract(
     background_map = option_map(ttkstyle, 'background')
     foreground_map = option_map(ttkstyle, 'foreground')
     assert config['foreground'].lower() == builder.on_color(background)
-    # This clam recipe has no separately rendered border treatment: its
-    # border/dark/light colors intentionally track the button face.
-    assert config['bordercolor'].lower() == background
+    # The solid button is a plain flat fill: it renders no clam border/dark/
+    # light regions, so those options are absent from its configuration.
+    assert config['relief'].lower() == 'flat'
+    assert 'bordercolor' not in config
     assert background_map[('hover', '!disabled')].lower() == active
     assert background_map[('pressed', '!disabled')].lower() == pressed
     disabled = builder.disabled()
@@ -242,9 +243,9 @@ def test_solid_button_recipe_uses_helper_state_contract(
         'text', disabled
     )
 
-    # Options named "border" are not automatically semantic borders. These
-    # recipes deliberately paint their clam border/dark/light regions with the
-    # same color as the current face.
+    # Options named "border" are not automatically semantic borders. The
+    # menubutton and calendar recipes deliberately paint their clam
+    # border/dark/light regions with the same color as the current face.
     for family, variant in (
         ('menubutton', 'default'),
         ('toolbutton', 'default'),
@@ -258,8 +259,11 @@ def test_solid_button_recipe_uses_helper_state_contract(
         ('hover', '!disabled')
     ] == active
 
+    # The solid toolbutton, like the solid button, is a plain flat fill with no
+    # clam border treatment; its selected state simply fills with the accent.
     toolbutton = f'{colorname}.Toolbutton'
-    assert option_map(toolbutton, 'bordercolor')[
+    assert 'bordercolor' not in style.configure(toolbutton)
+    assert option_map(toolbutton, 'background')[
         ('selected', '!disabled')
     ] == background
 
