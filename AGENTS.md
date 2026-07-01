@@ -46,7 +46,11 @@ Read these, in order, before any 2.0 work:
      recipe registry (approved, implemented, visually approved, and merged as
      #1082).
    - `development/2_0_scaling_design.md` — scaling and asset-geometry
-     normalization (approved, implemented, and visually approved).
+     normalization (approved, implemented, visually approved, and merged as
+     #1083).
+   - `development/2_0_color_helpers_design.md` — focused private color ramps
+     and `StyleBuilderTTK` state-color helpers (implemented; automated gates
+     pass and human visual approval is pending).
 
 ### Where things stand (snapshot — confirm against the handoff, it's authoritative)
 
@@ -55,32 +59,26 @@ Merged into `2.0`: engine repaint + content-addressed image cache (PRs 1–2),
 mixin API replacing the import-time monkey-patch (PR 3), the `style/` package
 split (PR 4), the public asset/layout toolkit (PR 5), the icon engine (PR 6a),
 the glyph-builder migration (PR 6b), recolorable raster widget assets (#1081),
-and the `StyleBuilderTTK` modularization (#1082). The expected suite on `2.0` is
-**147 passed**. Scaling and asset-geometry normalization is implemented on
-`refactor/2.0-scaling`; its 177-test expected suite and structural gates pass
-apart from the documented local Tcl catalog defect. Its human
-100/125/150/200% light↔dark gate passed. After the scaling PR, take a focused
-Workstream E slice for private color ramps plus the minimal builder helpers
-(`active`, `pressed`, `border`, `disabled`, `on_color`). Canonical bootstyle
-grammar (D) remains later and needs its own design pass.
+the `StyleBuilderTTK` modularization (#1082), and scaling/asset normalization
+(#1083). The expected suite on `2.0` is **177 passed**; the color-helper branch
+raises it to **189 passed**. Scaling's human 100/125/150/200% light↔dark gate
+passed. The focused Workstream E color helpers are implemented and awaiting
+their six-theme visual gate. Canonical bootstyle grammar (D) remains later and
+needs its own design pass.
 
-## Current task this handoff: review and merge scaling PR #1083
+## Current task this handoff: run the color-helper visual gate
 
-Branch: **`refactor/2.0-scaling`**, cut from `2.0` after the builder
-modularization merged as **#1082**. The approved design and implementation are
-in **`development/2_0_scaling_design.md`** and the current working tree. One
-root-bound service now owns logical-to-physical conversion; toolkit assets and
-icons accept logical sizes; manifest v2 separates source pixels from approved
-logical geometry; final image frames are not even-snapped; builder geometry is
-scaled once and guarded structurally.
-
-Automated result: **176 passed / 1 environment failure** on Python 3.12 because
-this Tcl install cannot read `tk8.6/msgs/nl.msg`; excluding localization gives
-**171 passed**. Warning-free import, 36 fresh-process style imports, Python 3.10
-grammar for 88 files, and 226 forced annotation targets pass. The human
-light↔dark gate passed at 100%, 125%, 150%, and 200%. The branch is ready for
-review as draft PR **#1083** against `2.0`. Color ramps and builder state-color
-helpers remain out of scope.
+Branch: **`refactor/2.0-color-helpers`**, cut from `2.0` after scaling merged as
+**#1083** (`c1f9ed73`). The approved design is
+**`development/2_0_color_helpers_design.md`**. Run
+`python examples/color_states_preview.py`, exercise normal/hover/pressed/
+selected/disabled/focus states, and switch through flatly, minty, morph,
+darkly, solar, and vapor. Automated results: full suite **189 passed**,
+on the original implementation run. The corrected builder audit reports **188
+passed / 1 known local Tcl `nl.msg` failure**; excluding localization gives
+**183 passed**. Warning-free import, Python 3.10 grammar for 91 files, and the
+annotation sweep are clean. Public semantic ramps, built-in theme conversion,
+canonical bootstyle grammar, and legacy-tk parity remain deferred.
 
 ## How to work here
 

@@ -5,7 +5,6 @@ import tkinter as tk
 from ttkbootstrap.constants import *
 from ttkbootstrap.style import StyleBuilderTTK
 from ttkbootstrap.style.layout import El, image_element, layout
-from ttkbootstrap.style.theme import Colors
 from ttkbootstrap.style.builders.registry import register_builder
 
 
@@ -55,8 +54,8 @@ def build_round_scrollbar_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         v_ttk_style = f"{colorname}.Round.Vertical.{ttk_class}"
         background = builder.colors.get(colorname)
 
-    pressed = Colors.update_hsv(background, vd=-0.05)
-    active = Colors.update_hsv(background, vd=0.05)
+    pressed = builder.pressed(background)
+    active = builder.active(background)
 
     scroll_images = _create_round_scrollbar_assets(builder, background, pressed, active)
 
@@ -161,8 +160,8 @@ def build_scrollbar_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         v_ttk_style = f"{colorname}.Vertical.{ttk_class}"
         background = builder.colors.get(colorname)
 
-    pressed = Colors.update_hsv(background, vd=-0.05)
-    active = Colors.update_hsv(background, vd=0.05)
+    pressed = builder.pressed(background)
+    active = builder.active(background)
 
     scroll_images = _create_scrollbar_assets(builder,
         background, pressed, active

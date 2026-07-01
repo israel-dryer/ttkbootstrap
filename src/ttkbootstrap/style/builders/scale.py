@@ -24,19 +24,18 @@ def _create_scale_assets(builder, colorname=DEFAULT):
             Recolored handle and track assets.
     """
     a = builder.assets
+    disabled_color = builder.disabled("text")
     if builder.is_light_theme:
-        disabled_color = builder.colors.border
         track_color = builder.colors.bg if colorname == LIGHT else builder.colors.light
     else:
-        disabled_color = builder.colors.selectbg
         track_color = Colors.update_hsv(builder.colors.selectbg, vd=-0.2)
 
     if any([colorname == DEFAULT, colorname == ""]):
         normal_color = builder.colors.primary
     else:
         normal_color = builder.colors.get(colorname)
-    pressed_color = Colors.update_hsv(normal_color, vd=-0.1)
-    hover_color = Colors.update_hsv(normal_color, vd=0.1)
+    pressed_color = builder.pressed(normal_color)
+    hover_color = builder.active(normal_color)
 
     # ( normal, pressed, hover, disabled thumbs; horizontal, vertical track )
     return (

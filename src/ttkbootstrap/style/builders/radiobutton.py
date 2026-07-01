@@ -21,7 +21,7 @@ def build_radiobutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     """
     sn = StyleName("TRadiobutton", colorname)
     fg = builder.colors.fg
-    disabled = Colors.make_transparent(0.30, fg, builder.colors.bg)
+    disabled = builder.disabled("text")
     fg_muted = Colors.make_transparent(0.40, fg, builder.colors.bg)
 
     # Resolve the "on" accent; LIGHT/DARK on their own background need a

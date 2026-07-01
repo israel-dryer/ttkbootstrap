@@ -5,7 +5,6 @@ import tkinter as tk
 from ttkbootstrap.constants import *
 from ttkbootstrap.style import StyleBuilderTTK
 from ttkbootstrap.style.layout import El, layout
-from ttkbootstrap.style.theme import Colors
 from ttkbootstrap.style.builders.registry import register_builder
 
 
@@ -25,20 +24,19 @@ def build_calendar_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     ttk_class = "TCalendar"
 
     if any([colorname == DEFAULT, colorname == ""]):
-        prime_color = builder.colors.primary
+        accent = builder.colors.primary
         ttk_style = ttk_class
         chevron_style = "Chevron.TButton"
     else:
-        prime_color = builder.colors.get(colorname)
+        accent = builder.colors.get(colorname)
         ttk_style = f"{colorname}.{ttk_class}"
         chevron_style = f"Chevron.{colorname}.TButton"
 
-    if builder.is_light_theme:
-        disabled_fg = Colors.update_hsv(builder.colors.inputbg, vd=-0.2)
-        pressed = Colors.update_hsv(prime_color, vd=-0.1)
-    else:
-        disabled_fg = Colors.update_hsv(builder.colors.inputbg, vd=-0.3)
-        pressed = Colors.update_hsv(prime_color, vd=0.1)
+    on_disabled = builder.disabled("text")
+    pressed = builder.pressed(accent)
+    active = builder.active(accent)
+    on_pressed = builder.on_color(pressed)
+    on_active = builder.on_color(active)
 
     builder.configure(
         ttk_style,
@@ -63,37 +61,37 @@ def build_calendar_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     builder.style.map(
         ttk_style,
         foreground=[
-            ("disabled", disabled_fg),
-            ("pressed !disabled", builder.colors.selectfg),
-            ("selected !disabled", builder.colors.selectfg),
-            ("hover !disabled", builder.colors.selectfg),
+            ("disabled", on_disabled),
+            ("pressed !disabled", on_pressed),
+            ("selected !disabled", on_pressed),
+            ("hover !disabled", on_active),
         ],
         background=[
             ("pressed !disabled", pressed),
             ("selected !disabled", pressed),
-            ("hover !disabled", pressed),
+            ("hover !disabled", active),
         ],
         bordercolor=[
-            ("disabled", disabled_fg),
+            ("disabled", on_disabled),
             ("pressed !disabled", pressed),
             ("selected !disabled", pressed),
-            ("hover !disabled", pressed),
+            ("hover !disabled", active),
         ],
         darkcolor=[
             ("pressed !disabled", pressed),
             ("selected !disabled", pressed),
-            ("hover !disabled", pressed),
+            ("hover !disabled", active),
         ],
         lightcolor=[
             ("pressed !disabled", pressed),
             ("selected !disabled", pressed),
-            ("hover !disabled", pressed),
+            ("hover !disabled", active),
         ],
         focuscolor=[
-            ("disabled", disabled_fg),
-            ("pressed !disabled", builder.colors.selectfg),
-            ("selected !disabled", builder.colors.selectfg),
-            ("hover !disabled", builder.colors.selectfg),
+            ("disabled", on_disabled),
+            ("pressed !disabled", on_pressed),
+            ("selected !disabled", on_pressed),
+            ("hover !disabled", on_active),
         ]
     )
     builder.configure(chevron_style, font="-size 14")

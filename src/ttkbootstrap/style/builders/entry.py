@@ -18,29 +18,27 @@ def build_entry_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     """
     ttk_class = "TEntry"
 
-    # general default colors
+    on_disabled = builder.disabled("text", builder.colors.inputbg)
     if builder.is_light_theme:
-        disabled_fg = builder.colors.border
-        border_color = builder.colors.border
+        border = builder.colors.border
         readonly = builder.colors.light
     else:
-        disabled_fg = builder.colors.selectbg
-        border_color = builder.colors.selectbg
-        readonly = border_color
+        border = builder.colors.selectbg
+        readonly = border
 
     if any([colorname == DEFAULT, not colorname]):
         # default style
         ttk_style = ttk_class
-        focus_color = builder.colors.primary
+        focus_ring = builder.colors.primary
     else:
         # colored style
         ttk_style = f"{colorname}.{ttk_class}"
-        focus_color = builder.colors.get(colorname)
-        border_color = focus_color
+        focus_ring = builder.colors.get(colorname)
+        border = focus_ring
 
     builder.configure(
         ttk_style,
-        bordercolor=border_color,
+        bordercolor=border,
         darkcolor=builder.colors.inputbg,
         lightcolor=builder.colors.inputbg,
         fieldbackground=builder.colors.inputbg,
@@ -50,21 +48,21 @@ def build_entry_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     )
     builder.style.map(
         ttk_style,
-        foreground=[("disabled", disabled_fg)],
+        foreground=[("disabled", on_disabled)],
         fieldbackground=[("readonly", readonly)],
         bordercolor=[
             ("invalid", builder.colors.danger),
-            ("focus !disabled", focus_color),
-            ("hover !disabled", focus_color),
+            ("focus !disabled", focus_ring),
+            ("hover !disabled", focus_ring),
         ],
         lightcolor=[
             ("focus invalid", builder.colors.danger),
-            ("focus !disabled", focus_color),
+            ("focus !disabled", focus_ring),
             ("readonly", readonly),
         ],
         darkcolor=[
             ("focus invalid", builder.colors.danger),
-            ("focus !disabled", focus_color),
+            ("focus !disabled", focus_ring),
             ("readonly", readonly),
         ],
     )

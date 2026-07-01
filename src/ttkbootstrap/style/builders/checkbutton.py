@@ -21,31 +21,24 @@ def build_checkbutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     """
     sn = StyleName("TCheckbutton", colorname)
     fg = builder.colors.fg
-    disabled = Colors.make_transparent(0.3, fg, builder.colors.bg)
+
+    disabled = builder.disabled("text")
     fg_muted = Colors.make_transparent(0.4, fg, builder.colors.bg)
 
-    # Resolve the "on" accent; LIGHT/DARK on their own background need a
-    # contrasting indicator so the knockout interior stays readable
-    # (visual-check item: verify LIGHT-on-light reads on the human spot-check).
-    if sn.colorname == LIGHT and builder.is_light_theme:
-        accent = builder.colors.dark
-    elif sn.colorname == DARK and not builder.is_light_theme:
-        accent = builder.colors.light
-    else:
-        accent = builder.colors.get(sn.colorname)
+    accent = builder.colors.get(colorname or 'primary')
+    on_accent = builder.on_color(accent)
 
-    # Foreground map FIRST -- color-less icon specs resolve against it.
     builder.configure(sn.ttk_style, foreground=fg)
     state_map(builder.style, sn.ttk_style, foreground={"disabled": disabled})
 
     # Create style assets
     a = builder.assets
-    checked = a.recolor("checkbox_checked", white=builder.colors.bg, black=accent)
-    unchecked = a.recolor("checkbox_unchecked", white=builder.colors.bg, black=fg_muted)
-    indeterminate = a.recolor("checkbox_indeterminate", white=builder.colors.bg, black=accent)
-    disabled_checked = a.recolor("checkbox_checked", white=builder.colors.bg, black=disabled)
-    disabled_unchecked = a.recolor("checkbox_unchecked", white=builder.colors.bg, black=disabled)
-    disabled_indeterminate = a.recolor("checkbox_indeterminate", white=builder.colors.bg, black=disabled)
+    checked = a.recolor("checkbox_checked", white=on_accent, black=accent)
+    unchecked = a.recolor("checkbox_unchecked", white=on_accent, black=fg_muted)
+    indeterminate = a.recolor("checkbox_indeterminate", white=on_accent, black=accent)
+    disabled_checked = a.recolor("checkbox_checked", white=on_accent, black=disabled)
+    disabled_unchecked = a.recolor("checkbox_unchecked", white=on_accent, black=disabled)
+    disabled_indeterminate = a.recolor("checkbox_indeterminate", white=on_accent, black=disabled)
 
     # Layout elements
     image_element(builder.style, f"{sn.ttk_style}.indicator", default=checked.image,

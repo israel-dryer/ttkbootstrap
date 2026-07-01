@@ -1,8 +1,8 @@
 # ttkbootstrap 2.0 — Scaling and asset-geometry normalization
 
-**Status:** implemented and visually approved on 2026-06-29
+**Status:** merged as #1083 after implementation and visual approval
 **Branch:** `refactor/2.0-scaling`, from `2.0` at `fa1cede8`
-**Draft PR:** #1083 against `2.0`
+**Merged PR:** #1083 against `2.0` (`c1f9ed73`)
 **Date:** 2026-06-29
 
 ## Decision summary

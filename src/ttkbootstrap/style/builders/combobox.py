@@ -22,29 +22,28 @@ def build_combobox_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     """
     ttk_class = "TCombobox"
 
+    on_disabled = builder.disabled("text", builder.colors.inputbg)
     if builder.is_light_theme:
-        disabled_fg = builder.colors.border
-        border_color = builder.colors.border
+        border = builder.colors.border
         readonly = builder.colors.light
     else:
-        disabled_fg = builder.colors.selectbg
-        border_color = builder.colors.selectbg
-        readonly = border_color
+        border = builder.colors.selectbg
+        readonly = border
 
     if any([colorname == DEFAULT, colorname == ""]):
         ttk_style = ttk_class
         element = f"{ttk_style.replace('TC', 'C')}"
-        focus_color = builder.colors.primary
+        focus_ring = builder.colors.primary
     else:
         ttk_style = f"{colorname}.{ttk_class}"
         element = f"{ttk_style.replace('TC', 'C')}"
-        focus_color = builder.colors.get(colorname)
+        focus_ring = builder.colors.get(colorname)
 
     # Create custom arrow assets since the default ones don't work with Tcl/Tk bundled in python 3.13
     arrow_images = simple_arrow_assets(builder,
         builder.colors.inputfg,
-        disabled_fg,
-        focus_color,
+        on_disabled,
+        focus_ring,
     )
     down_arrow_image = arrow_images[0][1]
     down_arrow_disabled_image = arrow_images[1][1]
@@ -62,11 +61,11 @@ def build_combobox_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     builder.style.element_create(f"{element}.textarea", "from", TTK_CLAM)
 
     if all([colorname, colorname != DEFAULT]):
-        border_color = focus_color
+        border = focus_ring
 
     builder.configure(
         ttk_style,
-        bordercolor=border_color,
+        bordercolor=border,
         darkcolor=builder.colors.inputbg,
         lightcolor=builder.colors.inputbg,
         foreground=builder.colors.inputfg,
@@ -80,22 +79,22 @@ def build_combobox_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         ttk_style,
         background=[("readonly", readonly)],
         fieldbackground=[("readonly", readonly)],
-        foreground=[("disabled", disabled_fg)],
+        foreground=[("disabled", on_disabled)],
         bordercolor=[
             ("invalid", builder.colors.danger),
-            ("focus !disabled", focus_color),
-            ("hover !disabled", focus_color),
+            ("focus !disabled", focus_ring),
+            ("hover !disabled", focus_ring),
         ],
         lightcolor=[
             ("focus invalid", builder.colors.danger),
-            ("focus !disabled", focus_color),
-            ("pressed !disabled", focus_color),
+            ("focus !disabled", focus_ring),
+            ("pressed !disabled", focus_ring),
             ("readonly", readonly),
         ],
         darkcolor=[
             ("focus invalid", builder.colors.danger),
-            ("focus !disabled", focus_color),
-            ("pressed !disabled", focus_color),
+            ("focus !disabled", focus_ring),
+            ("pressed !disabled", focus_ring),
             ("readonly", readonly),
         ],
     )
@@ -131,14 +130,14 @@ def update_combobox_popdown_style(builder: StyleBuilderTTK, widget):
             The combobox element to be updated.
     """
     if builder.is_light_theme:
-        border_color = builder.colors.border
+        border = builder.colors.border
     else:
-        border_color = builder.colors.selectbg
+        border = builder.colors.selectbg
 
     tk_settings = []
     tk_settings.extend(["-borderwidth", 2])
     tk_settings.extend(["-highlightthickness", 1])
-    tk_settings.extend(["-highlightcolor", border_color])
+    tk_settings.extend(["-highlightcolor", border])
     tk_settings.extend(["-background", builder.colors.inputbg])
     tk_settings.extend(["-foreground", builder.colors.inputfg])
     tk_settings.extend(["-selectbackground", builder.colors.selectbg])

@@ -35,7 +35,7 @@ def build_round_toggle_style(builder: StyleBuilderTTK, colorname=DEFAULT):
             The color label used to style the widget.
     """
     ttk_class = "Round.Toggle"
-    disabled_fg = Colors.make_transparent(0.30, builder.colors.fg, builder.colors.bg)
+    disabled_fg = builder.disabled("text")
     fg_muted = Colors.make_transparent(0.40, builder.colors.fg, builder.colors.bg)
 
     if any([colorname == DEFAULT, colorname == ""]):
@@ -43,6 +43,7 @@ def build_round_toggle_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         colorname = PRIMARY
     else:
         ttk_style = f"{colorname}.{ttk_class}"
+
 
     # Resolve the "on" accent; LIGHT/DARK on their own background need a
     # contrasting indicator (visual-check item: verify toggle aspect ratio
@@ -115,7 +116,7 @@ def build_square_toggle_style(builder: StyleBuilderTTK, colorname=DEFAULT):
             The color label used to style the widget.
     """
     ttk_class = "Square.Toggle"
-    disabled_fg = Colors.make_transparent(0.30, builder.colors.fg, builder.colors.bg)
+    disabled_fg = builder.disabled("text")
     fg_muted = Colors.make_transparent(0.40, builder.colors.fg, builder.colors.bg)
 
     if any([colorname == DEFAULT, colorname == ""]):

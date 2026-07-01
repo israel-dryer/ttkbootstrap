@@ -30,8 +30,8 @@ def build_notebook_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         select_fg = builder.colors.fg
         ttk_style = ttk_class
     else:
-        select_fg = builder.colors.get_foreground(colorname)
         background = builder.colors.get(colorname)
+        select_fg = builder.on_color(background)
         ttk_style = f"{colorname}.{ttk_class}"
 
     ttk_style_tab = f"{ttk_style}.Tab"

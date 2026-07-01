@@ -4,7 +4,6 @@ import tkinter as tk
 
 from ttkbootstrap.constants import *
 from ttkbootstrap.style import StyleBuilderTTK
-from ttkbootstrap.style.theme import Colors
 from ttkbootstrap.style.builders.registry import register_builder
 
 
@@ -24,70 +23,50 @@ def build_toolbutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
 
     if any([colorname == DEFAULT, colorname == ""]):
         ttk_style = ttk_class
-        toggle_on = builder.colors.primary
+        selected = builder.colors.primary
     else:
         ttk_style = f"{colorname}.{ttk_class}"
-        toggle_on = builder.colors.get(colorname)
-
-    foreground = builder.colors.get_foreground(colorname)
+        selected = builder.colors.get(colorname)
 
     if builder.is_light_theme:
-        toggle_off = builder.colors.border
+        unselected = builder.colors.border
     else:
-        toggle_off = builder.colors.selectbg
+        unselected = builder.colors.selectbg
 
-    disabled_bg = Colors.make_transparent(0.10, builder.colors.fg, builder.colors.bg)
-    disabled_fg = Colors.make_transparent(0.30, builder.colors.fg, builder.colors.bg)
+    disabled = builder.disabled()
+
+    on_selected = builder.on_color(selected)
+    on_unselected = builder.on_color(unselected)
+    on_disabled = builder.disabled("text", disabled)
 
     builder.configure(
         ttk_style,
-        foreground=builder.colors.selectfg,
-        background=toggle_off,
-        bordercolor=toggle_off,
-        darkcolor=toggle_off,
-        lightcolor=toggle_off,
-        relief=tk.RAISED,
+        foreground=on_unselected,
+        background=unselected,
+        relief=tk.FLAT,
         focusthickness=builder.scale_size(1),
-        focuscolor=foreground,
+        focuscolor=on_unselected,
         padding=builder.scale_size((10, 5)),
         anchor=tk.CENTER,
     )
     builder.style.map(
         ttk_style,
         foreground=[
-            ("disabled", disabled_fg),
-            ("hover", foreground),
-            ("selected", foreground),
+            ("disabled", on_disabled),
+            ("active", on_selected),
+            ("selected", on_selected),
         ],
         focuscolor=[
-            ("disabled", disabled_fg),
-            ("hover", foreground),
-            ("selected", foreground),
+            ("disabled", on_disabled),
+            ("active", on_selected),
+            ("selected", on_selected),
         ],
         background=[
-            ("disabled", disabled_bg),
-            ("pressed !disabled", toggle_on),
-            ("selected !disabled", toggle_on),
-            ("hover !disabled", toggle_on),
-        ],
-        bordercolor=[
-            ("disabled", disabled_bg),
-            ("pressed !disabled", toggle_on),
-            ("selected !disabled", toggle_on),
-            ("hover !disabled", toggle_on),
-        ],
-        darkcolor=[
-            ("disabled", disabled_bg),
-            ("pressed !disabled", toggle_on),
-            ("selected !disabled", toggle_on),
-            ("hover !disabled", toggle_on),
-        ],
-        lightcolor=[
-            ("disabled", disabled_bg),
-            ("pressed !disabled", toggle_on),
-            ("selected !disabled", toggle_on),
-            ("hover !disabled", toggle_on),
-        ],
+            ("disabled", disabled),
+            ("pressed !disabled", selected),
+            ("selected !disabled", selected),
+            ("active !disabled", selected),
+        ]
     )
 
     # register ttk style
@@ -108,7 +87,6 @@ def build_outline_toolbutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     """
     ttk_class = "Outline.Toolbutton"
 
-    disabled_fg = Colors.make_transparent(0.30, builder.colors.fg, builder.colors.bg)
 
     if any([colorname == DEFAULT, colorname == ""]):
         ttk_style = ttk_class
@@ -116,59 +94,58 @@ def build_outline_toolbutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     else:
         ttk_style = f"{colorname}.{ttk_class}"
 
-    foreground = builder.colors.get(colorname)
-    background = builder.colors.get_foreground(colorname)
-    foreground_pressed = background
-    border_color = foreground
-    pressed = foreground
-    hover = foreground
+    accent = builder.colors.get(colorname)
+    selected = active = pressed = accent
+    unselected = builder.colors.bg
+
+    on_selected = on_active = on_pressed = builder.on_color(selected)
+    on_unselected = builder.on_color(unselected)
+    on_disabled = builder.disabled("text")
+
 
     builder.configure(
         ttk_style,
-        foreground=foreground,
+        foreground=accent,
         background=builder.colors.bg,
-        bordercolor=border_color,
+        bordercolor=accent,
         darkcolor=builder.colors.bg,
         lightcolor=builder.colors.bg,
         relief=tk.RAISED,
         focusthickness=0,
-        focuscolor=foreground,
+        focuscolor=on_unselected,
         padding=builder.scale_size((10, 5)),
         anchor=tk.CENTER,
-        arrowcolor=foreground,
-        arrowpadding=builder.scale_size((0, 0, 15, 0)),
-        arrowsize=builder.scale_size(3),
     )
     builder.style.map(
         ttk_style,
         foreground=[
-            ("disabled", disabled_fg),
-            ("pressed !disabled", foreground_pressed),
-            ("selected !disabled", foreground_pressed),
-            ("hover !disabled", foreground_pressed),
+            ("disabled", on_disabled),
+            ("pressed !disabled", on_pressed),
+            ("selected !disabled", on_selected),
+            ("active !disabled", on_active),
         ],
         background=[
             ("pressed !disabled", pressed),
             ("selected !disabled", pressed),
-            ("hover !disabled", hover),
+            ("active !disabled", active),
         ],
         bordercolor=[
-            ("disabled", disabled_fg),
+            ("disabled", on_disabled),
             ("pressed !disabled", pressed),
             ("selected !disabled", pressed),
-            ("hover !disabled", hover),
+            ("active !disabled", active),
         ],
         darkcolor=[
             ("disabled", builder.colors.bg),
             ("pressed !disabled", pressed),
             ("selected !disabled", pressed),
-            ("hover !disabled", hover),
+            ("active !disabled", active),
         ],
         lightcolor=[
             ("disabled", builder.colors.bg),
             ("pressed !disabled", pressed),
             ("selected !disabled", pressed),
-            ("hover !disabled", hover),
+            ("active !disabled", active),
         ],
     )
     # register ttkstyle
