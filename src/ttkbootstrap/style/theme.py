@@ -6,11 +6,166 @@ the `style` package; the semantic-anchor `Theme` model (Workstream E) will grow
 here. Split out of the monolithic `style.py` in 2.0.
 """
 import colorsys
+from collections.abc import Mapping
+from functools import lru_cache
+from types import MappingProxyType
 
 from PIL import ImageColor
 
 from ttkbootstrap import colorutils
 from ttkbootstrap.constants import *
+
+
+_TINT_WEIGHTS = {
+    50: 0.90,
+    100: 0.80,
+    150: 0.70,
+    200: 0.60,
+    250: 0.50,
+    300: 0.40,
+    350: 0.30,
+    400: 0.20,
+    450: 0.10,
+}
+_SHADE_WEIGHTS = {
+    550: 0.10,
+    600: 0.20,
+    650: 0.30,
+    700: 0.40,
+    750: 0.50,
+    800: 0.60,
+    850: 0.70,
+    900: 0.80,
+    950: 0.90,
+}
+
+
+def _normalize_color(color: str) -> str:
+    """Return a Pillow-supported color as canonical lowercase hex."""
+    r, g, b = ImageColor.getrgb(color)
+    return f'#{r:02x}{g:02x}{b:02x}'
+
+
+def _mix_colors(color1: str, color2: str, weight: float) -> str:
+    """Mix two colors; weight is the fraction of color1."""
+    r1, g1, b1 = ImageColor.getrgb(color1)
+    r2, g2, b2 = ImageColor.getrgb(color2)
+    channels = (
+        round(r1 * weight + r2 * (1 - weight)),
+        round(g1 * weight + g2 * (1 - weight)),
+        round(b1 * weight + b2 * (1 - weight)),
+    )
+    return f'#{channels[0]:02x}{channels[1]:02x}{channels[2]:02x}'
+
+
+@lru_cache(maxsize=256)
+def _cached_color_ramp(anchor: str) -> Mapping[int, str]:
+    """Build one immutable Bootstrap-compatible 50–950 color ramp."""
+    ramp = {
+        stop: _mix_colors(anchor, '#ffffff', 1 - target)
+        for stop, target in _TINT_WEIGHTS.items()
+    }
+    ramp[500] = anchor
+    ramp.update(
+        {
+            stop: _mix_colors(anchor, '#000000', 1 - target)
+            for stop, target in _SHADE_WEIGHTS.items()
+        }
+    )
+    return MappingProxyType(ramp)
+
+
+def _color_ramp(color: str) -> Mapping[int, str]:
+    """Return the cached private ramp for color."""
+    return _cached_color_ramp(_normalize_color(color))
+
+
+def _relative_luminance(color: str) -> float:
+    """Return WCAG relative luminance for a Pillow-supported color."""
+    channels = [value / 255 for value in ImageColor.getrgb(color)]
+
+    def linearize(value: float) -> float:
+        if value <= 0.03928:
+            return value / 12.92
+        return ((value + 0.055) / 1.055) ** 2.4
+
+    r, g, b = (linearize(value) for value in channels)
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+
+def _contrast_ratio(color1: str, color2: str) -> float:
+    """Return the WCAG contrast ratio between two colors."""
+    lum1 = _relative_luminance(color1)
+    lum2 = _relative_luminance(color2)
+    lighter, darker = max(lum1, lum2), min(lum1, lum2)
+    return (lighter + 0.05) / (darker + 0.05)
+
+
+def _color_to_hsl(color: str) -> tuple[int, int, int]:
+    """Return hue, saturation, and lightness on 360/100/100 scales."""
+    r, g, b = (value / 255 for value in ImageColor.getrgb(color))
+    hue, lightness, saturation = colorsys.rgb_to_hls(r, g, b)
+    return int(hue * 360), int(saturation * 100), int(lightness * 100)
+
+
+# On-color (filled-surface foreground) tuning. White is the conventional and
+# perceptually better label on vivid accents, so it is preferred; black is used
+# only where it is genuinely more readable. Two floors + a saturation gate,
+# because WCAG relative luminance is not perceptual: it under-weights red/blue,
+# so a raw max-contrast rule wrongly picks black on saturated blues/greens/reds
+# (e.g. sandstone info #29abe0: black scores 8.0 vs white 2.6, yet white reads
+# far better). Saturation separates a vivid accent from a light gray; the warm
+# hue band keeps perceptually-light yellow/orange/lime on black.
+_ON_COLOR_MIN_CONTRAST = 3.0   # white always wins at or above this ratio
+_ON_COLOR_WHITE_FLOOR = 2.3    # marginal white still preferred for vivid accents
+_ON_COLOR_SAT_FLOOR = 45       # below this a fill is near-neutral: use real contrast
+
+
+def _accent_on_color(surface: str) -> str:
+    """Return a readable filled-surface foreground, white-preferred.
+
+    White wins whenever it clears the bold-text floor. When it is marginal,
+    white is still chosen for vivid, non-warm accents (saturated blues, greens,
+    and reds), where WCAG contrast understates its readability; otherwise black
+    is used. Mode-independent — the choice depends only on the fill.
+    """
+    if _contrast_ratio('#ffffff', surface) >= _ON_COLOR_MIN_CONTRAST:
+        return '#ffffff'
+    hue, saturation, _ = _color_to_hsl(surface)
+    warm = 20 <= hue <= 100  # orange/yellow/lime read light -> keep black
+    if (
+        saturation >= _ON_COLOR_SAT_FLOOR
+        and not warm
+        and _contrast_ratio('#ffffff', surface) >= _ON_COLOR_WHITE_FLOOR
+    ):
+        return '#ffffff'
+    return '#000000'
+
+
+def _darken_color(color: str, percent: float) -> str:
+    """Darken a color by reducing HLS lightness."""
+    r, g, b = (value / 255 for value in ImageColor.getrgb(color))
+    hue, lightness, saturation = colorsys.rgb_to_hls(r, g, b)
+    lightness = max(0.0, lightness * (1 - percent))
+    r, g, b = colorsys.hls_to_rgb(hue, lightness, saturation)
+    return f'#{int(r * 255):02x}{int(g * 255):02x}{int(b * 255):02x}'
+
+
+def _lighten_color(color: str, percent: float) -> str:
+    """Lighten a color by increasing HLS lightness."""
+    r, g, b = (value / 255 for value in ImageColor.getrgb(color))
+    hue, lightness, saturation = colorsys.rgb_to_hls(r, g, b)
+    lightness = min(1.0, lightness + (1 - lightness) * percent)
+    r, g, b = colorsys.hls_to_rgb(hue, lightness, saturation)
+    return f'#{int(r * 255):02x}{int(g * 255):02x}{int(b * 255):02x}'
+
+
+def _state_color(color: str, state: str) -> str:
+    """Port bootstack's luminance-directed active/pressed derivation."""
+    delta = {'active': 0.08, 'pressed': 0.12}[state]
+    if _relative_luminance(color) < 0.5:
+        return _lighten_color(color, delta)
+    return _darken_color(color, delta)
 
 
 class Colors:

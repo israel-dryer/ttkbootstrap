@@ -10,7 +10,13 @@ from ttkbootstrap.style.builders.registry import (
     get_builder,
 )
 from ttkbootstrap.style.builders_tk import StyleBuilderTK
-from ttkbootstrap.style.theme import Colors, ThemeDefinition
+from ttkbootstrap.style.theme import (
+    Colors,
+    ThemeDefinition,
+    _accent_on_color,
+    _mix_colors,
+    _state_color,
+)
 
 
 class StyleBuilderTTK:
@@ -61,6 +67,50 @@ class StyleBuilderTTK:
     def scale_size(self, size):
         """Convert logical UI units using the root-bound scaling service."""
         return self.style.scaling.logical(size)
+
+    def active(self, color: str) -> str:
+        """Return bootstack's luminance-directed active-state color."""
+        return _state_color(color, "active")
+
+    def pressed(self, color: str) -> str:
+        """Return bootstack's stronger luminance-directed pressed color."""
+        return _state_color(color, "pressed")
+
+    def border(self, color: str) -> str:
+        """Derive a local border by mixing a surface toward its on-color."""
+        return _mix_colors(color, self.on_color(color), 0.84)
+
+    def disabled(
+        self, role: str = "background", surface: str | None = None
+    ) -> str:
+        """Return bootstack's mode-aware disabled text or surface color."""
+        surface = surface or self.colors.bg
+        if role == 'text':
+            if self.is_light_theme:
+                neutral, weight = '#6c757d', 0.35
+            else:
+                neutral, weight = '#adb5bd', 0.25
+        elif role == 'background':
+            if self.is_light_theme:
+                neutral, weight = '#dee2e6', 0.15
+            else:
+                neutral, weight = '#495057', 0.20
+        else:
+            raise ValueError(
+                f'Invalid role: {role}. Expected text or background.'
+            )
+        return _mix_colors(neutral, surface, weight)
+
+    def on_color(self, color: str) -> str:
+        """Return a readable foreground for a filled surface.
+
+        White-preferred, saturation-aware: white wins whenever it clears the
+        bold-text floor, and stays chosen for vivid non-warm accents where
+        WCAG contrast understates it; black is used for pale, near-neutral,
+        and warm (yellow/orange) fills. Identical in light and dark themes.
+        See `_accent_on_color`.
+        """
+        return _accent_on_color(color)
 
     def build_style(
         self,

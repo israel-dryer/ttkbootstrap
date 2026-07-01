@@ -139,7 +139,7 @@ def build_inverse_label_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     else:
         ttk_style = f"{colorname}.{ttk_class}"
         background = builder.colors.get(colorname)
-        foreground = builder.colors.get_foreground(colorname)
+        foreground = builder.on_color(background)
 
     builder.configure(
         ttk_style, foreground=foreground, background=background

@@ -23,13 +23,12 @@ def build_spinbox_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     ttk_class = "TSpinbox"
 
     if builder.is_light_theme:
-        disabled_fg = builder.colors.border
         border_color = builder.colors.border
         readonly = builder.colors.light
     else:
-        disabled_fg = builder.colors.selectbg
         border_color = builder.colors.selectbg
         readonly = border_color
+    disabled_fg = builder.disabled("text", builder.colors.inputbg)
 
     if any([colorname == DEFAULT, colorname == ""]):
         ttk_style = ttk_class

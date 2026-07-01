@@ -5,7 +5,6 @@ import tkinter as tk
 from ttkbootstrap.constants import *
 from ttkbootstrap.style import StyleBuilderTTK
 from ttkbootstrap.style.layout import El, image_element, layout
-from ttkbootstrap.style.theme import Colors
 from ttkbootstrap.style.builders.registry import register_builder
 from ttkbootstrap.style.builders.utils import simple_arrow_assets
 
@@ -26,16 +25,16 @@ def build_menubutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     if any([colorname == DEFAULT, colorname == ""]):
         ttk_style = ttk_class
         background = builder.colors.primary
-        foreground = builder.colors.get_foreground(PRIMARY)
+        foreground = builder.on_color(background)
     else:
         ttk_style = f"{colorname}.{ttk_class}"
         background = builder.colors.get(colorname)
-        foreground = builder.colors.get_foreground(colorname)
+        foreground = builder.on_color(background)
 
-    disabled_bg = Colors.make_transparent(0.10, builder.colors.fg, builder.colors.bg)
-    disabled_fg = Colors.make_transparent(0.30, builder.colors.fg, builder.colors.bg)
-    pressed = Colors.make_transparent(0.80, background, builder.colors.bg)
-    hover = Colors.make_transparent(0.90, background, builder.colors.bg)
+    disabled_bg = builder.disabled()
+    disabled_fg = builder.disabled("text", disabled_bg)
+    pressed = builder.pressed(background)
+    hover = builder.active(background)
 
     builder.configure(
         ttk_style,
@@ -46,7 +45,7 @@ def build_menubutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         lightcolor=background,
         relief=tk.RAISED,
         focusthickness=0,
-        focuscolor=builder.colors.selectfg,
+        focuscolor=foreground,
         padding=builder.scale_size((10, 5)),
     )
     builder.style.map(
@@ -120,7 +119,7 @@ def build_outline_menubutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     """
     ttk_class = "Outline.TMenubutton"
 
-    disabled_fg = Colors.make_transparent(0.30, builder.colors.fg, builder.colors.bg)
+    disabled_fg = builder.disabled("text")
 
     if any([colorname == DEFAULT, colorname == ""]):
         ttk_style = ttk_class
@@ -129,7 +128,7 @@ def build_outline_menubutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         ttk_style = f"{colorname}.{ttk_class}"
 
     foreground = builder.colors.get(colorname)
-    background = builder.colors.get_foreground(colorname)
+    background = builder.on_color(foreground)
     foreground_pressed = background
     border_color = foreground
     pressed = foreground
