@@ -3,18 +3,19 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-06-29 (scaling and asset-geometry normalization approved,
-implemented, and visually approved on `refactor/2.0-scaling`; open as draft PR
-#1083 against `2.0`.)_
+_Last updated: 2026-07-01 (focused Workstream E private ramps and builder
+color helpers implemented on `refactor/2.0-color-helpers`; `on_color` retuned to
+a white-preferred, saturation-aware policy after visual feedback; automated
+gates pass. Theme appearance approved; a quick re-confirm of the retuned vivid
+accents remains before merge.)_
 
 ## Where we are
 
 Integration branch: **`2.0`** (cut all 2.0 PRs against it, not `master`).
-Expected suite on `2.0`: **147 passed**, headless, order-independent. Expected
-after the scaling branch: **177 passed**. On this machine Python 3.12 reports
-**176 passed / 1 environment failure** because its Tcl install cannot read
-`tk8.6/msgs/nl.msg`; excluding the six-test localization module gives **171
-passed**.
+Expected suite on `2.0`: **177 passed**, headless, order-independent. Expected
+after the color-helper branch: **189 passed**. The latest Python 3.12 run is
+**188 passed / 1 environment failure** because this Tcl install cannot read
+`tk8.6/msgs/nl.msg`; excluding localization gives **183 passed**.
 
 The engine keystone (Workstream A) is **complete and merged**: PR 1 (repaint,
 #1073) + PR 2 (content-addressed image cache, #1074). **PR 3 — the mixin API
@@ -35,19 +36,86 @@ implementation summary immediately below.
 **PR #1082 is MERGED.** `2.0` now includes the 161-line coordinator, frozen
 registry, and 22 widget-family modules. Merge commit: `fa1cede8`.
 
-**Current actionable → review and merge draft PR #1083.** Branch:
-`refactor/2.0-scaling`, cut from `2.0` at `fa1cede8`; implementation commit
-`b491a0be`. Approved design: `development/2_0_scaling_design.md`. Automated and
-human gates pass.
+**PR #1083 is MERGED.** Scaling and asset-geometry normalization landed on
+`2.0` as merge commit `c1f9ed73`; its automated and four-scale human gates pass.
 
-**Next after scaling:** design a focused Workstream E slice: cheap private ramps
-plus only the builder helpers ttkbootstrap needs (`active`, `pressed`,
-`border`, `disabled`, and
-`on_color`). Keep those helpers on `StyleBuilderTTK`; defer a public palette API
-unless a simple concrete need emerges. Canonical bootstyle grammar (D) follows
-later with its own design pass.
+**Current actionable → run the color-helper human visual gate.** Branch:
+`refactor/2.0-color-helpers`, cut from `2.0` at `c1f9ed73`. Approved design:
+`development/2_0_color_helpers_design.md`. Run
+`python examples/color_states_preview.py`, exercise the five color columns,
+and switch through flatly/minty/morph/darkly/solar/vapor. Automated gates pass.
+Canonical bootstyle grammar (D) remains later and needs its own design pass.
 
-## Scaling and asset geometry — DRAFT PR #1083, VISUALLY APPROVED
+## Private color ramps and builder helpers — IMPLEMENTED, VISUAL GATE PENDING
+
+- Private immutable 50–950 ramps use bootstack's Bootstrap-compatible weights
+  and a bounded 256-entry cache; no public palette API was added.
+- `StyleBuilderTTK` owns `active`, `pressed`, `border`, `disabled`, and
+  `on_color`, porting bootstack's luminance/mode-aware derivation policy.
+- Approved ttk recipes now use those helpers according to the color actually
+  rendered. Clam `bordercolor`/`darkcolor`/`lightcolor` regions that paint the
+  control face continue to track the face color; theme-authored structural
+  field borders and readonly fills remain authored. `border()` is available
+  for a genuinely distinct derived boundary, not selected by option name.
+- Input controls derive disabled foregrounds against `inputbg`; filled controls
+  derive them against their disabled face; the date button has a separately
+  colored disabled icon. Ten remaining direct HSV/alpha sites are specialized
+  trough/stripe/unchecked-indicator effects guarded by an exact AST allowlist.
+  Legacy `StyleBuilderTK` remains out of scope.
+- Verification after the corrected audit: focused **12 passed**; full Python
+  3.12 suite **188 passed / 1 known Tcl `nl.msg` environment failure**;
+  excluding localization **183 passed**; warning-free import; Python 3.10
+  parsed 91 files; annotation evaluation clean.
+- `examples/color_states_preview.py` includes disabled/readonly input controls
+  and a disabled date icon, and constructs/switches all six themes
+  successfully.
+
+### `on_color` retuned — white-preferred, saturation-aware (2026-07-01)
+
+The design's original bootstack mode-aware `on_color` was replaced (after live
+visual feedback that black-on-saturated-accent — e.g. sandstone `info`
+#29abe0 — reads poorly) with `_accent_on_color(surface)` in `style/theme.py`:
+
+- White wins whenever it clears the bold-text floor
+  (`_ON_COLOR_MIN_CONTRAST = 3.0`); else, for a **vivid non-warm** accent
+  (saturation `>= 45`, hue outside the warm 20–100° band, white
+  `>= _ON_COLOR_WHITE_FLOOR = 2.3`) white is still chosen, because WCAG
+  contrast understates white on saturated colors; else black. Mode-independent.
+- Rationale: WCAG relative luminance is not perceptual (under-weights red/blue),
+  so raw max-contrast picks black on vivid accents. Saturation separates a vivid
+  accent (white) from a light gray (black); the warm band keeps yellow/orange/
+  lime (`warning`) on black. Validated across the built-ins: exactly 14 vivid
+  cool/red roles flip to white (every `success`, saturated `info`/`primary`,
+  coral `danger`); no `warning`, pale, or gray changes. `secondary` grays stay
+  black by design.
+- Accessibility tradeoff: vivid accents can ship white at ~2.3–3.0:1 (below AA
+  4.5). Deliberate appearance choice; strict-AA fix is palette-level (darken the
+  accents), deferred to Workstream E. Three constants are the tuning knobs.
+- Interim `on_color` iterations (raw max-contrast, plain white-preferred@3.0)
+  were superseded; the design doc's `on_color` section is current. Test
+  `test_on_color_is_safe_and_independent_of_legacy_toggle` now asserts the 2.3
+  white floor, not 3.0. Verified by direct computation (pytest not installed in
+  the dev env — run `python -m pytest -q` before merge).
+
+### Fast-follow scoped (next PR, after this branch merges)
+
+A separate PR (its own design pass, per the hard rule) to retire the remaining
+ad-hoc HSV/alpha color math onto bootstack-style utilities:
+
+- **`elevate(surface, level)`** — mode-aware surface raise (built on the private
+  `_mix`/`_relative_luminance` primitives), replacing the 5 inconsistent
+  trough/track `update_hsv` sites (`label.py`, `progressbar.py` ×2, `scale.py`,
+  `floodgauge.py` — four darken 20%, floodgauge lightens 80%) and folding the 4
+  `make_transparent(0.4, …)` unchecked-indicator muting sites onto `_mix`
+  (visually identical). One stripe site (`progressbar.py:40`) may want a `tint`.
+- **`input_bg(surface=None)`** — mode-aware field background policy built on
+  `elevate`: `= bg` in light (border carries the affordance), `= elevate(bg)` in
+  dark (fill carries it; border ≈ bg). Encodes "fill vs outline are substitutes,
+  use one per mode." Open decision for that PR's design pass: derive `inputbg`
+  (drop the hand-authored, inconsistent per-theme dark deltas) vs coexist — the
+  derive path needs the deferred built-in theme-dict conversion (Workstream E).
+
+## Scaling and asset geometry — MERGED #1083, VISUALLY APPROVED
 
 Approved decisions: public size-bearing `Assets`/Icon APIs take logical UI
 units; `IconRenderer.render()` remains a physical-pixel leaf; final

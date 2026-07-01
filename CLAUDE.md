@@ -78,11 +78,21 @@ deleted), the held branch's geometric/`layout` cleanup landed, and the public
 style-registration path added (`register_style` + `layout()` auto-registers — the
 PR-6a finding). Two light↔dark spot-check rounds settled the arrows on solid
 `caret-*-fill` (incl. menubutton + datepicker header), toggle sizing, and
-`calendar3`; suite 92. That completes the Workstream I icon work. **Next:** an
+`calendar3`; suite 92. That completes the Workstream I icon work. **Historical next:** an
 optional small visual-polish PR (value/asset tweaks — see
 `development/2_0_handoff.md` "FOLLOW-UP"), then theme/anchor (E) + bootstyle
 canonical (D), each with a design pass first. Proceed PR by PR per the design doc;
 don't exceed a PR's scope without revisiting it.
+
+Recolorable raster widget assets (#1081), the modular `StyleBuilderTTK`
+registry (#1082), and scaling/asset-geometry normalization (#1083) are now also
+merged into `2.0`; the expected suite is 177 tests. **Current:** the focused
+private color ramps and `StyleBuilderTTK` helpers are implemented on
+`refactor/2.0-color-helpers` per
+`development/2_0_color_helpers_design.md`; the branch suite is 189 tests. Run
+`python examples/color_states_preview.py` and complete its six-theme visual
+gate before merge. Canonical bootstyle grammar (D) follows later with its own
+design pass.
 
 ## Repository layout
 
