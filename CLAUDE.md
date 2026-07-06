@@ -114,9 +114,18 @@ to canonical strings, then turned the tuple `DeprecationWarning` on), D3 #1093
 `tools/generate_bootstyle_reference.py`, with sync tests). `BootType` fixed
 (`round` added; `toggle`/`toolbutton` moved to the new `BootBase`); dead
 `focus`/`input` dropped. Expected suite ~263 (excl. the known `nl.msg`
-localization env flake). **Current:** the remaining 2.0 headliner is the docs
-overhaul (Workstream H) — fold in the bootstyle reference and
-`development/2_0_theme_migration.md`.
+localization env flake). **Workstream H (docs) DESIGN PASS is now COMPLETE** — the
+hard-rule design/scoping gate is done; full design in
+`development/2_0_docs_design.md` (bootstack-modeled 4-destination Diátaxis IA;
+native-vs-shipped widget dichotomy carried by catalog grouping; generated Style
+Reference; both staged sources fold in; flagship = the bootstyle grammar). The
+design pass surfaced two follow-on **code** items (not docs): a **PREREQ** to drop
+the character-based icons (`ttkbootstrap.icons` `Emoji`/`Icon` constants; keep the
+font-glyph engine; rewire Messagebox's 4 icons to Bootstrap-Icon glyphs — a
+documented breaking change that lands before docs screenshots), and a **deferred**
+shipped-widget API-normalization pass (`Window`/dialogs/`Tableview`; docs-first is
+accepted). **Current:** the icon-drop prereq PR (own mini design pass) is next,
+then docs sub-PR #1 (nav/IA skeleton + un-break the 7 broken API `:::` stubs).
 
 ## Repository layout
 

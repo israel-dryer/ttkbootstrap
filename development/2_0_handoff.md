@@ -3,7 +3,78 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-07-06 (**Workstream D (canonical bootstyle grammar)
+_Last updated: 2026-07-06 (**icon-drop PREREQ IMPLEMENTED** — the character-based
+icons are removed on branch `feat/2.0-drop-char-icons` (cut from `2.0`), per the
+mini design pass `development/2_0_icon_drop_design.md`. `src/ttkbootstrap/icons.py`
+deleted (the `Emoji`/`EmojiItem` catalog + base64 `Icon` constants). **Design-pass
+finding the docs-design §2 enumeration missed:** `Icon` carried a **fifth**
+attribute — `Icon.icon`, the ttkbootstrap **brand logo** used as the default
+`Window(iconphoto='')` icon in `window.py` — which is not an alert glyph and can't
+become a Bootstrap glyph; deleting the whole module blind would regress every
+Window to the bare Tk feather. Preserved as a private `_DEFAULT_ICON_DATA`
+constant in `window.py`. The four `Messagebox.show_*` alert icons now render from
+the font glyph engine (`info-circle-fill`/`info`, `exclamation-triangle-fill`/
+`warning`, `x-circle-fill`/`danger`, `question-circle-fill`/`info`; size 30 —
+`question` color=`info` is a settle-on-spot-check pick). `MessageDialog.create_body`
+gained a third icon input form (a pre-rendered Tk image name, tried before the
+existing base64-data → file-path cascade) so user-supplied base64/file icons still
+work. `gallery/media_player.py` inlines the 6 literal emoji chars it used to look
+up via `Emoji`. New `tests/test_icon_drop.py` (7 tests). Suite **269 passed** + the
+known `nl.msg` env flake; warning-free import; media_player compiles. **PR #1094
+open against `2.0`** (branch `feat/2.0-drop-char-icons`; commits: H-design docs +
+icon-drop + a stray `gallery/calculator.py` `flatly`→`bootstrap-dark` theme fix).
+Still needs the **live visual spot-check** of the four dialog glyphs + the
+media-player transport controls (light↔dark) before merge/docs screenshots — the headless suite asserts the
+image is wired, not that it looks right. The frozen `docs/zh/gallery/mediaplayer.md`
+still shows the old `Emoji` import (zh untouched for 2.0; Gallery being dropped) —
+noted for the docs sweep. **NEXT after this merges → docs sub-PR #1.**)_
+
+_Prior 2026-07-06 (**Workstream H (docs) DESIGN PASS COMPLETE** — the
+hard-rule design/scoping gate is done; full design in
+`development/2_0_docs_design.md`; vision captured in memory
+`project-2-0-docs-vision`). Locked with the author over a live vision session.
+Headlines: bootstack-modeled Diátaxis IA collapsed to **4 destinations** (Landing
+marketing hero → User Guide → Widgets catalog → Reference); the **native-vs-shipped
+widget dichotomy** carried by *grouping* in the catalog (catalog = common front
+door; a widget's depth lands in **Style Reference** (native, e.g. Button) or **API
+Reference** (shipped, e.g. Floodgauge) — they're mirror-images); **Style Reference
+is generated** from ttk introspection (like the `BootStyle` generator — biggest new
+value-add); API Reference covers only authored surfaces with `inherited_members:
+false`, native widgets link out to python.org's `tkinter.ttk`; Themes folded into
+User Guide as a Theming guide with a **2-column light/dark gallery**; Cookbook →
+How-To; Gallery removed for now; English only; **flagship = the bootstyle grammar**
+(make-your-own-style/theme = second act). Both staged sources
+(`2_0_bootstyle_reference.md`, `2_0_theme_migration.md`) fold in. Full staleness
+inventory (from the 2026-07-06 audit) is in the design doc §8: 7 API `:::` stubs
+point at removed module paths (mkdocstrings breaks), the tutorial + several gallery
+pages have crashing legacy-theme/tuple examples, theme pages document the retired
+16-key dict model.
+
+**Two follow-on code items surfaced by the design pass (NOT part of H):**
+- **PREREQ (next session) — drop the character-based icons.** Remove
+  `ttkbootstrap.icons` (the `Emoji`/`EmojiItem` catalog + `Icon.info/.warning/
+  .error/.question` constants — a poor-man's, OS-font-dependent solution). **Keep**
+  the Bootstrap-Icons font-glyph engine (`style/icons.py`; date/caret/sizegrip are
+  unchanged). Rewire Messagebox's 4 default icons (`dialogs/message.py:213/239/265/
+  291`) onto font glyphs (`info-circle-fill`/`exclamation-triangle-fill`/
+  `x-circle-fill`/`question-circle-fill`) — strict upgrade + dogfoods the engine +
+  kills the `Icon` name collision. Documented breaking change (→ Migrating-to-2.0).
+  Must land **before** docs screenshots (changes dialog-icon appearance). Own mini
+  design pass per the hard rule. Design-doc §2.
+- **DEFERRED — shipped-widget API normalization pass.** `Window`, dialogs,
+  `Tableview`/datagrid, etc. have NOT had a 2.0 API cleanup. Docs-first is
+  accepted (author, 2026-07-06); autogen API Reference regenerates for free, so
+  keep the *hand-written* catalog/How-To examples for those widgets conservative to
+  limit churn. Its own future workstream, after docs. Design-doc §11a.
+
+**NEXT → the icon-drop PREREQ PR** (mini design pass → implement), then docs
+sub-PR #1 (nav/IA skeleton + un-break the 7 API stubs + `inherited_members:
+false`); sub-PR sequence in design-doc §11. Env note: the repo `.venv/` is broken
+on this Windows box (launcher fails); use `.venv-home/` (pytest is installed
+there). One known non-blocking test flake: `nl.msg` localization (Tcl can't read
+the Dutch catalog; passes in isolation). _
+
+_Prior 2026-07-06 (**Workstream D (canonical bootstyle grammar)
 COMPLETE** — all three PRs merged into `2.0`; design in
 `development/2_0_bootstyle_grammar_design.md`). **D1 #1091**: closed-vocab
 tokenizer replacing the substring regex, loud failure on unknown tokens (warn by
@@ -23,14 +94,7 @@ flake). Two design-pass gaps found during D1 and documented in the design doc's
 "D1 — IMPLEMENTED" note: the resolver handles **two input dialects** (bootstyle
 strings — loud — vs already-built dotted ttk style names from the theme walk /
 `Style.configure` / custom styles — lenient), and invalid pairs now fall back to
-the family default instead of returning an unusable fragment.
-
-**NEXT → Workstream H (docs)** is the main remaining 2.0 headliner: run its own
-design/scoping pass first, then fold in the two `development/`-staged sources
-(`2_0_bootstyle_reference.md`, `2_0_theme_migration.md`). Env note: the repo
-`.venv/` is broken on this Windows box (launcher fails); use `.venv-home/`
-(pytest is installed there). One known non-blocking test flake: `nl.msg`
-localization (Tcl can't read the Dutch catalog; passes in isolation). _
+the family default instead of returning an unusable fragment. _
 
 _Prior 2026-07-06 (**Workstream E (theme/anchor) COMPLETE** — all three
 PRs merged: E1 #1088 (`Colors`→`RampColor` resolved view + `c.primary[300]`),

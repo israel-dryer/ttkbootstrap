@@ -6,9 +6,26 @@ from typing import Any, Callable, List, Optional, Tuple
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
-from ttkbootstrap.icons import Icon
 from ttkbootstrap.localization import MessageCatalog
 from .base import Dialog
+
+
+# The default alert glyphs for the four Messagebox.show_* dialogs, rendered from
+# the built-in Bootstrap-Icons font (theme-matched and recolorable). Replaces the
+# base64 PNG constants from the removed ``ttkbootstrap.icons`` module (2.0).
+_ALERT_ICON_SIZE = 30
+_ALERT_ICONS = {
+    "info": ("info-circle-fill", "info"),
+    "warning": ("exclamation-triangle-fill", "warning"),
+    "error": ("x-circle-fill", "danger"),
+    "question": ("question-circle-fill", "info"),
+}
+
+
+def _alert_icon(kind: str) -> str:
+    """Render one alert glyph to a cached Tk image name (see ``_ALERT_ICONS``)."""
+    name, color = _ALERT_ICONS[kind]
+    return ttk.Icon(name, _ALERT_ICON_SIZE, color)
 
 
 class MessageDialog(Dialog):
@@ -77,8 +94,9 @@ class MessageDialog(Dialog):
                 tuple (horizontal, vertical) (default=(20, 20)).
 
             icon (str):
-                Optional icon to display. Can be image data, file path,
-                or Icon constant (e.g., Icon.info).
+                Optional icon to display. Can be an already-rendered Tk image
+                name (e.g. from ``ttk.Icon(...)``), base64 image data, or a
+                file path.
 
             **kwargs (Dict):
                 Additional keyword arguments. Supports 'localize' (bool)
@@ -106,20 +124,9 @@ class MessageDialog(Dialog):
         """Overrides the parent method; adds the message section."""
         container = ttk.Frame(master, padding=self._padding)
         if self._icon:
-            try:
-                # assume this is image data
-                self._img = ttk.PhotoImage(data=self._icon)
-                icon_lbl = ttk.Label(container, image=self._img)
+            icon_lbl = self._create_icon_label(container)
+            if icon_lbl is not None:
                 icon_lbl.pack(side=LEFT, anchor=N, padx=(0, 5))
-            except Exception:
-                try:
-                    # assume this is a file path
-                    self._img = ttk.PhotoImage(file=self._icon)
-                    icon_lbl = ttk.Label(container, image=self._img)
-                    icon_lbl.pack(side=LEFT, anchor=N, padx=(0, 5))
-                except Exception:
-                    # icon is neither data nor a valid file path
-                    print("MessageDialog icon is invalid")
 
         if self._message:
             for msg in self._message.split("\n"):
@@ -127,6 +134,35 @@ class MessageDialog(Dialog):
                 message_label = ttk.Label(container, text=message)
                 message_label.pack(pady=(0, 3), fill=X, anchor=N)
         container.pack(fill=X, expand=True)
+
+    def _create_icon_label(self, container: tkinter.Misc) -> "Optional[ttk.Label]":
+        """Build the icon Label from ``self._icon``, or None if it is unusable.
+
+        ``self._icon`` may be, in order of preference, an already-rendered Tk
+        image name (e.g. from ``ttk.Icon(...)`` -- the four default alert icons),
+        base64 image data, or a file path. Setting ``image=`` to a string that
+        is not an existing image raises ``TclError``, so an image name and base64
+        data disambiguate cleanly with no string sniffing.
+        """
+        # Each candidate yields the image to hand to ``image=``. A rendered
+        # ttk.Icon is a Tk image name (a str, pinned alive by the engine cache);
+        # the data/file forms build a PhotoImage that must be retained on the
+        # dialog (bound below) so it is not garbage-collected.
+        candidates = (
+            lambda: self._icon,
+            lambda: ttk.PhotoImage(data=self._icon),
+            lambda: ttk.PhotoImage(file=self._icon),
+        )
+        for make_image in candidates:
+            try:
+                image = make_image()
+                label = ttk.Label(container, image=image)
+            except Exception:
+                continue
+            self._img = image
+            return label
+        print("MessageDialog icon is invalid")
+        return None
 
     def create_buttonbox(self, master: tkinter.Misc) -> None:
         """Overrides the parent method; adds the message buttonbox"""
@@ -210,7 +246,7 @@ class Messagebox:
         """Display a modal dialog box with an OK button and an INFO icon."""
         position = kwargs.pop("position", None)
         buttons = kwargs.pop("buttons", ["OK:primary"])
-        icon = kwargs.pop("icon", Icon.info)
+        icon = kwargs.pop("icon", None) or _alert_icon("info")
         localize = kwargs.pop("localize", True)
         dialog = MessageDialog(
             message=message,
@@ -236,7 +272,7 @@ class Messagebox:
         """Display a modal dialog box with an OK button and a warning icon."""
         position = kwargs.pop("position", None)
         buttons = kwargs.pop("buttons", ["OK:primary"])
-        icon = kwargs.pop("icon", Icon.warning)
+        icon = kwargs.pop("icon", None) or _alert_icon("warning")
         localize = kwargs.pop("localize", True)
         dialog = MessageDialog(
             message=message,
@@ -262,7 +298,7 @@ class Messagebox:
         """Display a modal dialog box with an OK button and an error icon."""
         position = kwargs.pop("position", None)
         buttons = kwargs.pop("buttons", ["OK:primary"])
-        icon = kwargs.pop("icon", Icon.error)
+        icon = kwargs.pop("icon", None) or _alert_icon("error")
         localize = kwargs.pop("localize", True)
         dialog = MessageDialog(
             message=message,
@@ -288,7 +324,7 @@ class Messagebox:
         """Display a modal dialog box with an OK button and a question icon."""
         position = kwargs.pop("position", None)
         buttons = kwargs.pop("buttons", ["OK:primary"])
-        icon = kwargs.pop("icon", Icon.question)
+        icon = kwargs.pop("icon", None) or _alert_icon("question")
         localize = kwargs.pop("localize", True)
         dialog = MessageDialog(
             message=message,
