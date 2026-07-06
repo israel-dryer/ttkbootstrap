@@ -3,7 +3,29 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-07-06 (**Workstream E (theme/anchor) COMPLETE** — all three
+_Last updated: 2026-07-06 (**Workstream D design pass DONE + D1 IMPLEMENTED**.
+Design locked in `development/2_0_bootstyle_grammar_design.md` (6 forks resolved:
+warn-by-default+opt-in strict; tuple form warn-and-normalize through 2.x;
+Meter/DateEntry get no new public API; single modifier slot; toggle/toolbutton
+reclassified as base-types + `round` added to `BootType`; generated table in D3).
+**D1 committed on `feat/2.0-pr-d1-bootstyle-grammar`** (commit `b4970a11`, off
+`2.0` tip): single vocab source in `constants.py`, real tokenizer replacing the
+substring regex, loud failure on unknown tokens (`_compat.py` — new Workstream-F
+quarantine — with `set_bootstyle_strict`/`TTKBOOTSTRAP_STRICT`), no caller
+changes (tuple still normalizes quietly). Suite **258 passed**, warning-free
+import, annotation sweep clean, theme-switch smoke OK. Implementation surfaced
+two under-specified points, now handled + documented in the design doc's "D1 —
+IMPLEMENTED" note: the resolver has **two input dialects** (bootstyle strings vs
+already-built ttk style names from the theme walk / `Style.configure` /custom
+styles — lenient parse, no warns), and invalid pairs now fall back to the
+family default instead of returning an unusable fragment. **NEXT → D2**: migrate
+the 4 internal tuple callers (meter/dateentry/tooltip/datepicker) to canonical
+strings, then flip `normalize_bootstyle` to `warn=True`. Then D3 (generated
+`BootStyle` Literal + reference table for docs H). Env note: the repo `.venv/`
+is broken on this Windows box (launcher fails); `.venv-home/` works — pytest was
+installed into it. _
+
+_Prior 2026-07-06 (**Workstream E (theme/anchor) COMPLETE** — all three
 PRs merged: E1 #1088 (`Colors`→`RampColor` resolved view + `c.primary[300]`),
 E2 #1089 (semantic-anchor `Theme` model + curated 15-family/30-theme catalog +
 `install_legacy_themes()` + 16-key adapter + hue-correct `inputbg`; default
