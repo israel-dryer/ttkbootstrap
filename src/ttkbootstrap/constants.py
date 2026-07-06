@@ -92,7 +92,7 @@ MeterMode = Literal["full", "semi"]
 
 ProgressMode = Literal["determinate", "indeterminate"]
 
-BootColor = Literal["primary", "secondary", "success", "danger", "warning", "info", "light", "dark"]
+BootColor = Literal["primary", "secondary", "success", "danger", "warning", "info", "light", "dark", "neutral"]
 
 # The bootstyle type modifiers (variant slot). NOTE for 2.0 (Workstream D): this
 # is the reconciled set -- `round` is included (it is buildable; its historical
@@ -116,8 +116,14 @@ TreeviewDisplay = Literal["tree", "headings", "tree headings"]
 # ---------------------------------------------------------------------------
 BOOTSTYLE_COLORS: Final = (
     "primary", "secondary", "success", "info", "warning", "danger",
-    "light", "dark",
+    "light", "dark", "neutral",
 )
+# Families for which `neutral` (the derived, no-accent color) produces a real
+# style. Unlike the accent colors, `neutral` is not valid everywhere -- it is a
+# render policy (surface fill + derived border + normal text), meaningful only
+# where accent-vs-neutral is a genuine choice. The reference generator advertises
+# `neutral-<family>` only for these (see tools/generate_bootstyle_reference.py).
+NEUTRAL_FAMILIES: Final = ("button", "menubutton", "toolbutton")
 # Public, documented type modifiers -- matches BootType.
 BOOTSTYLE_MODIFIERS: Final = (
     "outline", "link", "inverse", "round", "square", "striped", "thin",
@@ -200,6 +206,11 @@ BootStyle = Literal[
     'light-toggle',
     'light-toolbutton',
     'link',
+    'neutral',
+    'neutral-link',
+    'neutral-outline',
+    'neutral-outline-toolbutton',
+    'neutral-toolbutton',
     'outline',
     'outline-toolbutton',
     'primary',
@@ -432,6 +443,7 @@ WARNING: Final[BootColor] = "warning"
 INFO: Final[BootColor] = "info"
 LIGHT: Final[BootColor] = "light"
 DARK: Final[BootColor] = "dark"
+NEUTRAL: Final[BootColor] = "neutral"
 
 OUTLINE: Final[BootType] = "outline"
 LINK: Final[BootType] = "link"
@@ -464,7 +476,7 @@ __all__ = [
     "TreeviewDisplay",
     # bootstyle vocabulary (single source of truth)
     "BOOTSTYLE_COLORS", "BOOTSTYLE_MODIFIERS", "BOOTSTYLE_INTERNAL_MODIFIERS",
-    "BOOTSTYLE_BASES", "BOOTSTYLE_FAMILIES", "BOOTSTYLE_ORIENTS",
+    "BOOTSTYLE_BASES", "BOOTSTYLE_FAMILIES", "BOOTSTYLE_ORIENTS", "NEUTRAL_FAMILIES",
     # constants
     "NO", "FALSE", "OFF", "YES", "TRUE", "ON",
     "N", "S", "W", "E", "NW", "SW", "NE", "SE", "NS", "EW", "NSEW", "CENTER",
@@ -487,6 +499,7 @@ __all__ = [
     "DEFAULT", "DEFAULT_THEME", "TTK_CLAM", "TTK_ALT", "TTK_DEFAULT",
     "FULL", "SEMI", "DETERMINATE", "INDETERMINATE",
     "PRIMARY", "SECONDARY", "SUCCESS", "DANGER", "WARNING", "INFO", "LIGHT", "DARK",
+    "NEUTRAL",
     "OUTLINE", "LINK", "TOGGLE", "INVERSE", "STRIPED", "THIN", "TOOLBUTTON", "SQUARE",
     "TREE", "HEADINGS", "TREEHEADINGS",
 ]

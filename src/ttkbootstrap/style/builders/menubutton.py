@@ -6,7 +6,7 @@ from ttkbootstrap.constants import *
 from ttkbootstrap.style import StyleBuilderTTK
 from ttkbootstrap.style.layout import El, image_element, layout
 from ttkbootstrap.style.builders.registry import register_builder
-from ttkbootstrap.style.builders.utils import simple_arrow_assets
+from ttkbootstrap.style.builders.utils import simple_arrow_assets, neutral_fill
 
 
 @register_builder("default", "menubutton")
@@ -22,28 +22,45 @@ def build_menubutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     """
     ttk_class = "TMenubutton"
 
-    if any([colorname == DEFAULT, colorname == ""]):
+    # `neutral` = the no-accent adaptive fill; otherwise the accent (or primary).
+    if colorname == NEUTRAL:
+        ttk_style = f"{NEUTRAL}.{ttk_class}"
+        background = neutral_fill(builder)
+    elif any([colorname == DEFAULT, colorname == ""]):
         ttk_style = ttk_class
         background = builder.colors.primary
-        foreground = builder.on_color(background)
     else:
         ttk_style = f"{colorname}.{ttk_class}"
         background = builder.colors.get(colorname)
-        foreground = builder.on_color(background)
+    foreground = builder.on_color(background)
 
     disabled_bg = builder.disabled()
     disabled_fg = builder.disabled("text", disabled_bg)
     pressed = builder.pressed(background)
     hover = builder.active(background)
 
+    # 1px hairline border, matching the ttk.Button treatment: dark/light always
+    # track the fill (no bevel), `bordercolor` is the only distinct edge.
+    fill_states = [
+        ("disabled", disabled_bg),
+        ("pressed !disabled", pressed),
+        ("hover !disabled", hover),
+    ]
+    border_states = [
+        ("disabled", disabled_bg),
+        ("pressed !disabled", builder.border(pressed)),
+        ("hover !disabled", builder.border(hover)),
+    ]
+
     builder.configure(
         ttk_style,
         foreground=foreground,
         background=background,
-        bordercolor=background,
+        bordercolor=builder.border(background),
         darkcolor=background,
         lightcolor=background,
         relief=tk.RAISED,
+        borderwidth=1,  # 1px hairline; intentionally unscaled
         focusthickness=0,
         focuscolor=foreground,
         padding=builder.scale_size((10, 5)),
@@ -51,26 +68,10 @@ def build_menubutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     builder.style.map(
         ttk_style,
         foreground=[("disabled", disabled_fg)],
-        background=[
-            ("disabled", disabled_bg),
-            ("pressed !disabled", pressed),
-            ("hover !disabled", hover),
-        ],
-        bordercolor=[
-            ("disabled", disabled_bg),
-            ("pressed !disabled", pressed),
-            ("hover !disabled", hover),
-        ],
-        darkcolor=[
-            ("disabled", disabled_bg),
-            ("pressed !disabled", pressed),
-            ("hover !disabled", hover),
-        ],
-        lightcolor=[
-            ("disabled", disabled_bg),
-            ("pressed !disabled", pressed),
-            ("hover !disabled", hover),
-        ],
+        background=fill_states,
+        bordercolor=border_states,
+        darkcolor=fill_states,
+        lightcolor=fill_states,
     )
     # caret-down-fill indicator (replaces the native clam triangle); the
     # solid menubutton arrow keeps one color (only the background changes on
@@ -106,6 +107,53 @@ def _build_menubutton_arrow(builder: StyleBuilderTTK, ttk_style, normal, disable
                     El("Menubutton.label", side=LEFT, sticky="")])])]))
 
 
+def _build_neutral_outline_menubutton(builder: StyleBuilderTTK, ttk_class, disabled_fg):
+    """Neutral outline menubutton: surface fill, derived border, normal fg.
+
+    The no-accent analog of the outline menubutton -- it does not fill with an
+    accent on hover (that would break the "unaccented" intent); it stays on the
+    surface with a subtle elevate on interaction, matching the neutral outline
+    button.
+    """
+    ttk_style = f"{NEUTRAL}.{ttk_class}"
+    surface = builder.colors.bg
+    fg = builder.colors.fg
+    hover = builder.active(surface)
+    pressed = builder.pressed(surface)
+    fill_states = [
+        ("pressed !disabled", pressed),
+        ("hover !disabled", hover),
+    ]
+    border_states = [
+        ("disabled", disabled_fg),
+        ("pressed !disabled", builder.border(pressed)),
+        ("hover !disabled", builder.border(hover)),
+    ]
+    builder.configure(
+        ttk_style,
+        foreground=fg,
+        background=surface,
+        bordercolor=builder.border(surface),
+        darkcolor=surface,
+        lightcolor=surface,
+        relief=tk.RAISED,
+        borderwidth=1,  # 1px hairline; intentionally unscaled
+        focusthickness=0,
+        focuscolor=fg,
+        padding=builder.scale_size((10, 5)),
+    )
+    builder.style.map(
+        ttk_style,
+        foreground=[("disabled", disabled_fg)],
+        background=fill_states,
+        bordercolor=border_states,
+        darkcolor=fill_states,
+        lightcolor=fill_states,
+    )
+    _build_menubutton_arrow(builder, ttk_style, fg, disabled_fg, fg)
+    builder.register_ttkstyle(ttk_style)
+
+
 @register_builder("outline", "menubutton")
 def build_outline_menubutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     """Create an outline button style for the ttk.Menubutton widget
@@ -120,6 +168,10 @@ def build_outline_menubutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     ttk_class = "Outline.TMenubutton"
 
     disabled_fg = builder.disabled("text")
+
+    if colorname == NEUTRAL:
+        _build_neutral_outline_menubutton(builder, ttk_class, disabled_fg)
+        return
 
     if any([colorname == DEFAULT, colorname == ""]):
         ttk_style = ttk_class
@@ -142,6 +194,7 @@ def build_outline_menubutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         darkcolor=builder.colors.bg,
         lightcolor=builder.colors.bg,
         relief=tk.RAISED,
+        borderwidth=1,  # 1px hairline; intentionally unscaled
         focusthickness=0,
         focuscolor=foreground,
         padding=builder.scale_size((10, 5)),

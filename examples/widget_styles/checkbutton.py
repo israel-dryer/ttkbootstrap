@@ -1,11 +1,6 @@
 import tkinter as tk
 import ttkbootstrap as ttk
 from random import choice
-from ttkbootstrap import utility
-utility.enable_high_dpi_awareness()
-
-DARK = 'superhero'
-LIGHT = 'flatly'
 
 def create_checkbutton_test(bootstyle, style, name):
     frame = ttk.Frame(padding=10)
@@ -16,16 +11,19 @@ def create_checkbutton_test(bootstyle, style, name):
     ttk.Separator(frame).pack(padx=5, pady=5, fill=tk.X)
 
     # default style
-    cb = ttk.Checkbutton(frame, text='default', bootstyle=bootstyle)
+    if 'toolbutton' in bootstyle:
+        cb = ttk.Checkbutton(frame, text='default', bootstyle=f'neutral-{bootstyle}')
+    else:
+        cb = ttk.Checkbutton(frame, text='default', bootstyle=bootstyle)
     cb.pack(padx=5, pady=5, fill=tk.BOTH)
     cb.invoke()
 
     # color styles
     for color in style.theme.colors:
         cb = ttk.Checkbutton(
-            master=frame, 
-            text=color, 
-            bootstyle=color + bootstyle,
+            master=frame,
+            text=color,
+            bootstyle=f"{color}-{bootstyle}" if bootstyle else color,
             width=15
         )
         cb.pack(padx=5, pady=5, fill=tk.BOTH)
@@ -51,7 +49,7 @@ def change_style():
 if __name__ == '__main__':
     # create visual widget style tests
     root = tk.Tk()
-    style = ttk.Style(theme=LIGHT)
+    style = ttk.Style()
 
     test1 = create_checkbutton_test('', style, 'Checkbutton')
     test1.pack(side=tk.LEFT, fill=tk.BOTH)

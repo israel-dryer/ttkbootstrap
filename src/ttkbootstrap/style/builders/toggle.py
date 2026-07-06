@@ -35,7 +35,7 @@ def build_round_toggle_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     """
     ttk_class = "Round.Toggle"
     disabled_fg = builder.disabled("text")
-    fg_muted = builder.mute(builder.colors.fg)
+    off_track = builder.border(builder.colors.bg)  # bootstack: off track = border(surface)
 
     if any([colorname == DEFAULT, colorname == ""]):
         ttk_style = ttk_class
@@ -69,7 +69,7 @@ def build_round_toggle_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     )
     a = builder.assets
     on = a.recolor("switch_round", white=accent, black=builder.colors.bg)
-    off = a.recolor("switch_round", white=fg_muted, black=builder.colors.bg, transform="flip-x")
+    off = a.recolor("switch_round", white=off_track, black=builder.colors.bg, transform="flip-x")
     disabled_on = a.recolor("switch_round", white=disabled_fg, black=builder.colors.bg)
     disabled_off = a.recolor("switch_round", white=disabled_fg, black=builder.colors.bg, transform="flip-x")
     spacer_name = f"{ttk_style}.spacer"
@@ -116,7 +116,7 @@ def build_square_toggle_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     """
     ttk_class = "Square.Toggle"
     disabled_fg = builder.disabled("text")
-    fg_muted = builder.mute(builder.colors.fg)
+    off_track = builder.border(builder.colors.bg)  # bootstack: off track = border(surface)
 
     if any([colorname == DEFAULT, colorname == ""]):
         ttk_style = ttk_class
@@ -143,7 +143,7 @@ def build_square_toggle_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     )
     a = builder.assets
     on = a.recolor("switch_square", white=accent, black=builder.colors.bg)
-    off = a.recolor("switch_square", white=fg_muted, black=builder.colors.bg, transform="flip-x")
+    off = a.recolor("switch_square", white=off_track, black=builder.colors.bg, transform="flip-x")
     disabled_on = a.recolor("switch_square", white=disabled_fg, black=builder.colors.bg)
     disabled_off = a.recolor("switch_square", white=disabled_fg, black=builder.colors.bg, transform="flip-x")
     spacer_name = f"{ttk_style}.spacer"

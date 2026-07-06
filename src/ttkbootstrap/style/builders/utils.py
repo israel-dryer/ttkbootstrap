@@ -1,5 +1,22 @@
 """Shared private helpers used by multiple ttk recipe families."""
 
+def neutral_fill(builder, level=1):
+    """A mode-aware elevation of the theme surface (bootstack's `elevate`).
+
+    Darkens the surface a touch in a light theme, lightens it in a dark theme, so
+    an unaccented control reads as a subtly raised surface in either mode (a fixed
+    `colors.light` would only be right in light themes). `level` 1 (~6%) is the
+    quiet neutral fill; `level` 2 (~12%) is a stronger raise used to distinguish
+    an "on"/selected neutral state from the "off" fill without an accent color.
+    Shared by the button-family neutral recipes.
+    """
+    weight = level * 0.06
+    surface = builder.colors.bg
+    if builder.is_light_theme:
+        return builder.shade(surface, weight)
+    return builder.tint(surface, weight)
+
+
 def indicator_spacer(builder):
     """Return the shared transparent image used between indicator and label."""
     size = (6, 1)

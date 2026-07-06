@@ -15,7 +15,7 @@ default; `set_bootstyle_strict(True)` or `TTKBOOTSTRAP_STRICT=1` raises).
 
 ## Colors
 
-`primary`, `secondary`, `success`, `info`, `warning`, `danger`, `light`, `dark`
+`primary`, `secondary`, `success`, `info`, `warning`, `danger`, `light`, `dark`, `neutral`
 
 ## Widget families and variants
 
