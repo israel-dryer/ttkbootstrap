@@ -229,6 +229,16 @@ deprecation warning only fires for genuine external tuple use.
   every built-in `(variant, family)` registry key → expected canonical string →
   resolves back to the same ttk style.
 
+> **D2 — IMPLEMENTED (2026-07-06, branch `feat/2.0-pr-d2-bootstyle-migrate`).**
+> Suite **260 passed**; import + all-warnings-as-errors widget smoke clean. The
+> tuple-caller sweep found **more first-party sites than the prep doc listed** —
+> besides meter/dateentry/tooltip/datepicker, the `python -m ttkbootstrap` demo
+> (8 sites) and ttkcreator (5 sites) also used tuples and would have tripped
+> their own new warning; all were migrated to canonical strings. `tooltip`'s
+> public `bootstyle` param (which accepted a tuple) was narrowed to `Optional[str]`
+> and its docstrings updated; the runtime pass-through still tolerates a tuple via
+> compat (now warning). No new grammar tokens were needed.
+
 ### D2 — migrate internal callers + turn on the tuple deprecation
 - Migrate meter/dateentry/tooltip/datepicker off the tuple form (§6).
 - Flip `normalize_bootstyle` to **emit the `DeprecationWarning`** on tuple/list

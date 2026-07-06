@@ -307,28 +307,28 @@ class Meter(Frame):
             master=self.textframe,
             text=self._textleft,
             font=self._subtextfont,
-            bootstyle=(self._subtextstyle, "metersubtxt"),
+            bootstyle=f"{self._subtextstyle}-metersubtxt",
             anchor=S,
             padding=(0, 5),
         )
         self.textcenter = Label(
             master=self.textframe,
             textvariable=self.amountuseddisplayvar,
-            bootstyle=(self._bootstyle, "meter"),
+            bootstyle=f"{self._bootstyle}-meter",
             font=self._textfont,
         )
         self.textright = Label(
             master=self.textframe,
             text=self._textright,
             font=self._subtextfont,
-            bootstyle=(self._subtextstyle, "metersubtxt"),
+            bootstyle=f"{self._subtextstyle}-metersubtxt",
             anchor=S,
             padding=(0, 5),
         )
         self.subtext = Label(
             master=self.meterframe,
             text=self._subtext,
-            bootstyle=(self._subtextstyle, "metersubtxt"),
+            bootstyle=f"{self._subtextstyle}-metersubtxt",
             font=self._subtextfont,
             textvariable=self.labelvar,
         )
@@ -350,8 +350,9 @@ class Meter(Frame):
         Sets the meter foreground, background, and trough colors based on
         the current theme and bootstyle.
         """
-        bootstyle = (self._bootstyle, "meter", "label")
-        ttkstyle = Bootstyle.ttkstyle_name(string="-".join(bootstyle))
+        ttkstyle = Bootstyle.ttkstyle_name(
+            string=f"{self._bootstyle}-meter-label"
+        )
         textcolor = self._lookup_style_option(ttkstyle, "foreground")
         background = self._lookup_style_option(ttkstyle, "background")
         troughcolor = self._lookup_style_option(ttkstyle, "space")
@@ -739,7 +740,7 @@ class Meter(Frame):
             self.textright.configure(font=self._subtextfont)
         if "subtextstyle" in kwargs:
             self._subtextstyle = kwargs.pop("subtextstyle")
-            self.subtext.configure(bootstyle=(self._subtextstyle, "meter"))
+            self.subtext.configure(bootstyle=f"{self._subtextstyle}-meter")
         if "metersize" in kwargs:
             self._metersize = utility.scale_size(self, kwargs.pop("metersize"))
             self.meterframe.configure(
@@ -747,7 +748,7 @@ class Meter(Frame):
             )
         if "bootstyle" in kwargs:
             self._bootstyle = kwargs.pop("bootstyle")
-            self.textcenter.configure(bootstyle=(self._bootstyle, "meter"))
+            self.textcenter.configure(bootstyle=f"{self._bootstyle}-meter")
         if "metertype" in kwargs:
             self._metertype = kwargs.pop("metertype")
         if "meterthickness" in kwargs:

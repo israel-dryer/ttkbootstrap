@@ -177,7 +177,7 @@ class DateEntry(Frame):
         if "bootstyle" in kwargs:
             self._bootstyle = kwargs.pop("bootstyle")
             self.entry.configure(bootstyle=self._bootstyle)
-            self.button.configure(bootstyle=[self._bootstyle, "date"])
+            self.button.configure(bootstyle=f"{self._bootstyle}-date")
         if "width" in kwargs:
             width = kwargs.pop("width")
             self.entry.configure(width=width)

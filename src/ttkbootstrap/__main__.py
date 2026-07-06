@@ -165,7 +165,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
         master=lframe_inner,
         orient=HORIZONTAL,
         value=75,
-        bootstyle=(SUCCESS, STRIPED),
+        bootstyle="success-striped",
     ).pack(fill=X, pady=5, expand=YES)
 
     m = ttk.Meter(
@@ -186,7 +186,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
     sb.pack(fill=X, pady=5, expand=YES)
 
     sb = ttk.Scrollbar(
-        master=lframe_inner, orient=HORIZONTAL, bootstyle=(DANGER, ROUND)
+        master=lframe_inner, orient=HORIZONTAL, bootstyle="danger-round"
     )
     sb.set(0.1, 0.9)
     sb.pack(fill=X, pady=5, expand=YES)
@@ -213,7 +213,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
     cb = ttk.Checkbutton(
         master=btn_group,
         text="solid toolbutton",
-        bootstyle=(SUCCESS, TOOLBUTTON),
+        bootstyle="success-toolbutton",
     )
     cb.invoke()
     cb.pack(fill=X, pady=5)
@@ -221,7 +221,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
     ob = ttk.Button(
         master=btn_group,
         text="outline button",
-        bootstyle=(INFO, OUTLINE),
+        bootstyle="info-outline",
         command=lambda: Messagebox.ok("You pushed an outline button"),
     )
     ob.pack(fill=X, pady=5)
@@ -229,7 +229,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
     mb = ttk.Menubutton(
         master=btn_group,
         text="outline menubutton",
-        bootstyle=(WARNING, OUTLINE),
+        bootstyle="warning-outline",
         menu=menu,
     )
     mb.pack(fill=X, pady=5)
@@ -237,7 +237,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
     cb = ttk.Checkbutton(
         master=btn_group,
         text="outline toolbutton",
-        bootstyle=(SUCCESS, OUTLINE, TOOLBUTTON),
+        bootstyle="success-outline-toolbutton",
     )
     cb.pack(fill=X, pady=5)
 
@@ -247,13 +247,13 @@ Namespaces are one honking great idea -- let's do more of those!"""
     cb1 = ttk.Checkbutton(
         master=btn_group,
         text="rounded toggle",
-        bootstyle=(SUCCESS, ROUND, TOGGLE),
+        bootstyle="success-round-toggle",
     )
     cb1.invoke()
     cb1.pack(fill=X, pady=5)
 
     cb2 = ttk.Checkbutton(
-        master=btn_group, text="squared toggle", bootstyle=(SQUARE, TOGGLE)
+        master=btn_group, text="squared toggle", bootstyle="square-toggle"
     )
     cb2.pack(fill=X, pady=5)
     cb2.invoke()

@@ -581,10 +581,10 @@ class Bootstyle:
         if style_string is None:
             style_string = widget.cget("style")
 
-        # normalize legacy forms (tuple/list) to a canonical string. D1 keeps
-        # this quiet (warn=False) because the internal composite-widget callers
-        # still pass tuples; D2 migrates them and turns the warning on.
-        style_string = _compat.normalize_bootstyle(style_string)
+        # normalize legacy forms (tuple/list) to a canonical string. As of D2 all
+        # first-party callers pass canonical strings, so a tuple/list here is
+        # genuine external use and earns a DeprecationWarning (removed in 3.0).
+        style_string = _compat.normalize_bootstyle(style_string, warn=True)
 
         # do nothing if the style has not been set
         if not style_string:

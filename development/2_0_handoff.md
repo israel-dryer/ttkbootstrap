@@ -18,12 +18,18 @@ two under-specified points, now handled + documented in the design doc's "D1 —
 IMPLEMENTED" note: the resolver has **two input dialects** (bootstyle strings vs
 already-built ttk style names from the theme walk / `Style.configure` /custom
 styles — lenient parse, no warns), and invalid pairs now fall back to the
-family default instead of returning an unusable fragment. **NEXT → D2**: migrate
-the 4 internal tuple callers (meter/dateentry/tooltip/datepicker) to canonical
-strings, then flip `normalize_bootstyle` to `warn=True`. Then D3 (generated
-`BootStyle` Literal + reference table for docs H). Env note: the repo `.venv/`
-is broken on this Windows box (launcher fails); `.venv-home/` works — pytest was
-installed into it. _
+family default instead of returning an unusable fragment. **D2 IMPLEMENTED** (branch `feat/2.0-pr-d2-bootstyle-migrate`, PR #1092 open
+against `2.0`): migrated every first-party tuple caller to canonical strings
+(meter/dateentry/tooltip/datepicker **plus** the `python -m ttkbootstrap` and
+ttkcreator demos — more sites than the prep doc listed) and flipped
+`normalize_bootstyle(..., warn=True)`, so an external tuple bootstyle now warns
+(removed in 3.0) while still resolving. `tooltip.bootstyle` narrowed to
+`Optional[str]`. Suite **260 passed**; import + all-warnings-as-errors widget
+smoke clean. **NEXT → D3**: generate the canonical reference table + a `BootStyle`
+string `Literal` from the vocab × registry (feeds the Workstream-H docs); add a
+test that the generated artifacts stay in sync with the live vocab + registry.
+Env note: the repo `.venv/` is broken on this Windows box (launcher fails);
+`.venv-home/` works — pytest was installed into it. _
 
 _Prior 2026-07-06 (**Workstream E (theme/anchor) COMPLETE** — all three
 PRs merged: E1 #1088 (`Colors`→`RampColor` resolved view + `c.primary[300]`),
