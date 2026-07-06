@@ -29,9 +29,11 @@ def build_notebook_style(builder: StyleBuilderTTK, colorname=DEFAULT):
 
     # Tab foregrounds are computed from each tab's own background so the label
     # stays readable: the selected tab sits on `colors.bg`, the unselected tabs
-    # on `unselected_bg`.
+    # on `unselected_bg`. The unselected label is muted toward its background to
+    # de-emphasize inactive tabs (gently -- it must stay legible, unlike the
+    # decorative 0.4 indicator mute; 0.6 keeps 60% of the on-color).
     selected_fg = builder.on_color(builder.colors.bg)
-    unselected_fg = builder.on_color(unselected_bg)
+    unselected_fg = builder.mute(builder.on_color(unselected_bg), unselected_bg, 0.6)
 
     ttk_style_tab = f"{ttk_style}.Tab"
 
