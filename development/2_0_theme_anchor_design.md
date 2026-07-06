@@ -190,7 +190,14 @@ trough/selection color. So the border consumers now use `colors.border`
 unconditionally: ttk `entry`, `combobox`, `spinbox`, `labelframe`, `notebook`,
 `panedwindow`, `separator`; tk `Entry`, `Spinbox`, `Scale`, `LabelFrame`,
 `Text`. (Outline *buttons* keep `bordercolor = accent` — a colored outline is
-their design, not this bug. Troughs keep `shade(selectbg)` — neutral by design.)
+their design, not this bug.)
+
+**Troughs** (scale track, progressbar trough, label/meter trough) were
+`shade(selectbg)`, which turned strong on dark backgrounds once `selectbg`
+became a light neutral. Bootstack derives a trough as `border(surface)` — a
+recessed neutral — so ttkbootstrap now uses `builder.border(colors.bg)` for
+troughs in both modes (a trough is the same subtle neutral as a border).
+Scrollbar troughs remain `colors.bg` (the thumb carries the contrast).
 
 ### 4.1 Tunable constants (initial values; settle in the human visual gate)
 

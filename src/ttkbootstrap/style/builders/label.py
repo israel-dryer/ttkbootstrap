@@ -58,13 +58,8 @@ def build_meter_label_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     # text color = `foreground`
     # trough color = `space`
 
-    if builder.is_light_theme:
-        if colorname == LIGHT:
-            trough_color = builder.colors.bg
-        else:
-            trough_color = builder.colors.light
-    else:
-        trough_color = builder.shade(builder.colors.selectbg)
+    # Recessed neutral trough = border(surface) (bootstack parity).
+    trough_color = builder.border(builder.colors.bg)
 
     if any([colorname == DEFAULT, colorname == ""]):
         ttk_style = ttk_class
