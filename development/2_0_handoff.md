@@ -91,8 +91,8 @@ End-to-end smoke: all affected widgets build in darkly + flatly.
 **Human visual gate PASSED** (user, 2026-07-06): the six-theme
 `examples/color_states_preview.py` sweep (new "Progress, stripe, and floodgauge"
 section) was approved with no tuning changes — `_TROUGH_SHADE=0.2`,
-`_STRIPE_TINT=0.2`, and the floodgauge `0.7` are settled. PR opened against
-`2.0` after approval.
+`_STRIPE_TINT=0.2`, and the floodgauge `0.7` are settled. **PR #1087 opened
+against `2.0`** (awaiting merge).
 
 **pytest gap closed + two stale tests fixed (2026-07-01).** The prior session's
 env had no pytest, so `test_color_helpers` was written but never run. Installing
