@@ -6,7 +6,20 @@
 from pathlib import Path
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
-from ttkbootstrap.icons import Emoji
+
+# Media-control icons, rendered from the built-in Bootstrap Icons font via
+# ttk.Icon at runtime (see create_buttonbox). Names are Bootstrap Icons glyphs.
+REWIND = "skip-start-fill"
+PLAY = "play-fill"
+FORWARD = "skip-end-fill"
+PAUSE = "pause-fill"
+STOP = "stop-fill"
+OPEN_FILE = "folder2-open"
+
+# Icon render size (logical px) and color. "selectfg" is the theme's on-accent
+# foreground -- white on the default (primary) and secondary buttons here.
+ICON_SIZE = 24
+ICON_COLOR = "selectfg"
 
 
 class MediaPlayer(ttk.Frame):
@@ -63,50 +76,49 @@ class MediaPlayer(ttk.Frame):
         """Create buttonbox with media controls"""
         container = ttk.Frame(self)
         container.pack(fill=X, expand=YES)
-        ttk.Style().configure('TButton', font="-size 14")
 
         rev_btn = ttk.Button(
             master=container,
-            text=Emoji.get('black left-pointing double triangle with vertical bar'),
+            image=ttk.Icon(REWIND, ICON_SIZE, ICON_COLOR),
             padding=10,
         )
         rev_btn.pack(side=LEFT, fill=X, expand=YES)
 
         play_btn = ttk.Button(
             master=container,
-            text=Emoji.get('black right-pointing triangle'),
+            image=ttk.Icon(PLAY, ICON_SIZE, ICON_COLOR),
             padding=10,
         )
         play_btn.pack(side=LEFT, fill=X, expand=YES)
 
         fwd_btn = ttk.Button(
             master=container,
-            text=Emoji.get('black right-pointing double triangle with vertical bar'),
+            image=ttk.Icon(FORWARD, ICON_SIZE, ICON_COLOR),
             padding=10,
         )
         fwd_btn.pack(side=LEFT, fill=X, expand=YES)
 
         pause_btn = ttk.Button(
             master=container,
-            text=Emoji.get('double vertical bar'),
+            image=ttk.Icon(PAUSE, ICON_SIZE, ICON_COLOR),
             padding=10,
         )
-        pause_btn.pack(side=LEFT, fill=X, expand=YES)        
+        pause_btn.pack(side=LEFT, fill=X, expand=YES)
 
         stop_btn = ttk.Button(
             master=container,
-            text=Emoji.get('black square for stop'),
+            image=ttk.Icon(STOP, ICON_SIZE, ICON_COLOR),
             padding=10,
         )
-        stop_btn.pack(side=LEFT, fill=X, expand=YES)          
+        stop_btn.pack(side=LEFT, fill=X, expand=YES)
 
-        stop_btn = ttk.Button(
+        open_btn = ttk.Button(
             master=container,
-            text=Emoji.get('open file folder'),
+            image=ttk.Icon(OPEN_FILE, ICON_SIZE, ICON_COLOR),
             bootstyle=SECONDARY,
             padding=10
         )
-        stop_btn.pack(side=LEFT, fill=X, expand=YES)             
+        open_btn.pack(side=LEFT, fill=X, expand=YES)
 
 
     def on_progress(self, val: float):
@@ -132,7 +144,7 @@ class MediaPlayer(ttk.Frame):
 
 if __name__ == '__main__':
 
-    app = ttk.Window("Media Player", "yeti")
+    app = ttk.Window("Media Player")
     mp = MediaPlayer(app)
     mp.scale.set(0.35)  # set default
     app.mainloop()
