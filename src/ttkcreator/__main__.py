@@ -439,20 +439,20 @@ class DemoWidgets(ttk.Frame):
         cb = ttk.Checkbutton(
             master=btn_group,
             text="solid toolbutton",
-            bootstyle=(SUCCESS, TOOLBUTTON),
+            bootstyle="success-toolbutton",
         )
         cb.invoke()
         cb.pack(fill=X, pady=5)
 
         ob = ttk.Button(
-            master=btn_group, text="outline button", bootstyle=(INFO, OUTLINE)
+            master=btn_group, text="outline button", bootstyle="info-outline"
         )
         ob.pack(fill=X, pady=5)
 
         mb = ttk.Menubutton(
             master=btn_group,
             text="outline menubutton",
-            bootstyle=(WARNING, OUTLINE),
+            bootstyle="warning-outline",
             menu=menu,
         )
         mb.pack(fill=X, pady=5)
@@ -470,13 +470,13 @@ class DemoWidgets(ttk.Frame):
         cb1 = ttk.Checkbutton(
             master=btn_group,
             text="rounded toggle",
-            bootstyle=(SUCCESS, ROUND, TOGGLE),
+            bootstyle="success-round-toggle",
         )
         cb1.invoke()
         cb1.pack(fill=X, pady=5)
 
         cb2 = ttk.Checkbutton(
-            master=btn_group, text="squared toggle", bootstyle=(SQUARE, TOGGLE)
+            master=btn_group, text="squared toggle", bootstyle="square-toggle"
         )
         cb2.pack(fill=X, pady=5)
         cb2.invoke()

@@ -220,7 +220,7 @@ class DatePickerDialog:
                 text=col,
                 anchor=CENTER,
                 padding=5,
-                bootstyle=(SECONDARY, INVERSE),
+                bootstyle="secondary-inverse",
             ).pack(side=LEFT, fill=X, expand=YES)
 
     def _set_title(self) -> None:

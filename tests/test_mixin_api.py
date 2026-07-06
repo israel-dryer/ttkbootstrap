@@ -75,8 +75,10 @@ def test_item_access_routes_bootstyle(root):
 
 
 def test_tuple_bootstyle_back_compat(root):
-    """The legacy tuple form still resolves (canonicalization is Workstream D)."""
-    b = ttk.Button(root, bootstyle=("success", "outline"))
+    """The legacy tuple form still resolves, but now warns (Workstream D, D2:
+    warn-and-normalize through 2.x, removed in 3.0)."""
+    with pytest.warns(DeprecationWarning, match="tuple/list bootstyle"):
+        b = ttk.Button(root, bootstyle=("success", "outline"))
     assert b.cget("style") == "success.Outline.TButton"
 
 

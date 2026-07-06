@@ -149,7 +149,9 @@ def test_build_name(args, expected):
 # --------------------------------------------------------------------------- #
 # _compat.normalize_bootstyle
 # --------------------------------------------------------------------------- #
-def test_normalize_tuple_is_quiet_in_d1():
+def test_normalize_is_quiet_unless_warn_requested():
+    # warn is opt-in per call; the resolver passes warn=True (D2), but a bare
+    # normalize_bootstyle() call stays quiet.
     with warnings.catch_warnings():
         warnings.simplefilter("error")
         assert _compat.normalize_bootstyle(("primary", "outline")) == \
@@ -245,3 +247,22 @@ def test_valid_widget_construction_is_warning_free(root):
         ttk.Checkbutton(root, bootstyle="success-round-toggle")
         ttk.Progressbar(root, bootstyle="info-striped")
         ttk.Label(root, bootstyle="inverse")
+
+
+def test_composite_widgets_construct_without_tuple_warning(root):
+    # Meter/DateEntry used the internal tuple form for their composite
+    # sub-styles; D2 migrated them to canonical strings, so building them must
+    # not trip the tuple DeprecationWarning.
+    from ttkbootstrap.widgets import Meter, DateEntry
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        Meter(root, bootstyle="info", subtextstyle="secondary").pack()
+        DateEntry(root, bootstyle="primary").pack()
+        root.update_idletasks()
+
+
+def test_external_tuple_bootstyle_warns_and_resolves(root):
+    # A genuine external tuple bootstyle still resolves, but now warns.
+    with pytest.warns(DeprecationWarning, match="tuple/list bootstyle"):
+        b = ttk.Button(root, bootstyle=("primary", "outline"))
+    assert b.cget("style") == "primary.Outline.TButton"

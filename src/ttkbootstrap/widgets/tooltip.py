@@ -36,7 +36,7 @@ Example:
     ToolTip(
         b2,
         text="This is dangerous",
-        bootstyle=(DANGER, INVERSE),
+        bootstyle="danger-inverse",
         position="top right"
     )
 
@@ -44,7 +44,7 @@ Example:
     ```
 """
 from tkinter import Event, Misc
-from typing import Any, Literal, Optional, Union
+from typing import Any, Literal, Optional
 
 import ttkbootstrap as ttk
 from ttkbootstrap import utility
@@ -76,7 +76,7 @@ class ToolTip:
         ToolTip(b1, text="This is the default style")
 
         # styled tooltip
-        ToolTip(b2, text="This is dangerous", bootstyle=(DANGER, INVERSE))
+        ToolTip(b2, text="This is dangerous", bootstyle="danger-inverse")
 
         app.mainloop()
         ```
@@ -88,7 +88,7 @@ class ToolTip:
             text: str = "widget info",
             padding: int = 10,
             justify: Literal["left", "center", "right"] = "left",
-            bootstyle: Optional[Union[str, tuple[str, ...]]] = None,
+            bootstyle: Optional[str] = None,
             wraplength: Optional[int] = None,
             delay: int = 250,  # milliseconds
             image: Any = None,
