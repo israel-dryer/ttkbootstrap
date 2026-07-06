@@ -1,86 +1,150 @@
-# 2.0 — Fast-follow color-math PR (`elevate` + `input_bg`)
+# 2.0 — Fast-follow color-math PR (`shade` / `tint` / `mute`)
 
-> **STATUS: DESIGN STUB — NOT YET APPROVED.** Per the hard rule (see
-> `CLAUDE.md` / handoff), this PR does **not** start as ad-hoc coding. Hold the
-> design discussion, settle the open decision below, get user sign-off, then
-> implement. This file captures the scope carried over from the color-helper
-> design's fast-follow section so the next session starts from the right place.
+**Status:** IMPLEMENTED on `refactor/2.0-color-math` (from `2.0`); automated
+gates pass; human visual gate pending.
+**Prereq reading:** `development/2_0_color_helpers_design.md` and the handoff's
+"Fast-follow scoped" block.
 
-## Context
+## Decision summary
 
-The color-helper PR (#1085, merged into `2.0`) added the private 50–950 ramps
-and the five `StyleBuilderTTK` helpers (`active`, `pressed`, `border`,
-`disabled`, `on_color`). It deliberately **left 10 ad-hoc HSV/alpha color-math
-sites in place**, guarded by an exact AST allowlist, because they are
-specialized surface/mute effects rather than state-color derivation. This
-fast-follow retires those sites onto two mode-aware utilities built on the
-private `_mix` / `_relative_luminance` primitives.
+Retire the **10 ad-hoc HSV/alpha color-math sites** the color-helper PR (#1085)
+deliberately left allowlisted in the ttk recipes, moving them onto three thin
+mix-based `StyleBuilderTTK` helpers built on the private `_mix_colors`
+primitive. Second and final focused color-math slice before the semantic-anchor
+`Theme` API (Workstream E). No public palette surface; theme dictionaries
+untouched.
 
-Prereq reading: `development/2_0_color_helpers_design.md` (esp. its fast-follow
-section) and the handoff's "Fast-follow scoped" block.
+Two forks were opened with the user and both were re-decided against the stub
+after reading ground truth (2026-07-05 → 07-06):
 
-## Proposed surface
+1. **Trough/track/stripe sites (6):** the stub proposed a mode-aware `elevate`.
+   Ground truth killed that framing — the trough sites are **already
+   mode-branched** and the HSV call only runs in the **dark** `else` branch
+   (light themes use `colors.light`/`bg`, which are not HSV and out of scope).
+   A mode-aware `elevate` would *lighten* dark-theme troughs, which is visually
+   wrong (an empty track should recede darker in a dark theme). So we **retire
+   the HSV onto plain mix-based `shade`/`tint`, preserving each site's current
+   appearance** — still well inside the drift envelope the user approved, but
+   *less* drift, no direction flip. (For gray `selectbg` — the common dark case
+   — `shade` is byte-identical to the old value.)
+2. **`input_bg`: DEFERRED to Workstream E** (user, 2026-07-06). In light themes
+   `bg == inputbg` already, so `input_bg()=bg` is a no-op; the field affordance
+   is `bordercolor=colors.border`, not the fill. In dark themes the authored
+   `inputbg` deltas *carry theme hue* (vapor `#190831`→`#30115e` toward purple),
+   which a uniform tint-toward-white would desaturate — a regression. A
+   hue-preserving derivation needs the semantic model, so it belongs in E.
 
-### `elevate(surface, level)` — mode-aware surface raise
-Built on `_mix` / `_relative_luminance`. Replaces the 5 inconsistent
-trough/track `update_hsv` sites and folds the 4 `make_transparent(0.4, …)`
-unchecked-indicator muting sites onto `_mix` (must stay visually identical):
+This is visual normalization, not a behavior-exact refactor. The 2.0 plan
+permits trough/track drift; the muting fold is visually identical (≤1/255).
 
-- `label.py` — trough darken 20%
-- `progressbar.py` (×2) — trough darken 20%
-- `scale.py` — track darken 20%
-- `floodgauge.py` — lightens 80% (the odd one out — confirm direction under
-  `elevate`'s mode-aware model)
-- 4× `make_transparent(0.4, …)` unchecked-indicator mute sites → `_mix`
-- One stripe site (`progressbar.py:40`) may want a `tint` rather than `elevate`
-  — decide during the design pass.
+## Ground truth — the 10 sites (all in `style/builders/`)
 
-### `input_bg(surface=None)` — mode-aware field background policy
-Built on `elevate`. Encodes "fill vs outline are substitutes, use one per mode":
+`builders_tk.py` (legacy tk) is out of scope and outside the AST guard.
 
-- **light:** `= bg` (border carries the affordance)
-- **dark:** `= elevate(bg)` (fill carries it; border ≈ bg)
+| # | Site | Old math (dark branch / effect) | Migration |
+|---|---|---|---|
+| 1 | `label.py` `build_meter_label_style` | `update_hsv(selectbg, vd=-0.2)` | `builder.shade(selectbg)` |
+| 2 | `progressbar.py` `build_striped_progressbar_style` | `update_hsv(selectbg, vd=-0.2)` | `builder.shade(selectbg)` |
+| 3 | `progressbar.py` `_create_recolored_progressbar_style` | `update_hsv(selectbg, vd=-0.2)` | `builder.shade(selectbg)` |
+| 4 | `scale.py` `_create_scale_assets` | `update_hsv(selectbg, vd=-0.2)` | `builder.shade(selectbg)` |
+| 5 | `floodgauge.py` `build_floodgauge_style` | `update_hsv(background, sd=-0.3, vd=0.8)` | `builder.tint(background, 0.7)` |
+| 6 | `progressbar.py` `_create_striped_progressbar_assets` | `update_hsv(bar_color, sd=-0.2, vd=value_delta)` | `builder.tint(bar_color)` |
+| 7 | `checkbutton.py` `build_checkbutton_style` | `make_transparent(0.4, fg, bg)` | `builder.mute(fg)` |
+| 8 | `radiobutton.py` `build_radiobutton_style` | `make_transparent(0.40, fg, bg)` | `builder.mute(fg)` |
+| 9 | `toggle.py` `build_round_toggle_style` | `make_transparent(0.40, fg, bg)` | `builder.mute(colors.fg)` |
+| 10 | `toggle.py` `build_square_toggle_style` | `make_transparent(0.40, fg, bg)` | `builder.mute(colors.fg)` |
 
-## OPEN DECISION (settle first)
+Sites 1–4 are byte-identical copy-paste; only the dark branch is HSV. Site 5 is
+a pale wash (kept via a strong `tint`). Site 6 is a lighter highlight over the
+bar; its brightness-adaptive `value_delta` block is **deleted** — mixing toward
+white is self-limiting (a near-white bar barely shifts; a dark bar lifts
+clearly), which is what the adaptive delta hand-rolled. Sites 7–10 are alpha
+blends → `_mix_colors` (visually identical: `make_transparent` truncated,
+`_mix_colors` rounds).
 
-Does `input_bg` **derive** `inputbg` (dropping the hand-authored, inconsistent
-per-theme dark deltas), or **coexist** with them?
+## New primitives (`style/theme.py`)
 
-- The **derive** path needs the deferred built-in theme-dict conversion
-  (Workstream E) — so deriving here may pull E's scope forward or block on it.
-- The **coexist** path keeps the authored deltas and only routes *new* uses
-  through `input_bg`.
+```python
+def _tint(color, weight):   return _mix_colors('#ffffff', color, weight)  # toward white
+def _shade(color, weight):  return _mix_colors('#000000', color, weight)  # toward black
+```
 
-Recommendation to bring to the design discussion: **coexist** for this PR (keep
-it self-contained, no E dependency), and fold the derive path into E when the
-theme-dict conversion lands. Confirm with user.
+`_mix_colors(a, b, w) = round(w·a + (1-w)·b)` per channel; `weight` is the
+fraction of `a`. So `_tint`/`_shade` mix `weight` of white/black into `color`.
 
-## Constraints / guardrails (carry from color-helper PR)
+## New builder helpers (`StyleBuilderTTK`, `builders_ttk.py`)
 
-- `StyleBuilderTK` (legacy tk) stays out of scope.
-- Keep the AST allowlist mechanism; shrink it as sites migrate. New direct
-  `Colors.update_hsv` / `Colors.make_transparent` in ttk recipes must still fail
-  the guard unless allowlisted with a reason.
-- Behavior-preserving: the mute sites must be **visually identical**; the
-  trough/track sites are allowed normalized drift (2.0 plan permits it) but
-  should be reviewed light↔dark.
-- Carry the **PEP 649 annotation force-evaluation sweep** (3.14 gotcha) over any
-  new/moved module.
+Three methods, mirroring the existing five (`active`/`pressed`/`border`/
+`disabled`/`on_color`). Keeping all color policy on the coordinator lets the AST
+guard enforce **zero** raw `Colors.update_hsv`/`make_transparent` in recipes.
 
-## Gates
+```python
+_TROUGH_SHADE = 0.2   # recessed dark-theme track/trough
+_STRIPE_TINT  = 0.2   # progress-stripe highlight
+_MUTE_AMOUNT  = 0.4   # unchecked-indicator muting
 
-- Focused unit tests for `elevate` / `input_bg` (mode-aware direction, exact
-  deltas, mute-equivalence to the old `make_transparent(0.4)` output).
-- Full headless suite green (expected baseline on `2.0`: **189 passed** / 1 known
-  Tcl `nl.msg` env failure).
-- **Human visual gate** light↔dark across the affected widgets
-  (troughs/tracks/stripes, unchecked indicators, input fields) — the headless
-  suite asserts color-at-pixel, not appearance. Extend or reuse
-  `examples/color_states_preview.py`.
+def shade(self, color, weight=_TROUGH_SHADE):  # darken toward black
+    return _shade(color, weight)
 
-## Next steps for the implementing session
+def tint(self, color, weight=_STRIPE_TINT):    # lighten toward white
+    return _tint(color, weight)
 
-1. Hold the design discussion; settle the open decision; get sign-off.
-2. Flesh this doc into the full design (signatures, mix ratios, mode detection).
-3. Cut a branch from `2.0`; implement PR-by-PR per the doc.
-4. Run automated + human gates; open the PR against `2.0`; update the handoff.
+def mute(self, color, surface=None, amount=_MUTE_AMOUNT):
+    return _mix_colors(color, surface or self.colors.bg, amount)
+```
+
+No `elevate` and no `input_bg` in this PR (see Decision summary). The floodgauge
+wash passes an explicit `0.7` weight at its single site (gate-tunable).
+
+## AST guard
+
+`test_direct_color_math_is_limited_to_special_effects`: `expected = Counter()`
+(empty). The guard now enforces **zero** direct `Colors.update_hsv` /
+`Colors.make_transparent` in every `style/builders/*.py` recipe — strictly
+stronger than the old 10-entry allowlist. A future genuine special effect must
+be re-added to `expected` with a reason.
+
+## Tests (all passing)
+
+Added to `tests/widget_styles/test_color_helpers.py`:
+
+- `test_tint_and_shade_move_toward_white_and_black` — `_tint`/`_shade` equal the
+  matching `_mix_colors` call; tint lightens / shade darkens; 0-weight no-op,
+  full-weight reaches target.
+- `test_shade_tint_mute_builder_helpers` (darkly) — `shade`/`tint` delegate to
+  the primitives and move luminance the right way; `mute` equals
+  `_mix_colors(fg, bg, 0.4)` and is within 1/255 per channel of the old
+  `Colors.make_transparent(0.4, fg, bg)`.
+- AST guard `expected` emptied.
+
+Gates run: focused **14 passed**; full headless **191 passed** (189 baseline + 2
+new; this Windows box has the `nl.msg` locale file, so no env failure);
+warning-free `import ttkbootstrap`; PEP 649 annotation sweep over 26 changed/
+dependent modules (152 targets) clean; standalone `style.theme` import; all
+edited modules compile; the seven migrated recipe files shed their now-unused
+`from ...theme import Colors` import.
+
+End-to-end smoke: scale, standard/striped progressbar, floodgauge, check/radio/
+round-toggle all build in darkly and flatly; `shade(#555)→#444444` (identical to
+the old HSV for gray selectbg).
+
+## Human visual gate (blocks merge)
+
+Extend `examples/color_states_preview.py` to include: scale, standard/striped/
+thin/recolored progressbars, and the ttk floodgauge. Review at 100% in
+`flatly`, `minty`, `morph`, `darkly`, `solar`, `vapor`, then switch light↔dark.
+
+Accept only if: dark-theme tracks/troughs read as recessed and distinct from
+their fill; the floodgauge pale-wash trough still reads correctly; the striped
+highlight is visible on light and dark bars; muted unchecked indicators are
+unchanged. Tune `_TROUGH_SHADE`, `_STRIPE_TINT`, and the floodgauge `0.7` here
+and record settled values in this doc + the handoff.
+
+## Out of scope (carry to Workstream E)
+
+- `input_bg` / field-background policy and the authored-vs-derived `inputbg`
+  reconciliation; the theme-dict conversion.
+- A mode-aware `elevate` / surface-elevation model (the sites that would use it
+  are already mode-branched; the general model belongs to the semantic theme).
+- Legacy `builders_tk.py` (tk) color math.
+- Any public palette / semantic-anchor `Theme` surface.

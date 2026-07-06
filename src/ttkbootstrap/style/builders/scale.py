@@ -3,7 +3,6 @@
 from ttkbootstrap.constants import *
 from ttkbootstrap.style import StyleBuilderTTK
 from ttkbootstrap.style.layout import El, StyleName, image_element, layout
-from ttkbootstrap.style.theme import Colors
 from ttkbootstrap.style.builders.registry import register_builder
 
 
@@ -28,7 +27,7 @@ def _create_scale_assets(builder, colorname=DEFAULT):
     if builder.is_light_theme:
         track_color = builder.colors.bg if colorname == LIGHT else builder.colors.light
     else:
-        track_color = Colors.update_hsv(builder.colors.selectbg, vd=-0.2)
+        track_color = builder.shade(builder.colors.selectbg)
 
     if any([colorname == DEFAULT, colorname == ""]):
         normal_color = builder.colors.primary

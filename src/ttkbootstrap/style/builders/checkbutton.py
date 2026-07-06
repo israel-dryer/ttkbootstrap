@@ -3,7 +3,6 @@
 from ttkbootstrap.constants import *
 from ttkbootstrap.style import StyleBuilderTTK
 from ttkbootstrap.style.layout import El, StyleName, image_element, layout, state_map
-from ttkbootstrap.style.theme import Colors
 from ttkbootstrap.style.builders.registry import register_builder
 from ttkbootstrap.style.builders.utils import indicator_spacer
 
@@ -23,7 +22,7 @@ def build_checkbutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     fg = builder.colors.fg
 
     disabled = builder.disabled("text")
-    fg_muted = Colors.make_transparent(0.4, fg, builder.colors.bg)
+    fg_muted = builder.mute(fg)
 
     accent = builder.colors.get(colorname or 'primary')
     on_accent = builder.on_color(accent)

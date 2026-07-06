@@ -58,6 +58,16 @@ def _mix_colors(color1: str, color2: str, weight: float) -> str:
     return f'#{channels[0]:02x}{channels[1]:02x}{channels[2]:02x}'
 
 
+def _tint(color: str, weight: float) -> str:
+    """Mix `weight` of white into `color` (a lighter highlight)."""
+    return _mix_colors('#ffffff', color, weight)
+
+
+def _shade(color: str, weight: float) -> str:
+    """Mix `weight` of black into `color` (a darker shade)."""
+    return _mix_colors('#000000', color, weight)
+
+
 @lru_cache(maxsize=256)
 def _cached_color_ramp(anchor: str) -> Mapping[int, str]:
     """Build one immutable Bootstrap-compatible 50–950 color ramp."""

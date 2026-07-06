@@ -3,7 +3,6 @@
 from ttkbootstrap.constants import *
 from ttkbootstrap.style import StyleBuilderTTK
 from ttkbootstrap.style.layout import El, StyleName, image_element, layout, state_map
-from ttkbootstrap.style.theme import Colors
 from ttkbootstrap.style.builders.registry import register_builder
 from ttkbootstrap.style.builders.utils import indicator_spacer
 
@@ -22,7 +21,7 @@ def build_radiobutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     sn = StyleName("TRadiobutton", colorname)
     fg = builder.colors.fg
     disabled = builder.disabled("text")
-    fg_muted = Colors.make_transparent(0.40, fg, builder.colors.bg)
+    fg_muted = builder.mute(fg)
 
     # Resolve the "on" accent; LIGHT/DARK on their own background need a
     # contrasting indicator so the knockout interior stays readable

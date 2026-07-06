@@ -3,12 +3,11 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-07-05 (the color-helper branch is **MERGED into `2.0`** —
-PR #1085, merge commit `b7872a98`, 2026-07-01 21:04; PR #1084 was an earlier
-merge of the same branch. Prior session's "open the PR" actionable is done. Next
-actionable is the **fast-follow color-math PR** (`elevate` + `input_bg`), which
-needs its own design pass first — a stub is at
-`development/2_0_color_math_followup_design.md`.)_
+_Last updated: 2026-07-06 (the **fast-follow color-math PR is IMPLEMENTED** on
+`refactor/2.0-color-math` from `2.0`; automated gates pass, **human visual gate
+pending** — see "Fast-follow color-math — IMPLEMENTED" below. Not yet committed/
+pushed as of writing; branch is local. The prior color-helper branch is
+**MERGED into `2.0`** — PR #1085, merge commit `b7872a98`.)_
 
 _Prior (2026-07-01): focused Workstream E private ramps and builder color
 helpers implemented on `refactor/2.0-color-helpers`; `on_color` retuned to a
@@ -54,14 +53,47 @@ human visual gate (`python examples/color_states_preview.py`) PASSED (user,
 2026-07-01); automated gates passed (188/1). The local branch is fully contained
 in `2.0` and safe to delete.
 
-**Current actionable → the fast-follow color-math PR (`elevate` + `input_bg`).**
-Per the hard rule it needs its own design pass FIRST — a starting stub is at
-`development/2_0_color_math_followup_design.md` (scope carried from the
-color-helper design's fast-follow section, below). Open the design, settle the
-one open decision (derive `inputbg` vs coexist — note it may depend on the
-deferred Workstream E theme-dict conversion), get sign-off, THEN implement on a
-new branch cut from `2.0`. Canonical bootstyle grammar (D) and theme/anchor (E)
+**Current actionable → run the human visual gate for the color-math PR**, then
+commit/open the PR. The design pass is done and the code is implemented (see the
+dedicated section below). Canonical bootstyle grammar (D) and theme/anchor (E)
 remain later, each with its own design pass.
+
+## Fast-follow color-math — IMPLEMENTED, VISUAL GATE PENDING
+
+Branch `refactor/2.0-color-math` (from `2.0` at `26dd182f`). Approved+as-built
+design: `development/2_0_color_math_followup_design.md`. Retires the **10 ad-hoc
+HSV/alpha sites** the color-helper PR left allowlisted, onto three thin mix-based
+`StyleBuilderTTK` helpers: `shade`/`tint` (build on new `_shade`/`_tint` in
+`theme.py`) and `mute`. The AST guard now enforces **zero** direct
+`Colors.update_hsv`/`make_transparent` in `style/builders/*.py`.
+
+**Two forks were opened with the user and BOTH re-decided against the original
+stub after reading ground truth:**
+- **No `elevate`.** The stub assumed troughs "always darken regardless of mode";
+  ground truth showed they are **already mode-branched** and the HSV runs only in
+  the dark `else` branch (light uses `colors.light`/`bg`). A mode-aware `elevate`
+  would *lighten* dark troughs — wrong. So troughs migrate to plain `shade`
+  (preserve appearance; for gray `selectbg`, `shade` is byte-identical to the old
+  HSV). Floodgauge wash + progress stripe → `tint`.
+- **`input_bg` DEFERRED to Workstream E** (user, 2026-07-06). Light: `bg ==
+  inputbg` already, so it's a no-op there (the field affordance is
+  `bordercolor=colors.border`). Dark: authored `inputbg` deltas carry theme hue
+  (vapor `#190831`→`#30115e`) that a uniform tint-toward-white would desaturate —
+  a regression. A hue-correct derivation needs the semantic model → E.
+
+**Automated gates PASS:** focused **14 passed**; full headless **191 passed**
+(189 baseline + 2 new; this Windows box has `nl.msg`, no env failure);
+warning-free import; PEP 649 sweep (26 modules / 152 targets) clean; standalone
+`style.theme` import; seven migrated recipes shed their unused `Colors` import.
+End-to-end smoke: all affected widgets build in darkly + flatly.
+
+**NEXT — human visual gate (blocks merge):** run
+`python examples/color_states_preview.py` (a new "Progress, stripe, and
+floodgauge" section was added) across `flatly`/`minty`/`morph`/`darkly`/`solar`/
+`vapor`, switching light↔dark. Confirm dark troughs recede, floodgauge wash +
+stripe read right, muted indicators unchanged. Tune `_TROUGH_SHADE`/
+`_STRIPE_TINT`/floodgauge `0.7` if needed, record settled values, THEN commit +
+open one PR against `2.0`.
 
 **pytest gap closed + two stale tests fixed (2026-07-01).** The prior session's
 env had no pytest, so `test_color_helpers` was written but never run. Installing
