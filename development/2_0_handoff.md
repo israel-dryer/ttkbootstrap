@@ -5,8 +5,9 @@
 
 _Last updated: 2026-07-06 (**Workstream E in progress.** PR E1 (`Colors`→
 `RampColor` resolved view + `c.primary[300]`) is **MERGED** (PR #1088). **PR E2
-is IMPLEMENTED + green on branch `refactor/2.0-pr-e2-theme-model`, AWAITING the
-human visual gate** — semantic-anchor `Theme` model + schema→16-key derivation,
+is IMPLEMENTED + green on branch `refactor/2.0-pr-e2-theme-model`, human visual
+gate PASSED** (user, 2026-07-06; ready to PR) — semantic-anchor `Theme` model +
+schema→16-key derivation,
 curated 15-family catalog (30 light/dark themes, `themes/builtin.py`), legacy
 16-key adapter + opt-in `install_legacy_themes()` (`themes/legacy.py`), default
 `bootstrap-light`, helpful error for legacy names, hue-correct `inputbg` fix.

@@ -1,7 +1,24 @@
 # ttkbootstrap 2.0 — Workstream E: semantic-anchor theme model
 
-**Status:** design pass approved; **PR E1 merged**; **PR E2 implemented + green,
-awaiting the human visual gate** (§8). E3 not started.
+**Status:** design pass approved; **PR E1 merged**; **PR E2 implemented + green;
+human visual gate PASSED** (user, 2026-07-06). E3 not started.
+
+> **Visual gate — PASSED** after an interactive light↔dark sweep. Fixes made
+> during the gate, all traceable to `selectbg` no longer being a mid-gray:
+> (1) `selectbg` → neutral (accent was bleeding into dark troughs/borders);
+> (2) `colors.border` via the dedicated `_border_color` (mix toward on-color),
+> not a lightness move that kept saturated backgrounds saturated;
+> (3) widget borders use `colors.border` in both modes (retired the dark-mode
+> `selectbg` border workaround) — ttk entry/combobox/spinbox/labelframe/
+> notebook/panedwindow/separator + tk Entry/Spinbox/Scale/LabelFrame/Text;
+> (4) troughs = `border(colors.bg)` (bootstack parity), subtle in both modes;
+> (5) notebook selected-tab fg = `on_color(colors.bg)` (was black-on-dark);
+> (6) a `selectfg` audit — tk Button/Menubutton + ttk Floodgauge label
+> foregrounds now `on_color(their own accent bg)`; and
+> (7) unselected notebook tab labels muted (0.6) toward their bg.
+> The three deferred aesthetic items (toolbutton unselected fill, scrollbar
+> thumb, dark readonly-field brightness — all light-neutral `selectbg` fills)
+> were reviewed and accepted as-is.
 **Branch:** E2 on `refactor/2.0-pr-e2-theme-model` (from `2.0`).
 **Date:** 2026-07-06.
 
