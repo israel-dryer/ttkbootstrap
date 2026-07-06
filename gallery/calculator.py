@@ -141,9 +141,9 @@ if __name__ == "__main__":
 
     app = ttk.Window(
         title="Calculator",
-        themename="flatly",
         size=(350, 450),
         resizable=(False, False),
+        themename="bootstrap-dark"
     )
     Calculator(app)
     app.mainloop()
