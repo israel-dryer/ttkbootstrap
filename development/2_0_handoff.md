@@ -88,13 +88,11 @@ warning-free import; PEP 649 sweep (26 modules / 152 targets) clean; standalone
 `style.theme` import; seven migrated recipes shed their unused `Colors` import.
 End-to-end smoke: all affected widgets build in darkly + flatly.
 
-**NEXT — human visual gate (blocks merge):** run
-`python examples/color_states_preview.py` (a new "Progress, stripe, and
-floodgauge" section was added) across `flatly`/`minty`/`morph`/`darkly`/`solar`/
-`vapor`, switching light↔dark. Confirm dark troughs recede, floodgauge wash +
-stripe read right, muted indicators unchanged. Tune `_TROUGH_SHADE`/
-`_STRIPE_TINT`/floodgauge `0.7` if needed, record settled values, THEN commit +
-open one PR against `2.0`.
+**Human visual gate PASSED** (user, 2026-07-06): the six-theme
+`examples/color_states_preview.py` sweep (new "Progress, stripe, and floodgauge"
+section) was approved with no tuning changes — `_TROUGH_SHADE=0.2`,
+`_STRIPE_TINT=0.2`, and the floodgauge `0.7` are settled. PR opened against
+`2.0` after approval.
 
 **pytest gap closed + two stale tests fixed (2026-07-01).** The prior session's
 env had no pytest, so `test_color_helpers` was written but never run. Installing

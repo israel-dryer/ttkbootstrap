@@ -1,7 +1,9 @@
 # 2.0 — Fast-follow color-math PR (`shade` / `tint` / `mute`)
 
 **Status:** IMPLEMENTED on `refactor/2.0-color-math` (from `2.0`); automated
-gates pass; human visual gate pending.
+gates pass; **human visual gate PASSED** (user, 2026-07-06 — colors approved,
+no tuning changes; `_TROUGH_SHADE=0.2` / `_STRIPE_TINT=0.2` / floodgauge `0.7`
+are the settled values).
 **Prereq reading:** `development/2_0_color_helpers_design.md` and the handoff's
 "Fast-follow scoped" block.
 
