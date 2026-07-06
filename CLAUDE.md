@@ -89,11 +89,15 @@ registry (#1082), and scaling/asset-geometry normalization (#1083) are now also
 merged into `2.0`; the expected suite is 177 tests. The focused private color
 ramps and `StyleBuilderTTK` helpers (#1085, merge commit `b7872a98`, per
 `development/2_0_color_helpers_design.md`) are now also **merged** into `2.0`;
-the expected suite is 189 tests. **Current:** the fast-follow color-math PR
-(`elevate` + `input_bg`, retiring the remaining ad-hoc HSV/alpha sites) is next
-and needs its own design pass first — stub at
-`development/2_0_color_math_followup_design.md`. Canonical bootstyle grammar (D)
-and theme/anchor (E) follow later, each with its own design pass.
+the expected suite is 189 tests. The fast-follow color-math PR (#1087, merge
+commit `0218aba3`, per `development/2_0_color_math_followup_design.md`) is now
+also **merged** — it retired the last 10 ad-hoc HSV/alpha sites onto mix-based
+`shade`/`tint`/`mute` helpers (the AST guard now enforces zero raw color math in
+ttk recipes); `elevate` and `input_bg` from the original stub were **dropped/
+deferred to Workstream E** after ground truth invalidated them. Expected suite is
+191 tests. **Current:** canonical bootstyle grammar (D) and theme/anchor (E) are
+next, each needing its own design pass first (E owns the deferred `input_bg` /
+`inputbg` reconciliation + the theme-dict conversion).
 
 ## Repository layout
 
