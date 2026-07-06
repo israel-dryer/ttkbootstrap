@@ -20,7 +20,9 @@ def build_entry_style(builder: StyleBuilderTTK, colorname=DEFAULT):
 
     on_disabled = builder.disabled("text", builder.colors.inputbg)
     border = builder.colors.border
-    readonly = builder.colors.light if builder.is_light_theme else builder.colors.selectbg
+    # readonly fields read like normal fields (no greyed box); the field bg is
+    # the same input surface in both modes.
+    readonly = builder.colors.inputbg
 
     if any([colorname == DEFAULT, not colorname]):
         # default style

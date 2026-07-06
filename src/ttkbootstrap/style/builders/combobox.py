@@ -24,7 +24,8 @@ def build_combobox_style(builder: StyleBuilderTTK, colorname=DEFAULT):
 
     on_disabled = builder.disabled("text", builder.colors.inputbg)
     border = builder.colors.border
-    readonly = builder.colors.light if builder.is_light_theme else builder.colors.selectbg
+    # readonly fields read like normal fields (no greyed box).
+    readonly = builder.colors.inputbg
 
     if any([colorname == DEFAULT, colorname == ""]):
         ttk_style = ttk_class

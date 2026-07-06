@@ -7,15 +7,47 @@ import ttkbootstrap as ttk
 from tkinter import Frame
 from tkinter.colorchooser import askcolor
 from tkinter.filedialog import askopenfilename, asksaveasfilename
-from ttkbootstrap.themes import standard, user
-from ttkbootstrap.style import ThemeDefinition
+from ttkbootstrap.themes import user
+from ttkbootstrap.themes.builtin import CURATED_THEMES
+from ttkbootstrap.style import Theme
+from ttkbootstrap.style.theme import _DEFAULT_NEUTRAL
 from ttkbootstrap.constants import *
 from ttkbootstrap.dialogs import Messagebox
 
 
+# The editable Theme inputs, grouped for the UI. Each entry is
+# (field-key, display label). The field keys map onto `Theme` (or its
+# light/dark blocks) in `_spec()`.
+_ACCENT_FIELDS = [
+    ("primary", "primary"),
+    ("secondary", "secondary"),
+    ("success", "success"),
+    ("info", "info"),
+    ("warning", "warning"),
+    ("danger", "danger"),
+    ("neutral", "neutral"),
+]
+_LIGHT_FIELDS = [
+    ("light_bg", "background"),
+    ("light_fg", "foreground"),
+]
+_DARK_FIELDS = [
+    ("dark_bg", "background"),
+    ("dark_fg", "foreground"),
+]
+
+
 class ThemeCreator(ttk.Window):
+    """Author a semantic-anchor `Theme`: edit the accent anchors + neutral and
+    the light/dark background/foreground blocks; the full palette (and both mode
+    variants) is generated. Preview live, then export a `Theme(...).register()`
+    snippet or save it to your user theme store.
+    """
+
     def __init__(self):
         super().__init__("TTK Creator")
+        self._families = {t.name: t for t in CURATED_THEMES}
+        self.rows = {}
         self.configure_frame = ttk.Frame(self, padding=(10, 10, 5, 10))
         self.configure_frame.pack(side=LEFT, fill=BOTH, expand=YES)
         self.demo_frame = ttk.Frame(self, padding=(5, 10, 10, 10))
@@ -27,100 +59,211 @@ class ThemeCreator(ttk.Window):
     def setup_theme_creator(self):
         # application menu
         self.menu = ttk.Menu()
-
+        commands = [
+            ("Save", self.save_theme),
+            ("Reset", self.change_base_theme),
+            ("Import", self.import_user_themes),
+            ("Export all themes", self.export_user_themes),
+            ("Export theme definition", self.export_theme_as_python_file),
+        ]
         if sys.platform == 'darwin':
-            # mac os menu
             self.file_submenu = ttk.Menu(self.menu)
-            self.file_submenu.add_command(label="Save", command=self.save_theme)
-            self.file_submenu.add_command(label="Reset", command=self.change_base_theme)
-            self.file_submenu.add_command(label="Import", command=self.import_user_themes)
-            self.file_submenu.add_command(label="Export all themes", command=self.export_user_themes)
-            self.file_submenu.add_command(label="Export theme definition", command=self.export_theme_as_python_file)
+            for label, command in commands:
+                self.file_submenu.add_command(label=label, command=command)
             self.menu.add_cascade(menu=self.file_submenu, label="File")
         else:
-            # all other platforms
-            self.menu.add_command(label="Save", command=self.save_theme)
-            self.menu.add_command(label="Reset", command=self.change_base_theme)
-            self.menu.add_command(label="Import", command=self.import_user_themes)
-            self.menu.add_command(label="Export all themes", command=self.export_user_themes)
-            self.menu.add_command(label="Export theme definition", command=self.export_theme_as_python_file)
-
+            for label, command in commands:
+                self.menu.add_command(label=label, command=command)
         self.configure(menu=self.menu)
 
-        # theme configuration settings
+        cf = self.configure_frame
+
         ## user theme name
-        f1 = ttk.Frame(self.configure_frame, padding=(5, 2))
-        ttk.Label(f1, text="name", width=12).pack(side=LEFT)
+        f1 = ttk.Frame(cf, padding=(5, 2))
+        ttk.Label(f1, text="name", width=14).pack(side=LEFT)
         self.theme_name = ttk.Entry(f1)
         self.theme_name.insert(END, "new theme")
         self.theme_name.pack(side=LEFT, fill=X, expand=YES)
         f1.pack(fill=X, expand=YES)
 
-        ## base theme
-        f2 = ttk.Frame(self.configure_frame, padding=(5, 2))
-        ttk.Label(f2, text="base theme", width=12).pack(side=LEFT)
-        self.base_theme = ttk.Combobox(f2, values=self.style.theme_names())
-        self.base_theme.insert(END, "litera")
+        ## base family + preview mode
+        f2 = ttk.Frame(cf, padding=(5, 2))
+        ttk.Label(f2, text="base family", width=14).pack(side=LEFT)
+        self.base_theme = ttk.Combobox(
+            f2, values=list(self._families), state="readonly")
+        self.base_theme.set("bootstrap")
         self.base_theme.pack(side=LEFT, fill=X, expand=YES)
-        f2.pack(fill=X, expand=YES, pady=(0, 15))
         self.base_theme.bind("<<ComboboxSelected>>", self.change_base_theme)
+        f2.pack(fill=X, expand=YES)
 
-        ## color options
-        self.color_rows = []
-        for color in self.style.colors.label_iter():
-            row = ColorRow(self.configure_frame, color, self.style)
-            self.color_rows.append(row)
-            row.pack(fill=BOTH, expand=YES)
+        f3 = ttk.Frame(cf, padding=(5, 2))
+        ttk.Label(f3, text="preview mode", width=14).pack(side=LEFT)
+        self.preview_mode = ttk.Combobox(
+            f3, values=["light", "dark"], state="readonly")
+        self.preview_mode.set("light")
+        self.preview_mode.pack(side=LEFT, fill=X, expand=YES)
+        self.preview_mode.bind("<<ComboboxSelected>>", self.create_temp_theme)
+        f3.pack(fill=X, expand=YES, pady=(0, 10))
+
+        ## anchor + block color rows, grouped under headers
+        self._add_section("Accents & neutral", _ACCENT_FIELDS)
+        self._add_section("Light background/foreground", _LIGHT_FIELDS)
+        self._add_section("Dark background/foreground", _DARK_FIELDS)
+
+        # seed the rows from the base family
+        self._load_family(self.base_theme.get())
+
+    def _add_section(self, title, fields):
+        ttk.Label(
+            self.configure_frame, text=title, font="-weight bold",
+            padding=(5, 8, 0, 2),
+        ).pack(fill=X)
+        for key, label in fields:
+            row = ColorRow(self.configure_frame, key, label)
+            row.pack(fill=X, expand=YES)
             row.bind("<<ColorSelected>>", self.create_temp_theme)
+            self.rows[key] = row
+
+    # ----- theme spec / generation ------------------------------------------
+
+    def _mode(self):
+        return self.preview_mode.get() or "light"
+
+    def _spec(self):
+        """Build the `Theme(**spec)` keyword dict from the current rows."""
+        def v(key):
+            return (self.rows[key].color_value or "").strip() or None
+
+        light = {"background": v("light_bg"), "foreground": v("light_fg")}
+        dark = {"background": v("dark_bg"), "foreground": v("dark_fg")}
+        return {
+            "primary": v("primary"),
+            "success": v("success"),
+            "info": v("info"),
+            "warning": v("warning"),
+            "danger": v("danger"),
+            "secondary": v("secondary"),
+            "neutral": v("neutral") or _DEFAULT_NEUTRAL,
+            "light": light if light["background"] and light["foreground"] else None,
+            "dark": dark if dark["background"] and dark["foreground"] else None,
+        }
 
     def create_temp_theme(self, *_):
-        """Creates a temp theme using the current configure settings and
-        changes the theme in tkinter to that new theme.
-        """
-        themename = "temp_" + str(uuid4()).replace("-", "")[:10]
-        colors = {}
-        for row in self.color_rows:
-            colors[row.label["text"]] = row.color_value
-        definition = ThemeDefinition(themename, colors, self.style.theme.type)
-        self.style.register_theme(definition)
-        self.style.theme_use(themename)
-        self.update_color_patches()
+        """Generate a throwaway Theme from the current settings and preview the
+        selected mode. A fresh name each time forces a rebuild (an already-built
+        Tcl theme would otherwise show stale colors)."""
+        spec = self._spec()
+        themename = "temp" + uuid4().hex[:10]
+        try:
+            definitions = Theme(name=themename, **spec).to_definitions()
+        except ValueError:
+            return  # incomplete/invalid spec (e.g. a blank accent) -- skip
+        if not definitions:
+            return
+        for definition in definitions:
+            self.style.register_theme(definition)
+        names = {d.name for d in definitions}
+        target = f"{themename}-{self._mode()}"
+        if target not in names:
+            target = definitions[0].name  # only one block defined
+        self.style.theme_use(target)
 
     def change_base_theme(self, *_):
-        """Sets the initial colors used in the color configuration"""
-        themename = self.base_theme.get()
-        self.style.theme_use(themename)
-        self.update_color_patches()
+        """Load the selected base family's anchors/blocks into the rows."""
+        self._load_family(self.base_theme.get())
 
-    def update_color_patches(self):
-        """Updates the color patches next to the color code entry."""
-        for row in self.color_rows:
-            row.color_value = self.style.colors.get(row.label["text"])
-            row.update_patch_color()
+    def _load_family(self, name):
+        family = self._families.get(name)
+        if family is None:
+            return
+        self.rows["primary"].set_value(family.primary)
+        self.rows["success"].set_value(family.success)
+        self.rows["info"].set_value(family.info)
+        self.rows["warning"].set_value(family.warning)
+        self.rows["danger"].set_value(family.danger)
+        self.rows["secondary"].set_value(family.secondary or "")
+        self.rows["neutral"].set_value(family.neutral)
+        light = family.light or {}
+        dark = family.dark or {}
+        self.rows["light_bg"].set_value(light.get("background", ""))
+        self.rows["light_fg"].set_value(light.get("foreground", ""))
+        self.rows["dark_bg"].set_value(dark.get("background", ""))
+        self.rows["dark_fg"].set_value(dark.get("foreground", ""))
+        self.create_temp_theme()
+        # A family without a colored `secondary` derives it from the neutral
+        # ramp; show that resolved color so the field is populated (and
+        # editable) rather than blank. Clear it to go back to neutral-derived.
+        if not family.secondary:
+            self.rows["secondary"].set_value(self.style.colors.secondary)
+
+    # ----- save / export -----------------------------------------------------
+
+    def _theme_key(self):
+        return self.theme_name.get().lower().replace(" ", "")
+
+    def save_theme(self):
+        """Persist the current Theme spec to the user theme store (user.py) and
+        register it live as `<name>-light` / `<name>-dark`."""
+        name = self._theme_key()
+        if not name:
+            Messagebox.ok("Please enter a theme name.", "Save theme", parent=self)
+            return
+        if name in user.USER_THEME_SPECS:
+            result = Messagebox.okcancel(
+                title="Save Theme", alert=True,
+                message=f"Overwrite existing theme {name}?",
+            )
+            if result == "Cancel":
+                return
+
+        spec = self._spec()
+        user.USER_THEME_SPECS[name] = spec
+        self._write_user_file()
+
+        for definition in Theme(name=name, **spec).to_definitions():
+            self.style.register_theme(definition)
+        target = f"{name}-{self._mode()}"
+        if target in self.style.theme_names():
+            self.style.theme_use(target)
+        Messagebox.ok(f"The theme {name} has been saved.", "Save theme", parent=self)
+
+    def _write_user_file(self):
+        """Rewrite themes/user.py with the current spec + legacy dict stores."""
+        header = (
+            '"""User-defined custom theme storage for ttkbootstrap.\n\n'
+            'USER_THEME_SPECS holds 2.0 semantic-anchor Theme specs (managed by\n'
+            'ttkcreator); USER_THEMES holds legacy 16-key dicts. Both are loaded\n'
+            'at startup. You may also hand-edit this file.\n"""\n\n'
+        )
+        content = (
+            header
+            + "USER_THEME_SPECS = "
+            + json.dumps(user.USER_THEME_SPECS, indent=4)
+            + "\n\nUSER_THEMES = "
+            + json.dumps(user.USER_THEMES, indent=4)
+            + "\n"
+        )
+        with open(user.__file__, "w", encoding="utf-8") as f:
+            f.write(content)
 
     def export_user_themes(self):
-        """Export user themes saved in the user.py file"""
+        """Export the user theme store file (user.py)."""
         inpath = Path(user.__file__)
         outpath = asksaveasfilename(
-            initialdir="/",
-            initialfile="user.py",
+            initialdir="/", initialfile="user.py",
             filetypes=[("python", "*.py")],
         )
         if outpath:
             shutil.copyfile(inpath, outpath)
             Messagebox.ok(
-                parent=self,
-                title="Export",
+                parent=self, title="Export",
                 message="User themes have been exported.",
             )
 
     def import_user_themes(self):
-        """Import user themes into the user.py file. Any existing data
-        in the user.py file will be overwritten."""
-        outpath = Path(user.__file__)
+        """Import a user theme store file over the current user.py."""
         inpath = askopenfilename(
-            initialdir="/",
-            initialfile="user.py",
+            initialdir="/", initialfile="user.py",
             filetypes=[("python", "*.py")],
         )
         confirm = Messagebox.okcancel(
@@ -128,150 +271,111 @@ class ThemeCreator(ttk.Window):
             message="This import will overwrite the existing user themes. Ok to import?",
         )
         if confirm == "OK" and inpath:
-            shutil.copyfile(inpath, outpath)
+            shutil.copyfile(inpath, Path(user.__file__))
             Messagebox.ok(
-                parent=self,
-                title="Export",
-                message="User themes have been imported.",
+                parent=self, title="Import",
+                message="User themes have been imported. Restart to load them.",
             )
 
-    def save_theme(self):
-        """Save the current settings as a new theme. Warn using if
-        saving will overwrite existing theme."""
-        name = self.theme_name.get().lower().replace(" ", "")
-
-        if name in user.USER_THEMES:
-            result = Messagebox.okcancel(
-                title="Save Theme",
-                alert=True,
-                message=f"Overwrite existing theme {name}?",
-            )
-            if result == "Cancel":
-                return
-
-        colors = {}
-        for row in self.color_rows:
-            colors[row.label["text"]] = row.color_value
-
-        theme = {name: {"type": self.style.theme.type, "colors": colors}}
-        user.USER_THEMES.update(theme)
-        standard.STANDARD_THEMES[name] = theme[name]
-
-        # save user themes to file
-        formatted = json.dumps(user.USER_THEMES, indent=4)
-        out = 'USER_THEMES = ' + formatted
-        filepath = user.__file__
-        with open(filepath, 'w', encoding='utf-8') as f:
-            f.write(out)
-
-        definition = ThemeDefinition(name, colors, self.style.theme.type)
-        self.style.register_theme(definition)
-        self.style.theme_use(name)
-        new_themes = []
-        for themename in self.style.theme_names():
-            if not themename.startswith("temp"):
-                new_themes.append(themename)
-        self.base_theme.configure(values=new_themes)
-        Messagebox.ok(f"The theme {name} has been created", "Save theme")
-
-    from tkinter.filedialog import asksaveasfilename
+    def theme_to_source(self, name):
+        """Render the current spec as a `Theme(...).register()` Python snippet."""
+        spec = self._spec()
+        lines = ["import ttkbootstrap as ttk", "", "ttk.Theme(", f'    name="{name}",']
+        for role in ("primary", "success", "info", "warning", "danger"):
+            if spec[role]:
+                lines.append(f'    {role}="{spec[role]}",')
+        if spec.get("secondary"):
+            lines.append(f'    secondary="{spec["secondary"]}",')
+        lines.append(f'    neutral="{spec["neutral"]}",')
+        for mode in ("light", "dark"):
+            block = spec.get(mode)
+            if block:
+                lines.append(
+                    f'    {mode}=dict(background="{block["background"]}", '
+                    f'foreground="{block["foreground"]}"),'
+                )
+        lines.append(").register()")
+        return "\n".join(lines)
 
     def export_theme_as_python_file(self):
-        """Export the current theme definition as a Python file."""
-        name = self.theme_name.get().lower().replace(" ", "")
-        theme_type = self.style.theme.type
-        colors = {row.label["text"]: row.color_value for row in self.color_rows}
-
-        lines = [
-            "from ttkbootstrap.style import ThemeDefinition",
-            "",
-            f"theme = ThemeDefinition(",
-            f'    name="{name}",',
-            f'    themetype="{theme_type}",',
-            f"    colors={{"
-        ]
-        for key, value in colors.items():
-            lines.append(f'        "{key}": "{value}",')
-        lines.append("    },")
-        lines.append(")")
-
-        theme_code = "\n".join(lines)
-
+        """Export the current theme as a `Theme(...)` Python file."""
+        name = self._theme_key()
+        code = self.theme_to_source(name)
         filepath = asksaveasfilename(
             defaultextension=".py",
             initialfile=f"{name}_theme.py",
             filetypes=[("Python files", "*.py")],
             title="Save Theme As Python File",
         )
+        if not filepath:
+            return
+        try:
+            with open(filepath, "w", encoding="utf-8") as f:
+                f.write(code + "\n")
+            Messagebox.ok(
+                parent=self, title="Export Successful",
+                message=f"Theme exported to {filepath}",
+            )
+        except Exception as e:
+            Messagebox.ok(
+                parent=self, title="Export Failed",
+                message=f"Failed to save file: {e}", alert=True,
+            )
 
-        if filepath:
-            try:
-                with open(filepath, "w", encoding="utf-8") as f:
-                    f.write(theme_code)
-                Messagebox.ok(
-                    parent=self,
-                    title="Export Successful",
-                    message=f"Theme exported to {filepath}",
-                )
-            except Exception as e:
-                Messagebox.ok(
-                    parent=self,
-                    title="Export Failed",
-                    message=f"Failed to save file: {e}",
-                    alert=True,
-                )
 
 class ColorRow(ttk.Frame):
-    def __init__(self, master, color, style):
-        super().__init__(master, padding=(5, 2))
-        self.colorname = color
-        self.style = style
+    """One editable color: a swatch, a hex entry, and a color picker. `key` maps
+    onto a Theme field in `ThemeCreator._spec()`. An empty value is allowed
+    (e.g. an omitted `secondary`)."""
 
-        self.label = ttk.Label(self, text=color, width=12)
-        self.label.pack(side=LEFT)
+    def __init__(self, master, key, label):
+        super().__init__(master, padding=(5, 2))
+        self.key = key
+        self.color_value = ""
+
+        ttk.Label(self, text=label, width=14).pack(side=LEFT)
+        # A fixed color sample. It must NOT follow the theme (it shows the color
+        # being edited), so opt it out of the theme walk -- otherwise every
+        # temp-theme switch repaints this tk.Frame to the theme background.
         self.patch = Frame(
-            master=self, background=self.style.colors.get(color), width=15
+            master=self, width=24, highlightthickness=1,
+            highlightbackground="#888888",
         )
-        self.patch.pack(side=LEFT, fill=BOTH, padx=2)
+        self.patch._tb_no_autostyle = True
+        self.patch.pack(side=LEFT, fill=Y, padx=4, pady=2)
         self.entry = ttk.Entry(self, width=12)
         self.entry.pack(side=LEFT, fill=X, expand=YES)
         self.entry.bind("<FocusOut>", self.enter_color)
-        self.color_picker = ttk.Button(
-            master=self,
-            text="...",
-            bootstyle=SECONDARY,
-            command=self.pick_color,
-        )
-        self.color_picker.pack(side=LEFT, padx=2)
+        self.entry.bind("<Return>", self.enter_color)
+        ttk.Button(
+            self, text="...", bootstyle=SECONDARY, command=self.pick_color,
+        ).pack(side=LEFT, padx=2)
 
-        # set initial color value and patch color
-        self.color_value = self.style.colors.get(color)
+    def set_value(self, value):
+        """Set the color without firing <<ColorSelected>> (bulk load)."""
+        self.color_value = value or ""
         self.update_patch_color()
 
     def pick_color(self):
-        """Callback for when a color is selected from the color chooser"""
-        color = askcolor(color=self.color_value)
+        color = askcolor(color=self.color_value or None)
         if color[1]:
-            self.color_value = color[1]
+            self.color_value = color[1].lower()
             self.update_patch_color()
-        self.event_generate("<<ColorSelected>>")
+            self.event_generate("<<ColorSelected>>")
 
     def enter_color(self, *_):
-        """Callback for when a color is typed into the entry"""
-        try:
-            self.color_value = self.entry.get().lower()
-            self.update_patch_color()
-        except:
-            self.color_value = self.style.colors.get(self.label["text"])
-            self.update_patch_color()
+        self.color_value = self.entry.get().strip().lower()
+        self.update_patch_color()
         self.event_generate("<<ColorSelected>>")
 
     def update_patch_color(self):
-        """Update the color patch frame with the color value stored in
-        the entry widget."""
         self.entry.delete(0, END)
         self.entry.insert(END, self.color_value)
-        self.patch.configure(background=self.color_value)
+        if self.color_value:
+            try:
+                self.patch.configure(background=self.color_value)
+            except Exception:
+                pass
 
 
 class DemoWidgets(ttk.Frame):

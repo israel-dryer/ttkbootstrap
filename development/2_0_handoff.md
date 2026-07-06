@@ -5,8 +5,14 @@
 
 _Last updated: 2026-07-06 (**Workstream E in progress.** PR E1 (`Colors`→
 `RampColor` resolved view + `c.primary[300]`) is **MERGED** (PR #1088). **PR E2
-is IMPLEMENTED + green on branch `refactor/2.0-pr-e2-theme-model`, human visual
-gate PASSED** (user, 2026-07-06; ready to PR) — semantic-anchor `Theme` model +
+is MERGED** (PR #1089; visual gate passed). **PR E3 (ttkcreator rework +
+`USER_THEME_SPECS` + migration guide) is IMPLEMENTED + green on branch
+`refactor/2.0-pr-e3-ttkcreator`**, pending a manual `python -m ttkcreator`
+eyeball. Migration guide at **`development/2_0_theme_migration.md`** — FOLD INTO
+the Workstream-H docs rewrite (kept in `development/` so it survives the docs
+transition). That completes Workstream E; next headliner is Workstream D
+(canonical bootstyle grammar, needs its own design pass). E2 was the
+semantic-anchor `Theme` model +
 schema→16-key derivation,
 curated 15-family catalog (30 light/dark themes, `themes/builtin.py`), legacy
 16-key adapter + opt-in `install_legacy_themes()` (`themes/legacy.py`), default
