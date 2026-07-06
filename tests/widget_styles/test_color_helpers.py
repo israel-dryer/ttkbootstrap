@@ -7,13 +7,16 @@ from pathlib import Path
 import pytest
 
 from ttkbootstrap.style.theme import (
+    Colors,
     _ON_COLOR_WHITE_FLOOR,
     _cached_color_ramp,
     _color_ramp,
     _contrast_ratio,
     _mix_colors,
     _relative_luminance,
+    _shade,
     _state_color,
+    _tint,
 )
 
 
@@ -97,6 +100,52 @@ def test_mix_and_contrast_primitives():
     assert _contrast_ratio('#000000', '#ffffff') == pytest.approx(21.0)
 
 
+def test_tint_and_shade_move_toward_white_and_black():
+    color = '#2780e3'
+    tinted = _tint(color, 0.2)
+    shaded = _shade(color, 0.2)
+
+    assert tinted == _mix_colors('#ffffff', color, 0.2)
+    assert shaded == _mix_colors('#000000', color, 0.2)
+    # tint lightens, shade darkens, regardless of the color
+    assert _relative_luminance(tinted) > _relative_luminance(color)
+    assert _relative_luminance(shaded) < _relative_luminance(color)
+    # zero weight is a no-op; full weight reaches the target
+    assert _tint(color, 0.0) == color
+    assert _shade(color, 1.0) == '#000000'
+
+
+def _channels(hex_color):
+    return Colors.hex_to_rgb(hex_color)
+
+
+def test_shade_tint_mute_builder_helpers(root):
+    style = root.style
+    style.theme_use('darkly')
+    builder = style._get_builder()
+
+    # shade() darkens a fill toward black (the recessed-trough recipes)
+    fill = builder.colors.selectbg
+    assert builder.shade(fill) == _shade(fill, 0.2)
+    assert _relative_luminance(builder.shade(fill)) < _relative_luminance(fill)
+
+    # tint() lightens a fill toward white (progress stripe / floodgauge wash)
+    bar = builder.colors.primary
+    assert builder.tint(bar) == _tint(bar, 0.2)
+    assert builder.tint(bar, 0.7) == _tint(bar, 0.7)
+    assert _relative_luminance(builder.tint(bar)) > _relative_luminance(bar)
+
+    # mute() reproduces the old make_transparent(0.4) alpha blend within 1/255
+    fg, bg = builder.colors.fg, builder.colors.bg
+    muted = builder.mute(fg)
+    legacy = Colors.make_transparent(0.4, fg, bg)
+    assert muted == _mix_colors(fg, bg, 0.4)
+    assert all(
+        abs(m - l) <= 1
+        for m, l in zip(_channels(muted), _channels(legacy))
+    )
+
+
 def test_light_theme_builder_helpers(root):
     style = root.style
     style.theme_use('flatly')
@@ -167,20 +216,12 @@ def test_on_color_is_safe_and_independent_of_legacy_toggle(root):
 
 
 def test_direct_color_math_is_limited_to_special_effects():
-    expected = Counter(
-        {
-            ('checkbutton.py', 'build_checkbutton_style', 'make_transparent'): 1,
-            ('floodgauge.py', 'build_floodgauge_style', 'update_hsv'): 1,
-            ('label.py', 'build_meter_label_style', 'update_hsv'): 1,
-            ('progressbar.py', '_create_striped_progressbar_assets', 'update_hsv'): 1,
-            ('progressbar.py', 'build_striped_progressbar_style', 'update_hsv'): 1,
-            ('progressbar.py', '_create_recolored_progressbar_style', 'update_hsv'): 1,
-            ('radiobutton.py', 'build_radiobutton_style', 'make_transparent'): 1,
-            ('scale.py', '_create_scale_assets', 'update_hsv'): 1,
-            ('toggle.py', 'build_round_toggle_style', 'make_transparent'): 1,
-            ('toggle.py', 'build_square_toggle_style', 'make_transparent'): 1,
-        }
-    )
+    # After the color-math fast-follow, ttk recipes carry ZERO direct
+    # Colors.update_hsv / Colors.make_transparent calls: state and surface
+    # derivation goes through the builder helpers (active/pressed/border/
+    # disabled/on_color/shade/tint/mute). A genuinely new special effect that
+    # needs raw HSV/alpha must be re-added here with a reason.
+    expected = Counter()
     actual = Counter()
     for path in BUILDERS_DIR.glob('*.py'):
         tree = ast.parse(path.read_text(encoding='utf-8'))

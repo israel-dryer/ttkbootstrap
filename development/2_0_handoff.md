@@ -3,20 +3,26 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-07-01 (focused Workstream E private ramps and builder
-color helpers implemented on `refactor/2.0-color-helpers`; `on_color` retuned to
-a white-preferred, saturation-aware policy after visual feedback. pytest
-installed and the suite ACTUALLY RUN this session — 188 passed / 1 known Tcl
-`nl.msg` env failure; two stale `test_color_helpers` assertions corrected (see
-below). Six-theme human visual gate PASSED. Branch is merge-ready — open the PR
-against `2.0`.)_
+_Last updated: 2026-07-06 (the **fast-follow color-math PR is IMPLEMENTED** on
+`refactor/2.0-color-math` from `2.0`; automated gates pass, **human visual gate
+pending** — see "Fast-follow color-math — IMPLEMENTED" below. Committed locally
+as `6d95a22b`, **not pushed**; PR not opened, pending the visual gate. The prior
+color-helper branch is **MERGED into `2.0`** — PR #1085, merge commit
+`b7872a98`.)_
+
+_Prior (2026-07-01): focused Workstream E private ramps and builder color
+helpers implemented on `refactor/2.0-color-helpers`; `on_color` retuned to a
+white-preferred, saturation-aware policy after visual feedback. pytest installed
+and the suite ACTUALLY RUN — 188 passed / 1 known Tcl `nl.msg` env failure; two
+stale `test_color_helpers` assertions corrected. Six-theme human visual gate
+PASSED._
 
 ## Where we are
 
 Integration branch: **`2.0`** (cut all 2.0 PRs against it, not `master`).
-Expected suite on `2.0`: **177 passed**, headless, order-independent. Expected
-after the color-helper branch: **189 passed**. The latest Python 3.12 run is
-**188 passed / 1 environment failure** because this Tcl install cannot read
+Expected suite on `2.0`: **189 passed** (the color-helper PR #1085 is now merged;
+merge commit `b7872a98`), headless, order-independent. The latest Python 3.12 run
+is **188 passed / 1 environment failure** because this Tcl install cannot read
 `tk8.6/msgs/nl.msg`; excluding localization gives **183 passed**.
 
 The engine keystone (Workstream A) is **complete and merged**: PR 1 (repaint,
@@ -41,12 +47,52 @@ registry, and 22 widget-family modules. Merge commit: `fa1cede8`.
 **PR #1083 is MERGED.** Scaling and asset-geometry normalization landed on
 `2.0` as merge commit `c1f9ed73`; its automated and four-scale human gates pass.
 
-**Current actionable → open the color-helper PR against `2.0`.** Branch:
-`refactor/2.0-color-helpers`, cut from `2.0` at `c1f9ed73`. Approved design:
-`development/2_0_color_helpers_design.md`. The six-theme human visual gate
-(`python examples/color_states_preview.py`) PASSED (user, 2026-07-01). Automated
-gates pass (188/1). Canonical bootstyle grammar (D) remains later and needs its
-own design pass.
+**The color-helper PR is MERGED (#1085 → `2.0`, merge commit `b7872a98`,
+2026-07-01).** Branch was `refactor/2.0-color-helpers` (cut from `2.0` at
+`c1f9ed73`); approved design `development/2_0_color_helpers_design.md`; six-theme
+human visual gate (`python examples/color_states_preview.py`) PASSED (user,
+2026-07-01); automated gates passed (188/1). The local branch is fully contained
+in `2.0` and safe to delete.
+
+**Current actionable → run the human visual gate for the color-math PR**, then
+commit/open the PR. The design pass is done and the code is implemented (see the
+dedicated section below). Canonical bootstyle grammar (D) and theme/anchor (E)
+remain later, each with its own design pass.
+
+## Fast-follow color-math — IMPLEMENTED, VISUAL GATE PENDING
+
+Branch `refactor/2.0-color-math` (from `2.0` at `26dd182f`). Approved+as-built
+design: `development/2_0_color_math_followup_design.md`. Retires the **10 ad-hoc
+HSV/alpha sites** the color-helper PR left allowlisted, onto three thin mix-based
+`StyleBuilderTTK` helpers: `shade`/`tint` (build on new `_shade`/`_tint` in
+`theme.py`) and `mute`. The AST guard now enforces **zero** direct
+`Colors.update_hsv`/`make_transparent` in `style/builders/*.py`.
+
+**Two forks were opened with the user and BOTH re-decided against the original
+stub after reading ground truth:**
+- **No `elevate`.** The stub assumed troughs "always darken regardless of mode";
+  ground truth showed they are **already mode-branched** and the HSV runs only in
+  the dark `else` branch (light uses `colors.light`/`bg`). A mode-aware `elevate`
+  would *lighten* dark troughs — wrong. So troughs migrate to plain `shade`
+  (preserve appearance; for gray `selectbg`, `shade` is byte-identical to the old
+  HSV). Floodgauge wash + progress stripe → `tint`.
+- **`input_bg` DEFERRED to Workstream E** (user, 2026-07-06). Light: `bg ==
+  inputbg` already, so it's a no-op there (the field affordance is
+  `bordercolor=colors.border`). Dark: authored `inputbg` deltas carry theme hue
+  (vapor `#190831`→`#30115e`) that a uniform tint-toward-white would desaturate —
+  a regression. A hue-correct derivation needs the semantic model → E.
+
+**Automated gates PASS:** focused **14 passed**; full headless **191 passed**
+(189 baseline + 2 new; this Windows box has `nl.msg`, no env failure);
+warning-free import; PEP 649 sweep (26 modules / 152 targets) clean; standalone
+`style.theme` import; seven migrated recipes shed their unused `Colors` import.
+End-to-end smoke: all affected widgets build in darkly + flatly.
+
+**Human visual gate PASSED** (user, 2026-07-06): the six-theme
+`examples/color_states_preview.py` sweep (new "Progress, stripe, and floodgauge"
+section) was approved with no tuning changes — `_TROUGH_SHADE=0.2`,
+`_STRIPE_TINT=0.2`, and the floodgauge `0.7` are settled. **PR #1087 opened
+against `2.0`** (awaiting merge).
 
 **pytest gap closed + two stale tests fixed (2026-07-01).** The prior session's
 env had no pytest, so `test_color_helpers` was written but never run. Installing

@@ -2,7 +2,6 @@
 
 from ttkbootstrap.constants import *
 from ttkbootstrap.style import StyleBuilderTTK
-from ttkbootstrap.style.theme import Colors
 from ttkbootstrap.style.builders.registry import register_builder
 
 
@@ -65,7 +64,7 @@ def build_meter_label_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         else:
             trough_color = builder.colors.light
     else:
-        trough_color = Colors.update_hsv(builder.colors.selectbg, vd=-0.2)
+        trough_color = builder.shade(builder.colors.selectbg)
 
     if any([colorname == DEFAULT, colorname == ""]):
         ttk_style = ttk_class

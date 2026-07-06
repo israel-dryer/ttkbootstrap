@@ -5,7 +5,6 @@ import tkinter as tk
 from ttkbootstrap.constants import *
 from ttkbootstrap.style import StyleBuilderTTK
 from ttkbootstrap.style.layout import El, image_element, layout
-from ttkbootstrap.style.theme import Colors
 from ttkbootstrap.style.builders.registry import register_builder
 
 
@@ -28,16 +27,10 @@ def _create_striped_progressbar_assets(builder, colorname=DEFAULT):
     else:
         bar_color = builder.colors.get(colorname)
 
-    # calculate value of the light color
-    brightness = Colors.rgb_to_hsv(*Colors.hex_to_rgb(bar_color))[2]
-    if brightness < 0.4:
-        value_delta = 0.3
-    elif brightness > 0.8:
-        value_delta = 0
-    else:
-        value_delta = 0.1
-
-    bar_color_light = Colors.update_hsv(bar_color, sd=-0.2, vd=value_delta)
+    # A lighter diagonal highlight over the bar. Mixing toward white is
+    # self-limiting (a near-white bar barely shifts; a dark bar lifts clearly),
+    # which is what the old brightness-adaptive HSV delta hand-rolled.
+    bar_color_light = builder.tint(bar_color)
     a = builder.assets
 
     # Diagonal stripe pattern over a bar_color_light field; the original
@@ -90,7 +83,7 @@ def build_striped_progressbar_style(builder: StyleBuilderTTK, colorname=DEFAULT)
             trough_color = builder.colors.light
             border_color = trough_color
     else:
-        trough_color = Colors.update_hsv(builder.colors.selectbg, vd=-0.2)
+        trough_color = builder.shade(builder.colors.selectbg)
         border_color = trough_color
 
     # ( horizontal, vertical )
@@ -170,7 +163,7 @@ def _create_recolored_progressbar_style(
         trough_color = (
             builder.colors.bg if colorname == LIGHT else builder.colors.light)
     else:
-        trough_color = Colors.update_hsv(builder.colors.selectbg, vd=-0.2)
+        trough_color = builder.shade(builder.colors.selectbg)
 
     if colorname in (DEFAULT, ""):
         bar_color = builder.colors.primary

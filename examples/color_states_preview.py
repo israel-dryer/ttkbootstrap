@@ -42,6 +42,7 @@ class ColorStatesPreview:
         self._build_fields(content)
         self._build_indicators(content)
         self._build_motion(content)
+        self._build_progress(content)
         self._build_tree(content)
 
     def _build_header(self, parent):
@@ -191,6 +192,29 @@ class ColorStatesPreview:
             disabled_date.grid(row=row, column=4, padx=8, pady=4)
         section.columnconfigure(1, weight=1)
         section.columnconfigure(2, weight=1)
+
+    def _build_progress(self, parent):
+        # Exercises the mix-based trough/track/stripe/wash color math:
+        # progressbar/floodgauge troughs (shade of selectbg in dark themes),
+        # the striped highlight (tint), and the floodgauge pale wash (tint).
+        section = ttk.Labelframe(
+            parent, text="Progress, stripe, and floodgauge", padding=12
+        )
+        section.pack(fill="x", pady=6)
+        for row, color in enumerate(COLORS):
+            ttk.Label(section, text=color, width=9).grid(row=row, column=0)
+            ttk.Progressbar(
+                section, value=55, bootstyle=color
+            ).grid(row=row, column=1, sticky="ew", padx=8, pady=4)
+            ttk.Progressbar(
+                section, value=55, bootstyle=f"{color}-striped"
+            ).grid(row=row, column=2, sticky="ew", padx=8, pady=4)
+            ttk.Floodgauge(
+                section, value=55, bootstyle=color, mask="{}%"
+            ).grid(row=row, column=3, sticky="ew", padx=8, pady=4)
+        section.columnconfigure(1, weight=1)
+        section.columnconfigure(2, weight=1)
+        section.columnconfigure(3, weight=1)
 
     def _build_tree(self, parent):
         section = ttk.Labelframe(parent, text="Treeview", padding=12)

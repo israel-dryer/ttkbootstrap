@@ -5,7 +5,6 @@ import tkinter as tk
 from ttkbootstrap.constants import *
 from ttkbootstrap.style import StyleBuilderTTK
 from ttkbootstrap.style.layout import El, image_element, layout
-from ttkbootstrap.style.theme import Colors
 from ttkbootstrap.style.builders.registry import register_builder
 from ttkbootstrap.style.builders.utils import indicator_spacer
 
@@ -36,7 +35,7 @@ def build_round_toggle_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     """
     ttk_class = "Round.Toggle"
     disabled_fg = builder.disabled("text")
-    fg_muted = Colors.make_transparent(0.40, builder.colors.fg, builder.colors.bg)
+    fg_muted = builder.mute(builder.colors.fg)
 
     if any([colorname == DEFAULT, colorname == ""]):
         ttk_style = ttk_class
@@ -117,7 +116,7 @@ def build_square_toggle_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     """
     ttk_class = "Square.Toggle"
     disabled_fg = builder.disabled("text")
-    fg_muted = Colors.make_transparent(0.40, builder.colors.fg, builder.colors.bg)
+    fg_muted = builder.mute(builder.colors.fg)
 
     if any([colorname == DEFAULT, colorname == ""]):
         ttk_style = ttk_class

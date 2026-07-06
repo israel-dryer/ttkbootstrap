@@ -86,13 +86,14 @@ don't exceed a PR's scope without revisiting it.
 
 Recolorable raster widget assets (#1081), the modular `StyleBuilderTTK`
 registry (#1082), and scaling/asset-geometry normalization (#1083) are now also
-merged into `2.0`; the expected suite is 177 tests. **Current:** the focused
-private color ramps and `StyleBuilderTTK` helpers are implemented on
-`refactor/2.0-color-helpers` per
-`development/2_0_color_helpers_design.md`; the branch suite is 189 tests. Run
-`python examples/color_states_preview.py` and complete its six-theme visual
-gate before merge. Canonical bootstyle grammar (D) follows later with its own
-design pass.
+merged into `2.0`; the expected suite is 177 tests. The focused private color
+ramps and `StyleBuilderTTK` helpers (#1085, merge commit `b7872a98`, per
+`development/2_0_color_helpers_design.md`) are now also **merged** into `2.0`;
+the expected suite is 189 tests. **Current:** the fast-follow color-math PR
+(`elevate` + `input_bg`, retiring the remaining ad-hoc HSV/alpha sites) is next
+and needs its own design pass first — stub at
+`development/2_0_color_math_followup_design.md`. Canonical bootstyle grammar (D)
+and theme/anchor (E) follow later, each with its own design pass.
 
 ## Repository layout
 

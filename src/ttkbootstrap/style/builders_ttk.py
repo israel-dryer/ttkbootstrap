@@ -15,8 +15,17 @@ from ttkbootstrap.style.theme import (
     ThemeDefinition,
     _accent_on_color,
     _mix_colors,
+    _shade,
     _state_color,
+    _tint,
 )
+
+# Mix-based surface tuning, retiring the ad-hoc HSV/alpha color math. Weights
+# are fractions mixed toward black (shade), white (tint), or a surface (mute),
+# chosen to preserve each recipe's current appearance; gate-tunable.
+_TROUGH_SHADE = 0.2    # recessed dark-theme track/trough behind a filled bar
+_STRIPE_TINT = 0.2     # lighter diagonal highlight over a progress bar
+_MUTE_AMOUNT = 0.4     # unchecked-indicator muting
 
 
 class StyleBuilderTTK:
@@ -100,6 +109,34 @@ class StyleBuilderTTK:
                 f'Invalid role: {role}. Expected text or background.'
             )
         return _mix_colors(neutral, surface, weight)
+
+    def shade(self, color: str, weight: float = _TROUGH_SHADE) -> str:
+        """Return `color` darkened by mixing `weight` of black into it.
+
+        The recessed dark-theme track/trough recipes use the default weight;
+        this replaces their `Colors.update_hsv(..., vd=-0.2)` darken.
+        """
+        return _shade(color, weight)
+
+    def tint(self, color: str, weight: float = _STRIPE_TINT) -> str:
+        """Return `color` lightened by mixing `weight` of white into it.
+
+        Used for forward highlights that must read lighter than the fill they
+        sit on (progress stripe, pale floodgauge trough) in either mode.
+        """
+        return _tint(color, weight)
+
+    def mute(
+        self, color: str, surface: str | None = None,
+        amount: float = _MUTE_AMOUNT,
+    ) -> str:
+        """Return `color` alpha-blended onto a surface to mute an indicator.
+
+        Replaces `Colors.make_transparent(amount, color, surface)`; visually
+        identical (that helper truncated, `_mix_colors` rounds — at most 1/255
+        per channel).
+        """
+        return _mix_colors(color, surface or self.colors.bg, amount)
 
     def on_color(self, color: str) -> str:
         """Return a readable foreground for a filled surface.

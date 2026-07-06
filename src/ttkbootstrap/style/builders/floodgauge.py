@@ -5,7 +5,6 @@ import tkinter as tk
 from ttkbootstrap.constants import *
 from ttkbootstrap.style import StyleBuilderTTK
 from ttkbootstrap.style.layout import El, layout
-from ttkbootstrap.style.theme import Colors
 from ttkbootstrap.style.builders.registry import register_builder
 
 
@@ -39,7 +38,9 @@ def build_floodgauge_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         foreground = builder.colors.fg
         trough_color = builder.colors.bg
     else:
-        trough_color = Colors.update_hsv(background, sd=-0.3, vd=0.8)
+        # Pale wash of the bar color for the empty trough (was a strong HSV
+        # value lift); mixing ~70% white preserves that near-white look.
+        trough_color = builder.tint(background, 0.7)
         foreground = builder.colors.selectfg
 
     # horizontal floodgauge
