@@ -99,9 +99,9 @@ class ThemeCreator(ttk.Window):
         f3 = ttk.Frame(cf, padding=(5, 2))
         ttk.Label(f3, text="preview mode", width=14).pack(side=LEFT)
         self.preview_mode = ttk.Combobox(
-            f3, values=["light", "dark"], state="readonly", width=10)
+            f3, values=["light", "dark"], state="readonly")
         self.preview_mode.set("light")
-        self.preview_mode.pack(side=LEFT)
+        self.preview_mode.pack(side=LEFT, fill=X, expand=YES)
         self.preview_mode.bind("<<ComboboxSelected>>", self.create_temp_theme)
         f3.pack(fill=X, expand=YES, pady=(0, 10))
 
@@ -190,6 +190,11 @@ class ThemeCreator(ttk.Window):
         self.rows["dark_bg"].set_value(dark.get("background", ""))
         self.rows["dark_fg"].set_value(dark.get("foreground", ""))
         self.create_temp_theme()
+        # A family without a colored `secondary` derives it from the neutral
+        # ramp; show that resolved color so the field is populated (and
+        # editable) rather than blank. Clear it to go back to neutral-derived.
+        if not family.secondary:
+            self.rows["secondary"].set_value(self.style.colors.secondary)
 
     # ----- save / export -----------------------------------------------------
 
