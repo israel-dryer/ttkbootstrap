@@ -307,11 +307,28 @@ def build_date_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     pressed = builder.pressed(background)
     hover = builder.active(background)
 
+    # Same hairline-border treatment as the solid button: dark/light track the
+    # fill (no bevel), bordercolor is the fill's derived border.
+    fill_states = [
+        ("disabled", disabled),
+        ("pressed !disabled", pressed),
+        ("hover !disabled", hover),
+    ]
+    border_states = [
+        ("disabled", disabled),
+        ("pressed !disabled", builder.border(pressed)),
+        ("hover !disabled", builder.border(hover)),
+    ]
+
     builder.configure(
         ttk_style,
         foreground=on_background,
         background=background,
-        relief=tk.FLAT,
+        bordercolor=builder.border(background),
+        darkcolor=background,
+        lightcolor=background,
+        relief=tk.RAISED,
+        borderwidth=1,  # 1px hairline; intentionally unscaled
         focusthickness=0,
         focuscolor=on_background,
         padding=builder.scale_size((2, 2)),
@@ -322,21 +339,9 @@ def build_date_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         ttk_style,
         image=[("disabled", img_disabled)],
         foreground=[("disabled", on_disabled)],
-        background=[
-            ("disabled", disabled),
-            ("pressed !disabled", pressed),
-            ("hover !disabled", hover),
-        ],
-        bordercolor=[("disabled", disabled)],
-        darkcolor=[
-            ("disabled", disabled),
-            ("pressed !disabled", pressed),
-            ("hover !disabled", hover),
-        ],
-        lightcolor=[
-            ("disabled", disabled),
-            ("pressed !disabled", pressed),
-            ("hover !disabled", hover),
-        ],
+        background=fill_states,
+        bordercolor=border_states,
+        darkcolor=fill_states,
+        lightcolor=fill_states,
     )
     builder.register_ttkstyle(ttk_style)
