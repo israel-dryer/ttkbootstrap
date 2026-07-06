@@ -3,11 +3,16 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-07-06 (the **fast-follow color-math PR is MERGED into `2.0`**
-— PR #1087, merge commit `0218aba3`; visual gate passed, suite 191. Branch
-deleted. Next actionable is canonical bootstyle grammar (Workstream D) or
-theme/anchor (Workstream E), each needing its own design pass first. The prior
-color-helper branch is also merged — PR #1085, merge commit `b7872a98`.)_
+_Last updated: 2026-07-06 (**Workstream E design pass DONE** — approved model in
+`development/2_0_theme_anchor_design.md`: adopt bootstack's semantic-anchor
+`Theme` family, curated catalog + opt-in `install_legacy_themes()`, minimal
+derived surface layer, `Colors` resolved view + ramp addressing. **PR E1 is
+implemented + green** (`Colors`→`RampColor` resolved view, `c.primary[300]`; no
+catalog/visual change; suite **201 passed**) on branch
+`refactor/2.0-pr-e1-colors-ramp`, **PR open against `2.0`**. E2
+= `Theme` model + curated catalog + adapter (carries the human visual gate + 3
+open forks); E3 = migration doc/polish. Prior: color-math PR #1087 merged
+(`0218aba3`, suite 191); color-helper PR #1085 merged (`b7872a98`).)_
 
 _Prior (2026-07-01): focused Workstream E private ramps and builder color
 helpers implemented on `refactor/2.0-color-helpers`; `on_color` retuned to a

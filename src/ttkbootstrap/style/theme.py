@@ -90,6 +90,47 @@ def _color_ramp(color: str) -> Mapping[int, str]:
     return _cached_color_ramp(_normalize_color(color))
 
 
+# The valid 50-950 ramp stops, in 50-step increments. Every stop is >= 50, and
+# no hex/named color string is that long, so an int index of this magnitude is
+# unambiguously a ramp request and never collides with ordinary str indexing
+# (char indices 0-6, slices) -- which `RampColor` delegates to `str` untouched.
+_RAMP_STOPS = frozenset(range(50, 1000, 50))
+
+
+class RampColor(str):
+    """A hex color string that also addresses its own 50-950 tint/shade ramp.
+
+    Behaves as the plain color string everywhere it is used today
+    (`str.__eq__`, formatting, `color[1:]` slicing, char indexing), so it is a
+    drop-in for the previous `str` color values. Additionally, indexing with a
+    ramp stop returns that step of the color's ramp, treating the color itself
+    as the `[500]` anchor:
+
+        c.primary          # '#2780e3'  (a str)
+        c.primary[500]     # '#2780e3'  (the anchor, normalized)
+        c.primary[300]     # a lighter tint
+        c.primary[700]     # a darker shade
+        c.primary[1:]      # '2780e3'   (ordinary str slicing, unchanged)
+
+    Only int keys that are valid ramp stops (multiples of 50 in 50-950) are
+    intercepted; every other key falls through to `str.__getitem__`.
+    """
+
+    __slots__ = ()
+
+    def __getitem__(self, key):
+        if isinstance(key, int) and key in _RAMP_STOPS:
+            return _color_ramp(self)[key]
+        return super().__getitem__(key)
+
+
+def _as_ramp_color(value):
+    """Wrap a color string as a `RampColor`; pass through non-strings/None."""
+    if isinstance(value, str) and not isinstance(value, RampColor):
+        return RampColor(value)
+    return value
+
+
 def _relative_luminance(color: str) -> float:
     """Return WCAG relative luminance for a Pillow-supported color."""
     channels = [value / 255 for value in ImageColor.getrgb(color)]
@@ -298,22 +339,24 @@ class Colors:
             active (str):
                 An accent color.
         """
-        self.primary = primary
-        self.secondary = secondary
-        self.success = success
-        self.info = info
-        self.warning = warning
-        self.danger = danger
-        self.light = light
-        self.dark = dark
-        self.bg = bg
-        self.fg = fg
-        self.selectbg = selectbg
-        self.selectfg = selectfg
-        self.border = border
-        self.inputfg = inputfg
-        self.inputbg = inputbg
-        self.active = active
+        # Colors are stored as RampColor -- a str subclass that additionally
+        # ramp-addresses (c.primary[300]); a no-op for every existing str use.
+        self.primary = _as_ramp_color(primary)
+        self.secondary = _as_ramp_color(secondary)
+        self.success = _as_ramp_color(success)
+        self.info = _as_ramp_color(info)
+        self.warning = _as_ramp_color(warning)
+        self.danger = _as_ramp_color(danger)
+        self.light = _as_ramp_color(light)
+        self.dark = _as_ramp_color(dark)
+        self.bg = _as_ramp_color(bg)
+        self.fg = _as_ramp_color(fg)
+        self.selectbg = _as_ramp_color(selectbg)
+        self.selectfg = _as_ramp_color(selectfg)
+        self.border = _as_ramp_color(border)
+        self.inputfg = _as_ramp_color(inputfg)
+        self.inputbg = _as_ramp_color(inputbg)
+        self.active = _as_ramp_color(active)
 
     @staticmethod
     def make_transparent(alpha, foreground, background='#ffffff'):
@@ -457,6 +500,25 @@ class Colors:
         """
         return self.__dict__.get(color_label)
 
+    def ramp(self, color_label: str) -> Mapping[int, str]:
+        """Return the full immutable 50-950 tint/shade ramp for a color role.
+
+        The role's current value is treated as the `[500]` anchor. Equivalent
+        to reading each stop off the addressable color (`self.get(label)[stop]`)
+        but returns the whole mapping at once.
+
+        Parameters:
+
+            color_label (str):
+                A color label corresponding to a class property.
+
+        Returns:
+
+            Mapping[int, str]:
+                An immutable mapping of ramp stop (50-950) to hex color.
+        """
+        return _color_ramp(self.get(color_label))
+
     def set(self, color_label: str, color_value: str):
         """Set a color property value. This does not update any existing
         widgets. Can also be used to create on-demand color properties
@@ -470,7 +532,7 @@ class Colors:
             color_value (str):
                 A hexadecimal color value
         """
-        self.__dict__[color_label] = color_value
+        self.__dict__[color_label] = _as_ramp_color(color_value)
 
     def __iter__(self):
         return iter(
