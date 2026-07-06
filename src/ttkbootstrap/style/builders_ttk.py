@@ -14,6 +14,7 @@ from ttkbootstrap.style.theme import (
     Colors,
     ThemeDefinition,
     _accent_on_color,
+    _border_color,
     _mix_colors,
     _shade,
     _state_color,
@@ -87,7 +88,7 @@ class StyleBuilderTTK:
 
     def border(self, color: str) -> str:
         """Derive a local border by mixing a surface toward its on-color."""
-        return _mix_colors(color, self.on_color(color), 0.84)
+        return _border_color(color)
 
     def disabled(
         self, role: str = "background", surface: str | None = None

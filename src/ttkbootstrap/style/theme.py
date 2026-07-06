@@ -194,6 +194,18 @@ def _accent_on_color(surface: str) -> str:
     return '#000000'
 
 
+def _border_color(surface: str) -> str:
+    """Derive a neutral border by mixing a surface toward its on-color.
+
+    The dedicated border derivation (bootstack parity): 84% surface + 16% of the
+    surface's readable on-color, so a border is a subtle, mode-correct step off
+    the surface -- never the accent, and desaturated toward the on-color rather
+    than a raw lightness move that keeps a saturated surface saturated. This is
+    the same formula as the `StyleBuilderTTK.border()` helper.
+    """
+    return _mix_colors(surface, _accent_on_color(surface), 0.84)
+
+
 def _darken_color(color: str, percent: float) -> str:
     """Darken a color by reducing HLS lightness."""
     r, g, b = (value / 255 for value in ImageColor.getrgb(color))
@@ -743,10 +755,9 @@ _DARK_ACCENT_STOP = 800   # the dark-gray `dark` accent role (both modes)
 # Surface-derivation knobs. Hue/saturation-preserving lightness moves off the
 # authored background (NOT a tint toward white -- that would desaturate a
 # themed dark field, the regression Workstream E was chartered to fix). Initial
-# values; confirmed/tuned in the six-theme human visual gate.
+# values; confirmed/tuned in the human visual gate. `border` is not a lightness
+# move: it uses the dedicated `_border_color` (mix toward the on-color).
 _INPUT_LIFT = 0.03    # dark inputbg lift off bg
-_BORDER_MIX = 0.14    # light border darken
-_BORDER_MIX_D = 0.22  # dark border lighten
 _ACTIVE_MIX = 0.06    # light active/hover darken
 _ACTIVE_MIX_D = 0.09  # dark active/hover lighten
 
@@ -780,13 +791,12 @@ def _generate_colors(mode, anchors, neutral, background, foreground, secondary=N
 
     bg = _normalize_color(background)
     fg = _normalize_color(foreground)
+    border = _border_color(bg)
     if mode == "dark":
         inputbg = _lighten_color(bg, _INPUT_LIFT)
-        border = _lighten_color(bg, _BORDER_MIX_D)
         active = _lighten_color(bg, _ACTIVE_MIX_D)
     else:
         inputbg = bg
-        border = _darken_color(bg, _BORDER_MIX)
         active = _darken_color(bg, _ACTIVE_MIX)
 
     # selectbg is NOT just the selection highlight: the builders reuse it as a

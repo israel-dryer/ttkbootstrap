@@ -18,9 +18,8 @@ from ttkbootstrap.style.theme import (
     ThemeDefinition,
     _ACTIVE_MIX,
     _ACTIVE_MIX_D,
-    _BORDER_MIX,
-    _BORDER_MIX_D,
     _INPUT_LIFT,
+    _border_color,
     _darken_color,
     _lighten_color,
     _normalize_color,
@@ -39,13 +38,12 @@ def theme_from_legacy_dict(name, spec) -> ThemeDefinition:
     c = spec["colors"]
     mode = spec["type"]
     bg = _normalize_color(c["bg"])
+    border = _border_color(bg)
     if mode == "dark":
         inputbg = _lighten_color(bg, _INPUT_LIFT)
-        border = _lighten_color(bg, _BORDER_MIX_D)
         active = _lighten_color(bg, _ACTIVE_MIX_D)
     else:
         inputbg = bg
-        border = _darken_color(bg, _BORDER_MIX)
         active = _darken_color(bg, _ACTIVE_MIX)
     colors = Colors(
         primary=c["primary"],

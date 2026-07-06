@@ -172,7 +172,7 @@ hue-preserving `_darken_color`/`_lighten_color`.
 | `fg` | `fg` (authored) | |
 | `inputfg` | `fg` | |
 | `inputbg` | light: `bg`; dark: `_lighten_color(bg, _INPUT_LIFT)` | **hue-correct — the deferred fix** |
-| `border` | light: `_darken_color(bg, _BORDER_MIX)`; dark: `_lighten_color(bg, _BORDER_MIX_D)` | hue-preserving |
+| `border` | `_border_color(bg)` = `mix(bg, on_color(bg), 0.84)` | the **dedicated** border derivation, shared with `builder.border()`; desaturates toward the on-color (a lightness move kept saturated surfaces saturated — wrong) |
 | `active` | light: `_darken_color(bg, _ACTIVE_MIX)`; dark: `_lighten_color(bg, _ACTIVE_MIX_D)` | subtle hover fill |
 | `selectbg` | `N[_SECONDARY_STOP[mode]]` — **neutral**, see §4.2 | doubles as the trough/dark-border base |
 | `selectfg` | `_accent_on_color(selectbg)` | reuses on-color policy |
