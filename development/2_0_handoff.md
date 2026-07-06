@@ -3,20 +3,26 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-07-01 (focused Workstream E private ramps and builder
-color helpers implemented on `refactor/2.0-color-helpers`; `on_color` retuned to
-a white-preferred, saturation-aware policy after visual feedback. pytest
-installed and the suite ACTUALLY RUN this session — 188 passed / 1 known Tcl
-`nl.msg` env failure; two stale `test_color_helpers` assertions corrected (see
-below). Six-theme human visual gate PASSED. Branch is merge-ready — open the PR
-against `2.0`.)_
+_Last updated: 2026-07-05 (the color-helper branch is **MERGED into `2.0`** —
+PR #1085, merge commit `b7872a98`, 2026-07-01 21:04; PR #1084 was an earlier
+merge of the same branch. Prior session's "open the PR" actionable is done. Next
+actionable is the **fast-follow color-math PR** (`elevate` + `input_bg`), which
+needs its own design pass first — a stub is at
+`development/2_0_color_math_followup_design.md`.)_
+
+_Prior (2026-07-01): focused Workstream E private ramps and builder color
+helpers implemented on `refactor/2.0-color-helpers`; `on_color` retuned to a
+white-preferred, saturation-aware policy after visual feedback. pytest installed
+and the suite ACTUALLY RUN — 188 passed / 1 known Tcl `nl.msg` env failure; two
+stale `test_color_helpers` assertions corrected. Six-theme human visual gate
+PASSED._
 
 ## Where we are
 
 Integration branch: **`2.0`** (cut all 2.0 PRs against it, not `master`).
-Expected suite on `2.0`: **177 passed**, headless, order-independent. Expected
-after the color-helper branch: **189 passed**. The latest Python 3.12 run is
-**188 passed / 1 environment failure** because this Tcl install cannot read
+Expected suite on `2.0`: **189 passed** (the color-helper PR #1085 is now merged;
+merge commit `b7872a98`), headless, order-independent. The latest Python 3.12 run
+is **188 passed / 1 environment failure** because this Tcl install cannot read
 `tk8.6/msgs/nl.msg`; excluding localization gives **183 passed**.
 
 The engine keystone (Workstream A) is **complete and merged**: PR 1 (repaint,
@@ -41,12 +47,21 @@ registry, and 22 widget-family modules. Merge commit: `fa1cede8`.
 **PR #1083 is MERGED.** Scaling and asset-geometry normalization landed on
 `2.0` as merge commit `c1f9ed73`; its automated and four-scale human gates pass.
 
-**Current actionable → open the color-helper PR against `2.0`.** Branch:
-`refactor/2.0-color-helpers`, cut from `2.0` at `c1f9ed73`. Approved design:
-`development/2_0_color_helpers_design.md`. The six-theme human visual gate
-(`python examples/color_states_preview.py`) PASSED (user, 2026-07-01). Automated
-gates pass (188/1). Canonical bootstyle grammar (D) remains later and needs its
-own design pass.
+**The color-helper PR is MERGED (#1085 → `2.0`, merge commit `b7872a98`,
+2026-07-01).** Branch was `refactor/2.0-color-helpers` (cut from `2.0` at
+`c1f9ed73`); approved design `development/2_0_color_helpers_design.md`; six-theme
+human visual gate (`python examples/color_states_preview.py`) PASSED (user,
+2026-07-01); automated gates passed (188/1). The local branch is fully contained
+in `2.0` and safe to delete.
+
+**Current actionable → the fast-follow color-math PR (`elevate` + `input_bg`).**
+Per the hard rule it needs its own design pass FIRST — a starting stub is at
+`development/2_0_color_math_followup_design.md` (scope carried from the
+color-helper design's fast-follow section, below). Open the design, settle the
+one open decision (derive `inputbg` vs coexist — note it may depend on the
+deferred Workstream E theme-dict conversion), get sign-off, THEN implement on a
+new branch cut from `2.0`. Canonical bootstyle grammar (D) and theme/anchor (E)
+remain later, each with its own design pass.
 
 **pytest gap closed + two stale tests fixed (2026-07-01).** The prior session's
 env had no pytest, so `test_color_helpers` was written but never run. Installing
