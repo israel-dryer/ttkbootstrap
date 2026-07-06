@@ -25,11 +25,17 @@ ttkcreator demos — more sites than the prep doc listed) and flipped
 `normalize_bootstyle(..., warn=True)`, so an external tuple bootstyle now warns
 (removed in 3.0) while still resolving. `tooltip.bootstyle` narrowed to
 `Optional[str]`. Suite **260 passed**; import + all-warnings-as-errors widget
-smoke clean. **NEXT → D3**: generate the canonical reference table + a `BootStyle`
-string `Literal` from the vocab × registry (feeds the Workstream-H docs); add a
-test that the generated artifacts stay in sync with the live vocab + registry.
-Env note: the repo `.venv/` is broken on this Windows box (launcher fails);
-`.venv-home/` works — pytest was installed into it. _
+smoke clean. **D3 IMPLEMENTED** (branch `feat/2.0-pr-d3-bootstyle-reference`, PR open against
+`2.0`) — **Workstream D COMPLETE**: `tools/generate_bootstyle_reference.py`
+derives the **107** canonical bootstyle strings from vocab × registry, committed
+as the generated `BootStyle` `Literal` in `constants.py` (`apply_bootstyle` types
+`BootStyle | str`) + the reference table `development/2_0_bootstyle_reference.md`
+(Workstream-H source). Sync tests fail if a builder is added without
+regenerating. Suite 257 passed (excl. the known `nl.msg` env flake). **NEXT →
+Workstream H (docs)** is the main remaining 2.0 headliner; fold in the bootstyle
+reference + `development/2_0_theme_migration.md`. Env note: the repo `.venv/` is
+broken on this Windows box (launcher fails); `.venv-home/` works — pytest was
+installed into it. _
 
 _Prior 2026-07-06 (**Workstream E (theme/anchor) COMPLETE** — all three
 PRs merged: E1 #1088 (`Colors`→`RampColor` resolved view + `c.primary[300]`),
