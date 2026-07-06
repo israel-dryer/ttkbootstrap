@@ -7,6 +7,8 @@ proving every registered builder key is expressible in the grammar.
 """
 from typing import get_args
 
+import importlib.util
+import pathlib
 import warnings
 
 import pytest
@@ -266,3 +268,50 @@ def test_external_tuple_bootstyle_warns_and_resolves(root):
     with pytest.warns(DeprecationWarning, match="tuple/list bootstyle"):
         b = ttk.Button(root, bootstyle=("primary", "outline"))
     assert b.cget("style") == "primary.Outline.TButton"
+
+
+# --------------------------------------------------------------------------- #
+# D3: generated reference (BootStyle Literal + markdown) stays in sync
+# --------------------------------------------------------------------------- #
+def _load_reference_generator():
+    path = (
+        pathlib.Path(__file__).resolve().parents[1]
+        / "tools"
+        / "generate_bootstyle_reference.py"
+    )
+    spec = importlib.util.spec_from_file_location("_bootstyle_ref_gen", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_bootstyle_literal_matches_registry():
+    # The committed BootStyle Literal must equal the set derived live from the
+    # vocabulary x registry, so adding a builder without regenerating fails.
+    gen = _load_reference_generator()
+    assert set(get_args(C.BootStyle)) == set(gen.canonical_bootstyles())
+
+
+def test_bootstyle_reference_markdown_is_current():
+    gen = _load_reference_generator()
+    path = (
+        pathlib.Path(__file__).resolve().parents[1]
+        / "development"
+        / "2_0_bootstyle_reference.md"
+    )
+    current = path.read_text(encoding="utf-8")
+    expected = gen.reference_table_markdown() + "\n"
+    assert current == expected, (
+        "development/2_0_bootstyle_reference.md is stale; regenerate with "
+        "`python tools/generate_bootstyle_reference.py`"
+    )
+
+
+def test_every_canonical_string_is_in_vocab():
+    # Every generated canonical string classifies with no unknown-token warning,
+    # i.e. it is composed entirely of closed-vocabulary tokens.
+    gen = _load_reference_generator()
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        for s in gen.canonical_bootstyles():
+            _classify_tokens(s, warn=True)
