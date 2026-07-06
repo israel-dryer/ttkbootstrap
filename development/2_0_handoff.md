@@ -13,8 +13,16 @@ E2 #1089 (semantic-anchor `Theme` model + curated 15-family/30-theme catalog +
 default `bootstrap-light`, legacy-names helpful-error, `selectbg`=neutral,
 readonly fields=`inputbg`. **Migration guide `development/2_0_theme_migration.md`
 — FOLD INTO the Workstream-H docs rewrite** (kept in `development/` so it
-survives the docs transition). **Next headliner: Workstream D (canonical
-bootstyle grammar) — needs its own design pass first (hard rule).** Also
+survives the docs transition). **NEXT SESSION → Workstream D (canonical
+bootstyle grammar): start from the prep doc `development/2_0_bootstyle_grammar_notes.md`
+(ground truth + the 6 open forks), run the DESIGN PASS FIRST (hard rule) → write
+`development/2_0_bootstyle_grammar_design.md` → PR-by-PR.** Headlines from the
+prep: the resolver is a regex substring-search that silently drops unknown
+tokens (no closed vocab); the vocab is split across two out-of-sync sources
+(`Keywords` in bootstyle.py vs `BootColor`/`BootType` in constants.py — `round`
+missing from BootType, `toggle`/`toolbutton` mis-typed, `focus`/`input` dead);
+no `_compat.py` yet; internal tuple callers to migrate = meter/dateentry/tooltip/
+datepicker; the loud-fail seam is `statespec`/`state_map` in layout.py. Also
 ongoing: Workstream H (docs). Prior: color-math #1087 (`0218aba3`),
 color-helper #1085 (`b7872a98`).)_
 
