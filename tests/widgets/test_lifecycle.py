@@ -126,7 +126,7 @@ def test_theme_walk_stamps_and_repaints_mounted_widgets(root):
     root.update_idletasks()
 
     start = style.theme.name
-    other = "darkly" if start != "darkly" else "cosmo"
+    other = "bootstrap-dark" if start != "bootstrap-dark" else "bootstrap-light"
     bg_before = style.lookup("primary.TButton", "background")
 
     style.theme_use(other)
@@ -150,7 +150,7 @@ def test_autostyle_false_widget_skipped_by_walk(root):
     """
     style = root.style
     start = style.theme.name
-    other = "darkly" if start != "darkly" else "cosmo"
+    other = "bootstrap-dark" if start != "bootstrap-dark" else "bootstrap-light"
 
     plain = ttk.Canvas(root, autostyle=False, background="#abcdef")
     styled = ttk.Canvas(root)
@@ -173,7 +173,7 @@ def test_theme_switch_cycles_do_not_leak_subscribers(root):
     """Repeated create/destroy/theme-switch cycles leave no residual refs."""
     style = root.style
     start = style.theme.name
-    other = "darkly" if start != "darkly" else "cosmo"
+    other = "bootstrap-dark" if start != "bootstrap-dark" else "bootstrap-light"
 
     for _ in range(5):
         w = ttk.Combobox(root, values=["a", "b"])

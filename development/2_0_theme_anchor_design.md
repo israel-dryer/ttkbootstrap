@@ -1,9 +1,25 @@
 # ttkbootstrap 2.0 — Workstream E: semantic-anchor theme model
 
-**Status:** design pass approved; **PR E1 implemented + green** (§8). E2/E3 not
-started.
-**Branch (planned):** cut from `2.0`.
+**Status:** design pass approved; **PR E1 merged**; **PR E2 implemented + green,
+awaiting the human visual gate** (§8). E3 not started.
+**Branch:** E2 on `refactor/2.0-pr-e2-theme-model` (from `2.0`).
 **Date:** 2026-07-06.
+
+> **PR E2 — IMPLEMENTED, GATE PENDING.** `Theme` semantic-anchor model +
+> schema→16-key derivation in `style/theme.py`; curated 15-family catalog
+> (`themes/builtin.py`, 30 light/dark themes); legacy 16-key adapter + opt-in
+> `install_legacy_themes()` (`themes/legacy.py`); `_load_themes` registers the
+> curated catalog; default theme `bootstrap-light`; helpful `TclError` for
+> legacy names pre-opt-in; `Theme`/`install_legacy_themes` re-exported. The
+> deferred hue-correct `inputbg` fix is in and regression-tested. **`selectbg`
+> correction** (§2 #9): reverted from `primary` to neutral after a visual check
+> found the accent bleeding into dark troughs/borders (builders reuse `selectbg`
+> as a neutral surface). Non-localization suite **210 passed** (+25 over E1's
+> 201: 15 in `test_theme_anchor.py` + the E1 10; localization passes in
+> isolation, order-dependent `nl.msg` env failure otherwise); warning-free
+> import; standalone module imports; PEP 649 sweep (6 modules) clean;
+> `examples/color_states_preview.py` sweeps all 30 curated themes. **Merge is
+> gated on the six-theme (now full-catalog) human visual review.**
 
 > **PR E1 — DONE** (branch `refactor/2.0-pr-e1-colors-ramp`, PR open against
 > `2.0`). `Colors` is now a resolved view:
@@ -60,6 +76,26 @@ bootstack's public API or its full surface taxonomy.
    overlay/raised taxonomy — ttk does not need it.
 7. **Plumbing is derived, not authored, for the curated set** (this is where the
    deferred `inputbg` fix lands).
+
+### E2-kickoff forks (locked 2026-07-06)
+
+8. **Default theme = `bootstrap-light`** (was `litera`, which folds into the
+   bootstrap family; `litera` reachable via `install_legacy_themes()`).
+9. **`selectbg = neutral`** for the curated set (from the neutral ramp,
+   `_SECONDARY_STOP` step); `selectfg = _accent_on_color(selectbg)`. Legacy
+   themes keep their authored `selectbg`.
+   **Correction (2026-07-06):** the kickoff pick of `selectbg = primary` was
+   reverted after a visual check — the builders **reuse `selectbg` as a neutral
+   surface** for dark-mode borders (`entry`/`combobox`/`notebook`/`scrollbar`/
+   `labelframe`/`panedwindow`) and for scale/progress/label troughs
+   (`shade(selectbg)`). An accent `selectbg` therefore bled the primary color
+   into every dark trough and border. Keeping `selectbg` neutral honors E2's
+   "builders untouched" rule. Accent-colored *selection* (Treeview/Entry) would
+   require decoupling the true selection sites from the trough/border sites in
+   the builders — a separate change, not E2.
+10. **Legacy names = helpful error, no aliases.** `themename="darkly"` without
+    `install_legacy_themes()` raises a `TclError` naming the fix (call
+    `install_legacy_themes()` or use a 2.0 theme). No silent aliases.
 
 ---
 
@@ -138,7 +174,7 @@ hue-preserving `_darken_color`/`_lighten_color`.
 | `inputbg` | light: `bg`; dark: `_lighten_color(bg, _INPUT_LIFT)` | **hue-correct — the deferred fix** |
 | `border` | light: `_darken_color(bg, _BORDER_MIX)`; dark: `_lighten_color(bg, _BORDER_MIX_D)` | hue-preserving |
 | `active` | light: `_darken_color(bg, _ACTIVE_MIX)`; dark: `_lighten_color(bg, _ACTIVE_MIX_D)` | subtle hover fill |
-| `selectbg` | `primary` (resolved above) — **decision, see §4.1** | |
+| `selectbg` | `N[_SECONDARY_STOP[mode]]` — **neutral**, see §4.2 | doubles as the trough/dark-border base |
 | `selectfg` | `_accent_on_color(selectbg)` | reuses on-color policy |
 
 ### 4.1 Tunable constants (initial values; settle in the human visual gate)

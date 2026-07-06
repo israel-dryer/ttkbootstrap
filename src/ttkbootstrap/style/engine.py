@@ -201,6 +201,13 @@ class Style(ttk.Style):
             # Creating the builder also runs theme_create + theme_use for the
             # new theme and builds its default (".") styles.
             self._theme_objects[themename] = StyleBuilderTTK()
+        elif themename in STANDARD_THEMES:
+            raise TclError(
+                f"{themename!r} is a legacy (pre-2.0) theme name. Call "
+                f"ttkbootstrap.install_legacy_themes() to enable the legacy "
+                f"catalog, or use a 2.0 theme such as 'bootstrap-dark' "
+                f"(see Style.theme_names())."
+            )
         else:
             raise TclError(themename, "is not a valid theme.")
 
@@ -352,25 +359,31 @@ class Style(ttk.Style):
         super().configure(style, **kw)
 
     def _load_themes(self, EXTERNAL_THEMES=None):
-        """Load all ttkbootstrap defined themes"""
-        # create a theme definition object for each theme, this will be
-        # used to generate the theme in tkinter along with any assets
-        # at run-time
+        """Register the curated 2.0 theme catalog (and any user themes).
+
+        The built-in catalog is the curated semantic-anchor `Theme` families
+        (`themes/builtin.py`), each generating a `<name>-light`/`<name>-dark`
+        pair. User-authored 16-key dicts (`USER_THEMES`, `EXTERNAL_THEMES`) are
+        adapted through the legacy quarantine so they keep working and gain the
+        plumbing cleanup. The full pre-2.0 name catalog is opt-in via
+        `ttkbootstrap.install_legacy_themes()`.
+        """
+        from ttkbootstrap.themes.builtin import CURATED_THEMES
+
+        for theme in CURATED_THEMES:
+            for definition in theme.to_definitions():
+                self.register_theme(definition)
+
+        extra = {}
         if USER_THEMES:
-            STANDARD_THEMES.update(USER_THEMES)
-
+            extra.update(USER_THEMES)
         if EXTERNAL_THEMES:
-            STANDARD_THEMES.update(EXTERNAL_THEMES)
+            extra.update(EXTERNAL_THEMES)
+        if extra:
+            from ttkbootstrap.themes.legacy import theme_from_legacy_dict
 
-        theme_settings = {"themes": STANDARD_THEMES}
-        for name, definition in theme_settings["themes"].items():
-            self.register_theme(
-                ThemeDefinition(
-                    name=name,
-                    themetype=definition["type"],
-                    colors=definition["colors"],
-                )
-            )
+            for name, spec in extra.items():
+                self.register_theme(theme_from_legacy_dict(name, spec))
 
     def _register_ttkstyle(self, ttkstyle):
         """Register that a ttk style name. This ensures that the

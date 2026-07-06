@@ -121,7 +121,7 @@ def _channels(hex_color):
 
 def test_shade_tint_mute_builder_helpers(root):
     style = root.style
-    style.theme_use('darkly')
+    style.theme_use('bootstrap-dark')
     builder = style._get_builder()
 
     # shade() darkens a fill toward black (the recessed-trough recipes)
@@ -148,7 +148,7 @@ def test_shade_tint_mute_builder_helpers(root):
 
 def test_light_theme_builder_helpers(root):
     style = root.style
-    style.theme_use('flatly')
+    style.theme_use('bootstrap-light')
     builder = style._get_builder()
 
     assert builder.active('#2780e3') == '#388ae5'
@@ -167,7 +167,7 @@ def test_light_theme_builder_helpers(root):
 
 def test_dark_theme_builder_helpers(root):
     style = root.style
-    style.theme_use('darkly')
+    style.theme_use('bootstrap-dark')
     builder = style._get_builder()
 
     assert builder.on_color(builder.colors.primary) == '#ffffff'
@@ -175,8 +175,11 @@ def test_dark_theme_builder_helpers(root):
     assert builder.border(builder.colors.primary) == _mix_colors(
         builder.colors.primary, '#ffffff', 0.84
     )
-    assert builder.disabled('text') == '#454749'
-    assert builder.disabled() == '#2a2b2d'
+    # dark disabled blends: 25% #adb5bd (text) / 20% #495057 (bg) over the
+    # surface; computed from the documented weights so the check is
+    # theme-robust rather than pinned to one theme's background.
+    assert builder.disabled('text') == _mix_colors('#adb5bd', builder.colors.bg, 0.25)
+    assert builder.disabled() == _mix_colors('#495057', builder.colors.bg, 0.20)
 
 
 def test_on_color_is_safe_and_independent_of_legacy_toggle(root):
@@ -184,12 +187,12 @@ def test_on_color_is_safe_and_independent_of_legacy_toggle(root):
     previous = style.dynamic_foreground
     try:
         for theme in (
-            'flatly',
-            'minty',
-            'morph',
-            'darkly',
-            'solar',
-            'vapor',
+            'bootstrap-light',
+            'minty-light',
+            'catppuccin-light',
+            'bootstrap-dark',
+            'solarized-dark',
+            'vapor-dark',
         ):
             style.theme_use(theme)
             builder = style._get_builder()
@@ -249,7 +252,7 @@ def test_direct_color_math_is_limited_to_special_effects():
 
 @pytest.mark.parametrize(
     ('theme', 'colorname'),
-    [('flatly', 'warning'), ('darkly', 'primary')],
+    [('bootstrap-light', 'warning'), ('bootstrap-dark', 'primary')],
 )
 def test_solid_button_recipe_uses_helper_state_contract(
     root, theme, colorname

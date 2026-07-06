@@ -246,7 +246,7 @@ PAGES: Final[ViewArg] = "pages"
 # Themes / ttk themes
 # ---------------------------
 DEFAULT: Final[str] = "default"
-DEFAULT_THEME: Final[str] = "litera"
+DEFAULT_THEME: Final[str] = "bootstrap-light"
 
 TTK_CLAM: Final[TtkTheme] = "clam"
 TTK_ALT: Final[TtkTheme] = "alt"

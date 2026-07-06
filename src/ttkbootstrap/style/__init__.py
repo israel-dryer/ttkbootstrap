@@ -6,7 +6,7 @@ module). The implementation is split across submodules (`theme`, `builders_tk`,
 implementation detail and carry no back-compat guarantee. Import the names below
 from `ttkbootstrap.style` (or, preferably, from `ttkbootstrap`).
 """
-from ttkbootstrap.style.theme import Colors, RampColor, ThemeDefinition
+from ttkbootstrap.style.theme import Colors, RampColor, Theme, ThemeDefinition
 from ttkbootstrap.style.builders_tk import StyleBuilderTK
 from ttkbootstrap.style.builders_ttk import StyleBuilderTTK
 from ttkbootstrap.style.engine import Style
@@ -34,6 +34,7 @@ from ttkbootstrap.style.icons import Icon, icon_element, IconRenderer
 __all__ = [
     "Colors",
     "RampColor",
+    "Theme",
     "ThemeDefinition",
     "StyleBuilderTK",
     "StyleBuilderTTK",

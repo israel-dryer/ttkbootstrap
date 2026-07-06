@@ -51,7 +51,7 @@ def test_theme_switch_yields_fresh_pixels(root):
     """
     style = root.style
     start = style.theme.name
-    other = "darkly" if start != "darkly" else "flatly"
+    other = "bootstrap-dark" if start != "bootstrap-dark" else "bootstrap-light"
 
     ttk.Scale(root, bootstyle="primary").pack()
     root.update_idletasks()
@@ -77,7 +77,7 @@ def test_theme_return_is_a_cache_hit(root):
     """Returning to an already-visited theme renders no new images."""
     style = root.style
     start = style.theme.name
-    other = "darkly" if start != "darkly" else "flatly"
+    other = "bootstrap-dark" if start != "bootstrap-dark" else "bootstrap-light"
 
     ttk.Scale(root, bootstyle="primary").pack()
     ttk.Checkbutton(root, bootstyle="round-toggle").pack()
