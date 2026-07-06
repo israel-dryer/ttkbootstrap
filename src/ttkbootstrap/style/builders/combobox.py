@@ -23,12 +23,8 @@ def build_combobox_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     ttk_class = "TCombobox"
 
     on_disabled = builder.disabled("text", builder.colors.inputbg)
-    if builder.is_light_theme:
-        border = builder.colors.border
-        readonly = builder.colors.light
-    else:
-        border = builder.colors.selectbg
-        readonly = border
+    border = builder.colors.border
+    readonly = builder.colors.light if builder.is_light_theme else builder.colors.selectbg
 
     if any([colorname == DEFAULT, colorname == ""]):
         ttk_style = ttk_class
@@ -129,10 +125,7 @@ def update_combobox_popdown_style(builder: StyleBuilderTTK, widget):
         widget (ttk.Combobox):
             The combobox element to be updated.
     """
-    if builder.is_light_theme:
-        border = builder.colors.border
-    else:
-        border = builder.colors.selectbg
+    border = builder.colors.border
 
     tk_settings = []
     tk_settings.extend(["-borderwidth", 2])

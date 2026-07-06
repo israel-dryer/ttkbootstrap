@@ -26,10 +26,7 @@ def build_labelframe_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         foreground = builder.colors.fg
         ttk_style = ttk_class
 
-        if builder.is_light_theme:
-            border_color = builder.colors.border
-        else:
-            border_color = builder.colors.selectbg
+        border_color = builder.colors.border
 
     else:
         foreground = builder.colors.get(colorname)

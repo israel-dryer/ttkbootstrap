@@ -321,17 +321,16 @@ def test_solid_button_recipe_uses_helper_state_contract(
         ('pressed', '!disabled')
     ]
 
-    # Input controls keep their theme-authored structural border and readonly
-    # fill; only their disabled foreground moves to the helper contract.
-    structural = (
-        builder.colors.border
-        if builder.is_light_theme
-        else builder.colors.selectbg
-    ).lower()
+    # Input controls now use the derived `colors.border` in BOTH modes: the old
+    # dark-mode `selectbg` border workaround (needed when authored dark themes
+    # had border == bg) is retired, since `colors.border` is a proper visible
+    # border in dark themes too. The readonly fill stays a neutral (light: the
+    # `light` accent; dark: `selectbg`).
+    border = builder.colors.border.lower()
     readonly = (
         builder.colors.light
         if builder.is_light_theme
-        else structural
+        else builder.colors.selectbg
     ).lower()
     for family, style_name in (
         ('entry', 'TEntry'),
@@ -339,7 +338,7 @@ def test_solid_button_recipe_uses_helper_state_contract(
         ('spinbox', 'TSpinbox'),
     ):
         builder.build_style('default', family, '', required=True)
-        assert style.configure(style_name)['bordercolor'].lower() == structural
+        assert style.configure(style_name)['bordercolor'].lower() == border
         assert option_map(style_name, 'foreground')[
             ('disabled',)
         ] == builder.disabled('text', builder.colors.inputbg)

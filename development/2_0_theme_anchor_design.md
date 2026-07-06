@@ -177,6 +177,21 @@ hue-preserving `_darken_color`/`_lighten_color`.
 | `selectbg` | `N[_SECONDARY_STOP[mode]]` — **neutral**, see §4.2 | doubles as the trough/dark-border base |
 | `selectfg` | `_accent_on_color(selectbg)` | reuses on-color policy |
 
+### 4.1a Builder border consumption (retire the dark-mode workaround)
+
+E2 assumed "builders untouched," but that assumption broke: many builders set a
+widget's border with `border = colors.border if is_light_theme else
+colors.selectbg`. The dark-mode `selectbg` branch existed **only** because
+authored dark themes had `border == bg` (an invisible border), so they borrowed
+`selectbg` as a visible line. With E2's derived `colors.border` (a proper
+visible border in *both* modes, for curated **and** legacy themes), that branch
+is obsolete — and actively wrong, since `selectbg` is now the neutral
+trough/selection color. So the border consumers now use `colors.border`
+unconditionally: ttk `entry`, `combobox`, `spinbox`, `labelframe`, `notebook`,
+`panedwindow`, `separator`; tk `Entry`, `Spinbox`, `Scale`, `LabelFrame`,
+`Text`. (Outline *buttons* keep `bordercolor = accent` — a colored outline is
+their design, not this bug. Troughs keep `shade(selectbg)` — neutral by design.)
+
 ### 4.1 Tunable constants (initial values; settle in the human visual gate)
 
 ```python

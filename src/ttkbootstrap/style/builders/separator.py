@@ -26,10 +26,7 @@ def build_separator_style(builder: StyleBuilderTTK, accent=DEFAULT):
     v_size = [1, 40]
 
     # style colors
-    if builder.is_light_theme:
-        default_color = builder.colors.border
-    else:
-        default_color = builder.colors.selectbg
+    default_color = builder.colors.border
 
     if any([accent == DEFAULT, accent == ""]):
         background = default_color

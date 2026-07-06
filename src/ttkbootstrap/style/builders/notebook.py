@@ -18,12 +18,8 @@ def build_notebook_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     """
     ttk_class = "TNotebook"
 
-    if builder.is_light_theme:
-        border_color = builder.colors.border
-        foreground = builder.colors.inputfg
-    else:
-        border_color = builder.colors.selectbg
-        foreground = builder.colors.selectfg
+    border_color = builder.colors.border
+    foreground = builder.colors.inputfg if builder.is_light_theme else builder.colors.selectfg
 
     if any([colorname == DEFAULT, colorname == ""]):
         background = builder.colors.inputbg
