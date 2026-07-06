@@ -5,6 +5,7 @@ import tkinter as tk
 from ttkbootstrap.constants import *
 from ttkbootstrap.style import StyleBuilderTTK
 from ttkbootstrap.style.builders.registry import register_builder
+from ttkbootstrap.style.builders.utils import neutral_fill
 
 
 @register_builder("default", "toolbutton")
@@ -21,29 +22,50 @@ def build_toolbutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     """
     ttk_class = "Toolbutton"
 
-    if any([colorname == DEFAULT, colorname == ""]):
+    # bootstack on/off model: OFF is a quiet raised surface with muted text; ON
+    # is the accent -- or, for `neutral` (no accent to switch to), a stronger
+    # surface raise so "on" still reads as distinct from "off".
+    unselected = neutral_fill(builder, 1)
+
+    if colorname == NEUTRAL:
+        ttk_style = f"{NEUTRAL}.{ttk_class}"
+        selected = neutral_fill(builder, 2)
+    elif any([colorname == DEFAULT, colorname == ""]):
         ttk_style = ttk_class
         selected = builder.colors.primary
     else:
         ttk_style = f"{colorname}.{ttk_class}"
         selected = builder.colors.get(colorname)
 
-    if builder.is_light_theme:
-        unselected = builder.colors.border
-    else:
-        unselected = builder.colors.selectbg
-
     disabled = builder.disabled()
 
     on_selected = builder.on_color(selected)
-    on_unselected = builder.on_color(unselected)
+    on_unselected = builder.mute(builder.colors.fg, unselected)  # muted off text
     on_disabled = builder.disabled("text", disabled)
+
+    # 1px hairline border, matching the ttk.Button treatment: dark/light always
+    # track the fill (no bevel); `bordercolor` is the only distinct edge and is
+    # derived from whatever fill the segment is currently showing.
+    # A toolbutton is a toggle: only ON (selected) and OFF (unselected) change
+    # the appearance -- no hover/active or pressed preview.
+    fill_states = [
+        ("disabled", disabled),
+        ("selected !disabled", selected),
+    ]
+    border_states = [
+        ("disabled", disabled),
+        ("selected !disabled", builder.border(selected)),
+    ]
 
     builder.configure(
         ttk_style,
         foreground=on_unselected,
         background=unselected,
-        relief=tk.FLAT,
+        bordercolor=builder.border(unselected),
+        darkcolor=unselected,
+        lightcolor=unselected,
+        relief=tk.RAISED,
+        borderwidth=1,  # 1px hairline; intentionally unscaled
         focusthickness=builder.scale_size(1),
         focuscolor=on_unselected,
         padding=builder.scale_size((10, 5)),
@@ -53,23 +75,75 @@ def build_toolbutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         ttk_style,
         foreground=[
             ("disabled", on_disabled),
-            ("active", on_selected),
             ("selected", on_selected),
         ],
         focuscolor=[
             ("disabled", on_disabled),
-            ("active", on_selected),
             ("selected", on_selected),
         ],
-        background=[
-            ("disabled", disabled),
-            ("pressed !disabled", selected),
-            ("selected !disabled", selected),
-            ("active !disabled", selected),
-        ]
+        background=fill_states,
+        bordercolor=border_states,
+        darkcolor=fill_states,
+        lightcolor=fill_states,
     )
 
     # register ttk style
+    builder.register_ttkstyle(ttk_style)
+
+
+def _build_neutral_outline_toolbutton(builder: StyleBuilderTTK, ttk_class):
+    """Neutral outline toolbutton: OFF is the flat surface, ON a raised surface.
+
+    The no-accent analog of the outline toolbutton -- with no accent to latch to,
+    "on" is shown by a subtle surface raise (`neutral_fill`) rather than a color.
+    """
+    ttk_style = f"{NEUTRAL}.{ttk_class}"
+    unselected = builder.colors.bg
+    selected = neutral_fill(builder, 1)
+    on_unselected = builder.mute(builder.colors.fg, unselected)
+    on_selected = builder.on_color(selected)
+    disabled = builder.disabled()
+    on_disabled = builder.disabled("text", disabled)
+
+    # A toolbutton is a toggle: only ON (selected) and OFF (unselected) change
+    # the appearance -- no hover/active or pressed preview.
+    fill_states = [
+        ("disabled", disabled),
+        ("selected !disabled", selected),
+    ]
+    border_states = [
+        ("disabled", disabled),
+        ("selected !disabled", builder.border(selected)),
+    ]
+    builder.configure(
+        ttk_style,
+        foreground=on_unselected,
+        background=unselected,
+        bordercolor=builder.border(unselected),
+        darkcolor=unselected,
+        lightcolor=unselected,
+        relief=tk.RAISED,
+        borderwidth=1,  # 1px hairline; intentionally unscaled
+        focusthickness=builder.scale_size(1),  # match solid toolbutton height
+        focuscolor=on_unselected,
+        padding=builder.scale_size((10, 5)),
+        anchor=tk.CENTER,
+    )
+    builder.style.map(
+        ttk_style,
+        foreground=[
+            ("disabled", on_disabled),
+            ("selected", on_selected),
+        ],
+        focuscolor=[  # focus ring tracks the text color
+            ("disabled", on_disabled),
+            ("selected", on_selected),
+        ],
+        background=fill_states,
+        bordercolor=border_states,
+        darkcolor=fill_states,
+        lightcolor=fill_states,
+    )
     builder.register_ttkstyle(ttk_style)
 
 
@@ -87,6 +161,9 @@ def build_outline_toolbutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     """
     ttk_class = "Outline.Toolbutton"
 
+    if colorname == NEUTRAL:
+        _build_neutral_outline_toolbutton(builder, ttk_class)
+        return
 
     if any([colorname == DEFAULT, colorname == ""]):
         ttk_style = ttk_class
@@ -95,13 +172,9 @@ def build_outline_toolbutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         ttk_style = f"{colorname}.{ttk_class}"
 
     accent = builder.colors.get(colorname)
-    selected = active = pressed = accent
-    unselected = builder.colors.bg
-
-    on_selected = on_active = on_pressed = builder.on_color(selected)
-    on_unselected = builder.on_color(unselected)
+    selected = accent
+    on_selected = builder.on_color(selected)
     on_disabled = builder.disabled("text")
-
 
     builder.configure(
         ttk_style,
@@ -111,41 +184,38 @@ def build_outline_toolbutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         darkcolor=builder.colors.bg,
         lightcolor=builder.colors.bg,
         relief=tk.RAISED,
-        focusthickness=0,
-        focuscolor=on_unselected,
+        borderwidth=1,  # 1px hairline; intentionally unscaled
+        focusthickness=builder.scale_size(1),  # match solid toolbutton height
+        focuscolor=accent,  # focus ring matches the text color (accent at rest)
         padding=builder.scale_size((10, 5)),
         anchor=tk.CENTER,
     )
+    # A toolbutton is a toggle: only ON (selected) vs OFF (unselected) -- no
+    # hover/active or pressed preview. The focus ring tracks the text color.
     builder.style.map(
         ttk_style,
         foreground=[
             ("disabled", on_disabled),
-            ("pressed !disabled", on_pressed),
             ("selected !disabled", on_selected),
-            ("active !disabled", on_active),
+        ],
+        focuscolor=[
+            ("disabled", on_disabled),
+            ("selected !disabled", on_selected),
         ],
         background=[
-            ("pressed !disabled", pressed),
-            ("selected !disabled", pressed),
-            ("active !disabled", active),
+            ("selected !disabled", selected),
         ],
         bordercolor=[
             ("disabled", on_disabled),
-            ("pressed !disabled", pressed),
-            ("selected !disabled", pressed),
-            ("active !disabled", active),
+            ("selected !disabled", selected),
         ],
         darkcolor=[
             ("disabled", builder.colors.bg),
-            ("pressed !disabled", pressed),
-            ("selected !disabled", pressed),
-            ("active !disabled", active),
+            ("selected !disabled", selected),
         ],
         lightcolor=[
             ("disabled", builder.colors.bg),
-            ("pressed !disabled", pressed),
-            ("selected !disabled", pressed),
-            ("active !disabled", active),
+            ("selected !disabled", selected),
         ],
     )
     # register ttkstyle

@@ -35,6 +35,8 @@ from ttkbootstrap.constants import (  # noqa: E402
     BOOTSTYLE_COLORS,
     BOOTSTYLE_BASES,
     BOOTSTYLE_INTERNAL_MODIFIERS,
+    NEUTRAL,
+    NEUTRAL_FAMILIES,
 )
 from ttkbootstrap.style.builders import load_builders  # noqa: E402
 from ttkbootstrap.style.builders.registry import (  # noqa: E402
@@ -74,6 +76,11 @@ def _strings_for_key(variant, family):
     modifier = None if variant == DEFAULT_VARIANT else variant
     base = family if family in BOOTSTYLE_BASES else None
     for color in (None, *BOOTSTYLE_COLORS):
+        # `neutral` is a derived, no-accent color that only renders for a curated
+        # set of families (NEUTRAL_FAMILIES) -- don't advertise it elsewhere even
+        # though the tokenizer would parse it.
+        if color == NEUTRAL and family not in NEUTRAL_FAMILIES:
+            continue
         parts = [p for p in (color, modifier, base) if p]
         if parts:
             yield "-".join(parts)

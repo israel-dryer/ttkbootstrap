@@ -5,6 +5,7 @@ import tkinter as tk
 from ttkbootstrap.constants import *
 from ttkbootstrap.style import StyleBuilderTTK
 from ttkbootstrap.style.builders.registry import register_builder
+from ttkbootstrap.style.builders.utils import neutral_fill
 
 
 @register_builder("default", "button")
@@ -20,27 +21,93 @@ def build_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     """
     ttk_class = "TButton"
 
-    if any([colorname == DEFAULT, colorname == ""]):
+    # Every solid button carries a subtle border derived from its own fill
+    # (`border(fill)` -- the fill blended toward its text color), so the shape
+    # stays defined on any surface. `darkcolor`/`lightcolor` track the fill so
+    # only the border ring shows (no clam bevel). `neutral` is just the
+    # no-accent fill (a mode-aware raise of the surface) through this same path.
+    if colorname == NEUTRAL:
+        ttk_style = f"{NEUTRAL}.{ttk_class}"
+        fill = neutral_fill(builder)
+    elif any([colorname == DEFAULT, colorname == ""]):
         ttk_style = ttk_class
-        accent = builder.colors.primary
-        on_accent = builder.on_color(accent)
+        fill = builder.colors.primary
     else:
         ttk_style = f"{colorname}.{ttk_class}"
-        accent = builder.colors.get(colorname)
-        on_accent = builder.on_color(accent)
+        fill = builder.colors.get(colorname)
 
-    pressed = builder.pressed(accent)
-    hover = builder.active(accent)
+    on_fill = builder.on_color(fill)
+    hover = builder.active(fill)
+    pressed = builder.pressed(fill)
     disabled = builder.disabled()
     on_disabled = builder.disabled("text", disabled)
 
+    # Border: a subtle same-hue edge derived from the fill. The clam dark/light
+    # regions always track the *fill* (in every state), so no two-tone bevel is
+    # ever drawn -- `bordercolor` is the only distinct edge color, itself the
+    # fill's derived border in each state.
+    fill_states = [
+        ("disabled", disabled),
+        ("pressed !disabled", pressed),
+        ("hover !disabled", hover),
+    ]
+    border_states = [
+        ("disabled", disabled),
+        ("pressed !disabled", builder.border(pressed)),
+        ("hover !disabled", builder.border(hover)),
+    ]
+
     builder.configure(
         ttk_style,
-        foreground=on_accent,
-        background=accent,
-        relief=tk.FLAT,
+        foreground=on_fill,
+        background=fill,
+        bordercolor=builder.border(fill),
+        darkcolor=fill,
+        lightcolor=fill,
+        relief=tk.RAISED,
+        borderwidth=1,  # 1px hairline; intentionally unscaled
         focusthickness=builder.scale_size(1),
-        focuscolor=on_accent,
+        focuscolor=on_fill,
+        padding=builder.scale_size((10, 5)),
+        anchor=tk.CENTER,
+    )
+    builder.style.map(
+        ttk_style,
+        foreground=[("disabled", on_disabled)],
+        focuscolor=[("disabled", on_disabled)],
+        background=fill_states,
+        bordercolor=border_states,
+        darkcolor=fill_states,
+        lightcolor=fill_states,
+    )
+    # register ttkstyle
+    builder.register_ttkstyle(ttk_style)
+
+
+def _build_neutral_outline_button_style(builder: StyleBuilderTTK, ttk_class):
+    """Outline `neutral` button: flush with the surface, a derived neutral border.
+
+    fill = the surface itself; border = `border(bg)`; text = normal `fg`. Hover
+    fills with a subtle elevate of the surface (`active`), staying unaccented.
+    """
+    ttk_style = f"{NEUTRAL}.{ttk_class}"
+    surface = builder.colors.bg
+    fg = builder.colors.fg
+    hover = builder.active(surface)
+    pressed = builder.pressed(surface)
+    on_disabled = builder.disabled("text")
+
+    builder.configure(
+        ttk_style,
+        foreground=fg,
+        background=surface,
+        bordercolor=builder.border(surface),
+        darkcolor=surface,
+        lightcolor=surface,
+        relief=tk.RAISED,
+        borderwidth=1,  # 1px hairline; intentionally unscaled
+        focusthickness=builder.scale_size(1),
+        focuscolor=fg,
         padding=builder.scale_size((10, 5)),
         anchor=tk.CENTER,
     )
@@ -49,12 +116,23 @@ def build_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         foreground=[("disabled", on_disabled)],
         focuscolor=[("disabled", on_disabled)],
         background=[
-            ("disabled", disabled),
+            ("pressed !disabled", pressed),
+            ("hover !disabled", hover),
+        ],
+        bordercolor=[
+            ("disabled", on_disabled),
+            ("pressed !disabled", builder.border(pressed)),
+            ("hover !disabled", builder.border(hover)),
+        ],
+        darkcolor=[
+            ("pressed !disabled", pressed),
+            ("hover !disabled", hover),
+        ],
+        lightcolor=[
             ("pressed !disabled", pressed),
             ("hover !disabled", hover),
         ],
     )
-    # register ttkstyle
     builder.register_ttkstyle(ttk_style)
 
 
@@ -71,6 +149,9 @@ def build_outline_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     """
     ttk_class = "Outline.TButton"
 
+    if colorname == NEUTRAL:
+        _build_neutral_outline_button_style(builder, ttk_class)
+        return
 
     if any([colorname == DEFAULT, colorname == ""]):
         ttk_style = ttk_class
@@ -94,6 +175,7 @@ def build_outline_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         darkcolor=builder.colors.bg,
         lightcolor=builder.colors.bg,
         relief=tk.RAISED,
+        borderwidth=1,  # 1px hairline; intentionally unscaled
         focusthickness=builder.scale_size(1),
         focuscolor=accent,
         padding=builder.scale_size((10, 5)),

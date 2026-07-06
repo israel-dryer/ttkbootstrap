@@ -276,10 +276,12 @@ def test_solid_button_recipe_uses_helper_state_contract(
     background_map = option_map(ttkstyle, 'background')
     foreground_map = option_map(ttkstyle, 'foreground')
     assert config['foreground'].lower() == builder.on_color(background)
-    # The solid button is a plain flat fill: it renders no clam border/dark/
-    # light regions, so those options are absent from its configuration.
-    assert config['relief'].lower() == 'flat'
-    assert 'bordercolor' not in config
+    # Every solid button has a subtle 1px border derived from its own fill.
+    # At rest the clam dark/light regions track the fill, so the resting edge is
+    # just the distinct `bordercolor`; the face stays the fill.
+    assert config['bordercolor'].lower() == builder.border(background)
+    assert config['darkcolor'].lower() == background
+    assert config['lightcolor'].lower() == background
     assert background_map[('hover', '!disabled')].lower() == active
     assert background_map[('pressed', '!disabled')].lower() == pressed
     disabled = builder.disabled()
@@ -287,9 +289,9 @@ def test_solid_button_recipe_uses_helper_state_contract(
         'text', disabled
     )
 
-    # Options named "border" are not automatically semantic borders. The
-    # menubutton and calendar recipes deliberately paint their clam
-    # border/dark/light regions with the same color as the current face.
+    # The button-family solid recipes (button/menubutton/toolbutton) now share
+    # the hairline-border treatment: a `bordercolor` derived from the fill, with
+    # the clam dark/light regions tracking the fill (no two-tone bevel).
     for family, variant in (
         ('menubutton', 'default'),
         ('toolbutton', 'default'),
@@ -298,18 +300,17 @@ def test_solid_button_recipe_uses_helper_state_contract(
         builder.build_style(variant, family, colorname, required=True)
 
     menubutton = f'{colorname}.TMenubutton'
-    assert style.configure(menubutton)['bordercolor'].lower() == background
-    assert option_map(menubutton, 'bordercolor')[
-        ('hover', '!disabled')
-    ] == active
+    assert style.configure(menubutton)['bordercolor'].lower() == builder.border(background)
+    # dark/light follow the fill; bordercolor is the fill's derived border
+    assert option_map(menubutton, 'darkcolor')[('hover', '!disabled')] == active
+    assert option_map(menubutton, 'bordercolor')[('hover', '!disabled')] == builder.border(active)
 
-    # The solid toolbutton, like the solid button, is a plain flat fill with no
-    # clam border treatment; its selected state simply fills with the accent.
+    # The solid toolbutton now carries the same border; its selected state fills
+    # with the accent and dark/light track that fill.
     toolbutton = f'{colorname}.Toolbutton'
-    assert 'bordercolor' not in style.configure(toolbutton)
-    assert option_map(toolbutton, 'background')[
-        ('selected', '!disabled')
-    ] == background
+    assert 'bordercolor' in style.configure(toolbutton)
+    assert option_map(toolbutton, 'background')[('selected', '!disabled')] == background
+    assert option_map(toolbutton, 'darkcolor')[('selected', '!disabled')] == background
 
     calendar = f'{colorname}.TCalendar'
     calendar_bg = option_map(calendar, 'background')

@@ -405,6 +405,21 @@ def _is_logical_toolkit_call(call):
     )
 
 
+def _is_hairline_border(arg, value):
+    """A 1px border is a physical hairline, not a scaled logical dimension.
+
+    Solid buttons draw a `borderwidth=1` flat border that should stay a single
+    physical pixel at every DPI (scaling it makes it read as a thick 2px+ edge on
+    hi-DPI). This narrowly permits the literal `borderwidth=1`; any other width or
+    option still must go through the scaling service.
+    """
+    return (
+        arg == "borderwidth"
+        and isinstance(value, ast.Constant)
+        and value.value == 1
+    )
+
+
 def test_builder_numeric_geometry_is_scaled_or_already_physical():
     violations = []
     for path in _builder_paths():
@@ -423,6 +438,7 @@ def test_builder_numeric_geometry_is_scaled_or_already_physical():
                         keyword.arg in GEOMETRY_OPTIONS
                         and _contains_nonzero_literal(value)
                         and not _contains_scaling_call(value)
+                        and not _is_hairline_border(keyword.arg, value)
                     ):
                         violations.append(f"{path.name}:{call.lineno}:{keyword.arg}")
     assert not violations, "unscaled literal builder geometry: " + ", ".join(

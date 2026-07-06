@@ -4,8 +4,8 @@ from random import choice
 from ttkbootstrap import utility
 utility.enable_high_dpi_awareness()
 
-DARK = 'superhero'
-LIGHT = 'flatly'
+DARK = 'bootstrap-light'
+LIGHT = 'bootstrap-dark'
 
 
 def button_style_frame(bootstyle, style, widget_name):
@@ -26,7 +26,7 @@ def button_style_frame(bootstyle, style, widget_name):
         bootstyle=bootstyle
     ).pack(padx=5, pady=5, fill=tk.BOTH)
 
-    for color in style.colors:
+    for color in [*style.colors, 'neutral']:
         ttk.Button(
             master=frame,
             text=color,
@@ -52,7 +52,7 @@ def change_style():
 if __name__ == '__main__':
     # create visual widget style tests
     root = tk.Tk()
-    style = ttk.Style(theme='minty')
+    style = ttk.Style()
 
     button_style_frame('outline', style, 'Outline Button').pack(side=tk.LEFT)
     button_style_frame('', style, 'Solid Button').pack(side=tk.LEFT)

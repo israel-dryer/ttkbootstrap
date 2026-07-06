@@ -1,12 +1,6 @@
 import tkinter as tk
 import ttkbootstrap as ttk
 from random import choice
-from ttkbootstrap import utility
-utility.enable_high_dpi_awareness()
-
-DARK = 'superhero'
-LIGHT = 'flatly'
-
 
 def create_menubutton_frame(bootstyle, style, testname):
     frame = ttk.Frame(root, padding=5)
@@ -23,7 +17,7 @@ def create_menubutton_frame(bootstyle, style, testname):
     btn = ttk.Menubutton(
         master=frame,
         text='default',
-        bootstyle=bootstyle
+        bootstyle=f'neutral-{bootstyle}'
     )
     btn.pack(padx=5, pady=5, fill=tk.BOTH)
 
