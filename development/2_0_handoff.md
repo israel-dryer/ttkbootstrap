@@ -3,12 +3,11 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-07-06 (the **fast-follow color-math PR is IMPLEMENTED** on
-`refactor/2.0-color-math` from `2.0`; automated gates pass, **human visual gate
-pending** — see "Fast-follow color-math — IMPLEMENTED" below. Committed locally
-as `6d95a22b`, **not pushed**; PR not opened, pending the visual gate. The prior
-color-helper branch is **MERGED into `2.0`** — PR #1085, merge commit
-`b7872a98`.)_
+_Last updated: 2026-07-06 (the **fast-follow color-math PR is MERGED into `2.0`**
+— PR #1087, merge commit `0218aba3`; visual gate passed, suite 191. Branch
+deleted. Next actionable is canonical bootstyle grammar (Workstream D) or
+theme/anchor (Workstream E), each needing its own design pass first. The prior
+color-helper branch is also merged — PR #1085, merge commit `b7872a98`.)_
 
 _Prior (2026-07-01): focused Workstream E private ramps and builder color
 helpers implemented on `refactor/2.0-color-helpers`; `on_color` retuned to a
@@ -20,10 +19,10 @@ PASSED._
 ## Where we are
 
 Integration branch: **`2.0`** (cut all 2.0 PRs against it, not `master`).
-Expected suite on `2.0`: **189 passed** (the color-helper PR #1085 is now merged;
-merge commit `b7872a98`), headless, order-independent. The latest Python 3.12 run
-is **188 passed / 1 environment failure** because this Tcl install cannot read
-`tk8.6/msgs/nl.msg`; excluding localization gives **183 passed**.
+Expected suite on `2.0`: **191 passed** (the color-math PR #1087 is now merged;
+merge commit `0218aba3`; +2 tests over the 189 at #1085), headless,
+order-independent. A Tcl install that cannot read `tk8.6/msgs/nl.msg` shows one
+localization env failure; excluding localization otherwise stays green.
 
 The engine keystone (Workstream A) is **complete and merged**: PR 1 (repaint,
 #1073) + PR 2 (content-addressed image cache, #1074). **PR 3 — the mixin API
@@ -54,14 +53,15 @@ human visual gate (`python examples/color_states_preview.py`) PASSED (user,
 2026-07-01); automated gates passed (188/1). The local branch is fully contained
 in `2.0` and safe to delete.
 
-**Current actionable → run the human visual gate for the color-math PR**, then
-commit/open the PR. The design pass is done and the code is implemented (see the
-dedicated section below). Canonical bootstyle grammar (D) and theme/anchor (E)
-remain later, each with its own design pass.
+**Current actionable → pick the next workstream: canonical bootstyle grammar
+(D) or theme/anchor (E).** Each needs its own design pass FIRST (per the hard
+rule). E is where the deferred `input_bg` / authored-vs-derived `inputbg`
+reconciliation lands, alongside the built-in theme-dict conversion.
 
-## Fast-follow color-math — IMPLEMENTED, VISUAL GATE PENDING
+## Fast-follow color-math — MERGED (#1087, 2026-07-06)
 
-Branch `refactor/2.0-color-math` (from `2.0` at `26dd182f`). Approved+as-built
+Merged into `2.0` (merge commit `0218aba3`; was `refactor/2.0-color-math` from
+`2.0` at `26dd182f`). Expected suite: **191 passed**. Approved+as-built
 design: `development/2_0_color_math_followup_design.md`. Retires the **10 ad-hoc
 HSV/alpha sites** the color-helper PR left allowlisted, onto three thin mix-based
 `StyleBuilderTTK` helpers: `shade`/`tint` (build on new `_shade`/`_tint` in
@@ -91,8 +91,8 @@ End-to-end smoke: all affected widgets build in darkly + flatly.
 **Human visual gate PASSED** (user, 2026-07-06): the six-theme
 `examples/color_states_preview.py` sweep (new "Progress, stripe, and floodgauge"
 section) was approved with no tuning changes — `_TROUGH_SHADE=0.2`,
-`_STRIPE_TINT=0.2`, and the floodgauge `0.7` are settled. **PR #1087 opened
-against `2.0`** (awaiting merge).
+`_STRIPE_TINT=0.2`, and the floodgauge `0.7` are settled. **PR #1087 MERGED
+into `2.0`** (merge commit `0218aba3`).
 
 **pytest gap closed + two stale tests fixed (2026-07-01).** The prior session's
 env had no pytest, so `test_color_helpers` was written but never run. Installing
