@@ -3,26 +3,20 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-07-06 (**Workstream E in progress.** PR E1 (`Colors`→
-`RampColor` resolved view + `c.primary[300]`) is **MERGED** (PR #1088). **PR E2
-is MERGED** (PR #1089; visual gate passed). **PR E3 (ttkcreator rework +
-`USER_THEME_SPECS` + migration guide) is IMPLEMENTED + green on branch
-`refactor/2.0-pr-e3-ttkcreator`**, pending a manual `python -m ttkcreator`
-eyeball. Migration guide at **`development/2_0_theme_migration.md`** — FOLD INTO
-the Workstream-H docs rewrite (kept in `development/` so it survives the docs
-transition). That completes Workstream E; next headliner is Workstream D
-(canonical bootstyle grammar, needs its own design pass). E2 was the
-semantic-anchor `Theme` model +
-schema→16-key derivation,
-curated 15-family catalog (30 light/dark themes, `themes/builtin.py`), legacy
-16-key adapter + opt-in `install_legacy_themes()` (`themes/legacy.py`), default
-`bootstrap-light`, helpful error for legacy names, hue-correct `inputbg` fix.
-Kickoff forks locked: default `bootstrap-light`, legacy-names helpful-error,
-`selectbg`=**neutral** (reverted from primary after a visual catch — accent bled
-into dark troughs/borders). Non-localization suite **210 passed**. Gate tool:
-`python examples/color_states_preview.py` (now sweeps all 30 curated themes).
-Design: `development/2_0_theme_anchor_design.md`. Prior: color-math PR #1087
-merged (`0218aba3`, suite 191); color-helper PR #1085 merged (`b7872a98`).)_
+_Last updated: 2026-07-06 (**Workstream E (theme/anchor) COMPLETE** — all three
+PRs merged: E1 #1088 (`Colors`→`RampColor` resolved view + `c.primary[300]`),
+E2 #1089 (semantic-anchor `Theme` model + curated 15-family/30-theme catalog +
+`install_legacy_themes()` + 16-key adapter + hue-correct `inputbg`; default
+`bootstrap-light`; visual gate passed with 7 fixes), E3 #1090 (ttkcreator
+`Theme` editor + `USER_THEME_SPECS` + migration guide). Non-localization suite
+**211 passed**. Design: `development/2_0_theme_anchor_design.md`. Locked forks:
+default `bootstrap-light`, legacy-names helpful-error, `selectbg`=neutral,
+readonly fields=`inputbg`. **Migration guide `development/2_0_theme_migration.md`
+— FOLD INTO the Workstream-H docs rewrite** (kept in `development/` so it
+survives the docs transition). **Next headliner: Workstream D (canonical
+bootstyle grammar) — needs its own design pass first (hard rule).** Also
+ongoing: Workstream H (docs). Prior: color-math #1087 (`0218aba3`),
+color-helper #1085 (`b7872a98`).)_
 
 _Prior (2026-07-01): focused Workstream E private ramps and builder color
 helpers implemented on `refactor/2.0-color-helpers`; `on_color` retuned to a

@@ -95,9 +95,15 @@ also **merged** — it retired the last 10 ad-hoc HSV/alpha sites onto mix-based
 `shade`/`tint`/`mute` helpers (the AST guard now enforces zero raw color math in
 ttk recipes); `elevate` and `input_bg` from the original stub were **dropped/
 deferred to Workstream E** after ground truth invalidated them. Expected suite is
-191 tests. **Current:** canonical bootstyle grammar (D) and theme/anchor (E) are
-next, each needing its own design pass first (E owns the deferred `input_bg` /
-`inputbg` reconciliation + the theme-dict conversion).
+191 tests. **Workstream E (theme/anchor) is now COMPLETE** — the semantic-anchor
+`Theme` model, curated 15-family/30-theme catalog, `install_legacy_themes()` +
+16-key adapter, `Colors` resolved view + ramp addressing, the hue-correct
+`inputbg` fix, and the ttkcreator `Theme` rework all merged (PRs #1088/#1089/
+#1090; default theme is now `bootstrap-light`; expected suite 211). Design in
+`development/2_0_theme_anchor_design.md`; migration guide (for the Workstream-H
+docs rewrite) in `development/2_0_theme_migration.md`. **Current:** canonical
+bootstyle grammar (Workstream D) is the next headliner — needs its own design
+pass first. Docs (Workstream H) are ongoing.
 
 ## Repository layout
 
