@@ -41,7 +41,9 @@ def build_floodgauge_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         # Pale wash of the bar color for the empty trough (was a strong HSV
         # value lift); mixing ~70% white preserves that near-white look.
         trough_color = builder.tint(background, 0.7)
-        foreground = builder.colors.selectfg
+        # The label sits on the bar (background); compute a readable label from
+        # it, not from selectfg (which now tracks the neutral selection color).
+        foreground = builder.on_color(background)
 
     # horizontal floodgauge
     h_element = h_ttk_style.replace(".TF", ".F")
