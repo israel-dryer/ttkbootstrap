@@ -16,6 +16,7 @@ from ttkbootstrap.constants import (
     BOOTSTYLE_INTERNAL_MODIFIERS,
     BOOTSTYLE_FAMILIES,
     BOOTSTYLE_ORIENTS,
+    BootStyle,
 )
 from ttkbootstrap.style import _compat
 from ttkbootstrap.style.engine import Style
@@ -915,7 +916,7 @@ def bootify(cls):
     return type(cls.__name__, (BootMixin, cls), {})
 
 
-def apply_bootstyle(widget, bootstyle):
+def apply_bootstyle(widget, bootstyle: BootStyle | str) -> str:
     """Apply a bootstyle to an existing widget instance, no class mutation.
 
     For per-instance styling of a widget whose class was never wrapped (for

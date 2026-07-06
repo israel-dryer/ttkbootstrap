@@ -246,6 +246,20 @@ deprecation warning only fires for genuine external tuple use.
 - Verify `import ttkbootstrap` + constructing every widget stays warning-free;
   add a test that a tuple bootstyle warns and still resolves.
 
+> **D3 — IMPLEMENTED (2026-07-06, branch `feat/2.0-pr-d3-bootstyle-reference`).**
+> Workstream D COMPLETE. `tools/generate_bootstyle_reference.py` derives, from
+> the vocabulary × registry: (a) `canonical_bootstyles()` → the **107** canonical
+> strings, committed as the generated `BootStyle` `Literal` in `constants.py`
+> (`apply_bootstyle` types `BootStyle | str`); and (b)
+> `reference_table_markdown()` → `development/2_0_bootstyle_reference.md` (the
+> Workstream-H source, kept under `development/`). Base-types are spelled only for
+> the chameleons `toggle`/`toolbutton`; internal composite variants
+> (meter/date/table) are excluded from the public reference. Sync tests assert the
+> committed `Literal` == the live registry-derived set, the markdown == the
+> generator output, and every canonical string is in-vocab — so adding a builder
+> without regenerating fails. Suite **257 passed** (excl. the known `nl.msg`
+> localization env flake); generator idempotent; annotation sweep clean.
+
 ### D3 — generated reference table + combined-string Literal (feeds H docs)
 - A small generator (a `tools/` script or a tested function) enumerates the
   vocab × registry into: (a) a **canonical grammar table** (markdown, for the
