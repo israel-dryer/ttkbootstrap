@@ -30,6 +30,10 @@ from ttkbootstrap.style.layout import (
     StyleName,
 )
 from ttkbootstrap.style.icons import Icon, icon_element, IconRenderer
+from ttkbootstrap.style._compat import (
+    set_bootstyle_strict,
+    is_bootstyle_strict,
+)
 
 __all__ = [
     "Colors",
@@ -59,4 +63,7 @@ __all__ = [
     "Icon",
     "icon_element",
     "IconRenderer",
+    # bootstyle grammar strictness (Workstream D)
+    "set_bootstyle_strict",
+    "is_bootstyle_strict",
 ]

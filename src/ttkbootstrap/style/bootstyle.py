@@ -6,9 +6,18 @@ delivery path; `bootify`/`apply_bootstyle`/`enable_global_api` are the dynamic
 and opt-in-global delivery primitives. Top layer of the `style` package. Split
 out of the monolithic `style.py` in 2.0.
 """
+import difflib
 import re
 from tkinter import TclError, ttk
 
+from ttkbootstrap.constants import (
+    BOOTSTYLE_COLORS,
+    BOOTSTYLE_MODIFIERS,
+    BOOTSTYLE_INTERNAL_MODIFIERS,
+    BOOTSTYLE_FAMILIES,
+    BOOTSTYLE_ORIENTS,
+)
+from ttkbootstrap.style import _compat
 from ttkbootstrap.style.engine import Style
 from ttkbootstrap.style.builders_ttk import StyleBuilderTTK
 from ttkbootstrap.style.builders_tk import StyleBuilderTK
@@ -28,69 +37,173 @@ class Keywords:
 
     This class is internal to the styling system and not intended to be
     instantiated.
+
+    As of 2.0 (Workstream D) the token lists are sourced from the single
+    vocabulary in `ttkbootstrap.constants` -- this class no longer keeps a
+    second copy. The "type" slot spans both public modifiers (`outline`,
+    `round`, ...) and the internal composite modifiers (`meter`, `date`, ...).
+    The compiled patterns are retained for the orientation lookup and any
+    back-compat callers; the primary parse path is the token classifier below.
     """
-    
-    COLORS = [
-        "primary",
-        "secondary",
-        "success",
-        "info",
-        "warning",
-        "danger",
-        "light",
-        "dark",
-    ]
-    ORIENTS = ["horizontal", "vertical"]
-    TYPES = [
-        "outline",
-        "link",
-        "inverse",
-        "round",
-        "square",
-        "striped",
-        "thin",
-        "focus",
-        "input",
-        "date",
-        "metersubtxt",
-        "meter",
-        "table"
-    ]
-    CLASSES = [
-        "button",
-        "progressbar",
-        "checkbutton",
-        "combobox",
-        "entry",
-        "labelframe",
-        "label",
-        "frame",
-        "floodgauge",
-        "sizegrip",
-        "optionmenu",
-        "menubutton",
-        "menu",
-        "notebook",
-        "panedwindow",
-        "radiobutton",
-        "separator",
-        "scrollbar",
-        "spinbox",
-        "scale",
-        "text",
-        "toolbutton",
-        "treeview",
-        "toggle",
-        "tk",
-        "calendar",
-        "listbox",
-        "canvas",
-        "toplevel",
-    ]
-    COLOR_PATTERN = re.compile("|".join(COLORS))
+
+    COLORS = list(BOOTSTYLE_COLORS)
+    ORIENTS = list(BOOTSTYLE_ORIENTS)
+    TYPES = list(BOOTSTYLE_MODIFIERS) + list(BOOTSTYLE_INTERNAL_MODIFIERS)
+    CLASSES = list(BOOTSTYLE_FAMILIES)
+    # Longest-first alternation so a longer token wins over a substring it
+    # contains (e.g. `labelframe` over `label`, `menubutton` over `button`).
+    COLOR_PATTERN = re.compile("|".join(sorted(COLORS, key=len, reverse=True)))
     ORIENT_PATTERN = re.compile("|".join(ORIENTS))
-    CLASS_PATTERN = re.compile("|".join(CLASSES))
-    TYPE_PATTERN = re.compile("|".join(TYPES))
+    CLASS_PATTERN = re.compile("|".join(sorted(CLASSES, key=len, reverse=True)))
+    TYPE_PATTERN = re.compile("|".join(sorted(TYPES, key=len, reverse=True)))
+
+
+# --------------------------------------------------------------------------- #
+# Bootstyle tokenizer (2.0 Workstream D)
+#
+# The pre-2.0 resolver `re.search`-ed the whole string for a color/type/class
+# substring anywhere, which silently dropped unknown tokens and risked
+# substring collisions. The tokenizer below splits the (normalized) string into
+# tokens and classifies each against the closed vocabulary, so an unrecognized
+# token fails loudly (warn by default, raise in strict mode) instead of being
+# ignored.
+# --------------------------------------------------------------------------- #
+_COLORS = frozenset(BOOTSTYLE_COLORS)
+_PUBLIC_MODIFIERS = frozenset(BOOTSTYLE_MODIFIERS)
+_MODIFIERS = _PUBLIC_MODIFIERS | frozenset(BOOTSTYLE_INTERNAL_MODIFIERS)
+_FAMILIES = frozenset(BOOTSTYLE_FAMILIES)
+_ORIENTS = frozenset(BOOTSTYLE_ORIENTS)
+# winfo_class inference matches the class name by substring; try longer family
+# names first so `TLabelframe` resolves to `labelframe`, not `label`.
+_FAMILIES_BY_LEN = tuple(sorted(BOOTSTYLE_FAMILIES, key=len, reverse=True))
+# Suggestion pool for typos -- the tokens a user might reasonably have meant
+# (exclude the internal composite modifiers, which are not user-facing).
+_SUGGESTION_POOL = tuple(
+    sorted(_COLORS | _PUBLIC_MODIFIERS | _FAMILIES | _ORIENTS)
+)
+# Tokens that carry no slot meaning: empty fragments and the "no bootstyle"
+# sentinel the delivery paths pass when only a base style is wanted.
+_SENTINELS = frozenset({"", "default"})
+_TOKEN_SPLIT = re.compile(r"[-\s]+")
+
+
+def _classify_tokens(style_string, *, source=None, warn=False):
+    """Split a bootstyle string and classify each token into a slot.
+
+    Returns ``(color, modifier, base, orient)`` -- the first token seen for each
+    slot (matching the pre-2.0 leftmost-wins behavior). When ``warn`` is true,
+    an unrecognized token and a duplicate-slot token are reported through the
+    `_compat` loud-failure path (warn by default, raise in strict mode).
+    """
+    source = style_string if source is None else source
+    color = modifier = base = orient = ""
+    for token in _TOKEN_SPLIT.split(style_string.strip().lower()):
+        if token in _SENTINELS:
+            continue
+        if token in _COLORS:
+            if warn and color and token != color:
+                _compat.report_invalid("color", token, source)
+            color = color or token
+        elif token in _MODIFIERS:
+            if warn and modifier and token != modifier:
+                _compat.report_invalid("modifier", token, source)
+            modifier = modifier or token
+        elif token in _FAMILIES:
+            if warn and base and token != base:
+                _compat.report_invalid("base-type", token, source)
+            base = base or token
+        elif token in _ORIENTS:
+            orient = orient or token
+        elif warn:
+            suggestions = difflib.get_close_matches(
+                token, _SUGGESTION_POOL, n=1
+            )
+            _compat.report_invalid("token", token, source, suggestions)
+    return color, modifier, base, orient
+
+
+def _looks_like_style_name(style_string):
+    """Return whether the input is an already-built ttk style name.
+
+    The resolver accepts two dialects. A *bootstyle* is lowercase and dash/space
+    separated (``"primary-outline"``). A built *ttk style name* always has a
+    Title-cased class component, so it contains an uppercase letter and no dash
+    or space (``"TFrame"``, ``"primary.Outline.TButton"``, ``"symbol.Link.
+    TButton"``); a dotted string is always a style name. This lets the theme
+    walk re-resolve a widget's dotted ``cget("style")`` (including a bare base
+    like ``"TFrame"``) without misreading it as a mistyped bootstyle.
+    """
+    if "." in style_string:
+        return True
+    return (
+        "-" not in style_string
+        and " " not in style_string
+        and any(ch.isupper() for ch in style_string)
+    )
+
+
+def _classify_style_name(name):
+    """Classify the segments of an already-built dotted ttk style name.
+
+    The resolver receives two input dialects: a dashed/spaced *bootstyle*
+    (``"primary-outline"``) and an already-built *ttk style name*
+    (``"primary.Outline.TButton"``, ``"symbol.Link.TButton"``). The latter
+    arrives from the theme-walk repaint (a widget's current ``cget("style")``),
+    from `Style.configure` subclassing a base style, and from user-supplied
+    custom style names. Segments are split on ``.``; the class segment is
+    title-cased with an optional ``T`` prefix, so ``TButton`` -> ``button`` but
+    ``Treeview``/``Toggle`` map directly. Unknown segments (custom prefixes such
+    as ``symbol``) are ignored *without* warning -- style names legitimately
+    carry them, unlike a user's bootstyle.
+    """
+    color = modifier = base = orient = ""
+    for segment in name.split("."):
+        seg = segment.strip().lower()
+        if not seg or seg in _SENTINELS:
+            continue
+        if seg in _COLORS:
+            color = color or seg
+        elif seg in _MODIFIERS:
+            modifier = modifier or seg
+        elif seg in _ORIENTS:
+            orient = orient or seg
+        elif seg in _FAMILIES:
+            base = base or seg
+        elif seg.startswith("t") and seg[1:] in _FAMILIES:
+            base = base or seg[1:]
+        # else: an unknown custom segment -- ignore it silently
+    return color, modifier, base, orient
+
+
+def _infer_family(widget):
+    """Infer the widget family from its Tcl class (longest match wins)."""
+    if widget is None:
+        return ""
+    try:
+        widget_class = widget.winfo_class().lower()
+    except Exception:
+        return ""
+    for family in _FAMILIES_BY_LEN:
+        if family in widget_class:
+            return family
+    return ""
+
+
+def _build_ttkstyle_name(color, modifier, orient, family):
+    """Assemble the dotted ttk style name from resolved slot tokens.
+
+    Preserves the exact pre-2.0 casing: the color stays lowercase, the modifier
+    and orientation are title-cased, and the family is title-cased with a ``T``
+    prefix unless it already starts with ``t`` (``Treeview``, ``Toplevel``).
+    """
+    color = f"{color}." if color else ""
+    modifier = f"{modifier.title()}." if modifier else ""
+    orient = f"{orient.title()}." if orient else ""
+    if family.startswith("t"):
+        family = family.title()
+    else:
+        family = f"T{family.title()}"
+    return f"{color}{modifier}{orient}{family}"
 
 
 class Bootstyle:
@@ -126,22 +239,12 @@ class Bootstyle:
             str:
                 A widget class keyword.
         """
-        # find widget class from string pattern
-        match = re.search(Keywords.CLASS_PATTERN, string.lower())
-        if match is not None:
-            widget_class = match.group(0)
-            return widget_class
-
-        # find widget class from tkinter/tcl method
-        if widget is None:
-            return ""
-        _class = widget.winfo_class()
-        match = re.search(Keywords.CLASS_PATTERN, _class.lower())
-        if match is not None:
-            widget_class = match.group(0)
-            return widget_class
-        else:
-            return ""
+        # an explicit base-type token in the string wins; otherwise infer the
+        # family from the widget's Tcl class
+        _, _, base, _ = _classify_tokens(string)
+        if base:
+            return base
+        return _infer_family(widget)
 
     @staticmethod
     def ttkstyle_widget_type(string):
@@ -157,12 +260,8 @@ class Bootstyle:
             str:
                 A widget type keyword.
         """
-        match = re.search(Keywords.TYPE_PATTERN, string.lower())
-        if match is None:
-            return ""
-        else:
-            widget_type = match.group(0)
-            return widget_type
+        _, modifier, _, _ = _classify_tokens(string)
+        return modifier
 
     @staticmethod
     def ttkstyle_widget_orient(widget=None, string="", **kwargs):
@@ -228,12 +327,8 @@ class Bootstyle:
             str:
                 A color keyword.
         """
-        _color = re.search(Keywords.COLOR_PATTERN, string.lower())
-        if _color is None:
-            return ""
-        else:
-            widget_color = _color.group(0)
-            return widget_color
+        color, _, _, _ = _classify_tokens(string)
+        return color
 
     @staticmethod
     def ttkstyle_name(widget=None, string="", **kwargs):
@@ -255,30 +350,38 @@ class Bootstyle:
             str:
                 A ttk style name
         """
-        style_string = "".join(string).lower()
-        widget_color = Bootstyle.ttkstyle_widget_color(style_string)
-        widget_type = Bootstyle.ttkstyle_widget_type(style_string)
-        widget_orient = Bootstyle.ttkstyle_widget_orient(
-            widget, style_string, **kwargs
+        style_string = _compat.normalize_bootstyle(string)
+        color, modifier, _, orient, family = Bootstyle._parse_components(
+            widget, style_string, warn=False, **kwargs
         )
-        widget_class = Bootstyle.ttkstyle_widget_class(widget, style_string)
+        return _build_ttkstyle_name(color, modifier, orient, family)
 
-        if widget_color:
-            widget_color = f"{widget_color}."
+    @staticmethod
+    def _parse_components(widget, style_string, *, warn, **kwargs):
+        """Resolve a bootstyle/style string to ``(color, modifier, base,
+        orient, family)``.
 
-        if widget_type:
-            widget_type = f"{widget_type.title()}."
-
-        if widget_orient:
-            widget_orient = f"{widget_orient.title()}."
-
-        if widget_class.startswith("t"):
-            widget_class = widget_class.title()
+        A dotted input is an already-built ttk style name and is parsed
+        leniently (`_classify_style_name`); a dashed/spaced input is a bootstyle
+        and goes through the closed-vocab tokenizer, which fails loudly on
+        unknown tokens when ``warn`` is set. ``family`` is the explicit base
+        token if present, else inferred from the widget.
+        """
+        if _looks_like_style_name(style_string):
+            color, modifier, base, orient = _classify_style_name(style_string)
+            if not orient:
+                orient = Bootstyle.ttkstyle_widget_orient(
+                    widget, "", **kwargs
+                )
         else:
-            widget_class = f"T{widget_class.title()}"
-
-        ttkstyle = f"{widget_color}{widget_type}{widget_orient}{widget_class}"
-        return ttkstyle
+            color, modifier, base, _ = _classify_tokens(
+                style_string, warn=warn
+            )
+            orient = Bootstyle.ttkstyle_widget_orient(
+                widget, style_string, **kwargs
+            )
+        family = base or _infer_family(widget)
+        return color, modifier, base, orient, family
 
     @staticmethod
     def ttkstyle_method_name(widget=None, string=""):
@@ -478,6 +581,11 @@ class Bootstyle:
         if style_string is None:
             style_string = widget.cget("style")
 
+        # normalize legacy forms (tuple/list) to a canonical string. D1 keeps
+        # this quiet (warn=False) because the internal composite-widget callers
+        # still pass tuples; D2 migrates them and turns the warning on.
+        style_string = _compat.normalize_bootstyle(style_string)
+
         # do nothing if the style has not been set
         if not style_string:
             return ""
@@ -485,22 +593,38 @@ class Bootstyle:
         if style_string == '.':
             return '.'
 
+        # parse once (loud-fail on unknown tokens for a bootstyle string; lenient
+        # for an already-built ttk style name); build the ttk style name from
+        # the resolved tokens rather than re-parsing the generated name.
+        is_bootstyle = not _looks_like_style_name(style_string)
+        color, modifier, _, orient, family = Bootstyle._parse_components(
+            widget, style_string, warn=True, **kwargs
+        )
+        variant = modifier or DEFAULT_VARIANT
+        ttkstyle = _build_ttkstyle_name(color, modifier, orient, family)
+
         # build style if not existing (example: theme changed)
-        ttkstyle = Bootstyle.ttkstyle_name(widget, style_string, **kwargs)
         if not style.style_exists_in_theme(ttkstyle):
-            widget_color = Bootstyle.ttkstyle_widget_color(ttkstyle)
-            widget_type = (
-                Bootstyle.ttkstyle_widget_type(ttkstyle)
-                or DEFAULT_VARIANT
-            )
-            widget_family = Bootstyle.ttkstyle_widget_class(widget, ttkstyle)
             builder: StyleBuilderTTK = style._get_builder()
-            if not builder.build_style(
-                widget_type, widget_family, widget_color
-            ):
-                # Style name is from a third-party widget (e.g. tkcalendar) and
-                # doesn't map to any ttkbootstrap builder; pass it through as-is.
-                return style_string
+            if not builder.build_style(variant, family, color):
+                if family in _FAMILIES and variant != DEFAULT_VARIANT:
+                    # An invalid modifier for one of our own widgets
+                    # (e.g. "outline-scale"): fail loudly for a bootstyle string,
+                    # then fall back to the family's default style rather than
+                    # returning the unusable raw fragment.
+                    if is_bootstyle and modifier:
+                        _compat.report_invalid(
+                            "combination", f"{modifier}-{family}", style_string
+                        )
+                    ttkstyle = _build_ttkstyle_name(color, "", orient, family)
+                    if not style.style_exists_in_theme(ttkstyle) and (
+                        not builder.build_style(DEFAULT_VARIANT, family, color)
+                    ):
+                        return style_string
+                else:
+                    # A third-party widget whose class maps to no ttkbootstrap
+                    # builder: pass its style through untouched.
+                    return style_string
 
         # Repaint the combobox popdown. It is a Tcl-level toplevel that the
         # theme walk's winfo_children() DFS cannot reach, so it is refreshed

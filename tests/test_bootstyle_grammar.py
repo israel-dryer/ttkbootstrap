@@ -1,0 +1,247 @@
+"""Grammar tests for the canonical bootstyle vocabulary (2.0 Workstream D, D1).
+
+These lock the D1 contract: a single closed vocabulary, a real tokenizer that
+classifies each token into a fixed slot, loud failure (warn by default, raise in
+strict mode) on unknown/duplicate tokens, tuple normalization, and a round-trip
+proving every registered builder key is expressible in the grammar.
+"""
+from typing import get_args
+
+import warnings
+
+import pytest
+
+import ttkbootstrap as ttk
+from ttkbootstrap import constants as C
+from ttkbootstrap.style import _compat
+from ttkbootstrap.style.bootstyle import (
+    _classify_tokens,
+    _infer_family,
+    _build_ttkstyle_name,
+)
+from ttkbootstrap.style.builders import load_builders
+from ttkbootstrap.style.builders.registry import builder_keys, DEFAULT_VARIANT
+
+
+@pytest.fixture(autouse=True)
+def _reset_strict():
+    """Keep strict-mode changes from leaking across tests."""
+    before = _compat.is_bootstyle_strict()
+    yield
+    _compat.set_bootstyle_strict(before)
+
+
+# --------------------------------------------------------------------------- #
+# Single source of truth: Literals mirror the runtime vocab tuples
+# --------------------------------------------------------------------------- #
+def test_literals_match_vocab_tuples():
+    assert set(get_args(C.BootColor)) == set(C.BOOTSTYLE_COLORS)
+    assert set(get_args(C.BootType)) == set(C.BOOTSTYLE_MODIFIERS)
+    assert set(get_args(C.BootBase)) == set(C.BOOTSTYLE_BASES)
+
+
+def test_reclassification_fixed_the_audit():
+    # `round` is now a modifier (was buildable but missing from BootType)...
+    assert "round" in C.BOOTSTYLE_MODIFIERS
+    # ...and toggle/toolbutton are base-types, not modifiers.
+    assert "toggle" not in C.BOOTSTYLE_MODIFIERS
+    assert "toolbutton" not in C.BOOTSTYLE_MODIFIERS
+    assert set(C.BOOTSTYLE_BASES) == {"toggle", "toolbutton"}
+    # the dead keywords are gone from every slot
+    for slot in (
+        C.BOOTSTYLE_COLORS, C.BOOTSTYLE_MODIFIERS,
+        C.BOOTSTYLE_INTERNAL_MODIFIERS, C.BOOTSTYLE_FAMILIES,
+    ):
+        assert "focus" not in slot
+        assert "input" not in slot
+
+
+# --------------------------------------------------------------------------- #
+# Tokenizer / classification
+# --------------------------------------------------------------------------- #
+@pytest.mark.parametrize(
+    "text, expected",
+    [
+        ("primary-outline", ("primary", "outline", "", "")),
+        ("success-round-toggle", ("success", "round", "toggle", "")),
+        ("info-striped", ("info", "striped", "", "")),
+        ("primary", ("primary", "", "", "")),
+        ("outline", ("", "outline", "", "")),
+        ("toolbutton", ("", "", "toolbutton", "")),
+        ("horizontal", ("", "", "", "horizontal")),
+        ("danger-inverse", ("danger", "inverse", "", "")),
+        # order-free input still classifies to the same slots
+        ("outline-primary", ("primary", "outline", "", "")),
+        # whitespace separator is accepted alongside the dash
+        ("primary outline", ("primary", "outline", "", "")),
+        # internal composite modifiers are valid tokens
+        ("primary-meter", ("primary", "meter", "", "")),
+        ("date", ("", "date", "", "")),
+    ],
+)
+def test_classify_slots(text, expected):
+    assert _classify_tokens(text) == expected
+
+
+def test_sentinels_classify_to_nothing():
+    assert _classify_tokens("default") == ("", "", "", "")
+    assert _classify_tokens("") == ("", "", "", "")
+    assert _classify_tokens("-primary-") == ("primary", "", "", "")
+
+
+# --------------------------------------------------------------------------- #
+# Loud failure: warn by default, raise in strict mode
+# --------------------------------------------------------------------------- #
+def test_unknown_token_is_silent_without_warn_flag():
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        assert _classify_tokens("primaryy") == ("", "", "", "")
+
+
+def test_unknown_token_warns():
+    with pytest.warns(UserWarning, match="primaryy"):
+        _classify_tokens("primaryy", warn=True)
+
+
+def test_unknown_token_suggests_nearest():
+    with pytest.warns(UserWarning, match="did you mean 'primary'"):
+        _classify_tokens("primaryy", warn=True)
+
+
+def test_unknown_token_strict_raises():
+    _compat.set_bootstyle_strict(True)
+    with pytest.raises(ValueError, match="primaryy"):
+        _classify_tokens("primaryy", warn=True)
+
+
+def test_duplicate_slot_warns():
+    with pytest.warns(UserWarning, match="color"):
+        _classify_tokens("primary-info", warn=True)
+
+
+def test_strict_toggle_and_default():
+    assert _compat.is_bootstyle_strict() is False
+    _compat.set_bootstyle_strict(True)
+    assert _compat.is_bootstyle_strict() is True
+    _compat.set_bootstyle_strict(False)
+    assert _compat.is_bootstyle_strict() is False
+
+
+# --------------------------------------------------------------------------- #
+# Name assembly (exact pre-2.0 casing preserved)
+# --------------------------------------------------------------------------- #
+@pytest.mark.parametrize(
+    "args, expected",
+    [
+        (("primary", "outline", "", "button"), "primary.Outline.TButton"),
+        (("success", "", "", "button"), "success.TButton"),
+        (("", "", "", "treeview"), "Treeview"),
+        (("", "striped", "horizontal", "progressbar"),
+         "Striped.Horizontal.TProgressbar"),
+        (("", "round", "", "toggle"), "Round.Toggle"),
+        (("", "", "", "toplevel"), "Toplevel"),
+    ],
+)
+def test_build_name(args, expected):
+    assert _build_ttkstyle_name(*args) == expected
+
+
+# --------------------------------------------------------------------------- #
+# _compat.normalize_bootstyle
+# --------------------------------------------------------------------------- #
+def test_normalize_tuple_is_quiet_in_d1():
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        assert _compat.normalize_bootstyle(("primary", "outline")) == \
+            "primary-outline"
+        assert _compat.normalize_bootstyle(["danger", "inverse"]) == \
+            "danger-inverse"
+        assert _compat.normalize_bootstyle("primary-outline") == \
+            "primary-outline"
+        assert _compat.normalize_bootstyle(None) == ""
+
+
+def test_normalize_tuple_warns_when_asked():
+    # D2 will flip the resolver's default to warn=True; the machinery is here.
+    with pytest.warns(DeprecationWarning, match="tuple/list bootstyle"):
+        assert _compat.normalize_bootstyle(
+            ("primary", "outline"), warn=True
+        ) == "primary-outline"
+
+
+# --------------------------------------------------------------------------- #
+# Registry round-trip: every built-in (variant, family) is expressible
+# --------------------------------------------------------------------------- #
+def test_every_registry_key_roundtrips():
+    load_builders()
+    keys = builder_keys()
+    assert keys, "registry should be populated after load_builders()"
+    for variant, family in keys:
+        # family is a real vocabulary token...
+        assert family in C.BOOTSTYLE_FAMILIES, (variant, family)
+        # ...and the variant is either the default or a known modifier
+        known_modifiers = set(C.BOOTSTYLE_MODIFIERS) | set(
+            C.BOOTSTYLE_INTERNAL_MODIFIERS
+        )
+        assert variant == DEFAULT_VARIANT or variant in known_modifiers, (
+            variant, family,
+        )
+
+        tokens = ["primary"]
+        if variant != DEFAULT_VARIANT:
+            tokens.append(variant)
+        tokens.append(family)
+        color, modifier, base, _ = _classify_tokens("-".join(tokens))
+        assert color == "primary"
+        assert base == family
+        assert (modifier or DEFAULT_VARIANT) == variant
+
+
+# --------------------------------------------------------------------------- #
+# End-to-end: canonical strings resolve to real, existing ttk styles
+# --------------------------------------------------------------------------- #
+def test_infer_family_from_widget(root):
+    btn = ttk.Button(root)
+    assert _infer_family(btn) == "button"
+    lf = ttk.Labelframe(root)
+    assert _infer_family(lf) == "labelframe"  # not the "label" substring
+
+
+@pytest.mark.parametrize(
+    "factory, bootstyle, expected_name",
+    [
+        (ttk.Button, "primary-outline", "primary.Outline.TButton"),
+        (ttk.Button, "success", "success.TButton"),
+        (ttk.Checkbutton, "round-toggle", "Round.Toggle"),
+        (ttk.Checkbutton, "toolbutton", "Toolbutton"),
+        (ttk.Progressbar, "info-striped", None),
+        (ttk.Label, "inverse", None),
+        (ttk.Scrollbar, "primary", None),
+    ],
+)
+def test_canonical_bootstyle_resolves_to_real_style(
+    root, factory, bootstyle, expected_name
+):
+    widget = factory(root, bootstyle=bootstyle)
+    applied = widget.cget("style")
+    if expected_name is not None:
+        assert applied == expected_name
+    assert root.style.style_exists_in_theme(applied)
+
+
+def test_invalid_pair_warns_for_our_widget(root):
+    # `thin` is a real modifier, `button` a real family, but (thin, button) is
+    # not a registered builder -> loud failure, not silent fallthrough. (A
+    # Button is used rather than a Scale so this does not pre-populate the
+    # session-global image cache the order-sensitive image-cache test checks.)
+    with pytest.warns(UserWarning, match="thin-button"):
+        ttk.Button(root, bootstyle="thin")
+
+
+def test_valid_widget_construction_is_warning_free(root):
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        ttk.Button(root, bootstyle="primary")
+        ttk.Checkbutton(root, bootstyle="success-round-toggle")
+        ttk.Progressbar(root, bootstyle="info-striped")
+        ttk.Label(root, bootstyle="inverse")

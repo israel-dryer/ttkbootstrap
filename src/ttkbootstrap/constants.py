@@ -94,9 +94,52 @@ ProgressMode = Literal["determinate", "indeterminate"]
 
 BootColor = Literal["primary", "secondary", "success", "danger", "warning", "info", "light", "dark"]
 
-BootType = Literal["outline", "link", "toggle", "inverse", "striped", "thin", "toolbutton", "square"]
+# The bootstyle type modifiers (variant slot). NOTE for 2.0 (Workstream D): this
+# is the reconciled set -- `round` is included (it is buildable; its historical
+# omission was a bug), and `toggle`/`toolbutton` are *removed* because they are
+# base-types (widget families), not modifiers. Those two moved to `BootBase`.
+BootType = Literal["outline", "link", "inverse", "round", "square", "striped", "thin"]
+
+# Base-types a user may name explicitly in a bootstyle string. Most base-types
+# are inferred from the widget's class and never typed; these two "chameleon"
+# families are the exception (e.g. a Checkbutton rendered as a switch/toolbutton).
+BootBase = Literal["toggle", "toolbutton"]
 
 TreeviewDisplay = Literal["tree", "headings", "tree headings"]
+
+# ---------------------------------------------------------------------------
+# Bootstyle vocabulary -- the single runtime source of truth for the grammar.
+# The bootstyle resolver (style/bootstyle.py) tokenizes against these tuples;
+# it no longer keeps a second copy. The `Literal` aliases above must match the
+# public tuples member-for-member (enforced by tests/test_bootstyle_grammar.py,
+# since a static `Literal[*tuple]` is not visible to type checkers).
+# ---------------------------------------------------------------------------
+BOOTSTYLE_COLORS: Final = (
+    "primary", "secondary", "success", "info", "warning", "danger",
+    "light", "dark",
+)
+# Public, documented type modifiers -- matches BootType.
+BOOTSTYLE_MODIFIERS: Final = (
+    "outline", "link", "inverse", "round", "square", "striped", "thin",
+)
+# Internal-only composite modifiers used by Meter/DateEntry/Tableview to build
+# their sub-styles. Valid grammar tokens, but undocumented and not in any public
+# Literal -- end users never type these.
+BOOTSTYLE_INTERNAL_MODIFIERS: Final = (
+    "meter", "metersubtxt", "date", "table",
+)
+# User-nameable base-types -- matches BootBase.
+BOOTSTYLE_BASES: Final = ("toggle", "toolbutton")
+# Every base-type/family the resolver recognizes, whether inferred from the
+# widget class or named explicitly in the string.
+BOOTSTYLE_FAMILIES: Final = (
+    "button", "checkbutton", "radiobutton", "toggle", "toolbutton",
+    "combobox", "entry", "spinbox", "scale", "progressbar", "floodgauge",
+    "scrollbar", "separator", "sizegrip", "label", "labelframe", "frame",
+    "notebook", "panedwindow", "treeview", "menubutton", "calendar",
+    "optionmenu", "menu", "text", "canvas", "tk", "toplevel", "listbox",
+)
+BOOTSTYLE_ORIENTS: Final = ("horizontal", "vertical")
 
 # ---------------------------
 # Booleans (legacy Tk style)
@@ -274,12 +317,15 @@ DARK: Final[BootColor] = "dark"
 
 OUTLINE: Final[BootType] = "outline"
 LINK: Final[BootType] = "link"
-TOGGLE: Final[BootType] = "toggle"
 INVERSE: Final[BootType] = "inverse"
 STRIPED: Final[BootType] = "striped"
 THIN: Final[BootType] = "thin"
-TOOLBUTTON: Final[BootType] = "toolbutton"
 SQUARE: Final[BootType] = "square"
+# ROUND ("round") is a valid BootType too, but the constant is already defined
+# above for LineCap/LineJoin with the same value -- reuse it; do not redefine.
+# Base-types (families), not modifiers -- see BootBase.
+TOGGLE: Final[BootBase] = "toggle"
+TOOLBUTTON: Final[BootBase] = "toolbutton"
 
 # ---------------------------
 # Treeview
@@ -296,7 +342,11 @@ __all__ = [
     "Anchor", "Sticky", "Fill", "Side", "Relief", "Orient", "Tabs", "Wrap",
     "Align", "BorderMode", "State", "MenuItemType", "SelectMode", "ActiveStyle",
     "PieStyle", "LineCap", "LineJoin", "IndexPos", "ViewArg", "TtkTheme",
-    "MeterMode", "ProgressMode", "BootColor", "BootType", "TreeviewDisplay",
+    "MeterMode", "ProgressMode", "BootColor", "BootType", "BootBase",
+    "TreeviewDisplay",
+    # bootstyle vocabulary (single source of truth)
+    "BOOTSTYLE_COLORS", "BOOTSTYLE_MODIFIERS", "BOOTSTYLE_INTERNAL_MODIFIERS",
+    "BOOTSTYLE_BASES", "BOOTSTYLE_FAMILIES", "BOOTSTYLE_ORIENTS",
     # constants
     "NO", "FALSE", "OFF", "YES", "TRUE", "ON",
     "N", "S", "W", "E", "NW", "SW", "NE", "SE", "NS", "EW", "NSEW", "CENTER",

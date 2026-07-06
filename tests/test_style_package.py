@@ -30,6 +30,7 @@ PUBLIC_NAMES = [
 ]
 
 SUBMODULES = [
+    "ttkbootstrap.style._compat",
     "ttkbootstrap.style.theme",
     "ttkbootstrap.style.scaling",
     "ttkbootstrap.style.builders_tk",
