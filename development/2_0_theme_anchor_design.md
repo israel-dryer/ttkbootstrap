@@ -1,7 +1,25 @@
 # ttkbootstrap 2.0 — Workstream E: semantic-anchor theme model
 
-**Status:** design pass approved; **PR E1 merged**; **PR E2 implemented + green;
-human visual gate PASSED** (user, 2026-07-06). E3 not started.
+**Status:** design pass approved; **PR E1 merged**; **PR E2 merged** (visual gate
+PASSED). **PR E3 implemented + green** — ttkcreator reworked to a `Theme`
+editor, `USER_THEME_SPECS` store, migration guide. Awaits a manual GUI eyeball
+(`python -m ttkcreator`, no headless view).
+
+> **PR E3 — ttkcreator + user-theme persistence + migration guide.**
+> - `ttkcreator/__main__.py` rebuilt as a **semantic-anchor editor**: edit the
+>   accent anchors + `neutral` and the light/dark background/foreground blocks,
+>   pick a base family, preview either generated mode live. **Export theme
+>   definition** now emits a `ttk.Theme(...).register()` snippet (was a 16-key
+>   `ThemeDefinition`); **Save** persists a `Theme` spec.
+> - New `themes/user.py` store **`USER_THEME_SPECS`** (name → `Theme(**spec)`
+>   kwargs); the engine builds+registers each at load. Legacy `USER_THEMES`
+>   (16-key) still adapted. Fixed the stale `litera` base default.
+> - Migration guide: **`development/2_0_theme_migration.md`** (durable; folded
+>   into the H docs rewrite, not `docs/`, so it survives the transition).
+> - Verified headless (creator constructs, seeds from a family, generates live,
+>   the exported snippet executes + registers, the persisted spec round-trips)
+>   + `tests/widget_styles/test_theme_anchor.py::test_user_theme_spec_builds_and_registers`.
+>   Non-localization suite 210 → **211 passed**; warning-free import.
 
 > **Visual gate — PASSED** after an interactive light↔dark sweep. Fixes made
 > during the gate, all traceable to `selectbg` no longer being a mid-gray:

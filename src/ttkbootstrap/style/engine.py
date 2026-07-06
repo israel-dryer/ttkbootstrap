@@ -22,6 +22,11 @@ try:
 except (ImportError, ModuleNotFoundError):
     USER_THEMES = {}
 
+try:
+    from ttkbootstrap.themes.user import USER_THEME_SPECS
+except (ImportError, ModuleNotFoundError):
+    USER_THEME_SPECS = {}
+
 
 class Style(ttk.Style):
     """A singleton class for creating and managing the application
@@ -369,11 +374,18 @@ class Style(ttk.Style):
         `ttkbootstrap.install_legacy_themes()`.
         """
         from ttkbootstrap.themes.builtin import CURATED_THEMES
+        from ttkbootstrap.style.theme import Theme
 
         for theme in CURATED_THEMES:
             for definition in theme.to_definitions():
                 self.register_theme(definition)
 
+        # 2.0 user themes: semantic-anchor Theme specs generate light/dark pairs.
+        for name, spec in USER_THEME_SPECS.items():
+            for definition in Theme(name=name, **spec).to_definitions():
+                self.register_theme(definition)
+
+        # Legacy 16-key user/external dicts, cleaned through the compat adapter.
         extra = {}
         if USER_THEMES:
             extra.update(USER_THEMES)

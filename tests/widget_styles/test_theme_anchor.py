@@ -170,6 +170,36 @@ def test_legacy_adapter_preserves_identity_regenerates_plumbing():
     assert d.type == "dark"
 
 
+def test_user_theme_spec_builds_and_registers(root):
+    # A USER_THEME_SPECS-style anchor spec (what ttkcreator persists) builds a
+    # Theme and registers usable light/dark variants -- the engine's user-theme
+    # load path.
+    style = root.style
+    spec = {
+        "primary": "#2780e3", "success": "#3fb618", "info": "#9954bb",
+        "warning": "#ff7518", "danger": "#ff0039",
+        "secondary": None, "neutral": "#7e8081",
+        "light": {"background": "#ffffff", "foreground": "#373a3c"},
+        "dark": {"background": "#222222", "foreground": "#f8f9fa"},
+    }
+    before = set(style._theme_names)
+    try:
+        for definition in Theme(name="spectest", **spec).to_definitions():
+            style.register_theme(definition)
+        assert {"spectest-light", "spectest-dark"} <= style._theme_names
+        style.theme_use("spectest-dark")
+        assert style.theme.name == "spectest-dark"
+        assert style.colors.bg == "#222222"
+    finally:
+        for name in list(style._theme_names):
+            if name not in before:
+                style._theme_names.discard(name)
+                style._theme_definitions.pop(name, None)
+                style._theme_styles.pop(name, None)
+                style._theme_objects.pop(name, None)
+        style.theme_use("bootstrap-light")
+
+
 def test_from_existing_overrides_and_rejects_unknown_tokens():
     derived = Theme.from_existing(BOOTSTRAP, name="acme", primary="#ff5722")
     assert derived.name == "acme"
