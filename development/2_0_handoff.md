@@ -3,39 +3,34 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-07-06 (**Workstream D design pass DONE + D1 IMPLEMENTED**.
-Design locked in `development/2_0_bootstyle_grammar_design.md` (6 forks resolved:
-warn-by-default+opt-in strict; tuple form warn-and-normalize through 2.x;
-Meter/DateEntry get no new public API; single modifier slot; toggle/toolbutton
-reclassified as base-types + `round` added to `BootType`; generated table in D3).
-**D1 committed on `feat/2.0-pr-d1-bootstyle-grammar`** (commit `b4970a11`, off
-`2.0` tip): single vocab source in `constants.py`, real tokenizer replacing the
-substring regex, loud failure on unknown tokens (`_compat.py` — new Workstream-F
-quarantine — with `set_bootstyle_strict`/`TTKBOOTSTRAP_STRICT`), no caller
-changes (tuple still normalizes quietly). Suite **258 passed**, warning-free
-import, annotation sweep clean, theme-switch smoke OK. Implementation surfaced
-two under-specified points, now handled + documented in the design doc's "D1 —
-IMPLEMENTED" note: the resolver has **two input dialects** (bootstyle strings vs
-already-built ttk style names from the theme walk / `Style.configure` /custom
-styles — lenient parse, no warns), and invalid pairs now fall back to the
-family default instead of returning an unusable fragment. **D2 IMPLEMENTED** (branch `feat/2.0-pr-d2-bootstyle-migrate`, PR #1092 open
-against `2.0`): migrated every first-party tuple caller to canonical strings
-(meter/dateentry/tooltip/datepicker **plus** the `python -m ttkbootstrap` and
-ttkcreator demos — more sites than the prep doc listed) and flipped
-`normalize_bootstyle(..., warn=True)`, so an external tuple bootstyle now warns
-(removed in 3.0) while still resolving. `tooltip.bootstyle` narrowed to
-`Optional[str]`. Suite **260 passed**; import + all-warnings-as-errors widget
-smoke clean. **D3 IMPLEMENTED** (branch `feat/2.0-pr-d3-bootstyle-reference`, PR open against
-`2.0`) — **Workstream D COMPLETE**: `tools/generate_bootstyle_reference.py`
-derives the **107** canonical bootstyle strings from vocab × registry, committed
-as the generated `BootStyle` `Literal` in `constants.py` (`apply_bootstyle` types
-`BootStyle | str`) + the reference table `development/2_0_bootstyle_reference.md`
-(Workstream-H source). Sync tests fail if a builder is added without
-regenerating. Suite 257 passed (excl. the known `nl.msg` env flake). **NEXT →
-Workstream H (docs)** is the main remaining 2.0 headliner; fold in the bootstyle
-reference + `development/2_0_theme_migration.md`. Env note: the repo `.venv/` is
-broken on this Windows box (launcher fails); `.venv-home/` works — pytest was
-installed into it. _
+_Last updated: 2026-07-06 (**Workstream D (canonical bootstyle grammar)
+COMPLETE** — all three PRs merged into `2.0`; design in
+`development/2_0_bootstyle_grammar_design.md`). **D1 #1091**: closed-vocab
+tokenizer replacing the substring regex, loud failure on unknown tokens (warn by
+default; `set_bootstyle_strict(True)` / `TTKBOOTSTRAP_STRICT=1` raises); single
+vocab source of truth in `constants.py`; new `style/_compat.py` quarantine
+(Workstream F's first tenant). **D2 #1092**: migrated every first-party tuple
+caller (meter/dateentry/tooltip/datepicker + the `python -m ttkbootstrap` and
+ttkcreator demos) to canonical strings, then turned the tuple `DeprecationWarning`
+on (warn-and-normalize through 2.x, removed 3.0). **D3 #1093**:
+`tools/generate_bootstyle_reference.py` derives the 107 canonical strings from
+vocab × registry → generated `BootStyle` `Literal` in `constants.py`
+(`apply_bootstyle` types `BootStyle | str`) + `development/2_0_bootstyle_reference.md`;
+sync tests fail if a builder is added without regenerating. `BootType` fixed
+(`round` added; `toggle`/`toolbutton` → new `BootBase`); dead `focus`/`input`
+dropped. Merged-`2.0` suite ~263 (excl. the known `nl.msg` localization env
+flake). Two design-pass gaps found during D1 and documented in the design doc's
+"D1 — IMPLEMENTED" note: the resolver handles **two input dialects** (bootstyle
+strings — loud — vs already-built dotted ttk style names from the theme walk /
+`Style.configure` / custom styles — lenient), and invalid pairs now fall back to
+the family default instead of returning an unusable fragment.
+
+**NEXT → Workstream H (docs)** is the main remaining 2.0 headliner: run its own
+design/scoping pass first, then fold in the two `development/`-staged sources
+(`2_0_bootstyle_reference.md`, `2_0_theme_migration.md`). Env note: the repo
+`.venv/` is broken on this Windows box (launcher fails); use `.venv-home/`
+(pytest is installed there). One known non-blocking test flake: `nl.msg`
+localization (Tcl can't read the Dutch catalog; passes in isolation). _
 
 _Prior 2026-07-06 (**Workstream E (theme/anchor) COMPLETE** — all three
 PRs merged: E1 #1088 (`Colors`→`RampColor` resolved view + `c.primary[300]`),
