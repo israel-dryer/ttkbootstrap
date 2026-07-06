@@ -23,7 +23,8 @@ def build_spinbox_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     ttk_class = "TSpinbox"
 
     border_color = builder.colors.border
-    readonly = builder.colors.light if builder.is_light_theme else builder.colors.selectbg
+    # readonly fields read like normal fields (no greyed box).
+    readonly = builder.colors.inputbg
     disabled_fg = builder.disabled("text", builder.colors.inputbg)
 
     if any([colorname == DEFAULT, colorname == ""]):

@@ -327,11 +327,8 @@ def test_solid_button_recipe_uses_helper_state_contract(
     # border in dark themes too. The readonly fill stays a neutral (light: the
     # `light` accent; dark: `selectbg`).
     border = builder.colors.border.lower()
-    readonly = (
-        builder.colors.light
-        if builder.is_light_theme
-        else builder.colors.selectbg
-    ).lower()
+    # readonly fields read like normal fields now (fieldbackground == inputbg).
+    readonly = builder.colors.inputbg.lower()
     for family, style_name in (
         ('entry', 'TEntry'),
         ('combobox', 'TCombobox'),

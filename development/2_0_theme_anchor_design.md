@@ -34,9 +34,11 @@ editor, `USER_THEME_SPECS` store, migration guide. Awaits a manual GUI eyeball
 > (6) a `selectfg` audit — tk Button/Menubutton + ttk Floodgauge label
 > foregrounds now `on_color(their own accent bg)`; and
 > (7) unselected notebook tab labels muted (0.6) toward their bg.
-> The three deferred aesthetic items (toolbutton unselected fill, scrollbar
-> thumb, dark readonly-field brightness — all light-neutral `selectbg` fills)
-> were reviewed and accepted as-is.
+> Three aesthetic items were deferred (all light-neutral `selectbg` fills):
+> toolbutton unselected fill and scrollbar thumb were accepted as-is; the
+> **dark readonly-field brightness was fixed in E3** — readonly fields
+> (combobox/entry/spinbox) now use `inputbg` in both modes (they read like
+> normal fields; no greyed box), per user feedback while eyeballing ttkcreator.
 **Branch:** E2 on `refactor/2.0-pr-e2-theme-model` (from `2.0`).
 **Date:** 2026-07-06.
 

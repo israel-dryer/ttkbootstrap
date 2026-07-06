@@ -329,8 +329,15 @@ class ColorRow(ttk.Frame):
         self.color_value = ""
 
         ttk.Label(self, text=label, width=14).pack(side=LEFT)
-        self.patch = Frame(master=self, width=15)
-        self.patch.pack(side=LEFT, fill=BOTH, padx=2)
+        # A fixed color sample. It must NOT follow the theme (it shows the color
+        # being edited), so opt it out of the theme walk -- otherwise every
+        # temp-theme switch repaints this tk.Frame to the theme background.
+        self.patch = Frame(
+            master=self, width=24, highlightthickness=1,
+            highlightbackground="#888888",
+        )
+        self.patch._tb_no_autostyle = True
+        self.patch.pack(side=LEFT, fill=Y, padx=4, pady=2)
         self.entry = ttk.Entry(self, width=12)
         self.entry.pack(side=LEFT, fill=X, expand=YES)
         self.entry.bind("<FocusOut>", self.enter_color)
