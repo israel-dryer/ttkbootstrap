@@ -5,9 +5,10 @@
 
 _Last updated: 2026-07-06 (the **fast-follow color-math PR is IMPLEMENTED** on
 `refactor/2.0-color-math` from `2.0`; automated gates pass, **human visual gate
-pending** — see "Fast-follow color-math — IMPLEMENTED" below. Not yet committed/
-pushed as of writing; branch is local. The prior color-helper branch is
-**MERGED into `2.0`** — PR #1085, merge commit `b7872a98`.)_
+pending** — see "Fast-follow color-math — IMPLEMENTED" below. Committed locally
+as `6d95a22b`, **not pushed**; PR not opened, pending the visual gate. The prior
+color-helper branch is **MERGED into `2.0`** — PR #1085, merge commit
+`b7872a98`.)_
 
 _Prior (2026-07-01): focused Workstream E private ramps and builder color
 helpers implemented on `refactor/2.0-color-helpers`; `on_color` retuned to a
