@@ -59,12 +59,16 @@ from tkinter.ttk import (
 from ttkbootstrap.style import (
     Bootstyle, Style, BootMixin, AutoStyleMixin,
     bootify, apply_bootstyle, enable_global_api,
+    # Semantic-anchor theme authoring (Workstream E).
+    Theme,
     # Style-construction toolkit (Workstream I): the public "build your own
     # style" surface, dogfooded by the builders.
     Assets, El, layout, register_style, image_element, statespec, state_map, StyleName,
     # Icon-rendered assets: glyph atoms + per-state icon element sugar.
     Icon, icon_element,
 )
+# Opt-in migration path for the pre-2.0 theme names (Workstream E/F).
+from ttkbootstrap.themes.legacy import install_legacy_themes
 
 
 # --------------------------------------------------------------------------- #
@@ -214,6 +218,8 @@ __all__ = [
     "bootify",
     "apply_bootstyle",
     "enable_global_api",
+    "Theme",
+    "install_legacy_themes",
 
     # Style-construction toolkit
     "Assets",

@@ -19,10 +19,7 @@ def build_panedwindow_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     h_ttk_class = "Horizontal.TPanedwindow"
     v_ttk_class = "Vertical.TPanedwindow"
 
-    if builder.is_light_theme:
-        default_color = builder.colors.border
-    else:
-        default_color = builder.colors.selectbg
+    default_color = builder.colors.border
 
     if any([colorname == DEFAULT, colorname == ""]):
         sash_color = default_color

@@ -24,10 +24,10 @@ def _create_scale_assets(builder, colorname=DEFAULT):
     """
     a = builder.assets
     disabled_color = builder.disabled("text")
-    if builder.is_light_theme:
-        track_color = builder.colors.bg if colorname == LIGHT else builder.colors.light
-    else:
-        track_color = builder.shade(builder.colors.selectbg)
+    # The track is a recessed neutral: bootstack derives it as border(surface),
+    # so it reads as a subtle groove in both modes (shading the now-light
+    # selectbg made it too strong on dark backgrounds).
+    track_color = builder.border(builder.colors.bg)
 
     if any([colorname == DEFAULT, colorname == ""]):
         normal_color = builder.colors.primary

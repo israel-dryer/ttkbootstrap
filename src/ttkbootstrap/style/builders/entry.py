@@ -19,12 +19,8 @@ def build_entry_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     ttk_class = "TEntry"
 
     on_disabled = builder.disabled("text", builder.colors.inputbg)
-    if builder.is_light_theme:
-        border = builder.colors.border
-        readonly = builder.colors.light
-    else:
-        border = builder.colors.selectbg
-        readonly = border
+    border = builder.colors.border
+    readonly = builder.colors.light if builder.is_light_theme else builder.colors.selectbg
 
     if any([colorname == DEFAULT, not colorname]):
         # default style

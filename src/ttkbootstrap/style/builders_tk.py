@@ -6,7 +6,7 @@ the active theme. Split out of the monolithic `style.py` in 2.0.
 import tkinter as tk
 
 from ttkbootstrap.constants import *
-from ttkbootstrap.style.theme import Colors, ThemeDefinition
+from ttkbootstrap.style.theme import Colors, ThemeDefinition, _accent_on_color
 
 
 class StyleBuilderTK:
@@ -100,7 +100,7 @@ class StyleBuilderTK:
                 The button object to update.
         """
         background = self.colors.primary
-        foreground = self.colors.selectfg
+        foreground = _accent_on_color(background)
         activebackground = Colors.update_hsv(self.colors.primary, vd=-0.1)
 
         widget.configure(
@@ -109,7 +109,7 @@ class StyleBuilderTK:
             relief=tk.FLAT,
             borderwidth=0,
             activebackground=activebackground,
-            highlightbackground=self.colors.selectfg,
+            highlightbackground=foreground,
         )
 
     def update_label_style(self, widget: tk.Label):
@@ -172,10 +172,7 @@ class StyleBuilderTK:
             widget (tkinter.Entry):
                 The entry object to update.
         """
-        if self.is_light_theme:
-            bordercolor = self.colors.border
-        else:
-            bordercolor = self.colors.selectbg
+        bordercolor = self.colors.border
 
         widget.configure(
             relief=tk.FLAT,
@@ -196,10 +193,7 @@ class StyleBuilderTK:
             widget (tkinter.scale):
                 The scale object to update.
         """
-        if self.is_light_theme:
-            bordercolor = self.colors.border
-        else:
-            bordercolor = self.colors.selectbg
+        bordercolor = self.colors.border
 
         activecolor = Colors.update_hsv(self.colors.primary, vd=-0.2)
         widget.configure(
@@ -222,10 +216,7 @@ class StyleBuilderTK:
             widget (tkinter.Spinbox):
                 THe spinbox object to update.
         """
-        if self.is_light_theme:
-            bordercolor = self.colors.border
-        else:
-            bordercolor = self.colors.selectbg
+        bordercolor = self.colors.border
 
         widget.configure(
             relief=tk.FLAT,
@@ -250,10 +241,7 @@ class StyleBuilderTK:
             widget (tkinter.Listbox):
                 The listbox object to update.
         """
-        if self.is_light_theme:
-            bordercolor = self.colors.border
-        else:
-            bordercolor = self.colors.selectbg
+        bordercolor = self.colors.border
 
         widget.configure(
             foreground=self.colors.inputfg,
@@ -278,9 +266,9 @@ class StyleBuilderTK:
         activebackground = Colors.update_hsv(self.colors.primary, vd=-0.2)
         widget.configure(
             background=self.colors.primary,
-            foreground=self.colors.selectfg,
+            foreground=_accent_on_color(self.colors.primary),
             activebackground=activebackground,
-            activeforeground=self.colors.selectfg,
+            activeforeground=_accent_on_color(activebackground),
             borderwidth=0,
         )
 
@@ -311,10 +299,7 @@ class StyleBuilderTK:
             widget (tkinter.LabelFrame):
                 The labelframe object to update.
         """
-        if self.is_light_theme:
-            bordercolor = self.colors.border
-        else:
-            bordercolor = self.colors.selectbg
+        bordercolor = self.colors.border
 
         widget.configure(
             highlightcolor=bordercolor,
@@ -332,10 +317,7 @@ class StyleBuilderTK:
             widget (tkinter.Text):
                 The text object to update.
         """
-        if self.is_light_theme:
-            bordercolor = self.colors.border
-        else:
-            bordercolor = self.colors.selectbg
+        bordercolor = self.colors.border
 
         focuscolor = widget.cget("highlightbackground")
 

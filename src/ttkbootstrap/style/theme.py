@@ -7,6 +7,7 @@ here. Split out of the monolithic `style.py` in 2.0.
 """
 import colorsys
 from collections.abc import Mapping
+from dataclasses import dataclass, fields, replace
 from functools import lru_cache
 from types import MappingProxyType
 
@@ -191,6 +192,18 @@ def _accent_on_color(surface: str) -> str:
     ):
         return '#ffffff'
     return '#000000'
+
+
+def _border_color(surface: str) -> str:
+    """Derive a neutral border by mixing a surface toward its on-color.
+
+    The dedicated border derivation (bootstack parity): 84% surface + 16% of the
+    surface's readable on-color, so a border is a subtle, mode-correct step off
+    the surface -- never the accent, and desaturated toward the on-color rather
+    than a raw lightness move that keeps a saturated surface saturated. This is
+    the same formula as the `StyleBuilderTTK.border()` helper.
+    """
+    return _mix_colors(surface, _accent_on_color(surface), 0.84)
 
 
 def _darken_color(color: str, percent: float) -> str:
@@ -714,3 +727,217 @@ class ThemeDefinition:
                 f"colors={self.colors}",
             ]
         )
+
+
+# --- Semantic-anchor theme model (Workstream E, PR E2) ----------------------
+#
+# A `Theme` family declares its accent colors once (as `[500]` ramp anchors)
+# plus a light/dark {background, foreground} block, and generates a resolved
+# `ThemeDefinition` per mode. The 16 legacy `Colors` fields are *derived* here
+# from the anchors + surface, so the builders are untouched -- only how `Colors`
+# is populated changes. Mechanism ported from bootstack; the ramp/surface math
+# is the in-repo color-helper code above.
+
+_ACCENT_ROLES = ("primary", "success", "info", "warning", "danger")
+
+# Which ramp step a SOLID fill uses per mode. On light a darker step reads
+# against a light bg; on dark a brighter step reads against a dark bg.
+# warning/info stay at [500] on light -- they carry dark on-color at any shade,
+# so darkening only mutes them.
+_SOLID_STOP = {
+    "light": {"primary": 600, "success": 600, "danger": 600, "info": 500, "warning": 500},
+    "dark":  {"primary": 400, "success": 400, "danger": 400, "info": 400, "warning": 400},
+}
+_SECONDARY_STOP = {"light": 700, "dark": 400}  # neutral step for an uncolored secondary
+_LIGHT_ACCENT_STOP = 100  # the pale-gray `light` accent role (both modes)
+_DARK_ACCENT_STOP = 800   # the dark-gray `dark` accent role (both modes)
+
+# Surface-derivation knobs. Hue/saturation-preserving lightness moves off the
+# authored background (NOT a tint toward white -- that would desaturate a
+# themed dark field, the regression Workstream E was chartered to fix). Initial
+# values; confirmed/tuned in the human visual gate. `border` is not a lightness
+# move: it uses the dedicated `_border_color` (mix toward the on-color).
+_INPUT_LIFT = 0.03    # dark inputbg lift off bg
+_ACTIVE_MIX = 0.06    # light active/hover darken
+_ACTIVE_MIX_D = 0.09  # dark active/hover lighten
+
+_DEFAULT_NEUTRAL = "#adb5bd"  # gray anchor when a family omits `neutral`
+
+
+def _generate_colors(mode, anchors, neutral, background, foreground, secondary=None):
+    """Derive the 16 `Colors` fields for one mode from semantic anchors.
+
+    Parameters:
+        mode: ``"light"`` or ``"dark"``.
+        anchors: mapping of accent role -> `[500]` anchor hex (the 5 accents).
+        neutral: gray anchor hex for the neutral ramp.
+        background/foreground: the authored surface block, hex.
+        secondary: optional colored secondary anchor; when None, `secondary`
+            derives from the neutral ramp.
+
+    Returns:
+        Colors: the resolved per-mode color scheme.
+    """
+    solid = _SOLID_STOP[mode]
+
+    def step(color, stop):
+        return _color_ramp(color)[stop]
+
+    primary = step(anchors["primary"], solid["primary"])
+    if secondary:
+        secondary_c = step(secondary, solid["primary"])
+    else:
+        secondary_c = step(neutral, _SECONDARY_STOP[mode])
+
+    bg = _normalize_color(background)
+    fg = _normalize_color(foreground)
+    border = _border_color(bg)
+    if mode == "dark":
+        inputbg = _lighten_color(bg, _INPUT_LIFT)
+        active = _lighten_color(bg, _ACTIVE_MIX_D)
+    else:
+        inputbg = bg
+        active = _darken_color(bg, _ACTIVE_MIX)
+
+    # selectbg is NOT just the selection highlight: the builders reuse it as a
+    # neutral surface for dark-mode borders and for scale/progress/label troughs
+    # (`shade(selectbg)`). It must stay neutral, or the accent bleeds into every
+    # trough and border -- so derive it from the neutral ramp, decoupled from a
+    # colored `secondary`.
+    selectbg = step(neutral, _SECONDARY_STOP[mode])
+    return Colors(
+        primary=primary,
+        secondary=secondary_c,
+        success=step(anchors["success"], solid["success"]),
+        info=step(anchors["info"], solid["info"]),
+        warning=step(anchors["warning"], solid["warning"]),
+        danger=step(anchors["danger"], solid["danger"]),
+        light=step(neutral, _LIGHT_ACCENT_STOP),
+        dark=step(neutral, _DARK_ACCENT_STOP),
+        bg=bg,
+        fg=fg,
+        selectbg=selectbg,
+        selectfg=_accent_on_color(selectbg),
+        border=border,
+        inputfg=fg,
+        inputbg=inputbg,
+        active=active,
+    )
+
+
+@dataclass
+class Theme:
+    """A semantic-anchor color theme *family* declared in code.
+
+    Declare the accent colors once (as the `[500]` midpoint of each ramp) plus a
+    `light` and/or `dark` `{background, foreground}` block; the family generates
+    a well-contrasted `ThemeDefinition` per mode (`<name>-light` /
+    `<name>-dark`). The per-mode ramp step for solids, borders, and inputs is
+    chosen automatically -- there is no per-mode shade boilerplate.
+
+    Examples:
+
+        ```python
+        Theme(
+            name="pulse",
+            primary="#593196", success="#13b955", info="#009cdc",
+            warning="#efa31d", danger="#fc3939",
+            light=dict(background="#ffffff", foreground="#17141f"),
+            dark=dict(background="#17141f", foreground="#e9ecef"),
+        ).register()   # registers pulse-light + pulse-dark on the live Style
+        ```
+
+    Parameters:
+
+        name (str):
+            Family name; generated variants are ``<name>-light`` /
+            ``<name>-dark``.
+        primary, success, info, warning, danger (str):
+            Accent `[500]` anchor colors (hex).
+        secondary (str):
+            Optional colored secondary accent (hex). When omitted, `secondary`
+            derives from the neutral ramp.
+        neutral (str):
+            Gray base for the neutral ramp (secondary, the light/dark accents).
+        light, dark (dict):
+            ``{'background': ..., 'foreground': ...}`` for that variant, or None
+            to skip it.
+    """
+
+    name: str
+    primary: str = None
+    success: str = None
+    info: str = None
+    warning: str = None
+    danger: str = None
+    secondary: str = None
+    neutral: str = _DEFAULT_NEUTRAL
+    light: dict = None
+    dark: dict = None
+
+    def _definition(self, mode):
+        block = self.light if mode == "light" else self.dark
+        if block is None:
+            return None
+        if "background" not in block or "foreground" not in block:
+            raise ValueError(
+                f"Theme {self.name!r} {mode} block must define both "
+                f"'background' and 'foreground'."
+            )
+        anchors = {role: getattr(self, role) for role in _ACCENT_ROLES}
+        missing = [role for role, value in anchors.items() if not value]
+        if missing:
+            raise ValueError(
+                f"Theme {self.name!r} is missing accent anchor(s): "
+                f"{', '.join(missing)}."
+            )
+        colors = _generate_colors(
+            mode, anchors, self.neutral,
+            block["background"], block["foreground"], self.secondary,
+        )
+        return ThemeDefinition(name=f"{self.name}-{mode}", colors=colors, themetype=mode)
+
+    def to_definitions(self):
+        """Return the generated per-mode `ThemeDefinition`s (light, then dark).
+
+        A family that declares only one block yields a single definition.
+        """
+        return [d for d in (self._definition("light"), self._definition("dark")) if d]
+
+    def register(self):
+        """Register the generated variants on the live `Style` singleton.
+
+        Returns this theme so ``theme = Theme(...).register()`` reads cleanly.
+        Raises `RuntimeError` if no `Style` has been created yet.
+        """
+        # local import breaks the theme<-engine cycle (engine imports theme)
+        from ttkbootstrap.style.engine import Style
+
+        style = Style.get_instance()
+        if style is None:
+            raise RuntimeError(
+                "No Style instance yet; create a Window/Style before registering "
+                "a Theme, or add it to the built-in catalog."
+            )
+        definitions = self.to_definitions()
+        if not definitions:
+            raise ValueError(
+                f"Theme {self.name!r} defines neither a 'light' nor a 'dark' block."
+            )
+        for definition in definitions:
+            style.register_theme(definition)
+        return self
+
+    @classmethod
+    def from_existing(cls, base: "Theme", *, name: str, **overrides) -> "Theme":
+        """Derive a new family from an existing `Theme`, overriding some tokens.
+
+        Every token not overridden is inherited from `base`, so a built-in can
+        be re-branded by changing just its `primary` (and anything else):
+
+            Theme.from_existing(BOOTSTRAP, name="acme", primary="#ff5722")
+        """
+        unknown = set(overrides) - {f.name for f in fields(cls)}
+        if unknown:
+            raise ValueError(f"Unknown Theme token(s): {', '.join(sorted(unknown))}.")
+        return replace(base, name=name, **overrides)

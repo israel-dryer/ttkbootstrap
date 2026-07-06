@@ -3,16 +3,20 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-07-06 (**Workstream E design pass DONE** — approved model in
-`development/2_0_theme_anchor_design.md`: adopt bootstack's semantic-anchor
-`Theme` family, curated catalog + opt-in `install_legacy_themes()`, minimal
-derived surface layer, `Colors` resolved view + ramp addressing. **PR E1 is
-implemented + green** (`Colors`→`RampColor` resolved view, `c.primary[300]`; no
-catalog/visual change; suite **201 passed**) on branch
-`refactor/2.0-pr-e1-colors-ramp`, **PR open against `2.0`**. E2
-= `Theme` model + curated catalog + adapter (carries the human visual gate + 3
-open forks); E3 = migration doc/polish. Prior: color-math PR #1087 merged
-(`0218aba3`, suite 191); color-helper PR #1085 merged (`b7872a98`).)_
+_Last updated: 2026-07-06 (**Workstream E in progress.** PR E1 (`Colors`→
+`RampColor` resolved view + `c.primary[300]`) is **MERGED** (PR #1088). **PR E2
+is IMPLEMENTED + green on branch `refactor/2.0-pr-e2-theme-model`, human visual
+gate PASSED** (user, 2026-07-06; ready to PR) — semantic-anchor `Theme` model +
+schema→16-key derivation,
+curated 15-family catalog (30 light/dark themes, `themes/builtin.py`), legacy
+16-key adapter + opt-in `install_legacy_themes()` (`themes/legacy.py`), default
+`bootstrap-light`, helpful error for legacy names, hue-correct `inputbg` fix.
+Kickoff forks locked: default `bootstrap-light`, legacy-names helpful-error,
+`selectbg`=**neutral** (reverted from primary after a visual catch — accent bled
+into dark troughs/borders). Non-localization suite **210 passed**. Gate tool:
+`python examples/color_states_preview.py` (now sweeps all 30 curated themes).
+Design: `development/2_0_theme_anchor_design.md`. Prior: color-math PR #1087
+merged (`0218aba3`, suite 191); color-helper PR #1085 merged (`b7872a98`).)_
 
 _Prior (2026-07-01): focused Workstream E private ramps and builder color
 helpers implemented on `refactor/2.0-color-helpers`; `on_color` retuned to a

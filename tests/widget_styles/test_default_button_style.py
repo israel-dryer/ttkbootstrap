@@ -26,7 +26,7 @@ def test_base_tbutton_themed_without_default_button(root):
     even when the app only ever creates a styled button.
     """
     style = root.style
-    style.theme_use("sandstone")
+    style.theme_use("sandstone-light")
 
     # Mirror the bug report: only a styled toolbutton is created.
     ttk.Button(root, text="Browse", style="Outline.Toolbutton")
@@ -37,7 +37,7 @@ def test_base_tbutton_themed_without_default_button(root):
         "base TButton should use the theme's primary color"
 
     # The base style must keep tracking the active theme.
-    for theme in ("superhero", "flatly", "litera"):
+    for theme in ("bootstrap-dark", "minty-light", "pydata-light"):
         style.theme_use(theme)
         assert _tbutton_background(root) == str(style.colors.primary).lower(), \
             f"base TButton did not follow change to {theme}"

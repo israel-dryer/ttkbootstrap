@@ -26,7 +26,7 @@ Example:
     # Create main window with theme
     root = ttk.Window(
         title="My Application",
-        themename="darkly",
+        themename="bootstrap-dark",
         size=(800, 600),
         position=(100, 100),
         resizable=(True, True)
@@ -200,7 +200,7 @@ class Window(tkinter.Tk):
     Examples:
 
         ```python
-        app = Window(title="My Application", themename="superhero")
+        app = Window(title="My Application", themename="bootstrap-dark")
         app.mainloop()
         ```
     """
@@ -208,7 +208,7 @@ class Window(tkinter.Tk):
     def __init__(
             self,
             title: str = "ttkbootstrap",
-            themename: str = "litera",
+            themename: str = "bootstrap-light",
             iconphoto: Optional[str] = '',
             size: Optional[Tuple[int, int]] = None,
             position: Optional[Tuple[int, int]] = None,
@@ -596,7 +596,7 @@ class Toplevel(tkinter.Toplevel):
 
 
 if __name__ == "__main__":
-    root = Window(themename="superhero", alpha=0.5, size=(1000, 1000))
+    root = Window(themename="bootstrap-dark", alpha=0.5, size=(1000, 1000))
     # root.withdraw()
     root.place_window_center()
     # root.deiconify()

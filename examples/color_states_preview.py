@@ -1,15 +1,23 @@
-"""Visual gate for the 2.0 private color-derivation helpers.
+"""Visual gate for the 2.0 color derivation and the semantic-anchor catalog.
 
 Run with `python examples/color_states_preview.py`. Exercise hover, pressed,
-selected, focus, and disabled states for every color column, then switch among
-the six representative themes from the header.
+selected, focus, and disabled states for every color column, then switch across
+the full curated catalog (every family, light and dark) from the header. Watch
+for: accent bleeding into troughs/borders (should be neutral), disabled controls
+receding without vanishing, readable filled text, and a themed-but-not-washed
+input background in dark themes.
 """
 import tkinter as tk
 
 import ttkbootstrap as ttk
+from ttkbootstrap.themes.builtin import CURATED_THEMES
 
 
-THEMES = ("flatly", "minty", "morph", "darkly", "solar", "vapor")
+THEMES = tuple(
+    f"{family.name}-{mode}"
+    for family in CURATED_THEMES
+    for mode in ("light", "dark")
+)
 COLORS = ("primary", "warning", "info", "light", "dark")
 
 
@@ -58,7 +66,7 @@ class ColorStatesPreview:
             text="Hold mouse button to inspect pressed; Tab for focus",
         ).pack(side="left", padx=20)
         chooser = ttk.Combobox(
-            header, values=THEMES, state="readonly", width=12
+            header, values=THEMES, state="readonly", width=18
         )
         chooser.set(self.style.theme.name)
         chooser.pack(side="right")
@@ -235,7 +243,7 @@ class ColorStatesPreview:
 if __name__ == "__main__":
     app = ttk.Window(
         title="ttkbootstrap 2.0 — color states",
-        themename="flatly",
+        themename="bootstrap-light",
         size=(1080, 820),
     )
     ColorStatesPreview(app)

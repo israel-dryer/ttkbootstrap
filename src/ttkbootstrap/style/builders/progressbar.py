@@ -75,16 +75,10 @@ def build_striped_progressbar_style(builder: StyleBuilderTTK, colorname=DEFAULT)
         h_ttk_style = f"{colorname}.{h_ttk_class}"
         v_ttk_style = f"{colorname}.{v_ttk_class}"
 
-    if builder.is_light_theme:
-        if colorname == LIGHT:
-            trough_color = builder.colors.bg
-            border_color = builder.colors.light
-        else:
-            trough_color = builder.colors.light
-            border_color = trough_color
-    else:
-        trough_color = builder.shade(builder.colors.selectbg)
-        border_color = trough_color
+    # Recessed neutral trough = border(surface) (bootstack parity), subtle in
+    # both modes.
+    trough_color = builder.border(builder.colors.bg)
+    border_color = trough_color
 
     # ( horizontal, vertical )
     images = _create_striped_progressbar_assets(builder, colorname)
@@ -159,11 +153,7 @@ def _create_recolored_progressbar_style(
     """Build horizontal and vertical progressbars from one source asset."""
     h_base = f"{type_name}Horizontal.TProgressbar"
     v_base = f"{type_name}Vertical.TProgressbar"
-    if builder.is_light_theme:
-        trough_color = (
-            builder.colors.bg if colorname == LIGHT else builder.colors.light)
-    else:
-        trough_color = builder.shade(builder.colors.selectbg)
+    trough_color = builder.border(builder.colors.bg)
 
     if colorname in (DEFAULT, ""):
         bar_color = builder.colors.primary
