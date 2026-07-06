@@ -20,9 +20,11 @@ gained a third icon input form (a pre-rendered Tk image name, tried before the
 existing base64-data → file-path cascade) so user-supplied base64/file icons still
 work. `gallery/media_player.py` inlines the 6 literal emoji chars it used to look
 up via `Emoji`. New `tests/test_icon_drop.py` (7 tests). Suite **269 passed** + the
-known `nl.msg` env flake; warning-free import; media_player compiles. NOT yet
-committed/PR'd. Still needs the **live visual spot-check** of the four dialog
-glyphs (light↔dark) before docs screenshots — the headless suite asserts the
+known `nl.msg` env flake; warning-free import; media_player compiles. **PR #1094
+open against `2.0`** (branch `feat/2.0-drop-char-icons`; commits: H-design docs +
+icon-drop + a stray `gallery/calculator.py` `flatly`→`bootstrap-dark` theme fix).
+Still needs the **live visual spot-check** of the four dialog glyphs + the
+media-player transport controls (light↔dark) before merge/docs screenshots — the headless suite asserts the
 image is wired, not that it looks right. The frozen `docs/zh/gallery/mediaplayer.md`
 still shows the old `Emoji` import (zh untouched for 2.0; Gallery being dropped) —
 noted for the docs sweep. **NEXT after this merges → docs sub-PR #1.**)_
