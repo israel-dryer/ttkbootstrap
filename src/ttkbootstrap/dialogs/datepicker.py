@@ -173,6 +173,11 @@ class DatePickerDialog:
                             ]
                     ):
                         day_style = "secondary-toolbutton"
+                        # Put this day in the ttk "selected" state so the
+                        # toolbutton renders its ON look. Without this the day
+                        # sits in the (now quiet + muted) OFF state and reads as
+                        # a disabled button.
+                        self.datevar.set(day)
                     else:
                         day_style = f"{self.bootstyle}-calendar"
 
