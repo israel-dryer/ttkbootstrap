@@ -3,23 +3,24 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-07-07 (**shipped-widget API pass STARTED — design pass done
-+ PR A (dialogs) implemented on a branch**). The deferred shipped-widget API
+_Last updated: 2026-07-07 (**shipped-widget API pass: design done + PR A
+(dialogs) MERGED into `2.0` (#1102)**). The deferred shipped-widget API
 normalization (`Window`/dialogs/`Tableview`) was picked up ahead of the docs
 (author reversed the docs-first call so docs get written against normalized
 signatures). Design pass **confirmed**:
 `development/2_0_shipped_widget_api_design.md` (Hybrid posture · port bootstack
 window mechanisms · unify dialog returns + `get_date`→None-on-cancel · Tableview
-fix+re-export now, defer verb rename). **PR A (dialogs)** is committed on
-`feat/2.0-shipped-api-dialogs` (from `2.0`), not yet pushed/merged: Messagebox
+fix+re-export now, defer verb rename). **PR A (dialogs) MERGED (#1102):** Messagebox
 uniform keyword-only signatures; Querybox `get_*` return via `.result`;
 `get_date` returns None on cancel + gained `position=`; DatePickerDialog
 `autoshow=False`/`show()`/`result`; `MessageDialog.command` plain-callable (tuple
 deprecated via `_compat`); `ColorChoice` deduped; dialogs re-exported at top
-level. `tests/test_dialogs_api.py` (+19); suite 297 passed excl. the known
-`nl.msg` flake; modal cancel + happy paths verified end-to-end. **NEXT → push/
-open PR A vs `2.0`, then PR B (Window/Toplevel) + PR C (Tableview) per the design
-§8.** (Prior recommended step, docs sub-PR #1, still trails the API pass.)_
+level. `tests/test_dialogs_api.py` (+19); suite on `2.0` **297 passed** excl. the
+known `nl.msg` flake; modal cancel + happy paths were verified end-to-end. A human
+visual spot-check of `examples/widgets/dialogs.py` (light↔dark) is still worth an
+eyeball before docs screenshots. **NEXT → PR B (Window/Toplevel — the
+cross-platform bootstack `_BaseWindow`/`WindowPositioning` port, design §5a), then
+PR C (Tableview, §5c), per §8.** (Docs sub-PR #1 still trails the API pass.)_
 
 _Prior 2026-07-07 (**icon-drop PREREQ + a visual-polish batch are all
 MERGED into `2.0`; NEXT → docs sub-PR #1**). Merged since the prior entry:
