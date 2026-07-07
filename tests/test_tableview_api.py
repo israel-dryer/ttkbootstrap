@@ -1,0 +1,87 @@
+"""Headless tests for the 2.0 Tableview API normalization (PR C).
+
+Covers the parts checkable without a real display:
+- the top-level / widgets-package re-exports (``ttk.Tableview`` et al.),
+- the two latent-bug regressions (``delete_column(cid=...)`` and the
+  right-click-menu ``master`` self-assignment),
+- ``insert_row`` raising instead of printing on empty values,
+- the dead code (``reset_row_sort`` / the two private builders) being gone.
+"""
+import pytest
+
+import ttkbootstrap as ttk
+from ttkbootstrap import widgets as _widgets
+from ttkbootstrap.widgets.tableview import (
+    TableColumn,
+    TableHeaderRightClickMenu,
+    TableRow,
+    Tableview,
+)
+
+
+# --------------------------------------------------------------------------
+# re-exports
+# --------------------------------------------------------------------------
+
+def test_tableview_reexported_at_top_level():
+    assert ttk.Tableview is Tableview
+    assert ttk.TableColumn is TableColumn
+    assert ttk.TableRow is TableRow
+    for name in ("Tableview", "TableColumn", "TableRow"):
+        assert name in ttk.__all__
+
+
+def test_tableview_reexported_from_widgets_package():
+    assert _widgets.Tableview is Tableview
+    assert _widgets.TableColumn is TableColumn
+    assert _widgets.TableRow is TableRow
+    for name in ("Tableview", "TableColumn", "TableRow"):
+        assert name in _widgets.__all__
+
+
+# --------------------------------------------------------------------------
+# latent-bug regressions
+# --------------------------------------------------------------------------
+
+def _make_table(root):
+    return Tableview(
+        root,
+        coldata=["A", "B", "C"],
+        rowdata=[["a1", "b1", "c1"], ["a2", "b2", "c2"]],
+    )
+
+
+def test_delete_column_by_cid(root):
+    # Regression: delete_column used ``self.cidmap(int(cid))`` (calling a
+    # dict), which raised TypeError before it could ever delete a column.
+    tv = _make_table(root)
+    assert len(tv.tablecolumns) == 3
+    tv.delete_column(cid=1)
+    assert len(tv.tablecolumns) == 2
+
+
+def test_header_rightclick_menu_master_is_the_table(root):
+    # Regression: ``self.master = self.master`` never set master from the arg.
+    tv = _make_table(root)
+    menu = TableHeaderRightClickMenu(tv)
+    assert menu.master is tv
+
+
+# --------------------------------------------------------------------------
+# insert_row empty-values behavior
+# --------------------------------------------------------------------------
+
+def test_insert_row_empty_values_raises(root):
+    # Was a stdout ``print`` + silent ``None`` return; now a loud error.
+    tv = _make_table(root)
+    with pytest.raises(ValueError):
+        tv.insert_row(values=[])
+
+
+# --------------------------------------------------------------------------
+# dead code removed
+# --------------------------------------------------------------------------
+
+def test_dead_code_removed():
+    for name in ("reset_row_sort", "_build_table_rows", "_build_table_columns"):
+        assert not hasattr(Tableview, name)

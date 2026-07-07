@@ -320,3 +320,42 @@ cross-platform quirks; we borrow the mechanisms (not the API).
 tuple wraps — consistency-with-Tk wins over bootstack's `min_size`/`max_size`).
 `screeninfo` is an *optional* import; without it centering falls back to Tk's
 single-screen metrics (no new hard dependency — Pillow stays the only one).
+
+## Tableview re-export + bug fixes  *(API + behavior)*
+
+**What.** `Tableview` normalization (shipped-widget API pass, PR C — fixes only;
+the method-verb rename is a deferred later slice).
+
+- **`Tableview`, `TableColumn`, and `TableRow` are re-exported at top level**
+  (`ttk.Tableview`, matching every other widget) and from
+  `ttkbootstrap.widgets`. The `ttkbootstrap.widgets.tableview.*` import path stays
+  valid.
+- **`insert_row(values=[])` now raises `ValueError`** instead of `print()`ing
+  `"[TableView] Cannot insert. No values found."` to stdout and returning `None`.
+  This also surfaces in the batch paths (`insert_rows`, and the constructor's
+  `rowdata`) — a row with no values is now a loud error, not a silent skip.
+- **Two latent bugs fixed** (were dead-on-call): `delete_column(cid=...)` used
+  `self.cidmap(int(cid))` (calling a dict → `TypeError`) — now
+  `self.cidmap.get(int(cid))`, matching the sibling column methods; the header
+  right-click menu's `self.master = self.master` self-assignment now sets
+  `self.master` from the constructor argument.
+- **Dead code removed**: the `reset_row_sort` `...` stub (`reset_column_sort` +
+  `reset_table` cover the need), the unused private `_build_table_rows`/
+  `_build_table_columns` builders, and the commented-out `_select_pagesize`. The
+  `coldata` docstring drops the never-implemented `maxwidth` setting.
+
+**Why.** `Tableview` was the only shipped widget not reachable as `ttk.<Name>`,
+and it carried two methods that could never succeed plus a stdout `print` in
+library code. These are cheap, unambiguous fixes; the larger method-verb
+normalization is intentionally deferred so names and docs move together.
+
+**Migration.**
+- `delete_column(cid=...)` and `Tableview` header right-click "delete column" now
+  work where they previously raised — no caller change needed.
+- If you relied on `insert_row([])` silently no-op'ing, guard the empty case
+  yourself or stop calling it with empty values.
+
+**Not breaking.** All established `Tableview` method names are unchanged. The
+`get_date`-style verb rename (`move_row_down`→`move_selected_row_down`,
+`hide/unhide`→`show/hide`, `coldata`/`rowdata` aliases) is a separate, later slice
+with deprecated aliases.

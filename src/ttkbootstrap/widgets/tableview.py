@@ -553,7 +553,7 @@ class Tableview(ttk.Frame):
                 An iterable containing either the heading name or a
                 dictionary of column settings. Configurable settings
                 include >> text, image, command, anchor, width, minwidth,
-                maxwidth, stretch. Also see `Tableview.insert_column`.
+                stretch. Also see `Tableview.insert_column`.
 
             rowdata (List):
                 An iterable of row data. The lenth of each row of data
@@ -881,8 +881,7 @@ class Tableview(ttk.Frame):
 
         # validate the index
         if len(values) == 0:
-            print('[TableView] Cannot insert. No values found.')
-            return None
+            raise ValueError("Cannot insert a row with no values.")
         if index == END:
             index = -1
         elif index > rowcount - 1:
@@ -958,7 +957,7 @@ class Tableview(ttk.Frame):
                 position is used.
         """
         if cid is not None:
-            column: TableColumn = self.cidmap(int(cid))
+            column: TableColumn = self.cidmap.get(int(cid))
             column.delete()
 
         elif index is not None and visible:
@@ -1572,13 +1571,15 @@ class Tableview(ttk.Frame):
             tableview.search_table_data(100, "Price", "Quantity")
             ```
         """
-        import re
-
         if criteria is None or (isinstance(criteria, str) and not criteria):
             self.reset_row_filters()
             return
 
-        search_text = str(criteria)
+        # A plain case-insensitive substring test (``needle in haystack``) is a
+        # literal match, so it is inherently special-character safe and, at the
+        # million-row scale a paginated table is built for, several times faster
+        # than driving ``re.search`` per cell for what is not a regex query.
+        needle = str(criteria).lower()
 
         # Get column indices if specified
         column_indices = None
@@ -1590,30 +1591,28 @@ class Tableview(ttk.Frame):
                         column_indices.append(col.tableindex)
                         break
 
-        # Escape special regex characters for literal search
-        search_text_escaped = re.escape(search_text.lower())
-
         self._filtered = True
-        self.tablerows_filtered.clear()
+        filtered = self.tablerows_filtered
+        filtered.clear()
         self.unload_table_data()
 
         for row in self.tablerows:
+            values = row.values
             if column_indices:
                 # Search specific columns
                 for col_index in column_indices:
                     try:
-                        col_value = str(row.values[col_index]).lower()
-                        if re.search(search_text_escaped, col_value):
-                            self.tablerows_filtered.append(row)
+                        if needle in str(values[col_index]).lower():
+                            filtered.append(row)
                             break
                     except IndexError:
                         # Column doesn't exist in this row
                         pass
             else:
                 # Search all columns
-                for col in row.values:
-                    if re.search(search_text_escaped, str(col).lower()):
-                        self.tablerows_filtered.append(row)
+                for col in values:
+                    if needle in str(col).lower():
+                        filtered.append(row)
                         break
 
         self._rowindex.set(0)
@@ -1630,10 +1629,6 @@ class Tableview(ttk.Frame):
         """Remove all column level filters; unhide all columns."""
         cols = [col.cid for col in self.tablecolumns]
         self.view.configure(displaycolumns=cols)
-
-    def reset_row_sort(self):
-        """Display all table rows by original insert index"""
-        ...
 
     def reset_column_sort(self):
         """Display all columns by original insert index"""
@@ -2465,42 +2460,6 @@ class Tableview(ttk.Frame):
 
         ttk.Label(pageframe, text=MessageCatalog.translate("Page")).pack(side=RIGHT, padx=5)
 
-    def _build_table_rows(self, rowdata):
-        """Build, load, and configure the DataTableRow objects
-
-        Parameters:
-
-            rowdata (List):
-                An iterable of row data
-        """
-        for row in rowdata:
-            self.insert_row(END, row)
-
-    def _build_table_columns(self, coldata):
-        """Build, load, and configure the DataTableColumn objects
-
-        Parameters:
-
-            coldata (list[str|dict[str, Any]]):
-                An iterable of column names or a dictionary of column
-                configuration settings.
-        """
-        for cid, col in enumerate(coldata):
-            if isinstance(col, str):
-                self.tablecolumns.append(
-                    TableColumn(
-                        tableview=self,
-                        cid=cid,
-                        text=col,
-                    )
-                )
-            else:
-                if "text" not in col:
-                    col["text"] = f"Column {cid}"
-                self.tablecolumns.append(
-                    TableColumn(tableview=self, cid=cid, **col)
-                )
-
     # PRIVATE METHODS - WIDGET BINDING
 
     def _set_widget_binding(self):
@@ -2521,11 +2480,6 @@ class Tableview(ttk.Frame):
 
         # add trace to track pagesize changes
         self._pagesize.trace_add("write", self._trace_pagesize)
-
-    # def _select_pagesize(self, event):
-    #     cbo: ttk.Combobox = self.nametowidget(event.widget)
-    #     cbo.select_clear()
-    #     self.goto_first_page()
 
     def _trace_pagesize(self, *_):
         """Callback for changes to page size"""
@@ -2788,7 +2742,7 @@ class TableHeaderRightClickMenu(tk.Menu):
                 The parent object
         """
         super().__init__(master, tearoff=False)
-        self.master: Tableview = self.master
+        self.master: Tableview = master
         self.view: ttk.Treeview = master.view
         self.event = None
         self.columnvars = []
