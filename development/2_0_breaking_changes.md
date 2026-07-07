@@ -20,6 +20,7 @@
 | **`neutral` color** | New | this doc, below |
 | **`ghost` button variant** | New | this doc, below |
 | **`thin` scrollbar variant** | New | this doc, below |
+| **Scrollbar restyle (visible trough, square default)** | Visual | this doc, below |
 | **Button-family visual restyle (flat + hairline border)** | Visual | this doc, below |
 
 ---
@@ -54,6 +55,31 @@ were standing in for a quiet/subtle button with `bootstyle="neutral"` — it wil
 stay quiet in dark mode where `light` would turn bright.
 
 Design: `development/2_0_neutral_color_design.md`.
+
+## Scrollbar restyle — visible trough, inset thumb, square default  *(Visual)*
+
+**What.** The standard (`default`) and `round` scrollbars were reworked:
+- a **visible trough** (a subtle track shade of the surface) so the thumb reads
+  as sliding in a channel rather than floating on the surface;
+- the thumb is **inset** ~1px from the trough walls (a transparent margin baked
+  into the thumb image), so there is a track of space around it;
+- the thumb has a **minimum length** (a 9-slice end region), so a long list can't
+  shrink it to a microscopic sliver;
+- `default` is now a **flat square** thumb and `round` a **pill** (they used to be
+  nearly identical rounded thumbs);
+- **no arrows** (the previous `arrowsize` was already dead layout config).
+
+The `thin` variant is unchanged. The combobox popdown uses `thin`; the font dialog
+lists use the square `default`.
+
+**Why.** The 2.0 scrollbars had an invisible trough (= surface) and a thumb that
+floated with no track and could collapse to nothing on a long list. Restoring a
+visible trough + inset thumb + min size makes them read as real scrollbars (closer
+to 1.0), and splitting square/round gives a genuine choice. Ports the visible-trough
+idea from 1.0; thumb margin/min-size are implemented via the image + 9-slice border.
+
+**Migration.** None (appearance only). `bootstyle="round"` is still the pill;
+the default is now square.
 
 ## `thin` — a new scrollbar variant  *(New)*
 

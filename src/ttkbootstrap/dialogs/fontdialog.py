@@ -147,7 +147,7 @@ class FontDialog(Dialog):
             listbox_frame,
             command=listbox.yview,
             orient=VERTICAL,
-            bootstyle="round",
+            bootstyle="",
         )
         # scrollbar first (reserves the right edge inside the border), then the
         # list fills the rest
@@ -197,7 +197,7 @@ class FontDialog(Dialog):
             master=sizes_frame,
             orient=VERTICAL,
             command=sizes_listbox.yview,
-            bootstyle="round",
+            bootstyle="",
         )
         sizes_listbox.configure(yscrollcommand=sizes_listbox_vbar.set)
         # scrollbar first (right edge, inside the border), then the list

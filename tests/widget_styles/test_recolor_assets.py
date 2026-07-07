@@ -124,14 +124,13 @@ def test_scrollbar_layout_stretches_only_along_orientation(root, bootstyle):
     assert v_thumb_options["sticky"] == "ns"
     assert h_layout[0][0] == "Horizontal.Scrollbar.trough"
     assert v_layout[0][0] == "Vertical.Scrollbar.trough"
-    assert root.style.lookup(
-        horizontal.cget("style"), "background") == root.style.colors.bg
-    assert root.style.lookup(
-        vertical.cget("style"), "background") == root.style.colors.bg
-    assert root.style.lookup(
-        horizontal.cget("style"), "troughcolor") == root.style.colors.bg
-    assert root.style.lookup(
-        vertical.cget("style"), "troughcolor") == root.style.colors.bg
+    # the trough is now a subtle *visible* track (2.0 restyle), and every region
+    # is that trough color so the whole widget reads as one track
+    from ttkbootstrap.style.builders.scrollbar import _scrollbar_trough
+    trough = _scrollbar_trough(root.style._get_builder())
+    for sb in (horizontal, vertical):
+        assert root.style.lookup(sb.cget("style"), "troughcolor") == trough
+        assert root.style.lookup(sb.cget("style"), "background") == trough
 
 
 def test_element_assets_are_packaged_next_to_style_module():
