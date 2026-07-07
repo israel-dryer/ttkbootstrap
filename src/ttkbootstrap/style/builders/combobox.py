@@ -6,7 +6,6 @@ from ttkbootstrap.constants import *
 from ttkbootstrap.style import StyleBuilderTTK
 from ttkbootstrap.style.layout import El, image_element, layout
 from ttkbootstrap.style.builders.registry import register_builder
-from ttkbootstrap.style.builders.utils import simple_arrow_assets
 
 
 @register_builder("default", "combobox")
@@ -36,23 +35,16 @@ def build_combobox_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         element = f"{ttk_style.replace('TC', 'C')}"
         focus_ring = builder.colors.get(colorname)
 
-    # Create custom arrow assets since the default ones don't work with Tcl/Tk bundled in python 3.13
-    arrow_images = simple_arrow_assets(builder,
-        builder.colors.inputfg,
-        on_disabled,
-        focus_ring,
-    )
-    down_arrow_image = arrow_images[0][1]
-    down_arrow_disabled_image = arrow_images[1][1]
-    down_arrow_focused_image = arrow_images[2][1]
+    # A `chevron-down` glyph (the open V) rather than the solid `caret-down-fill`
+    # triangle used elsewhere -- reads lighter in a combobox. Custom asset since
+    # the native ttk arrow doesn't work with the Tcl/Tk bundled in python 3.13.
+    a = builder.assets
+    chevron_size = [12, 12]
+    # One fixed color in every state (no focus/hover/pressed/disabled recolor) so
+    # the chevron reads as a steady glyph rather than reacting to field state.
+    down_arrow_image = a.icon("chevron-down", chevron_size, builder.colors.inputfg)
     image_element(
-        builder.style, f"{element}.downarrow", default=down_arrow_image,
-        states={"disabled": down_arrow_disabled_image,
-                "pressed !disabled": down_arrow_focused_image,
-                "focus !disabled": down_arrow_focused_image,
-                "hover !disabled": down_arrow_focused_image},
-        # right padding so the caret isn't flush against the border
-        padding=(0, 0, builder.scale_size(6), 0))
+        builder.style, f"{element}.downarrow", default=down_arrow_image)
     #  builder.style.element_create(f"{element}.downarrow", "from", TTK_DEFAULT)  # doesn't work in python 3.13
     builder.style.element_create(f"{element}.padding", "from", TTK_CLAM)
     builder.style.element_create(f"{element}.textarea", "from", TTK_CLAM)
@@ -70,7 +62,9 @@ def build_combobox_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         background=builder.colors.inputbg,
         insertcolor=builder.colors.inputfg,
         relief=tk.FLAT,
-        padding=builder.scale_size(5),
+        # (left, top, right, bottom): extra right inset holds the chevron a bit
+        # further off the border than the text is on the left.
+        padding=builder.scale_size((5, 6, 7, 4)),
     )
     builder.style.map(
         ttk_style,
@@ -95,10 +89,13 @@ def build_combobox_style(builder: StyleBuilderTTK, colorname=DEFAULT):
             ("readonly", readonly),
         ],
     )
+    # Lay the chevron out like the Menubutton indicator: inside the padded
+    # region, packed right and vertically centered (sticky="") so the widget
+    # padding holds it off the border instead of it being pinned bottom-right.
     layout(builder.style, ttk_style,
            El("combo.Spinbox.field", side=tk.TOP, sticky=tk.EW, children=[
-               El("Combobox.downarrow", side=tk.RIGHT, sticky=tk.S),
                El("Combobox.padding", expand="1", sticky=tk.NSEW, children=[
+                   El("Combobox.downarrow", side=tk.RIGHT, sticky=""),
                    El("Combobox.textarea", sticky=tk.NSEW)])]))
     builder.register_ttkstyle(ttk_style)
     try:

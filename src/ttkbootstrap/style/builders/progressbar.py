@@ -85,6 +85,11 @@ def build_striped_progressbar_style(builder: StyleBuilderTTK, colorname=DEFAULT)
 
     # horizontal progressbar
     h_element = h_ttk_style.replace(".TP", ".P")
+    # A flat clam trough. Without our own trough element, the layout's
+    # `{h_element}.trough` name falls back (via ttk's dotted-name resolution) to
+    # the solid progressbar's *rounded* image trough; create a flat clam trough
+    # so the square striped bar sits in a square channel.
+    builder.style.element_create(f"{h_element}.trough", "from", TTK_CLAM)
     builder.style.element_create(
         f"{h_element}.pbar",
         "image",
@@ -105,6 +110,7 @@ def build_striped_progressbar_style(builder: StyleBuilderTTK, colorname=DEFAULT)
 
     # vertical progressbar
     v_element = v_ttk_style.replace(".TP", ".P")
+    builder.style.element_create(f"{v_element}.trough", "from", TTK_CLAM)
     builder.style.element_create(
         f"{v_element}.pbar",
         "image",
