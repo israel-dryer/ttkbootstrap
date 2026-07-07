@@ -66,7 +66,9 @@ def build_menubutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         borderwidth=1,  # 1px hairline; intentionally unscaled
         focusthickness=0,
         focuscolor=foreground,
-        padding=builder.scale_size((10, 5)),
+        # (left, top, right, bottom): 10px label inset on the left, a tighter
+        # 6px on the right so the caret sits closer to the edge than the label.
+        padding=builder.scale_size((10, 5, 6, 5)),
     )
     builder.style.map(
         ttk_style,
@@ -101,12 +103,16 @@ def _build_menubutton_arrow(builder: StyleBuilderTTK, ttk_style, normal, disable
         states={"disabled": down_disabled,
                 "pressed !disabled": down_active,
                 "hover !disabled": down_active},
-        sticky="", padding=(0, 0, builder.scale_size(10), 0))
+        sticky="")
+    # Keep the indicator *inside* `Menubutton.padding` so the configured widget
+    # padding (see `padding=` in configure) holds the caret off the right edge.
+    # clam's image element ignores an outer `-padding` on the element itself, so
+    # placing it outside padding left the caret flush against the border.
     layout(builder.style, ttk_style,
            El("Menubutton.border", sticky=NSEW, children=[
             El("Menubutton.focus", sticky=NSEW, children=[
-                El(f"{ttk_style}.indicator", side=tk.RIGHT, sticky=""),
-                El("Menubutton.padding", sticky=tk.EW, children=[
+                El("Menubutton.padding", sticky=NSEW, children=[
+                    El(f"{ttk_style}.indicator", side=tk.RIGHT, sticky=""),
                     El("Menubutton.label", side=LEFT, sticky="")])])]))
 
 
@@ -143,7 +149,7 @@ def _build_neutral_outline_menubutton(builder: StyleBuilderTTK, ttk_class, disab
         borderwidth=1,  # 1px hairline; intentionally unscaled
         focusthickness=0,
         focuscolor=fg,
-        padding=builder.scale_size((10, 5)),
+        padding=builder.scale_size((10, 5, 6, 5)),
     )
     builder.style.map(
         ttk_style,
@@ -200,7 +206,7 @@ def build_outline_menubutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         borderwidth=1,  # 1px hairline; intentionally unscaled
         focusthickness=0,
         focuscolor=foreground,
-        padding=builder.scale_size((10, 5)),
+        padding=builder.scale_size((10, 5, 6, 5)),
     )
     builder.style.map(
         ttk_style,
