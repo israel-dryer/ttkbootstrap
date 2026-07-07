@@ -6,7 +6,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from ttkbootstrap.widgets.tableview import TableRow, Tableview
 
-app = ttk.Window(themename='flatly')
+app = ttk.Window()
 colors = app.style.colors
 
 p = Path(__file__).parent / "Sample1000.csv"
@@ -52,9 +52,10 @@ print(f"Combined row count: {len(table_data):,}")
 
 
 # column configuration options
-# text, image, command, anchor, width, minwidth, maxwidth, stretch
+# text, image, command, anchor, width, minwidth, stretch
+# NOTE: Sample1000.csv is book data, so the headers describe books.
 col_data = [
-    "Serial Number", "Company Name", "Employee", "Description", "Leave"
+    "ISBN", "Title", "Author", "Publisher", "Qty"
 ]
 
 
@@ -76,7 +77,6 @@ dt = Tableview(
     paginated=True,
     disable_right_click=True,
     searchable=True,
-    bootstyle=PRIMARY,
     autofit=False,
     on_select=handle_selection
 )
@@ -118,10 +118,12 @@ def check_paging():
 
 def check_search():
     """Test search performance"""
-    print(f"\nTesting search performance...")
+    # Search a term that actually appears in Sample1000.csv (book data).
+    term = "HARPER"
+    print(f"\nTesting search performance (searching {term!r})...")
 
     start = time.perf_counter()
-    dt.search_table_data("Corp")
+    dt.search_table_data(term)
     end = time.perf_counter()
     search_time = (end - start) * 1000
 
