@@ -133,7 +133,6 @@ class FontDialog(Dialog):
             columns=[0],
         )
         listbox.column(0, width=utility.scale_size(listbox, 250))
-        listbox.pack(side=LEFT, fill=BOTH, expand=YES)
 
         listbox_vbar = ttk.Scrollbar(
             container,
@@ -141,7 +140,10 @@ class FontDialog(Dialog):
             orient=VERTICAL,
             bootstyle="thin",
         )
+        # pack the scrollbar first so it reserves the right edge inside the
+        # container; then the list fills the remaining space
         listbox_vbar.pack(side=RIGHT, fill=Y)
+        listbox.pack(side=LEFT, fill=BOTH, expand=YES)
         listbox.configure(yscrollcommand=listbox_vbar.set)
 
         for f in sorted(self._families):
@@ -184,8 +186,9 @@ class FontDialog(Dialog):
             bootstyle="thin",
         )
         sizes_listbox.configure(yscrollcommand=sizes_listbox_vbar.set)
-        sizes_listbox.pack(side=LEFT, fill=Y, expand=YES, anchor=N)
-        sizes_listbox_vbar.pack(side=LEFT, fill=Y, expand=YES)
+        # scrollbar first (right edge), then the list fills the rest
+        sizes_listbox_vbar.pack(side=RIGHT, fill=Y)
+        sizes_listbox.pack(side=LEFT, fill=BOTH, expand=YES)
 
     def _font_options_selectors(self, master: tkinter.Misc, padding: int) -> None:
         container = ttk.Frame(master, padding=padding)
