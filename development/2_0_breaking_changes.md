@@ -23,6 +23,7 @@
 | **Scrollbar restyle (visible trough, square default)** | Visual | this doc, below |
 | **Button-family visual restyle (flat + hairline border)** | Visual | this doc, below |
 | **Bare buttons default to `neutral`** | Visual/API | this doc, below |
+| **Dialog API normalization (Messagebox/Querybox)** | API | `development/2_0_shipped_widget_api_design.md` (PR A) |
 
 ---
 
@@ -216,3 +217,53 @@ their CTA emphasis is unaffected.
 or set `Window(default_button="primary")` to restore the pre-2.0 default globally.
 
 Design: `development/2_0_neutral_default_design.md`.
+
+## Dialog API normalization — Messagebox/Querybox signatures & returns  *(API)*
+
+Shipped-widget API pass, **PR A** (design: `development/2_0_shipped_widget_api_design.md`).
+
+**What.**
+- **`Messagebox` signatures are uniform and `parent`/`alert` are keyword-only.**
+  Every method is now `method(message, title, *, parent=None, alert=False,
+  position=None, buttons=None, icon=None, localize=True)`. Previously some methods
+  ordered the positional args `parent, alert` and others `alert, parent`, so a
+  positional third argument was ambiguous. The formerly hidden `**kwargs` options
+  (`position`, `buttons`, `icon`, `localize`) are now discoverable named params.
+- **`Querybox.get_date` returns `None` when cancelled** (closed without picking a
+  day). Previously it *always* returned a `date`, silently falling back to
+  `startdate`/today, so cancellation was indistinguishable from a selection.
+  `get_date` also gained a `position=` argument.
+- **All `Querybox.get_*` methods return via the `Dialog.result` property**, not
+  the private `._result`, so the modal grab is released consistently. `get_string`
+  / `get_item` still return `""` on submit-of-empty vs `None` on cancel (now
+  documented, not accidental).
+- **`MessageDialog.command` accepts a plain zero-argument callable.** The legacy
+  `(callable, label)` tuple form (the label was never used) is deprecated and
+  normalized with a `DeprecationWarning` (removed in 3.0).
+- **`Messagebox`/`Querybox` and the dialog classes are re-exported at top level**
+  (`ttk.Messagebox`, `ttk.Querybox`, `ttk.MessageDialog`, …), matching how widgets
+  are exposed. `ttkbootstrap.dialogs.*` import paths remain valid.
+- Internal: `DatePickerDialog` gained an `autoshow=False` path + a `show()` method
+  + a `result` property so `get_date` can position the popup and detect
+  cancellation without blocking in the constructor (the default `autoshow=True`
+  keeps the old blocking-in-`__init__` behavior for direct users). The duplicate
+  `ColorChoice` namedtuple in `colorchooser.py` now imports the one in
+  `colordropper.py` (single type).
+
+**Why.** These were the shipped-widget inconsistencies flagged by the 2.0 API
+survey: an ambiguous positional order, an un-signalable cancel, four different
+result-access conventions, and a vestigial tuple param. Normalizing them now (API
+pass before the Workstream-H docs) means the docs get written against final
+signatures.
+
+**Migration.**
+- Pass `parent=`/`alert=` by keyword to `Messagebox.*` (positional no longer
+  accepted). Almost all existing code already does.
+- If you called `Querybox.get_date(...)` and used the result unconditionally,
+  guard for `None` (a cancel). E.g. `d = Querybox.get_date(); if d: ...`.
+- Replace any `MessageDialog(command=(fn, "label"))` with
+  `MessageDialog(command=fn)`.
+
+**Not breaking.** `message` (Messagebox) vs `prompt` (Querybox) is kept — it is a
+real told-vs-asked distinction. `parent` stays the owner-argument name across the
+dialog surface (the embeddable `ColorChooser` frame keeps `master`).

@@ -63,7 +63,7 @@ from ttkbootstrap.constants import *
 from ttkbootstrap.localization import MessageCatalog
 from ttkbootstrap.widgets.tooltip import ToolTip
 from ttkbootstrap.validation import add_range_validation, add_validation, validator
-from .colordropper import ColorDropperDialog
+from .colordropper import ColorChoice, ColorDropperDialog
 
 STD_SHADES: List[float] = [0.9, 0.8, 0.7, 0.4, 0.3]
 STD_COLORS: List[str] = [
@@ -71,8 +71,9 @@ STD_COLORS: List[str] = [
     '#0070C0', '#7030A0', '#FFFFFF', '#000000'
 ]
 
+# ColorChoice is defined once in colordropper.py and imported above, so
+# get_color and the dropper return the same type (2.0 dedupe).
 ColorValues = namedtuple('ColorValues', 'h s l r g b hex')
-ColorChoice = namedtuple('ColorChoice', 'rgb hsl hex')
 
 PEN = '✛'
 

@@ -3,7 +3,25 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-07-07 (**icon-drop PREREQ + a visual-polish batch are all
+_Last updated: 2026-07-07 (**shipped-widget API pass STARTED — design pass done
++ PR A (dialogs) implemented on a branch**). The deferred shipped-widget API
+normalization (`Window`/dialogs/`Tableview`) was picked up ahead of the docs
+(author reversed the docs-first call so docs get written against normalized
+signatures). Design pass **confirmed**:
+`development/2_0_shipped_widget_api_design.md` (Hybrid posture · port bootstack
+window mechanisms · unify dialog returns + `get_date`→None-on-cancel · Tableview
+fix+re-export now, defer verb rename). **PR A (dialogs)** is committed on
+`feat/2.0-shipped-api-dialogs` (from `2.0`), not yet pushed/merged: Messagebox
+uniform keyword-only signatures; Querybox `get_*` return via `.result`;
+`get_date` returns None on cancel + gained `position=`; DatePickerDialog
+`autoshow=False`/`show()`/`result`; `MessageDialog.command` plain-callable (tuple
+deprecated via `_compat`); `ColorChoice` deduped; dialogs re-exported at top
+level. `tests/test_dialogs_api.py` (+19); suite 297 passed excl. the known
+`nl.msg` flake; modal cancel + happy paths verified end-to-end. **NEXT → push/
+open PR A vs `2.0`, then PR B (Window/Toplevel) + PR C (Tableview) per the design
+§8.** (Prior recommended step, docs sub-PR #1, still trails the API pass.)_
+
+_Prior 2026-07-07 (**icon-drop PREREQ + a visual-polish batch are all
 MERGED into `2.0`; NEXT → docs sub-PR #1**). Merged since the prior entry:
 **#1094** (icon-drop prereq — `ttkbootstrap.icons` removed, brand logo preserved
 as `window.py` `_DEFAULT_ICON_DATA`, the 4 Messagebox icons render from the

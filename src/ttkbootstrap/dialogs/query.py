@@ -3,7 +3,7 @@
 import textwrap
 import tkinter
 from datetime import date
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Tuple
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
@@ -213,13 +213,17 @@ class Querybox:
             parent: Optional[tkinter.Misc] = None,
             title: str = "Color Chooser",
             initialcolor: Optional[str] = None,
+            *,
+            position: Optional[Tuple[int, int]] = None,
             **kwargs: Any,
     ) -> Any:
-        """Show a color picker and return the selected color when OK is pressed."""
+        """Show a color picker and return the selected color when OK is pressed.
+
+        Returns a ``ColorChoice`` namedtuple, or ``None`` if cancelled.
+        """
         from ttkbootstrap.dialogs.colorchooser import ColorChooserDialog
 
         dialog = ColorChooserDialog(parent, title, initialcolor)
-        position = kwargs.pop("position", None)
         dialog.show(position)
         return dialog.result
 
@@ -230,15 +234,26 @@ class Querybox:
             firstweekday: int = 6,
             startdate: Optional[date] = None,
             bootstyle: str = "primary",
-    ) -> date:
+            *,
+            position: Optional[Tuple[int, int]] = None,
+    ) -> Optional[date]:
+        """Show a calendar and return the selected ``date``.
+
+        2.0 change: returns ``None`` when the picker is cancelled (closed
+        without choosing a day). Previously it always returned a ``date`` --
+        falling back to ``startdate``/today -- so cancellation was
+        indistinguishable from a real selection.
+        """
         chooser = DatePickerDialog(
             parent=parent,
             title=title,
             firstweekday=firstweekday,
             startdate=startdate,
             bootstyle=bootstyle,
+            autoshow=False,
         )
-        return chooser.date_selected
+        chooser.show(position)
+        return chooser.result
 
     @staticmethod
     def get_string(
@@ -246,13 +261,19 @@ class Querybox:
             title: str = " ",
             initialvalue: Optional[str] = None,
             parent: Optional[tkinter.Misc] = None,
+            *,
+            position: Optional[Tuple[int, int]] = None,
             **kwargs: Any,
     ) -> Optional[str]:
+        """Prompt for a string. Returns the text, or ``None`` if cancelled.
+
+        Note: submitting an empty field returns ``""`` (distinct from the
+        ``None`` returned on cancel).
+        """
         initialvalue = initialvalue or ""
-        position = kwargs.pop("position", None)
         dialog = QueryDialog(prompt, title, initialvalue, parent=parent, **kwargs)
         dialog.show(position)
-        return dialog._result
+        return dialog.result
 
     @staticmethod
     def get_item(
@@ -261,13 +282,15 @@ class Querybox:
             initialvalue: Optional[str] = None,
             items: Optional[List[str]] = None,
             parent: Optional[tkinter.Misc] = None,
+            *,
+            position: Optional[Tuple[int, int]] = None,
             **kwargs: Any,
     ) -> Optional[str]:
+        """Prompt for one item from a list. Returns it, or ``None`` if cancelled."""
         initialvalue = initialvalue or ""
-        position = kwargs.pop("position", None)
         dialog = QueryDialog(prompt, title, initialvalue, items=items, parent=parent, **kwargs)
         dialog.show(position)
-        return dialog._result
+        return dialog.result
 
     @staticmethod
     def get_integer(
@@ -277,10 +300,12 @@ class Querybox:
             minvalue: Optional[int] = None,
             maxvalue: Optional[int] = None,
             parent: Optional[tkinter.Misc] = None,
+            *,
+            position: Optional[Tuple[int, int]] = None,
             **kwargs: Any,
     ) -> Optional[int]:
+        """Prompt for an integer. Returns it, or ``None`` if cancelled."""
         initialvalue = initialvalue or ""
-        position = kwargs.pop("position", None)
         datatype = kwargs.pop("datatype", int)
         dialog = QueryDialog(
             prompt,
@@ -293,7 +318,7 @@ class Querybox:
             **kwargs,
         )
         dialog.show(position)
-        return dialog._result
+        return dialog.result
 
     @staticmethod
     def get_float(
@@ -303,10 +328,12 @@ class Querybox:
             minvalue: Optional[float] = None,
             maxvalue: Optional[float] = None,
             parent: Optional[tkinter.Misc] = None,
+            *,
+            position: Optional[Tuple[int, int]] = None,
             **kwargs: Any,
     ) -> Optional[float]:
+        """Prompt for a float. Returns it, or ``None`` if cancelled."""
         initialvalue = initialvalue or ""
-        position = kwargs.pop("position", None)
         datatype = kwargs.pop("datatype", float)
         dialog = QueryDialog(
             prompt,
@@ -319,11 +346,16 @@ class Querybox:
             **kwargs,
         )
         dialog.show(position)
-        return dialog._result
+        return dialog.result
 
     @staticmethod
-    def get_font(parent: Optional[tkinter.Misc] = None, **kwargs: Any):
-        position = kwargs.pop("position", None)
+    def get_font(
+            parent: Optional[tkinter.Misc] = None,
+            *,
+            position: Optional[Tuple[int, int]] = None,
+            **kwargs: Any,
+    ):
+        """Show a font picker. Returns a ``Font``, or ``None`` if cancelled."""
         dialog = FontDialog(parent=parent, **kwargs)
         dialog.show(position)
         return dialog.result

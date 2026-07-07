@@ -201,6 +201,23 @@ from ttkbootstrap import widgets as _widgets
 from ttkbootstrap.widgets import DateEntry, Floodgauge, FloodgaugeLegacy, LabeledScale, M, Meter
 from ttkbootstrap.window import Toplevel, Window
 
+# Dialogs re-exported at top level so the common front doors are reachable as
+# ttk.Messagebox / ttk.Querybox, matching how widgets are exposed (2.0). The
+# ttkbootstrap.dialogs.* import paths remain valid. Placed after the widget and
+# window classes above, since the dialogs build on them at runtime.
+from ttkbootstrap.dialogs import (
+    ColorChooser,
+    ColorChooserDialog,
+    ColorDropperDialog,
+    DatePickerDialog,
+    Dialog,
+    FontDialog,
+    MessageDialog,
+    Messagebox,
+    QueryDialog,
+    Querybox,
+)
+
 __all__ = [
     # Tk exports
     "Tk", "Menu", "Text", "Canvas", "TkFrame", "LabelFrame", "Variable", "StringVar", "IntVar", "BooleanVar",
@@ -247,5 +264,17 @@ __all__ = [
     "FloodgaugeLegacy",
     "LabeledScale",
     "Meter",
-    "M"
+    "M",
+
+    # Dialogs
+    "Messagebox",
+    "Querybox",
+    "Dialog",
+    "MessageDialog",
+    "QueryDialog",
+    "DatePickerDialog",
+    "FontDialog",
+    "ColorChooser",
+    "ColorChooserDialog",
+    "ColorDropperDialog",
 ]

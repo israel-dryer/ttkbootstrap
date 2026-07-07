@@ -46,6 +46,7 @@ class DatePickerDialog:
             firstweekday: int = 6,
             startdate: Optional[date] = None,
             bootstyle: str = PRIMARY,
+            autoshow: bool = True,
     ) -> None:
         """Create a date picker dialog with a calendar popup.
 
@@ -74,6 +75,14 @@ class DatePickerDialog:
             bootstyle (str):
                 The color theme for the calendar (primary, secondary, success,
                 info, warning, danger, light, dark) (default=PRIMARY).
+
+            autoshow (bool):
+                If True (default, back-compatible), the dialog grabs focus and
+                blocks during construction, so ``date_selected`` is readable as
+                soon as the constructor returns. If False, construction does not
+                block; call :meth:`show` explicitly and read :attr:`result`
+                afterward (the path :meth:`Querybox.get_date` uses so it can
+                position the popup and detect cancellation).
 
         Interaction:
             - Left-click month arrows: Move calendar by one month
@@ -104,13 +113,43 @@ class DatePickerDialog:
         self.date_selected = self.startdate
         self.date = startdate or self.date_selected
         self.calendar = calendar.Calendar(firstweekday=firstweekday)
+        # Track whether the user actually picked a day, so cancellation
+        # (closing the window without a selection) is distinguishable from a
+        # real selection -- `date_selected` alone cannot tell them apart because
+        # it defaults to `startdate`/today. Read via the `result` property.
+        self._selection_made = False
 
         self.titlevar = ttk.StringVar()
         self.datevar = ttk.IntVar()
 
         self._setup_calendar()
+        if autoshow:
+            self.show()
+
+    def show(self, position: Optional[Tuple[int, int]] = None, wait_for_result: bool = True) -> None:
+        """Grab focus and (optionally) block until the dialog closes.
+
+        Parameters:
+
+            position (tuple[int, int]):
+                Optional ``(x, y)`` screen coordinates for the popup. If omitted,
+                the default placement (bottom-right of the parent, else centered)
+                set up during construction is kept.
+
+            wait_for_result (bool):
+                If True (default), block until the dialog is closed; read the
+                selection from :attr:`result` afterward.
+        """
+        if position is not None:
+            self._set_window_position(position)
         self.root.grab_set()
-        self.root.wait_window()
+        if wait_for_result:
+            self.root.wait_window()
+
+    @property
+    def result(self) -> Optional[date]:
+        """The selected ``date``, or ``None`` if the dialog was cancelled."""
+        return self.date_selected if self._selection_made else None
 
     def _setup_calendar(self) -> None:
         """Setup the calendar widget"""
@@ -259,6 +298,7 @@ class DatePickerDialog:
     def _on_date_selected(self, row: int, col: int) -> None:
         """Callback for selecting a date."""
         self.date_selected = self.monthdates[row][col]
+        self._selection_made = True
         self.root.destroy()
 
     def _selection_callback(func):
@@ -297,9 +337,16 @@ class DatePickerDialog:
     def on_reset_date(self, *_: Any) -> None:
         self.date = self.startdate
 
-    def _set_window_position(self) -> None:
-        """Move window to bottom-right of parent, else center on master."""
-        if self.parent:
+    def _set_window_position(self, position: Optional[Tuple[int, int]] = None) -> None:
+        """Position the popup.
+
+        An explicit ``(x, y)`` wins; otherwise anchor to the bottom-right of the
+        parent, else center on the master.
+        """
+        if position is not None:
+            x, y = position
+            self.root.geometry(f"+{x}+{y}")
+        elif self.parent:
             xpos = self.parent.winfo_rootx() + self.parent.winfo_width()
             ypos = self.parent.winfo_rooty() + self.parent.winfo_height()
             self.root.geometry(f"+{xpos}+{ypos}")
