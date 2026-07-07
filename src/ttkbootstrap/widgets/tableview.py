@@ -1571,13 +1571,15 @@ class Tableview(ttk.Frame):
             tableview.search_table_data(100, "Price", "Quantity")
             ```
         """
-        import re
-
         if criteria is None or (isinstance(criteria, str) and not criteria):
             self.reset_row_filters()
             return
 
-        search_text = str(criteria)
+        # A plain case-insensitive substring test (``needle in haystack``) is a
+        # literal match, so it is inherently special-character safe and, at the
+        # million-row scale a paginated table is built for, several times faster
+        # than driving ``re.search`` per cell for what is not a regex query.
+        needle = str(criteria).lower()
 
         # Get column indices if specified
         column_indices = None
@@ -1589,30 +1591,28 @@ class Tableview(ttk.Frame):
                         column_indices.append(col.tableindex)
                         break
 
-        # Escape special regex characters for literal search
-        search_text_escaped = re.escape(search_text.lower())
-
         self._filtered = True
-        self.tablerows_filtered.clear()
+        filtered = self.tablerows_filtered
+        filtered.clear()
         self.unload_table_data()
 
         for row in self.tablerows:
+            values = row.values
             if column_indices:
                 # Search specific columns
                 for col_index in column_indices:
                     try:
-                        col_value = str(row.values[col_index]).lower()
-                        if re.search(search_text_escaped, col_value):
-                            self.tablerows_filtered.append(row)
+                        if needle in str(values[col_index]).lower():
+                            filtered.append(row)
                             break
                     except IndexError:
                         # Column doesn't exist in this row
                         pass
             else:
                 # Search all columns
-                for col in row.values:
-                    if re.search(search_text_escaped, str(col).lower()):
-                        self.tablerows_filtered.append(row)
+                for col in values:
+                    if needle in str(col).lower():
+                        filtered.append(row)
                         break
 
         self._rowindex.set(0)
