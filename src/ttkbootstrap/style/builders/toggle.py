@@ -11,15 +11,22 @@ from ttkbootstrap.style.builders.utils import indicator_spacer
 
 @register_builder("default", "toggle")
 def build_toggle_style(builder: StyleBuilderTTK, colorname=DEFAULT):
-    """Create a round toggle style for the ttk.Checkbutton widget.
+    """Create the default toggle style for the ttk.Checkbutton widget.
+
+    The default toggle *is* a round toggle, but it must be built under the base
+    ``Toggle`` style name -- that is what the bare ``bootstyle="toggle"`` resolves
+    to (``round-toggle`` resolves to ``Round.Toggle``). Building it under
+    ``Round.Toggle`` here left ``Toggle`` with no layout ("Layout Toggle not
+    found").
 
     Parameters:
 
         builder (StyleBuilderTTK):
             The style builder.
         colorname (str):
+            The color label used to style the widget.
     """
-    builder.build_style("round", "toggle", colorname, required=True)
+    _build_round_toggle_style(builder, colorname, "Toggle")
 
 
 @register_builder("round", "toggle")
@@ -33,7 +40,11 @@ def build_round_toggle_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         colorname (str):
             The color label used to style the widget.
     """
-    ttk_class = "Round.Toggle"
+    _build_round_toggle_style(builder, colorname, "Round.Toggle")
+
+
+def _build_round_toggle_style(builder: StyleBuilderTTK, colorname, ttk_class):
+    """Build a round toggle under `ttk_class` (`Toggle` or `Round.Toggle`)."""
     disabled_fg = builder.disabled("text")
     off_track = builder.border(builder.colors.bg)  # bootstack: off track = border(surface)
 
