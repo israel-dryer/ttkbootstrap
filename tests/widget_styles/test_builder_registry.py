@@ -50,6 +50,7 @@ EXPECTED_KEYS = {
     ("outline", "menubutton"),
     ("outline", "toolbutton"),
     ("round", "scrollbar"),
+    ("thin", "scrollbar"),
     ("round", "toggle"),
     ("square", "toggle"),
     ("striped", "progressbar"),

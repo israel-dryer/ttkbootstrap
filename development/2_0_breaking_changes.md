@@ -19,6 +19,7 @@
 | Delivery API (mixins, no import-time monkey-patch) | API | handoff / PR #1075 |
 | **`neutral` color** | New | this doc, below |
 | **`ghost` button variant** | New | this doc, below |
+| **`thin` scrollbar variant** | New | this doc, below |
 | **Button-family visual restyle (flat + hairline border)** | Visual | this doc, below |
 
 ---
@@ -53,6 +54,23 @@ were standing in for a quiet/subtle button with `bootstyle="neutral"` — it wil
 stay quiet in dark mode where `light` would turn bright.
 
 Design: `development/2_0_neutral_color_design.md`.
+
+## `thin` — a new scrollbar variant  *(New)*
+
+**What.** A thin scrollbar (`bootstyle="thin"`, `primary-thin`, …): a few-pixel
+flat thumb on a surface-matched track, **no arrows**. Neutral by default (thumb =
+`border(surface)`), or the accent when a color is given; darkens/lightens on
+hover/press. It is now the scrollbar used in the **Combobox popdown** and the
+**font dialog** lists — narrow spaces where the bar is a scroll *indicator* more
+than a drag handle. Additive; the standard (`default`) and `round` scrollbars are
+unchanged.
+
+**Why.** The standard scrollbar (with arrows, an 18×8 rounded thumb) is heavy in a
+cramped dropdown. bootstack's thin bar reads as a clean sliver. Ported from
+bootstack (mechanism, not API) — the thumb is a solid box from the `rect` toolkit,
+so no new PNG asset was added.
+
+**Migration.** None (additive). Opt in with `bootstyle="thin"` on any `Scrollbar`.
 
 ## `ghost` — a new button variant  *(New)*
 

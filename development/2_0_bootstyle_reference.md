@@ -54,4 +54,5 @@ default; `set_bootstyle_strict(True)` or `TTKBOOTSTRAP_STRICT=1` raises).
 | `toggle` | `square` | `primary-square-toggle` |
 | `progressbar` | `striped` | `primary-striped` |
 | `progressbar` | `thin` | `primary-thin` |
+| `scrollbar` | `thin` | `primary-thin` |
 

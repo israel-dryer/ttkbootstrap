@@ -139,7 +139,7 @@ class FontDialog(Dialog):
             container,
             command=listbox.yview,
             orient=VERTICAL,
-            bootstyle="rounded",
+            bootstyle="thin",
         )
         listbox_vbar.pack(side=RIGHT, fill=Y)
         listbox.configure(yscrollcommand=listbox_vbar.set)
@@ -181,7 +181,7 @@ class FontDialog(Dialog):
             master=container,
             orient=VERTICAL,
             command=sizes_listbox.yview,
-            bootstyle="round",
+            bootstyle="thin",
         )
         sizes_listbox.configure(yscrollcommand=sizes_listbox_vbar.set)
         sizes_listbox.pack(side=LEFT, fill=Y, expand=YES, anchor=N)

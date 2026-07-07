@@ -102,7 +102,8 @@ def build_combobox_style(builder: StyleBuilderTTK, colorname=DEFAULT):
                    El("Combobox.textarea", sticky=tk.NSEW)])]))
     builder.register_ttkstyle(ttk_style)
     try:
-        builder.build_style("default", "scrollbar", DEFAULT, required=True)
+        # the popdown uses the thin scrollbar (a scroll indicator in a small space)
+        builder.build_style("thin", "scrollbar", DEFAULT, required=True)
     except Exception:
         # style already created
         pass
@@ -141,6 +142,8 @@ def update_combobox_popdown_style(builder: StyleBuilderTTK, widget):
     popdown = widget.tk.eval(f"ttk::combobox::PopdownWindow {widget}")
     widget.tk.call(f"{popdown}.f.l", "configure", *tk_settings)
 
-    # set scrollbar style
-    sb_style = "TCombobox.Vertical.TScrollbar"
+    # set scrollbar style -- the thin bar suits the narrow popdown
+    sb_style = "Thin.Vertical.TScrollbar"
+    if not builder.style.style_exists_in_theme(sb_style):
+        builder.build_style("thin", "scrollbar", DEFAULT, required=True)
     widget.tk.call(f"{popdown}.f.sb", "configure", "-style", sb_style)

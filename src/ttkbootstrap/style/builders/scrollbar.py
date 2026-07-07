@@ -8,6 +8,84 @@ from ttkbootstrap.style.layout import El, image_element, layout
 from ttkbootstrap.style.builders.registry import register_builder
 
 
+# A few-pixel thumb for the 'thin' variant -- suits narrow lists/dropdowns.
+_THIN_SCROLLBAR_THICKNESS = 4
+
+
+@register_builder("thin", "scrollbar")
+def build_thin_scrollbar_style(builder: StyleBuilderTTK, colorname=DEFAULT):
+    """Create a thin scrollbar style for the ttk.Scrollbar widget.
+
+    A few-pixel flat thumb on a surface-matched track, no arrows -- for narrow
+    lists and dropdowns where the bar is more a scroll *indicator* than a drag
+    handle (combobox popdown, font picker, ...). The thumb is neutral (the
+    surface border color) by default, or the accent when a color is given, and
+    darkens/lightens on hover/press. Ported from bootstack (mechanism, not API):
+    a solid box thumb via the `rect` toolkit rather than a rounded PNG.
+
+    Parameters:
+
+        builder (StyleBuilderTTK):
+            The style builder
+        colorname (str):
+            The color label used to style the widget.
+    """
+    ttk_class = "TScrollbar"
+    surface = builder.colors.bg
+
+    if any([colorname == DEFAULT, colorname == ""]):
+        h_ttk_style = f"Thin.Horizontal.{ttk_class}"
+        v_ttk_style = f"Thin.Vertical.{ttk_class}"
+        thumb = builder.border(surface)  # neutral by default
+    else:
+        h_ttk_style = f"{colorname}.Thin.Horizontal.{ttk_class}"
+        v_ttk_style = f"{colorname}.Thin.Vertical.{ttk_class}"
+        thumb = builder.colors.get(colorname)
+
+    active = builder.active(thumb)
+    pressed = builder.pressed(thumb)
+    a = builder.assets
+    t = _THIN_SCROLLBAR_THICKNESS
+
+    def _configure(ttk_style):
+        builder.configure(
+            ttk_style,
+            troughcolor=surface,
+            bordercolor=surface,
+            background=surface,
+            relief=tk.FLAT,
+            borderwidth=0,
+            arrowsize=0,
+        )
+
+    # horizontal: a `t`-px-thick sliver that stretches along the track (EW)
+    _configure(h_ttk_style)
+    image_element(
+        builder.style, f"{h_ttk_style}.thumb",
+        default=a.rect(thumb, (8, t)),
+        states={"pressed": a.rect(pressed, (8, t)),
+                "active": a.rect(active, (8, t))},
+        border=0, sticky="ew")
+    layout(builder.style, h_ttk_style,
+           El("Horizontal.Scrollbar.trough", sticky="we", children=[
+               El(f"{h_ttk_style}.thumb", expand="1", sticky="ew")]))
+
+    # vertical
+    _configure(v_ttk_style)
+    image_element(
+        builder.style, f"{v_ttk_style}.thumb",
+        default=a.rect(thumb, (t, 8)),
+        states={"pressed": a.rect(pressed, (t, 8)),
+                "active": a.rect(active, (t, 8))},
+        border=0, sticky="ns")
+    layout(builder.style, v_ttk_style,
+           El("Vertical.Scrollbar.trough", sticky="ns", children=[
+               El(f"{v_ttk_style}.thumb", expand="1", sticky="ns")]))
+
+    builder.register_ttkstyle(h_ttk_style)
+    builder.register_ttkstyle(v_ttk_style)
+
+
 def _create_round_scrollbar_assets(builder, thumb_color, pressed, active):
     """Create image assets to be used when building the round
     scrollbar style.
