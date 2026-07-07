@@ -43,12 +43,16 @@ Example:
     root.mainloop()
     ```
 """
+import sys
 import tkinter
+import warnings
 from typing import Any, Optional, Tuple, Union
 
 from ttkbootstrap import utility
 from ttkbootstrap.constants import *
+from ttkbootstrap.internal import positioning
 from ttkbootstrap.style import Style, Bootstyle
+from ttkbootstrap.style._compat import normalize_window_kwargs
 
 # The default ttkbootstrap window icon (brand logo, 32x32 PNG) used when a
 # Window/Toplevel is created with ``iconphoto=''``. This is a base64-encoded
@@ -194,7 +198,134 @@ def on_select_all(event: tkinter.Event) -> None:
         widget.icursor(END)
 
 
-class Window(tkinter.Tk):
+class _BaseWindow:
+    """Window logic shared by `Window` (root) and `Toplevel` (secondary).
+
+    Used as a mixin alongside `tkinter.Tk`/`tkinter.Toplevel`, so both classes
+    stop duplicating -- and drifting on -- their icon, geometry, alpha, and
+    positioning handling. Mirrors bootstack's `BaseWindow`
+    (`bootstack/src/bootstack/_runtime/base_window.py`); ttkbootstrap borrows
+    the mechanisms only, keeping its own `Window`/`Toplevel` split.
+    """
+
+    winsys: str
+
+    @property
+    def style(self) -> Style:
+        """Return a reference to the `ttkbootstrap.style.Style` object."""
+        return Style.get_instance()
+
+    # -- setup helpers -----------------------------------------------------
+
+    def _setup_icon(self, iconphoto: Optional[str], default_data: Optional[str] = None) -> None:
+        """Configure the titlebar icon uniformly across both window classes.
+
+        Semantics (identical for `Window` and `Toplevel`):
+            None  -> leave the icon untouched (skip).
+            ''    -> use `default_data` if given (the brand icon on `Window`),
+                     otherwise inherit the application default (`Toplevel`).
+            path  -> load the image, falling back to `default_data` on failure.
+
+        A `.ico` path is applied through `wm_iconbitmap` on Windows (mirrors
+        bootstack's platform branch); other formats go through `iconphoto`.
+        """
+        if iconphoto is None:
+            return
+        if iconphoto == '':
+            if default_data is not None:
+                self._icon = tkinter.PhotoImage(master=self, data=default_data)
+                self.iconphoto(True, self._icon)
+            return
+        try:
+            path = str(iconphoto)
+            if path.lower().endswith('.ico') and self.winsys == 'win32':
+                self.wm_iconbitmap(path)
+            else:
+                self._icon = tkinter.PhotoImage(file=path, master=self)
+                self.iconphoto(True, self._icon)
+        except tkinter.TclError:
+            warnings.warn(
+                f"iconphoto path {iconphoto!r} could not be loaded; "
+                "using the default image.",
+                UserWarning,
+                stacklevel=3,
+            )
+            if default_data is not None:
+                self._icon = tkinter.PhotoImage(master=self, data=default_data)
+                self.iconphoto(True, self._icon)
+
+    def _apply_geometry(
+            self,
+            size: Optional[Tuple[int, int]],
+            position: Optional[Tuple[int, int]],
+    ) -> None:
+        """Apply `size` and/or `position` as a single `geometry` call.
+
+        `position` uses a signed format (`f"{x:+d}{y:+d}"`) so negative offsets
+        express edge-relative placement (`position=(-10, -10)` -> near the
+        bottom-right), which the old hardcoded `+{x}+{y}` could not.
+        """
+        geo = ""
+        if size is not None:
+            geo += f"{size[0]}x{size[1]}"
+        if position is not None:
+            x, y = position
+            geo += f"{int(x):+d}{int(y):+d}"
+        if geo:
+            self.geometry(geo)
+
+    def _apply_constraints(
+            self,
+            minsize: Optional[Tuple[int, int]],
+            maxsize: Optional[Tuple[int, int]],
+            resizable: Optional[Tuple[bool, bool]],
+    ) -> None:
+        if minsize is not None:
+            self.minsize(minsize[0], minsize[1])
+        if maxsize is not None:
+            self.maxsize(maxsize[0], maxsize[1])
+        if resizable is not None:
+            self.resizable(resizable[0], resizable[1])
+
+    def _setup_alpha(self, alpha: Optional[float]) -> None:
+        """Set window transparency, platform-aware.
+
+        On X11 alpha must be applied after the window is visible, so it is
+        deferred to the `<Visibility>` event (mirrors bootstack's
+        `on_visibility_alpha`); Windows/aqua set it immediately.
+        """
+        if alpha is None:
+            return
+        if self.winsys == 'x11':
+            self.alpha = alpha
+            self.alpha_bind = self.bind("<Visibility>", on_visibility, '+')
+        else:
+            self.attributes("-alpha", alpha)
+
+    def overrideredirect(self, boolean: Optional[bool] = None):
+        """Get/set override-redirect, guarding the macOS no-op.
+
+        On aqua, enabling override-redirect breaks click handling and can crash
+        Tk/Cocoa, so a truthy request is silently ignored there (bootstack
+        `base_window.py:619-639`).
+        """
+        if boolean and getattr(self, 'winsys', None) == 'aqua':
+            return None
+        return super().overrideredirect(boolean)
+
+    # -- positioning -------------------------------------------------------
+
+    def place_window_center(self) -> None:
+        """Center the window on the screen (monitor under the cursor when
+        `screeninfo` is available), clamped to stay fully visible."""
+        x, y = positioning.center_on_screen(self)
+        x, y = positioning.ensure_on_screen(self, x, y)
+        self.geometry(f'+{x}+{y}')
+
+    position_center = place_window_center  # alias
+
+
+class Window(_BaseWindow, tkinter.Tk):
     """A class that wraps the tkinter.Tk class in order to provide a
     more convenient api with additional bells and whistles. For more
     information on how to use the inherited `Tk` methods, see the
@@ -215,6 +346,7 @@ class Window(tkinter.Tk):
             self,
             title: str = "ttkbootstrap",
             themename: str = "bootstrap-light",
+            *,
             default_button: str = "neutral",
             iconphoto: Optional[str] = '',
             size: Optional[Tuple[int, int]] = None,
@@ -222,10 +354,10 @@ class Window(tkinter.Tk):
             minsize: Optional[Tuple[int, int]] = None,
             maxsize: Optional[Tuple[int, int]] = None,
             resizable: Optional[Tuple[bool, bool]] = None,
-            hdpi: bool = True,
+            high_dpi: bool = True,
             scaling: Optional[float] = None,
             transient: Optional[tkinter.Misc] = None,
-            overrideredirect: bool = False,
+            override_redirect: bool = False,
             alpha: float = 1.0,
             **kwargs: Any,
     ) -> None:
@@ -259,9 +391,10 @@ class Window(tkinter.Tk):
 
             position (tuple[int, int]):
                 The horizontal and vertical position of the window on
-                the screen relative to the top-left coordinate.
-                Internally this is passed to the `Window.geometry`
-                method.
+                the screen relative to the top-left coordinate. Negative
+                values are edge-relative (e.g. `(-10, -10)` places the
+                window near the bottom-right). Internally this is passed
+                to the `Window.geometry` method.
 
             minsize (tuple[int, int]):
                 Specifies the minimum permissible dimensions for the
@@ -280,9 +413,9 @@ class Window(tkinter.Tk):
                 This can be adjusted after the window is created by using
                 the `Window.resizable` method.
 
-            hdpi (bool):
+            high_dpi (bool):
                 Enable high-dpi support for Windows OS. This option is
-                enabled by default.
+                enabled by default. (Renamed from `hdpi` in 2.0.)
 
             scaling (float):
                 Sets the current scaling factor used by Tk to convert
@@ -296,10 +429,12 @@ class Window(tkinter.Tk):
                 transient with regard to the widget master. Internally
                 this is passed to the `Window.transient` method.
 
-            overrideredirect (bool):
+            override_redirect (bool):
                 Instructs the window manager to ignore this widget if
                 True. Internally, this argument is passed to the
-                `Window.overrideredirect(1)` method.
+                `Window.overrideredirect(1)` method. Ignored on macOS
+                (aqua), where it destabilizes Tk. (Renamed from
+                `overrideredirect` in 2.0.)
 
             alpha (float):
                 On Windows, specifies the alpha transparency level of the
@@ -310,13 +445,22 @@ class Window(tkinter.Tk):
                 Any other keyword arguments that are passed through to tkinter.Tk() constructor
                 List of available keywords available at: https://docs.python.org/3/library/tkinter.html#tkinter.Tk
         """
+        # Accept the pre-2.0 raw-Tk kwarg spellings with a deprecation warning.
+        aliases = normalize_window_kwargs(kwargs)
+        high_dpi = aliases.get("high_dpi", high_dpi)
+        override_redirect = aliases.get("override_redirect", override_redirect)
+
         # ttkbootstrap supports a single application root. The Style engine is
         # a process-wide singleton bound to the first root; a second live root
         # would silently no-op all theming. Fail loudly before any side effects.
         _require_single_root(self)
 
-        if hdpi:
+        if high_dpi:
             utility.enable_high_dpi_awareness()
+
+        # On win32, tag the process so the taskbar shows the app icon rather
+        # than the generic python.exe one (bootstack app.py:534-540).
+        self._set_app_user_model_id()
 
         super().__init__(**kwargs)
         self.winsys: str = self.tk.call('tk', 'windowingsystem')
@@ -324,65 +468,35 @@ class Window(tkinter.Tk):
         if scaling is not None:
             utility.enable_high_dpi_awareness(self, scaling)
 
-        if iconphoto is not None:
-            if iconphoto == '':
-                # the default ttkbootstrap icon
-                self._icon = tkinter.PhotoImage(master=self, data=_DEFAULT_ICON_DATA)
-                self.iconphoto(True, self._icon)
-            else:
-                try:
-                    # the user provided an image path
-                    self._icon = tkinter.PhotoImage(file=iconphoto, master=self)
-                    self.iconphoto(True, self._icon)
-                except tkinter.TclError:
-                    # The fallback icon if the user icon fails.
-                    print('iconphoto path is bad; using default image.')
-                    self._icon = tkinter.PhotoImage(data=_DEFAULT_ICON_DATA, master=self)
-                    self.iconphoto(True, self._icon)
-
+        self._setup_icon(iconphoto, default_data=_DEFAULT_ICON_DATA)
         self.title(title)
-
-        if size is not None:
-            width, height = size
-            self.geometry(f"{width}x{height}")
-
-        if position is not None:
-            xpos, ypos = position
-            self.geometry(f"+{xpos}+{ypos}")
-
-        if minsize is not None:
-            width, height = minsize
-            self.minsize(width, height)
-
-        if maxsize is not None:
-            width, height = maxsize
-            self.maxsize(width, height)
-
-        if resizable is not None:
-            width, height = resizable
-            self.resizable(width, height)
+        self._apply_geometry(size, position)
+        self._apply_constraints(minsize, maxsize, resizable)
 
         if transient is not None:
             self.transient(transient)
 
-        if overrideredirect:
+        if override_redirect:
             self.overrideredirect(1)
 
-        if alpha is not None:
-            if self.winsys == 'x11':
-                self.alpha = alpha
-                self.alpha_bind = self.bind("<Visibility>", on_visibility, '+')
-            else:
-                self.attributes("-alpha", alpha)
+        self._setup_alpha(alpha)
 
         apply_class_bindings(self)
         apply_all_bindings(self)
         self._style = Style(themename, default_button=default_button)
 
-    @property
-    def style(self) -> Style:
-        """Return a reference to the `ttkbootstrap.style.Style` object."""
-        return self._style
+    @staticmethod
+    def _set_app_user_model_id() -> None:
+        """On win32, set an explicit AppUserModelID so the taskbar groups this
+        app under its own icon instead of python.exe. No-op elsewhere."""
+        if sys.platform != 'win32':
+            return
+        try:
+            import ctypes
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
+                "ttkbootstrap.app")
+        except Exception:
+            pass
 
     def destroy(self) -> None:
         """Destroy the window and all its children."""
@@ -391,22 +505,8 @@ class Window(tkinter.Tk):
         Style.instance = None
         super().destroy()
 
-    def place_window_center(self) -> None:
-        """Position the toplevel in the center of the screen. Does not
-        account for titlebar height."""
-        self.update_idletasks()
-        w_height = self.winfo_height()
-        w_width = self.winfo_width()
-        s_height = self.winfo_screenheight()
-        s_width = self.winfo_screenwidth()
-        xpos = (s_width - w_width) // 2
-        ypos = (s_height - w_height) // 2
-        self.geometry(f'+{xpos}+{ypos}')
 
-    position_center = place_window_center  # alias
-
-
-class Toplevel(tkinter.Toplevel):
+class Toplevel(_BaseWindow, tkinter.Toplevel):
     """A class that wraps the tkinter.Toplevel class in order to
     provide a more convenient api with additional bells and whistles.
     For more information on how to use the inherited `Toplevel`
@@ -426,17 +526,19 @@ class Toplevel(tkinter.Toplevel):
     def __init__(
             self,
             title: str = "ttkbootstrap",
-            iconphoto: str = '',
+            *,
+            iconphoto: Optional[str] = '',
             size: Optional[Tuple[int, int]] = None,
             position: Optional[Tuple[int, int]] = None,
             minsize: Optional[Tuple[int, int]] = None,
             maxsize: Optional[Tuple[int, int]] = None,
             resizable: Optional[Tuple[bool, bool]] = None,
             transient: Optional[tkinter.Misc] = None,
-            overrideredirect: bool = False,
-            windowtype: Optional[str] = None,
+            override_redirect: bool = False,
+            window_type: Optional[str] = None,
             topmost: bool = False,
-            toolwindow: bool = False,
+            tool_window: bool = False,
+            iconify: bool = False,
             alpha: float = 1.0,
             **kwargs: Any,
     ) -> None:
@@ -449,7 +551,8 @@ class Toplevel(tkinter.Toplevel):
             iconphoto (str):
                 A path to the image used for the titlebar icon.
                 Internally this is passed to the `Tk.iconphoto` method.
-                By default the application icon is used.
+                By default the application icon is inherited. Set to
+                `None` to leave the icon untouched.
 
             size (tuple[int, int]):
                 The width and height of the application window.
@@ -458,9 +561,9 @@ class Toplevel(tkinter.Toplevel):
 
             position (tuple[int, int]):
                 The horizontal and vertical position of the window on
-                the screen relative to the top-left coordinate.
-                Internally this is passed to the `Toplevel.geometry`
-                method.
+                the screen relative to the top-left coordinate. Negative
+                values are edge-relative. Internally this is passed to
+                the `Toplevel.geometry` method.
 
             minsize (tuple[int, int]):
                 Specifies the minimum permissible dimensions for the
@@ -484,27 +587,34 @@ class Toplevel(tkinter.Toplevel):
                 transient with regard to the widget master. Internally
                 this is passed to the `Toplevel.transient` method.
 
-            overrideredirect (bool):
+            override_redirect (bool):
                 Instructs the window manager to ignore this widget if
                 True. Internally, this argument is processed as
-                `Toplevel.overrideredirect(1)`.
+                `Toplevel.overrideredirect(1)`. Ignored on macOS (aqua).
+                (Renamed from `overrideredirect` in 2.0.)
 
-            windowtype (str):
+            window_type (str):
                 On X11, requests that the window should be interpreted by
                 the window manager as being of the specified type. Internally,
-                this is passed to the `Toplevel.attributes('-type', windowtype)`.
+                this is passed to the `Toplevel.attributes('-type', window_type)`.
 
                 See the [-type option](https://tcl.tk/man/tcl8.6/TkCmd/wm.htm#M64)
-                for a list of available options.
+                for a list of available options. (Renamed from `windowtype`
+                in 2.0.)
 
             topmost (bool):
                 Specifies whether this is a topmost window (displays above all
                 other windows). Internally, this processed by the window as
                 `Toplevel.attributes('-topmost', 1)`.
 
-            toolwindow (bool):
+            tool_window (bool):
                 On Windows, specifies a toolwindow style. Internally, this is
-                processed as `Toplevel.attributes('-toolwindow', 1)`.
+                processed as `Toplevel.attributes('-toolwindow', 1)`. (Renamed
+                from `toolwindow` in 2.0.)
+
+            iconify (bool):
+                If True, the window starts minimized (iconified). Internally
+                this calls `Toplevel.iconify`.
 
             alpha (float):
                 On Windows, specifies the alpha transparency level of the
@@ -514,10 +624,11 @@ class Toplevel(tkinter.Toplevel):
             **kwargs (Dict):
                 Other optional keyword arguments.
         """
-        if 'iconify' in kwargs:
-            iconify = kwargs.pop('iconify')
-        else:
-            iconify = None
+        # Accept the pre-2.0 raw-Tk kwarg spellings with a deprecation warning.
+        aliases = normalize_window_kwargs(kwargs)
+        override_redirect = aliases.get("override_redirect", override_redirect)
+        window_type = aliases.get("window_type", window_type)
+        tool_window = aliases.get("tool_window", tool_window)
 
         super().__init__(**kwargs)
         self.winsys: str = self.tk.call('tk', 'windowingsystem')
@@ -528,37 +639,12 @@ class Toplevel(tkinter.Toplevel):
         Bootstyle.update_tk_widget_style(self)
         Bootstyle.stamp_theme_version(self)
 
-        if iconphoto != '':
-            try:
-                # the user provided an image path
-                self._icon = tkinter.PhotoImage(file=iconphoto, master=self)
-                self.iconphoto(True, self._icon)
-            except tkinter.TclError:
-                # The fallback icon if the user icon fails.
-                print('iconphoto path is bad; using default image.')
-                pass
-
+        # A Toplevel inherits the application icon by default (iconphoto='');
+        # pass default_data=None so '' means "inherit", not "brand icon".
+        self._setup_icon(iconphoto, default_data=None)
         self.title(title)
-
-        if size is not None:
-            width, height = size
-            self.geometry(f'{width}x{height}')
-
-        if position is not None:
-            xpos, ypos = position
-            self.geometry(f"+{xpos}+{ypos}")
-
-        if minsize is not None:
-            width, height = minsize
-            self.minsize(width, height)
-
-        if maxsize is not None:
-            width, height = maxsize
-            self.maxsize(width, height)
-
-        if resizable is not None:
-            width, height = resizable
-            self.resizable(width, height)
+        self._apply_geometry(size, position)
+        self._apply_constraints(minsize, maxsize, resizable)
 
         if iconify:
             self.iconify()
@@ -566,45 +652,19 @@ class Toplevel(tkinter.Toplevel):
         if transient is not None:
             self.transient(transient)
 
-        if overrideredirect:
+        if override_redirect:
             self.overrideredirect(1)
 
-        if windowtype is not None:
-            if self.winsys == 'x11':
-                self.attributes("-type", windowtype)
+        if window_type is not None and self.winsys == 'x11':
+            self.attributes("-type", window_type)
 
         if topmost:
             self.attributes("-topmost", 1)
 
-        if toolwindow:
-            if self.winsys == 'win32':
-                self.attributes("-toolwindow", 1)
+        if tool_window and self.winsys == 'win32':
+            self.attributes("-toolwindow", 1)
 
-        if alpha is not None:
-            if self.winsys == 'x11':
-                self.alpha = alpha
-                self.alpha_bind = self.bind("<Visibility>", on_visibility, '+')
-            else:
-                self.attributes("-alpha", alpha)
-
-    @property
-    def style(self) -> Style:
-        """Return a reference to the `ttkbootstrap.style.Style` object."""
-        return Style()
-
-    def place_window_center(self) -> None:
-        """Position the toplevel in the center of the screen. Does not
-        account for titlebar height."""
-        self.update_idletasks()
-        w_height = self.winfo_height()
-        w_width = self.winfo_width()
-        s_height = self.winfo_screenheight()
-        s_width = self.winfo_screenwidth()
-        xpos = (s_width - w_width) // 2
-        ypos = (s_height - w_height) // 2
-        self.geometry(f'+{xpos}+{ypos}')
-
-    position_center = place_window_center  # alias
+        self._setup_alpha(alpha)
 
 
 if __name__ == "__main__":

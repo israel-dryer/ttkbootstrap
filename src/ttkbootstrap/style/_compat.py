@@ -64,6 +64,37 @@ def warn_deprecated(old: str, new: str, *, removed_in: str = "3.0") -> None:
     )
 
 
+# ---------------------------------------------------------------------------
+# Window/Toplevel keyword renames (2.0 shipped-widget API pass, PR B).
+# ---------------------------------------------------------------------------
+# The raw-Tk-mirroring constructor kwargs were renamed to snake_case. The old
+# spellings are accepted through 2.x with a DeprecationWarning, removed in 3.0.
+_WINDOW_KWARG_ALIASES = {
+    "overrideredirect": "override_redirect",
+    "windowtype": "window_type",
+    "toolwindow": "tool_window",
+    "hdpi": "high_dpi",
+}
+
+
+def normalize_window_kwargs(kwargs: dict) -> dict:
+    """Pop deprecated raw-Tk-name window kwargs from ``kwargs`` in place.
+
+    Returns a ``{new_name: value}`` dict for any legacy spelling found, emitting
+    the standard deprecation warning for each. The caller merges the result over
+    its explicit parameters, e.g.::
+
+        aliases = normalize_window_kwargs(kwargs)
+        high_dpi = aliases.get("high_dpi", high_dpi)
+    """
+    out = {}
+    for old, new in _WINDOW_KWARG_ALIASES.items():
+        if old in kwargs:
+            warn_deprecated(f"the {old!r} window argument", f"{new!r}")
+            out[new] = kwargs.pop(old)
+    return out
+
+
 def normalize_bootstyle(value, *, warn: bool = False) -> str:
     """Return the canonical dash-joined bootstyle string for a legacy value.
 

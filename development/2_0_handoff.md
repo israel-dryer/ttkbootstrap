@@ -3,7 +3,37 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-07-07 (**shipped-widget API pass: design done + PR A
+_Last updated: 2026-07-07 (**shipped-widget API pass — PR B (Window/Toplevel)
+IMPLEMENTED on branch `feat/2.0-shipped-api-window`, awaiting a cross-platform
+visual gate + merge**). Per design §5a: new private `_BaseWindow` mixin
+(`Window(_BaseWindow, tk.Tk)` / `Toplevel(_BaseWindow, tk.Toplevel)`) owning the
+shared icon/geometry/alpha/positioning/`style` logic both classes were
+duplicating and drifting on; `_setup_icon` unifies `iconphoto` (`None`=skip,
+`''`=default/inherit, path=load-with-fallback — fixes the `Toplevel(iconphoto=None)`
+crash, bad path now `UserWarning` not `print`, `.ico`→`wm_iconbitmap` on win32);
+new private `internal/positioning.py` (subset of bootstack's `WindowPositioning`:
+`center_on_screen`/`center_on_parent`/`ensure_on_screen`, optional `screeninfo`
+with graceful single-screen fallback — no new hard dep) re-points
+`place_window_center`; snake_case kwarg aliases via
+`_compat.normalize_window_kwargs` (`hdpi`→`high_dpi`,
+`overrideredirect`→`override_redirect`, `windowtype`→`window_type`,
+`toolwindow`→`tool_window`, warn-and-normalize, removed 3.0); **keyword-only**
+constructors after the leading positional(s) (`Window(title, themename, *, …)`,
+`Toplevel(title, *, …)` — documented breaking, unshimmable); `iconify` promoted to
+a real `Toplevel` kwarg; edge-relative + combined geometry (`f"{x:+d}{y:+d}"`);
+aqua `overrideredirect` no-op guard; win32 AppUserModelID. First-party
+`dialogs/base.py` migrated `windowtype`→`window_type`. New
+`tests/test_window_api.py` (+15); suite **317 passed** excl. the known `nl.msg`
+flake; warning-free import + end-to-end smoke verified. Breaking-change log +
+design §8 updated. **Residual risk = cross-platform** (a manual win32 + if-available
+x11/aqua check is still owed before merge). **Deferred fast-follow (NOT in PR B):**
+the richer bootstack positioning surface (`place_center_on`/`place_at`/
+`place_anchor`/`place_dropdown`/`place_cursor`), the `windowtype` unified switch
+(§5a.9), and routing the dialogs' `internal/utility.center_on_parent` through the
+new `positioning` module. **NEXT → PR C (Tableview fixes + re-export, §5c)** once PR
+B lands. Prior entry (PR A) follows._
+
+_Prior 2026-07-07 (**shipped-widget API pass: design done + PR A
 (dialogs) MERGED into `2.0` (#1102)**). The deferred shipped-widget API
 normalization (`Window`/dialogs/`Tableview`) was picked up ahead of the docs
 (author reversed the docs-first call so docs get written against normalized

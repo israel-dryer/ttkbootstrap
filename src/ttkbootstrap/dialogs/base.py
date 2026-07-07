@@ -124,7 +124,7 @@ class Dialog(BaseWidget):
                 title=self._title,
                 resizable=(False, False),
                 minsize=(250, 15),
-                windowtype="dialog",
+                window_type="dialog",
                 iconify=True,
             )
 
