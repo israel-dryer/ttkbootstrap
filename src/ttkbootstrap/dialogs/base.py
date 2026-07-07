@@ -148,6 +148,20 @@ class Dialog(BaseWidget):
 
     @property
     def result(self) -> Any:
-        """Returns the result of the dialog."""
-        self._toplevel.grab_release()
+        """Returns the result of the dialog.
+
+        Safe to read whether the toplevel is already destroyed (e.g.
+        ``QueryDialog`` destroys it synchronously on submit) or only queued for
+        destruction (``MessageDialog`` uses ``after_idle``); the grab is released
+        only if the window still exists. This is the single result accessor for
+        every ``Dialog`` subclass -- facades must read ``.result``, not the
+        private ``._result`` (2.0 result-convention unification).
+        """
+        toplevel = self._toplevel
+        if toplevel is not None:
+            try:
+                if toplevel.winfo_exists():
+                    toplevel.grab_release()
+            except tkinter.TclError:
+                pass
         return self._result

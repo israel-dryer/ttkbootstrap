@@ -382,5 +382,8 @@ class DateEntry(Frame):
             firstweekday=self._firstweekday,
             bootstyle=self._bootstyle,
         )
-        self.set_date(new_date)
-        self.event_generate("<<DateEntrySelected>>")
+        # get_date returns None when the picker is cancelled (2.0); leave the
+        # field unchanged rather than resetting it.
+        if new_date is not None:
+            self.set_date(new_date)
+            self.event_generate("<<DateEntrySelected>>")
