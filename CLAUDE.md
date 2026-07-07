@@ -154,11 +154,18 @@ fallback) re-pointing `place_window_center`, snake_case kwarg aliases via
 `toolwindow`, warn-and-normalize), keyword-only constructors, `iconify` promoted,
 edge-relative/combined geometry, aqua `overrideredirect` no-op guard, win32
 AppUserModelID; `tests/test_window_api.py` (+15), suite 317 excl. the `nl.msg`
-flake. **NEXT → PR C (Tableview fixes + re-export, §5c), the last PR of the
-shipped-widget API pass.** The docs
-Workstream H (starting with docs sub-PR #1 — nav/IA skeleton + un-break the 7
-broken API `:::` stubs, per `development/2_0_docs_design.md` §11) now trails the
-API pass.
+flake. **PR C (Tableview fixes + re-export, §5c) — the pass's last PR — is
+OPENED as #1104:** re-export `Tableview`/`TableColumn`/`TableRow` at top level
+(`ttk.Tableview`) + from `ttkbootstrap.widgets`, fix two dead-on-call bugs
+(`delete_column(cid=...)` called the `cidmap` dict — `cidmap` is int-keyed, not
+`str`; header right-click menu `self.master` self-assignment), `insert_row([])`
+raises `ValueError` instead of `print()`ing to stdout, delete dead code
+(`reset_row_sort` stub / unused `_build_table_*` / commented `_select_pagesize` /
+`maxwidth` docstring); `tests/test_tableview_api.py` (+6), suite 323 excl. the
+`nl.msg` flake. **With A/B/C the shipped-widget API pass is COMPLETE** (only the
+deferred Tableview method-verb rename remains, its own later slice). **NEXT → docs
+Workstream H sub-PR #1** — nav/IA skeleton + un-break the 7 broken API `:::` stubs,
+per `development/2_0_docs_design.md` §11.
 
 ## Repository layout
 

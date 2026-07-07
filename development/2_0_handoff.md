@@ -3,7 +3,28 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-07-07 (**shipped-widget API pass — PR B (Window/Toplevel)
+_Last updated: 2026-07-07 (**shipped-widget API pass — PR C (Tableview)
+OPENED as #1104 against `2.0`; the pass's LAST PR**). Fixes only per design §5c
+(the method-verb rename stays a deferred later slice). Re-export
+`Tableview`/`TableColumn`/`TableRow` at top level (`ttk.Tableview`) + from
+`ttkbootstrap.widgets` (was the only widget not reachable as `ttk.<Name>`); fix
+two dead-on-call bugs — `delete_column(cid=...)` called the `cidmap` dict
+(`self.cidmap(int(cid))`→`self.cidmap.get(int(cid))`; ground truth: `cidmap` is
+keyed by **int**, not the `str` the design sketch assumed) and the header
+right-click menu's `self.master = self.master` now sets `master` from the arg;
+`insert_row(values=[])` raises `ValueError` instead of `print()`ing to stdout +
+returning `None` (surfaces in the `insert_rows`/`rowdata` batch paths too); delete
+dead code (`reset_row_sort` stub, unused `_build_table_rows`/`_build_table_columns`,
+commented `_select_pagesize`, never-implemented `maxwidth` docstring). New
+`tests/test_tableview_api.py` (+6); suite **323 passed** excl. the known `nl.msg`
+flake; warning-free import. No visual/cross-platform gate (bugs + dead-code +
+re-exports only). Breaking/behavior log updated. **With A/B/C done the
+shipped-widget API pass is COMPLETE**; the only remaining Tableview item is the
+deferred method-verb rename slice (own mini design pass, after the H docs). **NEXT →
+docs Workstream H sub-PR #1** (nav/IA skeleton + un-break the 7 broken API `:::`
+stubs, `development/2_0_docs_design.md` §11). Prior entry (PR B) follows._
+
+_Prior 2026-07-07 (**shipped-widget API pass — PR B (Window/Toplevel)
 MERGED into `2.0` (#1103)**; expected suite **317 passed** excl. the `nl.msg`
 flake. A cross-platform visual gate (win32 AppUserModelID / aqua guard /
 multi-monitor centering) is still worth an eyeball but did not block merge. Per design §5a: new private `_BaseWindow` mixin
