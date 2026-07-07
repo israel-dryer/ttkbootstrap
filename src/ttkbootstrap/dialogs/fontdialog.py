@@ -83,6 +83,10 @@ class FontDialog(Dialog):
         height = utility.scale_size(master, 500)
         self._toplevel.geometry(f"{width}x{height}")
 
+        # A borderless Treeview: the list border is carried by a wrapping frame
+        # instead, so the (thin) scrollbar sits *inside* the border with the list.
+        ttk.Style.get_instance().configure("Flat.Treeview", borderwidth=0)
+
         family_size_frame = ttk.Frame(master, padding=10)
         family_size_frame.pack(fill=X, anchor=N)
         self._initial_focus = self._font_families_selector(family_size_frame)
@@ -126,22 +130,27 @@ class FontDialog(Dialog):
         )
         header.pack(fill=X, pady=(0, 2), anchor=N)
 
+        # bordered box wrapping the list + its thin scrollbar as one unit
+        listbox_frame = ttk.Frame(container, relief=SOLID, borderwidth=1)
+        listbox_frame.pack(fill=BOTH, expand=YES)
+
         listbox = ttk.Treeview(
-            master=container,
+            master=listbox_frame,
             height=5,
             show="",
             columns=[0],
+            style="Flat.Treeview",
         )
         listbox.column(0, width=utility.scale_size(listbox, 250))
 
         listbox_vbar = ttk.Scrollbar(
-            container,
+            listbox_frame,
             command=listbox.yview,
             orient=VERTICAL,
             bootstyle="thin",
         )
-        # pack the scrollbar first so it reserves the right edge inside the
-        # container; then the list fills the remaining space
+        # scrollbar first (reserves the right edge inside the border), then the
+        # list fills the rest
         listbox_vbar.pack(side=RIGHT, fill=Y)
         listbox.pack(side=LEFT, fill=BOTH, expand=YES)
         listbox.configure(yscrollcommand=listbox_vbar.set)
@@ -167,7 +176,12 @@ class FontDialog(Dialog):
         )
         header.pack(fill=X, pady=(0, 2), anchor=N)
 
-        sizes_listbox = ttk.Treeview(container, height=7, columns=[0], show="")
+        # bordered box wrapping the list + its thin scrollbar as one unit
+        sizes_frame = ttk.Frame(container, relief=SOLID, borderwidth=1)
+        sizes_frame.pack(fill=BOTH, expand=YES)
+
+        sizes_listbox = ttk.Treeview(
+            sizes_frame, height=7, columns=[0], show="", style="Flat.Treeview")
         sizes_listbox.column(0, width=utility.scale_size(sizes_listbox, 24))
 
         sizes = [*range(8, 13), *range(13, 30, 2), 36, 48, 72]
@@ -180,13 +194,13 @@ class FontDialog(Dialog):
         sizes_listbox.bind("<<TreeviewSelect>>", lambda e: self._on_select_font_size(e))
 
         sizes_listbox_vbar = ttk.Scrollbar(
-            master=container,
+            master=sizes_frame,
             orient=VERTICAL,
             command=sizes_listbox.yview,
             bootstyle="thin",
         )
         sizes_listbox.configure(yscrollcommand=sizes_listbox_vbar.set)
-        # scrollbar first (right edge), then the list fills the rest
+        # scrollbar first (right edge, inside the border), then the list
         sizes_listbox_vbar.pack(side=RIGHT, fill=Y)
         sizes_listbox.pack(side=LEFT, fill=BOTH, expand=YES)
 
