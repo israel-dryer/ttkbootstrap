@@ -198,7 +198,17 @@ class LabelFrame(AutoStyleMixin, _tkLabelFrame):
 # Submodules below import the concrete widget classes from this package, so
 # they must come after the class definitions above.
 from ttkbootstrap import widgets as _widgets
-from ttkbootstrap.widgets import DateEntry, Floodgauge, FloodgaugeLegacy, LabeledScale, M, Meter
+from ttkbootstrap.widgets import (
+    DateEntry,
+    Floodgauge,
+    FloodgaugeLegacy,
+    LabeledScale,
+    M,
+    Meter,
+    TableColumn,
+    TableRow,
+    Tableview,
+)
 from ttkbootstrap.window import Toplevel, Window
 
 # Dialogs re-exported at top level so the common front doors are reachable as
@@ -264,6 +274,9 @@ __all__ = [
     "FloodgaugeLegacy",
     "LabeledScale",
     "Meter",
+    "Tableview",
+    "TableColumn",
+    "TableRow",
     "M",
 
     # Dialogs
