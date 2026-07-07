@@ -26,7 +26,7 @@ def button_style_frame(bootstyle, style, widget_name):
         bootstyle=bootstyle
     ).pack(padx=5, pady=5, fill=tk.BOTH)
 
-    for color in [*style.colors, 'neutral']:
+    for color in style.colors:
         ttk.Button(
             master=frame,
             text=color,
