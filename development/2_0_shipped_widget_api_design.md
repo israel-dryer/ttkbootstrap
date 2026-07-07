@@ -315,11 +315,30 @@ gate. Recommended order (smallest-blast-radius first):
   top-level re-exports, `command` de-vestigialize. New/updated tests in a headless
   `tests/test_dialogs_api.py` (result conventions, cancel→None, kwarg normalization).
   Human spot-check: each dialog opens/positions/returns correctly light+dark.
-- **PR B — Window/Toplevel normalization.** §5a. `_BaseWindow` mixin, `_setup_icon`,
-  positioning utility + priority, snake_case aliases, keyword-only, edge-relative
-  position, aqua guard, AppUserModelID. Cross-platform is the risk — gate on a
-  manual check on win32 + (if available) x11/aqua. Tests: kwarg normalization,
-  geometry string construction, centering math (headless-computable).
+- **PR B — Window/Toplevel normalization. OPEN — PR #1103 (branch
+  `feat/2.0-shipped-api-window`).** §5a. `_BaseWindow` mixin (`Window(_BaseWindow,
+  tk.Tk)` / `Toplevel(_BaseWindow, tk.Toplevel)`) holding the shared
+  icon/geometry/alpha/positioning/`style` logic; `_setup_icon` (unified `None`/`''`/
+  path semantics, fixes the `Toplevel(iconphoto=None)` crash, `.ico`→`wm_iconbitmap`
+  on win32, bad-path → `UserWarning` not `print`); new private
+  `internal/positioning.py` (subset of bootstack's `WindowPositioning`:
+  `center_on_screen`/`center_on_parent`/`ensure_on_screen`, optional `screeninfo`,
+  graceful single-screen fallback) re-pointing `place_window_center`; snake_case
+  aliases via `_compat.normalize_window_kwargs` (`hdpi`/`overrideredirect`/
+  `windowtype`/`toolwindow`); keyword-only constructors after the leading
+  positional(s); `iconify` promoted to a real `Toplevel` kwarg; edge-relative +
+  combined `geometry` (`f"{x:+d}{y:+d}"`); aqua `overrideredirect` no-op guard;
+  win32 AppUserModelID. First-party caller `dialogs/base.py` migrated
+  `windowtype`→`window_type`. New `tests/test_window_api.py` (+15). Suite **317
+  passed** excl. the known `nl.msg` flake; warning-free import + end-to-end smoke
+  (new API, legacy-kwarg warnings, centering, singleton `style`) verified.
+  **Cross-platform is the residual risk — still wants a manual check on win32 +
+  (if available) x11/aqua** before/at merge. **Deferred to a fast-follow (noted
+  here, not done in PR B):** the richer bootstack positioning surface
+  (`place_center_on`/`place_at`/`place_anchor`/`place_dropdown`/`place_cursor`),
+  the `windowtype` unified switch (§5a.9), and routing the dialogs'
+  `internal/utility.center_on_parent` through the new `positioning` module — all
+  out of PR B's minimal scope.
 - **PR C — Tableview fixes + re-export.** §5c. Bug fixes, dead-code removal,
   `print()`→error, re-export. Tests: re-export presence, the two bug regressions,
   no-stdout-on-empty-insert.

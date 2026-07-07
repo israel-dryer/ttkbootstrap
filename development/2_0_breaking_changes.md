@@ -267,3 +267,56 @@ signatures.
 **Not breaking.** `message` (Messagebox) vs `prompt` (Querybox) is kept — it is a
 real told-vs-asked distinction. `parent` stays the owner-argument name across the
 dialog surface (the embeddable `ColorChooser` frame keeps `master`).
+
+## Window/Toplevel API normalization — snake_case, keyword-only, positioning  *(API)*
+
+**What.** `Window` and `Toplevel` now share a private `_BaseWindow` mixin and a
+normalized constructor surface (shipped-widget API pass, PR B).
+
+- **Raw-Tk-mirroring kwargs are snake_cased** with warn-and-normalize aliases
+  (removed in 3.0): `hdpi`→`high_dpi`, `overrideredirect`→`override_redirect`,
+  `windowtype`→`window_type`, `toolwindow`→`tool_window`. The old spellings still
+  work through 2.x but emit a `DeprecationWarning`.
+- **Constructors are keyword-only after the leading positional(s)**: `Window(title,
+  themename, *, ...)` and `Toplevel(title, *, ...)`. Everything past those (e.g.
+  `size`, `iconphoto`, `alpha`, `default_button`) must be passed by keyword. This
+  cannot be shimmed (positional args carry no name) — documented breaking change,
+  low real-world incidence.
+- **`Toplevel.iconify` is a real keyword-only parameter** (default `False`), no
+  longer smuggled through `**kwargs`.
+- **`iconphoto` semantics are unified** across both classes via one `_setup_icon`
+  helper: `None` skips (leave untouched), `''` uses the default (brand icon on
+  `Window`, inherit on `Toplevel`), a path loads with fallback. This fixes the old
+  `Toplevel(iconphoto=None)` crash (it fell into `PhotoImage(file=None)`), and a
+  bad icon path now emits a `UserWarning` instead of `print()`ing to stdout. A
+  `.ico` path is applied via `wm_iconbitmap` on Windows.
+- **`position` accepts negative (edge-relative) offsets** — it now emits
+  `f"{x:+d}{y:+d}"`, so `position=(-10, -10)` places the window relative to the
+  bottom-right edge; `size`+`position` apply as one combined `geometry()` call.
+- **`place_window_center`/`position_center` use the new positioning utility**
+  (`internal/positioning.py`, a subset of bootstack's `WindowPositioning`):
+  monitor-aware centering (via optional `screeninfo`, graceful single-screen
+  fallback) + on-screen clamping. Previously it ignored the titlebar and was not
+  multi-monitor aware.
+- Internal/polish: the `style` property returns the singleton consistently on both
+  classes; `overrideredirect(True)` is a silent no-op on macOS (aqua) where it
+  destabilizes Tk; on win32 an explicit AppUserModelID is set so the taskbar shows
+  the app icon, not `python.exe`.
+
+**Why.** `Window`/`Toplevel` were the last shipped surfaces with un-normalized
+signatures: raw Tk attribute names, a ~14-param all-positional constructor, a
+smuggled `iconify`, two diverging `iconphoto` implementations (one crashing on
+`None`), a `+{x}+{y}` position that couldn't express edge offsets, and a
+titlebar-ignorant single-screen centering. bootstack had already solved the
+cross-platform quirks; we borrow the mechanisms (not the API).
+
+**Migration.**
+- Rename kwargs: `hdpi=`→`high_dpi=`, `overrideredirect=`→`override_redirect=`,
+  `windowtype=`→`window_type=`, `toolwindow=`→`tool_window=`.
+- Pass window options by keyword (they already usually are): `Window("Title",
+  size=(800,600))`, not `Window("Title", "theme", "primary", ...)` positionally.
+
+**Not breaking.** `minsize`/`maxsize` are kept (they mirror the Tk method names the
+tuple wraps — consistency-with-Tk wins over bootstack's `min_size`/`max_size`).
+`screeninfo` is an *optional* import; without it centering falls back to Tk's
+single-screen metrics (no new hard dependency — Pillow stays the only one).

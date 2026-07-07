@@ -138,15 +138,26 @@ author reversed docs-first so the docs get written against normalized signatures
 design pass done + confirmed in `development/2_0_shipped_widget_api_design.md`
 (Hybrid posture · port bootstack window mechanisms · unify dialog returns +
 `get_date`→None-on-cancel · Tableview fix+re-export now, defer the verb rename).
-**PR A (dialogs)** is implemented on branch `feat/2.0-shipped-api-dialogs`:
+**PR A (dialogs) is MERGED (#1102):**
 Messagebox uniform keyword-only signatures, Querybox `get_*` return via `.result`,
 `get_date`→None-on-cancel + `position=`, `DatePickerDialog` `autoshow`/`show()`/
 `result`, `MessageDialog.command` plain-callable (tuple deprecated via `_compat`),
 `ColorChoice` deduped, dialogs re-exported at top level; `tests/test_dialogs_api.py`
-(+19). **Current → open/merge PR A vs `2.0`, then PR B (Window/Toplevel) + PR C
-(Tableview) per the design §8.** The docs Workstream H (starting with docs sub-PR
-#1 — nav/IA skeleton + un-break the 7 broken API `:::` stubs, per
-`development/2_0_docs_design.md` §11) now trails the API pass.
+(+19); expected suite on `2.0` ~302 (297 excl. localization). **PR B (Window/
+Toplevel) is OPEN — PR #1103, branch `feat/2.0-shipped-api-window`** (design §5a;
+awaiting a cross-platform visual gate before merge): private `_BaseWindow` mixin
+shared by `Window`/`Toplevel`, unified `_setup_icon` (fixes the
+`Toplevel(iconphoto=None)` crash), new private `internal/positioning.py` (subset of
+bootstack's `WindowPositioning`; optional `screeninfo`, graceful single-screen
+fallback) re-pointing `place_window_center`, snake_case kwarg aliases via
+`_compat.normalize_window_kwargs` (`hdpi`/`overrideredirect`/`windowtype`/
+`toolwindow`, warn-and-normalize), keyword-only constructors, `iconify` promoted,
+edge-relative/combined geometry, aqua `overrideredirect` no-op guard, win32
+AppUserModelID; `tests/test_window_api.py` (+15), suite 317 excl. the `nl.msg`
+flake. **NEXT → PR C (Tableview fixes + re-export, §5c) once PR B lands.** The docs
+Workstream H (starting with docs sub-PR #1 — nav/IA skeleton + un-break the 7
+broken API `:::` stubs, per `development/2_0_docs_design.md` §11) now trails the
+API pass.
 
 ## Repository layout
 
