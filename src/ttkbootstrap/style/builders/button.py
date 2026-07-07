@@ -274,6 +274,68 @@ def build_link_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     builder.register_ttkstyle(ttk_style)
 
 
+@register_builder("ghost", "button")
+def build_ghost_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
+    """Create a ghost style for the ttk.Button widget.
+
+    A ghost button is transparent at rest -- no fill, no border, just its
+    (accent-colored) label -- and gains a subtle wash on hover/press: a light
+    tint of the accent for a colored ghost, or a neutral surface raise for the
+    default/neutral ghost. It sits between `link` (text-only) and `outline`
+    (bordered): more button-like than a link, quieter than an outline. Ported
+    from bootstack's ghost button.
+
+    Parameters:
+
+        builder (StyleBuilderTTK):
+            The style builder
+        colorname (str):
+            The color label used to style the widget.
+    """
+    style_class = "Ghost.TButton"
+    surface = builder.colors.bg
+
+    if colorname in (DEFAULT, "", NEUTRAL):
+        # default/neutral ghost: normal text, a neutral surface raise on hover
+        ttk_style = style_class if colorname in (DEFAULT, "") else f"{NEUTRAL}.{style_class}"
+        fg = builder.colors.fg
+        hover = neutral_fill(builder, 1)
+        pressed = neutral_fill(builder, 2)
+    else:
+        # colored ghost: accent text, a subtle wash of the accent on hover
+        ttk_style = f"{colorname}.{style_class}"
+        fg = builder.colors.get(colorname)
+        hover = builder.mute(fg, surface, 0.16)
+        pressed = builder.mute(fg, surface, 0.26)
+
+    on_disabled = builder.disabled("text")
+
+    builder.configure(
+        ttk_style,
+        foreground=fg,
+        background=surface,
+        relief=tk.FLAT,
+        # flat relief draws no border, but keep borderwidth=1 (like link) so the
+        # ghost reserves the same space and matches the solid/outline size.
+        borderwidth=1,
+        focusthickness=builder.scale_size(1),
+        focuscolor=fg,
+        padding=builder.scale_size((10, 5)),
+        anchor=tk.CENTER,
+    )
+    builder.style.map(
+        ttk_style,
+        foreground=[("disabled", on_disabled)],
+        focuscolor=[("disabled", on_disabled)],
+        background=[
+            ("disabled", surface),
+            ("pressed !disabled", pressed),
+            ("hover !disabled", hover),
+        ],
+    )
+    builder.register_ttkstyle(ttk_style)
+
+
 @register_builder("date", "button")
 def build_date_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     """Create a date button style for the ttk.Button widget.

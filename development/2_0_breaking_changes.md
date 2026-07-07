@@ -18,6 +18,7 @@
 | Character-based icons removed (`ttkbootstrap.icons`) | API | `development/2_0_icon_drop_design.md` (PR #1094) |
 | Delivery API (mixins, no import-time monkey-patch) | API | handoff / PR #1075 |
 | **`neutral` color** | New | this doc, below |
+| **`ghost` button variant** | New | this doc, below |
 | **Button-family visual restyle (flat + hairline border)** | Visual | this doc, below |
 
 ---
@@ -52,6 +53,21 @@ were standing in for a quiet/subtle button with `bootstyle="neutral"` — it wil
 stay quiet in dark mode where `light` would turn bright.
 
 Design: `development/2_0_neutral_color_design.md`.
+
+## `ghost` — a new button variant  *(New)*
+
+**What.** A new button modifier, `ghost` (e.g. `bootstyle="ghost"`,
+`bootstyle="primary-ghost"`). A ghost button is **transparent at rest** — no fill,
+no border, just its label — and gains a **subtle wash** on hover/press: a light
+tint of the accent for a colored ghost (`primary-ghost` → a faint blue wash), or a
+neutral surface raise for the default/neutral ghost. Additive.
+
+**Why.** It fills the gap between `link` (text-only, hyperlink feel) and `outline`
+(bordered): more button-like than a link (it has a hover surface), quieter than an
+outline. Common for toolbar/icon buttons and low-emphasis actions. Ported from
+bootstack's ghost button (derivation, not API). Button family only.
+
+**Migration.** None (additive).
 
 ## Button-family visual restyle — flat fill + 1px hairline border  *(Visual)*
 

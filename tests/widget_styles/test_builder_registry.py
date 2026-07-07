@@ -20,6 +20,7 @@ from ttkbootstrap.style.builders.registry import (
 EXPECTED_KEYS = {
     ("date", "button"),
     ("default", "button"),
+    ("ghost", "button"),
     ("default", "calendar"),
     ("default", "checkbutton"),
     ("default", "combobox"),

@@ -56,6 +56,7 @@ if __name__ == '__main__':
 
     button_style_frame('outline', style, 'Outline Button').pack(side=tk.LEFT)
     button_style_frame('', style, 'Solid Button').pack(side=tk.LEFT)
+    button_style_frame('ghost', style, 'Ghost Button').pack(side=tk.LEFT)
     button_style_frame('link', style, 'Link Button').pack(side=tk.LEFT)
     ttk.Button(text="Change Theme", command=change_style).pack(padx=10, pady=10)
 

@@ -34,6 +34,32 @@ def test_toggle_variants_all_build(root):
         assert root.style.style_exists_in_theme(expected)
 
 
+def test_ghost_button_is_transparent_with_accent_text(root):
+    """A colored ghost button is borderless, surface-filled, accent-texted, and
+    washes subtly on hover."""
+    style = root.style
+    ttk.Button(root, bootstyle="primary-ghost")
+    root.update_idletasks()
+    st = "primary.Ghost.TButton"
+    # flat relief => no visible border (borderwidth is kept at 1 only to match the
+    # solid/outline size; nothing is drawn)
+    assert _lookup(root, st, "relief") == "flat"
+    assert _lookup(root, st, "foreground") == str(style.colors.primary).lower()
+    assert _lookup(root, st, "background") == str(style.colors.bg).lower()
+    # hover wash is a subtle tint of the accent, distinct from both fg and surface
+    hover = {tuple(i[:-1]): str(i[-1]).lower() for i in style.map(st, "background")}
+    wash = hover[("hover", "!disabled")]
+    assert wash not in (str(style.colors.bg).lower(), str(style.colors.primary).lower())
+
+
+def test_ghost_is_a_canonical_bootstyle():
+    import typing
+    from ttkbootstrap.constants import BootStyle
+    canonical = set(typing.get_args(BootStyle))
+    assert "ghost" in canonical
+    assert "primary-ghost" in canonical
+
+
 def test_date_button_has_hairline_border(root):
     """DateEntry's button gets the same fill-derived border as other buttons."""
     style = root.style
