@@ -20,6 +20,7 @@ from ttkbootstrap.style.builders.registry import (
 EXPECTED_KEYS = {
     ("date", "button"),
     ("default", "button"),
+    ("ghost", "button"),
     ("default", "calendar"),
     ("default", "checkbutton"),
     ("default", "combobox"),
@@ -49,6 +50,7 @@ EXPECTED_KEYS = {
     ("outline", "menubutton"),
     ("outline", "toolbutton"),
     ("round", "scrollbar"),
+    ("thin", "scrollbar"),
     ("round", "toggle"),
     ("square", "toggle"),
     ("striped", "progressbar"),

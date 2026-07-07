@@ -18,6 +18,9 @@
 | Character-based icons removed (`ttkbootstrap.icons`) | API | `development/2_0_icon_drop_design.md` (PR #1094) |
 | Delivery API (mixins, no import-time monkey-patch) | API | handoff / PR #1075 |
 | **`neutral` color** | New | this doc, below |
+| **`ghost` button variant** | New | this doc, below |
+| **`thin` scrollbar variant** | New | this doc, below |
+| **Scrollbar restyle (visible trough, square default)** | Visual | this doc, below |
 | **Button-family visual restyle (flat + hairline border)** | Visual | this doc, below |
 | **Bare buttons default to `neutral`** | Visual/API | this doc, below |
 
@@ -53,6 +56,63 @@ were standing in for a quiet/subtle button with `bootstyle="neutral"` — it wil
 stay quiet in dark mode where `light` would turn bright.
 
 Design: `development/2_0_neutral_color_design.md`.
+
+## Scrollbar restyle — visible trough, inset thumb, square default  *(Visual)*
+
+**What.** The standard (`default`) and `round` scrollbars were reworked:
+- a **visible trough** (a subtle track shade of the surface) so the thumb reads
+  as sliding in a channel rather than floating on the surface;
+- the thumb is **inset** ~1px from the trough walls (a transparent margin baked
+  into the thumb image), so there is a track of space around it;
+- the thumb has a **minimum length** (a 9-slice end region), so a long list can't
+  shrink it to a microscopic sliver;
+- `default` is now a **flat square** thumb and `round` a **pill** (they used to be
+  nearly identical rounded thumbs);
+- **no arrows** (the previous `arrowsize` was already dead layout config).
+
+The `thin` variant is unchanged. The combobox popdown uses `thin`; the font dialog
+lists use the square `default`.
+
+**Why.** The 2.0 scrollbars had an invisible trough (= surface) and a thumb that
+floated with no track and could collapse to nothing on a long list. Restoring a
+visible trough + inset thumb + min size makes them read as real scrollbars (closer
+to 1.0), and splitting square/round gives a genuine choice. Ports the visible-trough
+idea from 1.0; thumb margin/min-size are implemented via the image + 9-slice border.
+
+**Migration.** None (appearance only). `bootstyle="round"` is still the pill;
+the default is now square.
+
+## `thin` — a new scrollbar variant  *(New)*
+
+**What.** A thin scrollbar (`bootstyle="thin"`, `primary-thin`, …): a few-pixel
+flat thumb on a surface-matched track, **no arrows**. Neutral by default (thumb =
+`border(surface)`), or the accent when a color is given; darkens/lightens on
+hover/press. It is now the scrollbar used in the **Combobox popdown** and the
+**font dialog** lists — narrow spaces where the bar is a scroll *indicator* more
+than a drag handle. Additive; the standard (`default`) and `round` scrollbars are
+unchanged.
+
+**Why.** The standard scrollbar (with arrows, an 18×8 rounded thumb) is heavy in a
+cramped dropdown. bootstack's thin bar reads as a clean sliver. Ported from
+bootstack (mechanism, not API) — the thumb is a solid box from the `rect` toolkit,
+so no new PNG asset was added.
+
+**Migration.** None (additive). Opt in with `bootstyle="thin"` on any `Scrollbar`.
+
+## `ghost` — a new button variant  *(New)*
+
+**What.** A new button modifier, `ghost` (e.g. `bootstyle="ghost"`,
+`bootstyle="primary-ghost"`). A ghost button is **transparent at rest** — no fill,
+no border, just its label — and gains a **subtle wash** on hover/press: a light
+tint of the accent for a colored ghost (`primary-ghost` → a faint blue wash), or a
+neutral surface raise for the default/neutral ghost. Additive.
+
+**Why.** It fills the gap between `link` (text-only, hyperlink feel) and `outline`
+(bordered): more button-like than a link (it has a hover surface), quieter than an
+outline. Common for toolbar/icon buttons and low-emphasis actions. Ported from
+bootstack's ghost button (derivation, not API). Button family only.
+
+**Migration.** None (additive).
 
 ## Button-family visual restyle — flat fill + 1px hairline border  *(Visual)*
 

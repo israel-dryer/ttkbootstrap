@@ -98,7 +98,7 @@ BootColor = Literal["primary", "secondary", "success", "danger", "warning", "inf
 # is the reconciled set -- `round` is included (it is buildable; its historical
 # omission was a bug), and `toggle`/`toolbutton` are *removed* because they are
 # base-types (widget families), not modifiers. Those two moved to `BootBase`.
-BootType = Literal["outline", "link", "inverse", "round", "square", "striped", "thin"]
+BootType = Literal["outline", "link", "ghost", "inverse", "round", "square", "striped", "thin"]
 
 # Base-types a user may name explicitly in a bootstyle string. Most base-types
 # are inferred from the widget's class and never typed; these two "chameleon"
@@ -126,7 +126,7 @@ BOOTSTYLE_COLORS: Final = (
 NEUTRAL_FAMILIES: Final = ("button", "menubutton", "toolbutton")
 # Public, documented type modifiers -- matches BootType.
 BOOTSTYLE_MODIFIERS: Final = (
-    "outline", "link", "inverse", "round", "square", "striped", "thin",
+    "outline", "link", "ghost", "inverse", "round", "square", "striped", "thin",
 )
 # Internal-only composite modifiers used by Meter/DateEntry/Tableview to build
 # their sub-styles. Valid grammar tokens, but undocumented and not in any public
@@ -157,6 +157,7 @@ BOOTSTYLE_ORIENTS: Final = ("horizontal", "vertical")
 # ---------------------------------------------------------------------------
 BootStyle = Literal[
     'danger',
+    'danger-ghost',
     'danger-inverse',
     'danger-link',
     'danger-outline',
@@ -169,6 +170,7 @@ BootStyle = Literal[
     'danger-toggle',
     'danger-toolbutton',
     'dark',
+    'dark-ghost',
     'dark-inverse',
     'dark-link',
     'dark-outline',
@@ -180,7 +182,9 @@ BootStyle = Literal[
     'dark-thin',
     'dark-toggle',
     'dark-toolbutton',
+    'ghost',
     'info',
+    'info-ghost',
     'info-inverse',
     'info-link',
     'info-outline',
@@ -194,6 +198,7 @@ BootStyle = Literal[
     'info-toolbutton',
     'inverse',
     'light',
+    'light-ghost',
     'light-inverse',
     'light-link',
     'light-outline',
@@ -207,6 +212,7 @@ BootStyle = Literal[
     'light-toolbutton',
     'link',
     'neutral',
+    'neutral-ghost',
     'neutral-link',
     'neutral-outline',
     'neutral-outline-toolbutton',
@@ -214,6 +220,7 @@ BootStyle = Literal[
     'outline',
     'outline-toolbutton',
     'primary',
+    'primary-ghost',
     'primary-inverse',
     'primary-link',
     'primary-outline',
@@ -228,6 +235,7 @@ BootStyle = Literal[
     'round',
     'round-toggle',
     'secondary',
+    'secondary-ghost',
     'secondary-inverse',
     'secondary-link',
     'secondary-outline',
@@ -242,6 +250,7 @@ BootStyle = Literal[
     'square-toggle',
     'striped',
     'success',
+    'success-ghost',
     'success-inverse',
     'success-link',
     'success-outline',
@@ -257,6 +266,7 @@ BootStyle = Literal[
     'toggle',
     'toolbutton',
     'warning',
+    'warning-ghost',
     'warning-inverse',
     'warning-link',
     'warning-outline',
@@ -447,6 +457,7 @@ NEUTRAL: Final[BootColor] = "neutral"
 
 OUTLINE: Final[BootType] = "outline"
 LINK: Final[BootType] = "link"
+GHOST: Final[BootType] = "ghost"
 INVERSE: Final[BootType] = "inverse"
 STRIPED: Final[BootType] = "striped"
 THIN: Final[BootType] = "thin"
@@ -500,6 +511,6 @@ __all__ = [
     "FULL", "SEMI", "DETERMINATE", "INDETERMINATE",
     "PRIMARY", "SECONDARY", "SUCCESS", "DANGER", "WARNING", "INFO", "LIGHT", "DARK",
     "NEUTRAL",
-    "OUTLINE", "LINK", "TOGGLE", "INVERSE", "STRIPED", "THIN", "TOOLBUTTON", "SQUARE",
+    "OUTLINE", "LINK", "GHOST", "TOGGLE", "INVERSE", "STRIPED", "THIN", "TOOLBUTTON", "SQUARE",
     "TREE", "HEADINGS", "TREEHEADINGS",
 ]

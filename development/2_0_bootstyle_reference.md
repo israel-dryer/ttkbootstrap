@@ -43,6 +43,7 @@ default; `set_bootstyle_strict(True)` or `TTKBOOTSTRAP_STRICT=1` raises).
 | `toggle` | `default` | `primary-toggle` |
 | `toolbutton` | `default` | `primary-toolbutton` |
 | `treeview` | `default` | `primary` |
+| `button` | `ghost` | `primary-ghost` |
 | `label` | `inverse` | `primary-inverse` |
 | `button` | `link` | `primary-link` |
 | `button` | `outline` | `primary-outline` |
@@ -53,4 +54,5 @@ default; `set_bootstyle_strict(True)` or `TTKBOOTSTRAP_STRICT=1` raises).
 | `toggle` | `square` | `primary-square-toggle` |
 | `progressbar` | `striped` | `primary-striped` |
 | `progressbar` | `thin` | `primary-thin` |
+| `scrollbar` | `thin` | `primary-thin` |
 

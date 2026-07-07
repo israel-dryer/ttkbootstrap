@@ -55,9 +55,9 @@ class Calculator(ttk.Frame):
         if text == "=":
             bootstyle = SUCCESS
         elif not isinstance(text, int):
-            bootstyle = SECONDARY
+            bootstyle = None
         else:
-            bootstyle = PRIMARY
+            bootstyle = SECONDARY
         return ttk.Button(
             master=master,
             text=text,
