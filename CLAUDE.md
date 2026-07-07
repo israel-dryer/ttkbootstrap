@@ -144,8 +144,8 @@ Messagebox uniform keyword-only signatures, Querybox `get_*` return via `.result
 `result`, `MessageDialog.command` plain-callable (tuple deprecated via `_compat`),
 `ColorChoice` deduped, dialogs re-exported at top level; `tests/test_dialogs_api.py`
 (+19); expected suite on `2.0` ~302 (297 excl. localization). **PR B (Window/
-Toplevel) is IMPLEMENTED on branch `feat/2.0-shipped-api-window`** (design §5a; not
-yet merged — awaiting a cross-platform visual gate): private `_BaseWindow` mixin
+Toplevel) is OPEN — PR #1103, branch `feat/2.0-shipped-api-window`** (design §5a;
+awaiting a cross-platform visual gate before merge): private `_BaseWindow` mixin
 shared by `Window`/`Toplevel`, unified `_setup_icon` (fixes the
 `Toplevel(iconphoto=None)` crash), new private `internal/positioning.py` (subset of
 bootstack's `WindowPositioning`; optional `screeninfo`, graceful single-screen
