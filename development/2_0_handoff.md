@@ -4,8 +4,9 @@
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
 _Last updated: 2026-07-07 (**shipped-widget API pass — PR B (Window/Toplevel)
-OPEN as PR #1103 (branch `feat/2.0-shipped-api-window`), awaiting a cross-platform
-visual gate + merge**). Per design §5a: new private `_BaseWindow` mixin
+MERGED into `2.0` (#1103)**; expected suite **317 passed** excl. the `nl.msg`
+flake. A cross-platform visual gate (win32 AppUserModelID / aqua guard /
+multi-monitor centering) is still worth an eyeball but did not block merge. Per design §5a: new private `_BaseWindow` mixin
 (`Window(_BaseWindow, tk.Tk)` / `Toplevel(_BaseWindow, tk.Toplevel)`) owning the
 shared icon/geometry/alpha/positioning/`style` logic both classes were
 duplicating and drifting on; `_setup_icon` unifies `iconphoto` (`None`=skip,

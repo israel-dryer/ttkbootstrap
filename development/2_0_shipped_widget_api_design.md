@@ -315,8 +315,7 @@ gate. Recommended order (smallest-blast-radius first):
   top-level re-exports, `command` de-vestigialize. New/updated tests in a headless
   `tests/test_dialogs_api.py` (result conventions, cancel→None, kwarg normalization).
   Human spot-check: each dialog opens/positions/returns correctly light+dark.
-- **PR B — Window/Toplevel normalization. OPEN — PR #1103 (branch
-  `feat/2.0-shipped-api-window`).** §5a. `_BaseWindow` mixin (`Window(_BaseWindow,
+- **PR B — Window/Toplevel normalization. MERGED — #1103.** §5a. `_BaseWindow` mixin (`Window(_BaseWindow,
   tk.Tk)` / `Toplevel(_BaseWindow, tk.Toplevel)`) holding the shared
   icon/geometry/alpha/positioning/`style` logic; `_setup_icon` (unified `None`/`''`/
   path semantics, fixes the `Toplevel(iconphoto=None)` crash, `.ico`→`wm_iconbitmap`

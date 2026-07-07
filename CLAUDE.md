@@ -144,8 +144,8 @@ Messagebox uniform keyword-only signatures, Querybox `get_*` return via `.result
 `result`, `MessageDialog.command` plain-callable (tuple deprecated via `_compat`),
 `ColorChoice` deduped, dialogs re-exported at top level; `tests/test_dialogs_api.py`
 (+19); expected suite on `2.0` ~302 (297 excl. localization). **PR B (Window/
-Toplevel) is OPEN — PR #1103, branch `feat/2.0-shipped-api-window`** (design §5a;
-awaiting a cross-platform visual gate before merge): private `_BaseWindow` mixin
+Toplevel) is MERGED into `2.0` (#1103)** (design §5a; a cross-platform visual gate
+is still worth an eyeball but did not block merge): private `_BaseWindow` mixin
 shared by `Window`/`Toplevel`, unified `_setup_icon` (fixes the
 `Toplevel(iconphoto=None)` crash), new private `internal/positioning.py` (subset of
 bootstack's `WindowPositioning`; optional `screeninfo`, graceful single-screen
@@ -154,7 +154,8 @@ fallback) re-pointing `place_window_center`, snake_case kwarg aliases via
 `toolwindow`, warn-and-normalize), keyword-only constructors, `iconify` promoted,
 edge-relative/combined geometry, aqua `overrideredirect` no-op guard, win32
 AppUserModelID; `tests/test_window_api.py` (+15), suite 317 excl. the `nl.msg`
-flake. **NEXT → PR C (Tableview fixes + re-export, §5c) once PR B lands.** The docs
+flake. **NEXT → PR C (Tableview fixes + re-export, §5c), the last PR of the
+shipped-widget API pass.** The docs
 Workstream H (starting with docs sub-PR #1 — nav/IA skeleton + un-break the 7
 broken API `:::` stubs, per `development/2_0_docs_design.md` §11) now trails the
 API pass.
