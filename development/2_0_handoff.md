@@ -3,7 +3,50 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-07-06 (**icon-drop PREREQ IMPLEMENTED** — the character-based
+_Last updated: 2026-07-07 (**icon-drop PREREQ + a visual-polish batch are all
+MERGED into `2.0`; NEXT → docs sub-PR #1**). Merged since the prior entry:
+**#1094** (icon-drop prereq — `ttkbootstrap.icons` removed, brand logo preserved
+as `window.py` `_DEFAULT_ICON_DATA`, the 4 Messagebox icons render from the
+font-glyph engine, `media_player` emoji inlined; `tests/test_icon_drop.py`), then
+an unplanned **visual-polish batch** driven by live light↔dark review — all with
+what/why entries in **`development/2_0_breaking_changes.md`**:
+- **#1096** — new `neutral` bootstyle color (theme-adaptive, no-accent, derived
+  from the surface via `neutral_fill`/bootstack's `elevate`) + flat **1px hairline
+  border** restyle across the button family (clam "border ⟺ bevel" worked around by
+  tracking `darkcolor`/`lightcolor` to the fill; `borderwidth=1` unscaled). New
+  `NEUTRAL` const + `NEUTRAL_FAMILIES` gate in `constants.py`;
+  `development/2_0_neutral_color_design.md`.
+- **#1097** — button-family follow-ups: date-button hairline border; fixed the bare
+  `bootstyle="toggle"` crash; toolbutton on/off + switch-off recolored to
+  bootstack's model; toolbuttons made pure on/off toggles.
+- **#1098** — **bare buttons/menubuttons now default to `neutral`** (breaking;
+  opt out with `Style(default_button="primary")` / `Window(default_button=…)`, read
+  at base-style build via `default_button_fill`). Demos adopt it.
+  `development/2_0_neutral_default_design.md`.
+- **#1099** — `ghost` button variant (transparent at rest, subtle hover wash) + new
+  `GHOST` const/modifier; a `thin` scrollbar variant (used in the combobox popdown +
+  font-dialog lists); a full **scrollbar restyle** (visible trough, ~1px inset thumb,
+  minimum thumb length, square `default` vs `round` pill, arrowless); datepicker
+  fixes (selected-day look, dark-mode chevron arrow color via `on_color(accent)`,
+  smaller title, tighter cells); font-dialog scrollbar layout (bordered box +
+  borderless `Flat.Treeview`).
+- **#1100** — input-indicator refinements: menubutton caret moved inside
+  `Menubutton.padding` with asymmetric `(10,5,6,5)` padding (clam ignores outer
+  image-element `-padding`); combobox uses a `chevron-down` glyph laid out like the
+  menubutton indicator; spinbox/combobox arrows render **one fixed color in every
+  state** (no focus/hover/press/disabled recolor); spinbox right-edge gap is a real
+  transparent spacer element; **striped progressbar gets its own flat clam trough**
+  (it was falling back to the solid bar's rounded image trough via ttk dotted-name
+  resolution).
+
+Expected suite on `2.0`: **~283 passed** + the known `nl.msg` env flake. The two
+merged local branches (`feat/2.0-followups`, `feat/2.0-input-indicators`) are
+deleted. **NEXT → docs sub-PR #1** (nav/IA skeleton + un-break the 7 broken API
+`:::` stubs + `inherited_members: false`); sub-PR sequence in
+`development/2_0_docs_design.md` §11. The deferred **shipped-widget API
+normalization** (`Window`/dialogs/`Tableview`) still trails the docs.)_
+
+_Prior 2026-07-06 (**icon-drop PREREQ IMPLEMENTED** — the character-based
 icons are removed on branch `feat/2.0-drop-char-icons` (cut from `2.0`), per the
 mini design pass `development/2_0_icon_drop_design.md`. `src/ttkbootstrap/icons.py`
 deleted (the `Emoji`/`EmojiItem` catalog + base64 `Icon` constants). **Design-pass

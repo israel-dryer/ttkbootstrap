@@ -120,12 +120,21 @@ hard-rule design/scoping gate is done; full design in
 native-vs-shipped widget dichotomy carried by catalog grouping; generated Style
 Reference; both staged sources fold in; flagship = the bootstyle grammar). The
 design pass surfaced two follow-on **code** items (not docs): a **PREREQ** to drop
-the character-based icons (`ttkbootstrap.icons` `Emoji`/`Icon` constants; keep the
-font-glyph engine; rewire Messagebox's 4 icons to Bootstrap-Icon glyphs — a
-documented breaking change that lands before docs screenshots), and a **deferred**
-shipped-widget API-normalization pass (`Window`/dialogs/`Tableview`; docs-first is
-accepted). **Current:** the icon-drop prereq PR (own mini design pass) is next,
-then docs sub-PR #1 (nav/IA skeleton + un-break the 7 broken API `:::` stubs).
+the character-based icons (now **merged**, #1094 — `ttkbootstrap.icons`
+`Emoji`/`Icon` constants removed, brand logo preserved as `window.py`
+`_DEFAULT_ICON_DATA`, Messagebox's 4 icons rendered from the font-glyph engine),
+and a **deferred** shipped-widget API-normalization pass (`Window`/dialogs/
+`Tableview`; docs-first is accepted). **A batch of visual-polish PRs then merged
+into `2.0`** (design/rationale in `development/2_0_breaking_changes.md`): the
+`neutral` color + flat hairline-border button-family restyle (#1096), button-family
+follow-ups (#1097), `neutral` as the bare-button default with `default_button=`
+opt-out (#1098), a `ghost` button variant + `thin` scrollbar + full scrollbar
+restyle + datepicker/font-dialog fixes (#1099), and the input-indicator refinements
+(#1100 — menubutton/combobox/spinbox arrow glyphs, padding, constant-color arrows,
+striped-progressbar flat trough). Expected suite on `2.0` ~283 (excl. the known
+`nl.msg` localization env flake). **Current → docs sub-PR #1** (nav/IA skeleton +
+un-break the 7 broken API `:::` stubs + `inherited_members: false`); sub-PR
+sequence in `development/2_0_docs_design.md` §11.
 
 ## Repository layout
 
