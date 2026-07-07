@@ -5,7 +5,7 @@ import tkinter as tk
 from ttkbootstrap.constants import *
 from ttkbootstrap.style import StyleBuilderTTK
 from ttkbootstrap.style.builders.registry import register_builder
-from ttkbootstrap.style.builders.utils import neutral_fill
+from ttkbootstrap.style.builders.utils import neutral_fill, default_button_fill
 
 
 @register_builder("default", "button")
@@ -30,8 +30,10 @@ def build_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         ttk_style = f"{NEUTRAL}.{ttk_class}"
         fill = neutral_fill(builder)
     elif any([colorname == DEFAULT, colorname == ""]):
+        # The base (no-color) button follows the Style's default_button setting
+        # (neutral by default; "primary" restores the pre-2.0 accented default).
         ttk_style = ttk_class
-        fill = builder.colors.primary
+        fill = default_button_fill(builder)
     else:
         ttk_style = f"{colorname}.{ttk_class}"
         fill = builder.colors.get(colorname)

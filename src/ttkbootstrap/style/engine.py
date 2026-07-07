@@ -57,23 +57,32 @@ class Style(ttk.Style):
 
     instance = None
 
-    def __new__(cls, theme=None):
+    def __new__(cls, theme=None, default_button="neutral"):
         if Style.instance is None:
             return object.__new__(cls)
         else:
             return Style.instance
 
-    def __init__(self, theme=DEFAULT_THEME):
+    def __init__(self, theme=DEFAULT_THEME, default_button="neutral"):
         """
         Parameters:
 
             theme (str):
                 The name of the theme to use when styling the widget.
+
+            default_button (str):
+                The color a bare `Button`/`Menubutton` (no `bootstyle`) uses.
+                Defaults to `"neutral"`; pass `"primary"` for the pre-2.0
+                accented default. Read once when the base styles build, so set it
+                on the first `Style`/`Window`; ignored on the existing singleton.
         """
         if Style.instance is not None:
             if theme != DEFAULT_THEME:
                 Style.instance.theme_use(theme)
             return
+        # Set before theme_use() below, which builds the base TButton/TMenubutton
+        # styles that read this to resolve their default (no-color) fill.
+        self.default_button = default_button
         self._theme_objects = {}
         self._theme_definitions = {}
         self._style_registry = set()  # all styles used

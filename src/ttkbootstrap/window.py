@@ -215,6 +215,7 @@ class Window(tkinter.Tk):
             self,
             title: str = "ttkbootstrap",
             themename: str = "bootstrap-light",
+            default_button: str = "neutral",
             iconphoto: Optional[str] = '',
             size: Optional[Tuple[int, int]] = None,
             position: Optional[Tuple[int, int]] = None,
@@ -237,6 +238,11 @@ class Window(tkinter.Tk):
             themename (str):
                 The name of the ttkbootstrap theme to apply to the
                 application.
+
+            default_button (str):
+                The color a bare `Button`/`Menubutton` (no `bootstyle`) uses.
+                Defaults to `"neutral"` (a quiet, unaccented button); pass
+                `"primary"` to restore the pre-2.0 accented default.
 
             iconphoto (str):
                 A path to the image used for the titlebar icon.
@@ -371,7 +377,7 @@ class Window(tkinter.Tk):
 
         apply_class_bindings(self)
         apply_all_bindings(self)
-        self._style = Style(themename)
+        self._style = Style(themename, default_button=default_button)
 
     @property
     def style(self) -> Style:
