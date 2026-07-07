@@ -6,7 +6,9 @@ from ttkbootstrap.constants import *
 from ttkbootstrap.style import StyleBuilderTTK
 from ttkbootstrap.style.layout import El, image_element, layout
 from ttkbootstrap.style.builders.registry import register_builder
-from ttkbootstrap.style.builders.utils import simple_arrow_assets, neutral_fill
+from ttkbootstrap.style.builders.utils import (
+    simple_arrow_assets, neutral_fill, default_button_fill,
+)
 
 
 @register_builder("default", "menubutton")
@@ -27,8 +29,9 @@ def build_menubutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         ttk_style = f"{NEUTRAL}.{ttk_class}"
         background = neutral_fill(builder)
     elif any([colorname == DEFAULT, colorname == ""]):
+        # base (no-color) menubutton follows the Style's default_button setting
         ttk_style = ttk_class
-        background = builder.colors.primary
+        background = default_button_fill(builder)
     else:
         ttk_style = f"{colorname}.{ttk_class}"
         background = builder.colors.get(colorname)

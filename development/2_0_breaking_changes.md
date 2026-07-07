@@ -19,6 +19,7 @@
 | Delivery API (mixins, no import-time monkey-patch) | API | handoff / PR #1075 |
 | **`neutral` color** | New | this doc, below |
 | **Button-family visual restyle (flat + hairline border)** | Visual | this doc, below |
+| **Bare buttons default to `neutral`** | Visual/API | this doc, below |
 
 ---
 
@@ -126,3 +127,32 @@ reads clearly enough (the level-2 weight is the knob).
 
 **Migration.** None (appearance only). `toolbutton` joins `NEUTRAL_FAMILIES`, so
 `neutral-toolbutton` / `neutral-outline-toolbutton` are now valid bootstyles.
+
+## Bare buttons default to `neutral`  *(Visual / small API)*
+
+**What.** A bare `ttk.Button()` / `ttk.Menubutton()` (no `bootstyle`) now renders
+**neutral** instead of **primary**. Opt into an accent explicitly
+(`bootstyle="primary"`). A new construction-time setting restores the old default:
+`Window(default_button="primary")` (or `Style(theme, default_button="primary")`).
+
+**Why.** A plain button is not a call-to-action — it should be quiet by default,
+and you opt into emphasis (the Bootstrap/bootstack model). This suits
+ttkbootstrap's utility/scientific audience, who generally want a calm default over
+a blue CTA.
+
+**Scope.** `Button` and `Menubutton` only. **Not** Toolbutton / Toggle /
+Checkbutton / Radiobutton — their default accent is the *selection* signal, and
+they are already neutral *at rest* (OFF = the quiet surface, ON = accent), so
+flipping their ON state would only remove the selection color. The DateEntry
+button (an internal affordance) also stays primary.
+
+**Mechanism.** `default_button` is a **color name** (default `"neutral"`) stored on
+the `Style` and read once when the base `TButton`/`TMenubutton` builds — a
+construction-time choice, **not** a runtime toggle. Explicit styles
+(`primary.TButton`, etc.) are unchanged. Dialogs set `bootstyle` explicitly, so
+their CTA emphasis is unaffected.
+
+**Migration.** Add `bootstyle="primary"` to buttons that should be call-to-action,
+or set `Window(default_button="primary")` to restore the pre-2.0 default globally.
+
+Design: `development/2_0_neutral_default_design.md`.

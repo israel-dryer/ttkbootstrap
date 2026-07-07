@@ -1,5 +1,22 @@
 """Shared private helpers used by multiple ttk recipe families."""
 
+from ttkbootstrap.constants import NEUTRAL
+
+
+def default_button_fill(builder):
+    """The fill for a bare (no-color) button/menubutton.
+
+    Honors the Style's `default_button` setting (default `"neutral"`): the quiet
+    neutral raise, or the resolved accent for any other color (e.g. `"primary"`
+    to restore the pre-2.0 accented default). This is what makes a plain
+    `ttk.Button()` render neutral by default.
+    """
+    color = getattr(builder.style, "default_button", NEUTRAL)
+    if color == NEUTRAL:
+        return neutral_fill(builder)
+    return builder.colors.get(color)
+
+
 def neutral_fill(builder, level=1):
     """A mode-aware elevation of the theme surface (bootstack's `elevate`).
 
