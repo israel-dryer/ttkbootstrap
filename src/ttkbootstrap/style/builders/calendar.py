@@ -45,11 +45,9 @@ def build_calendar_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         bordercolor=builder.colors.bg,
         darkcolor=builder.colors.bg,
         lightcolor=builder.colors.bg,
-        relief=tk.RAISED,
-        focusthickness=builder.scale_size(1),
         focuscolor=builder.colors.fg,
         borderwidth=builder.scale_size(1),
-        padding=builder.scale_size((10, 5)),
+        padding=builder.scale_size(4),
         anchor=tk.CENTER,
     )
     layout(builder.style, ttk_style,
@@ -94,7 +92,30 @@ def build_calendar_style(builder: StyleBuilderTTK, colorname=DEFAULT):
             ("hover !disabled", on_active),
         ]
     )
-    builder.configure(chevron_style, font="-size 14")
+    # The prev/next chevrons sit on the accent-colored title bar. Style them as
+    # ghost buttons: blend into the header (no border, no fill of their own, no
+    # padding) with a subtle darken/lighten on hover/press.
+    builder.configure(
+        chevron_style,
+        font="-size 12",
+        foreground=builder.on_color(accent),
+        focuscolor='',
+        background=accent,
+        relief=tk.FLAT,
+        padding=builder.scale_size(4),
+        anchor=tk.CENTER,
+    )
+    chevron_states = [
+        ("pressed !disabled", pressed),
+        ("hover !disabled", active),
+    ]
+    builder.style.map(
+        chevron_style,
+        background=chevron_states,
+        bordercolor=chevron_states,
+        darkcolor=chevron_states,
+        lightcolor=chevron_states,
+    )
 
     # register ttk_style
     builder.register_ttkstyle(ttk_style)

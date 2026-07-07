@@ -191,7 +191,7 @@ class DatePickerDialog:
                         text=day,
                         takefocus=True,
                         bootstyle=day_style,
-                        padding=5,
+                        padding=4,
                         command=selected,
                     )
                     btn.grid(row=row, column=col, sticky=NSEW)
@@ -206,7 +206,7 @@ class DatePickerDialog:
             master=self.frm_title,
             textvariable=self.titlevar,
             anchor=CENTER,
-            font="-weight bold",
+            font="-size 11 -weight bold",
         )
         self.title.pack(side=LEFT, fill=X, expand=YES)
 
@@ -224,7 +224,7 @@ class DatePickerDialog:
                 master=self.frm_header,
                 text=col,
                 anchor=CENTER,
-                padding=5,
+                padding=4,
                 bootstyle="secondary-inverse",
             ).pack(side=LEFT, fill=X, expand=YES)
 
