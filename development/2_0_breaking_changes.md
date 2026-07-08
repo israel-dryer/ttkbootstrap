@@ -387,3 +387,25 @@ restores the base style. The static `Icon(...)` escape hatch is unchanged (a raw
 
 **Not breaking.** Purely additive; no existing signature changed. First-party: the
 datepicker header carets were migrated onto `apply_icon` (internal, no API change).
+
+## Tableview pagination: glyph nav buttons + boundary-disable  *(behavior)*
+
+**What.** The five `Tableview` pagination controls (first/prev/next/last + reset)
+change from character symbols (`« ‹ › » ⎌`, styled `symbol.Link.TButton`) to
+Bootstrap Icons glyphs on a `ghost` base via the `icon=` sugar
+(`chevron-bar-left`/`chevron-left`/`chevron-right`/`chevron-bar-right` +
+`arrow-counterclockwise`). The four **nav** buttons now **disable at the page
+boundaries** — first/prev on page one, next/last on the last page — driven from
+`load_table_data` (the single funnel that refreshes the page index/limit). The
+searchable-but-unpaginated reset button gets the same glyph for consistency.
+
+**Why.** The character symbols were font-dependent and visually inconsistent with
+the rest of the 2.0 glyph-based indicators; the nav buttons previously stayed
+enabled at the boundaries (a click there was a silent no-op), so there was no
+affordance for "no further pages." Ghost + disabled foreground mutes the glyph, so
+the boundary state now reads.
+
+**Not breaking (API).** No public signature changed; `goto_first_page`/
+`goto_last_page`/`goto_next_page`/`goto_prev_page` are unchanged. A programmatic
+caller can still invoke them at a boundary (they were already guarded no-ops); only
+the button's interactive `state` reflects the boundary now.

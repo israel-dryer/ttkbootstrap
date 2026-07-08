@@ -1235,6 +1235,26 @@ class Tableview(ttk.Frame):
                 row.show(False)
             self._viewdata.append(row)
 
+        self._update_pagination_state()
+
+    def _update_pagination_state(self):
+        """Enable/disable the navigation buttons at the page boundaries.
+
+        Called from `load_table_data` (the single funnel that refreshes the
+        page index/limit): first/prev disable on page one, next/last on the
+        last page. The ghost buttons' disabled foreground mutes their glyph.
+        """
+        if not self._paginated:
+            return
+        pageindex = self._pageindex.get()
+        pagelimit = self._pagelimit.get()
+        at_first = pageindex <= 1
+        at_last = pageindex >= pagelimit
+        self._pagefirst.configure(state=DISABLED if at_first else NORMAL)
+        self._pageprev.configure(state=DISABLED if at_first else NORMAL)
+        self._pagenext.configure(state=DISABLED if at_last else NORMAL)
+        self._pagelast.configure(state=DISABLED if at_last else NORMAL)
+
     def fill_empty_columns(self, fillvalue=""):
         """Fill empty columns with the fillvalue.
 
@@ -2399,9 +2419,9 @@ class Tableview(ttk.Frame):
         if not self._paginated:
             ttk.Button(
                 frame,
-                text=MessageCatalog.translate("⎌"),
+                bootstyle=GHOST,
+                icon="arrow-counterclockwise",
                 command=self.reset_table,
-                style="symbol.Link.TButton",
             ).pack(side=LEFT)
 
     def _build_pagination_frame(self):
@@ -2409,45 +2429,51 @@ class Tableview(ttk.Frame):
         frame is only built if `pagination=True` when creating the
         widget.
         """
-        pageframe = ttk.Frame(self)
+        pageframe = ttk.Frame(self, padding=5)
         pageframe.pack(fill=X, anchor=N)
 
         ttk.Button(
             pageframe,
-            text=MessageCatalog.translate("⎌"),
+            bootstyle=GHOST,
+            icon="arrow-counterclockwise",
             command=self.reset_table,
-            style="symbol.Link.TButton",
-        ).pack(side=RIGHT)
+        ).pack(side=RIGHT, fill=Y)
 
-        ttk.Separator(pageframe, orient=VERTICAL).pack(side=RIGHT, padx=10)
+        self._add_page_separator(pageframe)
 
-        ttk.Button(
+        # keep references: the nav buttons disable at the page boundaries
+        # (see _update_pagination_state, called from load_table_data).
+        self._pagelast = ttk.Button(
             master=pageframe,
-            text="»",
+            bootstyle=GHOST,
+            icon="chevron-bar-right",
             command=self.goto_last_page,
-            style="symbol.Link.TButton",
-        ).pack(side=RIGHT, fill=Y)
-        ttk.Button(
+        )
+        self._pagelast.pack(side=RIGHT, fill=Y)
+        self._pagenext = ttk.Button(
             master=pageframe,
-            text="›",
+            bootstyle=GHOST,
+            icon="chevron-right",
             command=self.goto_next_page,
-            style="symbol.Link.TButton",
-        ).pack(side=RIGHT, fill=Y)
+        )
+        self._pagenext.pack(side=RIGHT, fill=Y)
 
-        ttk.Button(
+        self._pageprev = ttk.Button(
             master=pageframe,
-            text="‹",
+            bootstyle=GHOST,
+            icon="chevron-left",
             command=self.goto_prev_page,
-            style="symbol.Link.TButton",
-        ).pack(side=RIGHT, fill=Y)
-        ttk.Button(
+        )
+        self._pageprev.pack(side=RIGHT, fill=Y)
+        self._pagefirst = ttk.Button(
             master=pageframe,
-            text="«",
+            bootstyle=GHOST,
+            icon="chevron-bar-left",
             command=self.goto_first_page,
-            style="symbol.Link.TButton",
-        ).pack(side=RIGHT, fill=Y)
+        )
+        self._pagefirst.pack(side=RIGHT, fill=Y)
 
-        ttk.Separator(pageframe, orient=VERTICAL).pack(side=RIGHT, padx=10)
+        self._add_page_separator(pageframe)
 
         lbl = ttk.Label(pageframe, textvariable=self._pagelimit)
         lbl.pack(side=RIGHT, padx=(0, 5))
@@ -2459,6 +2485,20 @@ class Tableview(ttk.Frame):
         index.bind("<KP_Enter>", self.goto_page, "+")
 
         ttk.Label(pageframe, text=MessageCatalog.translate("Page")).pack(side=RIGHT, padx=5)
+
+    def _add_page_separator(self, parent):
+        """Pack a short vertical divider into the pagination bar.
+
+        A bare vertical ``ttk.Separator`` requests its full drawn length (the
+        style's baked ~40px), which would make it the tallest child and force
+        an oversized bar. Bounding it in a fixed, DPI-scaled height frame keeps
+        the divider inset and lets the (shorter) controls set the bar height.
+        """
+        height, width = utility.scale_size(self, [20, 1])
+        box = ttk.Frame(parent, height=height, width=width)
+        box.pack_propagate(False)
+        box.pack(side=RIGHT, padx=10)
+        ttk.Separator(box, orient=VERTICAL).pack(fill=BOTH, expand=YES)
 
     # PRIVATE METHODS - WIDGET BINDING
 
