@@ -28,6 +28,7 @@
 | **DateEntry: snake_case (cross-layer), live-text read, string `state`** | Breaking/additive | this doc, below (PR 3 / #1111) |
 | **Floodgauge: DoubleVar value, `start(interval)`, live mode/orient** | Breaking/additive | this doc, below (PR 4) |
 | **Scrolled: Canvas-viewport rewrite, `auto_hide`, keyword-only** | Breaking/additive | this doc, below (PR 5) |
+| **LabeledScale + ToolTip: DoubleVar, lifecycle, `configure`/`cget`** | Breaking/additive | this doc, below (PR 6) |
 
 ---
 
@@ -577,3 +578,43 @@ and its `hbar=True, vbar=False` **AttributeError** outright; its `configure`/`cg
 and unknown-method access now delegate to the inner `Text` (via the shared
 `ConfigureDelegationMixin` target hook), so `st.configure(font=…)` / `st.cget("wrap")`
 round-trip. Four bare `except:` clauses were narrowed to `except tkinter.TclError`.
+
+---
+
+## LabeledScale + ToolTip: DoubleVar, lifecycle, `configure`/`cget`  *(breaking + additive)*
+
+**What.** `LabeledScale` and `ToolTip` (widget-review PR 6) were normalized. No
+option *renames* (both widgets' option names were already clean).
+
+- **Constructors are keyword-only** after the first positional
+  (`LabeledScale(master, *, …)`, `ToolTip(widget, *, …)`), and `compound` is now a
+  real named `LabeledScale` parameter (it was only read from `**kwargs`).
+- **`LabeledScale` value backing `IntVar` → `DoubleVar`** (matches Meter /
+  ttk.Progressbar): fractional scales are honored, so `value` / the value label can
+  now be a float. The value label is rendered with `:g` formatting, so an integer
+  scale still reads as integers (`4`, not `4.0`).
+- **`ToolTip` gained `configure`/`cget`** (and `tip["text"]` item access) over its
+  options (`text`, `bootstyle`, `position`, `delay`, `wraplength`, `justify`,
+  `image`, `padding`); a currently-visible popup is reconfigured in place. Previously
+  these were only reachable by poking undocumented attributes.
+
+**Migration.** The keyword-only constructors and the `IntVar`→`DoubleVar` change
+cannot be shimmed: pass `LabeledScale`/`ToolTip` options by keyword (already the
+norm), and expect a float back from `LabeledScale.value` where you previously got an
+int. Nothing warns — these are source-level breaks, not deprecations.
+
+**Fixes bundled.**
+- `LabeledScale(compound="bottom")` no longer raises `TclError` (the `compound`
+  option was forwarded to `ttk.Frame` before being popped) and the Frame is
+  initialized **once** (was twice — an orphaned frame leaked per instance).
+- `LabeledScale.destroy()` cancels its pending `after_idle` label-adjust, fixing a
+  use-after-destroy `AttributeError` when the idle callback fired into a
+  half-torn-down widget.
+- `ToolTip` binds with `add="+"` (a second tooltip, or the user's own `<Enter>`
+  handler, is no longer silently clobbered), gained a `destroy()` that unbinds those
+  handlers + cancels the pending timer + drops a live popup, and **self-releases when
+  its target widget is destroyed** (`<Destroy>`), fixing the orphaned-timer-into-a-
+  dead-widget leak. Placement now measures the real popup size and routes through
+  `internal/positioning.ensure_on_screen` (multi-monitor clamping) instead of a bare
+  `except:` 200×50 guess. The embedded `__main__` demo was removed from the package
+  source and a bare `except:` narrowed to `except tkinter.TclError`.
