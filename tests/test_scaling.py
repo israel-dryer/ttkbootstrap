@@ -158,6 +158,7 @@ APPROVED_MANIFEST_GEOMETRY = {
     "progressbar_default": ((16, 8), (4, 0), 0),
     "progressbar_thin": ((8, 4), (2, 0), 0),
     "scrollbar_thumb": ((18, 8), (4, 0), 0),
+    "sizegrip": ((8, 8), (0, 0), 0),
 }
 
 

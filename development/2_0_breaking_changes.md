@@ -692,3 +692,10 @@ Old spellings keep working through 2.x with a `DeprecationWarning` (removed in 3
   `cget("date_format")`.
 - **Scrolled** — `ScrolledFrame.vbar` is the vertical-scrollbar handle (matching
   `ScrolledText`); the old `vscroll` attribute is a deprecated alias.
+
+## Sizegrip: recolor raster asset instead of a font glyph  *(Visual)*
+
+The `Sizegrip` grip is now drawn from a recolorable raster asset
+(`assets/elements/sizegrip.png` + the `sizegrip` manifest entry) via
+`Assets.recolor`, replacing the `grip-horizontal` font glyph. The default grip
+color is derived from the surface (`border(colors.bg)`). No API change.

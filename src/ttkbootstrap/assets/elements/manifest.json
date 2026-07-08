@@ -12,6 +12,7 @@
     "slider_track": {"file": "slider-track.png", "source_size": [24, 12], "size": [12, 6], "border": [2, 0], "padding": 0},
     "progressbar_default": {"file": "progressbar-default.png", "source_size": [32, 16], "size": [16, 8], "border": [4, 0], "padding": 0},
     "progressbar_thin": {"file": "progressbar-thin.png", "source_size": [16, 8], "size": [8, 4], "border": [2, 0], "padding": 0},
-    "scrollbar_thumb": {"file": "scrollbar-thumb.png", "source_size": [36, 16], "size": [18, 8], "border": [4, 0], "padding": 0}
+    "scrollbar_thumb": {"file": "scrollbar-thumb.png", "source_size": [36, 16], "size": [18, 8], "border": [4, 0], "padding": 0},
+    "sizegrip": {"file": "sizegrip.png", "source_size": [16, 16], "size": [8, 8], "border": [0, 0], "padding": 0}
   }
 }
