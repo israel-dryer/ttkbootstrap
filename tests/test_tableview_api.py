@@ -175,3 +175,19 @@ def test_get_columns_deprecated_for_tablecolumns_property(root):
         cols = tv.get_columns()
     assert any(issubclass(w.category, DeprecationWarning) for w in caught)
     assert cols == tv.tablecolumns
+
+
+# --------------------------------------------------------------------------
+# header sort indicator: font-glyph icon instead of an ASCII arrow
+# --------------------------------------------------------------------------
+
+def test_sort_shows_glyph_icon_not_ascii_arrow(root):
+    tv = _make_table(root)
+    cid = tv.tablecolumns[0].cid
+    assert tv.view.heading(cid, "image") in ("", ())      # none before sort
+    tv.sort_column_data(cid=cid, sort=0)                    # ascending
+    assert tv.view.heading(cid, "image")                   # a glyph image now
+    text = tv.view.heading(cid, "text")
+    assert "⬆" not in text and "⬇" not in text   # no ⬆/⬇ in the text
+    tv._column_sort_header_reset()
+    assert tv.view.heading(cid, "image") in ("", ())       # cleared on reset

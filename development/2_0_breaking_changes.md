@@ -710,3 +710,11 @@ names keep working through 2.x with a `DeprecationWarning` (removed in 3.0):
 Left as-is: the `coldata`/`rowdata` constructor params (fine as data-input names),
 `configure(cnf=)` vs the objects' `configure(opt=)`, and the plural/singular split
 in `move_selected_rows_to_top` vs `move_selected_row_up`.
+
+## Tableview: glyph sort indicator  *(Visual)*
+
+The sorted-column header now shows a Bootstrap-Icons `sort-up`/`sort-down` glyph
+(rendered from the built-in icon font in the heading color, re-tinted on a theme
+switch) via the heading `image=`, instead of an appended `⬆`/`⬇` ASCII character.
+No API change. The glyph sits to the left of the header label (ttk heading image
+placement).

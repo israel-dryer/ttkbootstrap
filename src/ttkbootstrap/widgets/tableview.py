@@ -2336,14 +2336,43 @@ class Tableview(ttk.Frame):
     def _column_sort_header_reset(self):
         """Remove the sort character from the column headers"""
         for col in self.tablecolumns:
-            self.view.heading(col.cid, text=col.headertext)
+            self.view.heading(col.cid, text=col.headertext, image="")
+        self._sorted_cid = None
+
+    def _resolve_heading_foreground(self) -> str:
+        """The Treeview heading foreground, for tinting the sort icon."""
+        ttkstyle = self.view.cget("style") or "Treeview"
+        for name in (f"{ttkstyle}.Heading", "Treeview.Heading", ttkstyle):
+            fg = self.view.tk.call("ttk::style", "lookup", name, "-foreground")
+            if fg:
+                return str(fg)
+        return "black"
+
+    def _sort_icon(self, ascending: bool):
+        """A ``sort-up``/``sort-down`` glyph rendered in the heading color.
+
+        Re-rendered when the heading foreground changes (theme switch).
+        """
+        fg = self._resolve_heading_foreground()
+        if getattr(self, "_sort_icon_fg", None) != fg:
+            self._sort_icon_fg = fg
+            self._sort_icon_up = ttk.Icon("sort-up", 14, fg)
+            self._sort_icon_down = ttk.Icon("sort-down", 14, fg)
+        return self._sort_icon_up if ascending else self._sort_icon_down
 
     def _column_sort_header_update(self, cid):
-        """Add sort character to the sorted column"""
+        """Show a sort-direction icon on the sorted column heading."""
         column: TableColumn = self.cidmap.get(int(cid))
-        arrow = UPARROW if column.columnsort == ASCENDING else DOWNARROW
-        headertext = f"{column.headertext} {arrow}"
-        self.view.heading(column.cid, text=headertext)
+        image = self._sort_icon(column.columnsort == ASCENDING)
+        self.view.heading(column.cid, text=column.headertext, image=image)
+        self._sorted_cid = column.cid
+
+    def _refresh_sort_icon_theme(self, *_) -> None:
+        """Re-render the active sort icon in the new heading color on a theme
+        switch."""
+        self._sort_icon_fg = None
+        if getattr(self, "_sorted_cid", None) is not None:
+            self._column_sort_header_update(self._sorted_cid)
 
     def _resolve_iid_field_index(self):
         """Resolve the iid_field to a column index. This method should be called
@@ -2387,6 +2416,9 @@ class Tableview(ttk.Frame):
             show=HEADINGS,
             bootstyle=f"{bootstyle}-table",
         )
+        # re-tint the active sort icon when the theme (heading color) changes
+        self._sorted_cid = None
+        self.view.bind("<<ThemeChanged>>", self._refresh_sort_icon_theme, "+")
 
         if self._yscrollbar:
             self.ybar = ttk.Scrollbar(
