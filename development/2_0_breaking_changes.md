@@ -745,3 +745,12 @@ selection) while their own cascade submenus — built with `ttk.Menu` — were
 theme-styled, giving the outer menu a mismatched look. Both menu classes now
 subclass `ttk.Menu`, so background/foreground/selection match the cascades and the
 active theme. No API change.
+
+## Tableview: plain-text context-menu labels  *(Visual)*
+
+The cell/header right-click menu labels dropped their leading decorative Unicode
+symbols (`⬆`/`↑`/`🞨`/`⧨`/`⎌`/… — sort/move/align/delete markers). Those glyphs
+aren't guaranteed in the platform menu font (they render as missing-box tofu on
+some Linux/macOS setups), and `tk.Menu` command entries have no hover-aware image,
+so a rendered icon can't track the active-row highlight. Labels are now the plain,
+translatable text. No API change.
