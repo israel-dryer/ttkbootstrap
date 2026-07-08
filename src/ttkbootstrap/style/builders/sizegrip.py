@@ -22,22 +22,15 @@ def build_sizegrip_style(builder: StyleBuilderTTK, colorname=DEFAULT):
 
     if any([colorname == DEFAULT, colorname == ""]):
         ttk_style = ttk_class
-
-        if builder.is_light_theme:
-            grip_color = builder.colors.border
-        else:
-            grip_color = builder.colors.inputbg
+        grip_color = builder.border(builder.colors.bg)
     else:
         ttk_style = f"{colorname}.{ttk_class}"
         grip_color = builder.colors.get(colorname)
 
-    # Visual-check item: `grip-horizontal` vs a corner-grip glyph -- settle
-    # on the human spot-check.
-    size = 16
-    image = builder.assets.icon("grip-horizontal", size, grip_color)
+    image = builder.assets.recolor("sizegrip", white=grip_color, black=grip_color)
 
     builder.style.element_create(
-        f"{ttk_style}.Sizegrip.sizegrip", "image", image
+        f"{ttk_style}.Sizegrip.sizegrip", "image", image.image
     )
     builder.style.layout(
         ttk_style,

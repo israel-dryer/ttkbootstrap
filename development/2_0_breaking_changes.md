@@ -716,5 +716,13 @@ in `move_selected_rows_to_top` vs `move_selected_row_up`.
 The sorted-column header now shows a Bootstrap-Icons `sort-up`/`sort-down` glyph
 (rendered from the built-in icon font in the heading color, re-tinted on a theme
 switch) via the heading `image=`, instead of an appended `⬆`/`⬇` ASCII character.
-No API change. The glyph sits to the left of the header label (ttk heading image
-placement).
+No API change. The glyph is drawn after the header label (ttk heading image
+placement), with a small leading gap baked into the image so it doesn't butt
+against the text.
+
+## Sizegrip: recolor raster asset instead of a font glyph  *(Visual)*
+
+The `Sizegrip` grip is now drawn from a recolorable raster asset
+(`assets/elements/sizegrip.png` + the `sizegrip` manifest entry) via
+`Assets.recolor`, replacing the `grip-horizontal` font glyph. The default grip
+color is derived from the surface (`border(colors.bg)`). No API change.
