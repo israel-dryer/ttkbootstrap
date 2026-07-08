@@ -20,16 +20,24 @@ bootstack mechanism-mining comparisons**; full design in
 (the #1 pick for Meter+Floodgauge+Scrolled) → adopt as a shared private
 `internal/` mixin that gives `cget` + get/set symmetry + reconfigurable options +
 proper 5-tuples and deletes the buggy hand-maintained configure ladders (caveat:
-inner-widget pass-through is ours to add). **Locked forks:** value backing →
-`DoubleVar`; constructors → keyword-only; mine bootstack before code (done). **7-PR
-plan** (design §5): PR 0 self-deprecation hotfix → PR 1 re-exports (`ttk.ToolTip`/
-`ToastNotification`/`ScrolledText`/`ScrolledFrame` don't exist today; Scrolled isn't
-even in `widgets/__all__`) → PR 2 Meter → PR 3 DateEntry (coordinated with the dialog
-layer's `start_date`/`first_weekday`) → PR 4 Floodgauge → PR 5 Scrolled → PR 6
-LabeledScale + ToolTip lifecycle. **NEXT → author sign-off on the remaining §7 forks
-(§4.1 renames; `position` unify-vs-document; Floodgauge `start()`; ScrolledFrame
-deep-vs-stopgap; toast stack + fade), then PR 0.** Prior entry (pagination #1106)
-follows._
+inner-widget pass-through is ours to add). **ALL forks now locked (author):** value backing → `DoubleVar`; constructors →
+keyword-only; adopt bootstack's `ConfigureDelegationMixin` as a shared `internal/`
+backbone; **ScrolledFrame → deep outer-frame + Canvas-`create_window` rewrite**;
+**include the toast STACK manager** (cancellable fade kept); **Floodgauge `start()`
+→ realign to ttk `start(interval)`** + `_compat` shim; **unify `position`/value-access
+where feasible** (§9: a `value` property everywhere + a shared popup anchor grammar;
+`Window` stays absolute `(x,y)`). These deliberately go beyond "consolidation only"
+for 2.0 quality. **8-PR plan** (design §5): **PR 0 self-deprecation hotfix — MERGED
+#1107** (ToolTip/Toast internal `override_redirect`/`window_type`; +2 tests; suite
+341) → PR 1 re-exports (`ttk.ToolTip`/`ToastNotification`/`ScrolledText`/
+`ScrolledFrame` don't exist today; Scrolled isn't even in `widgets/__all__`) → **PR
+1.5 the shared `internal/configure_delegation.py` mixin** (backbone; add the
+inner-widget-fallthrough bootstack lacks) → PR 2 Meter → PR 3 DateEntry (coordinated
+with the dialog layer's `start_date`/`first_weekday`) → PR 4 Floodgauge → PR 5
+Scrolled (deep Canvas rewrite) → PR 6 LabeledScale + ToolTip lifecycle → PR 7 Toast +
+stack. Borrowed-mechanism details per widget in design §8. **NEXT → merge #1107,
+then PR 1 (re-exports).** (Author cadence: one PR in flight; wait for merge before the
+next.) Prior entry (pagination #1106) follows._
 
 _Prior 2026-07-07 (**Tableview pagination buttons on the icon path — MERGED
 into `2.0` (#1106)**). Swaps the five character-symbol pagination controls
