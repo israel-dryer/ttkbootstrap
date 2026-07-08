@@ -43,10 +43,12 @@ from ttkbootstrap.style.layout import statespec, image_element
 _ICONS_DIR = Path(__file__).parent.parent / "assets" / "icons"
 
 # A small downward nudge -- icon fonts sit slightly high in their em box; this
-# (and the 10% inner pad) match bootstack's tuned render so glyphs optically
-# center in a square frame.
+# and the small inner pad keep glyphs optically centered in a square frame. The
+# pad is kept low (4%): at button-icon sizes (~16px) a larger pad renders the
+# glyph at only ~80% of the frame, starving thin strokes of pixels and reading
+# blurry -- 4% lets the glyph nearly fill the frame and stay crisp.
 _ICON_Y_BIAS = 0.02
-_ICON_PAD_FACTOR = 0.10
+_ICON_PAD_FACTOR = 0.04
 
 
 def _physical_size(size):
@@ -175,8 +177,11 @@ class IconRenderer:
             )))
             font = cls._get_font(font_size)
             ink_w, ink_h = nw * font_size, nh * font_size
-            dx = (cw - ink_w) / 2 - nl * font_size
-            dy = (ch - ink_h) / 2 - nt * font_size + ch * _ICON_Y_BIAS
+            # Snap the draw origin to whole pixels (the fallback branch already
+            # does via //) so the ink lands on the grid rather than half-pixels,
+            # which softens straight strokes on the LANCZOS downscale.
+            dx = round((cw - ink_w) / 2 - nl * font_size)
+            dy = round((ch - ink_h) / 2 - nt * font_size + ch * _ICON_Y_BIAS)
             draw.text((dx, dy), glyph, font=font, fill=color)
         else:
             # Fallback for glyphs absent from icon_metrics.json: measure with
