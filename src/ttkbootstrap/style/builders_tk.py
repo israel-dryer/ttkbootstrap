@@ -106,7 +106,7 @@ class StyleBuilderTK:
         widget.configure(
             background=background,
             foreground=foreground,
-            relief=tk.FLAT,
+            relief="flat",
             borderwidth=0,
             activebackground=activebackground,
             highlightbackground=foreground,
@@ -175,7 +175,7 @@ class StyleBuilderTK:
         bordercolor = self.colors.border
 
         widget.configure(
-            relief=tk.FLAT,
+            relief="flat",
             highlightthickness=self.style.scaling.logical(1),
             foreground=self.colors.inputfg,
             highlightbackground=bordercolor,
@@ -199,7 +199,7 @@ class StyleBuilderTK:
         widget.configure(
             background=self.colors.primary,
             showvalue=False,
-            sliderrelief=tk.FLAT,
+            sliderrelief="flat",
             borderwidth=0,
             activebackground=activecolor,
             highlightthickness=self.style.scaling.logical(1),
@@ -219,7 +219,7 @@ class StyleBuilderTK:
         bordercolor = self.colors.border
 
         widget.configure(
-            relief=tk.FLAT,
+            relief="flat",
             highlightthickness=self.style.scaling.logical(1),
             foreground=self.colors.inputfg,
             highlightbackground=bordercolor,
@@ -229,8 +229,8 @@ class StyleBuilderTK:
             insertbackground=self.colors.inputfg,
             insertwidth=self.style.scaling.logical(1),
             # these options should work, but do not have any affect
-            buttonuprelief=tk.FLAT,
-            buttondownrelief=tk.SUNKEN,
+            buttonuprelief="flat",
+            buttondownrelief="sunken",
         )
 
     def update_listbox_style(self, widget: tk.Listbox):
@@ -252,7 +252,7 @@ class StyleBuilderTK:
             highlightbackground=bordercolor,
             highlightthickness=self.style.scaling.logical(1),
             activestyle="none",
-            relief=tk.FLAT,
+            relief="flat",
         )
 
     def update_menubutton_style(self, widget: tk.Menubutton):
@@ -287,7 +287,7 @@ class StyleBuilderTK:
             foreground=self.colors.fg,
             selectcolor=self.colors.primary,
             background=self.colors.bg,
-            relief=tk.FLAT,
+            relief="flat",
             borderwidth=0,
         )
 
@@ -334,8 +334,7 @@ class StyleBuilderTK:
             selectforeground=self.colors.selectfg,
             insertwidth=self.style.scaling.logical(1),
             highlightthickness=self.style.scaling.logical(1),
-            relief=tk.FLAT,
+            relief="flat",
             padx=self.style.scaling.logical(5),
-            pady=self.style.scaling.logical(5),
-            # font="TkDefaultFont",
+            pady=self.style.scaling.logical(5)
         )
