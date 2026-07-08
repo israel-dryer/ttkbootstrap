@@ -365,7 +365,7 @@ with deprecated aliases.
 **What.** New public surface for putting a theme-aware Bootstrap Icons glyph on a
 widget (design `development/2_0_icon_theme_awareness_design.md`):
 
-- `ttk.apply_icon(widget, name, *, size=16, states=None, compound=None)` — renders
+- `ttk.apply_icon(widget, name, *, size=14, states=None, compound=None)` — renders
   the glyph following the widget's style `foreground` (so it inverts on
   outline/toggle, mutes when disabled) and re-renders on `<<ThemeChanged>>`.
 - `icon=`/`icon_size=` keyword sugar on every blessed ttk widget (`BootMixin`) —

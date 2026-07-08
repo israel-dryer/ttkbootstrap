@@ -38,7 +38,7 @@ variants = [
     ("Disabled", "primary"),
 ]
 for i, (label, boot) in enumerate(variants):
-    b = ttk.Button(body, text=label, bootstyle=boot, icon="gear-fill", icon_size=16)
+    b = ttk.Button(body, text=label, bootstyle=boot, icon="gear-fill")  # default size 14
     if label == "Disabled":
         b.configure(state=DISABLED)
     b.grid(row=i // 4, column=i % 4, padx=6, pady=6, sticky=EW)

@@ -812,7 +812,7 @@ class BootMixin:
         bootstyle = kwargs.pop("bootstyle", "")
         style = kwargs.pop("style", "") or ""
         icon = kwargs.pop("icon", None)
-        icon_size = kwargs.pop("icon_size", 16)
+        icon_size = kwargs.pop("icon_size", 14)
 
         # instantiate the underlying ttk widget first so winfo_class() is
         # available to the resolver below
@@ -885,7 +885,7 @@ class BootMixin:
             from ttkbootstrap.style.icons import apply_icon
             existing = getattr(self, "_tb_icon", None)
             name = icon if icon is not _UNSET else (existing["name"] if existing else None)
-            size = icon_size if icon_size is not _UNSET else (existing["size"] if existing else 16)
+            size = icon_size if icon_size is not _UNSET else (existing["size"] if existing else 14)
             states = existing["states"] if existing else None
             compound = existing["compound"] if existing else None
             apply_icon(self, name, size=size, states=states, compound=compound)

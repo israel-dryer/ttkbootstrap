@@ -132,7 +132,7 @@ rule is recorded in `CLAUDE.md` Conventions + memory `naming-convention`.)
 ## 4. API spec
 
 ```python
-def apply_icon(widget, name, *, size=16, states=None, compound=None) -> str | None:
+def apply_icon(widget, name, *, size=14, states=None, compound=None) -> str | None:
     """Put a theme-aware Bootstrap Icons glyph on `widget`.
 
     Unlike a bare `Icon(...)` used as `image=`, this tracks the active theme and

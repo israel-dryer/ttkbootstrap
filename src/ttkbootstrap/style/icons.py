@@ -488,7 +488,7 @@ def _clear_widget_icon(widget):
     return None
 
 
-def apply_icon(widget, name, *, size=16, states=None, compound=None):
+def apply_icon(widget, name, *, size=14, states=None, compound=None):
     """Put a theme-aware Bootstrap Icons glyph on ``widget``.
 
     Unlike a bare `Icon(...)` used as ``image=``, this tracks the active theme and
