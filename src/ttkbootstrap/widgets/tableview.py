@@ -2606,7 +2606,7 @@ class Tableview(ttk.Frame):
             self._rightclickmenu_cell.tk_popup(event)
 
 
-class TableCellRightClickMenu(tk.Menu):
+class TableCellRightClickMenu(ttk.Menu):
     """A right-click menu object for the tableview cells - INTERNAL"""
 
     def __init__(self, master: Tableview):
@@ -2831,7 +2831,7 @@ class TableCellRightClickMenu(tk.Menu):
             self.view.selection_set(prev_item)
 
 
-class TableHeaderRightClickMenu(tk.Menu):
+class TableHeaderRightClickMenu(ttk.Menu):
     """A right-click menu object for the tableview header - INTERNAL"""
 
     def __init__(self, master: Tableview):

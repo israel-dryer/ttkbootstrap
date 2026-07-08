@@ -736,3 +736,12 @@ back (it is not taller than 1.0). The header border derives from the heading
 background (`border(background)`) and follows the hover color on the active
 heading, and the body border derives from `inputbg` at a 1px (was 2px) width.
 No API change.
+
+## Tableview: right-click menus follow the theme  *(Visual)*
+
+The Tableview's top-level cell/header right-click menus subclassed raw `tk.Menu`,
+so they rendered in the OS palette (`SystemMenu` background, `SystemHighlight`
+selection) while their own cascade submenus — built with `ttk.Menu` — were
+theme-styled, giving the outer menu a mismatched look. Both menu classes now
+subclass `ttk.Menu`, so background/foreground/selection match the cascades and the
+active theme. No API change.
