@@ -6,9 +6,16 @@
 > `2_0_icons_design.md` (the icon engine), `2_0_engine_design.md` (the no-`Publisher`
 > theme walk), and `CLAUDE.md`.
 >
-> **Status: CONFIRMED (author sign-off 2026-07-07).** Worked out interactively;
-> all three §7 forks resolved (states=: include; datepicker: migrate now;
-> unsupported widgets: raise). Implementation proceeds per §5.
+> **Status: IMPLEMENTED (2026-07-07).** Confirmed with the author, then built on
+> `feat/2.0-icon-theme-aware`: `style/icons.py` `apply_icon` + derived-style/
+> `<<ThemeChanged>>` machinery; `BootMixin` `icon=`/`icon_size=` sugar (compose +
+> re-derive on bootstyle change); top-level + `ttkbootstrap.style` re-exports;
+> datepicker carets migrated; `tests/test_icon_theme.py` (+12); preview
+> `examples/icon_button_preview.py`. Suite 330 passed excl. the `nl.msg` flake;
+> warning-free import. All three §7 forks resolved (states=: include; datepicker:
+> migrate now; unsupported widgets: raise). **Still owed: a human light↔dark visual
+> spot-check** (the preview) before docs screenshots — headless asserts the image
+> is wired + re-rendered, not that it looks right.
 
 ## 1. Why this, why now
 
@@ -239,8 +246,19 @@ documentation §1's gap analysis called for.
   light↔dark switch, plus an outline/toggle icon button.
 - **PR (follow-on) — Tableview pagination buttons on icons.** Ghost base + glyph via
   the same path (their disabled first/prev arrows get muting for free). Own small PR.
-- **Docs (Workstream H).** §4.1 becomes a "Theme-aware icons" How-To/Guide section;
-  the `Icon` vs `icon=` vs `icon_element` three-tier split is the teaching frame.
+- **Docs (Workstream H) — two distinct impacts, not just a How-To.**
+  1. **API-reference surface extends.** `icon=`/`icon_size=` on `BootMixin` are a
+     new *cross-cutting kwarg* on **every blessed ttk widget** — the same category
+     as `bootstyle`/`autostyle`. Wherever the docs describe "what ttkbootstrap adds
+     to a ttk widget" (the mixin's shared keyword surface), that list must now
+     include `icon`/`icon_size`. This is a genuine extension of the ttk widget API,
+     so the mixin's own signature + docstring must carry these kwargs (they feed the
+     autogen API reference); the per-widget catalog pages that mention the mixin
+     kwargs pick them up centrally, not per widget.
+  2. **New guide.** §4.1 becomes a "Theme-aware icons" How-To/Guide; the `Icon` vs
+     `icon=` vs `icon_element` three-tier split is the teaching frame; §4.1's
+     hashed-style contract is documented loudly there.
+  Both go into the Workstream-H rewrite (`2_0_docs_design.md`), tracked there.
 
 ## 6. Compat
 

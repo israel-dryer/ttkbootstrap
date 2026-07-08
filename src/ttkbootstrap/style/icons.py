@@ -23,8 +23,11 @@ modules (`assets`, `layout`); it carries **no module-level engine edge** (the
 and imports standalone. Asset loading is lazy: `import ttkbootstrap` does not read
 the font -- `IconRenderer` loads it on first `render`.
 """
+import hashlib
 import io
 import json
+import re
+import tkinter as tk
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
@@ -346,3 +349,212 @@ def icon_element(style, name, *, size, default, states=None, **options):
     if states:
         state_images = {s: resolve(spec, s) for s, spec in states.items()}
     image_element(style, name, default=default_image, states=state_images, **options)
+
+
+# --------------------------------------------------------------------------- #
+# Theme-aware widget icons (apply_icon)
+# --------------------------------------------------------------------------- #
+# ttk classes whose layout has a label element that renders the style `image`
+# option + honors `compound`. apply_icon works on these; anything else silently
+# no-ops at the Tcl level, so we class-check and raise instead.
+_ICON_WIDGET_CLASSES = frozenset({
+    "TButton", "Toolbutton", "TLabel", "TMenubutton",
+    "TCheckbutton", "TRadiobutton",
+})
+
+# A derived icon style is named "Icon<8 hex>.<base style>"; this strips the
+# prefix back to the base so re-applies are idempotent.
+_ICON_STYLE_PREFIX = re.compile(r"^Icon[0-9a-f]{8}\.")
+
+
+def _icon_base_style(widget):
+    """The widget's current style with any Icon<hash>. prefix removed.
+
+    Falls back to the widget's ttk class (e.g. ``TButton``) when no style is set.
+    """
+    current = _ICON_STYLE_PREFIX.sub("", str(widget.cget("style") or ""))
+    return current or widget.winfo_class()
+
+
+def _widget_has_text(widget):
+    try:
+        return bool(str(widget.cget("text") or ""))
+    except tk.TclError:
+        return False
+
+
+def _build_icon_style(style, base, name, size, states, compound):
+    """(Re)configure a derived ``Icon<hash>.<base>`` style and return its name.
+
+    Renders one glyph per state in that state's *base foreground* color (so the
+    icon inverts / mutes exactly as the label text does); ``states`` overrides the
+    glyph name per state, never its color. The images are set as the derived
+    style's ``image`` option + map, which the inherited ``*.label`` element renders
+    (the built-in date-button pattern -- no custom element/layout). configure/map
+    overwrite, so a theme-change rebuild is just a re-call (idempotent).
+    """
+    assets = Assets(style)
+    states = states or {}
+
+    key = f"{base}|{name}|{size}|{sorted(states.items())}|{compound}"
+    digest = hashlib.md5(key.encode("utf-8")).hexdigest()[:8]
+    derived = f"Icon{digest}.{base}"
+
+    def render(glyph, state_tokens):
+        color = style.lookup(base, "foreground", state=state_tokens or None)
+        return assets.icon(glyph, size, color or style.colors.fg)
+
+    rest_image = render(states.get("", name), [])
+
+    image_map = []
+    seen = set()
+    for entry in style.map(base, "foreground"):
+        *tokens, _color = entry
+        state_str = " ".join(tokens)
+        if not tokens or state_str in seen:
+            continue
+        seen.add(state_str)
+        image_map.append((state_str, render(states.get(state_str, name), tokens)))
+    # states= keys the base foreground map doesn't remap still need an image
+    for state_str, glyph in states.items():
+        if state_str and state_str not in seen:
+            seen.add(state_str)
+            image_map.append((state_str, render(glyph, state_str.split())))
+
+    config = {"image": rest_image}
+    if compound is not None:
+        config["compound"] = compound
+    style.configure(derived, **config)
+    if image_map:
+        style.map(derived, image=image_map)
+    return derived
+
+
+def _set_icon_style(widget, derived):
+    """Set the widget's style to ``derived``, guarding `BootMixin.configure` from
+    re-deriving the icon on the resulting style change (which would recurse)."""
+    widget._tb_applying_icon = True
+    try:
+        widget.configure(style=derived)
+    finally:
+        widget._tb_applying_icon = False
+
+
+def _rebuild_widget_icon(widget):
+    """Re-render a widget's icon for the active theme (``<<ThemeChanged>>``)."""
+    spec = getattr(widget, "_tb_icon", None)
+    if not spec:
+        return
+    from ttkbootstrap.style.engine import Style  # back-edge; keeps this a leaf
+    style = Style.get_instance()
+    if style is None:
+        return
+    try:
+        derived = _build_icon_style(
+            style, spec["base"], spec["name"], spec["size"],
+            spec["states"], spec["compound"],
+        )
+        _set_icon_style(widget, derived)
+    except tk.TclError:
+        pass  # widget torn down mid-switch
+
+
+def _clear_widget_icon(widget):
+    """Remove an applied icon: restore the base style, drop the theme bind."""
+    spec = getattr(widget, "_tb_icon", None)
+    # Clear the spec *before* restoring the base style: the configure() below
+    # routes through BootMixin.configure, whose base-change branch would otherwise
+    # see a live _tb_icon and re-derive the icon we are removing.
+    widget._tb_icon = None
+    if spec is not None:
+        base = spec["base"]
+        try:
+            widget.configure(
+                style="" if base == widget.winfo_class() else base)
+        except tk.TclError:
+            pass
+    bindid = getattr(widget, "_tb_icon_bindid", None)
+    if bindid is not None:
+        try:
+            widget.unbind("<<ThemeChanged>>", bindid)
+        except tk.TclError:
+            pass
+        widget._tb_icon_bindid = None
+    return None
+
+
+def apply_icon(widget, name, *, size=16, states=None, compound=None):
+    """Put a theme-aware Bootstrap Icons glyph on ``widget``.
+
+    Unlike a bare `Icon(...)` used as ``image=``, this tracks the active theme and
+    the widget's states: the glyph color follows the widget's style ``foreground``,
+    so it inverts on ``outline``/``toggle`` buttons, mutes when disabled, and
+    re-colors on a theme switch. It does so by giving the widget a derived,
+    content-hashed style that augments (inherits) its current ``style``/
+    ``bootstyle`` -- see the design doc's "What this does to your widget's style".
+
+    Parameters:
+
+        widget:
+            A ttk ``Button`` (incl. Toolbutton/Outline/link/ghost variants),
+            ``Label``, ``Menubutton``, ``Checkbutton``, or ``Radiobutton``. Any
+            other class raises ``TypeError`` (it has no image-bearing label
+            element; use a per-item image API for Treeview/Notebook).
+
+        name (str | None):
+            A Bootstrap Icons glyph name (e.g. ``"gear-fill"``). ``None``/``""``
+            removes the icon and restores the base style.
+
+        size (int | tuple[int, int]):
+            The logical UI size (converted by the root-bound scaling service).
+
+        states (dict[str, str] | None):
+            Optional ``{state_string: glyph_name}`` to show a *different glyph*
+            per state (e.g. ``{"selected": "check-square-fill"}``). The color still
+            follows the foreground. State strings are ttk state specs
+            (``"disabled"``, ``"pressed !disabled"``, ...).
+
+        compound (str | None):
+            The ttk ``-compound`` option (icon/text arrangement). Defaults to
+            ``LEFT`` when the widget has text, else icon-only.
+
+    Returns the derived ttk style name, or ``None`` when the icon was cleared.
+    """
+    from ttkbootstrap.style.engine import Style  # back-edge; keeps this a leaf
+
+    style = Style.get_instance() or Style()
+
+    if not name:
+        return _clear_widget_icon(widget)
+
+    if widget.winfo_class() not in _ICON_WIDGET_CLASSES:
+        raise TypeError(
+            f"apply_icon: {widget.winfo_class()!r} has no image-bearing label "
+            f"element. Supported: Button, Label, Menubutton, Checkbutton, "
+            f"Radiobutton. (Treeview/Notebook take images via their own per-item "
+            f"API, not a widget-level style.)"
+        )
+
+    if compound is None and _widget_has_text(widget):
+        compound = tk.LEFT
+
+    base = _icon_base_style(widget)
+    derived = _build_icon_style(style, base, name, size, states, compound)
+    _set_icon_style(widget, derived)
+
+    # remember the spec so a <<ThemeChanged>> (or a bootstyle change that re-calls
+    # apply_icon) can rebuild the glyphs for the new theme
+    widget._tb_icon = {
+        "base": base, "name": name, "size": size,
+        "states": states, "compound": compound,
+    }
+    # single bind: replace, never stack, on repeated apply_icon calls
+    old = getattr(widget, "_tb_icon_bindid", None)
+    if old is not None:
+        try:
+            widget.unbind("<<ThemeChanged>>", old)
+        except tk.TclError:
+            pass
+    widget._tb_icon_bindid = widget.bind(
+        "<<ThemeChanged>>", lambda _e: _rebuild_widget_icon(widget), "+")
+    return derived

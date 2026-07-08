@@ -782,6 +782,9 @@ class Bootstyle:
         return __init__wrapper
 
 
+_UNSET = object()  # sentinel: distinguish "icon kwarg omitted" from "icon=None"
+
+
 class BootMixin:
     """Mixin that adds the ``bootstyle`` API to a ttk widget class.
 
@@ -792,6 +795,8 @@ class BootMixin:
     class:
 
     - a ``bootstyle=`` (and bare ``style=``) keyword on the constructor,
+    - an ``icon=``/``icon_size=`` keyword for a theme-aware glyph (see
+      `ttkbootstrap.apply_icon`) on the widgets that carry a label image,
     - ``configure``/``config`` that accept and report ``bootstyle``,
     - ``widget["bootstyle"]`` / ``widget["bootstyle"] = ...`` access.
 
@@ -803,9 +808,11 @@ class BootMixin:
     """
 
     def __init__(self, *args, **kwargs):
-        # capture bootstyle and style arguments
+        # capture bootstyle, style, and icon arguments
         bootstyle = kwargs.pop("bootstyle", "")
         style = kwargs.pop("style", "") or ""
+        icon = kwargs.pop("icon", None)
+        icon_size = kwargs.pop("icon_size", 16)
 
         # instantiate the underlying ttk widget first so winfo_class() is
         # available to the resolver below
@@ -833,6 +840,11 @@ class BootMixin:
             # Stamp the widget current so the next theme walk only repaints it
             # once the theme actually changes.
             Bootstyle.stamp_theme_version(self)
+            # Apply a theme-aware icon last, so it derives from the resolved base
+            # style (see ttkbootstrap.apply_icon).
+            if icon:
+                from ttkbootstrap.style.icons import apply_icon
+                apply_icon(self, icon, size=icon_size)
         except AttributeError:
             # Third-party widgets (e.g. tkcalendar.Calendar) override
             # configure() and may touch instance attributes not yet set when
@@ -847,8 +859,13 @@ class BootMixin:
         if cnf is not None:
             return super().configure(cnf)
 
+        # capture icon changes; applied after the base style resolves below
+        icon = kwargs.pop("icon", _UNSET)
+        icon_size = kwargs.pop("icon_size", _UNSET)
+
         # set configuration
         bootstyle = kwargs.pop("bootstyle", "")
+        base_changed = bool(bootstyle) or ("style" in kwargs)
         if "style" in kwargs:
             style = kwargs.get("style")
             Bootstyle.update_ttk_widget_style(self, style, **kwargs)
@@ -858,7 +875,28 @@ class BootMixin:
             )
             kwargs.update(style=ttkstyle)
 
-        return super().configure(cnf, **kwargs)
+        result = super().configure(cnf, **kwargs)
+
+        # Icon handling. An explicit icon=/icon_size= applies or clears the glyph;
+        # otherwise a base-style change under an existing icon re-derives it onto
+        # the new base. The _tb_applying_icon guard skips the re-derive while
+        # apply_icon is itself setting the derived style (avoids recursion).
+        if icon is not _UNSET or icon_size is not _UNSET:
+            from ttkbootstrap.style.icons import apply_icon
+            existing = getattr(self, "_tb_icon", None)
+            name = icon if icon is not _UNSET else (existing["name"] if existing else None)
+            size = icon_size if icon_size is not _UNSET else (existing["size"] if existing else 16)
+            states = existing["states"] if existing else None
+            compound = existing["compound"] if existing else None
+            apply_icon(self, name, size=size, states=states, compound=compound)
+        elif (base_changed and getattr(self, "_tb_icon", None)
+                and not getattr(self, "_tb_applying_icon", False)):
+            from ttkbootstrap.style.icons import apply_icon
+            spec = self._tb_icon
+            apply_icon(self, spec["name"], size=spec["size"],
+                       states=spec["states"], compound=spec["compound"])
+
+        return result
 
     config = configure
 

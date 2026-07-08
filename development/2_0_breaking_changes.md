@@ -359,3 +359,31 @@ normalization is intentionally deferred so names and docs move together.
 `get_date`-style verb rename (`move_row_down`→`move_selected_row_down`,
 `hide/unhide`→`show/hide`, `coldata`/`rowdata` aliases) is a separate, later slice
 with deprecated aliases.
+
+## Theme-aware widget icons: `apply_icon` + `icon=`/`icon_size=`  *(additive)*
+
+**What.** New public surface for putting a theme-aware Bootstrap Icons glyph on a
+widget (design `development/2_0_icon_theme_awareness_design.md`):
+
+- `ttk.apply_icon(widget, name, *, size=16, states=None, compound=None)` — renders
+  the glyph following the widget's style `foreground` (so it inverts on
+  outline/toggle, mutes when disabled) and re-renders on `<<ThemeChanged>>`.
+- `icon=`/`icon_size=` keyword sugar on every blessed ttk widget (`BootMixin`) —
+  routes to `apply_icon` after the base style resolves.
+- Supported on label-image widgets (`Button`/`Label`/`Menubutton`/`Checkbutton`/
+  `Radiobutton`); other classes raise `TypeError`.
+
+**Why.** A bare `Icon(...)` used as `image=` bakes its color once and goes stale on
+a theme switch — style-delivered icons (builder recipes) were theme-aware, inline
+ones were not. This completes the `Icon` feature's theme story.
+
+**The one thing to know (implicit style generation).** `icon=`/`apply_icon`
+*augments the widget's style*: it gives the widget a derived, content-hashed style
+`Icon<hash>.<your style>` that **inherits** your `bootstyle`/`style` (config, map,
+and layout) and adds the glyph. So **`widget.cget("style")` changes** to the
+derived name. `bootstyle` and `icon` compose and re-derive together; `icon=None`
+restores the base style. The static `Icon(...)` escape hatch is unchanged (a raw
+`-image`, no style, not themed).
+
+**Not breaking.** Purely additive; no existing signature changed. First-party: the
+datepicker header carets were migrated onto `apply_icon` (internal, no API change).
