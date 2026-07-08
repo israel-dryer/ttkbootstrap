@@ -216,3 +216,22 @@ def test_rightclick_menus_are_themed(root):
         # themed background matches a plain ttk.Menu (not the OS "SystemMenu")
         assert str(menu.cget("background")) == str(ref.cget("background"))
         assert str(menu.cget("activebackground")) == str(ref.cget("activebackground"))
+
+
+# --------------------------------------------------------------------------
+# context-menu labels are plain text (no non-cross-platform glyphs)
+# --------------------------------------------------------------------------
+
+def test_menu_labels_have_no_decorative_glyphs(root):
+    """The ⬆/↑/🞨/⧨/... label prefixes weren't font-guaranteed cross-platform
+    and are removed; labels are the plain (translatable) text."""
+    tv = _make_table(root)
+    glyphs = set("⬆⬇↑↓⤒⤓◧◫◨🞨⇅⧨↔⇵↦→←⇤⇥±⇄◑⎌")
+    for menu in (tv._rightclickmenu_cell, tv._rightclickmenu_head):
+        for i in range(menu.index("end") + 1):
+            try:
+                label = menu.entrycget(i, "label")
+            except Exception:
+                continue
+            assert not (set(label) & glyphs), f"decorative glyph in menu label: {label!r}"
+    assert tv._rightclickmenu_head.entrycget(0, "label") == "Reset table"
