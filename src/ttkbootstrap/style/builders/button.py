@@ -363,8 +363,10 @@ def build_date_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         background = builder.colors.get(colorname)
         on_background = builder.on_color(background)
 
-    # Calendar icon in the button foreground color.
-    size = [21, 22]
+    # Calendar icon in the button foreground color. Sized against the 4% glyph
+    # pad (icons.py): ~18 keeps the prior visual size (the old 21 was tuned to the
+    # larger 10% pad; the reduced pad now renders the glyph bigger per unit size).
+    size = [18, 19]
     img_normal = builder.assets.icon("calendar3", size, on_background)
     img_disabled = builder.assets.icon("calendar3", size, on_disabled)
 
