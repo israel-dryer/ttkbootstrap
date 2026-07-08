@@ -237,6 +237,20 @@ def normalize_floodgauge_start_args(args: list, kwargs: dict) -> tuple:
     return interval, step_size
 
 
+# Scrolled widget authored-option renames (2.0 shipped-widget API pass, PR 5).
+# `autohide` -> `auto_hide` (ScrolledText + ScrolledFrame); `scrollheight` ->
+# `scroll_height` (ScrolledFrame).
+_SCROLLED_KWARG_ALIASES = {
+    "autohide": "auto_hide",
+    "scrollheight": "scroll_height",
+}
+
+
+def normalize_scrolled_kwargs(kwargs: dict) -> dict:
+    """Pop deprecated Scrolled option names from ``kwargs``; return ``{new: value}``."""
+    return normalize_option_names(kwargs, _SCROLLED_KWARG_ALIASES, "Scrolled")
+
+
 def normalize_bootstyle(value, *, warn: bool = False) -> str:
     """Return the canonical dash-joined bootstyle string for a legacy value.
 
