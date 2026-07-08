@@ -8,6 +8,7 @@ from typing import Any, List, Optional, Tuple
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from ttkbootstrap.localization import MessageCatalog
+from ttkbootstrap.style._compat import normalize_datepicker_kwargs
 from .base import Dialog
 from .datepicker import DatePickerDialog
 from .fontdialog import FontDialog
@@ -231,24 +232,36 @@ class Querybox:
     def get_date(
             parent: Optional[tkinter.Misc] = None,
             title: str = " ",
-            firstweekday: int = 6,
-            startdate: Optional[date] = None,
+            first_weekday: int = 6,
+            start_date: Optional[date] = None,
             bootstyle: str = "primary",
             *,
             position: Optional[Tuple[int, int]] = None,
+            **kwargs: Any,
     ) -> Optional[date]:
         """Show a calendar and return the selected ``date``.
 
         2.0 change: returns ``None`` when the picker is cancelled (closed
         without choosing a day). Previously it always returned a ``date`` --
-        falling back to ``startdate``/today -- so cancellation was
+        falling back to ``start_date``/today -- so cancellation was
         indistinguishable from a real selection.
+
+        The pre-2.0 ``firstweekday``/``startdate`` spellings are accepted
+        through 2.x with a ``DeprecationWarning`` (removed in 3.0).
         """
+        aliases = normalize_datepicker_kwargs(kwargs)
+        first_weekday = aliases.get("first_weekday", first_weekday)
+        start_date = aliases.get("start_date", start_date)
+        if kwargs:
+            raise TypeError(
+                f"get_date() got unexpected keyword arguments: "
+                f"{', '.join(sorted(kwargs))}"
+            )
         chooser = DatePickerDialog(
             parent=parent,
             title=title,
-            firstweekday=firstweekday,
-            startdate=startdate,
+            first_weekday=first_weekday,
+            start_date=start_date,
             bootstyle=bootstyle,
             autoshow=False,
         )

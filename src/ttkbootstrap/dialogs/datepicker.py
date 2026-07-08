@@ -10,13 +10,14 @@ import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from ttkbootstrap.localization import MessageCatalog
 from ttkbootstrap.internal.utility import center_on_parent
+from ttkbootstrap.style._compat import normalize_datepicker_kwargs
 
 
 class DatePickerDialog:
     """A dialog that displays a calendar popup and returns the
     selected date as a datetime object.
 
-    The current date is displayed by default unless the `startdate`
+    The current date is displayed by default unless the `start_date`
     parameter is provided.
 
     The month can be changed by clicking the chevrons to the left
@@ -26,7 +27,7 @@ class DatePickerDialog:
     Right-click the arrow to move the calendar by one year.
     Right-click the title to reset the calendar to the start date.
 
-    The starting weekday can be changed with the `firstweekday`
+    The starting weekday can be changed with the `first_weekday`
     parameter for geographies that do not start the calendar on
     Sunday, which is the default.
 
@@ -43,10 +44,11 @@ class DatePickerDialog:
             self,
             parent: Optional[tkinter.Misc] = None,
             title: str = " ",
-            firstweekday: int = 6,
-            startdate: Optional[date] = None,
+            first_weekday: int = 6,
+            start_date: Optional[date] = None,
             bootstyle: str = PRIMARY,
             autoshow: bool = True,
+            **kwargs: Any,
     ) -> None:
         """Create a date picker dialog with a calendar popup.
 
@@ -64,11 +66,11 @@ class DatePickerDialog:
             title (str):
                 The dialog window title (default=' ').
 
-            firstweekday (int):
+            first_weekday (int):
                 First day of the week (0=Monday, 6=Sunday). Adjust this for
                 different geographical conventions (default=6).
 
-            startdate (date):
+            start_date (date):
                 Initial date to display in the calendar. If None, uses today's
                 date. The calendar will open to the month containing this date.
 
@@ -91,6 +93,18 @@ class DatePickerDialog:
             - Click date: Select date and close dialog
             - Click X button: Cancel selection and close dialog
         """
+        # Accept the pre-2.0 `firstweekday`/`startdate` spellings through 2.x
+        # (warn-and-normalize; removed in 3.0). Coordinated with DateEntry /
+        # Querybox.get_date, which were snake_cased in the same PR.
+        aliases = normalize_datepicker_kwargs(kwargs)
+        first_weekday = aliases.get("first_weekday", first_weekday)
+        start_date = aliases.get("start_date", start_date)
+        if kwargs:
+            raise TypeError(
+                f"DatePickerDialog got unexpected keyword arguments: "
+                f"{', '.join(sorted(kwargs))}"
+            )
+
         # Safe locale setup
         try:
             locale.setlocale(locale.LC_TIME, "")
@@ -106,17 +120,17 @@ class DatePickerDialog:
             minsize=(226, 1),
             iconify=True,
         )
-        self.firstweekday = firstweekday
-        self.startdate = startdate or datetime.today().date()
+        self.first_weekday = first_weekday
+        self.start_date = start_date or datetime.today().date()
         self.bootstyle = bootstyle or PRIMARY
 
-        self.date_selected = self.startdate
-        self.date = startdate or self.date_selected
-        self.calendar = calendar.Calendar(firstweekday=firstweekday)
+        self.date_selected = self.start_date
+        self.date = start_date or self.date_selected
+        self.calendar = calendar.Calendar(firstweekday=first_weekday)
         # Track whether the user actually picked a day, so cancellation
         # (closing the window without a selection) is distinguishable from a
         # real selection -- `date_selected` alone cannot tell them apart because
-        # it defaults to `startdate`/today. Read via the `result` property.
+        # it defaults to `start_date`/today. Read via the `result` property.
         self._selection_made = False
 
         self.titlevar = ttk.StringVar()
@@ -280,7 +294,7 @@ class DatePickerDialog:
         self.monthdates = self.calendar.monthdatescalendar(year=self.date.year, month=self.date.month)
 
     def _header_columns(self) -> List[str]:
-        """Create weekday headers based on `firstweekday`."""
+        """Create weekday headers based on `first_weekday`."""
         weekdays = [
             MessageCatalog.translate("Mo"),
             MessageCatalog.translate("Tu"),
@@ -290,7 +304,7 @@ class DatePickerDialog:
             MessageCatalog.translate("Sa"),
             MessageCatalog.translate("Su"),
         ]
-        header = weekdays[self.firstweekday:] + weekdays[: self.firstweekday]
+        header = weekdays[self.first_weekday:] + weekdays[: self.first_weekday]
         return header
 
     def _on_date_selected(self, row: int, col: int) -> None:
@@ -333,7 +347,7 @@ class DatePickerDialog:
 
     @_selection_callback
     def on_reset_date(self, *_: Any) -> None:
-        self.date = self.startdate
+        self.date = self.start_date
 
     def _set_window_position(self, position: Optional[Tuple[int, int]] = None) -> None:
         """Position the popup.
