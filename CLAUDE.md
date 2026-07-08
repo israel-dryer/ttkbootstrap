@@ -304,6 +304,13 @@ interactive/visual demo in `examples/`, not `tests/`.
 ## Conventions
 
 - Match the style of the file you're editing (comment density, naming).
+- **Public-name casing (2.0 standardization):** ttkbootstrap-authored identifiers
+  (functions, methods, new kwargs) use `snake_case` (`apply_icon`, `icon_size`,
+  `high_dpi`, `window_type`); names that pass through to a real Tk/ttk option or
+  method keep Tk's spelling verbatim (`iconphoto`, `minsize`/`maxsize`, `compound`,
+  `themename`); `bootstyle`/`autostyle` are grandfathered brand tokens, not a
+  template for new names. Test: "am I forwarding a real Tk name?" — yes → Tk
+  spelling; no → snake_case.
 - Custom widgets that need image assets generate them through the style
   builder / Pillow pipeline; favor native ttk/clam mechanisms over images
   where both are viable (perf and cross-platform consistency).

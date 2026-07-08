@@ -29,7 +29,7 @@ from ttkbootstrap.style.layout import (
     state_map,
     StyleName,
 )
-from ttkbootstrap.style.icons import Icon, icon_element, IconRenderer
+from ttkbootstrap.style.icons import Icon, apply_icon, icon_element, IconRenderer
 from ttkbootstrap.style._compat import (
     set_bootstyle_strict,
     is_bootstyle_strict,
@@ -61,6 +61,7 @@ __all__ = [
     "StyleName",
     # Icon-rendered assets (Workstream I, Tier 1.5)
     "Icon",
+    "apply_icon",
     "icon_element",
     "IconRenderer",
     # bootstyle grammar strictness (Workstream D)

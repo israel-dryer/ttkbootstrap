@@ -8,6 +8,8 @@ frame.pack(padx=10, pady=10)
 
 de = ttk.DateEntry(frame)
 
+ttk.Button(frame, text="TtkBootstrap", icon="house", icon_size=14).pack()
+
 de.pack(fill=X)
 
 root.mainloop()

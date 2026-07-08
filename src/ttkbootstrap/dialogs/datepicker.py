@@ -179,14 +179,12 @@ class DatePickerDialog:
         self.title.configure(bootstyle=f"{self.bootstyle}-inverse")
         self.prev_period.configure(style=f"Chevron.{self.bootstyle}.TButton")
         self.next_period.configure(style=f"Chevron.{self.bootstyle}.TButton")
-        # caret-fill nav arrows, in the header's contrasting on-accent color.
-        # (Use on_color, not colors.get_foreground(), which returns black on a
-        # saturated dark-theme accent -- wrong on the accent-colored title bar.)
-        style = ttk.Style.get_instance()
-        accent = style.colors.get(self.bootstyle)
-        arrow_color = style._get_builder().on_color(accent)
-        self.prev_period.configure(image=ttk.Icon("caret-left-fill", 14, arrow_color))
-        self.next_period.configure(image=ttk.Icon("caret-right-fill", 14, arrow_color))
+        # caret nav arrows: apply_icon renders them following the chevron style's
+        # foreground -- which is on_color(accent), the header's contrasting
+        # on-accent color -- and re-renders on a theme switch, replacing a
+        # baked-once ttk.Icon image.
+        ttk.apply_icon(self.prev_period, "caret-left-fill", size=14)
+        ttk.apply_icon(self.next_period, "caret-right-fill", size=14)
 
     def _draw_calendar(self) -> None:
         self._update_widget_bootstyle()
