@@ -23,8 +23,8 @@ def build_table_treeview_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     ttk_class = "Table.Treeview"
 
     f = font.nametofont("TkDefaultFont")
-    row_height = f.metrics()["linespace"]
-    border = builder.border(builder.colors.bg)
+    metrics = f.metrics()
+    row_height = metrics['linespace'] + metrics['ascent']
     on_disabled = builder.disabled("text", builder.colors.inputbg)
 
     if any([colorname == DEFAULT, colorname == ""]):
@@ -43,6 +43,8 @@ def build_table_treeview_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         tb_ttk_style = f"{colorname}.{ttk_class}"
         th_ttk_style = f"{colorname}.{ttk_class}.Heading"
     hover = builder.active(background)
+    header_border = builder.border(background)
+    body_border = builder.border(builder.colors.inputbg)
 
     # treeview header
     builder.configure(
@@ -51,33 +53,28 @@ def build_table_treeview_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         foreground=on_background,
         relief=RAISED,
         borderwidth=builder.scale_size(1),
-        darkcolor=background,
-        bordercolor=border,
+        darkcolor=header_border,
+        bordercolor=background,
         lightcolor=background,
         padding=builder.scale_size(5),
     )
     builder.style.map(
         th_ttk_style,
         foreground=[("disabled", on_disabled)],
-        background=[
-            ("active !disabled", hover),
-        ],
-        darkcolor=[
-            ("active !disabled", hover),
-        ],
-        lightcolor=[
-            ("active !disabled", hover),
-        ],
+        background=[("active !disabled", hover)],
+        lightcolor=[("active !disabled", hover)],
+        darkcolor=[("active !disabled", hover)],
+        bordercolor=[("active !disabled", hover)]
     )
     builder.configure(
         tb_ttk_style,
         background=builder.colors.inputbg,
         fieldbackground=builder.colors.inputbg,
         foreground=builder.colors.inputfg,
-        bordercolor=border,
+        bordercolor=body_border,
         lightcolor=builder.colors.inputbg,
         darkcolor=builder.colors.inputbg,
-        borderwidth=builder.scale_size(2),
+        borderwidth=builder.scale_size(1),
         padding=0,
         rowheight=row_height,
         relief=tk.RAISED,
