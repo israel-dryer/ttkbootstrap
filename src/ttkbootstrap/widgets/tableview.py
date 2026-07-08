@@ -2361,8 +2361,8 @@ class Tableview(ttk.Frame):
         return self._sort_icon_up if ascending else self._sort_icon_down
 
     def _render_sort_icon(self, name: str, fg: str):
-        """Render the sort glyph with trailing transparent space so it does not
-        butt against the header text (ttk draws the heading image left of the
+        """Render the sort glyph with leading transparent space so it does not
+        butt against the header text (ttk draws the heading image after the
         text, with no built-in gap)."""
         from PIL import Image, ImageTk
         from ttkbootstrap.style.icons import IconRenderer
@@ -2371,7 +2371,7 @@ class Tableview(ttk.Frame):
         gap = utility.scale_size(self, 6)
         glyph = IconRenderer.render(name, size, fg)  # physical-pixel PIL RGBA
         canvas = Image.new("RGBA", (glyph.width + gap, glyph.height), (0, 0, 0, 0))
-        canvas.paste(glyph, (0, 0))
+        canvas.paste(glyph, (gap, 0))  # pad on the leading side (text | gap | glyph)
         # keep a reference (stored on self by the caller) so Tk doesn't GC it
         return ImageTk.PhotoImage(canvas)
 
