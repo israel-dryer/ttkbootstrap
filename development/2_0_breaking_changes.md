@@ -27,6 +27,7 @@
 | **Meter: snake_case options, DoubleVar, `value`** | Breaking/additive | this doc, below (PR 2 / #1110) |
 | **DateEntry: snake_case (cross-layer), live-text read, string `state`** | Breaking/additive | this doc, below (PR 3 / #1111) |
 | **Floodgauge: DoubleVar value, `start(interval)`, live mode/orient** | Breaking/additive | this doc, below (PR 4) |
+| **Scrolled: Canvas-viewport rewrite, `auto_hide`, keyword-only** | Breaking/additive | this doc, below (PR 5) |
 
 ---
 
@@ -526,3 +527,53 @@ longer clobbers the user's `textvariable`, so **`cget("text")` returns the user'
 text** rather than the masked string. `FloodgaugeLegacy` (unchanged API, 3.0-removal)
 gained a `destroy()` that detaches its value/text write traces (leak parity with the
 #1070 fix).
+
+## Scrolled: Canvas-viewport rewrite, `auto_hide`, keyword-only  *(breaking + additive)*
+
+**What.** `ScrolledText` and `ScrolledFrame` (widget-review PR 5) were normalized,
+and `ScrolledFrame` was rebuilt on a Canvas viewport.
+
+*Breaking:*
+- **Constructors are keyword-only** after `master`.
+- **Options renamed to snake_case**: `autohide` → `auto_hide` (both classes),
+  `scrollheight` → `scroll_height` (`ScrolledFrame`).
+- **`ScrolledFrame` is internally restructured** — the content frame is now a child
+  of a `Canvas` viewport inside `self.container` (grid: canvas + scrollbar). The
+  public contract is preserved (`ttk.Checkbutton(sf, …)` still parents to the
+  content; `sf.pack()/grid()/place()` still lay out the whole assembly;
+  `sf.container` is still the outer frame for `notebook.add(...)`), but code that
+  reached into the old `place()`-based internals or relied on `sf` itself being the
+  Canvas-less frame may need updating.
+- **`autohide_scrollbar()` now has one meaning on both classes** — it *toggles*
+  auto-hide on/off (previously it *bound* enter/leave on `ScrolledText` but *toggled
+  a flag* on `ScrolledFrame`).
+- **`yview()` returns `(first, last)`** (delegated to the Canvas); it previously
+  returned `None`.
+
+*Deprecated (works through 2.x, removed in 3.0):*
+- `autohide=` / `scrollheight=` are accepted with a `DeprecationWarning` (via
+  `style/_compat.normalize_scrolled_kwargs`).
+- **`ScrolledFrame.vscroll`** stays as the attribute for the scrollbar; the unified
+  accessor is now `vbar` (`sf.vbar is sf.vscroll`). `ScrolledText` also exposes
+  `vbar`/`hbar`.
+
+*Additive:*
+- `auto_hide` is exposed as a read-only bool **property** on both classes.
+
+**Migration.** Rename `autohide`→`auto_hide` and `scrollheight`→`scroll_height`
+(old spellings warn through 2.x). Pass options by keyword. If you read a `yview()`
+result, it is now a 2-tuple.
+
+**Fixes bundled.** The old `ScrolledFrame.destroy()` was a no-op that **leaked** the
+outer container + scrollbar — `destroy()` now tears down the whole assembly (native
+Canvas cascade, re-entrancy-guarded so an ancestor teardown is clean). The Canvas
+supplies **native scroll fractions**, removing the `_measures` **div-by-zero** before
+realize. Mousewheel scrolling moved to a **per-instance bind-tag** seam (enable/
+disable by toggling the tag in `bindtags`), fixing the O(subtree) per-hover rebind and
+the clobbering of app-level wheel handlers, and giving location-independent teardown
+(`unbind_class` in `destroy()`); `disable_scrolling()` still survives a later hover
+(regression #1064). `ScrolledText` moved to a **grid** layout, deleting `_on_configure`
+and its `hbar=True, vbar=False` **AttributeError** outright; its `configure`/`cget`
+and unknown-method access now delegate to the inner `Text` (via the shared
+`ConfigureDelegationMixin` target hook), so `st.configure(font=…)` / `st.cget("wrap")`
+round-trip. Four bare `except:` clauses were narrowed to `except tkinter.TclError`.
