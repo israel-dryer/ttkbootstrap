@@ -85,3 +85,57 @@ def test_insert_row_empty_values_raises(root):
 def test_dead_code_removed():
     for name in ("reset_row_sort", "_build_table_rows", "_build_table_columns"):
         assert not hasattr(Tableview, name)
+
+
+# --------------------------------------------------------------------------
+# pagination navigation buttons (glyph icons + boundary-disable)
+# --------------------------------------------------------------------------
+
+def _make_paginated_table(root):
+    # pagesize=2 over 6 rows -> 3 pages, so every boundary is reachable.
+    return Tableview(
+        root,
+        coldata=["A", "B"],
+        rowdata=[[f"a{i}", f"b{i}"] for i in range(6)],
+        paginated=True,
+        pagesize=2,
+    )
+
+
+def _nav_disabled(tv):
+    return {
+        "first": tv._pagefirst.instate(["disabled"]),
+        "prev": tv._pageprev.instate(["disabled"]),
+        "next": tv._pagenext.instate(["disabled"]),
+        "last": tv._pagelast.instate(["disabled"]),
+    }
+
+
+def test_pagination_nav_buttons_are_ghost_icon_buttons(root):
+    tv = _make_paginated_table(root)
+    for btn in (tv._pagefirst, tv._pageprev, tv._pagenext, tv._pagelast):
+        # apply_icon derives an ``Icon<hash>.`` style off the ghost base.
+        assert "Ghost.TButton" in str(btn.cget("style"))
+
+
+def test_pagination_first_page_disables_backward(root):
+    tv = _make_paginated_table(root)
+    tv.goto_first_page()
+    state = _nav_disabled(tv)
+    assert state["first"] and state["prev"]
+    assert not state["next"] and not state["last"]
+
+
+def test_pagination_last_page_disables_forward(root):
+    tv = _make_paginated_table(root)
+    tv.goto_last_page()
+    state = _nav_disabled(tv)
+    assert state["next"] and state["last"]
+    assert not state["first"] and not state["prev"]
+
+
+def test_pagination_middle_page_all_enabled(root):
+    tv = _make_paginated_table(root)
+    tv.goto_first_page()
+    tv.goto_next_page()  # page 2 of 3
+    assert not any(_nav_disabled(tv).values())
