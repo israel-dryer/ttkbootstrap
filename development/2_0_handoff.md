@@ -3,8 +3,8 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-07-07 (**Theme-aware widget icons — OPENED as #1105 against
-`2.0`**). Closes the inline-icon theme-awareness gap (a bare `Icon(...)` `image=`
+_Last updated: 2026-07-07 (**Theme-aware widget icons — MERGED into `2.0`
+(#1105)**). Closes the inline-icon theme-awareness gap (a bare `Icon(...)` `image=`
 baked its color once and went stale on a theme switch). New `ttk.apply_icon` +
 `icon=`/`icon_size=` mixin sugar: renders a glyph following the widget's style
 `foreground` (inverts on outline/toggle, mutes disabled), re-renders on
@@ -25,7 +25,23 @@ memory `control-height-parity`) before docs screenshots. Also recorded the 2.0 n
 convention (snake_case authored / Tk-spelling pass-throughs; `CLAUDE.md` +
 memory). **NEXT → Tableview pagination buttons on the icon path** (ghost base +
 glyph; disabled first/prev arrows get muting for free), then docs Workstream H.
-Prior entry (PR C) follows._
+
+**>>> NEXT-SESSION PICKUP (pagination — decision pending, NOT started).** #1105 is
+merged into `2.0`; the tree is clean (also merged this session: the sizegrip
+example `tk.Tk()`→`ttk.Window()` fix, direct to `2.0`). The task: replace the 5
+character buttons in `Tableview._build_pagination_frame`
+(`src/ttkbootstrap/widgets/tableview.py`, ~line 2407 — currently `⎌ » › ‹ «`, all
+`style="symbol.Link.TButton"`) with font glyphs via the new `icon=` sugar on a
+**ghost** base. Proposed glyph map: first→`chevron-bar-left`, prev→`chevron-left`,
+next→`chevron-right`, last→`chevron-bar-right`, reset→`arrow-counterclockwise`.
+**OPEN SCOPE FORK — author to pick:** (a) **icons only** (swap chars→glyphs,
+minimal, matches the literal ask); or (b) **icons + boundary-disable** (also
+disable first/prev on page 1 and next/last on the last page so the ghost/disabled
+muting actually shows — better UX, small behavior addition). Opus leans **(b)**;
+NB the pagination buttons do **not** currently disable at boundaries, so (a) alone
+leaves no disabled state to mute. Cut the PR against `2.0` on a fresh branch. Still
+-open icon follow-ups: Sizegrip → recolor raster asset; control-height parity
+(buttons == inputs) — both before docs screenshots. Prior entry (PR C) follows._
 
 _Prior 2026-07-07 (**shipped-widget API pass — PR C (Tableview)
 OPENED as #1104 against `2.0`; the pass's LAST PR**). Fixes only per design §5c
