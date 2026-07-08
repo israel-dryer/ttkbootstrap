@@ -23,7 +23,7 @@ Example:
     root = ttk.Window()
 
     # Create various custom widgets
-    date_entry = ttk.DateEntry(root, firstweekday=0)
+    date_entry = ttk.DateEntry(root, first_weekday=0)
     date_entry.pack(padx=10, pady=5)
 
     floodgauge = ttk.Floodgauge(root, maximum=100, mask="{}% Complete")

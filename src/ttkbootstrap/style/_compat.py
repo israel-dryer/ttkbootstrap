@@ -157,6 +157,47 @@ def normalize_meter_option(name: str) -> str:
     return name
 
 
+# DateEntry authored-option renames (2.0 shipped-widget API pass, PR 3).
+_DATEENTRY_KWARG_ALIASES = {
+    "dateformat": "date_format",
+    "firstweekday": "first_weekday",
+    "startdate": "start_date",
+}
+
+
+def normalize_dateentry_kwargs(kwargs: dict) -> dict:
+    """Pop deprecated DateEntry option names from ``kwargs``; return ``{new: value}``."""
+    return normalize_option_names(kwargs, _DATEENTRY_KWARG_ALIASES, "DateEntry")
+
+
+def normalize_dateentry_option(name: str) -> str:
+    """Map a single legacy DateEntry option name to its 2.0 spelling (warns).
+
+    Used by ``configure``/``cget``/item access so a legacy option string
+    (``dateentry.cget("dateformat")``) still resolves. Non-legacy names pass
+    through unchanged.
+    """
+    new = _DATEENTRY_KWARG_ALIASES.get(name)
+    if new is not None:
+        warn_deprecated(f"the {name!r} DateEntry option", f"{new!r}")
+        return new
+    return name
+
+
+# Date-picker dialog keyword renames (2.0 shipped-widget API pass, PR 3). The
+# DateEntry rename is coordinated across the dialog layer: `Querybox.get_date`
+# and `DatePickerDialog` carried the same legacy spellings.
+_DATEPICKER_KWARG_ALIASES = {
+    "firstweekday": "first_weekday",
+    "startdate": "start_date",
+}
+
+
+def normalize_datepicker_kwargs(kwargs: dict) -> dict:
+    """Pop deprecated date-picker kwargs from ``kwargs``; return ``{new: value}``."""
+    return normalize_option_names(kwargs, _DATEPICKER_KWARG_ALIASES, "date picker")
+
+
 def normalize_bootstyle(value, *, warn: bool = False) -> str:
     """Return the canonical dash-joined bootstyle string for a legacy value.
 

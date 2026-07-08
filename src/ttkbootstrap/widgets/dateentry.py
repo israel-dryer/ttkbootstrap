@@ -11,10 +11,10 @@ Example:
     root = ttk.Window()
 
     # Create a date entry widget
-    date_entry = ttk.DateEntry(root, firstweekday=0, startdate=datetime.now())
+    date_entry = ttk.DateEntry(root, first_weekday=0, start_date=datetime.now())
     date_entry.pack(padx=10, pady=10)
 
-    # Get the selected date
+    # Get the selected date (reads the live entry text)
     selected_date = date_entry.get_date()
 
     # Handle date selection events
@@ -28,14 +28,22 @@ Example:
 """
 from datetime import date, datetime
 from tkinter import Misc
-from typing import Any, Optional, Union
+from typing import Any, Optional, Tuple, Union
 
 from ttkbootstrap import Button, Entry, Frame
 from ttkbootstrap.constants import END, LEFT, X, YES
 from ttkbootstrap.dialogs import Querybox
+from ttkbootstrap.internal.configure_delegation import (
+    ConfigureDelegationMixin,
+    configure_delegate,
+)
+from ttkbootstrap.style._compat import (
+    normalize_dateentry_kwargs,
+    normalize_dateentry_option,
+)
 
 
-class DateEntry(Frame):
+class DateEntry(ConfigureDelegationMixin, Frame):
     """A date entry widget combines an Entry field and a Button for date selection.
 
     When the button is pressed, a calendar popup is displayed allowing the user
@@ -48,11 +56,14 @@ class DateEntry(Frame):
         - Configurable date format using strftime format strings
         - Customizable starting weekday (0=Monday, 6=Sunday)
         - Style customization via bootstyle parameter
-        - Date validation with optional exception raising
+        - Typed-text aware: `get_date()` / the `value` property parse the live
+          entry text, so manual keyboard edits are honored
+        - Blur validation: the entry is flagged `invalid` when its text cannot
+          be parsed as a date
         - Access to entry and button widgets via instance attributes
 
     The date chooser popup will use the date in the entry field as the initial
-    focus date if it matches the specified dateformat. By default, the format
+    focus date if it matches the specified date_format. By default, the format
     is locale-specific ("%x").
 
     The bootstyle parameter can be used to change the widget colors. Available
@@ -65,15 +76,21 @@ class DateEntry(Frame):
     ![](../../assets/widgets/date-entry.png)
     """
 
+    # Common fallback formats tried (after the widget's own `date_format`) when
+    # coercing the live entry text to a date.
+    _FALLBACK_FORMATS = ("%Y-%m-%d", "%m/%d/%Y")
+
     def __init__(
             self,
             master: Optional[Misc] = None,
-            dateformat: str = r"%x",
-            firstweekday: int = 6,
-            startdate: Optional[Union[datetime, date]] = None,
+            *,
+            date_format: str = r"%x",
+            first_weekday: int = 6,
+            start_date: Optional[Union[datetime, date]] = None,
             bootstyle: str = "",
             popup_title: str = 'Select new date',
             raise_exception: bool = False,
+            position: Optional[Tuple[int, int]] = None,
             **kwargs: Any,
     ) -> None:
         """
@@ -82,16 +99,16 @@ class DateEntry(Frame):
             master (Widget, optional):
                 The parent widget.
 
-            dateformat (str, optional):
+            date_format (str, optional):
                 The format string used to render the text in the entry widget.
                 Defaults to "%x" (locale's appropriate date representation).
                 For more information on acceptable formats, see https://strftime.org/
 
-            firstweekday (int, optional):
+            first_weekday (int, optional):
                 Specifies the first day of the week. 0=Monday, 1=Tuesday,
                 etc...
 
-            startdate (datetime, optional):
+            start_date (datetime, optional):
                 The date that is in focus when the widget is displayed. Default is
                 current date.
 
@@ -105,33 +122,45 @@ class DateEntry(Frame):
                 Title for PopUp window (Default: `Select new date`)
 
             raise_exception (bool, optional):
-                If a `ValueError` should be raised, if the user enters an invalid date string. If this is set to `False`,
-                faulty date strings will be ignored. Only a warning on the terminal/console will be printed. (Default: `False`)
+                If a `ValueError` should be raised when the user enters an
+                invalid date string. If this is set to `False`, faulty date
+                strings are ignored (only a warning is printed). (Default: `False`)
+
+            position (tuple[int, int], optional):
+                Optional ``(x, y)`` screen coordinates passed through to the
+                date-picker popup.
 
             **kwargs (dict[str, Any], optional):
                 Other keyword arguments passed to the frame containing the
-                entry and date button.
+                entry and date button. A ``width`` here is applied to the entry
+                field (not the frame).
         """
+        # Accept the pre-2.0 dateformat/firstweekday/startdate spellings
+        # (warn-and-normalize through 2.x; removed in 3.0).
+        aliases = normalize_dateentry_kwargs(kwargs)
+        date_format = aliases.get("date_format", date_format)
+        first_weekday = aliases.get("first_weekday", first_weekday)
+        start_date = aliases.get("start_date", start_date)
 
         self.__enabled = True  # User/Programmer should NOT be able to change this, therefore double underscores
-        self.__dateformat = self._validate_dateformat(
-            dateformat)  # User/Programmer should NOT be able to change this, therefore double underscores
-        self._firstweekday = firstweekday
-
-        self._startdate = startdate or datetime.today()
+        self.__dateformat = self._validate_dateformat(date_format)
+        self._firstweekday = first_weekday
+        self._startdate = start_date or datetime.today()
         self._bootstyle = bootstyle
         self._popup_title = popup_title
         self._raise_exception = raise_exception
+        self._position = position
+        self._picker_open = False  # re-entrancy guard for the popup
+
+        # Kwarg partitioning: `width` belongs to the entry field, everything
+        # else to the frame. (Previously `width` was applied to both.)
+        entry_width = kwargs.pop("width", None)
         super().__init__(master, **kwargs)
 
-        # add visual components
-        entry_kwargs = {
-            "bootstyle": self._bootstyle,
-        }
-        if "width" in kwargs:
-            entry_kwargs["width"] = kwargs.pop("width")
-
-        # Build date Widget button (this shows the date in the wanted format)
+        # Build the date entry (this shows the date in the wanted format)
+        entry_kwargs = {"bootstyle": self._bootstyle}
+        if entry_width is not None:
+            entry_kwargs["width"] = entry_width
         self.entry = Entry(self, **entry_kwargs)
         self.entry.pack(side=LEFT, fill=X, expand=YES)
 
@@ -143,83 +172,95 @@ class DateEntry(Frame):
         )
         self.button.pack(side=LEFT)
 
+        # Mark the entry `invalid` on blur when its text is not a valid date.
+        self.entry.bind("<FocusOut>", self._on_entry_blur, add="+")
+
         # Initialize this widget
         self.set_date(self._startdate)
 
-    def __getitem__(self, key: str) -> Any:
-        return self.configure(cnf=key)
+    # -- configure delegates ------------------------------------------------- #
+    # One get/set handler per custom option (value=None queries, else sets).
+    # The ConfigureDelegationMixin wires these into configure/cget/keys/
+    # __getitem__/__setitem__.
 
-    def __setitem__(self, key: str, value: Any) -> None:
-        self.configure(cnf=None, **{key: value})
-
-    def _configure_set(self, **kwargs: Any) -> None:
-        """Override configure method to allow for setting custom DateEntry parameters.
-
-        Handles special configuration options like 'state', 'dateformat', 'firstweekday',
-        'startdate', 'bootstyle', and 'width'.
-        """
-
-        if "state" in kwargs:
-            state = kwargs.pop("state")
-            if state in ["readonly", "invalid"]:
-                self.entry.configure(state=state)
-            elif state in ("disabled", "normal"):
-                self.entry.configure(state=state)
-                self.button.configure(state=state)
-            else:
-                kwargs[state] = state
-        if "dateformat" in kwargs:
-            self.__dateformat = kwargs.pop("dateformat")
-        if "firstweekday" in kwargs:
-            self._firstweekday = kwargs.pop("firstweekday")
-        if "startdate" in kwargs:
-            self._startdate = kwargs.pop("startdate")
-        if "bootstyle" in kwargs:
-            self._bootstyle = kwargs.pop("bootstyle")
-            self.entry.configure(bootstyle=self._bootstyle)
-            self.button.configure(bootstyle=f"{self._bootstyle}-date")
-        if "width" in kwargs:
-            width = kwargs.pop("width")
-            self.entry.configure(width=width)
-
-        super(Frame, self).configure(**kwargs)
-
-    def _configure_get(self, cnf: str) -> Any:
-        """Override the configure get method.
-
-        Returns configuration values for DateEntry-specific options.
-        """
-        if cnf == "state":
-            entrystate = self.entry.cget("state")
-            buttonstate = self.button.cget("state")
-            return {"Entry": entrystate, "Button": buttonstate}
-        if cnf == "dateformat":
+    @configure_delegate("date_format")
+    def _cfg_date_format(self, value):
+        if value is None:
             return self.__dateformat
-        if cnf == "firstweekday":
-            return self._firstweekday
-        if cnf == "startdate":
-            return self._startdate
-        if cnf == "bootstyle":
-            return self._bootstyle
-        else:
-            return super(Frame, self).configure(cnf=cnf)
+        # Read the current date with the OLD format before switching, then
+        # re-render it with the validated NEW format.
+        current = self.get_date()
+        self.__dateformat = self._validate_dateformat(value)
+        if current is not None:
+            self._write_entry(current.strftime(self.__dateformat))
 
-    def configure(self, cnf: Optional[str] = None, **kwargs: Any) -> Any:
+    @configure_delegate("first_weekday")
+    def _cfg_first_weekday(self, value):
+        if value is None:
+            return self._firstweekday
+        self._firstweekday = value
+
+    @configure_delegate("start_date")
+    def _cfg_start_date(self, value):
+        if value is None:
+            return self._startdate
+        self._startdate = value
+
+    @configure_delegate("bootstyle")
+    def _cfg_bootstyle(self, value):
+        if value is None:
+            return self._bootstyle
+        self._bootstyle = value
+        self.entry.configure(bootstyle=self._bootstyle)
+        self.button.configure(bootstyle=f"{self._bootstyle}-date")
+
+    @configure_delegate("state")
+    def _cfg_state(self, value):
+        # Canonical single-string state: query returns the entry's state; a set
+        # fans out to entry (+ button, for the shared normal/disabled states).
+        if value is None:
+            return str(self.entry.cget("state"))
+        self.entry.configure(state=value)
+        if value in ("disabled", "normal"):
+            self.button.configure(state=value)
+
+    @configure_delegate("width")
+    def _cfg_width(self, value):
+        # `width` is an entry option here, not a frame option (kills the
+        # historical double-apply).
+        if value is None:
+            return self.entry.cget("width")
+        self.entry.configure(width=value)
+
+    # -- configure/cget wrappers (accept legacy option spellings) ------------ #
+    def configure(self, cnf: Any = None, **kwargs: Any) -> Any:
         """Configure the options for this widget.
 
-        Parameters:
-
-            cnf (dict[str, Any], optional):
-                A dictionary of configuration options.
-
-            **kwargs:
-                Optional keyword arguments.
+        Accepts the legacy ``dateformat``/``firstweekday``/``startdate``
+        spellings (with a ``DeprecationWarning``) in addition to the canonical
+        snake_case names.
         """
-        if cnf is not None:
-            return self._configure_get(cnf)
-        else:
-            return self._configure_set(**kwargs)
+        if kwargs:
+            kwargs.update(normalize_dateentry_kwargs(kwargs))
+        if isinstance(cnf, dict):
+            cnf = dict(cnf)
+            cnf.update(normalize_dateentry_kwargs(cnf))
+        elif isinstance(cnf, str):
+            cnf = normalize_dateentry_option(cnf)
+        return super().configure(cnf, **kwargs)
 
+    config = configure
+
+    def cget(self, key: str) -> Any:
+        return super().cget(normalize_dateentry_option(key))
+
+    def __setitem__(self, key: str, value: Any) -> None:
+        super().__setitem__(normalize_dateentry_option(key), value)
+
+    def __getitem__(self, key: str) -> Any:
+        return super().__getitem__(normalize_dateentry_option(key))
+
+    # -- properties ---------------------------------------------------------- #
     @property
     def enabled(self) -> bool:
         """Check if the date picker is enabled.
@@ -230,23 +271,86 @@ class DateEntry(Frame):
         """
         return self.__enabled
 
+    # NOTE: `date_format` (like start_date/first_weekday/bootstyle/state/width)
+    # is a configure option, not a property -- read/write it via
+    # `cget("date_format")` / `configure(date_format=...)` / `de["date_format"]`
+    # (the legacy `dateformat` spelling still resolves there, with a warning).
+    # Only the canonical `value` handle and the computed `enabled` state are
+    # exposed as properties.
+
     @property
-    def dateformat(self) -> str:
-        """Get the date format string.
+    def value(self) -> Optional[datetime]:
+        """The currently selected date (synonym for :meth:`get_date`).
 
-        Returns:
-            str: The strftime format string used to convert between
-                 strings and datetime objects.
+        Reads the live entry text, falling back to the last set date when the
+        text is empty or unparseable. Assigning is equivalent to
+        :meth:`set_date`.
         """
-        return self.__dateformat
+        return self.get_date()
 
-    def get_date(self) -> datetime:
+    @value.setter
+    def value(self, new_date: Union[datetime, date]) -> None:
+        self.set_date(new_date)
+
+    # -- date access --------------------------------------------------------- #
+    def get_date(self) -> Optional[datetime]:
         """Get the currently selected date.
+
+        Parses the **live entry text** so typed keyboard edits are honored. If
+        the text is empty or cannot be parsed, the last date set on the widget
+        is returned as a fallback.
 
         Returns:
             datetime: The currently selected date as a datetime object.
         """
-        return self.configure(cnf='startdate')
+        parsed = self._coerce_date(self.entry.get())
+        if parsed is not None:
+            return parsed
+        return self._startdate
+
+    def set_date(self, new_date: Union[datetime, date]) -> None:
+        """Set the currently selected date.
+
+        Updates the entry field and internal state with the new date.
+        Time components (hours, minutes, seconds, microseconds) are ignored
+        and will be stripped from datetime objects.
+
+        Parameters:
+            new_date (datetime | date): The new date to set.
+        """
+        _date: datetime = self._clean_datetime(new_date)
+        self._startdate = _date
+        self._write_entry(_date.strftime(self.__dateformat))
+        # A freshly set date is valid by construction.
+        self.entry.state(['!invalid'])
+
+    def _coerce_date(self, text: str) -> Optional[datetime]:
+        """Tolerantly parse ``text`` to a ``datetime``, or ``None``.
+
+        Tries the widget's configured ``date_format`` first, then a couple of
+        common formats, then ISO-8601. Never raises.
+        """
+        if not text:
+            return None
+        for fmt in (self.__dateformat, *self._FALLBACK_FORMATS):
+            try:
+                return datetime.strptime(text, fmt)
+            except (ValueError, TypeError):
+                continue
+        try:
+            return datetime.fromisoformat(text)
+        except (ValueError, TypeError):
+            return None
+
+    def _write_entry(self, text: str) -> None:
+        """Replace the entry text, transparently toggling the disabled state."""
+        was_disabled = not self.__enabled
+        if was_disabled:
+            self.enable()
+        self.entry.delete(first=0, last=END)
+        self.entry.insert(END, text)
+        if was_disabled:
+            self.disable()
 
     @staticmethod
     def _validate_dateformat(dateformat: str) -> str:
@@ -310,29 +414,6 @@ class DateEntry(Frame):
         else:
             return datetime(new_date.year, new_date.month, new_date.day)
 
-    def set_date(self, new_date: Union[datetime, date]) -> None:
-        """Set the currently selected date.
-
-        Updates the entry field and internal state with the new date.
-        Time components (hours, minutes, seconds, microseconds) are ignored
-        and will be stripped from datetime objects.
-
-        Parameters:
-            new_date (datetime | date): The new date to set.
-        """
-
-        _date: datetime = self._clean_datetime(new_date)
-        if self.__enabled:
-            self.configure(startdate=_date)
-            self.entry.delete(first=0, last=END)
-            self.entry.insert(END, new_date.strftime(self.__dateformat))
-        else:
-            self.enable()
-            self.configure(startdate=_date)
-            self.entry.delete(first=0, last=END)
-            self.entry.insert(END, new_date.strftime(self.__dateformat))
-            self.disable()
-
     def disable(self) -> None:
         """Disable the date picker.
 
@@ -351,12 +432,24 @@ class DateEntry(Frame):
         self.entry.state(['!disabled'])
         self.button.state(['!disabled'])
 
+    def _on_entry_blur(self, event: Any = None) -> None:
+        """Flag the entry `invalid` when its text is not a parseable date.
+
+        An empty field is treated as valid (no date entered). A non-empty,
+        unparseable field is marked `invalid` so the styling reflects it.
+        """
+        text = self.entry.get()
+        if text and self._coerce_date(text) is None:
+            self.entry.state(['invalid'])
+        else:
+            self.entry.state(['!invalid'])
+
     def _on_date_ask(self) -> None:
         """Handle the calendar button click event.
 
         Opens the date selection popup and updates the entry field with the
         selected date. Generates the <<DateEntrySelected>> event when a date
-        is chosen.
+        is chosen. Reads the initial focus date from the live entry text.
 
         Raises:
             ValueError: If raise_exception is True and the entry text doesn't
@@ -364,26 +457,36 @@ class DateEntry(Frame):
         """
         from warnings import warn
 
-        currently_selected_date: str = self.entry.get() or datetime.today().strftime(self.__dateformat)
-        try:
-            self._startdate: datetime = datetime.strptime(currently_selected_date, self.__dateformat)
-        except ValueError as exc:
-            warn(f"Date entry text does not match with date format: {self.__dateformat}\n")
-            if self._raise_exception:
-                raise exc
+        # Re-entrancy guard: ignore a click while the picker is already open.
+        if self._picker_open:
             return
-        old_date = datetime.strptime(currently_selected_date, self.__dateformat)
+        self._picker_open = True
+        try:
+            text = self.entry.get()
+            old_date = self._coerce_date(text)
+            if old_date is None:
+                if text:
+                    warn(f"Date entry text does not match with date format: {self.__dateformat}\n")
+                    if self._raise_exception:
+                        raise ValueError(
+                            f"time data {text!r} does not match format {self.__dateformat!r}"
+                        )
+                old_date = self._startdate or datetime.today()
+            self._startdate = old_date
 
-        # get the new date and insert into the entry
-        new_date = Querybox.get_date(
-            parent=self.entry,
-            title=self._popup_title,
-            startdate=old_date,
-            firstweekday=self._firstweekday,
-            bootstyle=self._bootstyle,
-        )
-        # get_date returns None when the picker is cancelled (2.0); leave the
-        # field unchanged rather than resetting it.
-        if new_date is not None:
-            self.set_date(new_date)
-            self.event_generate("<<DateEntrySelected>>")
+            # get the new date and insert into the entry
+            new_date = Querybox.get_date(
+                parent=self.entry,
+                title=self._popup_title,
+                start_date=old_date,
+                first_weekday=self._firstweekday,
+                bootstyle=self._bootstyle,
+                position=self._position,
+            )
+            # get_date returns None when the picker is cancelled (2.0); leave
+            # the field unchanged rather than resetting it.
+            if new_date is not None:
+                self.set_date(new_date)
+                self.event_generate("<<DateEntrySelected>>")
+        finally:
+            self._picker_open = False
