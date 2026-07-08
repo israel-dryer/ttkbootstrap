@@ -530,6 +530,17 @@ text** rather than the masked string. `FloodgaugeLegacy` (unchanged API, 3.0-rem
 gained a `destroy()` that detaches its value/text write traces (leak parity with the
 #1070 fix).
 
+**Follow-up (property-consistency pass) — *deprecated*, not breaking.** Floodgauge's
+option backing fields (`maximum`, `mode`, `orient`, `mask`, `font`, `length`,
+`thickness`) are now **private**; they were bare public attributes that paralleled the
+`configure`/`cget` surface (and `fg.maximum = 50` bypassed the redraw). The canonical
+surface is `configure`/`cget`/item-access (or `fg.value`), but the old bare-attribute
+**read and write still work through 2.x with a `DeprecationWarning`** (via `__getattr__`
+/`__setattr__` — a write now routes through `configure`, so it takes effect instead of
+silently shadowing). The `variable`/`textvariable` handles stay public. This aligns
+Floodgauge with Meter/DateEntry — the rule is: options through `configure`/`cget` only,
+properties only for the canonical `value` and genuinely-computed state.
+
 ## Scrolled: Canvas-viewport rewrite, `auto_hide`, keyword-only  *(breaking + additive)*
 
 **What.** `ScrolledText` and `ScrolledFrame` (widget-review PR 5) were normalized,
@@ -661,3 +672,23 @@ int. Nothing warns — these are source-level breaks, not deprecations.
 (`icon="bell-fill"`); drop any `iconfont=`. Pass toast options by keyword. If you
 called `set_geometry()` directly, don't (it is internal). Capture the return of
 `show_toast()` if you want to dismiss a toast early: `t = toast.show_toast(); t.hide()`.
+
+## Property/accessor consistency pass  *(mostly deprecated, not breaking)*
+
+A cross-widget sweep so options live only on `configure`/`cget`/item-access and the
+attribute surface stays minimal (widget/Variable handles + `value`/computed state).
+Old spellings keep working through 2.x with a `DeprecationWarning` (removed in 3.0):
+
+- **Floodgauge** — the option backing fields (`maximum`, `mode`, `orient`, `mask`,
+  `font`, `length`, `thickness`) are private; the old bare-attribute read/write still
+  works (deprecated) — a write now routes through `configure` (see the Floodgauge
+  section above).
+- **Meter** — the subtext/text-position Label handles gained collision-free names
+  (`subtext_label`, `text_left_label`, `text_right_label`, `text_center_label`); the
+  old `subtext`/`textleft`/`textright`/`textcenter` attributes are deprecated aliases.
+  (The bare `subtext` name is now unambiguously the *option*: `cget("subtext")` →
+  string; `meter.subtext_label` → the Label.)
+- **DateEntry** — the pre-2.0 `dateformat` attribute is a deprecated read alias for
+  `cget("date_format")`.
+- **Scrolled** — `ScrolledFrame.vbar` is the vertical-scrollbar handle (matching
+  `ScrolledText`); the old `vscroll` attribute is a deprecated alias.

@@ -253,3 +253,12 @@ def test_datepicker_dialog_legacy_names_warn(root):
 def test_datepicker_dialog_rejects_unknown_kwarg(root):
     with pytest.raises(TypeError):
         DatePickerDialog(parent=root, autoshow=False, bogus=1)
+
+def test_legacy_dateformat_attribute_is_deprecated(root):
+    """The pre-2.0 `dateformat` attribute still reads, with a warning."""
+    import warnings
+    de = DateEntry(root, date_format="%Y-%m-%d")
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        assert de.dateformat == "%Y-%m-%d"
+    assert any(issubclass(w.category, DeprecationWarning) for w in caught)

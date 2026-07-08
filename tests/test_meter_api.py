@@ -139,3 +139,33 @@ def test_import_is_warning_free():
         warnings.simplefilter("error")
         importlib.import_module("ttkbootstrap")
         importlib.import_module("ttkbootstrap.widgets.meter")
+
+
+# --------------------------------------------------------------------------
+# label handles: clean *_label names + deprecated old spellings
+# (property-consistency pass)
+# --------------------------------------------------------------------------
+
+def test_label_handles_have_clean_names(root):
+    """The subtext/text-position Label handles use collision-free *_label names."""
+    m = _make(root, subtext="hi", text_left="L", text_right="R")
+    for attr in ("subtext_label", "text_left_label",
+                 "text_right_label", "text_center_label"):
+        assert isinstance(getattr(m, attr), ttk.Label)
+    # the option and the handle are now distinct: cget -> string, attr -> Label
+    assert m.cget("subtext") == "hi"
+    assert isinstance(m.subtext_label, ttk.Label)
+
+
+def test_legacy_label_attrs_are_deprecated(root):
+    """Old handle spellings still resolve (to the renamed Label) but warn."""
+    m = _make(root, subtext="hi")
+    for old, new in (("subtext", "subtext_label"),
+                     ("textleft", "text_left_label"),
+                     ("textright", "text_right_label"),
+                     ("textcenter", "text_center_label")):
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            got = getattr(m, old)
+        assert got is getattr(m, new)
+        assert any(issubclass(w.category, DeprecationWarning) for w in caught)

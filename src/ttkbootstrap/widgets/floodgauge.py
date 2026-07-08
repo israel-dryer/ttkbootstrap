@@ -43,7 +43,7 @@ from ttkbootstrap.internal.configure_delegation import (
     configure_delegate,
 )
 from ttkbootstrap.style import Colors, Style
-from ttkbootstrap.style._compat import normalize_floodgauge_start_args
+from ttkbootstrap.style._compat import normalize_floodgauge_start_args, warn_deprecated
 
 
 class Floodgauge(ConfigureDelegationMixin, Canvas):
@@ -62,7 +62,7 @@ class Floodgauge(ConfigureDelegationMixin, Canvas):
     The widget's value is backed by a ``DoubleVar`` (matching ttk.Progressbar),
     so fractional values are honored. All options are reachable through the
     tk-native ``configure``/``cget``/item surface; ``value`` is also exposed as a
-    canonical read/write property.
+    read/write property.
 
     Parameters:
         master (Widget, optional):
@@ -123,15 +123,15 @@ class Floodgauge(ConfigureDelegationMixin, Canvas):
         self.variable = kwargs.pop("variable", DoubleVar(value=value))
         self.textvariable = kwargs.pop("textvariable", StringVar(value=text))
 
-        self.length = length
-        self.thickness = thickness
-        self.orient = orient
+        self._length = length
+        self._thickness = thickness
+        self._orient = orient
         canvas_kwargs = dict(highlightthickness=0, **kwargs)
 
-        if self.orient == "horizontal":
-            canvas_kwargs.update(width=self.length, height=self.thickness)
+        if self._orient == "horizontal":
+            canvas_kwargs.update(width=self._length, height=self._thickness)
         else:
-            canvas_kwargs.update(width=self.thickness, height=self.length)
+            canvas_kwargs.update(width=self._thickness, height=self._length)
 
         super().__init__(master, **canvas_kwargs)
 
@@ -140,10 +140,10 @@ class Floodgauge(ConfigureDelegationMixin, Canvas):
         self._bind_variable(self.variable)
         self._bind_textvariable(self.textvariable)
 
-        self.maximum = maximum
-        self.mode = mode
-        self.mask = mask
-        self.font = font
+        self._maximum = maximum
+        self._mode = mode
+        self._mask = mask
+        self._font = font
         self._step_size = 1
         self._running = False
         self._after_id = None
@@ -160,13 +160,45 @@ class Floodgauge(ConfigureDelegationMixin, Canvas):
     # -- value access -------------------------------------------------------- #
     @property
     def value(self) -> float:
-        """The current progress value (canonical read/write handle)."""
+        """The current progress value."""
         return self.variable.get()
 
     @value.setter
     def value(self, amount: Union[int, float]) -> None:
         # Setting the bound variable fires its write trace -> redraw.
         self.variable.set(amount)
+
+    #: Options that were bare public attributes before 2.0 -- now private,
+    #: reachable through configure/cget. Read access is kept (deprecated) so
+    #: nothing hard-breaks; the canonical surface is configure/cget.
+    _LEGACY_OPTION_ATTRS = (
+        "maximum", "mode", "orient", "mask", "font", "length", "thickness",
+    )
+
+    def __getattr__(self, name: str) -> Any:
+        # Only reached when normal lookup fails. Keep the pre-2.0 bare-attribute
+        # reads working (deprecated); the canonical read is cget.
+        if name in type(self)._LEGACY_OPTION_ATTRS:
+            warn_deprecated(
+                f"reading the {name!r} Floodgauge attribute",
+                f"cget({name!r})",
+            )
+            return getattr(self, f"_{name}")
+        raise AttributeError(name)
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        # Route pre-2.0 bare-attribute writes through configure (deprecated) so
+        # they still take effect (redraw) instead of silently shadowing the
+        # private field. Only triggers for a user setting the bare name -- we
+        # only ever assign the private `_name` internally.
+        if name in type(self)._LEGACY_OPTION_ATTRS:
+            warn_deprecated(
+                f"setting the {name!r} Floodgauge attribute",
+                f"configure({name}=...)",
+            )
+            self.configure(**{name: value})
+            return
+        super().__setattr__(name, value)
 
     def _update_theme_colors(self) -> None:
         style = Style.get_instance()
@@ -176,20 +208,20 @@ class Floodgauge(ConfigureDelegationMixin, Canvas):
         self._draw()
 
     def _on_resize(self, event: Event) -> None:
-        if self.orient == "horizontal":
-            self.length = event.width
-            self.thickness = event.height
+        if self._orient == "horizontal":
+            self._length = event.width
+            self._thickness = event.height
         else:
-            self.length = event.height
-            self.thickness = event.width
+            self._length = event.height
+            self._thickness = event.width
         self._draw()
 
     def _apply_geometry(self) -> None:
         """Resize the canvas to match the current orient/length/thickness."""
-        if self.orient == "horizontal":
-            super().configure(width=self.length, height=self.thickness)
+        if self._orient == "horizontal":
+            super().configure(width=self._length, height=self._thickness)
         else:
-            super().configure(width=self.thickness, height=self.length)
+            super().configure(width=self._thickness, height=self._length)
 
     def _draw(self) -> None:
         self.delete("all")
@@ -199,20 +231,20 @@ class Floodgauge(ConfigureDelegationMixin, Canvas):
         self.create_rectangle(0, 0, w, h, fill=self.trough_color, width=0)
 
         value = self.variable.get()
-        if self.mode == "determinate":
+        if self._mode == "determinate":
             # Zero-range guard: a 0 maximum has no meaningful ratio.
-            if self.maximum == 0:
+            if self._maximum == 0:
                 ratio = 0.0
             else:
-                ratio = max(0.0, min(1.0, value / self.maximum))
-            if self.orient == "horizontal":
+                ratio = max(0.0, min(1.0, value / self._maximum))
+            if self._orient == "horizontal":
                 fill = int(ratio * w)
                 self.create_rectangle(0, 0, fill, h, fill=self.bar_color, width=0)
             else:
                 fill = int(ratio * h)
                 self.create_rectangle(0, h - fill, w, h, fill=self.bar_color, width=0)
         else:
-            if self.orient == "horizontal":
+            if self._orient == "horizontal":
                 pulse_width = max(10, int(w * 0.2))
                 x = self._pulse_pos
                 self.create_rectangle(x, 0, x + pulse_width, h, fill=self.bar_color, width=0)
@@ -224,8 +256,8 @@ class Floodgauge(ConfigureDelegationMixin, Canvas):
         # Derive the display label. A mask formats the numeric value for
         # *display only* -- it must never be written back onto the user's
         # textvariable (that would clobber cget("text")).
-        if self.mask:
-            label = self.mask.format(int(value))
+        if self._mask:
+            label = self._mask.format(int(value))
         else:
             label = self.textvariable.get()
 
@@ -234,7 +266,7 @@ class Floodgauge(ConfigureDelegationMixin, Canvas):
                 w // 2,
                 h // 2,
                 text=label,
-                font=self.font,
+                font=self._font,
                 fill=self.text_color,
                 anchor="center"
             )
@@ -303,7 +335,7 @@ class Floodgauge(ConfigureDelegationMixin, Canvas):
             amount (int or float, optional): The amount to increment. Defaults
                 to 1. Value wraps around after reaching maximum.
         """
-        self.value = (self.value + amount) % (self.maximum + 1)
+        self.value = (self.value + amount) % (self._maximum + 1)
 
     def start(self, *args: Any, **kwargs: Any) -> None:
         """Start the progress animation.
@@ -311,7 +343,7 @@ class Floodgauge(ConfigureDelegationMixin, Canvas):
         For indeterminate mode, starts the bouncing animation. For determinate
         mode, starts auto-incrementing the value.
 
-        The canonical signature mirrors ``ttk.Progressbar.start``:
+        The signature mirrors ``ttk.Progressbar.start``:
 
             start(interval=None)
 
@@ -326,9 +358,9 @@ class Floodgauge(ConfigureDelegationMixin, Canvas):
         if step_size is not None:
             self._step_size = step_size
         else:
-            self._step_size = 8 if self.mode == "indeterminate" else 1
+            self._step_size = 8 if self._mode == "indeterminate" else 1
         if interval is None:
-            interval = 20 if self.mode == "indeterminate" else 50
+            interval = 20 if self._mode == "indeterminate" else 50
 
         self._running = True
         self._pulse_direction = 1
@@ -348,7 +380,7 @@ class Floodgauge(ConfigureDelegationMixin, Canvas):
         if not self._running:
             return
 
-        if self.mode == "indeterminate":
+        if self._mode == "indeterminate":
             self._animate_indeterminate(interval)
         else:
             self.step(self._step_size)
@@ -358,7 +390,7 @@ class Floodgauge(ConfigureDelegationMixin, Canvas):
         if not self._running:
             return
 
-        if self.orient == "horizontal":
+        if self._orient == "horizontal":
             w = self.winfo_width()
             pulse_width = max(10, int(w * 0.2))
             max_pos = w - pulse_width
@@ -398,30 +430,30 @@ class Floodgauge(ConfigureDelegationMixin, Canvas):
     @configure_delegate("maximum")
     def _cfg_maximum(self, value):
         if value is None:
-            return self.maximum
-        self.maximum = value
+            return self._maximum
+        self._maximum = value
         self._draw()
 
     @configure_delegate("mode")
     def _cfg_mode(self, value):
         if value is None:
-            return self.mode
-        self.mode = value
+            return self._mode
+        self._mode = value
         self._draw()
 
     @configure_delegate("orient")
     def _cfg_orient(self, value):
         if value is None:
-            return self.orient
-        self.orient = value
+            return self._orient
+        self._orient = value
         self._apply_geometry()
         self._draw()
 
     @configure_delegate("mask")
     def _cfg_mask(self, value):
         if value is None:
-            return self.mask
-        self.mask = value
+            return self._mask
+        self._mask = value
         self._draw()
 
     @configure_delegate("text")
@@ -433,8 +465,8 @@ class Floodgauge(ConfigureDelegationMixin, Canvas):
     @configure_delegate("font")
     def _cfg_font(self, value):
         if value is None:
-            return self.font
-        self.font = value
+            return self._font
+        self._font = value
         self._draw()
 
     @configure_delegate("bootstyle")
@@ -447,16 +479,16 @@ class Floodgauge(ConfigureDelegationMixin, Canvas):
     @configure_delegate("length")
     def _cfg_length(self, value):
         if value is None:
-            return self.length
-        self.length = value
+            return self._length
+        self._length = value
         self._apply_geometry()
         self._draw()
 
     @configure_delegate("thickness")
     def _cfg_thickness(self, value):
         if value is None:
-            return self.thickness
-        self.thickness = value
+            return self._thickness
+        self._thickness = value
         self._apply_geometry()
         self._draw()
 

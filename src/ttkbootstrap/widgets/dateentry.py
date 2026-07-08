@@ -40,6 +40,7 @@ from ttkbootstrap.internal.configure_delegation import (
 from ttkbootstrap.style._compat import (
     normalize_dateentry_kwargs,
     normalize_dateentry_option,
+    warn_deprecated,
 )
 
 
@@ -237,8 +238,8 @@ class DateEntry(ConfigureDelegationMixin, Frame):
         """Configure the options for this widget.
 
         Accepts the legacy ``dateformat``/``firstweekday``/``startdate``
-        spellings (with a ``DeprecationWarning``) in addition to the canonical
-        snake_case names.
+        spellings (with a ``DeprecationWarning``) in addition to the snake_case
+        names.
         """
         if kwargs:
             kwargs.update(normalize_dateentry_kwargs(kwargs))
@@ -277,6 +278,12 @@ class DateEntry(ConfigureDelegationMixin, Frame):
     # (the legacy `dateformat` spelling still resolves there, with a warning).
     # Only the canonical `value` handle and the computed `enabled` state are
     # exposed as properties.
+
+    @property
+    def dateformat(self) -> str:
+        """Deprecated alias for ``cget('date_format')``."""
+        warn_deprecated("the 'dateformat' DateEntry attribute", "cget('date_format')")
+        return self.__dateformat
 
     @property
     def value(self) -> Optional[datetime]:
