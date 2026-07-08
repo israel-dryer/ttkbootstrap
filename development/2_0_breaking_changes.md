@@ -727,6 +727,16 @@ The `Sizegrip` grip is now drawn from a recolorable raster asset
 `Assets.recolor`, replacing the `grip-horizontal` font glyph. The default grip
 color is derived from the surface (`border(colors.bg)`). No API change.
 
+## Tableview: header/body border + row-height restyle  *(Visual)*
+
+The `Table.Treeview` styling was refined: **row spacing is restored to match 1.0**
+— a 2.0 Treeview styling change had shrunk the effective row height to just the
+text `linespace`, so `rowheight = linespace + ascent` brings the vertical space
+back (it is not taller than 1.0). The header border derives from the heading
+background (`border(background)`) and follows the hover color on the active
+heading, and the body border derives from `inputbg` at a 1px (was 2px) width.
+No API change.
+
 ## Tableview: right-click menus follow the theme  *(Visual)*
 
 The Tableview's top-level cell/header right-click menus subclassed raw `tk.Menu`,
