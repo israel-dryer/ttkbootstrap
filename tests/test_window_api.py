@@ -153,3 +153,57 @@ def test_overrideredirect_noop_on_aqua(root):
     # the request was ignored: the window is still managed
     assert not top.overrideredirect()
     top.destroy()
+
+
+# --------------------------------------------------------------------------
+# aqua native window-style for borderless popups (tooltip titlebar fix)
+# --------------------------------------------------------------------------
+
+class _RecordingTk:
+    """Records ``call(...)`` args; the helper touches nothing else on ``tk``."""
+    def __init__(self):
+        self.calls = []
+
+    def call(self, *args):
+        self.calls.append(args)
+        return ""
+
+
+def _capture_mac_style(top, window_type):
+    # tkapp.call is read-only, so swap the whole tk handle for the duration of
+    # the helper (restored before destroy so teardown still works).
+    real_tk, rec = top.tk, _RecordingTk()
+    top.tk = rec
+    try:
+        top._apply_mac_window_style(window_type)
+    finally:
+        top.tk = real_tk
+    return rec.calls
+
+
+def test_apply_mac_window_style_borderless_types(root):
+    # On aqua the borderless types map to a native window class so the popup
+    # isn't drawn with a titlebar. Simulate aqua and capture the Tk call.
+    from ttkbootstrap.window import _AQUA_WINDOW_STYLES
+    top = ttk.Toplevel(title="aqua")
+    top.winsys = "aqua"
+    calls = _capture_mac_style(top, "tooltip")
+    assert calls == [("::tk::unsupported::MacWindowStyle", "style", top,
+                      *_AQUA_WINDOW_STYLES["tooltip"])]
+    top.destroy()
+
+
+def test_apply_mac_window_style_noop_off_aqua(root):
+    # Off aqua the native call must never fire (window_type stays x11-only).
+    top = ttk.Toplevel(title="x11")
+    top.winsys = "x11"
+    assert _capture_mac_style(top, "tooltip") == []
+    top.destroy()
+
+
+def test_apply_mac_window_style_ignores_unknown_type(root):
+    # A type with no native equivalent (e.g. "dialog") keeps default chrome.
+    top = ttk.Toplevel(title="aqua")
+    top.winsys = "aqua"
+    assert _capture_mac_style(top, "dialog") == []
+    top.destroy()

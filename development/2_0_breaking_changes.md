@@ -30,6 +30,7 @@
 | **Scrolled: Canvas-viewport rewrite, `auto_hide`, keyword-only** | Breaking/additive | this doc, below (PR 5) |
 | **LabeledScale + ToolTip: DoubleVar, lifecycle, `configure`/`cget`** | Breaking/additive | this doc, below (PR 6) |
 | **ToastNotification: glyph icon, stack manager, keyword-only** | Breaking/additive | this doc, below (PR 7) |
+| **Borderless popups get native macOS chrome (no titlebar)** | Visual | this doc, below |
 
 ---
 
@@ -754,3 +755,20 @@ aren't guaranteed in the platform menu font (they render as missing-box tofu on
 some Linux/macOS setups), and `tk.Menu` command entries have no hover-aware image,
 so a rendered icon can't track the active-row highlight. Labels are now the plain,
 translatable text. No API change.
+
+## Borderless popups get native macOS chrome  *(Visual)*
+
+Borderless `Toplevel` popups (tooltips, and any `window_type` popup) were drawn
+with a full titlebar on macOS. On aqua, `override_redirect` is a no-op — it breaks
+Cocoa click handling and can crash Tk — so the borderless request had no effect and
+the OS drew default window chrome, leaving a titlebar over every tooltip.
+
+On aqua the borderless `window_type` values (`tooltip`, `splash`, `utility`,
+`dock`) now map to a native macOS window class via
+`::tk::unsupported::MacWindowStyle` (e.g. `tooltip` → `help`), so the popup gets a
+real system shadow and rounded corners with no titlebar. The call is applied on the
+freshly-created, never-mapped window (Tk ignores it after the first event-loop
+trip) and, living in Tk's `unsupported` namespace, is wrapped in `try/except` and
+falls back to the previous default chrome when unavailable. Windows/Linux behavior
+is unchanged (`window_type` still resolves to `-type` on X11). Mechanism ported
+from bootstack (`_runtime/toplevel.py`); no API change. No effect off macOS.

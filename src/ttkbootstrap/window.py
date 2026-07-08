@@ -61,6 +61,18 @@ from ttkbootstrap.style._compat import normalize_window_kwargs
 # ``ttkbootstrap.icons.Icon.icon``, removed in 2.0.)
 _DEFAULT_ICON_DATA = "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAFxEAABcRAcom8z8AAAT/SURBVFhHzZd9TNR1HMff/O64BwKOp+NRnkIScJI2n7ZqFmqjVhkrHExrrDFZLnPkqmEyW2WtlQ1SQawWPSAYiJLNGvK0VhJOaDgVBDPCw0PwEOUQfsfd/fp+v/cFbt0Bd6yxXvfP5+F79/l+P9+H+3w8wMnO3r40I+P5vOCQ4I1ymVzrQeCu/wSJYDabB/sHbp45XlnzQUnJgcvcBRQUHEjX6/vH6aCFQK/XjxcWHnyBxpbRle/Ysf3n0NAQJTWMmiRUnB/FNy1GNHaNYdwsIS7IE4JdPqxWKxoam3D0aAVq6+rR39+P2NhYKBQKPsJGx3Abyq8dxGldBbrvXkSoVyR8Pf3g7e0tj46O2mQ0Gqs96urqv1u/PmUL/cLfQ2a8/O0t9A2b2Q9MsjpGicOZQfBSeEAURbyZtxstLee410awVovCgk8RGxPD9NLuT1B6dT+TJ/EUFMhL/gwpYZuYXl/fUCbQPaeKVQJyqwwOwSnnekR8VDvM5JIjnzsEpwwMDmL32/mwWCxoHqhzCE6ZsJrw4YWduHGvh+k0tkAPHFXadSZc1k8whzNOtt+DcWwCJ2p+4BZH/urpwfnWNpzs/YpbHJmwivjxehmTaWxh8rTT9M+GSM7CpZ5BjI2NcYtzdH069PEVzsSkn8YWmETQek+JTpER9/3h/pDL5dzinKDAQAQqg7nmHHv/VNRV5KCFaWRcc2RdvBpajRopjz/GLY4EBARgzerVeCKc3TCneJDPxohp/9QEFDIPfJwWwE76v1nkL8fep/yYnLvzNURFRTLZHqVSib35e6BSqfDkokysC32ae6ahwbPidyFRs4JbiK2jo1NKSFjCVaDHYMaRX0fQ3mcikwIeiVMh+2EfaNTTW2Q0jqKsvBxnzzaza5mYmICXXtw6dQUpVslK7n85ztyogkEcQIRXLNKis7BWu4GPADo7rzhOYCGZ9wQmxi249NN19P5xCxaTFdo4XyQ/Gw3fEDUf4RrzmoA4MoFT77RiqNfILTY8VTKk5i1HWJI/t8wNncDsd88JzV93OQSn0Kw0FF5kGXEHtyZgJj/+5283uebI6JAI3QUD11zDrQmIIyZYzLOvcNQgcsk13JqASqOAXDnzY0XxcfMgujUBmVzAkpRwrjmiCfNCxLIArrmG24dwzZbFTk+6mmRnw+vLIJAX1R3m9Q5IpHjo/kWP3jYDOZgW9g4sTY2EyseTj3CN/8VL6PYWMO70A1W7gHeTgfzFwBcZpBpp4U7OuAl4jxQm8ZvJ/pB/0IeygC9P0fKYD7DhfgaGeoFDzwAjA9zAEcjtyDwEPEjqPZFUVqm5QFMbd9rxShpQ9AYT55eBmj2OwSlWC1D9Fln5XaC42nlwSvEJoLGVK+7eApE8wVcauOKEsTtAVxPwfT03zMCxab9AGwUuz834iG2lszF6GzCQLMzGkM1PYwu0XWKaK/iQAlqt4coMhDwAJE0XJk7hfhpboL0a01xBIAXpo9u44oRIUmrFriV1G7kV9q2UPb73AdueYyKNLfNSazpXrlyRTdslZp2LmFXAbR2gn+4tGSHkJmWVkgz5AtGhpOsgT3ItaWBIGzeFnw9QuQ9YHk/bObG4qGgrs9NGkTaMdE9c5trvknR6nyTV5EtS23HS+pq4w46rOkl6v1SSXt0vSQXHJGlwmJltzWkhK42n8pSTk5OUnr5598K055WkPS8hKQT+AVyRrtzM5URAAAAAAElFTkSuQmCC"
 
+# On macOS, override-redirect is a no-op (it breaks Cocoa click handling), so a
+# borderless popup ``window_type`` would otherwise be drawn with full window
+# chrome -- a titlebar on a tooltip. Map the EWMH-style ``window_type`` onto a
+# native Aqua window class instead, which brings the real system shadow/rounded
+# corners with no chrome. Types with no native equivalent keep default chrome.
+_AQUA_WINDOW_STYLES = {
+    "tooltip": ("help", "none"),
+    "splash": ("plain", "none"),
+    "utility": ("utility", "none"),
+    "dock": ("plain", "none"),
+}
+
 
 def get_default_root(what: Optional[str] = None) -> tkinter.Tk:
     """Returns the default root if it has been created, otherwise
@@ -312,6 +324,26 @@ class _BaseWindow:
         if boolean and getattr(self, 'winsys', None) == 'aqua':
             return None
         return super().overrideredirect(boolean)
+
+    def _apply_mac_window_style(self, window_type: str) -> None:
+        """On aqua, map a borderless ``window_type`` to a native window class.
+
+        No-op off aqua and for types with no native equivalent. The
+        ``MacWindowStyle`` call lives in Tk's ``unsupported`` namespace, so it's
+        wrapped and falls back to default chrome when unavailable.
+        """
+        if getattr(self, 'winsys', None) != 'aqua':
+            return
+        aqua_style = _AQUA_WINDOW_STYLES.get(window_type)
+        if aqua_style is None:
+            return
+        try:
+            self.tk.call(
+                "::tk::unsupported::MacWindowStyle", "style",
+                self, aqua_style[0], aqua_style[1],
+            )
+        except tkinter.TclError:
+            pass
 
     # -- positioning -------------------------------------------------------
 
@@ -602,6 +634,11 @@ class Toplevel(_BaseWindow, tkinter.Toplevel):
                 for a list of available options. (Renamed from `windowtype`
                 in 2.0.)
 
+                On macOS, the borderless types (`tooltip`, `splash`, `utility`,
+                `dock`) instead map to a native window class via
+                `MacWindowStyle`, so the popup gets a real system shadow and no
+                titlebar; other values keep the default chrome.
+
             topmost (bool):
                 Specifies whether this is a topmost window (displays above all
                 other windows). Internally, this processed by the window as
@@ -632,6 +669,14 @@ class Toplevel(_BaseWindow, tkinter.Toplevel):
 
         super().__init__(**kwargs)
         self.winsys: str = self.tk.call('tk', 'windowingsystem')
+
+        # On aqua, give a borderless popup type (tooltip/splash/...) a native
+        # macOS window class instead of the default chrome, so it isn't drawn
+        # with a titlebar. This must run on a freshly-created, never-mapped
+        # window -- before the icon/geometry setup below pumps the event loop --
+        # or Tk silently ignores it.
+        if window_type is not None:
+            self._apply_mac_window_style(window_type)
 
         # Toplevel subclasses tkinter.Toplevel directly (not the AutoStyleMixin
         # tk.Toplevel), so paint it with the active theme at construction --
