@@ -38,6 +38,7 @@ This module is internal (`ttkbootstrap.internal`): no back-compat guarantee.
 """
 from __future__ import annotations
 
+from tkinter import TclError
 from typing import Any, Callable
 
 # Marker attribute stamped on a delegate method by the decorator. Namespaced to
@@ -142,7 +143,13 @@ class ConfigureDelegationMixin:
                 return self._spec(cnf, value)
             target = self._configure_delegate_target()
             if target is not None:
-                return target.configure(cnf)
+                try:
+                    return target.configure(cnf)
+                except TclError:
+                    # An option the inner widget lacks but the outer ttk widget
+                    # owns (e.g. `style`/`class` on a composite Frame) -- fall
+                    # back so theming can read it back off the wrapper.
+                    return super().configure(cnf)
             return super().configure(cnf)
 
         # No-arg query: full option dict, with the delegated options merged in.
@@ -160,7 +167,13 @@ class ConfigureDelegationMixin:
             return value
         target = self._configure_delegate_target()
         if target is not None:
-            return target.cget(key)
+            try:
+                return target.cget(key)
+            except TclError:
+                # An option the inner widget lacks but the outer ttk widget
+                # owns (e.g. `style` on a composite Frame): read it off the
+                # wrapper so the theme walk's cget("style") doesn't crash.
+                return super().cget(key)
         return super().cget(key)
 
     def __setitem__(self, key: str, value: Any) -> None:
@@ -178,7 +191,10 @@ class ConfigureDelegationMixin:
             return value
         target = self._configure_delegate_target()
         if target is not None:
-            return target[key]
+            try:
+                return target[key]
+            except TclError:
+                return super().__getitem__(key)
         return super().__getitem__(key)
 
     def keys(self) -> list:
