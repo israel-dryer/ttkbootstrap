@@ -82,9 +82,9 @@ def test_meter_interactive_toggle_no_bind_accumulation(root):
 
 def test_meter_value_trace_released_on_destroy(root):
     """Destroying a meter detaches its value-variable trace."""
-    m = Meter(root, amountused=10)
+    m = Meter(root, amount_used=10)
     root.update_idletasks()
-    var = m.amountusedvar
+    var = m.amount_used_var
     assert len(var.trace_info()) == 1
 
     m.destroy()

@@ -95,6 +95,68 @@ def normalize_window_kwargs(kwargs: dict) -> dict:
     return out
 
 
+def normalize_option_names(kwargs: dict, aliases: dict, context: str) -> dict:
+    """Rename deprecated option keys in ``kwargs`` in place; warn per rename.
+
+    Generic helper for the 2.0 custom-widget API review: a widget whose authored
+    option names were snake_cased accepts the old spellings through 2.x. Any
+    ``old`` key found in ``kwargs`` is popped and returned under its ``new`` name
+    (with a ``DeprecationWarning``), so the caller can fold the result over its
+    explicit parameters::
+
+        opts.update(normalize_option_names(kwargs, ALIASES, "Meter"))
+
+    Returns a ``{new_name: value}`` dict for the legacy keys found.
+    """
+    out = {}
+    for old, new in aliases.items():
+        if old in kwargs:
+            warn_deprecated(f"the {old!r} {context} option", f"{new!r}")
+            out[new] = kwargs.pop(old)
+    return out
+
+
+# Meter authored-option renames (2.0 shipped-widget API pass, PR 2).
+_METER_KWARG_ALIASES = {
+    "arcrange": "arc_range",
+    "arcoffset": "arc_offset",
+    "amountmin": "amount_min",
+    "amounttotal": "amount_total",
+    "amountused": "amount_used",
+    "amountformat": "amount_format",
+    "wedgesize": "wedge_size",
+    "metersize": "meter_size",
+    "metertype": "meter_type",
+    "meterthickness": "meter_thickness",
+    "showtext": "show_text",
+    "stripethickness": "stripe_thickness",
+    "textleft": "text_left",
+    "textright": "text_right",
+    "textfont": "text_font",
+    "subtextstyle": "subtext_style",
+    "subtextfont": "subtext_font",
+    "stepsize": "step_size",
+}
+
+
+def normalize_meter_kwargs(kwargs: dict) -> dict:
+    """Pop deprecated Meter option names from ``kwargs``; return ``{new: value}``."""
+    return normalize_option_names(kwargs, _METER_KWARG_ALIASES, "Meter")
+
+
+def normalize_meter_option(name: str) -> str:
+    """Map a single legacy Meter option name to its 2.0 spelling (warns).
+
+    Used by ``configure``/``cget``/item access so a legacy option string
+    (``meter.cget("amountused")``) still resolves. Non-legacy names pass through.
+    """
+    new = _METER_KWARG_ALIASES.get(name)
+    if new is not None:
+        warn_deprecated(f"the {name!r} Meter option", f"{new!r}")
+        return new
+    return name
+
+
 def normalize_bootstyle(value, *, warn: bool = False) -> str:
     """Return the canonical dash-joined bootstyle string for a legacy value.
 

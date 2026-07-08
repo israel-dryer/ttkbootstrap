@@ -258,7 +258,7 @@ def test_composite_widgets_construct_without_tuple_warning(root):
     from ttkbootstrap.widgets import Meter, DateEntry
     with warnings.catch_warnings():
         warnings.simplefilter("error", DeprecationWarning)
-        Meter(root, bootstyle="info", subtextstyle="secondary").pack()
+        Meter(root, bootstyle="info", subtext_style="secondary").pack()
         DateEntry(root, bootstyle="primary").pack()
         root.update_idletasks()
 
