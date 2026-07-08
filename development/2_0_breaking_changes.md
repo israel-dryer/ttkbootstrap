@@ -24,6 +24,8 @@
 | **Button-family visual restyle (flat + hairline border)** | Visual | this doc, below |
 | **Bare buttons default to `neutral`** | Visual/API | this doc, below |
 | **Dialog API normalization (Messagebox/Querybox)** | API | `development/2_0_shipped_widget_api_design.md` (PR A) |
+| **Meter: snake_case options, DoubleVar, `value`** | Breaking/additive | this doc, below (PR 2 / #1110) |
+| **DateEntry: snake_case (cross-layer), live-text read, string `state`** | Breaking/additive | this doc, below (PR 3 / #1111) |
 
 ---
 
@@ -442,3 +444,43 @@ pass options by keyword (already the norm), and expect floats back from
 `amount_format` is reconfigurable (was construction-only); `configure(meter_size=…)`
 no longer double-scales on a round-trip; a `subtext_style` change now recolors the
 left/right labels too; the dead `<<Configure>>` bind was removed.
+
+---
+
+## DateEntry: snake_case (cross-layer), live-text read, string `state`  *(breaking + additive)*
+
+**What.** The `DateEntry` widget's API was normalized (widget-review PR 3), and the
+rename was coordinated across the date-picker dialog layer:
+- **Authored options renamed to snake_case** — `dateformat`→`date_format`,
+  `firstweekday`→`first_weekday`, `startdate`→`start_date`. Applies to constructor
+  kwargs **and** `configure`/`cget`/item access. The **same rename lands on
+  `Querybox.get_date` and `DatePickerDialog`**, which carried the old
+  `firstweekday`/`startdate` keyword names.
+- **Constructor is keyword-only** after `master`.
+- **`configure(cnf="state")` / `cget("state")` now return a plain state string**
+  (the entry's state), not the old `{"Entry": …, "Button": …}` dict. Setting
+  `state=` still fans out to the entry (and the button for `normal`/`disabled`).
+- **`get_date()` / the new `value` property read the live entry text**, so typed
+  keyboard edits are honored (previously the stored shadow date was returned and
+  manual edits were silently ignored). Empty/unparseable text falls back to the last
+  set date. `get_date` return type is now `Optional[datetime]`.
+- The read-only **`dateformat` property was removed** — the format is an option, read
+  it via `cget("date_format")` (the legacy `dateformat` spelling still resolves there
+  with a warning). New canonical **`value`** property (get/set); `get_date`/`set_date`
+  remain as date-typed synonyms.
+- On unparseable text the entry is flagged **`invalid`** on blur (`<FocusOut>`).
+- New **`position=`** passthrough to the picker popup.
+
+**Migration.** The old `dateformat`/`firstweekday`/`startdate` spellings are accepted
+through 2.x with a `DeprecationWarning` naming the new form (via `style/_compat.py`),
+on the widget **and** the dialog layer; removed in 3.0. The keyword-only constructor,
+the `state` dict→string change, and the removed `dateformat` property cannot be
+shimmed: pass options by keyword; read `state`/format via `cget(...)`; and if you
+relied on `get_date()` returning the shadow, note it now reflects the live text.
+
+**Fixes bundled.** `cget(...)` works for every custom option (via the shared
+`ConfigureDelegationMixin`); `width` is applied to the entry only (was double-applied
+to the frame and entry); `date_format` reconfigure now re-validates and re-renders;
+a picker re-entrancy guard prevents a second popup while one is open; unknown keyword
+arguments to `Querybox.get_date`/`DatePickerDialog` now raise `TypeError` (typos fail
+loudly instead of being swallowed).
