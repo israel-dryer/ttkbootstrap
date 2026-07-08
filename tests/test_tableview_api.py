@@ -197,3 +197,22 @@ def test_sort_shows_glyph_icon_not_ascii_arrow(root):
     assert "⬆" not in text and "⬇" not in text   # no ⬆/⬇ in the text
     tv._column_sort_header_reset()
     assert tv.view.heading(cid, "image") in ("", ())       # cleared on reset
+
+
+# --------------------------------------------------------------------------
+# right-click menus use the themed ttk.Menu (not raw tk.Menu)
+# --------------------------------------------------------------------------
+
+def test_rightclick_menus_are_themed(root):
+    """The top-level cell/header menus must be themed like their cascades
+    (they were raw tk.Menu -> OS colors, mismatched with the ttk.Menu submenus)."""
+    tv = Tableview(root, coldata=["A", "B"], rowdata=[[1, 2]],
+                   disable_right_click=False)
+    root.update_idletasks()
+    ref = ttk.Menu(root)  # a themed ttkbootstrap Menu
+    root.update_idletasks()
+    for menu in (tv._rightclickmenu_cell, tv._rightclickmenu_head):
+        assert isinstance(menu, ttk.Menu)
+        # themed background matches a plain ttk.Menu (not the OS "SystemMenu")
+        assert str(menu.cget("background")) == str(ref.cget("background"))
+        assert str(menu.cget("activebackground")) == str(ref.cget("activebackground"))

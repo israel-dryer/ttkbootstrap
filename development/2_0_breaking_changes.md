@@ -726,3 +726,12 @@ The `Sizegrip` grip is now drawn from a recolorable raster asset
 (`assets/elements/sizegrip.png` + the `sizegrip` manifest entry) via
 `Assets.recolor`, replacing the `grip-horizontal` font glyph. The default grip
 color is derived from the surface (`border(colors.bg)`). No API change.
+
+## Tableview: right-click menus follow the theme  *(Visual)*
+
+The Tableview's top-level cell/header right-click menus subclassed raw `tk.Menu`,
+so they rendered in the OS palette (`SystemMenu` background, `SystemHighlight`
+selection) while their own cascade submenus — built with `ttk.Menu` — were
+theme-styled, giving the outer menu a mismatched look. Both menu classes now
+subclass `ttk.Menu`, so background/foreground/selection match the cascades and the
+active theme. No API change.
