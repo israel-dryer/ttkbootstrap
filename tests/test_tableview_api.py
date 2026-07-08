@@ -186,7 +186,13 @@ def test_sort_shows_glyph_icon_not_ascii_arrow(root):
     cid = tv.tablecolumns[0].cid
     assert tv.view.heading(cid, "image") in ("", ())      # none before sort
     tv.sort_column_data(cid=cid, sort=0)                    # ascending
-    assert tv.view.heading(cid, "image")                   # a glyph image now
+    img = tv.view.heading(cid, "image")
+    assert img                                              # a glyph image now
+    # trailing transparent pad so the glyph doesn't butt against the text
+    name = img if isinstance(img, str) else img[0]
+    assert int(tv.tk.call("image", "width", name)) > int(
+        tv.tk.call("image", "height", name)
+    )
     text = tv.view.heading(cid, "text")
     assert "⬆" not in text and "⬇" not in text   # no ⬆/⬇ in the text
     tv._column_sort_header_reset()
