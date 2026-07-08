@@ -18,9 +18,10 @@ draw origin (sharpens all font-glyph icons — the 10% pad was rendering glyphs 
 +1px vertical pad. Raster indicators (check/radio/toggle/scale/scrollbar) unaffected.
 `tests/test_icon_theme.py` (+12); suite **330 passed** excl. the `nl.msg` flake;
 warning-free import. Design `development/2_0_icon_theme_awareness_design.md`.
-**Follow-ups logged (not blockers):** eyeball `grip-horizontal` on a Sizegrip;
-theme-wide **control-height parity** (buttons == inputs, memory
-`control-height-parity`) before docs screenshots. Also recorded the 2.0 naming
+**Follow-ups logged (not blockers):** move the Sizegrip onto a **recolor raster
+asset** (retires its `grip-horizontal` font glyph — the conversion is the fix, no
+glyph-size trim needed); theme-wide **control-height parity** (buttons == inputs,
+memory `control-height-parity`) before docs screenshots. Also recorded the 2.0 naming
 convention (snake_case authored / Tk-spelling pass-throughs; `CLAUDE.md` +
 memory). **NEXT → Tableview pagination buttons on the icon path** (ghost base +
 glyph; disabled first/prev arrows get muting for free), then docs Workstream H.

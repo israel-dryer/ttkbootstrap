@@ -26,10 +26,11 @@
 >
 > **Visual gate outcome:** author confirmed the carets (spinbox/combobox/menubutton/
 > datepicker), the 14px button default, and the date button (glyph + height). **Two
-> follow-ups logged, not blockers:** (1) eyeball `grip-horizontal` on a Sizegrip and
-> trim if it reads large (the one font glyph that grew and was not spot-checked);
-> (2) theme-wide **control-height parity** (buttons == inputs), memory
-> `control-height-parity` — do before docs screenshots.
+> follow-ups logged, not blockers:** (1) the **Sizegrip** is planned to move onto a
+> **recolorable raster asset** (like the check/radio/scrollbar structural assets),
+> which retires its `grip-horizontal` font glyph — so no glyph-size trim is needed,
+> the conversion is the fix (deferred); (2) theme-wide **control-height parity**
+> (buttons == inputs), memory `control-height-parity` — do before docs screenshots.
 
 ## 1. Why this, why now
 
