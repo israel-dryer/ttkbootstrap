@@ -64,6 +64,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap import utility
 from ttkbootstrap.constants import *
 from ttkbootstrap.localization import MessageCatalog
+from ttkbootstrap.style._compat import warn_deprecated
 
 UPARROW = "⬆"
 DOWNARROW = "⬇"
@@ -1283,8 +1284,8 @@ class Tableview(ttk.Frame):
     # CONFIGURATION
 
     def get_columns(self) -> list[TableColumn]:
-        """Returns a list of all column objects. Same as using the
-        `Tableview.tablecolumns` property."""
+        """Deprecated alias for the :attr:`tablecolumns` property."""
+        warn_deprecated("Tableview.get_columns()", "the tablecolumns property")
         return self._tablecols
 
     def get_column(
@@ -1784,7 +1785,7 @@ class Tableview(ttk.Frame):
             column: TableColumn = self.cidmap.get(cid)
             column.hide()
 
-    def unhide_selected_column(self, event=None, cid=None):
+    def show_selected_column(self, event=None, cid=None):
         """Attach the selected column to the tableview. This method
         may be triggered by a window event or by specifying the column
         id. The column is reinserted at the index in the original data
@@ -1805,6 +1806,13 @@ class Tableview(ttk.Frame):
         elif cid is not None:
             column = self.cidmap.get(cid)
             column.show()
+
+    def unhide_selected_column(self, event=None, cid=None):
+        """Deprecated alias for :meth:`show_selected_column`."""
+        warn_deprecated(
+            "Tableview.unhide_selected_column", "show_selected_column"
+        )
+        return self.show_selected_column(event=event, cid=cid)
 
     # DATA EXPORT
 
@@ -1951,7 +1959,7 @@ class Tableview(ttk.Frame):
         self.unload_table_data()
         self.load_table_data()
 
-    def move_row_down(self):
+    def move_selected_row_down(self):
         """Move the selected rows down one position in the dataset"""
         selected = self.view.selection()
         if len(selected) == 0:
@@ -1976,6 +1984,11 @@ class Tableview(ttk.Frame):
         # refresh the table data
         self.unload_table_data()
         self.load_table_data()
+
+    def move_row_down(self):
+        """Deprecated alias for :meth:`move_selected_row_down`."""
+        warn_deprecated("Tableview.move_row_down", "move_selected_row_down")
+        return self.move_selected_row_down()
 
     # COLUMN MOVEMENT
 
@@ -2746,7 +2759,7 @@ class TableCellRightClickMenu(tk.Menu):
 
     def move_row_down(self):
         """Move the selected row below the next sibling"""
-        self.master.move_row_down()
+        self.master.move_selected_row_down()
 
     def align_column_left(self):
         "Left align the column text"
@@ -2897,7 +2910,7 @@ class TableHeaderRightClickMenu(tk.Menu):
         variable = f"column_{cid}"
         toggled = self.getvar(variable)
         if toggled:
-            self.master.unhide_selected_column(cid=int(cid))
+            self.master.show_selected_column(cid=int(cid))
         else:
             self.master.hide_selected_column(cid=int(cid))
 

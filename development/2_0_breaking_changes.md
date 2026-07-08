@@ -692,3 +692,21 @@ Old spellings keep working through 2.x with a `DeprecationWarning` (removed in 3
   `cget("date_format")`.
 - **Scrolled** — `ScrolledFrame.vbar` is the vertical-scrollbar handle (matching
   `ScrolledText`); the old `vscroll` attribute is a deprecated alias.
+
+## Tableview: method-verb rename  *(deprecated, not breaking)*
+
+Targeted fixes to the inconsistent method verbs flagged in the API review; the old
+names keep working through 2.x with a `DeprecationWarning` (removed in 3.0):
+
+- **`move_row_down` → `move_selected_row_down`** — the other row-moves are
+  `move_selected_row_up`/`move_selected_rows_to_top`/`move_selected_rows_to_bottom`;
+  this one had dropped `selected`.
+- **`unhide_selected_column` → `show_selected_column`** — drops the odd `unhide`
+  verb (row/column objects already use `show`/`hide`).
+- **`get_columns()` → the `tablecolumns` property** — `get_columns` was a documented
+  duplicate of the property. (`get_column`/`get_row`/`get_rows` stay — they take
+  arguments and are real accessors.)
+
+Left as-is: the `coldata`/`rowdata` constructor params (fine as data-input names),
+`configure(cnf=)` vs the objects' `configure(opt=)`, and the plural/singular split
+in `move_selected_rows_to_top` vs `move_selected_row_up`.
