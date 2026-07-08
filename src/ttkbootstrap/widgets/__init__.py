@@ -51,6 +51,7 @@ from ttkbootstrap.widgets.dateentry import DateEntry
 from ttkbootstrap.widgets.floodgauge import Floodgauge, FloodgaugeLegacy
 from ttkbootstrap.widgets.labeledscale import LabeledScale
 from ttkbootstrap.widgets.meter import Meter
+from ttkbootstrap.widgets.scrolled import ScrolledFrame, ScrolledText
 from ttkbootstrap.widgets.tableview import TableColumn, TableRow, Tableview
 from ttkbootstrap.widgets.toast import ToastNotification
 from ttkbootstrap.widgets.tooltip import ToolTip
@@ -107,6 +108,8 @@ __all__ = [
     'FloodgaugeLegacy',
     'Meter',
     'LabeledScale',
+    'ScrolledText',
+    'ScrolledFrame',
     'Tableview',
     'TableColumn',
     'TableRow',
