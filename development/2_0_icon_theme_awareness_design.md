@@ -6,16 +6,30 @@
 > `2_0_icons_design.md` (the icon engine), `2_0_engine_design.md` (the no-`Publisher`
 > theme walk), and `CLAUDE.md`.
 >
-> **Status: IMPLEMENTED (2026-07-07).** Confirmed with the author, then built on
+> **Status: IMPLEMENTED + visual-gated (2026-07-07).** Built on
 > `feat/2.0-icon-theme-aware`: `style/icons.py` `apply_icon` + derived-style/
 > `<<ThemeChanged>>` machinery; `BootMixin` `icon=`/`icon_size=` sugar (compose +
 > re-derive on bootstyle change); top-level + `ttkbootstrap.style` re-exports;
 > datepicker carets migrated; `tests/test_icon_theme.py` (+12); preview
 > `examples/icon_button_preview.py`. Suite 330 passed excl. the `nl.msg` flake;
 > warning-free import. All three §7 forks resolved (states=: include; datepicker:
-> migrate now; unsupported widgets: raise). **Still owed: a human light↔dark visual
-> spot-check** (the preview) before docs screenshots — headless asserts the image
-> is wired + re-rendered, not that it looks right.
+> migrate now; unsupported widgets: raise).
+>
+> **Render-tuning that landed during the visual gate** (see §4.2): the crispness
+> problem at button-icon sizes traced to the **10% glyph pad** rendering the glyph
+> at ~80% of the frame — dropped to **4%** (+ integer-snapped the metrics-path draw
+> origin), which sharpens all font-glyph icons; **default `icon_size` → 14** (16 read
+> large on a text button); the built-in **`calendar3`** was trimmed 21→18/19 and the
+> **date button** regained +1px vertical padding (both because the lower pad renders
+> a font glyph larger per unit size). The check/radio/toggle/scale/scrollbar
+> indicators are **raster** assets — unaffected.
+>
+> **Visual gate outcome:** author confirmed the carets (spinbox/combobox/menubutton/
+> datepicker), the 14px button default, and the date button (glyph + height). **Two
+> follow-ups logged, not blockers:** (1) eyeball `grip-horizontal` on a Sizegrip and
+> trim if it reads large (the one font glyph that grew and was not spot-checked);
+> (2) theme-wide **control-height parity** (buttons == inputs), memory
+> `control-height-parity` — do before docs screenshots.
 
 ## 1. Why this, why now
 
