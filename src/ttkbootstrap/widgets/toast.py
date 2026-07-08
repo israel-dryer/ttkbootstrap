@@ -1,8 +1,10 @@
 """Toast notification popup widgets for ttkbootstrap.
 
 This module provides a semi-transparent toast notification system for displaying
-temporary alerts or messages. Toasts appear as popup windows that can be configured
-to automatically close after a duration or require user interaction to dismiss.
+temporary alerts or messages. Toasts appear as popup windows that can be
+configured to automatically close after a duration or require user interaction
+to dismiss. Concurrent toasts anchored to the same screen corner are stacked so
+they do not overlap, and the stack reflows when one is dismissed.
 
 Classes:
     ToastNotification: Semi-transparent popup for alerts and messages
@@ -10,20 +12,20 @@ Classes:
 Features:
     - Configurable display duration or click-to-close behavior
     - Bootstrap styling support (primary, secondary, success, danger, etc.)
-    - Customizable icon and font support
-    - Flexible positioning (anchored to screen corners)
+    - A theme-aware icon rendered from the built-in Bootstrap-Icons font
+    - Flexible positioning (anchored to screen corners) with non-overlapping
+      stacking of concurrent toasts
     - Optional audible alert bell
-    - Smooth fade-out animation on close
+    - Smooth (cancellable) fade-out animation on close
 
 Example:
     ```python
     import ttkbootstrap as ttk
-    from ttkbootstrap.widgets.toast import ToastNotification
 
     app = ttk.Window()
 
     # Toast with auto-close after 3 seconds
-    toast = ToastNotification(
+    toast = ttk.ToastNotification(
         title="ttkbootstrap toast message",
         message="This is a toast message",
         duration=3000,
@@ -31,27 +33,66 @@ Example:
     )
     toast.show_toast()
 
-    # Toast that requires click to close
-    toast2 = ToastNotification(
-        title="Important Notice",
-        message="Click to dismiss this message",
-        bootstyle="warning",
-        alert=True,  # Ring bell when shown
-    )
-    toast2.show_toast()
-
     app.mainloop()
     ```
 """
+import tkinter
 from tkinter import font
-from typing import Any, TYPE_CHECKING, Optional, Union
+from typing import Any, Optional
 
 from ttkbootstrap.constants import *
+from ttkbootstrap.style._compat import warn_deprecated
 
-# https://www.fontspace.com/freeserif-font-f13277
+#: The valid ``position`` anchors (compass points).
+_VALID_ANCHORS = {"n", "e", "s", "w", "nw", "ne", "sw", "se"}
 
-DEFAULT_ICON_WIN32 = "\ue154"
-DEFAULT_ICON = "\u25f0"
+#: Default notification glyph (a Bootstrap-Icons name). Rendered by the built-in
+#: font engine so it is theme-matched and recolorable.
+_DEFAULT_ICON = "bell-fill"
+
+
+class _ToastStack:
+    """Keeps concurrent toasts from overlapping.
+
+    Toasts are grouped by their resolved anchor corner. Each toast is offset
+    along the anchor's vertical axis by the cumulative height of the toasts
+    ahead of it in that corner (plus a gap), so they stack away from the
+    anchored edge -- downward for a top anchor, upward for a bottom anchor.
+    Dismissing a toast removes it from its corner and reflows the rest so the
+    stack closes the gap.
+    """
+
+    _GAP = 10  # logical px between stacked toasts
+
+    def __init__(self) -> None:
+        self._corners: dict = {}  # anchor(str) -> [ToastNotification, ...]
+
+    def add(self, toast: "ToastNotification") -> None:
+        self._corners.setdefault(toast._anchor, []).append(toast)
+
+    def remove(self, toast: "ToastNotification") -> None:
+        lst = self._corners.get(toast._anchor)
+        if lst and toast in lst:
+            lst.remove(toast)
+            self._reflow(toast._anchor)
+
+    def offset_for(self, toast: "ToastNotification") -> int:
+        """Along-axis pixel offset for ``toast`` from the toasts ahead of it."""
+        lst = self._corners.get(toast._anchor, [])
+        offset = 0
+        for other in lst:
+            if other is toast:
+                break
+            offset += other._height + toast._scaled_gap()
+        return offset
+
+    def _reflow(self, anchor: str) -> None:
+        for toast in list(self._corners.get(anchor, [])):
+            toast._reposition()
+
+
+#: Process-wide stack manager (one screen, shared corners).
+_TOAST_STACK = _ToastStack()
 
 
 class ToastNotification:
@@ -59,22 +100,26 @@ class ToastNotification:
     You may choose to display the toast for a specified period of time,
     otherwise you must click the toast to close it.
 
+    Concurrent toasts anchored to the same corner stack without overlapping and
+    reflow when one is dismissed. ``show_toast()`` returns the toast so it can be
+    dismissed programmatically with :meth:`hide`.
+
     ![toast notification](../assets/toast/toast.png)
 
     Examples:
 
         ```python
         import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.toast import ToastNotification
 
         app = ttk.Window()
 
-        toast = ToastNotification(
+        toast = ttk.ToastNotification(
             title="ttkbootstrap toast message",
             message="This is a toast message",
             duration=3000,
         )
-        toast.show_toast()
+        handle = toast.show_toast()
+        # handle.hide()   # dismiss early
 
         app.mainloop()
         ```
@@ -84,12 +129,12 @@ class ToastNotification:
             self,
             title: str,
             message: str,
+            *,
             duration: Optional[int] = None,
             bootstyle: str = LIGHT,
             alert: bool = False,
             icon: Optional[str] = None,
-            iconfont: Optional[Union[font.Font, str]] = None,
-            position: Optional[tuple[int, int, str]] = None,
+            position: Optional[tuple] = None,
             **kwargs: Any,
     ) -> None:
         """
@@ -106,82 +151,122 @@ class ToastNotification:
                 (default), then you must click the toast to close it.
 
             bootstyle (str):
-                Style keywords used to updated the label style. One of
-                the accepted color keywords.
+                Style keywords used to update the label style. One of the
+                accepted color keywords.
 
             alert (bool):
-                Indicates whether to ring the display bell when the
-                toast is shown.
+                Indicates whether to ring the display bell when the toast is
+                shown.
 
             icon (str):
-                A UNICODE character to display on the top-left hand
-                corner of the toast. The default symbol is OS specific.
-                Pass an empty string to remove the symbol.
-
-            iconfont (Union[str, Font]):
-                The font used to render the icon. By default, this is
-                OS specific. You may need to change the font to enable
-                better character or emoji support for the icon you
-                want to use. Windows (Segoe UI Symbol),
-                Linux (FreeSerif), macOS (Apple Symbol)
+                A Bootstrap-Icons glyph name (e.g. ``"bell-fill"``,
+                ``"info-circle-fill"``) to show in the top-left corner. Rendered
+                from the built-in icon font, so it follows the theme. Defaults
+                to a bell glyph; pass an empty string to remove the icon.
 
             position (tuple[int, int, str]):
-                A tuple that controls the position of the toast. Default
-                is OS specific. The tuple cooresponds to
-                (horizontal, vertical, anchor), where the horizontal and
-                vertical elements represent the position of the toplevel
-                releative to the anchor, which is "ne" or top-left by
-                default. Acceptable anchors include: n, e, s, w, nw, ne,
-                sw, se. For example: (100, 100, 'ne').
+                A tuple ``(x, y, anchor)`` controlling the toast position.
+                Default is OS specific. ``x``/``y`` are the offset of the
+                toplevel relative to ``anchor``. Acceptable anchors: n, e, s, w,
+                nw, ne, sw, se (e.g. ``ne`` is the top-right corner). For
+                example: ``(100, 100, 'ne')``.
 
             **kwargs (Dict):
                 Other keyword arguments passed to the `Toplevel` window.
         """
-        self.container = None
-        self.message = message
+        # `iconfont`/`icon_font` are dead in 2.0 -- icons render from the
+        # built-in Bootstrap-Icons font. Accept-and-warn so old calls don't blow
+        # up on the unexpected keyword.
+        for legacy in ("iconfont", "icon_font"):
+            if legacy in kwargs:
+                kwargs.pop(legacy)
+                warn_deprecated(
+                    f"the {legacy!r} ToastNotification option",
+                    "the built-in Bootstrap-Icons font (icons render automatically)",
+                )
+
         self.title = title
+        self.message = message
         self.duration = duration
         self.bootstyle = bootstyle
-        self.icon = icon
-        self.iconfont = iconfont
-        self.iconfont = None
-        self.titlefont = None
-        self.toplevel = None
-        self.kwargs = kwargs
         self.alert = alert
+        self.icon = _DEFAULT_ICON if icon is None else icon
         self.position = position
+        self.kwargs = dict(kwargs)  # copy -- we mutate this, not the caller's
 
+        self.toplevel = None
+        self.container = None
+        self.title_font = None
+
+        # lifecycle bookkeeping
+        self._anchor: Optional[str] = None
+        self._height: int = 0
+        self._duration_id: Optional[str] = None
+        self._fade_id: Optional[str] = None
+        self._hidden = False
+
+        # internal Toplevel options (snake_case -- avoid the compat shim's
+        # DeprecationWarning that the old ``overrideredirect`` spelling tripped).
         if "override_redirect" not in self.kwargs:
             self.kwargs["override_redirect"] = True
         if "alpha" not in self.kwargs:
             self.kwargs["alpha"] = 0.95
 
         if position is not None:
-            if len(position) != 3:
-                self.position = None
+            self._validate_position(position)
 
-    def show_toast(self, *_: Any) -> None:
-        """Create and show the toast window."""
-        # Late import to avoid circular import during package initialization
-        from ttkbootstrap import Frame, Label, Toplevel, utility
+    # -- validation ---------------------------------------------------------- #
+    @staticmethod
+    def _validate_position(position: tuple) -> None:
+        if len(position) != 3:
+            raise ValueError(
+                f"position must be a (x, y, anchor) tuple, got: {position!r}"
+            )
+        anchor = str(position[2]).lower()
+        if anchor not in _VALID_ANCHORS:
+            raise ValueError(
+                f"Invalid position anchor: {position[2]!r} "
+                f"(expected one of {sorted(_VALID_ANCHORS)})"
+            )
 
-        # build toast
+    # -- show / hide --------------------------------------------------------- #
+    def show_toast(self, *_: Any) -> "ToastNotification":
+        """Create, place, and show the toast; returns ``self`` (a dismiss handle)."""
+        from tkinter import _default_root
+
+        from ttkbootstrap import Frame, Label, Toplevel, apply_icon, utility
+
+        self._hidden = False
+
+        # On aqua a borderless popup should be a 'tooltip' window type (parity
+        # with the tooltip); set it at construction, so probe the windowing
+        # system from the existing root before creating the Toplevel.
+        if _default_root is not None and "window_type" not in self.kwargs:
+            if _default_root.tk.call("tk", "windowingsystem") == "aqua":
+                self.kwargs["window_type"] = "tooltip"
+
         self.toplevel = Toplevel(**self.kwargs)
+        self.toplevel.withdraw()
         self._setup(self.toplevel)
 
         self.container = Frame(self.toplevel, bootstyle=self.bootstyle)
         self.container.pack(fill=BOTH, expand=YES)
-        Label(
+
+        icon_lbl = Label(
             self.container,
-            text=self.icon,
-            font=self.iconfont,
             bootstyle=f"{self.bootstyle}-inverse",
             anchor=NW,
-        ).grid(row=0, column=0, rowspan=2, sticky=NSEW, padx=(5, 0))
+        )
+        icon_lbl.grid(row=0, column=0, rowspan=2, sticky=NSEW, padx=(5, 0))
+        if self.icon:
+            # Theme-aware glyph: follows the (inverse) label foreground and
+            # re-renders on a theme switch.
+            apply_icon(icon_lbl, self.icon, size=24)
+
         Label(
             self.container,
             text=self.title,
-            font=self.titlefont,
+            font=self.title_font,
             bootstyle=f"{self.bootstyle}-inverse",
             anchor=NW,
         ).grid(row=0, column=1, sticky=NSEW, padx=10, pady=(5, 0))
@@ -193,105 +278,154 @@ class ToastNotification:
             anchor=NW,
         ).grid(row=1, column=1, sticky=NSEW, padx=10, pady=(0, 5))
 
-        self.toplevel.bind("<ButtonPress>", self.hide_toast)
+        self.toplevel.bind("<ButtonPress>", self.hide)
 
-        # alert toast
+        # measure the requested size (valid even while withdrawn) BEFORE placing,
+        # so the stack offset is correct and there is no reposition flash.
+        self.toplevel.update_idletasks()
+        self._height = self.toplevel.winfo_reqheight()
+
+        _TOAST_STACK.add(self)
+        self._reposition()
+        self.toplevel.deiconify()
+
         if self.alert:
             self.toplevel.bell()
-
-        # specified duration to close
         if self.duration:
-            self.toplevel.after(self.duration, self.hide_toast)
+            self._duration_id = self.toplevel.after(self.duration, self.hide)
+        return self
 
+    def hide(self, *_: Any) -> None:
+        """Dismiss the toast (idempotent, safe if never shown).
+
+        Removes the toast from its corner stack (reflowing the rest so they
+        close the gap), then fades out and destroys the window.
+        """
+        if self._hidden:
+            return
+        self._hidden = True
+
+        if self._duration_id is not None:
+            self._cancel(self._duration_id)
+            self._duration_id = None
+
+        # reflow the siblings first so they slide up while this one fades
+        _TOAST_STACK.remove(self)
+
+        if self.toplevel is None:
+            return
+        self._fade_out()
+
+    #: Back-compat alias for :meth:`hide`.
     def hide_toast(self, *_: Any) -> None:
-        """Destroy and close the toast window."""
+        self.hide()
+
+    def _fade_out(self) -> None:
+        if self.toplevel is None:
+            return
         try:
+            if not self.toplevel.winfo_exists():
+                return self._finalize()
             alpha = float(self.toplevel.attributes("-alpha"))
             if alpha <= 0.1:
-                self.toplevel.destroy()
+                self._finalize()
             else:
                 self.toplevel.attributes("-alpha", alpha - 0.1)
-                self.toplevel.after(25, self.hide_toast)
-        except:
-            if self.toplevel:
+                self._fade_id = self.toplevel.after(25, self._fade_out)
+        except tkinter.TclError:
+            self._finalize()
+
+    def _finalize(self) -> None:
+        """Cancel the fade timer and destroy the window; drop the handles."""
+        if self._fade_id is not None:
+            self._cancel(self._fade_id)
+            self._fade_id = None
+        if self.toplevel is not None:
+            try:
                 self.toplevel.destroy()
+            except tkinter.TclError:
+                pass
+        self.toplevel = None
+        self.container = None
 
+    def _cancel(self, after_id: str) -> None:
+        try:
+            if self.toplevel is not None:
+                self.toplevel.after_cancel(after_id)
+        except (tkinter.TclError, ValueError):
+            pass
+
+    # -- setup / geometry ---------------------------------------------------- #
     def _setup(self, window) -> None:
-        winsys = window.tk.call("tk", "windowingsystem")
+        from ttkbootstrap import utility
 
+        winsys = window.tk.call("tk", "windowingsystem")
         self.toplevel.configure(relief=RAISED)
 
-        # minsize
         if "minsize" not in self.kwargs:
-            # Late import to avoid circular import for utility
-            from ttkbootstrap import utility
             w, h = utility.scale_size(self.toplevel, [300, 75])
             self.toplevel.minsize(w, h)
 
         # heading font
         _font = font.nametofont("TkDefaultFont")
-        self.titlefont = font.Font(
+        self.title_font = font.Font(
             family=_font["family"],
             size=_font["size"] + 1,
             weight="bold",
         )
-        # symbol font
-        self.iconfont = font.Font(size=30, weight="bold")
-        if winsys == "win32":
-            self.iconfont["family"] = "Segoe UI Symbol"
-            self.icon = DEFAULT_ICON_WIN32 if self.icon is None else self.icon
-            if self.position is None:
-                from ttkbootstrap import utility
+
+        # default position by windowing system
+        if self.position is None:
+            if winsys == "win32":
                 x, y = utility.scale_size(self.toplevel, [5, 50])
                 self.position = (x, y, SE)
-        elif winsys == "x11":
-            self.iconfont["family"] = "FreeSerif"
-            self.icon = DEFAULT_ICON if self.icon is None else self.icon
-            if self.position is None:
-                from ttkbootstrap import utility
+            elif winsys == "x11":
                 x, y = utility.scale_size(self.toplevel, [0, 0])
                 self.position = (x, y, SE)
-        else:
-            self.iconfont["family"] = "Apple Symbols"
-            self.toplevel.update_idletasks()
-            self.icon = DEFAULT_ICON if self.icon is None else self.icon
-            if self.position is None:
-                from ttkbootstrap import utility
+            else:  # aqua (window_type='tooltip' was set at construction)
                 x, y = utility.scale_size(self.toplevel, [50, 50])
                 self.position = (x, y, NE)
 
-        self.set_geometry()
+        self._anchor = str(self.position[-1]).lower()
 
-    def set_geometry(self) -> None:
-        self.toplevel.update_idletasks()  # actualize geometry
-        anchor = self.position[-1]
-        x_anchor = "-" if "w" not in anchor else "+"
-        y_anchor = "-" if "n" not in anchor else "+"
-        screen_w = self.toplevel.winfo_screenwidth() // 2
-        screen_h = self.toplevel.winfo_screenheight() // 2
-        top_w = self.toplevel.winfo_width() // 2
-        top_h = self.toplevel.winfo_height() // 2
+    def _scaled_gap(self) -> int:
+        from ttkbootstrap import utility
+        try:
+            return utility.scale_size(self.toplevel, _ToastStack._GAP)
+        except Exception:
+            return _ToastStack._GAP
 
-        if all(["e" not in anchor, "w" not in anchor]):
+    def _reposition(self) -> None:
+        """Place the toast at its anchored position plus its stack offset."""
+        if self.toplevel is None:
+            return
+        try:
+            offset = _TOAST_STACK.offset_for(self)
+            self.toplevel.geometry(self._compute_geometry(offset))
+        except tkinter.TclError:
+            pass
+
+    def _compute_geometry(self, offset: int) -> str:
+        tl = self.toplevel
+        tl.update_idletasks()  # actualize the requested geometry
+        anchor = self._anchor
+        x_anchor = "+" if "w" in anchor else "-"
+        y_anchor = "+" if "n" in anchor else "-"
+
+        screen_w = tl.winfo_screenwidth() // 2
+        screen_h = tl.winfo_screenheight() // 2
+        top_w = tl.winfo_reqwidth() // 2
+        top_h = tl.winfo_reqheight() // 2
+
+        if "e" not in anchor and "w" not in anchor:
             xpos = screen_w - top_w
         else:
             xpos = self.position[0]
-        if all(["n" not in anchor, "s" not in anchor]):
+        if "n" not in anchor and "s" not in anchor:
             ypos = screen_h - top_h
         else:
             ypos = self.position[1]
 
-        self.toplevel.geometry(f"{x_anchor}{xpos}{y_anchor}{ypos}")
-
-
-if __name__ == "__main__":
-    from ttkbootstrap import Window
-
-    app = Window()
-
-    ToastNotification(
-        "ttkbootstrap toast message",
-        "This is a toast message; you can place a symbol on the top-left that is supported by the selected font. You can either make it appear for a specified period of time, or click to close.",
-    ).show_toast()
-
-    app.mainloop()
+        # the stack offset moves the toast away from its anchored edge
+        ypos += offset
+        return f"{x_anchor}{xpos}{y_anchor}{ypos}"

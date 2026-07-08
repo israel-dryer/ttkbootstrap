@@ -29,6 +29,7 @@
 | **Floodgauge: DoubleVar value, `start(interval)`, live mode/orient** | Breaking/additive | this doc, below (PR 4) |
 | **Scrolled: Canvas-viewport rewrite, `auto_hide`, keyword-only** | Breaking/additive | this doc, below (PR 5) |
 | **LabeledScale + ToolTip: DoubleVar, lifecycle, `configure`/`cget`** | Breaking/additive | this doc, below (PR 6) |
+| **ToastNotification: glyph icon, stack manager, keyword-only** | Breaking/additive | this doc, below (PR 7) |
 
 ---
 
@@ -618,3 +619,45 @@ int. Nothing warns — these are source-level breaks, not deprecations.
   `internal/positioning.ensure_on_screen` (multi-monitor clamping) instead of a bare
   `except:` 200×50 guess. The embedded `__main__` demo was removed from the package
   source and a bare `except:` narrowed to `except tkinter.TclError`.
+
+## ToastNotification: glyph icon, stack manager, keyword-only  *(breaking + additive)*
+
+**What.** `ToastNotification` (widget-review PR 7) was normalized.
+
+*Breaking.*
+- **The `icon` parameter is now a Bootstrap-Icons glyph name** (e.g.
+  `"bell-fill"`, `"info-circle-fill"`), not a raw Unicode/PUA character. It is
+  rendered from the built-in icon font (theme-matched, recolorable), so it
+  follows the theme instead of depending on an OS symbol font. Default is a bell
+  glyph; pass `icon=""` to suppress it. The old PUA defaults (``/`◰`) are gone.
+- **`iconfont` (and `icon_font`) is removed** — it was dead (the constructor
+  overwrote it before it could render). Passing either is accepted through 2.x
+  with a `DeprecationWarning` and ignored (removed in 3.0).
+- **The constructor is keyword-only** after `title, message`.
+- **A bad `position` anchor now raises `ValueError`** (was silently dropped to
+  the OS default). `position` stays a 3-tuple `(x, y, anchor)`.
+- **`set_geometry()` is now private (`_set_geometry` internals)** — it was public
+  but always internal. `titlefont` internal attribute → `title_font`.
+
+*Additive.*
+- **Concurrent toasts no longer overlap.** Toasts anchored to the same screen
+  corner are **stacked** and offset so each is fully visible; dismissing one
+  **reflows** the rest to close the gap.
+- **`show_toast()` returns the toast** as a dismiss handle, and a new idempotent
+  **`hide()`** dismisses it programmatically (safe to call twice / before shown).
+  `hide_toast()` remains as an alias.
+
+*Fixed.*
+- Every `show_toast()` used to emit a `DeprecationWarning` (it force-injected the
+  legacy `overrideredirect` kwarg) — now uses the internal `override_redirect`.
+- The duration timer and fade loop `after` ids are stored and cancelled on
+  dismiss (they could double-fire); `self.toplevel` is reset to `None` after
+  destroy; the bare `except:` in the fade is narrowed to `tkinter.TclError`.
+- The withdrawn-window mismeasure (`winfo_height()==1`) is fixed by measuring the
+  requested size before placing. The embedded `__main__` demo was removed and the
+  `"ne = top-left"` docstring corrected (`ne` is top-**right**).
+
+**Migration.** Replace a Unicode `icon="◰"` with a glyph name
+(`icon="bell-fill"`); drop any `iconfont=`. Pass toast options by keyword. If you
+called `set_geometry()` directly, don't (it is internal). Capture the return of
+`show_toast()` if you want to dismiss a toast early: `t = toast.show_toast(); t.hide()`.
