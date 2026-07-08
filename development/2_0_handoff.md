@@ -3,7 +3,34 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-07-07 (**Theme-aware widget icons — MERGED into `2.0`
+_Last updated: 2026-07-07 (**Tableview pagination buttons on the icon path — MERGED
+into `2.0` (#1106)**). Swaps the five character-symbol pagination controls
+(`⎌ » › ‹ «`, all `symbol.Link.TButton`) for Bootstrap Icons glyphs on a **ghost**
+base via the `icon=` sugar (first→`chevron-bar-left`, prev→`chevron-left`,
+next→`chevron-right`, last→`chevron-bar-right`, reset→`arrow-counterclockwise`; the
+searchable-frame reset button too). Scope **(b)** (author pick): the four nav
+buttons now **disable at the page boundaries** (first/prev on page one, next/last on
+the last page), driven from a new `_update_pagination_state` called by
+`load_table_data` (the single page index/limit funnel) — the ghost disabled
+-foreground mutes the glyph, so the boundary reads (previously a boundary click was a
+silent no-op with no affordance). **Bar layout fixes (surfaced live):** the bar was
+pinned ~40px because a bare vertical `ttk.Separator` requests the style's baked ~40px
+length (the old 16pt-font symbol buttons matched it) — each divider is now bounded in
+a fixed, DPI-scaled height frame (`_add_page_separator`) so the shorter controls
+(buttons 30px, entry 29px) set the height; reset gains `fill=Y` for uniform buttons;
+`padding=5` on the page frame (matching the search frame) keeps controls off the
+edges. No public method signature changed (`goto_*_page` unchanged, still safe at a
+boundary). `tests/test_tableview_api.py` (+4: ghost base, both boundaries, middle);
+suite **340 passed** (the `nl.msg`/`zh_cn.msg` localization flake did not surface
+this run); warning-free import. Breaking/behavior log updated. **A light↔dark visual
+eyeball of the bar (glyphs + disabled muting) is still worth it before docs
+screenshots.** Still-open icon follow-ups (both before docs screenshots): Sizegrip →
+recolor raster asset; theme-wide **control-height parity** (buttons == inputs, memory
+`control-height-parity`). **NEXT → docs Workstream H sub-PR #1** (nav/IA skeleton +
+un-break the 7 broken API `:::` stubs, `development/2_0_docs_design.md` §11). Prior
+entry (#1105) follows._
+
+_Prior 2026-07-07 (**Theme-aware widget icons — MERGED into `2.0`
 (#1105)**). Closes the inline-icon theme-awareness gap (a bare `Icon(...)` `image=`
 baked its color once and went stale on a theme switch). New `ttk.apply_icon` +
 `icon=`/`icon_size=` mixin sugar: renders a glyph following the widget's style
@@ -26,22 +53,8 @@ convention (snake_case authored / Tk-spelling pass-throughs; `CLAUDE.md` +
 memory). **NEXT → Tableview pagination buttons on the icon path** (ghost base +
 glyph; disabled first/prev arrows get muting for free), then docs Workstream H.
 
-**>>> NEXT-SESSION PICKUP (pagination — decision pending, NOT started).** #1105 is
-merged into `2.0`; the tree is clean (also merged this session: the sizegrip
-example `tk.Tk()`→`ttk.Window()` fix, direct to `2.0`). The task: replace the 5
-character buttons in `Tableview._build_pagination_frame`
-(`src/ttkbootstrap/widgets/tableview.py`, ~line 2407 — currently `⎌ » › ‹ «`, all
-`style="symbol.Link.TButton"`) with font glyphs via the new `icon=` sugar on a
-**ghost** base. Proposed glyph map: first→`chevron-bar-left`, prev→`chevron-left`,
-next→`chevron-right`, last→`chevron-bar-right`, reset→`arrow-counterclockwise`.
-**OPEN SCOPE FORK — author to pick:** (a) **icons only** (swap chars→glyphs,
-minimal, matches the literal ask); or (b) **icons + boundary-disable** (also
-disable first/prev on page 1 and next/last on the last page so the ghost/disabled
-muting actually shows — better UX, small behavior addition). Opus leans **(b)**;
-NB the pagination buttons do **not** currently disable at boundaries, so (a) alone
-leaves no disabled state to mute. Cut the PR against `2.0` on a fresh branch. Still
--open icon follow-ups: Sizegrip → recolor raster asset; control-height parity
-(buttons == inputs) — both before docs screenshots. Prior entry (PR C) follows._
+**The pagination pickup was COMPLETED as #1106 (scope (b) — see the top entry).**
+Prior entry (PR C) follows._
 
 _Prior 2026-07-07 (**shipped-widget API pass — PR C (Tableview)
 OPENED as #1104 against `2.0`; the pass's LAST PR**). Fixes only per design §5c
