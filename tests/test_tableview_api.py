@@ -139,3 +139,61 @@ def test_pagination_middle_page_all_enabled(root):
     tv.goto_first_page()
     tv.goto_next_page()  # page 2 of 3
     assert not any(_nav_disabled(tv).values())
+
+
+# --------------------------------------------------------------------------
+# verb-rename slice: canonical names + deprecated aliases
+# --------------------------------------------------------------------------
+
+def test_row_move_verb_is_consistent(root):
+    """`move_selected_row_down` matches move_selected_row_up; old name warns."""
+    import warnings
+    tv = _make_table(root)
+    assert hasattr(tv, "move_selected_row_down")
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        tv.move_row_down()  # no selection -> no-op, but must warn
+    assert any(issubclass(w.category, DeprecationWarning) for w in caught)
+
+
+def test_column_show_verb_is_consistent(root):
+    """`show_selected_column` replaces the odd `unhide` verb; old name warns."""
+    import warnings
+    tv = _make_table(root)
+    assert hasattr(tv, "show_selected_column")
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        tv.unhide_selected_column()
+    assert any(issubclass(w.category, DeprecationWarning) for w in caught)
+
+
+def test_get_columns_deprecated_for_tablecolumns_property(root):
+    import warnings
+    tv = _make_table(root)
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        cols = tv.get_columns()
+    assert any(issubclass(w.category, DeprecationWarning) for w in caught)
+    assert cols == tv.tablecolumns
+
+
+# --------------------------------------------------------------------------
+# header sort indicator: font-glyph icon instead of an ASCII arrow
+# --------------------------------------------------------------------------
+
+def test_sort_shows_glyph_icon_not_ascii_arrow(root):
+    tv = _make_table(root)
+    cid = tv.tablecolumns[0].cid
+    assert tv.view.heading(cid, "image") in ("", ())      # none before sort
+    tv.sort_column_data(cid=cid, sort=0)                    # ascending
+    img = tv.view.heading(cid, "image")
+    assert img                                              # a glyph image now
+    # trailing transparent pad so the glyph doesn't butt against the text
+    name = img if isinstance(img, str) else img[0]
+    assert int(tv.tk.call("image", "width", name)) > int(
+        tv.tk.call("image", "height", name)
+    )
+    text = tv.view.heading(cid, "text")
+    assert "⬆" not in text and "⬇" not in text   # no ⬆/⬇ in the text
+    tv._column_sort_header_reset()
+    assert tv.view.heading(cid, "image") in ("", ())       # cleared on reset

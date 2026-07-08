@@ -64,6 +64,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap import utility
 from ttkbootstrap.constants import *
 from ttkbootstrap.localization import MessageCatalog
+from ttkbootstrap.style._compat import warn_deprecated
 
 UPARROW = "⬆"
 DOWNARROW = "⬇"
@@ -1283,8 +1284,8 @@ class Tableview(ttk.Frame):
     # CONFIGURATION
 
     def get_columns(self) -> list[TableColumn]:
-        """Returns a list of all column objects. Same as using the
-        `Tableview.tablecolumns` property."""
+        """Deprecated alias for the :attr:`tablecolumns` property."""
+        warn_deprecated("Tableview.get_columns()", "the tablecolumns property")
         return self._tablecols
 
     def get_column(
@@ -1784,7 +1785,7 @@ class Tableview(ttk.Frame):
             column: TableColumn = self.cidmap.get(cid)
             column.hide()
 
-    def unhide_selected_column(self, event=None, cid=None):
+    def show_selected_column(self, event=None, cid=None):
         """Attach the selected column to the tableview. This method
         may be triggered by a window event or by specifying the column
         id. The column is reinserted at the index in the original data
@@ -1805,6 +1806,13 @@ class Tableview(ttk.Frame):
         elif cid is not None:
             column = self.cidmap.get(cid)
             column.show()
+
+    def unhide_selected_column(self, event=None, cid=None):
+        """Deprecated alias for :meth:`show_selected_column`."""
+        warn_deprecated(
+            "Tableview.unhide_selected_column", "show_selected_column"
+        )
+        return self.show_selected_column(event=event, cid=cid)
 
     # DATA EXPORT
 
@@ -1951,7 +1959,7 @@ class Tableview(ttk.Frame):
         self.unload_table_data()
         self.load_table_data()
 
-    def move_row_down(self):
+    def move_selected_row_down(self):
         """Move the selected rows down one position in the dataset"""
         selected = self.view.selection()
         if len(selected) == 0:
@@ -1976,6 +1984,11 @@ class Tableview(ttk.Frame):
         # refresh the table data
         self.unload_table_data()
         self.load_table_data()
+
+    def move_row_down(self):
+        """Deprecated alias for :meth:`move_selected_row_down`."""
+        warn_deprecated("Tableview.move_row_down", "move_selected_row_down")
+        return self.move_selected_row_down()
 
     # COLUMN MOVEMENT
 
@@ -2323,14 +2336,58 @@ class Tableview(ttk.Frame):
     def _column_sort_header_reset(self):
         """Remove the sort character from the column headers"""
         for col in self.tablecolumns:
-            self.view.heading(col.cid, text=col.headertext)
+            self.view.heading(col.cid, text=col.headertext, image="")
+        self._sorted_cid = None
+
+    def _resolve_heading_foreground(self) -> str:
+        """The Treeview heading foreground, for tinting the sort icon."""
+        ttkstyle = self.view.cget("style") or "Treeview"
+        for name in (f"{ttkstyle}.Heading", "Treeview.Heading", ttkstyle):
+            fg = self.view.tk.call("ttk::style", "lookup", name, "-foreground")
+            if fg:
+                return str(fg)
+        return "black"
+
+    def _sort_icon(self, ascending: bool):
+        """A ``sort-up``/``sort-down`` glyph rendered in the heading color.
+
+        Re-rendered when the heading foreground changes (theme switch).
+        """
+        fg = self._resolve_heading_foreground()
+        if getattr(self, "_sort_icon_fg", None) != fg:
+            self._sort_icon_fg = fg
+            self._sort_icon_up = self._render_sort_icon("sort-up", fg)
+            self._sort_icon_down = self._render_sort_icon("sort-down", fg)
+        return self._sort_icon_up if ascending else self._sort_icon_down
+
+    def _render_sort_icon(self, name: str, fg: str):
+        """Render the sort glyph with leading transparent space so it does not
+        butt against the header text (ttk draws the heading image after the
+        text, with no built-in gap)."""
+        from PIL import Image, ImageTk
+        from ttkbootstrap.style.icons import IconRenderer
+
+        size = utility.scale_size(self, 14)
+        gap = utility.scale_size(self, 6)
+        glyph = IconRenderer.render(name, size, fg)  # physical-pixel PIL RGBA
+        canvas = Image.new("RGBA", (glyph.width + gap, glyph.height), (0, 0, 0, 0))
+        canvas.paste(glyph, (gap, 0))  # pad on the leading side (text | gap | glyph)
+        # keep a reference (stored on self by the caller) so Tk doesn't GC it
+        return ImageTk.PhotoImage(canvas)
 
     def _column_sort_header_update(self, cid):
-        """Add sort character to the sorted column"""
+        """Show a sort-direction icon on the sorted column heading."""
         column: TableColumn = self.cidmap.get(int(cid))
-        arrow = UPARROW if column.columnsort == ASCENDING else DOWNARROW
-        headertext = f"{column.headertext} {arrow}"
-        self.view.heading(column.cid, text=headertext)
+        image = self._sort_icon(column.columnsort == ASCENDING)
+        self.view.heading(column.cid, text=column.headertext, image=image)
+        self._sorted_cid = column.cid
+
+    def _refresh_sort_icon_theme(self, *_) -> None:
+        """Re-render the active sort icon in the new heading color on a theme
+        switch."""
+        self._sort_icon_fg = None
+        if getattr(self, "_sorted_cid", None) is not None:
+            self._column_sort_header_update(self._sorted_cid)
 
     def _resolve_iid_field_index(self):
         """Resolve the iid_field to a column index. This method should be called
@@ -2374,6 +2431,9 @@ class Tableview(ttk.Frame):
             show=HEADINGS,
             bootstyle=f"{bootstyle}-table",
         )
+        # re-tint the active sort icon when the theme (heading color) changes
+        self._sorted_cid = None
+        self.view.bind("<<ThemeChanged>>", self._refresh_sort_icon_theme, "+")
 
         if self._yscrollbar:
             self.ybar = ttk.Scrollbar(
@@ -2746,7 +2806,7 @@ class TableCellRightClickMenu(tk.Menu):
 
     def move_row_down(self):
         """Move the selected row below the next sibling"""
-        self.master.move_row_down()
+        self.master.move_selected_row_down()
 
     def align_column_left(self):
         "Left align the column text"
@@ -2897,7 +2957,7 @@ class TableHeaderRightClickMenu(tk.Menu):
         variable = f"column_{cid}"
         toggled = self.getvar(variable)
         if toggled:
-            self.master.unhide_selected_column(cid=int(cid))
+            self.master.show_selected_column(cid=int(cid))
         else:
             self.master.hide_selected_column(cid=int(cid))
 
