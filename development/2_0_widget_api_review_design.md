@@ -259,22 +259,42 @@ light↔dark gate.
 - **PR 1 — re-exports + Scrolled package export.** §4.3. `ttk.ToolTip`/
   `ToastNotification`/`ScrolledText`/`ScrolledFrame`; Scrolled into
   `widgets/__init__` + `__all__`. Tests: `ttk.<Name> is <impl>`, `__all__` membership.
-- **PR 2 — Meter.** §4.1/4.4/4.5. snake_case rename (kwargs + configure strings +
-  `*var` attrs) via `_compat` aliases; `cget` override; fix scale round-trip +
-  `subtextstyle` + dead `<<Configure>>`; float support decision. Largest PR.
-- **PR 3 — DateEntry.** snake_case (`date_format`/`first_weekday`/`start_date`) +
-  aliases, **coordinated with `Querybox.get_date`/`DatePickerDialog`**; `cget`; fix
-  `state`/`width`/typed-input/validation. Adopt `position=` passthrough.
-- **PR 4 — Floodgauge.** `cget` + `mode`/`orient` handling; `maximum=0` guard;
-  `cget("text")` fix; `start()` signature decision (align vs document). Optional
-  `FloodgaugeLegacy` leak fix (§4.6).
-- **PR 5 — Scrolled.** `configure`/`cget` delegation; `ScrolledFrame.destroy`
-  container cleanup; `hbar/vbar` + div-by-zero + `yview` return fixes; `auto_hide`/
-  `scroll_height` aliases; reconcile `autohide_scrollbar`; kill dead code + bare excepts.
-- **PR 6 — LabeledScale + ToolTip lifecycle.** LabeledScale `compound`/double-init
-  fix + idle-cancel; ToolTip `add="+"` binding + after-cancel + unbind on destroy +
-  move `__main__` demo to `examples/`. (Grouped: both small, both mostly lifecycle.)
-- **(Deferred) Toast font-glyph icons** — §4.7, visual-polish follow-up.
+- **PR 1.5 — the shared `internal/configure_delegation.py` mixin (§8.0).** Land the
+  delegation-mixin backbone *before* the widgets that consume it (Meter/Floodgauge/
+  Scrolled), incl. the inner-widget-fallthrough extension bootstack lacks. Its own
+  focused tests. Precedes PR 2.
+- **PR 2 — Meter.** §4.1/4.4/4.5 + §8a. Adopt the mixin (§1.5) for `cget`/get-set
+  parity + settable `amountformat`; snake_case rename (kwargs + option strings +
+  `*var` attrs) via `_compat` aliases; **`DoubleVar`** value backing + `value`
+  property (§9); single-seam scaling (fix `metersize` double-scale); `subtextstyle`
+  fix; delete dead `<<Configure>>`. Largest PR.
+- **PR 3 — DateEntry.** §8c. snake_case (`date_format`/`first_weekday`/`start_date`)
+  via `_compat`, **coordinated with `Querybox.get_date`/`DatePickerDialog`**; the
+  mixin for `cget` + canonical `state`; **read-from-live-text via `coerce_date`** +
+  blur validation; kwarg partitioning (fix `width` double-apply); picker re-entrancy
+  guard; `position=` passthrough; `value` property alias (§9).
+- **PR 4 — Floodgauge.** §8b. Mixin for `cget` + 5-tuple + live `mode`/`orient`;
+  `maximum=0` zero-range guard; value-vs-display split (`cget("text")` fix);
+  **`start()` realigned to ttk's `start(interval)`** + `_compat` shim; `value`
+  property (§9). Optional `FloodgaugeLegacy` leak fix (§4.6).
+- **PR 5 — Scrolled (deep rewrite).** §8d. **Outer-frame + Canvas-`create_window`
+  viewport rewrite** (fixes the container leak, div-by-zero, `yview` contract);
+  class-tag mousewheel seam; grid layout + stable gutter; unified
+  `scrollbar_visibility` (retires the two-meanings `autohide_scrollbar`) + timer
+  mode; `auto_hide`/`scroll_height` aliases; mixin + inner-widget config fallthrough;
+  kill dead code + bare excepts. Human scroll/resize gate (light↔dark).
+- **PR 6 — LabeledScale + ToolTip lifecycle.** §8e. LabeledScale `compound`/
+  double-init fix + `DoubleVar` + idle-cancel + `value` already present; ToolTip
+  `add="+"` binds + `<Destroy>` self-release + after-cancel/unbind; route placement
+  through `ensure_on_screen` (verify the flip helpers exist in `internal/positioning`,
+  else port them); live text update; move `__main__` demo to `examples/`.
+- **PR 7 — Toast (full normalization + stack).** §8f. `ttk.ToastNotification`
+  keyword-only; `icon_font`→font-glyph engine (delete PUA chars + the dead param);
+  off-screen-measure-then-place; **store + `after_cancel` all timers**, cancellable
+  fade, idempotent `hide()` + dismiss handle; `override_redirect`/`window_type`
+  (folds in the PR-0 toast half if not already done); the **toast STACK manager**
+  (per-corner list + reflow-on-dismiss on `internal/positioning.py`); `position`
+  anchor grammar (§9). Human gate. Largest of the back half.
 
 ## 6. Compat & deprecation strategy
 
@@ -423,27 +443,44 @@ self-contained and don't need a bootstack mechanism — handled in PR 6.
 
 ## 7. Open questions (for author)
 
-**Resolved (2026-07-07):** Meter/LabeledScale → `DoubleVar` (old Q2); constructors
-→ keyword-only (§4.7); adopt the configure-delegation mixin as a shared
-`internal/` backbone (§8.0). Remaining:
+**All forks now RESOLVED (author, 2026-07-07):**
+- Meter/LabeledScale value backing → **`DoubleVar`** (old Q2).
+- Constructors → **keyword-only** (§4.7).
+- Adopt the configure-delegation mixin as a shared `internal/` backbone (§8.0).
+- **ScrolledFrame → DEEP REWRITE now** — outer-frame + Canvas-`create_window`
+  viewport in PR 5 (fixes leak + div-by-zero + `yview` together). Not the stopgap.
+- **Toast STACK manager → INCLUDE** — port the concurrent-non-overlapping-toasts
+  mechanism onto PR B's `internal/positioning.py` substrate (fade kept, made
+  cancellable). Accepted as an in-scope quality expansion.
+- **Floodgauge `start()` → REALIGN** to ttk's `start(interval)` with a `_compat`
+  shim for the old `(step_size, interval)` call shape.
+- **Cross-widget consistency → UNIFY WHERE FEASIBLE** — converge `position`
+  semantics and the value-access convention across widgets (with `_compat` aliases),
+  not just document them. See §9 for the proposed canonical conventions to confirm
+  during implementation.
 
-1. **Confirm the §4 forks** — esp. 4.1 (which widgets get renames) and 4.7's softer
-   pair: `position` **unify or document** (three incompatible shapes)? value-access
-   convention **leave-as-is**? (Proposed: document / leave-as-is.)
-2. **Floodgauge `start()`** — realign to ttk's `start(interval)` (breaking, needs a
-   shim) or keep the `step_size`-first signature and just document the divergence?
-3. **ScrolledFrame container leak — deep fix vs stopgap (§8d).** The durable fix is
-   the outer-frame + Canvas-`create_window` viewport rewrite (also fixes div-by-zero
-   + `yview` contract, but an internal-structure change, arguably past "consolidation
-   only"); the stopgap is a flag-guarded `destroy()` that tears down `self.container`.
-   **Deep rewrite now, or stopgap now + rewrite as a later slice?** (Proposed:
-   stopgap + grid/yview/wheel fixes now; Canvas-viewport rewrite is its own slice.)
-4. **Toast — two scope calls (§8f).** (a) The **toast STACK manager** (concurrent
-   non-overlapping toasts) — in scope, or defer as feature-grade? (b) Keep the fade
-   animation (make it cancellable) or **drop it to an instant destroy** (bootstack
-   has none)? (Proposed: defer the stack; keep a cancellable fade.)
-5. **PR 0 now** — land the self-deprecation hotfix (ToolTip + Toast internal
-   `override_redirect`/`window_type`) immediately as its own small PR? (Confirmed live
-   regression; no API change.) You redirected this into the bootstack pass — which is
-   now done and confirmed bootstack injects the *same* legacy kwargs, so the fix is
-   ours regardless.
+The author's steer is clearly toward a genuinely standardized surface over minimal
+churn — several of these (toast stack, Canvas rewrite, cross-widget unification) go
+beyond "consolidation only," which is an accepted, deliberate expansion for 2.0
+quality (paired with migration paths per the tiered deprecation policy).
+
+## 9. Canonical conventions for the cross-widget unification (to confirm in-impl)
+
+Proposed targets for the "unify where feasible" decision — confirm/adjust as each
+PR reaches them:
+
+- **Value access** — a uniform read/write surface across the value-bearing widgets
+  (Meter, Floodgauge, LabeledScale, DateEntry): a public **`value` property**
+  (get + set) as the canonical handle, with the existing per-widget forms
+  (`amountusedvar`/`amountused`, `.value` already on LabeledScale, `get_date`/
+  `set_date`) kept as **`_compat`-aliased** accessors through 2.x. `get_date`/
+  `set_date` stay (date-typed, semantically clear) but `DateEntry.value` becomes a
+  synonym. *Feasible* = where a single scalar/date is the widget's value; skip where
+  there's genuinely no single value.
+- **`position`** — define one **anchor grammar** shared by the popup widgets
+  (Toast, ToolTip): `position=(x, y, anchor)` where `anchor` is a compass token and
+  `(x,y)` is an offset from the anchored edge; ToolTip's `"top left"` string stays as
+  a `_compat`-normalized alias. Keep `Window`/`Toplevel` `position=(x,y)` as
+  **absolute screen coords** (a window has no parent to anchor to) — document the two
+  as distinct-but-related rather than forcing one shape. This is "unify the popups,
+  relate to Window," the feasible reading of the fork.
