@@ -397,7 +397,10 @@ def build_date_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         borderwidth=1,  # 1px hairline; intentionally unscaled
         focusthickness=0,
         focuscolor=on_background,
-        padding=builder.scale_size((2, 2)),
+        # +1px vertical vs horizontal: the smaller calendar glyph (18/19, trimmed
+        # for the 4% pad) shortened the button; restore its height to match the
+        # adjacent entry.
+        padding=builder.scale_size((2, 3)),
         anchor=tk.CENTER,
         image=img_normal,
     )
