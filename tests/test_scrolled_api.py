@@ -134,6 +134,30 @@ def test_configure_and_cget_reach_the_text(root):
     assert str(st.cget("wrap")) == "word"
 
 
+def test_style_cget_reads_the_outer_frame(root):
+    # `style` is an option of the outer ttk Frame, not the inner Text; the
+    # delegation must fall back to the wrapper instead of routing it to the
+    # Text (which has no -style option and would raise TclError).
+    st = ScrolledText(root, height=5)
+    st.pack()
+    assert st.cget("style") == "TFrame"
+    assert st.configure("style") == "TFrame"
+
+
+def test_theme_switch_repaints_scrolledtext(root):
+    # Regression: the theme walk repaints ScrolledText as a ttk.Widget and reads
+    # widget.cget("style"); routing that to the inner Text raised
+    # `unknown option "-style"` and aborted the switch.
+    st = ScrolledText(root, height=5, autohide=True)
+    st.pack()
+    st.update_idletasks()
+    style = ttk.Style()
+    for name in ("bootstrap-dark", "bootstrap-light"):
+        style.theme_use(name)
+        st.update_idletasks()
+    assert st.cget("style") == "TFrame"
+
+
 def test_method_delegation_to_text(root):
     st = ScrolledText(root, height=5)
     st.pack()
