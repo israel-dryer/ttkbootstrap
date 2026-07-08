@@ -3,8 +3,54 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-07-07 (**Remaining shipped-widget API review — DESIGN PASS in
-progress; some forks locked**). After the pagination merge (#1106) the author
+_Last updated: 2026-07-07 (**Remaining shipped-widget API review — IN PROGRESS;
+PRs 0/1/1.5/2 MERGED into `2.0`**). The all-widgets API review (design +
+bootstack-borrowed mechanisms + all forks locked in
+`development/2_0_widget_api_review_design.md`) is executing PR-by-PR. **Merged this
+session:** **#1107** PR 0 (ToolTip/Toast self-deprecation hotfix —
+`override_redirect`/`window_type`), **#1108** PR 1 (re-export `ttk.ToolTip`/
+`ToastNotification`/`ScrolledText`/`ScrolledFrame`), **#1109** PR 1.5 (the shared
+`internal/configure_delegation.py` `ConfigureDelegationMixin` backbone), **#1110**
+PR 2 (Meter: mixin adoption → `cget` parity + reconfigurable `amount_format` +
+5-tuples; 18 snake_case renames + keyword-only ctor via `_compat`; `DoubleVar` +
+`value` property; single-seam scaling fixing the double-scale; `subtext_style` +
+dead-`<<Configure>>` fixes). Expected suite on `2.0` now **~368 passed** excl. the
+known `nl.msg`/`zh_cn.msg` localization env flake.
+
+**>>> NEXT-SESSION PICKUP → PR 3 (DateEntry).** Design §8c + §5. Cut a fresh branch
+off `2.0`. Borrows to implement: (1) **read the value from the live entry text, not
+the `_startdate` shadow** — `get_date()`/`value` parse the entry (shadow only as
+empty/unparseable fallback), fixing typed edits being silently ignored; (2) adopt
+bootstack's tolerant non-throwing **`coerce_date`** parser (`bootstack/.../
+_impl/composites/_dateutils.py`) + blur (`<FocusOut>`)/manual validation marking the
+entry `invalid`; (3) adopt the **ConfigureDelegationMixin** (#1109) for `cget` +
+canonical single-string `state` (drop the `{"Entry":…,"Button":…}` dict; fan
+`configure(state=…)` out to entry+button); (4) **snake_case renames**
+`dateformat→date_format`, `firstweekday→first_weekday`, `startdate→start_date` via
+`_compat` (reuse `normalize_option_names`) — **coordinate with the dialog layer**:
+`Querybox.get_date`/`DatePickerDialog` still carry `startdate`/`firstweekday`, so
+either alias there too or thread the new names through; (5) keyword-only ctor;
+(6) explicit kwarg partitioning to kill the `width` double-apply; (7) `value`
+property (§9, `get_date`/`set_date` kept as synonyms); (8) route `dateformat`
+reconfigure through the existing `_validate_dateformat`; (9) picker re-entrancy
+guard; adopt `position=` passthrough. Add `tests/test_dateentry_api.py`.
+
+**Working method that's been effective:** create the branch, dispatch a **fork**
+(inherits full context) to implement per the design §8x spec, then **review the diff
++ independently spot-check + run `.venv-home/Scripts/python.exe -m pytest -q`
+yourself** before committing. Commit → push → `gh pr create --base 2.0` → **hold for
+the author to merge (one PR in flight)** before the next. Env: repo `.venv` is broken
+on this box — use `.venv-home/Scripts/python.exe`. Always exclude the
+**pre-existing uncommitted `examples/widgets/tableview.py` user edit** from commits
+(stash it around `git pull --ff-only`). Remaining after PR 3: PR 4 Floodgauge
+(5-tuple + `maximum=0` guard + value/display split + `start()`→ttk realign w/ shim),
+PR 5 Scrolled (deep outer-frame + Canvas-`create_window` rewrite + class-tag wheel
+seam + grid layout), PR 6 LabeledScale (`compound`/double-init + idle-cancel) +
+ToolTip lifecycle (`add="+"` binds + `<Destroy>` release + `ensure_on_screen`),
+PR 7 Toast + STACK manager. Design entry (below) has the full per-widget mechanism
+list. Prior entry (the design pass) follows._
+
+_Prior 2026-07-07 (**Remaining shipped-widget API review — DESIGN PASS**). After the pagination merge (#1106) the author
 directed that **all remaining shipped widgets get a 2.0 API review** (the first
 shipped-widget pass covered only Window/dialogs/Tableview). Verified first via three
 audit agents that PRs A/B/C are genuinely complete in code (all §5a/5b/5c items
