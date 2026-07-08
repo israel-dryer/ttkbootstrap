@@ -3,52 +3,68 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-07-07 (**Remaining shipped-widget API review — IN PROGRESS;
-PRs 0/1/1.5/2 MERGED into `2.0`**). The all-widgets API review (design +
-bootstack-borrowed mechanisms + all forks locked in
-`development/2_0_widget_api_review_design.md`) is executing PR-by-PR. **Merged this
-session:** **#1107** PR 0 (ToolTip/Toast self-deprecation hotfix —
-`override_redirect`/`window_type`), **#1108** PR 1 (re-export `ttk.ToolTip`/
-`ToastNotification`/`ScrolledText`/`ScrolledFrame`), **#1109** PR 1.5 (the shared
-`internal/configure_delegation.py` `ConfigureDelegationMixin` backbone), **#1110**
-PR 2 (Meter: mixin adoption → `cget` parity + reconfigurable `amount_format` +
-5-tuples; 18 snake_case renames + keyword-only ctor via `_compat`; `DoubleVar` +
-`value` property; single-seam scaling fixing the double-scale; `subtext_style` +
-dead-`<<Configure>>` fixes). Expected suite on `2.0` now **~368 passed** excl. the
-known `nl.msg`/`zh_cn.msg` localization env flake.
+_Last updated: 2026-07-08 (**Remaining shipped-widget API review — COMPLETE; the
+whole widget-review series (PRs 0–7) is MERGED into `2.0`**). The all-widgets API
+review (design + all forks in `development/2_0_widget_api_review_design.md`) is
+DONE. **Merged this session:** **#1111** PR 3 (DateEntry — live-text `get_date()`/
+`value` via a tolerant `_coerce_date`, cross-layer `date_format`/`first_weekday`/
+`start_date` rename incl. `Querybox.get_date`/`DatePickerDialog`, mixin +
+single-string `state`, `<FocusOut>` blur→invalid, `width` double-apply fix,
+keyword-only ctor, picker re-entrancy guard, `position=`), **#1112** PR 4
+(Floodgauge — mixin 5-tuples + `cget` parity, `IntVar`→`DoubleVar`, live `mode`/
+`orient`, `maximum=0` guard, value-vs-display split fixing `cget("text")`,
+`start()`→`start(interval)` w/ `_compat` shim, `value` property; FloodgaugeLegacy
+trace-leak `destroy()`), **#1113** PR 5 (Scrolled — ScrolledFrame **deep
+Canvas-viewport rewrite** fixing the container leak via a re-entrancy-safe
+`_ScrollContainer` + class-tag mousewheel seam + tuple `yview`; ScrolledText onto the
+mixin w/ inner-`Text` target; `auto_hide`/`scroll_height` renames), **#1114** PR 6
+(LabeledScale — `compound`/double-init crash fix, `IntVar`→`DoubleVar` w/ `:g`
+label, `after_idle` use-after-destroy fix; ToolTip — `add="+"` binds + funcids,
+idempotent `destroy()`, `<Destroy>` self-release, `ensure_on_screen` placement,
+`configure`/`cget`), **#1115** PR 7 (ToastNotification — self-deprecation fix,
+font-glyph icon via `apply_icon` (PUA/`iconfont` gone), timer+fade leak fix,
+off-screen mismeasure fix, dismiss handle + idempotent `hide()`, **`_ToastStack`
+concurrent-toast stack manager** w/ reflow-on-dismiss). **Expected suite on `2.0`
+now 460 passed** excl. the known `nl.msg`/`zh_cn.msg` localization flake (and a
+pre-existing order-dependent multi-monitor `test_center_on_screen` — see below).
+Every widget now: `ConfigureDelegationMixin` (where applicable), keyword-only ctor,
+`_compat` warn-and-normalize renames, lifecycle/leak fixes, and a per-widget entry
+in `development/2_0_breaking_changes.md` (split breaking vs deprecated vs fixed).
 
-**>>> NEXT-SESSION PICKUP → PR 3 (DateEntry).** Design §8c + §5. Cut a fresh branch
-off `2.0`. Borrows to implement: (1) **read the value from the live entry text, not
-the `_startdate` shadow** — `get_date()`/`value` parse the entry (shadow only as
-empty/unparseable fallback), fixing typed edits being silently ignored; (2) adopt
-bootstack's tolerant non-throwing **`coerce_date`** parser (`bootstack/.../
-_impl/composites/_dateutils.py`) + blur (`<FocusOut>`)/manual validation marking the
-entry `invalid`; (3) adopt the **ConfigureDelegationMixin** (#1109) for `cget` +
-canonical single-string `state` (drop the `{"Entry":…,"Button":…}` dict; fan
-`configure(state=…)` out to entry+button); (4) **snake_case renames**
-`dateformat→date_format`, `firstweekday→first_weekday`, `startdate→start_date` via
-`_compat` (reuse `normalize_option_names`) — **coordinate with the dialog layer**:
-`Querybox.get_date`/`DatePickerDialog` still carry `startdate`/`firstweekday`, so
-either alias there too or thread the new names through; (5) keyword-only ctor;
-(6) explicit kwarg partitioning to kill the `width` double-apply; (7) `value`
-property (§9, `get_date`/`set_date` kept as synonyms); (8) route `dateformat`
-reconfigure through the existing `_validate_dateformat`; (9) picker re-entrancy
-guard; adopt `position=` passthrough. Add `tests/test_dateentry_api.py`.
+**>>> NEXT-SESSION PICKUP → pick a thread (author's call):**
+1. **Docs Workstream H sub-PR #1** — nav/IA skeleton + un-break the 7 broken API
+   `:::` stubs, per `development/2_0_docs_design.md` §11. The stated primary next
+   initiative in CLAUDE.md.
+2. **Cross-widget property/accessor consistency pass** (memory
+   `property-accessor-consistency-pass`) — now unblocked (series done): confirm every
+   normalized widget follows the one rule (options via `configure`/`cget` only; only
+   `value` + genuinely-computed-state as properties; no bare option attributes).
+3. **Pre-release breaking-vs-deprecated audit** (memory
+   `prerelease-breaking-deprecation-audit`) — the log started late, so sweep the whole
+   2.0 diff vs `master` → the Migrating-to-2.0 guide (folds into docs H).
+4. **Deferred Tableview method-verb rename** — the one remaining widget slice (own mini
+   design pass).
 
-**Working method that's been effective:** create the branch, dispatch a **fork**
+**Working method that's been effective (KEEP):** cut the branch, dispatch a **fork**
 (inherits full context) to implement per the design §8x spec, then **review the diff
-+ independently spot-check + run `.venv-home/Scripts/python.exe -m pytest -q`
-yourself** before committing. Commit → push → `gh pr create --base 2.0` → **hold for
-the author to merge (one PR in flight)** before the next. Env: repo `.venv` is broken
-on this box — use `.venv-home/Scripts/python.exe`. Always exclude the
-**pre-existing uncommitted `examples/widgets/tableview.py` user edit** from commits
-(stash it around `git pull --ff-only`). Remaining after PR 3: PR 4 Floodgauge
-(5-tuple + `maximum=0` guard + value/display split + `start()`→ttk realign w/ shim),
-PR 5 Scrolled (deep outer-frame + Canvas-`create_window` rewrite + class-tag wheel
-seam + grid layout), PR 6 LabeledScale (`compound`/double-init + idle-cancel) +
-ToolTip lifecycle (`add="+"` binds + `<Destroy>` release + `ensure_on_screen`),
-PR 7 Toast + STACK manager. Design entry (below) has the full per-widget mechanism
-list. Prior entry (the design pass) follows._
++ independently spot-check + run the suite yourself** before committing. Commit →
+push → `gh pr create --base 2.0` → **hold for the author to merge (one PR in
+flight)** before the next. Require the fork to (a) update `2_0_breaking_changes.md`
+and (b) leave user WIP untouched, as explicit deliverables.
+
+**ENV CORRECTION (important):** on this box (Logistiview login), the repo **`.venv`
+WORKS** (`.venv/Scripts/python.exe`, run pytest with `-p no:cacheprovider` — the
+`.pytest_cache` dir throws Access-denied harmlessly). **`.venv-home` is NOW
+access-denied** (it belongs to the `Israel Dryer` account) — the opposite of the
+earlier handoff note. **Uncommitted WIP in the working tree (leave untouched, do NOT
+commit):** the user's builder edits `src/ttkbootstrap/style/builders_tk.py`,
+`style/builders/treeview.py`, `examples/widgets/tableview_yscrollbar.py`, plus the
+long-standing `examples/widgets/tableview.py`. **Known non-blocking test failures:**
+`nl.msg`/`zh_cn.msg` localization flake; and `test_window_api.py::
+test_center_on_screen_is_within_bounds` — a real latent `center_on_screen`
+negative-origin multi-monitor bug (memory `center-on-screen-negative-origin-bug`),
+order-dependent, fix parked for the deferred PR B positioning fast-follow. Prior
+entry (PRs 0/1/1.5/2) follows._
 
 _Prior 2026-07-07 (**Remaining shipped-widget API review — DESIGN PASS**). After the pagination merge (#1106) the author
 directed that **all remaining shipped widgets get a 2.0 API review** (the first
