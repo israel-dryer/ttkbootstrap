@@ -26,6 +26,7 @@
 | **Dialog API normalization (Messagebox/Querybox)** | API | `development/2_0_shipped_widget_api_design.md` (PR A) |
 | **Meter: snake_case options, DoubleVar, `value`** | Breaking/additive | this doc, below (PR 2 / #1110) |
 | **DateEntry: snake_case (cross-layer), live-text read, string `state`** | Breaking/additive | this doc, below (PR 3 / #1111) |
+| **Floodgauge: DoubleVar value, `start(interval)`, live mode/orient** | Breaking/additive | this doc, below (PR 4) |
 
 ---
 
@@ -484,3 +485,44 @@ to the frame and entry); `date_format` reconfigure now re-validates and re-rende
 a picker re-entrancy guard prevents a second popup while one is open; unknown keyword
 arguments to `Querybox.get_date`/`DatePickerDialog` now raise `TypeError` (typos fail
 loudly instead of being swallowed).
+
+---
+
+## Floodgauge: DoubleVar value, `start(interval)`, live mode/orient  *(breaking + additive)*
+
+**What.** The canvas-based `Floodgauge` widget was normalized (widget-review PR 4).
+Its options mirror `ttk.Progressbar` and are **not** renamed; the changes are
+contract/behavior:
+
+*Breaking:*
+- **Value backing is now `DoubleVar`** (was `IntVar`), matching `ttk.Progressbar`.
+  `value` / `cget("value")` / the new `value` property return **float**, and
+  `configure(value=33.3)` is honored instead of truncated. An externally supplied
+  `variable=IntVar(...)` still binds.
+- **`start()` realigned to `ttk.Progressbar.start(interval)`.** The canonical
+  signature is now `start(interval=None)`; a single positional is the *interval*
+  (previously it was the step size). The per-mode step size is now an internal
+  default. Unknown keyword arguments raise `TypeError`.
+
+*Deprecated (works through 2.x, removed in 3.0):*
+- The pre-2.0 **`start(step_size, interval)`** call shape — two positionals, or a
+  `step_size=` keyword — is accepted with a `DeprecationWarning` (via
+  `style/_compat.normalize_floodgauge_start_args`).
+
+*Additive:*
+- New canonical **`value`** property (get/set).
+
+**Migration.** Expect `float` back from `value`/`cget("value")` where you previously
+got `int`. Update `start(step, interval)` calls to `start(interval)` (set the step
+via the mode default); the old form keeps working with a warning through 2.x. A bare
+`start(20)` now means *interval=20*, not *step_size=20* — this positional-meaning
+change cannot be shimmed.
+
+**Fixes bundled.** `mode` and `orient` are now **live** `configure`/`cget` options
+(they were construction-only and raised `TclError`; `orient` now also swaps the
+canvas width/height); `configure(opt)` returns a proper **5-tuple** spec (was a
+malformed 4-tuple); `maximum=0` no longer raises `ZeroDivisionError`; a `mask` no
+longer clobbers the user's `textvariable`, so **`cget("text")` returns the user's
+text** rather than the masked string. `FloodgaugeLegacy` (unchanged API, 3.0-removal)
+gained a `destroy()` that detaches its value/text write traces (leak parity with the
+#1070 fix).

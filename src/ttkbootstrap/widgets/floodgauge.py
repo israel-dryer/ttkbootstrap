@@ -35,13 +35,18 @@ import warnings
 from tkinter import Event, Misc, TclError
 from typing import Any, Optional, Union
 
-from ttkbootstrap import Canvas, IntVar, Progressbar, StringVar
+from ttkbootstrap import Canvas, DoubleVar, IntVar, Progressbar, StringVar
 from ttkbootstrap.colorutils import contrast_color
 from ttkbootstrap.constants import DETERMINATE, HORIZONTAL, PRIMARY
+from ttkbootstrap.internal.configure_delegation import (
+    ConfigureDelegationMixin,
+    configure_delegate,
+)
 from ttkbootstrap.style import Colors, Style
+from ttkbootstrap.style._compat import normalize_floodgauge_start_args
 
 
-class Floodgauge(Canvas):
+class Floodgauge(ConfigureDelegationMixin, Canvas):
     """
     A canvas-based widget that displays progress in determinate or indeterminate mode,
     styled using ttkbootstrap's color system.
@@ -54,14 +59,19 @@ class Floodgauge(Canvas):
     - Auto-updating label based on mask or textvariable
     - Theme-reactive color updates via <<ThemeChanged>> event
 
+    The widget's value is backed by a ``DoubleVar`` (matching ttk.Progressbar),
+    so fractional values are honored. All options are reachable through the
+    tk-native ``configure``/``cget``/item surface; ``value`` is also exposed as a
+    canonical read/write property.
+
     Parameters:
         master (Widget, optional):
             Parent widget.
 
-        value (int):
+        value (int or float):
             Initial value of the progress bar.
 
-        maximum (int):
+        maximum (int or float):
             The maximum value for the determinate range.
 
         mode (str):
@@ -74,7 +84,7 @@ class Floodgauge(Canvas):
             A static fallback label (used if no mask is specified).
 
         font (Font or tuple):
-            The font used for the label (default: Helvetica 14 bold).
+            The font used for the label (default: ("Helvetica", 12)).
 
         bootstyle (str):
             A ttkbootstrap style keyword such as 'primary', 'info', etc.
@@ -88,7 +98,7 @@ class Floodgauge(Canvas):
         thickness (int):
             The short axis of the widget (height if horizontal, width if vertical). Defaults to 50.
 
-        variable (tk.IntVar, optional):
+        variable (tk.DoubleVar, optional):
             Bound variable for the current value.
 
         textvariable (tk.StringVar, optional):
@@ -98,8 +108,8 @@ class Floodgauge(Canvas):
     def __init__(
             self,
             master: Optional[Misc] = None,
-            value: int = 0,
-            maximum: int = 100,
+            value: Union[int, float] = 0,
+            maximum: Union[int, float] = 100,
             mode: str = "determinate",
             mask: Optional[str] = None,
             text: str = "",
@@ -110,7 +120,7 @@ class Floodgauge(Canvas):
             thickness: int = 50,
             **kwargs: Any
     ) -> None:
-        self.variable = kwargs.pop("variable", IntVar(value=value))
+        self.variable = kwargs.pop("variable", DoubleVar(value=value))
         self.textvariable = kwargs.pop("textvariable", StringVar(value=text))
 
         self.length = length
@@ -130,8 +140,6 @@ class Floodgauge(Canvas):
         self._bind_variable(self.variable)
         self._bind_textvariable(self.textvariable)
 
-        self.value = self.variable.get()
-        self.text = self.textvariable.get()
         self.maximum = maximum
         self.mode = mode
         self.mask = mask
@@ -149,6 +157,17 @@ class Floodgauge(Canvas):
         self.bind("<<ThemeChanged>>", lambda e: self._update_theme_colors())
         self._draw()
 
+    # -- value access -------------------------------------------------------- #
+    @property
+    def value(self) -> float:
+        """The current progress value (canonical read/write handle)."""
+        return self.variable.get()
+
+    @value.setter
+    def value(self, amount: Union[int, float]) -> None:
+        # Setting the bound variable fires its write trace -> redraw.
+        self.variable.set(amount)
+
     def _update_theme_colors(self) -> None:
         style = Style.get_instance()
         self.bar_color = style.colors.get(self._bootstyle)
@@ -165,6 +184,13 @@ class Floodgauge(Canvas):
             self.thickness = event.width
         self._draw()
 
+    def _apply_geometry(self) -> None:
+        """Resize the canvas to match the current orient/length/thickness."""
+        if self.orient == "horizontal":
+            super().configure(width=self.length, height=self.thickness)
+        else:
+            super().configure(width=self.thickness, height=self.length)
+
     def _draw(self) -> None:
         self.delete("all")
         w = self.winfo_width()
@@ -172,8 +198,13 @@ class Floodgauge(Canvas):
 
         self.create_rectangle(0, 0, w, h, fill=self.trough_color, width=0)
 
+        value = self.variable.get()
         if self.mode == "determinate":
-            ratio = max(0.0, min(1.0, self.value / self.maximum))
+            # Zero-range guard: a 0 maximum has no meaningful ratio.
+            if self.maximum == 0:
+                ratio = 0.0
+            else:
+                ratio = max(0.0, min(1.0, value / self.maximum))
             if self.orient == "horizontal":
                 fill = int(ratio * w)
                 self.create_rectangle(0, 0, fill, h, fill=self.bar_color, width=0)
@@ -190,13 +221,13 @@ class Floodgauge(Canvas):
                 y = self._pulse_pos
                 self.create_rectangle(0, y - pulse_height, w, y, fill=self.bar_color, width=0)
 
+        # Derive the display label. A mask formats the numeric value for
+        # *display only* -- it must never be written back onto the user's
+        # textvariable (that would clobber cget("text")).
         if self.mask:
-            label = self.mask.format(int(self.value))
-            self.textvariable.set(label)
-        elif self.textvariable:
-            label = self.textvariable.get()
+            label = self.mask.format(int(value))
         else:
-            label = self.text
+            label = self.textvariable.get()
 
         if label:
             self.create_text(
@@ -209,14 +240,12 @@ class Floodgauge(Canvas):
             )
 
     def _on_var_change(self) -> None:
-        self.value = self.variable.get()
         self._draw()
 
     def _on_text_change(self) -> None:
-        self.text = self.textvariable.get()
         self._draw()
 
-    def _bind_variable(self, variable: IntVar) -> None:
+    def _bind_variable(self, variable: Union[IntVar, DoubleVar]) -> None:
         """Trace `variable` for value changes, dropping any prior trace.
 
         The trace id is retained so it can be removed when the variable is
@@ -267,38 +296,39 @@ class Floodgauge(Canvas):
         self._textvar_traceid = None
         super().destroy()
 
-    def step(self, amount: int = 1) -> None:
+    def step(self, amount: Union[int, float] = 1) -> None:
         """Increment the progress value.
 
         Parameters:
-            amount (int, optional): The amount to increment. Defaults to 1.
-                                   Value wraps around after reaching maximum.
+            amount (int or float, optional): The amount to increment. Defaults
+                to 1. Value wraps around after reaching maximum.
         """
         self.value = (self.value + amount) % (self.maximum + 1)
-        self.variable.set(self.value)
-        self._draw()
 
-    def start(self, step_size: Optional[int] = None, interval: Optional[int] = None) -> None:
+    def start(self, *args: Any, **kwargs: Any) -> None:
         """Start the progress animation.
 
         For indeterminate mode, starts the bouncing animation. For determinate
         mode, starts auto-incrementing the value.
 
-        Parameters:
-            step_size (int, optional): Amount to increment per animation step.
-                                      Defaults to 8 for indeterminate mode,
-                                      1 for determinate mode.
+        The canonical signature mirrors ``ttk.Progressbar.start``:
 
-            interval (int, optional): Time in milliseconds between animation steps.
-                                     Defaults to 20ms for indeterminate mode,
-                                     50ms for determinate mode.
+            start(interval=None)
+
+        where ``interval`` is the time in milliseconds between animation steps
+        (defaults to 20ms for indeterminate mode, 50ms for determinate mode).
+
+        The pre-2.0 ``start(step_size, interval)`` form is still accepted
+        through 2.x with a ``DeprecationWarning`` (removed in 3.0); the per-mode
+        step size is now an internal default.
         """
-        if self.mode == "indeterminate":
-            self._step_size = step_size if step_size is not None else 8
-            interval = interval if interval is not None else 20
+        interval, step_size = normalize_floodgauge_start_args(list(args), dict(kwargs))
+        if step_size is not None:
+            self._step_size = step_size
         else:
-            self._step_size = step_size if step_size is not None else 1
-            interval = interval if interval is not None else 50
+            self._step_size = 8 if self.mode == "indeterminate" else 1
+        if interval is None:
+            interval = 20 if self.mode == "indeterminate" else 50
 
         self._running = True
         self._pulse_direction = 1
@@ -354,111 +384,96 @@ class Floodgauge(Canvas):
         self._draw()
         self._after_id = self.after(interval, lambda: self._animate_indeterminate(interval))
 
-    def configure(self, cnf: Optional[str] = None, **kwargs: Any) -> Any:
-        """Configure the options for this widget.
+    # -- configure delegates ------------------------------------------------- #
+    # One get/set handler per option (value=None queries, else sets). The
+    # ConfigureDelegationMixin wires these into configure/cget/keys/item access
+    # and emits proper Tk 5-tuple specs.
 
-        Parameters:
-            cnf (str, optional): Option name to query. If provided without
-                                kwargs, returns the current value.
-
-            **kwargs: Widget options to set (value, maximum, mask, text, font,
-                     bootstyle, length, thickness, variable, textvariable).
-        """
-        if cnf is not None and not kwargs:
-            custom = {
-                "value": ("value", "value", "Value", self.variable.get()),
-                "maximum": ("maximum", "maximum", "Maximum", self.maximum),
-                "mask": ("mask", "mask", "Mask", self.mask),
-                "text": ("text", "text", "Text", self.textvariable.get()),
-                "font": ("font", "font", "Font", self.font),
-                "bootstyle": ("bootstyle", "bootstyle", "Bootstyle", self._bootstyle),
-                "variable": ("variable", "variable", "Variable", str(self.variable)),
-                "textvariable": ("textvariable", "textvariable", "Textvariable", str(self.textvariable)),
-                "length": ("length", "length", "Length", self.length),
-                "thickness": ("thickness", "thickness", "Thickness", self.thickness),
-            }
-            if cnf in custom:
-                return custom[cnf]
-            else:
-                raise TclError(f"unknown option '{cnf}'")
-
-        if "value" in kwargs:
-            self.value = kwargs.pop("value")
-            self.variable.set(self.value)
-        if "maximum" in kwargs:
-            self.maximum = kwargs.pop("maximum")
-        if "mask" in kwargs:
-            self.mask = kwargs.pop("mask")
-        if "text" in kwargs:
-            self.text = kwargs.pop("text")
-            self.textvariable.set(self.text)
-        if "font" in kwargs:
-            self.font = kwargs.pop("font")
-        if "bootstyle" in kwargs:
-            self._bootstyle = kwargs.pop("bootstyle")
-            self._update_theme_colors()
-        if "length" in kwargs:
-            self.length = kwargs.pop("length")
-            if self.orient == "horizontal":
-                self.configure(width=self.length)
-            else:
-                self.configure(height=self.length)
-        if "thickness" in kwargs:
-            self.thickness = kwargs.pop("thickness")
-            if self.orient == "horizontal":
-                self.configure(height=self.thickness)
-            else:
-                self.configure(width=self.thickness)
-        if "variable" in kwargs:
-            self._bind_variable(kwargs.pop("variable"))
-        if "textvariable" in kwargs:
-            self._bind_textvariable(kwargs.pop("textvariable"))
-
-        result = super().configure(**kwargs)
-        self._draw()
-        return result
-
-    def cget(self, key: str) -> Any:
-        """Get the current value of a configuration option.
-
-        Parameters:
-            key (str): The option name to query.
-
-        Returns:
-            The current value of the specified option.
-        """
-        if key == "value":
+    @configure_delegate("value")
+    def _cfg_value(self, value):
+        if value is None:
             return self.variable.get()
-        if key == "text":
-            return self.textvariable.get()
-        if key == "maximum":
+        self.variable.set(value)  # trace -> _on_var_change -> _draw
+
+    @configure_delegate("maximum")
+    def _cfg_maximum(self, value):
+        if value is None:
             return self.maximum
-        if key == "mask":
+        self.maximum = value
+        self._draw()
+
+    @configure_delegate("mode")
+    def _cfg_mode(self, value):
+        if value is None:
+            return self.mode
+        self.mode = value
+        self._draw()
+
+    @configure_delegate("orient")
+    def _cfg_orient(self, value):
+        if value is None:
+            return self.orient
+        self.orient = value
+        self._apply_geometry()
+        self._draw()
+
+    @configure_delegate("mask")
+    def _cfg_mask(self, value):
+        if value is None:
             return self.mask
-        if key == "bootstyle":
-            return self._bootstyle
-        if key == "font":
+        self.mask = value
+        self._draw()
+
+    @configure_delegate("text")
+    def _cfg_text(self, value):
+        if value is None:
+            return self.textvariable.get()
+        self.textvariable.set(value)  # trace -> _on_text_change -> _draw
+
+    @configure_delegate("font")
+    def _cfg_font(self, value):
+        if value is None:
             return self.font
-        if key == "length":
+        self.font = value
+        self._draw()
+
+    @configure_delegate("bootstyle")
+    def _cfg_bootstyle(self, value):
+        if value is None:
+            return self._bootstyle
+        self._bootstyle = value
+        self._update_theme_colors()  # redraws
+
+    @configure_delegate("length")
+    def _cfg_length(self, value):
+        if value is None:
             return self.length
-        if key == "thickness":
+        self.length = value
+        self._apply_geometry()
+        self._draw()
+
+    @configure_delegate("thickness")
+    def _cfg_thickness(self, value):
+        if value is None:
             return self.thickness
-        if key == "variable":
-            return str(self.variable)
-        if key == "textvariable":
-            return str(self.textvariable)
-        return super().cget(key)
+        self.thickness = value
+        self._apply_geometry()
+        self._draw()
 
-    def keys(self) -> list[str]:
-        """Get the list of valid configuration option names.
+    @configure_delegate("variable")
+    def _cfg_variable(self, value):
+        # Queried: return the object; the mixin renders it as its Tcl name.
+        if value is None:
+            return self.variable
+        self._bind_variable(value)
+        self._draw()
 
-        Returns:
-            list: List of configuration option names.
-        """
-        return [
-            "value", "maximum", "mask", "text", "font",
-            "bootstyle", "length", "thickness", "variable", "textvariable"
-        ]
+    @configure_delegate("textvariable")
+    def _cfg_textvariable(self, value):
+        if value is None:
+            return self.textvariable
+        self._bind_textvariable(value)
+        self._draw()
 
     def items(self) -> Any:
         """Get all configuration options as key-value pairs.
@@ -467,9 +482,6 @@ class Floodgauge(Canvas):
             dict_items: Iterator of (option, value) pairs.
         """
         return {k: self.cget(k) for k in self.keys()}.items()
-
-    __getitem__ = lambda self, key: self.cget(key)
-    __setitem__ = lambda self, key, value: self.configure(**{key: value})
 
 
 class FloodgaugeLegacy(Progressbar):
@@ -584,7 +596,11 @@ class FloodgaugeLegacy(Progressbar):
         else:
             self._textvariable = StringVar(value=text)
 
-        self._textvariable.trace_add("write", self._set_widget_text)
+        # Retain the textvariable write trace id so it can be detached on
+        # destroy (otherwise it leaks and pins the widget alive).
+        self._textvar_traceid = self._textvariable.trace_add(
+            "write", self._set_widget_text
+        )
         self._bootstyle = bootstyle
         self._font = font or "helvetica 10"
         self._mask = mask
@@ -609,6 +625,26 @@ class FloodgaugeLegacy(Progressbar):
 
         if self._mask is not None:
             self._set_mask()
+
+    def destroy(self) -> None:
+        """Detach the value/text write traces before teardown.
+
+        The traces' write callbacks hold a reference back to the widget, so
+        leaving them attached keeps it alive after destroy (and, for an external
+        variable, keeps firing a callback pointed at a dead widget).
+        """
+        for variable, traceid in (
+            (self._textvariable, getattr(self, "_textvar_traceid", None)),
+            (self._variable, self._traceid),
+        ):
+            if traceid is not None:
+                try:
+                    variable.trace_remove("write", traceid)
+                except TclError:
+                    pass
+        self._textvar_traceid = None
+        self._traceid = None
+        super().destroy()
 
     def _set_widget_text(self, *_: Any) -> None:
         ttkstyle = self.cget("style")

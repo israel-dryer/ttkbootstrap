@@ -198,6 +198,45 @@ def normalize_datepicker_kwargs(kwargs: dict) -> dict:
     return normalize_option_names(kwargs, _DATEPICKER_KWARG_ALIASES, "date picker")
 
 
+# Floodgauge.start() signature realignment (2.0 shipped-widget API pass, PR 4).
+# 2.0 realigns start() to ttk.Progressbar's start(interval); the pre-2.0
+# start(step_size, interval) form is accepted through 2.x with a warning.
+def normalize_floodgauge_start_args(args: list, kwargs: dict) -> tuple:
+    """Resolve ``Floodgauge.start()`` arguments across the 2.x signature change.
+
+    Returns ``(interval, step_size)``. ``step_size`` is ``None`` unless the
+    legacy ``start(step_size, interval)`` form -- two positionals, or a
+    ``step_size=`` keyword -- was used, in which case a ``DeprecationWarning``
+    is emitted. A single positional is the new ``interval``.
+    """
+    interval = None
+    step_size = None
+    legacy = False
+
+    if "step_size" in kwargs:
+        step_size = kwargs.pop("step_size")
+        legacy = True
+    if "interval" in kwargs:
+        interval = kwargs.pop("interval")
+    if kwargs:
+        raise TypeError(
+            f"start() got unexpected keyword arguments: {', '.join(sorted(kwargs))}"
+        )
+
+    if len(args) >= 2:
+        step_size, interval = args[0], args[1]
+        legacy = True
+    elif len(args) == 1:
+        interval = args[0]
+
+    if legacy:
+        warn_deprecated(
+            "Floodgauge.start(step_size, interval)",
+            "start(interval)",
+        )
+    return interval, step_size
+
+
 def normalize_bootstyle(value, *, warn: bool = False) -> str:
     """Return the canonical dash-joined bootstyle string for a legacy value.
 
