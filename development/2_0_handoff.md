@@ -3,7 +3,35 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-07-07 (**Tableview pagination buttons on the icon path — MERGED
+_Last updated: 2026-07-07 (**Remaining shipped-widget API review — DESIGN PASS in
+progress; some forks locked**). After the pagination merge (#1106) the author
+directed that **all remaining shipped widgets get a 2.0 API review** (the first
+shipped-widget pass covered only Window/dialogs/Tableview). Verified first via three
+audit agents that PRs A/B/C are genuinely complete in code (all §5a/5b/5c items
+DONE; 19+15+tests pass) — the audit surfaced a live regression: **ToolTip fires 2
+`DeprecationWarning`s/hover and Toast 1/show** because they still inject legacy
+`overrideredirect`/`windowtype` into `Toplevel` (PR B migrated `dialogs/base.py`
+but missed these callers), plus a pre-existing `Tableview.delete_column` `int(None)`
+branch bug. Then ran **seven ground-truth surveys** (one per widget) + **six
+bootstack mechanism-mining comparisons**; full design in
+**`development/2_0_widget_api_review_design.md`**. Scope = Meter, Floodgauge
+(+Legacy), DateEntry, LabeledScale, ScrolledText/Frame, ToolTip, Toast.
+**Flagship borrow:** bootstack's `ConfigureDelegationMixin`/`@configure_delegate`
+(the #1 pick for Meter+Floodgauge+Scrolled) → adopt as a shared private
+`internal/` mixin that gives `cget` + get/set symmetry + reconfigurable options +
+proper 5-tuples and deletes the buggy hand-maintained configure ladders (caveat:
+inner-widget pass-through is ours to add). **Locked forks:** value backing →
+`DoubleVar`; constructors → keyword-only; mine bootstack before code (done). **7-PR
+plan** (design §5): PR 0 self-deprecation hotfix → PR 1 re-exports (`ttk.ToolTip`/
+`ToastNotification`/`ScrolledText`/`ScrolledFrame` don't exist today; Scrolled isn't
+even in `widgets/__all__`) → PR 2 Meter → PR 3 DateEntry (coordinated with the dialog
+layer's `start_date`/`first_weekday`) → PR 4 Floodgauge → PR 5 Scrolled → PR 6
+LabeledScale + ToolTip lifecycle. **NEXT → author sign-off on the remaining §7 forks
+(§4.1 renames; `position` unify-vs-document; Floodgauge `start()`; ScrolledFrame
+deep-vs-stopgap; toast stack + fade), then PR 0.** Prior entry (pagination #1106)
+follows._
+
+_Prior 2026-07-07 (**Tableview pagination buttons on the icon path — MERGED
 into `2.0` (#1106)**). Swaps the five character-symbol pagination controls
 (`⎌ » › ‹ «`, all `symbol.Link.TButton`) for Bootstrap Icons glyphs on a **ghost**
 base via the `icon=` sugar (first→`chevron-bar-left`, prev→`chevron-left`,
