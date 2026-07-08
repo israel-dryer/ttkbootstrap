@@ -168,3 +168,28 @@ def test_start_unknown_keyword_raises(root):
     with pytest.raises(TypeError):
         fg.start(bogus=1)
     fg.stop()
+
+# --- property/accessor consistency (2.0 property-consistency pass) ----------
+
+def test_options_backed_privately_and_read_via_cget(root):
+    """The option backing fields are private; the canonical read is cget."""
+    fg = Floodgauge(root, maximum=100)
+    for opt in ("maximum", "mode", "orient", "mask", "font", "length", "thickness"):
+        assert opt not in vars(fg), f"{opt!r} is still a bare public instance attr"
+        assert hasattr(fg, f"_{opt}")  # private backing field
+        fg.cget(opt)                   # round-trips through configure/cget
+    # The value handle and Variable handles remain public by design.
+    assert isinstance(fg.value, float)
+    assert fg.variable is not None and fg.textvariable is not None
+
+
+def test_legacy_bare_option_attrs_are_deprecated_not_removed(root):
+    """Pre-2.0 bare-attribute read/write still works but warns (non-breaking)."""
+    fg = Floodgauge(root, maximum=100)
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        assert fg.maximum == 100                 # deprecated read
+        fg.maximum = 50                          # deprecated write -> configure
+    cats = [w for w in caught if issubclass(w.category, DeprecationWarning)]
+    assert len(cats) >= 2                         # one for the read, one for the write
+    assert fg.cget("maximum") == 50              # the write actually took effect

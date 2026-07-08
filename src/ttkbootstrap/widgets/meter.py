@@ -141,6 +141,14 @@ class Meter(ConfigureDelegationMixin, Frame):
         "labelvar": "label_var",
         "meterframe": "meter_frame",
         "textframe": "text_frame",
+        # The subtext/text-position Label handles kept their pre-2.0 spellings
+        # while the sibling frames were snake_cased; give them collision-free
+        # `*_label` names (the bare `subtext`/`text_left` names are the string
+        # *options*) and deprecate the old attribute spellings.
+        "subtext": "subtext_label",
+        "textleft": "text_left_label",
+        "textright": "text_right_label",
+        "textcenter": "text_center_label",
     }
 
     def __init__(
@@ -318,7 +326,7 @@ class Meter(ConfigureDelegationMixin, Frame):
     # -- value access -------------------------------------------------------- #
     @property
     def value(self) -> Union[int, float]:
-        """The current meter value (canonical read/write handle)."""
+        """The current meter value."""
         return self.amount_used_var.get()
 
     @value.setter
@@ -370,7 +378,7 @@ class Meter(ConfigureDelegationMixin, Frame):
         self.meter_frame = Frame(master=self, width=size, height=size)
         self.indicator = Label(self.meter_frame)
         self.text_frame = Frame(self.meter_frame)
-        self.textleft = Label(
+        self.text_left_label = Label(
             master=self.text_frame,
             text=self._text_left,
             font=self._subtext_font,
@@ -378,13 +386,13 @@ class Meter(ConfigureDelegationMixin, Frame):
             anchor=S,
             padding=(0, 5),
         )
-        self.textcenter = Label(
+        self.text_center_label = Label(
             master=self.text_frame,
             textvariable=self.amount_used_display_var,
             bootstyle=f"{self._bootstyle}-meter",
             font=self._text_font,
         )
-        self.textright = Label(
+        self.text_right_label = Label(
             master=self.text_frame,
             text=self._text_right,
             font=self._subtext_font,
@@ -392,7 +400,7 @@ class Meter(ConfigureDelegationMixin, Frame):
             anchor=S,
             padding=(0, 5),
         )
-        self.subtext = Label(
+        self.subtext_label = Label(
             master=self.meter_frame,
             text=self._subtext,
             bootstyle=f"{self._subtext_style}-metersubtxt",
@@ -431,17 +439,17 @@ class Meter(ConfigureDelegationMixin, Frame):
         """Position the subtext label below the center text."""
         if self._subtext:
             if self._show_text:
-                self.subtext.place(relx=0.5, rely=0.6, anchor=CENTER)
+                self.subtext_label.place(relx=0.5, rely=0.6, anchor=CENTER)
             else:
-                self.subtext.place(relx=0.5, rely=0.5, anchor=CENTER)
+                self.subtext_label.place(relx=0.5, rely=0.5, anchor=CENTER)
 
     def _set_show_text(self) -> None:
         """Show or hide the text labels based on the show_text setting."""
         self.text_frame.pack_forget()
-        self.textcenter.pack_forget()
-        self.textleft.pack_forget()
-        self.textright.pack_forget()
-        self.subtext.pack_forget()
+        self.text_center_label.pack_forget()
+        self.text_left_label.pack_forget()
+        self.text_right_label.pack_forget()
+        self.subtext_label.pack_forget()
 
         if self._show_text:
             if self._subtext:
@@ -457,18 +465,18 @@ class Meter(ConfigureDelegationMixin, Frame):
     def _set_text_left(self) -> None:
         """Pack the left text label if configured."""
         if self._show_text and self._text_left:
-            self.textleft.pack(side=LEFT, fill=Y)
+            self.text_left_label.pack(side=LEFT, fill=Y)
 
     def _set_text_center(self) -> None:
         """Pack the center text label showing the current value."""
         if self._show_text:
-            self.textcenter.pack(side=LEFT, fill=Y)
+            self.text_center_label.pack(side=LEFT, fill=Y)
 
     def _set_text_right(self) -> None:
         """Pack the right text label if configured."""
-        self.textright.configure(text=self._text_right)
+        self.text_right_label.configure(text=self._text_right)
         if self._show_text and self._text_right:
-            self.textright.pack(side=RIGHT, fill=Y)
+            self.text_right_label.pack(side=RIGHT, fill=Y)
 
     def _set_interactive_bind(self) -> None:
         """Bind or unbind mouse events for interactive mode."""
@@ -678,7 +686,7 @@ class Meter(ConfigureDelegationMixin, Frame):
         if value is None:
             return self._bootstyle
         self._bootstyle = value
-        self.textcenter.configure(bootstyle=f"{self._bootstyle}-meter")
+        self.text_center_label.configure(bootstyle=f"{self._bootstyle}-meter")
 
     @configure_delegate("arc_range")
     def _cfg_arc_range(self, value):
@@ -769,7 +777,7 @@ class Meter(ConfigureDelegationMixin, Frame):
         if value is None:
             return self._text_left
         self._text_left = value
-        self.textleft.configure(text=self._text_left)
+        self.text_left_label.configure(text=self._text_left)
 
     @configure_delegate("text_right")
     def _cfg_text_right(self, value):
@@ -782,7 +790,7 @@ class Meter(ConfigureDelegationMixin, Frame):
         if value is None:
             return self._text_font
         self._text_font = value
-        self.textcenter.configure(font=self._text_font)
+        self.text_center_label.configure(font=self._text_font)
 
     @configure_delegate("subtext")
     def _cfg_subtext(self, value):
@@ -798,7 +806,7 @@ class Meter(ConfigureDelegationMixin, Frame):
         self._subtext_style = value
         # Recolor every subtext label (not just the center subtext) with the
         # same style suffix used at construction.
-        for label in (self.subtext, self.textleft, self.textright):
+        for label in (self.subtext_label, self.text_left_label, self.text_right_label):
             label.configure(bootstyle=f"{self._subtext_style}-metersubtxt")
 
     @configure_delegate("subtext_font")
@@ -806,9 +814,9 @@ class Meter(ConfigureDelegationMixin, Frame):
         if value is None:
             return self._subtext_font
         self._subtext_font = value
-        self.subtext.configure(font=self._subtext_font)
-        self.textleft.configure(font=self._subtext_font)
-        self.textright.configure(font=self._subtext_font)
+        self.subtext_label.configure(font=self._subtext_font)
+        self.text_left_label.configure(font=self._subtext_font)
+        self.text_right_label.configure(font=self._subtext_font)
 
     @configure_delegate("step_size")
     def _cfg_step_size(self, value):

@@ -164,3 +164,13 @@ def test_scrolledtext_autohide_scrollbar_toggles(root):
     assert st.auto_hide is False
     st.autohide_scrollbar()
     assert st.auto_hide is True
+
+def test_scrolledframe_vscroll_is_deprecated_alias_of_vbar(root):
+    """`vbar` is canonical; the old `vscroll` still resolves but warns."""
+    import warnings
+    from ttkbootstrap.widgets.scrolled import ScrolledFrame
+    sf = ScrolledFrame(root)
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        assert sf.vscroll is sf.vbar
+    assert any(issubclass(w.category, DeprecationWarning) for w in caught)

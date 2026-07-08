@@ -42,7 +42,7 @@ from typing import Any, Callable, Optional, Tuple
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from ttkbootstrap.internal.configure_delegation import ConfigureDelegationMixin
-from ttkbootstrap.style._compat import normalize_scrolled_kwargs
+from ttkbootstrap.style._compat import normalize_scrolled_kwargs, warn_deprecated
 
 
 class ScrolledText(ConfigureDelegationMixin, ttk.Frame):
@@ -367,14 +367,14 @@ class ScrolledFrame(ttk.Frame):
         )
         self._canvas.grid(row=0, column=0, sticky=NSEW)
 
-        self.vscroll: ttk.Scrollbar = ttk.Scrollbar(
+        self._vbar: ttk.Scrollbar = ttk.Scrollbar(
             master=self.container,
             command=self._canvas.yview,
             orient=VERTICAL,
             bootstyle=bootstyle,
         )
-        self.vscroll.grid(row=0, column=1, sticky=NS)
-        self._canvas.configure(yscrollcommand=self.vscroll.set)
+        self._vbar.grid(row=0, column=1, sticky=NS)
+        self._canvas.configure(yscrollcommand=self._vbar.set)
 
         # content frame lives inside the canvas -> native scroll fractions +
         # native destroy cascade.
@@ -528,7 +528,13 @@ class ScrolledFrame(ttk.Frame):
     @property
     def vbar(self) -> ttk.Scrollbar:
         """The vertical scrollbar."""
-        return self.vscroll
+        return self._vbar
+
+    @property
+    def vscroll(self) -> ttk.Scrollbar:
+        """Deprecated alias for :attr:`vbar` (removed in 3.0)."""
+        warn_deprecated("the 'vscroll' ScrolledFrame attribute", "'vbar'")
+        return self._vbar
 
     @property
     def hbar(self) -> None:
@@ -537,11 +543,11 @@ class ScrolledFrame(ttk.Frame):
 
     def hide_scrollbars(self) -> None:
         """Hide the scrollbar."""
-        self.vscroll.grid_remove()
+        self._vbar.grid_remove()
 
     def show_scrollbars(self) -> None:
         """Show the scrollbar."""
-        self.vscroll.grid()
+        self._vbar.grid()
 
     def autohide_scrollbar(self) -> None:
         """Toggle the auto-hide behavior.
