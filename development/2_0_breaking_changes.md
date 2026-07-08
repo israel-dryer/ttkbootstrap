@@ -409,3 +409,36 @@ the boundary state now reads.
 `goto_last_page`/`goto_next_page`/`goto_prev_page` are unchanged. A programmatic
 caller can still invoke them at a boundary (they were already guarded no-ops); only
 the button's interactive `state` reflects the boundary now.
+
+## Meter: snake_case options, DoubleVar values, `value` property  *(breaking + additive)*
+
+**What.** The `Meter` widget's API was normalized (widget-review PR 2):
+- **All 18 authored options renamed to snake_case** — `amountused`→`amount_used`,
+  `metersize`→`meter_size`, `metertype`→`meter_type`, `meterthickness`→
+  `meter_thickness`, `amountmin`/`amounttotal`→`amount_min`/`amount_total`,
+  `amountformat`→`amount_format`, `arcrange`/`arcoffset`→`arc_range`/`arc_offset`,
+  `wedgesize`→`wedge_size`, `showtext`→`show_text`, `stripethickness`→
+  `stripe_thickness`, `textleft`/`textright`→`text_left`/`text_right`,
+  `textfont`→`text_font`, `subtextstyle`→`subtext_style`, `subtextfont`→
+  `subtext_font`, `stepsize`→`step_size`. (`subtext`, `interactive`, `bootstyle`
+  unchanged.) Applies to constructor kwargs **and** `configure`/`cget`/item access.
+- **Public attributes renamed**: `amountusedvar`→`amount_used_var`,
+  `amounttotalvar`→`amount_total_var`, `amountminvar`→`amount_min_var`,
+  `amountuseddisplayvar`→`amount_used_display_var`, `labelvar`→`label_var`,
+  `meterframe`→`meter_frame`, `textframe`→`text_frame`.
+- **Constructor is keyword-only** after `master`.
+- **Values are `DoubleVar`-backed** (was `IntVar`): fractional `amount_used` and
+  fractional `amount_format` (e.g. `"{:.1f}"`) are now honored instead of truncated.
+- New canonical **`value`** property (get/set) as the uniform value handle
+  (`amount_used` remains a synonym).
+
+**Migration.** All old option and attribute spellings are accepted through 2.x with
+a `DeprecationWarning` naming the new form (via `style/_compat.py`), removed in 3.0.
+The keyword-only constructor and the `IntVar`→`DoubleVar` change cannot be shimmed:
+pass options by keyword (already the norm), and expect floats back from
+`amount_used`/`value` where you previously got ints.
+
+**Fixes bundled.** `cget(...)` now works for every option (was absent);
+`amount_format` is reconfigurable (was construction-only); `configure(meter_size=…)`
+no longer double-scales on a round-trip; a `subtext_style` change now recolors the
+left/right labels too; the dead `<<Configure>>` bind was removed.

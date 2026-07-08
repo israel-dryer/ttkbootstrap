@@ -29,7 +29,7 @@ Example:
     floodgauge = ttk.Floodgauge(root, maximum=100, mask="{}% Complete")
     floodgauge.pack(fill='x', padx=10, pady=5)
 
-    meter = ttk.Meter(root, amountused=75, metertype="semi")
+    meter = ttk.Meter(root, amount_used=75, meter_type="semi")
     meter.pack(padx=10, pady=5)
 
     scale = ttk.LabeledScale(root, from_=0, to=100)

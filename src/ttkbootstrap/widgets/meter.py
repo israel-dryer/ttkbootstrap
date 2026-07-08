@@ -18,10 +18,10 @@ Example:
     # Create a meter
     meter = ttk.Meter(
         root,
-        metersize=200,
-        amountused=65,
-        amounttotal=100,
-        metertype="semi",
+        meter_size=200,
+        amount_used=65,
+        amount_total=100,
+        meter_type="semi",
         subtext="CPU Usage",
         interactive=True,
         bootstyle="success"
@@ -29,10 +29,10 @@ Example:
     meter.pack(padx=10, pady=10)
 
     # Update the value
-    meter.configure(amountused=75)
+    meter.configure(amount_used=75)
 
-    # Access the value via variable
-    print(meter.amountusedvar.get())
+    # Access the value
+    print(meter.value)
 
     root.mainloop()
     ```
@@ -44,40 +44,48 @@ from typing import Any, Optional, Union
 from PIL import Image, ImageDraw, ImageTk
 from PIL.Image import Resampling
 
-from ttkbootstrap import Frame, IntVar, Label, StringVar, utility
+from ttkbootstrap import DoubleVar, Frame, Label, StringVar, utility
 from ttkbootstrap.constants import CENTER, DEFAULT, FULL, LEFT, RIGHT, S, Y
+from ttkbootstrap.internal.configure_delegation import (
+    ConfigureDelegationMixin,
+    configure_delegate,
+)
 from ttkbootstrap.style import Bootstyle, Colors
+from ttkbootstrap.style._compat import (
+    normalize_meter_kwargs,
+    normalize_meter_option,
+    warn_deprecated,
+)
 
 M = 3  # meter image scale, higher number increases resolution
 
 
-class Meter(Frame):
+class Meter(ConfigureDelegationMixin, Frame):
     """A radial meter that can be used to show progress of long
     running operations or the amount of work completed; can also be
     used as a dial when set to `interactive=True`.
 
     This widget is very flexible. There are two primary meter types
-    which can be set with the `metertype` parameter: 'full' and
+    which can be set with the `meter_type` parameter: 'full' and
     'semi', which shows the arc of the meter in a full or
     semi-circle. You can also customize the arc of the circle with
-    the `arcrange` and `arcoffset` parameters.
+    the `arc_range` and `arc_offset` parameters.
 
     The meter indicator can be displayed as a solid color or with
-    stripes using the `stripethickness` parameter. By default, the
-    `stripethickness` is 0, which results in a solid meter
-    indicator. A higher `stripethickness` results in larger wedges
+    stripes using the `stripe_thickness` parameter. By default, the
+    `stripe_thickness` is 0, which results in a solid meter
+    indicator. A higher `stripe_thickness` results in larger wedges
     around the arc of the meter.
 
-    Various text and label options exist. The center text and
-    meter indicator is formatted with the `meterstyle` parameter.
-    You can set text on the left and right of this center label
-    using the `textleft` and `textright` parameters. This is most
-    commonly used for '$', '%', or other such symbols.
+    Various text and label options exist. The center text is
+    formatted with the `amount_format` parameter. You can set text on
+    the left and right of this center label using the `text_left` and
+    `text_right` parameters. This is most commonly used for '$', '%',
+    or other such symbols.
 
-    If you need access to the variables that update the meter, you
-    you can access these via the `amountusedvar`, `amounttotalvar`,
-    and the `labelvar`. The value of these properties can also be
-    retrieved via the `configure` method.
+    The current value is available through the `value` property (and
+    the `amount_used_var` variable); the value can also be retrieved
+    or set via the `configure`/`cget` methods.
 
     ![](../../assets/widgets/meter.gif)
 
@@ -90,20 +98,20 @@ class Meter(Frame):
         app = ttk.Window()
 
         meter = ttk.Meter(
-            metersize=180,
+            meter_size=180,
             padding=5,
-            amountused=25,
-            metertype="semi",
+            amount_used=25,
+            meter_type="semi",
             subtext="miles per hour",
             interactive=True,
         )
         meter.pack()
 
         # update the amount used directly
-        meter.configure(amountused = 50)
+        meter.configure(amount_used=50)
 
         # update the amount used with another widget
-        entry = ttk.Entry(textvariable=meter.amountusedvar)
+        entry = ttk.Entry(textvariable=meter.amount_used_var)
         entry.pack(fill=X)
 
         # increment the amount by 10 steps
@@ -119,30 +127,47 @@ class Meter(Frame):
         ```
     """
 
+    # Options that affect the text labels — a `configure`/`__setitem__` that
+    # touches one of these re-packs the labels; the others only redraw.
+    _TEXT_OPTIONS = frozenset({"subtext", "text_left", "text_right", "show_text"})
+
+    # Deprecated public-attribute spellings -> the 2.0 snake_case names. Served
+    # via __getattr__ with a DeprecationWarning; removed in 3.0.
+    _LEGACY_ATTRS = {
+        "amountminvar": "amount_min_var",
+        "amountusedvar": "amount_used_var",
+        "amountuseddisplayvar": "amount_used_display_var",
+        "amounttotalvar": "amount_total_var",
+        "labelvar": "label_var",
+        "meterframe": "meter_frame",
+        "textframe": "text_frame",
+    }
+
     def __init__(
             self,
             master: Optional[Misc] = None,
+            *,
             bootstyle: str = DEFAULT,
-            arcrange: Optional[int] = None,
-            arcoffset: Optional[int] = None,
-            amountmin: Union[int, float] = 0,
-            amounttotal: Union[int, float] = 100,
-            amountused: Union[int, float] = 0,
-            amountformat: str = "{:.0f}",
-            wedgesize: int = 0,
-            metersize: int = 200,
-            metertype: str = FULL,
-            meterthickness: int = 10,
-            showtext: bool = True,
+            arc_range: Optional[int] = None,
+            arc_offset: Optional[int] = None,
+            amount_min: Union[int, float] = 0,
+            amount_total: Union[int, float] = 100,
+            amount_used: Union[int, float] = 0,
+            amount_format: str = "{:.0f}",
+            wedge_size: int = 0,
+            meter_size: int = 200,
+            meter_type: str = FULL,
+            meter_thickness: int = 10,
+            show_text: bool = True,
             interactive: bool = False,
-            stripethickness: int = 0,
-            textleft: Optional[str] = None,
-            textright: Optional[str] = None,
-            textfont: str = "-size 20 -weight bold",
+            stripe_thickness: int = 0,
+            text_left: Optional[str] = None,
+            text_right: Optional[str] = None,
+            text_font: str = "-size 20 -weight bold",
             subtext: Optional[str] = None,
-            subtextstyle: str = DEFAULT,
-            subtextfont: str = "-size 10",
-            stepsize: Union[int, float] = 1,
+            subtext_style: str = DEFAULT,
+            subtext_font: str = "-size 10",
+            step_size: Union[int, float] = 1,
             **kwargs: Any,
     ) -> None:
         """
@@ -151,47 +176,49 @@ class Meter(Frame):
             master (Widget):
                 The parent widget.
 
-            arcrange (int):
-                The range of the arc if degrees from start to end.
+            arc_range (int):
+                The range of the arc in degrees from start to end.
 
-            arcoffset (int):
+            arc_offset (int):
                 The amount to offset the arc's starting position in degrees.
                 0 is at 3 o'clock.
 
-            amountmin (int):
+            amount_min (int):
                 The minimum value of the meter. Defaults to 0. Can be set
                 to a negative value to support negative ranges.
 
-            amounttotal (int):
+            amount_total (int):
                 The maximum value of the meter.
 
-            amountused (int):
+            amount_used (int):
                 The current value of the meter; displayed in a center label
-                if the `showtext` property is set to True.
+                if the `show_text` property is set to True.
 
-            amountformat (str):
-                The format used to display the `amountused` value. Default is "{:.0f}"
+            amount_format (str):
+                The format used to display the `amount_used` value. Default is
+                "{:.0f}". Fractional formats such as "{:.1f}" are honored — the
+                value is stored as a float.
 
-            wedgesize (int):
+            wedge_size (int):
                 Sets the length of the indicator wedge around the arc. If
                 greater than 0, this wedge is set as an indicator centered
                 on the current meter value.
 
-            metersize (int):
-                The meter is square. This represents the size of one side
-                if the square as measured in screen units.
+            meter_size (int):
+                The meter is square. This represents the logical size of one
+                side of the square in screen units (scaled for high-dpi).
 
             bootstyle (str):
                 Sets the indicator and center text color. One of primary,
                 secondary, success, info, warning, danger, light, dark.
 
-            metertype ('full', 'semi'):
+            meter_type ('full', 'semi'):
                 Displays the meter as a full circle or semi-circle.
 
-            meterthickness (int):
+            meter_thickness (int):
                 The thickness of the indicator.
 
-            showtext (bool):
+            show_text (bool):
                 Indicates whether to show the left, center, and right text
                 labels on the meter.
 
@@ -199,34 +226,34 @@ class Meter(Frame):
                 Indicates that the user may adjust the meter value with
                 mouse interaction.
 
-            stripethickness (int):
+            stripe_thickness (int):
                 The indicator can be displayed as a solid band or as
                 striped wedges around the arc. If the value is greater than
                 0, the indicator changes from a solid to striped, where the
                 value is the thickness of the stripes (or wedges).
 
-            textleft (str):
+            text_left (str):
                 A short string inserted to the left of the center text.
 
-            textright (str):
+            text_right (str):
                 A short string inserted to the right of the center text.
 
-            textfont (Union[str, Font]):
+            text_font (Union[str, Font]):
                 The font used to render the center text.
 
             subtext (str):
                 Supplemental text that appears below the center text.
 
-            subtextstyle (str):
+            subtext_style (str):
                 The bootstyle color of the subtext. One of primary,
                 secondary, success, info, warning, danger, light, dark.
                 The default color is Theme specific and is a lighter
                 shade based on whether it is a 'light' or 'dark' theme.
 
-            subtextfont (Union[str, Font]):
+            subtext_font (Union[str, Font]):
                 The font used to render the subtext.
 
-            stepsize (int):
+            step_size (int):
                 Sets the amount by which to change the meter indicator
                 when incremented by mouse interaction.
 
@@ -234,49 +261,92 @@ class Meter(Frame):
                 Other keyword arguments that are passed directly to the
                 `Frame` widget that contains the meter components.
         """
+        # Collect the option values, then fold in any legacy option names that
+        # arrived through **kwargs (e.g. amountused=) so old callers keep working.
+        opts = dict(
+            bootstyle=bootstyle, arc_range=arc_range, arc_offset=arc_offset,
+            amount_min=amount_min, amount_total=amount_total,
+            amount_used=amount_used, amount_format=amount_format,
+            wedge_size=wedge_size, meter_size=meter_size, meter_type=meter_type,
+            meter_thickness=meter_thickness, show_text=show_text,
+            interactive=interactive, stripe_thickness=stripe_thickness,
+            text_left=text_left, text_right=text_right, text_font=text_font,
+            subtext=subtext, subtext_style=subtext_style,
+            subtext_font=subtext_font, step_size=step_size,
+        )
+        opts.update(normalize_meter_kwargs(kwargs))
+
         super().__init__(master=master, **kwargs)
 
-        # widget variables
-        self.amountminvar = IntVar(value=amountmin)
-        self.amountusedvar = IntVar(value=amountused)
-        self._amountused_traceid = self.amountusedvar.trace_add(
+        # widget variables (float-backed so fractional formats are honored)
+        self.amount_min_var = DoubleVar(value=opts["amount_min"])
+        self.amount_used_var = DoubleVar(value=opts["amount_used"])
+        self._amount_used_traceid = self.amount_used_var.trace_add(
             "write", self._update_meter
         )
-        self.amountuseddisplayvar = StringVar(value=amountformat.format(amountused))
-        self.amounttotalvar = IntVar(value=amounttotal)
-        self.labelvar = StringVar(value=subtext)
+        self.amount_used_display_var = StringVar(
+            value=opts["amount_format"].format(opts["amount_used"])
+        )
+        self.amount_total_var = DoubleVar(value=opts["amount_total"])
+        self.label_var = StringVar(value=opts["subtext"])
 
-        # misc settings
-        self._amountformat = amountformat
-        self._set_arc_offset_range(metertype, arcoffset, arcrange)
+        # misc settings — meter_size/meter_thickness are stored LOGICAL and only
+        # scaled to physical pixels at the render seams (see _physical_size).
+        self._amount_format = opts["amount_format"]
+        self._set_arc_offset_range(
+            opts["meter_type"], opts["arc_offset"], opts["arc_range"]
+        )
         self._towards_maximum = True
-        self._metersize = utility.scale_size(self, metersize)
-        self._meterthickness = utility.scale_size(self, meterthickness)
-        self._stripethickness = stripethickness
-        self._showtext = showtext
-        self._wedgesize = wedgesize
-        self._stepsize = stepsize
-        self._textleft = textleft
-        self._textright = textright
-        self._textfont = textfont
-        self._subtext = subtext
-        self._subtextfont = subtextfont
-        self._subtextstyle = subtextstyle
-        self._bootstyle = bootstyle
-        self._interactive = interactive
+        self._meter_size = opts["meter_size"]
+        self._meter_thickness = opts["meter_thickness"]
+        self._stripe_thickness = opts["stripe_thickness"]
+        self._show_text = opts["show_text"]
+        self._wedge_size = opts["wedge_size"]
+        self._step_size = opts["step_size"]
+        self._text_left = opts["text_left"]
+        self._text_right = opts["text_right"]
+        self._text_font = opts["text_font"]
+        self._subtext = opts["subtext"]
+        self._subtext_font = opts["subtext_font"]
+        self._subtext_style = opts["subtext_style"]
+        self._bootstyle = opts["bootstyle"]
+        self._interactive = opts["interactive"]
         self._bindids = {}
 
         self._setup_widget()
 
-    def _update_meter(self, *_: Any) -> None:
-        """Update the meter display when the value changes.
+    # -- value access -------------------------------------------------------- #
+    @property
+    def value(self) -> Union[int, float]:
+        """The current meter value (canonical read/write handle)."""
+        return self.amount_used_var.get()
 
-        Redraws the meter and updates the display text according to
-        the amountformat string.
-        """
+    @value.setter
+    def value(self, amount: Union[int, float]) -> None:
+        self.amount_used_var.set(amount)
+
+    def __getattr__(self, name: str) -> Any:
+        # Only fires for missing attributes; map the deprecated spellings.
+        new = self._LEGACY_ATTRS.get(name)
+        if new is not None:
+            warn_deprecated(f"Meter.{name}", f"Meter.{new}")
+            return getattr(self, new)
+        raise AttributeError(name)
+
+    # -- scaling seam -------------------------------------------------------- #
+    def _physical_size(self) -> int:
+        """Physical (dpi-scaled) meter size in pixels from the logical size."""
+        return utility.scale_size(self, self._meter_size)
+
+    def _physical_thickness(self) -> int:
+        """Physical (dpi-scaled) indicator thickness from the logical value."""
+        return utility.scale_size(self, self._meter_thickness)
+
+    def _update_meter(self, *_: Any) -> None:
+        """Redraw the indicator and refresh the display text on value change."""
         self._draw_meter()
-        amount_used = self.amountusedvar.get()
-        self.amountuseddisplayvar.set(self._amountformat.format(amount_used))
+        amount_used = self.amount_used_var.get()
+        self.amount_used_display_var.set(self._amount_format.format(amount_used))
 
     def destroy(self) -> None:
         """Detach the value-variable trace before teardown.
@@ -284,72 +354,64 @@ class Meter(Frame):
         The trace's write callback holds a reference back to the meter, so
         leaving it attached keeps the widget alive after destroy.
         """
-        if self._amountused_traceid is not None:
+        if self._amount_used_traceid is not None:
             try:
-                self.amountusedvar.trace_remove("write", self._amountused_traceid)
+                self.amount_used_var.trace_remove(
+                    "write", self._amount_used_traceid
+                )
             except TclError:
                 pass
-            self._amountused_traceid = None
+            self._amount_used_traceid = None
         super().destroy()
 
     def _setup_widget(self) -> None:
-        """Initialize and configure all meter components.
-
-        Creates the meter frame, indicator label, text labels, and binds
-        event handlers for theme changes and interactivity.
-        """
-        self.meterframe = Frame(
-            master=self, width=self._metersize, height=self._metersize
-        )
-        self.indicator = Label(self.meterframe)
-        self.textframe = Frame(self.meterframe)
+        """Initialize and configure all meter components."""
+        size = self._physical_size()
+        self.meter_frame = Frame(master=self, width=size, height=size)
+        self.indicator = Label(self.meter_frame)
+        self.text_frame = Frame(self.meter_frame)
         self.textleft = Label(
-            master=self.textframe,
-            text=self._textleft,
-            font=self._subtextfont,
-            bootstyle=f"{self._subtextstyle}-metersubtxt",
+            master=self.text_frame,
+            text=self._text_left,
+            font=self._subtext_font,
+            bootstyle=f"{self._subtext_style}-metersubtxt",
             anchor=S,
             padding=(0, 5),
         )
         self.textcenter = Label(
-            master=self.textframe,
-            textvariable=self.amountuseddisplayvar,
+            master=self.text_frame,
+            textvariable=self.amount_used_display_var,
             bootstyle=f"{self._bootstyle}-meter",
-            font=self._textfont,
+            font=self._text_font,
         )
         self.textright = Label(
-            master=self.textframe,
-            text=self._textright,
-            font=self._subtextfont,
-            bootstyle=f"{self._subtextstyle}-metersubtxt",
+            master=self.text_frame,
+            text=self._text_right,
+            font=self._subtext_font,
+            bootstyle=f"{self._subtext_style}-metersubtxt",
             anchor=S,
             padding=(0, 5),
         )
         self.subtext = Label(
-            master=self.meterframe,
+            master=self.meter_frame,
             text=self._subtext,
-            bootstyle=f"{self._subtextstyle}-metersubtxt",
-            font=self._subtextfont,
-            textvariable=self.labelvar,
+            bootstyle=f"{self._subtext_style}-metersubtxt",
+            font=self._subtext_font,
+            textvariable=self.label_var,
         )
 
         self.bind("<<ThemeChanged>>", self._on_theme_change)
-        self.bind("<<Configure>>", self._on_theme_change)
         self._set_interactive_bind()
         self._draw_base_image()
         self._draw_meter()
 
-        # set widget geometery
+        # set widget geometry
         self.indicator.place(x=0, y=0)
-        self.meterframe.pack()
+        self.meter_frame.pack()
         self._set_show_text()
 
     def _set_widget_colors(self) -> None:
-        """Query the theme for meter colors.
-
-        Sets the meter foreground, background, and trough colors based on
-        the current theme and bootstyle.
-        """
+        """Query the theme for the meter foreground/background/trough colors."""
         ttkstyle = Bootstyle.ttkstyle_name(
             string=f"{self._bootstyle}-meter-label"
         )
@@ -361,35 +423,31 @@ class Meter(Frame):
         self._metertrough = troughcolor
 
     def _set_meter_text(self) -> None:
-        """Configure and position all text labels.
-
-        Arranges the text labels (left, center, right, and subtext) according
-        to the current configuration.
-        """
+        """Configure and position all text labels."""
         self._set_show_text()
         self._set_subtext()
 
     def _set_subtext(self) -> None:
         """Position the subtext label below the center text."""
         if self._subtext:
-            if self._showtext:
+            if self._show_text:
                 self.subtext.place(relx=0.5, rely=0.6, anchor=CENTER)
             else:
                 self.subtext.place(relx=0.5, rely=0.5, anchor=CENTER)
 
     def _set_show_text(self) -> None:
-        """Show or hide the text labels based on showtext setting."""
-        self.textframe.pack_forget()
+        """Show or hide the text labels based on the show_text setting."""
+        self.text_frame.pack_forget()
         self.textcenter.pack_forget()
         self.textleft.pack_forget()
         self.textright.pack_forget()
         self.subtext.pack_forget()
 
-        if self._showtext:
+        if self._show_text:
             if self._subtext:
-                self.textframe.place(relx=0.5, rely=0.45, anchor=CENTER)
+                self.text_frame.place(relx=0.5, rely=0.45, anchor=CENTER)
             else:
-                self.textframe.place(relx=0.5, rely=0.5, anchor=CENTER)
+                self.text_frame.place(relx=0.5, rely=0.5, anchor=CENTER)
 
         self._set_text_left()
         self._set_text_center()
@@ -398,18 +456,18 @@ class Meter(Frame):
 
     def _set_text_left(self) -> None:
         """Pack the left text label if configured."""
-        if self._showtext and self._textleft:
+        if self._show_text and self._text_left:
             self.textleft.pack(side=LEFT, fill=Y)
 
     def _set_text_center(self) -> None:
         """Pack the center text label showing the current value."""
-        if self._showtext:
+        if self._show_text:
             self.textcenter.pack(side=LEFT, fill=Y)
 
     def _set_text_right(self) -> None:
         """Pack the right text label if configured."""
-        self.textright.configure(text=self._textright)
-        if self._showtext and self._textright:
+        self.textright.configure(text=self._text_right)
+        if self._show_text and self._text_right:
             self.textright.pack(side=RIGHT, fill=Y)
 
     def _set_interactive_bind(self) -> None:
@@ -432,65 +490,53 @@ class Meter(Frame):
             )
 
     def _set_arc_offset_range(
-        self, metertype: str, arcoffset: Optional[int], arcrange: Optional[int]
+        self, meter_type: str, arc_offset: Optional[int], arc_range: Optional[int]
     ) -> None:
-        """Configure the arc parameters based on meter type.
-
-        Sets default arc offset and range values for full or semi-circle meters
-        if not explicitly provided.
-        """
+        """Configure the arc parameters based on the meter type."""
         from ttkbootstrap.constants import SEMI
 
-        if metertype == SEMI:
-            self._arcoffset = 135 if arcoffset is None else arcoffset
-            self._arcrange = 270 if arcrange is None else arcrange
+        if meter_type == SEMI:
+            self._arc_offset = 135 if arc_offset is None else arc_offset
+            self._arc_range = 270 if arc_range is None else arc_range
         else:
-            self._arcoffset = -90 if arcoffset is None else arcoffset
-            self._arcrange = 360 if arcrange is None else arcrange
-        self._metertype = metertype
+            self._arc_offset = -90 if arc_offset is None else arc_offset
+            self._arc_range = 360 if arc_range is None else arc_range
+        self._meter_type = meter_type
 
     def _draw_meter(self, *_: Any) -> None:
-        """Draw the meter indicator on the base image.
-
-        Creates a copy of the base image and draws either a solid or striped
-        meter indicator based on the current value and stripethickness setting.
-        """
+        """Draw the meter indicator on the base image."""
         img = self._base_image.copy()
         draw = ImageDraw.Draw(img)
-        if self._stripethickness > 0:
+        if self._stripe_thickness > 0:
             self._draw_striped_meter(draw)
         else:
             self._draw_solid_meter(draw)
 
+        size = self._physical_size()
         self._meterimage = ImageTk.PhotoImage(
-            img.resize((self._metersize, self._metersize), Resampling.BICUBIC)
+            img.resize((size, size), Resampling.BICUBIC)
         )
         self.indicator.configure(image=self._meterimage)
 
     def _draw_base_image(self) -> None:
-        """Draw the meter background/trough.
-
-        Creates the base image showing the meter trough (background arc)
-        which remains constant while the indicator changes.
-        """
+        """Draw the meter background/trough (constant while the value changes)."""
         self._set_widget_colors()
-        self._base_image = Image.new(
-            mode="RGBA", size=(self._metersize * M, self._metersize * M)
-        )
+        size = self._physical_size()
+        self._base_image = Image.new(mode="RGBA", size=(size * M, size * M))
         draw = ImageDraw.Draw(self._base_image)
 
-        x1 = y1 = self._metersize * M - 20
-        width = self._meterthickness * M
+        x1 = y1 = size * M - 20
+        width = self._physical_thickness() * M
         # striped meter
-        if self._stripethickness > 0:
-            _from = self._arcoffset
-            _to = self._arcrange + self._arcoffset
-            _step = 2 if self._stripethickness == 1 else self._stripethickness
+        if self._stripe_thickness > 0:
+            _from = self._arc_offset
+            _to = self._arc_range + self._arc_offset
+            _step = 2 if self._stripe_thickness == 1 else self._stripe_thickness
             for x in range(_from, _to, _step):
                 draw.arc(
                     xy=(0, 0, x1, y1),
                     start=x,
-                    end=x + self._stripethickness - 1,
+                    end=x + self._stripe_thickness - 1,
                     fill=self._metertrough,
                     width=width,
                 )
@@ -498,328 +544,326 @@ class Meter(Frame):
         else:
             draw.arc(
                 xy=(0, 0, x1, y1),
-                start=self._arcoffset,
-                end=self._arcrange + self._arcoffset,
+                start=self._arc_offset,
+                end=self._arc_range + self._arc_offset,
                 fill=self._metertrough,
                 width=width,
             )
 
     def _draw_solid_meter(self, draw) -> None:
-        """Draw a solid meter indicator.
+        """Draw a solid meter indicator."""
+        size = self._physical_size()
+        x1 = y1 = size * M - 20
+        width = self._physical_thickness() * M
 
-        Draws a continuous arc representing the current value, either as a
-        full arc from start to value, or as a wedge centered on the value.
-        """
-        x1 = y1 = self._metersize * M - 20
-        width = self._meterthickness * M
-
-        if self._wedgesize > 0:
+        if self._wedge_size > 0:
             meter_value = self._meter_value()
             draw.arc(
                 xy=(0, 0, x1, y1),
-                start=meter_value - self._wedgesize,
-                end=meter_value + self._wedgesize,
+                start=meter_value - self._wedge_size,
+                end=meter_value + self._wedge_size,
                 fill=self._meterforeground,
                 width=width,
             )
         else:
             draw.arc(
                 xy=(0, 0, x1, y1),
-                start=self._arcoffset,
+                start=self._arc_offset,
                 end=self._meter_value(),
                 fill=self._meterforeground,
                 width=width,
             )
 
     def _draw_striped_meter(self, draw) -> None:
-        """Draw a striped meter indicator.
-
-        Draws the meter as a series of discrete wedges/stripes rather than
-        a continuous arc.
-        """
+        """Draw a striped meter indicator (discrete wedges)."""
         meter_value = self._meter_value()
-        x1 = y1 = self._metersize * M - 20
-        width = self._meterthickness * M
+        size = self._physical_size()
+        x1 = y1 = size * M - 20
+        width = self._physical_thickness() * M
 
-        if self._wedgesize > 0:
+        if self._wedge_size > 0:
             draw.arc(
                 xy=(0, 0, x1, y1),
-                start=meter_value - self._wedgesize,
-                end=meter_value + self._wedgesize,
+                start=meter_value - self._wedge_size,
+                end=meter_value + self._wedge_size,
                 fill=self._meterforeground,
                 width=width,
             )
         else:
-            _from = self._arcoffset
+            _from = self._arc_offset
             _to = meter_value - 1
-            _step = self._stripethickness
+            _step = self._stripe_thickness
             for x in range(_from, _to, _step):
                 draw.arc(
                     xy=(0, 0, x1, y1),
                     start=x,
-                    end=x + self._stripethickness - 1,
+                    end=x + self._stripe_thickness - 1,
                     fill=self._meterforeground,
                     width=width,
                 )
 
     def _meter_value(self) -> int:
-        """Calculate the arc degree value for drawing.
-
-        Converts the current meter value to degrees along the arc,
-        handling negative ranges and normalizing to the configured
-        arc offset and range.
-
-        Returns:
-            int: The degree value for the meter indicator position.
-        """
-        amountmin = self["amountmin"]
-        amounttotal = self["amounttotal"]
-        amountused = self["amountused"]
+        """Convert the current value to the arc degree used for drawing."""
+        amount_min = self.amount_min_var.get()
+        amount_total = self.amount_total_var.get()
+        amount_used = self.amount_used_var.get()
 
         # Normalize to 0-1 range to handle negative values
-        range_size = amounttotal - amountmin
+        range_size = amount_total - amount_min
         if range_size == 0:
             normalized = 0
         else:
-            normalized = (amountused - amountmin) / range_size
+            normalized = (amount_used - amount_min) / range_size
 
-        value = int(normalized * self._arcrange + self._arcoffset)
+        value = int(normalized * self._arc_range + self._arc_offset)
         return value
 
     def _on_theme_change(self, *_: Any) -> None:
-        """Handle theme change events.
-
-        Redraws the meter with updated colors from the new theme.
-        """
+        """Redraw the meter with updated colors from the new theme."""
         self._draw_base_image()
         self._draw_meter()
 
     def _on_dial_interact(self, e: Event) -> None:
-        """Handle mouse interaction for changing meter value.
-
-        Calculates the new meter value based on mouse position when the
-        meter is in interactive mode. Converts mouse coordinates to degrees
-        and updates the value accordingly.
-
-        Parameters:
-            e (tk.Event): The mouse event containing position information.
-        """
-        dx = e.x - self._metersize // 2
-        dy = e.y - self._metersize // 2
+        """Adjust the value based on the mouse position in interactive mode."""
+        size = self._physical_size()
+        dx = e.x - size // 2
+        dy = e.y - size // 2
         rads = math.atan2(dy, dx)
         degs = math.degrees(rads)
 
-        if degs > self._arcoffset - max(0, (360 - self._arcrange) / 2):
-            factor = degs - self._arcoffset
+        if degs > self._arc_offset - max(0, (360 - self._arc_range) / 2):
+            factor = degs - self._arc_offset
         else:
-            factor = 360 + degs - self._arcoffset
+            factor = 360 + degs - self._arc_offset
 
-        # clamp the value between `amountmin` and `amounttotal`
-        amountmin = self.amountminvar.get()
-        amounttotal = self.amounttotalvar.get()
-        lastused = self.amountusedvar.get()
+        # clamp the value between `amount_min` and `amount_total`
+        amount_min = self.amount_min_var.get()
+        amount_total = self.amount_total_var.get()
+        lastused = self.amount_used_var.get()
 
         # Calculate the value based on the range
-        range_size = amounttotal - amountmin
-        amountused = (range_size / self._arcrange * factor) + amountmin
+        range_size = amount_total - amount_min
+        amount_used = (range_size / self._arc_range * factor) + amount_min
 
-        # calculate amount used given stepsize
-        if self._stepsize > 0:
-            # Round to nearest stepsize
-            amountused = round(amountused / self._stepsize) * self._stepsize
+        # calculate amount used given step_size
+        if self._step_size > 0:
+            # Round to nearest step_size
+            amount_used = round(amount_used / self._step_size) * self._step_size
 
         # if the number is the same, then do not redraw
-        if lastused == amountused:
+        if lastused == amount_used:
             return
         # set the amount used variable
-        if amountused < amountmin:
-            self.amountusedvar.set(amountmin)
-        elif amountused > amounttotal:
-            self.amountusedvar.set(amounttotal)
+        if amount_used < amount_min:
+            self.amount_used_var.set(amount_min)
+        elif amount_used > amount_total:
+            self.amount_used_var.set(amount_total)
         else:
-            self.amountusedvar.set(amountused)
+            self.amount_used_var.set(amount_used)
 
     def _lookup_style_option(self, style: str, option: str) -> Any:
-        """Query a ttk style option value.
-
-        Parameters:
-            style (str): The ttk style name to query.
-            option (str): The option name to retrieve.
-
-        Returns:
-            The value of the specified style option.
-        """
+        """Query a ttk style option value."""
         value = self.tk.call(
             "ttk::style", "lookup", style, "-%s" % option, None, None
         )
         return value
 
-    def _configure_get(self, cnf: str) -> Any:
-        """Get the value of a configuration option.
+    # -- configure delegates ------------------------------------------------- #
+    # One get/set handler per custom option (value=None queries, else sets).
+    # The ConfigureDelegationMixin wires these into configure/cget/keys/
+    # __getitem__/__setitem__; the redraw is batched once in _refresh below.
 
-        Parameters:
-            cnf (str): The option name to query.
-
-        Returns:
-            The current value of the specified option.
-        """
-        if cnf == "arcrange":
-            return self._arcrange
-        elif cnf == "arcoffset":
-            return self._arcoffset
-        elif cnf == "amountmin":
-            return self.amountminvar.get()
-        elif cnf == "amounttotal":
-            return self.amounttotalvar.get()
-        elif cnf == "amountused":
-            return self.amountusedvar.get()
-        elif cnf == "interactive":
-            return self._interactive
-        elif cnf == "subtextfont":
-            return self._subtextfont
-        elif cnf == "subtextstyle":
-            return self._subtextstyle
-        elif cnf == "subtext":
-            return self.labelvar.get()
-        elif cnf == "metersize":
-            return self._metersize
-        elif cnf == "bootstyle":
+    @configure_delegate("bootstyle")
+    def _cfg_bootstyle(self, value):
+        if value is None:
             return self._bootstyle
-        elif cnf == "metertype":
-            return self._metertype
-        elif cnf == "meterthickness":
-            return self._meterthickness
-        elif cnf == "showtext":
-            return self._showtext
-        elif cnf == "stripethickness":
-            return self._stripethickness
-        elif cnf == "textleft":
-            return self._textleft
-        elif cnf == "textright":
-            return self._textright
-        elif cnf == "textfont":
-            return self._textfont
-        elif cnf == "wedgesize":
-            return self._wedgesize
-        elif cnf == "stepsize":
-            return self._stepsize
-        else:
-            return super(Frame, self).configure(cnf)
+        self._bootstyle = value
+        self.textcenter.configure(bootstyle=f"{self._bootstyle}-meter")
 
-    def _configure_set(self, **kwargs: Any) -> None:
-        """Set widget configuration options.
+    @configure_delegate("arc_range")
+    def _cfg_arc_range(self, value):
+        if value is None:
+            return self._arc_range
+        self._arc_range = value
 
-        Handles all meter-specific configuration options and updates
-        the widget display accordingly.
+    @configure_delegate("arc_offset")
+    def _cfg_arc_offset(self, value):
+        if value is None:
+            return self._arc_offset
+        self._arc_offset = value
 
-        Parameters:
-            **kwargs: Configuration options to set.
-        """
-        meter_text_changed = False
+    @configure_delegate("amount_min")
+    def _cfg_amount_min(self, value):
+        if value is None:
+            return self.amount_min_var.get()
+        self.amount_min_var.set(value)
 
-        if "arcrange" in kwargs:
-            self._arcrange = kwargs.pop("arcrange")
-        if "arcoffset" in kwargs:
-            self._arcoffset = kwargs.pop("arcoffset")
-        if "amountmin" in kwargs:
-            amountmin = kwargs.pop("amountmin")
-            self.amountminvar.set(amountmin)
-        if "amounttotal" in kwargs:
-            amounttotal = kwargs.pop("amounttotal")
-            self.amounttotalvar.set(amounttotal)
-        if "amountused" in kwargs:
-            amountused = kwargs.pop("amountused")
-            self.amountusedvar.set(amountused)
-        if "interactive" in kwargs:
-            self._interactive = kwargs.pop("interactive")
-            self._set_interactive_bind()
-        if "subtextfont" in kwargs:
-            self._subtextfont = kwargs.pop("subtextfont")
-            self.subtext.configure(font=self._subtextfont)
-            self.textleft.configure(font=self._subtextfont)
-            self.textright.configure(font=self._subtextfont)
-        if "subtextstyle" in kwargs:
-            self._subtextstyle = kwargs.pop("subtextstyle")
-            self.subtext.configure(bootstyle=f"{self._subtextstyle}-meter")
-        if "metersize" in kwargs:
-            self._metersize = utility.scale_size(self, kwargs.pop("metersize"))
-            self.meterframe.configure(
-                height=self._metersize, width=self._metersize
-            )
-        if "bootstyle" in kwargs:
-            self._bootstyle = kwargs.pop("bootstyle")
-            self.textcenter.configure(bootstyle=f"{self._bootstyle}-meter")
-        if "metertype" in kwargs:
-            self._metertype = kwargs.pop("metertype")
-        if "meterthickness" in kwargs:
-            self._meterthickness = kwargs.pop("meterthickness")
-        if "stripethickness" in kwargs:
-            self._stripethickness = kwargs.pop("stripethickness")
-        if "subtext" in kwargs:
-            self._subtext = kwargs.pop("subtext")
-            self.labelvar.set(self._subtext)
-            meter_text_changed = True
-        if "textleft" in kwargs:
-            self._textleft = kwargs.pop("textleft")
-            self.textleft.configure(text=self._textleft)
-            meter_text_changed = True
-        if "textright" in kwargs:
-            self._textright = kwargs.pop("textright")
-            meter_text_changed = True
-        if "showtext" in kwargs:
-            self._showtext = kwargs.pop("showtext")
-            meter_text_changed = True
-        if "textfont" in kwargs:
-            self._textfont = kwargs.pop("textfont")
-            self.textcenter.configure(font=self._textfont)
-        if "wedgesize" in kwargs:
-            self._wedgesize = kwargs.pop("wedgesize")
-        if "stepsize" in kwargs:
-            self._stepsize = kwargs.pop("stepsize")
-        if meter_text_changed:
-            self._set_meter_text()
+    @configure_delegate("amount_total")
+    def _cfg_amount_total(self, value):
+        if value is None:
+            return self.amount_total_var.get()
+        self.amount_total_var.set(value)
 
+    @configure_delegate("amount_used")
+    def _cfg_amount_used(self, value):
+        if value is None:
+            return self.amount_used_var.get()
+        self.amount_used_var.set(value)
+
+    @configure_delegate("amount_format")
+    def _cfg_amount_format(self, value):
+        if value is None:
+            return self._amount_format
+        self._amount_format = value
+        self.amount_used_display_var.set(
+            self._amount_format.format(self.amount_used_var.get())
+        )
+
+    @configure_delegate("wedge_size")
+    def _cfg_wedge_size(self, value):
+        if value is None:
+            return self._wedge_size
+        self._wedge_size = value
+
+    @configure_delegate("meter_size")
+    def _cfg_meter_size(self, value):
+        if value is None:
+            return self._meter_size  # logical (round-trips without re-scaling)
+        self._meter_size = value
+        size = self._physical_size()
+        self.meter_frame.configure(height=size, width=size)
+
+    @configure_delegate("meter_type")
+    def _cfg_meter_type(self, value):
+        if value is None:
+            return self._meter_type
+        self._meter_type = value
+
+    @configure_delegate("meter_thickness")
+    def _cfg_meter_thickness(self, value):
+        if value is None:
+            return self._meter_thickness  # logical
+        self._meter_thickness = value
+
+    @configure_delegate("show_text")
+    def _cfg_show_text(self, value):
+        if value is None:
+            return self._show_text
+        self._show_text = value
+
+    @configure_delegate("interactive")
+    def _cfg_interactive(self, value):
+        if value is None:
+            return self._interactive
+        self._interactive = value
+        self._set_interactive_bind()
+
+    @configure_delegate("stripe_thickness")
+    def _cfg_stripe_thickness(self, value):
+        if value is None:
+            return self._stripe_thickness
+        self._stripe_thickness = value
+
+    @configure_delegate("text_left")
+    def _cfg_text_left(self, value):
+        if value is None:
+            return self._text_left
+        self._text_left = value
+        self.textleft.configure(text=self._text_left)
+
+    @configure_delegate("text_right")
+    def _cfg_text_right(self, value):
+        if value is None:
+            return self._text_right
+        self._text_right = value
+
+    @configure_delegate("text_font")
+    def _cfg_text_font(self, value):
+        if value is None:
+            return self._text_font
+        self._text_font = value
+        self.textcenter.configure(font=self._text_font)
+
+    @configure_delegate("subtext")
+    def _cfg_subtext(self, value):
+        if value is None:
+            return self.label_var.get()
+        self._subtext = value
+        self.label_var.set(value)
+
+    @configure_delegate("subtext_style")
+    def _cfg_subtext_style(self, value):
+        if value is None:
+            return self._subtext_style
+        self._subtext_style = value
+        # Recolor every subtext label (not just the center subtext) with the
+        # same style suffix used at construction.
+        for label in (self.subtext, self.textleft, self.textright):
+            label.configure(bootstyle=f"{self._subtext_style}-metersubtxt")
+
+    @configure_delegate("subtext_font")
+    def _cfg_subtext_font(self, value):
+        if value is None:
+            return self._subtext_font
+        self._subtext_font = value
+        self.subtext.configure(font=self._subtext_font)
+        self.textleft.configure(font=self._subtext_font)
+        self.textright.configure(font=self._subtext_font)
+
+    @configure_delegate("step_size")
+    def _cfg_step_size(self, value):
+        if value is None:
+            return self._step_size
+        self._step_size = value
+
+    # -- configure/setitem wrappers (batch one redraw per set) --------------- #
+    def _refresh(self, redraw_text: bool = False) -> None:
+        """Recompute the arc and redraw once after a batch of option changes."""
         try:
-            if self._metertype:
+            if self._meter_type:
                 self._set_arc_offset_range(
-                    metertype=self._metertype,
-                    arcoffset=self._arcoffset,
-                    arcrange=self._arcrange,
+                    meter_type=self._meter_type,
+                    arc_offset=self._arc_offset,
+                    arc_range=self._arc_range,
                 )
         except AttributeError:
             return
 
         self._draw_base_image()
         self._draw_meter()
+        if redraw_text:
+            self._set_meter_text()
 
-        # pass remaining configurations to `ttk.Frame.configure`
-        super(Frame, self).configure(**kwargs)
+    def configure(self, cnf: Any = None, **kwargs: Any) -> Any:
+        # Accept legacy option spellings (kwargs, dict cnf, or a query string).
+        if kwargs:
+            kwargs.update(normalize_meter_kwargs(kwargs))
+        if isinstance(cnf, dict):
+            cnf = dict(cnf)
+            cnf.update(normalize_meter_kwargs(cnf))
+        elif isinstance(cnf, str):
+            cnf = normalize_meter_option(cnf)
 
-    def __getitem__(self, key: str) -> Any:
-        return self._configure_get(key)
+        keys = set(kwargs)
+        if isinstance(cnf, dict):
+            keys |= set(cnf)
+        result = super().configure(cnf, **kwargs)
+        if keys:  # it was a set
+            self._refresh(redraw_text=bool(keys & self._TEXT_OPTIONS))
+        return result
+
+    config = configure
+
+    def cget(self, key: str) -> Any:
+        return super().cget(normalize_meter_option(key))
 
     def __setitem__(self, key: str, value: Any) -> None:
-        self._configure_set(**{key: value})
+        key = normalize_meter_option(key)
+        super().__setitem__(key, value)
+        self._refresh(redraw_text=key in self._TEXT_OPTIONS)
 
-    def configure(self, cnf: Optional[str] = None, **kwargs: Any) -> Any:
-        """Configure the options for this widget.
-
-        Parameters:
-            cnf (str, optional):
-                Option name to query. If provided without kwargs, returns
-                the current value of that option.
-
-            **kwargs: Configuration options to set (arcrange, arcoffset,
-                     amountmin, amounttotal, amountused, interactive,
-                     subtextfont, subtextstyle, metersize, bootstyle,
-                     metertype, meterthickness, stripethickness, subtext,
-                     textleft, textright, showtext, textfont, wedgesize,
-                     stepsize).
-        """
-        if cnf is not None:
-            return self._configure_get(cnf)
-        else:
-            return self._configure_set(**kwargs)
+    def __getitem__(self, key: str) -> Any:
+        return super().__getitem__(normalize_meter_option(key))
 
     def step(self, delta: Union[int, float] = 1) -> None:
         """Increment or decrement the meter value.
@@ -832,9 +876,9 @@ class Meter(Frame):
                                   Positive values increase, negative values
                                   decrease. Defaults to 1.
         """
-        amount_used = self.amountusedvar.get()
-        amount_min = self.amountminvar.get()
-        amount_total = self.amounttotalvar.get()
+        amount_used = self.amount_used_var.get()
+        amount_min = self.amount_min_var.get()
+        amount_total = self.amount_total_var.get()
 
         if self._towards_maximum:
             amount_updated = amount_used + delta
@@ -843,9 +887,11 @@ class Meter(Frame):
 
         if amount_updated >= amount_total:
             self._towards_maximum = False
-            self.amountusedvar.set(amount_total - (amount_updated - amount_total))
+            self.amount_used_var.set(
+                amount_total - (amount_updated - amount_total)
+            )
         elif amount_updated < amount_min:
             self._towards_maximum = True
-            self.amountusedvar.set(amount_min + (amount_min - amount_updated))
+            self.amount_used_var.set(amount_min + (amount_min - amount_updated))
         else:
-            self.amountusedvar.set(amount_updated)
+            self.amount_used_var.set(amount_updated)
