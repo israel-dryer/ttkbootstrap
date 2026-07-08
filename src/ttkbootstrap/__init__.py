@@ -206,9 +206,13 @@ from ttkbootstrap.widgets import (
     LabeledScale,
     M,
     Meter,
+    ScrolledFrame,
+    ScrolledText,
     TableColumn,
     TableRow,
     Tableview,
+    ToastNotification,
+    ToolTip,
 )
 from ttkbootstrap.window import Toplevel, Window
 
@@ -276,9 +280,13 @@ __all__ = [
     "FloodgaugeLegacy",
     "LabeledScale",
     "Meter",
+    "ScrolledText",
+    "ScrolledFrame",
     "Tableview",
     "TableColumn",
     "TableRow",
+    "ToolTip",
+    "ToastNotification",
     "M",
 
     # Dialogs
