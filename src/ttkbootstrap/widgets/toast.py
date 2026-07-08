@@ -151,8 +151,8 @@ class ToastNotification:
         self.alert = alert
         self.position = position
 
-        if "overrideredirect" not in self.kwargs:
-            self.kwargs["overrideredirect"] = True
+        if "override_redirect" not in self.kwargs:
+            self.kwargs["override_redirect"] = True
         if "alpha" not in self.kwargs:
             self.kwargs["alpha"] = 0.95
 

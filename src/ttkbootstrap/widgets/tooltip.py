@@ -144,9 +144,9 @@ class ToolTip:
                 raise ValueError(f"Invalid position string: '{self.position}'")
 
         # set keyword arguments
-        kwargs["overrideredirect"] = True
+        kwargs["override_redirect"] = True
         kwargs["master"] = self.widget
-        kwargs["windowtype"] = "tooltip"
+        kwargs["window_type"] = "tooltip"
         if "alpha" not in kwargs:
             kwargs["alpha"] = 0.95
         self.toplevel_kwargs = kwargs
