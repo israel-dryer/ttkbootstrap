@@ -3,7 +3,30 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-07-07 (**shipped-widget API pass — PR C (Tableview)
+_Last updated: 2026-07-07 (**Theme-aware widget icons — OPENED as #1105 against
+`2.0`**). Closes the inline-icon theme-awareness gap (a bare `Icon(...)` `image=`
+baked its color once and went stale on a theme switch). New `ttk.apply_icon` +
+`icon=`/`icon_size=` mixin sugar: renders a glyph following the widget's style
+`foreground` (inverts on outline/toggle, mutes disabled), re-renders on
+`<<ThemeChanged>>` (per-widget bind, no engine change), by augmenting the widget
+with a derived content-hashed `Icon<hash>.<base>` style that inherits its
+`bootstyle`/`style` (config/map/layout via ttk fallback). Supported on label-image
+widgets (Button/Label/Menubutton/Check/Radio); others raise. Datepicker carets
+migrated as dogfood. **Render tuning from the live gate:** glyph pad 10%→4% + snap
+draw origin (sharpens all font-glyph icons — the 10% pad was rendering glyphs at
+~80% of frame), default `icon_size`→14, `calendar3` trimmed 21→18/19 + date-button
++1px vertical pad. Raster indicators (check/radio/toggle/scale/scrollbar) unaffected.
+`tests/test_icon_theme.py` (+12); suite **330 passed** excl. the `nl.msg` flake;
+warning-free import. Design `development/2_0_icon_theme_awareness_design.md`.
+**Follow-ups logged (not blockers):** eyeball `grip-horizontal` on a Sizegrip;
+theme-wide **control-height parity** (buttons == inputs, memory
+`control-height-parity`) before docs screenshots. Also recorded the 2.0 naming
+convention (snake_case authored / Tk-spelling pass-throughs; `CLAUDE.md` +
+memory). **NEXT → Tableview pagination buttons on the icon path** (ghost base +
+glyph; disabled first/prev arrows get muting for free), then docs Workstream H.
+Prior entry (PR C) follows._
+
+_Prior 2026-07-07 (**shipped-widget API pass — PR C (Tableview)
 OPENED as #1104 against `2.0`; the pass's LAST PR**). Fixes only per design §5c
 (the method-verb rename stays a deferred later slice). Re-export
 `Tableview`/`TableColumn`/`TableRow` at top level (`ttk.Tableview`) + from
