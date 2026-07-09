@@ -279,7 +279,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
 
 
 if __name__ == "__main__":
-    app = ttk.Window("ttkbootstrap widget demo")
+    app = ttk.App("ttkbootstrap widget demo")
 
     bagel = setup_demo(app)
     bagel.pack(fill=BOTH, expand=YES)

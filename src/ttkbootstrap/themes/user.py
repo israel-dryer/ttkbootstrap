@@ -25,7 +25,7 @@ Example (2.0 spec):
     }
     ```
 
-    Then ``ttk.Window(themename="mytheme-light")`` (or ``-dark``).
+    Then ``ttk.App(theme="mytheme-light")`` (or ``-dark``).
 
 Prefer authoring in your own code with the public ``Theme`` API directly:
     ```python

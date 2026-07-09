@@ -429,7 +429,7 @@ class Tableview(ttk.Frame):
         import ttkbootstrap as ttk
         from ttkbootstrap.constants import *
 
-        app = ttk.Window()
+        app = ttk.App()
         colors = app.style.colors
 
         coldata = [

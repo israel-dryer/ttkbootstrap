@@ -33,7 +33,7 @@ class ToolTip:
         import ttkbootstrap as ttk
         from ttkbootstrap.constants import *
 
-        app = ttk.Window()
+        app = ttk.App()
         b1 = ttk.Button(app, text="default tooltip")
         b1.pack()
 

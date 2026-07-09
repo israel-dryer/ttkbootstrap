@@ -77,7 +77,7 @@ class ToastNotification:
         ```python
         import ttkbootstrap as ttk
 
-        app = ttk.Window()
+        app = ttk.App()
 
         toast = ttk.ToastNotification(
             title="ttkbootstrap toast message",

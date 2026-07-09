@@ -60,7 +60,7 @@ class Meter(ConfigureDelegationMixin, Frame):
         import ttkbootstrap as ttk
         from ttkbootstrap.constants import *
 
-        app = ttk.Window()
+        app = ttk.App()
 
         meter = ttk.Meter(
             meter_size=180,

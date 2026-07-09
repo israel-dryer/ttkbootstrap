@@ -16,7 +16,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap.internal import positioning
 from ttkbootstrap.style import Style
 from ttkbootstrap.style._compat import normalize_window_kwargs
-from ttkbootstrap.window import Toplevel, Window, _BaseWindow
+from ttkbootstrap.window import App, Toplevel, Window, _BaseWindow
 
 
 # --------------------------------------------------------------------------
@@ -287,3 +287,49 @@ def test_default_icon_falls_back_when_asset_missing(root, monkeypatch):
     top._apply_default_icon(win._DEFAULT_ICON_DATA)
     assert top._icon is not None  # base64 fallback produced a PhotoImage
     top.destroy()
+
+
+# --------------------------------------------------------------------------
+# Slice 2: App/Window and theme/themename naming aliases
+# --------------------------------------------------------------------------
+
+def test_app_is_canonical_and_window_is_a_permanent_alias():
+    # App is the real class; Window is the same object, not a subclass -- so
+    # repr/type().__name__/tracebacks read "App" while Window(...) keeps working.
+    assert App is Window
+    assert App.__name__ == "App"
+    assert ttk.App is App and ttk.Window is App
+
+
+def test_window_alias_isinstance_and_type_name(root):
+    # The shared session root is created as ttk.Window(); it must be an App and
+    # report App as its type name (the disambiguation payoff).
+    assert isinstance(root, App)
+    assert isinstance(root, Window)
+    assert type(root).__name__ == "App"
+
+
+def test_style_accepts_theme_and_themename_alias(root):
+    # Both spellings reach the singleton and switch the theme; the fixture
+    # restores the active theme on teardown.
+    ttk.Style(themename="pydata-light")
+    assert root.style.theme.name == "pydata-light"
+    ttk.Style(theme="pydata-dark")
+    assert root.style.theme.name == "pydata-dark"
+
+
+def test_style_prefers_theme_when_both_given(root):
+    # theme is canonical, so it wins when both are passed.
+    ttk.Style(theme="pydata-dark", themename="pydata-light")
+    assert root.style.theme.name == "pydata-dark"
+
+
+def test_window_kwargs_are_warning_free_for_new_names():
+    # theme/themename are permanent aliases -- neither may emit a warning. Verify
+    # at the signature level (a second live root can't be constructed here).
+    import inspect
+    params = inspect.signature(App.__init__).parameters
+    assert "theme" in params and "themename" in params
+    # theme is the second positional; themename is keyword-only.
+    assert params["theme"].kind is inspect.Parameter.POSITIONAL_OR_KEYWORD
+    assert params["themename"].kind is inspect.Parameter.KEYWORD_ONLY
