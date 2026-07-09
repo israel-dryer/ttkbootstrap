@@ -10,9 +10,8 @@ from ttkbootstrap.style.builders.registry import register_builder
 
 @register_builder("default", "floodgauge")
 def build_floodgauge_style(builder: StyleBuilderTTK, colorname=DEFAULT):
-    """Create a ttk style for the ttkbootstrap.widgets.Floodgauge
-    widget. This is a custom widget style that uses components of
-    the progressbar and label.
+    """Create a ttk style for the ttkbootstrap Floodgauge widget, combining
+    progressbar and label components.
 
     Parameters:
 

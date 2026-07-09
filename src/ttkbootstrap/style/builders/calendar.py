@@ -10,15 +10,12 @@ from ttkbootstrap.style.builders.registry import register_builder
 
 @register_builder("default", "calendar")
 def build_calendar_style(builder: StyleBuilderTTK, colorname=DEFAULT):
-    """Create a style for the
-    ttkbootstrap.dialogs.DatePickerPopup widget.
+    """Create a style for the calendar day buttons used by
+    `ttkbootstrap.dialogs.DatePickerDialog`.
 
     Parameters:
-
-        builder (StyleBuilderTTK):
-            The style builder
-        colorname (str):
-            The color label used to style the widget.
+        builder (StyleBuilderTTK): The style builder.
+        colorname (str): The color label used to style the widget.
     """
 
     ttk_class = "TCalendar"

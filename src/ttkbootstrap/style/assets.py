@@ -1,11 +1,10 @@
-"""Public image-construction toolkit for ttkbootstrap styles.
+"""Image-construction toolkit for ttkbootstrap styles.
 
-`Assets(style)` is the ergonomic, key-safe front door to the engine's
-content-addressed image cache (`Style._get_or_create_image`). The shape recipes
-(`circle`/`rect`/`rounded_rect`) and the general `image()` escape hatch each
-render an asset *and* derive its cache key from the same inputs, so a key can
-never drift from the pixels it names -- the purity hazard PR 2's whole audit
-existed to manage.
+`Assets(style)` wraps the engine's content-addressed image cache
+(`Style._get_or_create_image`). The shape recipes (`circle`/`rect`/
+`rounded_rect`), the icon and recolor renderers, and the general `image()`
+escape hatch each render an asset *and* derive its cache key from the same
+inputs, so a key cannot drift from the pixels it names.
 
 The renderer uses adaptive supersampling, LANCZOS downscaling, and sharpening
 while preserving exact root-scaled output dimensions. Callers pass logical UI
@@ -17,7 +16,7 @@ from PIL.Image import Resampling
 from ttkbootstrap.style.elements import RecolorRenderer, RecolorResult
 
 def _oversample(w, h):
-    """Adaptive supersample factor by the larger dimension (bootstack: 3/2/1)."""
+    """Adaptive supersample factor by the larger dimension: 3x below 32px, 2x below 64px, else 1x."""
     longest = max(w, h)
     if longest < 32:
         return 3
@@ -47,13 +46,12 @@ def _render(size, draw_fn):
 
 
 class Assets:
-    """Key-safe image construction over the engine's content-addressed cache.
+    """Image construction over the engine's content-addressed cache.
 
     `Assets(style)` wraps `Style._get_or_create_image`: each method renders an
     asset *and* derives its cache key from the same render inputs, so the key
-    cannot drift from the pixels (the purity hazard PR 2's audit existed to
-    manage). Builders reach a shared instance via `self.assets`; public users
-    construct `Assets(Style.get_instance())`.
+    cannot drift from the pixels. Builders reach a shared instance via
+    `self.assets`; public users construct `Assets(Style.get_instance())`.
 
     Sizes are logical UI units converted once by the root-bound scaling service;
     final image dimensions are exact and may be odd. Every
@@ -129,8 +127,9 @@ class Assets:
 
         `white`, `black`, and optional `magenta` are resolved color strings for
         the source template's semantic channels. Source alpha is preserved.
-        `transform` may flip the image horizontally or rotate it by a quarter
-        turn; dimensions and border/padding metadata transform with the pixels.
+        `transform` may flip the image horizontally (`"flip-x"`) or rotate it
+        by 90/180/270 degrees (`"rotate-90"`/`"rotate-180"`/`"rotate-270"`);
+        dimensions and border/padding metadata transform with the pixels.
 
         Returns a `RecolorResult` containing the Tcl image name and scaled
         logical manifest metadata. Source-image dimensions only validate the

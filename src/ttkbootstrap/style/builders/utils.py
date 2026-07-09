@@ -4,12 +4,11 @@ from ttkbootstrap.constants import NEUTRAL
 
 
 def default_button_fill(builder):
-    """The fill for a bare (no-color) button/menubutton.
+    """Return the fill for a bare (no-color) button/menubutton.
 
-    Honors the Style's `default_button` setting (default `"neutral"`): the quiet
-    neutral raise, or the resolved accent for any other color (e.g. `"primary"`
-    to restore the pre-2.0 accented default). This is what makes a plain
-    `ttk.Button()` render neutral by default.
+    Reads the Style's `default_button` setting (default `"neutral"`): returns
+    the neutral elevation fill for `"neutral"`, or the resolved accent color
+    for any other color name.
     """
     color = getattr(builder.style, "default_button", NEUTRAL)
     if color == NEUTRAL:
@@ -18,14 +17,12 @@ def default_button_fill(builder):
 
 
 def neutral_fill(builder, level=1):
-    """A mode-aware elevation of the theme surface (bootstack's `elevate`).
+    """Return a mode-aware elevation of the theme surface color.
 
-    Darkens the surface a touch in a light theme, lightens it in a dark theme, so
-    an unaccented control reads as a subtly raised surface in either mode (a fixed
-    `colors.light` would only be right in light themes). `level` 1 (~6%) is the
-    quiet neutral fill; `level` 2 (~12%) is a stronger raise used to distinguish
-    an "on"/selected neutral state from the "off" fill without an accent color.
-    Shared by the button-family neutral recipes.
+    Darkens the surface in a light theme, lightens it in a dark theme, so an
+    unaccented control reads as a subtly raised surface in either mode. `level`
+    1 (~6%) is the quiet neutral fill; `level` 2 (~12%) is a stronger raise used
+    to distinguish an "on"/selected neutral state from the "off" fill.
     """
     weight = level * 0.06
     surface = builder.colors.bg
@@ -47,18 +44,15 @@ def indicator_spacer(builder):
 def simple_arrow_assets(builder, arrowcolor: str, disabledcolor: str, activecolor: str, y_offset: int = 0):
     """Create caret arrow assets using Bootstrap Icons glyphs.
 
-    Used for Combobox and Spinbox indicators. Uses the solid `caret-*-fill`
-    triangles so the indicators read consistently with the filled-triangle
-    arrows elsewhere in the app (menubutton, datepicker header).
+    Used for Combobox and Spinbox indicators. Renders the solid `caret-*-fill`
+    triangles for up/down/left/right in each of the given colors.
 
-    The `y_offset` parameter is accepted for API compatibility but is no
-    longer used (it was specific to the old hand-drawn triangle approach).
-
-    Args:
+    Parameters:
         arrowcolor: The color value to use as the arrow fill color.
         disabledcolor: A second color value to use when the arrow is disabled.
         activecolor: A third color value to use when the arrow has focus.
         y_offset: Accepted for API compatibility; ignored.
+
     Returns:
         A nested tuple (normal, disabled, active), each a 4-tuple of Tcl
         image names in the order (up, down, left, right).

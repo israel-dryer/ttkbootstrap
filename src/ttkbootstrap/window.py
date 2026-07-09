@@ -1,47 +1,8 @@
 """Window and Toplevel classes for ttkbootstrap applications.
 
-This module provides enhanced Window and Toplevel classes that wrap tkinter.Tk
-and tkinter.Toplevel with integrated ttkbootstrap Style support, providing a
-consolidated API for application initialization and window creation.
-
-Classes:
-    Window: Main application window (wraps tk.Tk with Style)
-    Toplevel: Top-level popup window (wraps tk.Toplevel with Style)
-
-Features:
-    - Integrated ttkbootstrap theme support
-    - Simplified window configuration (size, position, title, etc.)
-    - High-DPI awareness configuration
-    - Window positioning utilities (center, place)
-    - Alpha transparency support
-    - Icon management (PhotoImage or file path)
-    - Resizable window control
-    - Theme-aware styling
-
-Example:
-    ```python
-    import ttkbootstrap as ttk
-    from ttkbootstrap.constants import *
-
-    # Create main window with theme
-    root = ttk.Window(
-        title="My Application",
-        themename="bootstrap-dark",
-        size=(800, 600),
-        position=(100, 100),
-        resizable=(True, True)
-    )
-
-    # Add widgets
-    ttk.Label(root, text="Hello, World!").pack(padx=20, pady=20)
-    ttk.Button(root, text="Click Me", bootstyle="success").pack()
-
-    # Create toplevel popup
-    popup = ttk.Toplevel(title="Popup Window")
-    popup.geometry("400x300")
-
-    root.mainloop()
-    ```
+`Window` and `Toplevel` wrap `tkinter.Tk`/`tkinter.Toplevel` with integrated
+ttkbootstrap `Style` support and a consolidated construction API — theme, title,
+size/position/geometry, resizability, high-DPI, alpha, and icon handling.
 """
 import sys
 import tkinter
@@ -226,9 +187,7 @@ class _BaseWindow:
 
     Used as a mixin alongside `tkinter.Tk`/`tkinter.Toplevel`, so both classes
     stop duplicating -- and drifting on -- their icon, geometry, alpha, and
-    positioning handling. Mirrors bootstack's `BaseWindow`
-    (`bootstack/src/bootstack/_runtime/base_window.py`); ttkbootstrap borrows
-    the mechanisms only, keeping its own `Window`/`Toplevel` split.
+    positioning handling.
     """
 
     winsys: str
@@ -249,8 +208,8 @@ class _BaseWindow:
                      otherwise inherit the application default (`Toplevel`).
             path  -> load the image, falling back to `default_data` on failure.
 
-        A `.ico` path is applied through `wm_iconbitmap` on Windows (mirrors
-        bootstack's platform branch); other formats go through `iconphoto`.
+        A `.ico` path is applied through `wm_iconbitmap` on Windows; other
+        formats go through `iconphoto`.
         """
         if iconphoto is None:
             return
@@ -276,7 +235,7 @@ class _BaseWindow:
                 self._apply_default_icon(default_data)
 
     def _apply_default_icon(self, default_data: str) -> None:
-        """Apply the brand app icon per-platform (mirrors bootstack).
+        """Apply the brand app icon per platform.
 
         Windows gets the multi-resolution ``.ico`` via ``wm_iconbitmap`` (built
         by ``tools/make_app_ico.py``); macOS/Linux get a PNG via ``iconphoto``.
@@ -323,6 +282,7 @@ class _BaseWindow:
             maxsize: Optional[Tuple[int, int]],
             resizable: Optional[Tuple[bool, bool]],
     ) -> None:
+        """Apply `minsize`/`maxsize`/`resizable`, skipping any left as `None`."""
         if minsize is not None:
             self.minsize(minsize[0], minsize[1])
         if maxsize is not None:
@@ -334,8 +294,7 @@ class _BaseWindow:
         """Set window transparency, platform-aware.
 
         On X11 alpha must be applied after the window is visible, so it is
-        deferred to the `<Visibility>` event (mirrors bootstack's
-        `on_visibility_alpha`); Windows/aqua set it immediately.
+        deferred to the `<Visibility>` event; Windows/aqua set it immediately.
         """
         if alpha is None:
             return
@@ -349,8 +308,7 @@ class _BaseWindow:
         """Get/set override-redirect, guarding the macOS no-op.
 
         On aqua, enabling override-redirect breaks click handling and can crash
-        Tk/Cocoa, so a truthy request is silently ignored there (bootstack
-        `base_window.py:619-639`).
+        Tk/Cocoa, so a truthy request is silently ignored there.
         """
         if boolean and getattr(self, 'winsys', None) == 'aqua':
             return None
@@ -394,8 +352,6 @@ class Window(_BaseWindow, tkinter.Tk):
     information on how to use the inherited `Tk` methods, see the
     [tcl/tk documentation](https://tcl.tk/man/tcl8.6/TkCmd/wm.htm)
     and the [Python documentation](https://docs.python.org/3/library/tkinter.html#tkinter.Tk).
-
-    ![](../../assets/window/window-toplevel.png)
 
     Examples:
 
@@ -500,9 +456,10 @@ class Window(_BaseWindow, tkinter.Tk):
                 `overrideredirect` in 2.0.)
 
             alpha (float):
-                On Windows, specifies the alpha transparency level of the
-                toplevel. Where not supported, alpha remains at 1.0. Internally,
-                this is processed as `Toplevel.attributes('-alpha', alpha)`.
+                Sets the window's alpha transparency level (1.0 is opaque).
+                Applied immediately via `Window.attributes('-alpha', alpha)`,
+                except on X11 where it is deferred until the window becomes
+                visible.
 
             **kwargs:
                 Any other keyword arguments that are passed through to tkinter.Tk() constructor
@@ -575,8 +532,6 @@ class Toplevel(_BaseWindow, tkinter.Toplevel):
     For more information on how to use the inherited `Toplevel`
     methods, see the [tcl/tk documentation](https://tcl.tk/man/tcl8.6/TkCmd/toplevel.htm)
     and the [Python documentation](https://docs.python.org/3/library/tkinter.html#tkinter.Toplevel).
-
-    ![](../../assets/window/window-toplevel.png)
 
     Examples:
 
@@ -685,9 +640,10 @@ class Toplevel(_BaseWindow, tkinter.Toplevel):
                 this calls `Toplevel.iconify`.
 
             alpha (float):
-                On Windows, specifies the alpha transparency level of the
-                toplevel. Where not supported, alpha remains at 1.0. Internally,
-                this is processed as `Toplevel.attributes('-alpha', alpha)`.
+                Sets the window's alpha transparency level (1.0 is opaque).
+                Applied immediately via `Toplevel.attributes('-alpha', alpha)`,
+                except on X11 where it is deferred until the window becomes
+                visible.
 
             **kwargs (Dict):
                 Other optional keyword arguments.

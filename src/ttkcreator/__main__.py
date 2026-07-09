@@ -1,3 +1,8 @@
+"""Standalone Tk app for authoring `Theme` definitions: edit accent/neutral
+colors and light/dark background/foreground, preview the result live, and
+export or save the theme.
+"""
+
 import sys
 import shutil
 import json
@@ -45,6 +50,7 @@ class ThemeCreator(ttk.Window):
     """
 
     def __init__(self):
+        """Build the main window: menu, configuration panel, and live preview."""
         super().__init__("TTK Creator")
         self._families = {t.name: t for t in CURATED_THEMES}
         self.rows = {}
@@ -57,6 +63,7 @@ class ThemeCreator(ttk.Window):
         self.demo_widgets.pack(fill=BOTH, expand=YES)
 
     def setup_theme_creator(self):
+        """Build the file menu and the accent/light/dark color-row sections."""
         # application menu
         self.menu = ttk.Menu()
         commands = [
@@ -329,6 +336,7 @@ class ColorRow(ttk.Frame):
     (e.g. an omitted `secondary`)."""
 
     def __init__(self, master, key, label):
+        """Build the label, color patch, hex entry, and picker button for `key`."""
         super().__init__(master, padding=(5, 2))
         self.key = key
         self.color_value = ""
@@ -357,6 +365,7 @@ class ColorRow(ttk.Frame):
         self.update_patch_color()
 
     def pick_color(self):
+        """Open the OS color picker and apply the chosen color."""
         color = askcolor(color=self.color_value or None)
         if color[1]:
             self.color_value = color[1].lower()
@@ -364,11 +373,13 @@ class ColorRow(ttk.Frame):
             self.event_generate("<<ColorSelected>>")
 
     def enter_color(self, *_):
+        """Apply the hex value typed into the entry."""
         self.color_value = self.entry.get().strip().lower()
         self.update_patch_color()
         self.event_generate("<<ColorSelected>>")
 
     def update_patch_color(self):
+        """Sync the entry text and swatch color to `color_value`."""
         self.entry.delete(0, END)
         self.entry.insert(END, self.color_value)
         if self.color_value:
@@ -404,6 +415,7 @@ class DemoWidgets(ttk.Frame):
     Namespaces are one honking great idea -- let's do more of those!"""
 
     def __init__(self, master, style):
+        """Build the left and right preview panels."""
         super().__init__(master)
 
         self.style: ttk.Style = style
@@ -411,6 +423,7 @@ class DemoWidgets(ttk.Frame):
         self.create_right_frame()
 
     def create_right_frame(self):
+        """Create the button and input-widget preview column."""
         container = ttk.Frame(self)
         container.pack(side=RIGHT, fill=BOTH, expand=YES, padx=5)
 

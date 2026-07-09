@@ -1,47 +1,8 @@
-"""Tooltip popup widgets for ttkbootstrap.
+"""Tooltip popup for ttkbootstrap.
 
-This module provides a semi-transparent tooltip system that displays helpful
-text when hovering over widgets. Tooltips automatically appear on mouse hover
-and disappear when the mouse leaves the widget or on click.
-
-Classes:
-    ToolTip: Semi-transparent popup that shows text on hover
-
-Features:
-    - Automatic show/hide on mouse enter/leave events
-    - Configurable delay before the tooltip appears
-    - Bootstrap styling support
-    - Flexible positioning (follows the mouse or anchored to the widget)
-    - Text wrapping and justification options
-    - Optional image display with the text
-    - `configure`/`cget` for live reconfiguration; self-releasing lifecycle
-
-Example:
-    ```python
-    import ttkbootstrap as ttk
-    from ttkbootstrap.constants import *
-
-    app = ttk.Window()
-
-    b1 = ttk.Button(app, text="default tooltip")
-    b1.pack(side=LEFT, padx=20, pady=20)
-
-    b2 = ttk.Button(app, text="styled tooltip")
-    b2.pack(side=LEFT, padx=20, pady=20)
-
-    # Default tooltip (follows the mouse)
-    ttk.ToolTip(b1, text="This is the default style")
-
-    # Styled tooltip anchored to the widget
-    ttk.ToolTip(
-        b2,
-        text="This is dangerous",
-        bootstyle="danger-inverse",
-        position="top right",
-    )
-
-    app.mainloop()
-    ```
+A semi-transparent tooltip that shows text on hover and hides on leave or click.
+Supports a configurable delay, mouse-following or widget-anchored positioning,
+text wrapping/justification, an optional image, and live reconfiguration.
 """
 import tkinter
 from tkinter import Event, Misc
@@ -65,8 +26,6 @@ class ToolTip:
     destroyed; call :meth:`destroy` to remove it explicitly. Its options can be
     changed after construction with :meth:`configure` / :meth:`cget` (or item
     access), and a currently-visible popup is reconfigured in place.
-
-    ![](../assets/tooltip/tooltip.gif)
 
     Examples:
 

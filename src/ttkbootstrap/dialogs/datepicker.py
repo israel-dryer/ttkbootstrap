@@ -479,28 +479,33 @@ class DatePickerDialog:
 
     @_selection_callback
     def on_next_month(self) -> None:
+        """Advance the displayed calendar to the next month."""
         year, month = self._nextmonth(self.date.year, self.date.month)
         self.date = datetime(year=year, month=month, day=1).date()
 
     @_selection_callback
     def on_next_year(self, *_: Any) -> None:
+        """Advance the displayed calendar to the next year."""
         year = self.date.year + 1
         month = self.date.month
         self.date = datetime(year=year, month=month, day=1).date()
 
     @_selection_callback
     def on_prev_month(self) -> None:
+        """Move the displayed calendar back to the previous month."""
         year, month = self._prevmonth(self.date.year, self.date.month)
         self.date = datetime(year=year, month=month, day=1).date()
 
     @_selection_callback
     def on_prev_year(self, *_: Any) -> None:
+        """Move the displayed calendar back to the previous year."""
         year = self.date.year - 1
         month = self.date.month
         self.date = datetime(year=year, month=month, day=1).date()
 
     @_selection_callback
     def on_reset_date(self, *_: Any) -> None:
+        """Reset the displayed calendar to the start date."""
         self.date = self.start_date
 
     def _set_window_position(self, position: Optional[Tuple[int, int]] = None) -> None:

@@ -1,53 +1,8 @@
-"""Color chooser widget for ttkbootstrap dialogs.
+"""Color chooser widget and dialog for ttkbootstrap.
 
-This module provides a comprehensive color selection widget with multiple
-selection methods including RGB sliders, HSL controls, standard color palette,
-hex input, and screen color picker (color dropper).
-
-Classes:
-    ColorChooser: Main color chooser widget with tabbed interface
-    ColorValues: Named tuple for color value storage
-    ColorChoice: Named tuple for final color selection result
-
-Features:
-    - Multiple color selection methods via tabbed interface
-    - RGB color model with R, G, B sliders (0-255 range)
-    - HSL color model with H (0-360), S, L (0-100) sliders
-    - Standard color palette with common colors and shades
-    - Hex color input with validation
-    - Color dropper for selecting colors from screen
-    - Live color preview
-    - Integration with Querybox for dialog usage
-
-Color Models:
-    - RGB: Red, Green, Blue (0-255 each)
-    - HSL: Hue (0-360), Saturation (0-100), Luminance (0-100)
-    - HEX: Hexadecimal color string (#RRGGBB)
-
-Example:
-    Using ColorChooser in a dialog:
-    ```python
-    from ttkbootstrap.dialogs import Querybox
-
-    # Get color from user
-    color = Querybox.get_color(initialcolor="#FF0000")
-    if color:
-        print(f"Selected color: {color.hex}")
-        print(f"RGB: {color.rgb}")
-        print(f"HSL: {color.hsl}")
-    ```
-
-    Using ColorChooser widget directly:
-    ```python
-    import ttkbootstrap as ttk
-    from ttkbootstrap.dialogs.colorchooser import ColorChooser
-
-    root = ttk.Window()
-    chooser = ColorChooser(root, initialcolor="#00FF00")
-    chooser.pack(padx=10, pady=10)
-
-    root.mainloop()
-    ```
+A tabbed color-selection widget (spectrum, themed swatches, standard palette)
+with RGB/HSL/hex inputs and live preview, plus the `ColorChooserDialog` wrapper
+used by `Querybox.get_color`.
 """
 import tkinter
 from collections import namedtuple
@@ -87,10 +42,7 @@ def validate_color(event: Any) -> bool:
 
 
 class ColorChooser(ttk.Frame):
-    """A class which creates a color chooser widget
-
-    ![](../../assets/dialogs/querybox-get-color.png)
-    """
+    """A class which creates a color chooser widget."""
 
     def __init__(
             self, master: Optional[tkinter.Misc], initialcolor: Optional[str] = None,
@@ -103,9 +55,9 @@ class ColorChooser(ttk.Frame):
         - Themed: Swatches of theme colors and their shades
         - Standard: Common standard colors and their shades
 
-        The widget includes RGB/HSL/Hex value inputs, live preview, and optional
-        color dropper (platform-dependent). Color values are accessible through
-        widget variables (hue, sat, lum, red, grn, blu, hex).
+        The widget includes RGB/HSL/Hex value inputs and a live preview. Color
+        values are accessible through widget variables (hue, sat, lum, red,
+        grn, blu, hex).
 
         Parameters:
 
@@ -568,8 +520,6 @@ class ColorChooserDialog(Dialog):
     hex. These values can be accessed by indexing the tuple or by using
     the named fields.
 
-    ![](../../assets/dialogs/querybox-get-color.png)
-
     Examples:
 
         ```python
@@ -579,7 +529,7 @@ class ColorChooserDialog(Dialog):
         >>> colors.hex
         '#5fb04f'
         >>> colors[2]
-        '#5fb04f
+        '#5fb04f'
         >>> colors.rgb
         (95, 176, 79)
         >>> colors[0]
@@ -627,10 +577,12 @@ class ColorChooserDialog(Dialog):
         self.dropper.result.trace_add('write', self.trace_dropper_color)
 
     def create_body(self, master: tkinter.Misc) -> None:
+        """Overrides the parent method; adds the ColorChooser widget."""
         self.colorchooser = ColorChooser(master, self.initialcolor)
         self.colorchooser.pack(fill=BOTH, expand=YES)
 
     def create_buttonbox(self, master: tkinter.Misc) -> None:
+        """Overrides the parent method; adds the OK/Cancel/color-dropper buttonbox."""
         frame = ttk.Frame(master, padding=(5, 5))
 
         # OK button
@@ -655,14 +607,17 @@ class ColorChooserDialog(Dialog):
         frame.pack(side=BOTTOM, fill=X, anchor=S)
 
     def on_show_colordropper(self, event: tkinter.Event) -> None:
+        """Show the color dropper dialog."""
         self.dropper.show()
 
     def trace_dropper_color(self, *_: Any) -> None:
+        """Sync the color chooser to the hex value picked by the dropper."""
         values = self.dropper.result.get()
         self.colorchooser.hex.set(values[2])
         self.colorchooser.sync_color_values('hex')
 
     def on_button_press(self, button: ttk.Button) -> None:
+        """Set the result on OK and close the dialog; just close on Cancel."""
         if button.cget('text') == MessageCatalog.translate('OK'):
             values = self.colorchooser.get_variables()
             self._result = ColorChoice(

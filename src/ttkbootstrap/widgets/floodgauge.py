@@ -1,35 +1,7 @@
-"""Floodgauge widgets for ttkbootstrap.
+"""Floodgauge widget for ttkbootstrap.
 
-This module provides Floodgauge widgets that display progress with optional
-text labels. Floodgauge is a canvas-based alternative to the ttk Progressbar
-with enhanced styling and animation capabilities.
-
-Example:
-    ```python
-    import ttkbootstrap as ttk
-
-    root = ttk.Window()
-
-    # Create a floodgauge with a mask for percentage display
-    fg = ttk.Floodgauge(
-        root,
-        maximum=100,
-        value=0,
-        bootstyle="success",
-        mask="{}% Complete"
-    )
-    fg.pack(fill='x', padx=10, pady=10)
-
-    # Start animation or update value
-    fg.configure(value=50)
-
-    # For indeterminate mode
-    fg_indet = ttk.Floodgauge(root, mode='indeterminate', bootstyle='info')
-    fg_indet.pack(fill='x', padx=10, pady=10)
-    fg_indet.start()
-
-    root.mainloop()
-    ```
+A canvas-based progress indicator (a styled alternative to `ttk.Progressbar`)
+with determinate and indeterminate modes and an optional text/percentage label.
 """
 import warnings
 from tkinter import Event, Misc, TclError

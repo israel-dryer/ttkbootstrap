@@ -10,13 +10,13 @@ This package provides:
     - Window and Toplevel classes with enhanced functionality
     - Cross-platform compatibility
 
-Example:
+Examples:
     ```python
     import ttkbootstrap as ttk
     from ttkbootstrap.constants import *
 
     # Create a themed window
-    root = ttk.Window(themename="darkly")
+    root = ttk.Window(themename="bootstrap-dark")
 
     # Create styled widgets
     btn = ttk.Button(root, text="Click Me", bootstyle="success")

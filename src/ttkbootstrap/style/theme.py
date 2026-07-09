@@ -1,9 +1,9 @@
-"""Color model and theme definition for ttkbootstrap.
+"""Color model and theme definitions for ttkbootstrap.
 
-Holds `Colors` (the color scheme plus color math) and `ThemeDefinition` (the
-name/colors/light-or-dark container the style engine consumes). Lowest layer of
-the `style` package; the semantic-anchor `Theme` model (Workstream E) will grow
-here. Split out of the monolithic `style.py` in 2.0.
+Holds `Colors` (the color scheme plus color math), `ThemeDefinition` (the
+name/colors/light-or-dark container the style engine consumes), and `Theme`
+(a semantic-anchor theme family that generates light/dark `ThemeDefinition`s
+from a handful of accent colors). Lowest layer of the `style` package.
 """
 import colorsys
 from collections.abc import Mapping
@@ -254,7 +254,7 @@ class Colors:
 
         This class is an iterator, so you can iterate over the main
         style color labels (primary, secondary, success, info, warning,
-        danger):
+        danger, light, dark):
 
         ```python
         for color_label in style.colors:
@@ -268,7 +268,7 @@ class Colors:
 
         ```python
         for color_label in style.colors.label_iter():
-            color = Colors.get(color_label)
+            color = style.colors.get(color_label)
             print(color_label, color)
         ```
 
@@ -504,7 +504,7 @@ class Colors:
         Parameters:
 
             color_label (str):
-                A color label corresponding to a class propery
+                A color label corresponding to a class property
 
         Returns:
 
@@ -606,8 +606,8 @@ class Colors:
 
         Returns:
 
-            tuple[int, int, int]:
-                An rgb color value.
+            tuple[float, float, float]:
+                The rgb color value, each channel normalized to 0-1.
         """
         r, g, b = colorutils.color_to_rgb(color)
         return r / 255, g / 255, b / 255
@@ -933,9 +933,13 @@ class Theme:
         """Derive a new family from an existing `Theme`, overriding some tokens.
 
         Every token not overridden is inherited from `base`, so a built-in can
-        be re-branded by changing just its `primary` (and anything else):
+        be re-branded by changing just its `primary` (and anything else).
 
+        Examples:
+
+            ```python
             Theme.from_existing(BOOTSTRAP, name="acme", primary="#ff5722")
+            ```
         """
         unknown = set(overrides) - {f.name for f in fields(cls)}
         if unknown:

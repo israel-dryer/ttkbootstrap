@@ -55,6 +55,7 @@ class RecolorRenderer:
 
     @classmethod
     def info(cls, name):
+        """Return the manifest entry for element `name`."""
         images = cls._load_manifest().get("images", {})
         try:
             return images[name]
@@ -65,6 +66,7 @@ class RecolorRenderer:
 
     @classmethod
     def source_dpi(cls):
+        """Return the manifest's default source scale (template DPI multiplier)."""
         return float(cls._load_manifest().get("default_source_scale", 2.0))
 
     @classmethod
@@ -122,6 +124,7 @@ class RecolorRenderer:
 
     @classmethod
     def metadata(cls, name, scaling, transform=None):
+        """Return `ElementMeta` for `name`, scaled and adjusted for `transform`."""
         cls._validate_transform(transform)
         info = cls.info(name)
         width, height = info["size"]

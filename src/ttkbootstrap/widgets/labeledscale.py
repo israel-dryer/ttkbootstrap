@@ -1,23 +1,7 @@
 """LabeledScale widget for ttkbootstrap.
 
-This module provides the LabeledScale widget, which combines a Scale
-widget with a Label that automatically displays the current value.
-
-Example:
-    ```python
-    import ttkbootstrap as ttk
-
-    root = ttk.Window()
-
-    # Create a labeled scale
-    scale = ttk.LabeledScale(root, from_=0, to=100)
-    scale.pack(padx=10, pady=10)
-
-    # Access the current value
-    print(scale.value)
-
-    root.mainloop()
-    ```
+A `ttk.Scale` paired with a `ttk.Label` that tracks and displays the current
+value above or below the scale.
 """
 from tkinter import Misc, TclError, Variable
 from typing import Any, Optional, Union

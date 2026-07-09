@@ -1,8 +1,6 @@
-"""
-    ttkbootstrap demo
+"""Interactive demo app showcasing ttkbootstrap widgets and themes.
 
-    ISSUES:
-        - the legacy tk widgets do not update after DateDialog is used.
+Known issue: legacy tk widgets do not update after DateDialog is used.
 """
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
@@ -11,6 +9,7 @@ from ttkbootstrap.widgets.scrolled import ScrolledText
 
 
 def setup_demo(master):
+    """Build and return a Frame showcasing themed widgets and a theme selector."""
     ZEN = """Beautiful is better than ugly. 
 Explicit is better than implicit. 
 Simple is better than complex. 

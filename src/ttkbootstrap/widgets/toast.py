@@ -1,40 +1,8 @@
-"""Toast notification popup widgets for ttkbootstrap.
+"""Toast notification popup for ttkbootstrap.
 
-This module provides a semi-transparent toast notification system for displaying
-temporary alerts or messages. Toasts appear as popup windows that can be
-configured to automatically close after a duration or require user interaction
-to dismiss. Concurrent toasts anchored to the same screen corner are stacked so
-they do not overlap, and the stack reflows when one is dismissed.
-
-Classes:
-    ToastNotification: Semi-transparent popup for alerts and messages
-
-Features:
-    - Configurable display duration or click-to-close behavior
-    - Bootstrap styling support (primary, secondary, success, danger, etc.)
-    - A theme-aware icon rendered from the built-in Bootstrap-Icons font
-    - Flexible positioning (anchored to screen corners) with non-overlapping
-      stacking of concurrent toasts
-    - Optional audible alert bell
-    - Smooth (cancellable) fade-out animation on close
-
-Example:
-    ```python
-    import ttkbootstrap as ttk
-
-    app = ttk.Window()
-
-    # Toast with auto-close after 3 seconds
-    toast = ttk.ToastNotification(
-        title="ttkbootstrap toast message",
-        message="This is a toast message",
-        duration=3000,
-        bootstyle="info",
-    )
-    toast.show_toast()
-
-    app.mainloop()
-    ```
+A semi-transparent popup window for temporary alerts, anchored to a screen
+corner with non-overlapping stacking of concurrent toasts, an optional
+auto-close duration, a theme-aware icon, and a fade-out animation.
 """
 import tkinter
 from tkinter import font
@@ -103,8 +71,6 @@ class ToastNotification:
     Concurrent toasts anchored to the same corner stack without overlapping and
     reflow when one is dismissed. ``show_toast()`` returns the toast so it can be
     dismissed programmatically with :meth:`hide`.
-
-    ![toast notification](../assets/toast/toast.png)
 
     Examples:
 

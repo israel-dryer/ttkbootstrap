@@ -1,32 +1,11 @@
-"""Publisher-Subscriber pattern implementation for ttkbootstrap.
+"""A channel-based publisher-subscriber registry.
 
-This module implements a simple publisher-subscriber (pub-sub) pattern used
-for theme change notifications and widget updates throughout ttkbootstrap.
-
-The Publisher class manages subscribers on different channels and broadcasts
-messages to all subscribers when events occur (like theme changes).
-
-Classes:
-    Channel: Enum defining subscriber channels (STD for tk, TTK for ttk)
-    Subscriber: Data class storing subscriber information
-    Publisher: Manages subscriptions and publishes messages to subscribers
-
-Example:
-    ```python
-    from ttkbootstrap.internal.publisher import Publisher, Channel
-
-    # Subscribe a function to theme changes
-    def on_theme_change():
-        print("Theme changed!")
-
-    Publisher.subscribe(
-        func=on_theme_change,
-        channel=Channel.TTK
-    )
-
-    # Publish a message to all TTK subscribers
-    Publisher.publish(Channel.TTK)
-    ```
+Subscribers register a callback under a `Channel` (`STD` for legacy tk
+widgets, `TTK` for themed widgets); `Publisher.publish_message` invokes every
+callback registered on a given channel. The engine's theme walk repaints
+mounted widgets directly rather than through this registry, so nothing in
+ttkbootstrap currently subscribes here; the module is kept as internal
+plumbing behind the `ttkbootstrap.publisher` backward-compatibility shim.
 """
 from enum import Enum
 from typing import List
@@ -79,6 +58,7 @@ class Publisher:
 
     @staticmethod
     def subscriber_count():
+        """Return the total number of registered subscribers."""
         return len(Publisher.__subscribers)
 
     @staticmethod
@@ -115,12 +95,17 @@ class Publisher:
             pass
 
     def get_subscribers(channel):
-        """Return a list of subscribers.
+        """Return the subscribers registered on a channel.
+
+        Parameters:
+
+            channel (Channel):
+                The channel to filter subscribers by.
 
         Returns:
 
             List:
-                List of key-value tuples
+                List of `Subscriber` instances registered on the channel.
         """
         subs = Publisher.__subscribers.values()
         channel_subs = [s for s in subs if s.channel == channel]
@@ -132,10 +117,11 @@ class Publisher:
         Parameters:
 
             channel (Channel):
-                The name of the channel to subscribe.
+                The channel to publish to.
 
-            **args:
-                optional arguments to pass to the subscribers.
+            *args:
+                Optional positional arguments to pass to each subscriber's
+                callback.
         """
         subs: list[Subscriber] = Publisher.get_subscribers(channel)
         for sub in subs:
