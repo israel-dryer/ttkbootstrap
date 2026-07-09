@@ -35,6 +35,8 @@
 | **`Text` border left to tk default (not themed)** | Visual | this doc, below |
 | **ScrolledText: card border, focus ring, auto-hide fixes** | Visual | this doc, below |
 | **Scrollbar: no trough channel, darker light-mode thumb** | Visual | this doc, below |
+| **Inputs: focus color on focus only (not hover)** | Visual | this doc, below |
+| **`card` / `highlight` frames: hairline border (`RAISED`, no bevel)** | Visual | this doc, below |
 
 ---
 
@@ -836,3 +838,30 @@ entry) was removed — the thumb is drawn procedurally, so the asset was dead.
 **Why.** The faint `border`-colored thumb on a barely-off-white trough was hard to
 see in light mode; dropping the trough tint and darkening the thumb fixes the
 contrast without changing the bar's size.
+
+## Inputs: focus color shows on focus only, not hover  *(Visual)*
+
+**What.** `Entry`, `Combobox`, and `Spinbox` no longer tint their border with the
+focus color on *hover*. The `("hover !disabled", ...)` mapping was dropped from
+each widget's `bordercolor` state map; the border now brightens to the focus color
+(`primary`, or the colored variant) only while the widget actually holds focus.
+Invalid (danger) and readonly states are unchanged.
+
+**Why.** Lighting the focus ring on mere hover is non-standard — the ring should
+signal *where keyboard input goes*, not where the pointer happens to be. Reserving
+it for the real `focus` state matches conventional input behavior and removes a
+distracting hover flicker when the pointer sweeps across a form.
+
+## `card` / `highlight` frames: single hairline border (`RAISED`, bevel suppressed)  *(Visual)*
+
+**What.** The `card` and `highlight` frame variants now draw their border with
+`relief=RAISED` and `lightcolor`/`darkcolor` set to the frame background (instead
+of `relief=SOLID`). Suppressing the clam bevel leaves only the `bordercolor`
+hairline, at the same 1px weight the inputs draw. `highlight` additionally
+state-maps `lightcolor`/`darkcolor` (not just `bordercolor`) to the accent on
+`focus`, so the whole ring brightens uniformly. (Supersedes the `relief=SOLID`
+mechanism noted in the `card`/`highlight` entry above.)
+
+**Why.** The `SOLID` border read slightly heavier than the input borders it sits
+next to; matching the inputs' `RAISED`-with-neutralized-bevel technique gives cards
+and inputs one consistent hairline weight across the theme.
