@@ -186,9 +186,25 @@ and an **input focus-ring + card/highlight border cleanup** (#1127 — the
 the `card`/`highlight` frames draw a single `bordercolor` hairline via
 `relief=RAISED` with the bevel neutralized [`lightcolor`/`darkcolor` = background],
 matching the inputs' 1px border weight, `highlight` state-maps light/dark to the
-accent on focus). Expected suite on `2.0` ~482 (excl. the known `nl.msg`
-localization flake). The
-deferred **Tableview method-verb rename** is now also done (#1117). **NEXT
+accent on focus). The
+deferred **Tableview method-verb rename** is now also done (#1117). **A fluent-
+geometry batch then merged:** #1130 added `FluentGeometryMixin` (a shared mixin so
+`pack`/`grid`/`place` — and the `*_configure` spellings — return the widget for
+one-expression construct-and-place; mixed into both `BootMixin`/`AutoStyleMixin`,
+re-exported; `enable_global_api()` also patches tkinter's `Pack`/`Grid`/`Place`
+mixins so stock/native/third-party widgets get it on opt-in), plus a 39-site
+sweep collapsing first-party construct-then-place pairs. #1131 fixed a **2.0
+regression** where `ColorChooser` crashed in the default config — its swatch/
+preview widgets were native `tk.Frame`/`tk.Label` passed `autostyle=False`, which
+stock tkinter rejects now that the import-time monkey-patch is gone (PR 3); they
+now use the blessed `ttk.TkFrame` and a **new blessed `ttk.TkLabel`**
+(`AutoStyleMixin` subclass, re-exported), and a keyword-only `ToolTip(...)` caller
+was fixed. A follow-on audit for the same two latent-regression classes — native
+tk/ttk widgets taking `bootstyle=`/`autostyle=`, and positional args to now-
+keyword-only APIs — found **no other crash-class bugs** in `src/`; the only extra
+finding was the `__main__` demo tripping its own deprecation warnings, fixed in
+#1132 (`meter_size`/`amount_used`/`auto_hide`). Expected suite on `2.0` ~492
+(excl. the known `nl.msg` localization flake). **NEXT
 (deferred):** the **breaking/deprecation audit → *Migrating-to-2.0* guide** (see
 `2_0_breaking_changes.md`, the running log), and **docs Workstream H** — nav/IA
 skeleton + un-break the API `:::` stubs, per `development/2_0_docs_design.md` §11.
@@ -199,13 +215,15 @@ skeleton + un-break the API `:::` stubs, per `development/2_0_docs_design.md` §
 src/ttkbootstrap/
   __init__.py        # public exports; defines the concrete BootMixin/AutoStyleMixin widget
                      #   subclasses (e.g. `class Button(BootMixin, ttk.Button)`) that carry the
-                     #   `bootstyle`/`autostyle` api. No import-time monkey-patch (2.0, PR 3) —
-                     #   opt into it via enable_global_api().
+                     #   `bootstyle`/`autostyle` api + fluent pack/grid/place (return self). No
+                     #   import-time monkey-patch (2.0, PR 3) — opt into it via enable_global_api().
+                     #   Blessed tk widgets: Tk/Menu/Text/Canvas/TkFrame/TkLabel/LabelFrame.
   style/             # THE CORE — theme/style engine package (see below). Split from the old
                      #   style.py in 2.0 (PR 4); public import path `ttkbootstrap.style` unchanged.
                      #   theme.py (Colors, ThemeDefinition), builders_tk.py (StyleBuilderTK),
                      #   builders_ttk.py (StyleBuilderTTK — the bulk), engine.py (Style),
-                     #   bootstyle.py (Keywords, Bootstyle, tokenizer, BootMixin/AutoStyleMixin, delivery),
+                     #   bootstyle.py (Keywords, Bootstyle, tokenizer, FluentGeometryMixin +
+                     #     BootMixin/AutoStyleMixin, delivery),
                      #   _compat.py (2.0 Workstream D/F quarantine: normalize_bootstyle, strictness).
   window.py          # Window / Toplevel classes
   constants.py       # constants (PRIMARY, SUCCESS, ...) + the single bootstyle vocab source of
