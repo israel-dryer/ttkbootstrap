@@ -39,6 +39,7 @@
 | **Scrollbar: no trough channel, darker light-mode thumb** | Visual | this doc, below |
 | **Inputs: focus color on focus only (not hover)** | Visual | this doc, below |
 | **`card` / `highlight` frames: hairline border (`RAISED`, no bevel)** | Visual | this doc, below |
+| **Control-height parity + check/radio/menubutton focus rings** | Visual | this doc, below |
 
 ---
 
@@ -1088,3 +1089,38 @@ explicit.
 
 **Migration.** None — purely additive. The `ttkbootstrap.utility` /
 `ttkbootstrap.colorutils` import paths remain valid.
+
+---
+
+## Control-height parity + check/radio/menubutton focus rings  *(Visual)*
+
+**What.** Two related visual fixes to the interactive controls:
+
+- **Height parity.** Buttons, toolbuttons, and menubuttons rendered 2px taller
+  than the text inputs (31 vs 29px at 100%). The button/toolbutton/menubutton
+  vertical padding is trimmed by 1px per side so every control — `Button`,
+  `Menubutton`, `Toolbutton`, `Entry`, `Combobox`, `Spinbox` — is the same
+  height again, matching 1.x (where they were all ~29).
+- **Focus rings everywhere in the button family.** `Checkbutton`, `Radiobutton`,
+  `Menubutton`, and the toggle/switch styles (`toggle`/`round-toggle`/
+  `square-toggle`) had **no** keyboard-focus ring; `Button`/`Toolbutton` already
+  did. They now all draw the same 1px `focuscolor` ring on focus (the ring hugs
+  the label and does not change the indicator-driven check/radio/switch height).
+
+**Why.** The +2px on buttons was an unintended side effect of the 2.0 button
+restyle adding a `focusthickness=1` focus ring (which reserves 1px per side) on
+top of the existing padding; nothing compensated for it, so buttons grew. The
+fix keeps the accessibility win (a visible focus ring) and restores the height by
+absorbing the ring into the padding. Adding the missing rings to
+check/radio/menubutton makes keyboard focus visible and consistent across the
+whole family.
+
+**Scope.** `style/builders/{button,toolbutton,menubutton}.py` (padding
+`(…,5,…)` → `(…,4,…)`; menubutton `focusthickness` 0 → 1) and
+`style/builders/{checkbutton,radiobutton,toggle}.py` (add
+`focuscolor`/`focusthickness` + a disabled `focuscolor` map; the toggle layouts
+also gain a `Toolbutton.focus` wrapper around the label, which they lacked).
+Inputs are unchanged (they signal focus with a border-color highlight, not a
+ring — see "Inputs: focus color on focus only").
+
+**Migration.** None (appearance only).

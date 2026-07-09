@@ -275,7 +275,7 @@ def test_representative_builder_geometry_scales_once(root):
         for recipe in recipes:
             recipe(builder, "danger")
 
-        assert style.configure("danger.TButton", "padding") == "15 8"
+        assert style.configure("danger.TButton", "padding") == "15 6"
         assert int(style.configure("danger.TButton", "focusthickness")) == 2
         assert int(style.configure("danger.TEntry", "padding")) == 8
         assert int(style.configure("Sash", "sashthickness")) == 3
