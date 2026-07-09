@@ -180,8 +180,14 @@ borderless `window_type` popups via `MacWindowStyle` (#1125); and the
 **ScrolledText container-owned card border + scrollbar polish** (#1126 — new
 `card`/`highlight` frame style variants, `Text` border left to the container
 [`update_text_style` no longer imposes it], auto-hide flicker/window-growth fixes,
-trough removed + darker light-mode thumb, dead `scrollbar_thumb` asset deleted).
-Expected suite on `2.0` ~482 (excl. the known `nl.msg` localization flake). The
+trough removed + darker light-mode thumb, dead `scrollbar_thumb` asset deleted);
+and an **input focus-ring + card/highlight border cleanup** (#1127 — the
+`Entry`/`Combobox`/`Spinbox` focus color now shows on `focus` only, not `hover`;
+the `card`/`highlight` frames draw a single `bordercolor` hairline via
+`relief=RAISED` with the bevel neutralized [`lightcolor`/`darkcolor` = background],
+matching the inputs' 1px border weight, `highlight` state-maps light/dark to the
+accent on focus). Expected suite on `2.0` ~482 (excl. the known `nl.msg`
+localization flake). The
 deferred **Tableview method-verb rename** is now also done (#1117). **NEXT
 (deferred):** the **breaking/deprecation audit → *Migrating-to-2.0* guide** (see
 `2_0_breaking_changes.md`, the running log), and **docs Workstream H** — nav/IA
