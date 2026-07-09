@@ -27,8 +27,18 @@ def build_checkbutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     accent = builder.colors.get(colorname or 'primary')
     on_accent = builder.on_color(accent)
 
-    builder.configure(sn.ttk_style, foreground=fg)
-    state_map(builder.style, sn.ttk_style, foreground={"disabled": disabled})
+    # A 1px keyboard-focus ring around the label (drawn by the `.focus` element
+    # in the layout below), matching the button family so focus is visible here
+    # too. It hugs the label and does not change the indicator-driven height.
+    builder.configure(
+        sn.ttk_style, foreground=fg,
+        focuscolor=fg, focusthickness=builder.scale_size(1),
+    )
+    state_map(
+        builder.style, sn.ttk_style,
+        foreground={"disabled": disabled},
+        focuscolor={"disabled": disabled},
+    )
 
     # Create style assets
     a = builder.assets

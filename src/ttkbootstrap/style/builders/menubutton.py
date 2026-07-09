@@ -64,15 +64,16 @@ def build_menubutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         lightcolor=background,
         relief=tk.RAISED,
         borderwidth=1,  # 1px hairline; intentionally unscaled
-        focusthickness=0,
+        focusthickness=builder.scale_size(1),
         focuscolor=foreground,
         # (left, top, right, bottom): 10px label inset on the left, a tighter
         # 6px on the right so the caret sits closer to the edge than the label.
-        padding=builder.scale_size((10, 5, 6, 5)),
+        padding=builder.scale_size((10, 4, 6, 4)),
     )
     builder.style.map(
         ttk_style,
         foreground=[("disabled", disabled_fg)],
+        focuscolor=[("disabled", disabled_fg)],
         background=fill_states,
         bordercolor=border_states,
         darkcolor=fill_states,
@@ -147,13 +148,14 @@ def _build_neutral_outline_menubutton(builder: StyleBuilderTTK, ttk_class, disab
         lightcolor=surface,
         relief=tk.RAISED,
         borderwidth=1,  # 1px hairline; intentionally unscaled
-        focusthickness=0,
+        focusthickness=builder.scale_size(1),
         focuscolor=fg,
-        padding=builder.scale_size((10, 5, 6, 5)),
+        padding=builder.scale_size((10, 4, 6, 4)),
     )
     builder.style.map(
         ttk_style,
         foreground=[("disabled", disabled_fg)],
+        focuscolor=[("disabled", disabled_fg)],
         background=fill_states,
         bordercolor=border_states,
         darkcolor=fill_states,
@@ -204,9 +206,9 @@ def build_outline_menubutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         lightcolor=builder.colors.bg,
         relief=tk.RAISED,
         borderwidth=1,  # 1px hairline; intentionally unscaled
-        focusthickness=0,
+        focusthickness=builder.scale_size(1),
         focuscolor=foreground,
-        padding=builder.scale_size((10, 5, 6, 5)),
+        padding=builder.scale_size((10, 4, 6, 4)),
     )
     builder.style.map(
         ttk_style,
@@ -215,6 +217,7 @@ def build_outline_menubutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
             ("pressed !disabled", foreground_pressed),
             ("hover !disabled", foreground_pressed),
         ],
+        focuscolor=[("disabled", disabled_fg)],
         background=[
             ("pressed !disabled", pressed),
             ("hover !disabled", hover),

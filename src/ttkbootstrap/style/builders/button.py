@@ -70,7 +70,7 @@ def build_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         borderwidth=1,  # 1px hairline; intentionally unscaled
         focusthickness=builder.scale_size(1),
         focuscolor=on_fill,
-        padding=builder.scale_size((10, 5)),
+        padding=builder.scale_size((10, 4)),
         anchor=tk.CENTER,
     )
     builder.style.map(
@@ -110,7 +110,7 @@ def _build_neutral_outline_button_style(builder: StyleBuilderTTK, ttk_class):
         borderwidth=1,  # 1px hairline; intentionally unscaled
         focusthickness=builder.scale_size(1),
         focuscolor=fg,
-        padding=builder.scale_size((10, 5)),
+        padding=builder.scale_size((10, 4)),
         anchor=tk.CENTER,
     )
     builder.style.map(
@@ -180,7 +180,7 @@ def build_outline_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         borderwidth=1,  # 1px hairline; intentionally unscaled
         focusthickness=builder.scale_size(1),
         focuscolor=accent,
-        padding=builder.scale_size((10, 5)),
+        padding=builder.scale_size((10, 4)),
         anchor=tk.CENTER,
     )
     builder.style.map(
@@ -252,7 +252,7 @@ def build_link_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         focusthickness=builder.scale_size(1),
         focuscolor=on_surface,
         anchor=tk.CENTER,
-        padding=builder.scale_size((10, 5)),
+        padding=builder.scale_size((10, 4)),
     )
     builder.style.map(
         ttk_style,
@@ -322,7 +322,7 @@ def build_ghost_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         borderwidth=1,
         focusthickness=builder.scale_size(1),
         focuscolor=fg,
-        padding=builder.scale_size((10, 5)),
+        padding=builder.scale_size((10, 4)),
         anchor=tk.CENTER,
     )
     builder.style.map(
