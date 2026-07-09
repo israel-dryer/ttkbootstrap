@@ -785,7 +785,37 @@ class Bootstyle:
 _UNSET = object()  # sentinel: distinguish "icon kwarg omitted" from "icon=None"
 
 
-class BootMixin:
+class FluentGeometryMixin:
+    """Mixin that makes the geometry managers return the widget.
+
+    tkinter's ``pack``/``grid``/``place`` return ``None``; returning ``self``
+    instead lets a widget be constructed and placed in a single expression::
+
+        btn = ttk.Button(root, text="Save").pack(padx=10)
+
+    ``pack``/``grid``/``place`` are tkinter aliases for the ``*_configure``
+    methods, so overriding the configure variants (and re-aliasing) covers both
+    call names. Shared by `BootMixin` (ttk) and `AutoStyleMixin` (tk).
+    """
+
+    def pack_configure(self, cnf={}, **kwargs):
+        super().pack_configure(cnf, **kwargs)
+        return self
+
+    def grid_configure(self, cnf={}, **kwargs):
+        super().grid_configure(cnf, **kwargs)
+        return self
+
+    def place_configure(self, cnf={}, **kwargs):
+        super().place_configure(cnf, **kwargs)
+        return self
+
+    pack = pack_configure
+    grid = grid_configure
+    place = place_configure
+
+
+class BootMixin(FluentGeometryMixin):
     """Mixin that adds the ``bootstyle`` API to a ttk widget class.
 
     This is the 2.0 delivery vehicle for the styling API. Instead of
@@ -911,7 +941,7 @@ class BootMixin:
         return super().__getitem__(key)
 
 
-class AutoStyleMixin:
+class AutoStyleMixin(FluentGeometryMixin):
     """Mixin that auto-applies the theme to a legacy ``tk`` widget class.
 
     The tk counterpart to `BootMixin`. Legacy tk widgets have no ttk style;

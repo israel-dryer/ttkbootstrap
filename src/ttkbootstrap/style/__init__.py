@@ -13,6 +13,7 @@ from ttkbootstrap.style.engine import Style
 from ttkbootstrap.style.bootstyle import (
     Keywords,
     Bootstyle,
+    FluentGeometryMixin,
     BootMixin,
     AutoStyleMixin,
     bootify,
@@ -45,6 +46,7 @@ __all__ = [
     "Style",
     "Keywords",
     "Bootstyle",
+    "FluentGeometryMixin",
     "BootMixin",
     "AutoStyleMixin",
     "bootify",
