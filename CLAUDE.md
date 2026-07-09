@@ -155,17 +155,37 @@ fallback) re-pointing `place_window_center`, snake_case kwarg aliases via
 edge-relative/combined geometry, aqua `overrideredirect` no-op guard, win32
 AppUserModelID; `tests/test_window_api.py` (+15), suite 317 excl. the `nl.msg`
 flake. **PR C (Tableview fixes + re-export, §5c) — the pass's last PR — is
-OPENED as #1104:** re-export `Tableview`/`TableColumn`/`TableRow` at top level
+**MERGED (#1104)**:** re-export `Tableview`/`TableColumn`/`TableRow` at top level
 (`ttk.Tableview`) + from `ttkbootstrap.widgets`, fix two dead-on-call bugs
 (`delete_column(cid=...)` called the `cidmap` dict — `cidmap` is int-keyed, not
 `str`; header right-click menu `self.master` self-assignment), `insert_row([])`
 raises `ValueError` instead of `print()`ing to stdout, delete dead code
 (`reset_row_sort` stub / unused `_build_table_*` / commented `_select_pagesize` /
 `maxwidth` docstring); `tests/test_tableview_api.py` (+6), suite 323 excl. the
-`nl.msg` flake. **With A/B/C the shipped-widget API pass is COMPLETE** (only the
-deferred Tableview method-verb rename remains, its own later slice). **NEXT → docs
-Workstream H sub-PR #1** — nav/IA skeleton + un-break the 7 broken API `:::` stubs,
-per `development/2_0_docs_design.md` §11.
+`nl.msg` flake. **With A/B/C the shipped-widget API pass is COMPLETE.** **A large
+batch has since merged into `2.0`:** icon-delivery fixes (#1105 theme-aware
+`apply_icon`, #1106 pagination glyph buttons, #1107 widget self-deprecation
+hotfix) + top-level widget re-exports (#1108); the **widget-review normalization
+pass** on a shared `ConfigureDelegationMixin` (`internal/configure_delegation.py`,
+#1109) — Meter (#1110), DateEntry (#1111), Floodgauge (#1112), Scrolled (#1113),
+LabeledScale+ToolTip (#1114), Toast (#1115) — each keyword-only, cget/configure
+parity, `_compat` warn-and-normalize renames, lifecycle/leak fixes; a
+**property/accessor consistency pass** (#1116 — options live on configure/cget
+only, deprecated bare-attr `__getattr__`/`__setattr__` shims); a **Tableview polish
+run** — verb rename (#1117), sizegrip recolor asset (#1118), header restyle
+(#1119), themed right-click menus (#1120) with plain-text labels (#1121), a
+theme-walk `cget('style')` fix (#1122), `builders_tk` string-literal cleanup
+(#1123), a locale-robust test fix (#1124); **macOS native popup chrome** for
+borderless `window_type` popups via `MacWindowStyle` (#1125); and the
+**ScrolledText container-owned card border + scrollbar polish** (#1126 — new
+`card`/`highlight` frame style variants, `Text` border left to the container
+[`update_text_style` no longer imposes it], auto-hide flicker/window-growth fixes,
+trough removed + darker light-mode thumb, dead `scrollbar_thumb` asset deleted).
+Expected suite on `2.0` ~482 (excl. the known `nl.msg` localization flake). The
+deferred **Tableview method-verb rename** is now also done (#1117). **NEXT
+(deferred):** the **breaking/deprecation audit → *Migrating-to-2.0* guide** (see
+`2_0_breaking_changes.md`, the running log), and **docs Workstream H** — nav/IA
+skeleton + un-break the API `:::` stubs, per `development/2_0_docs_design.md` §11.
 
 ## Repository layout
 
