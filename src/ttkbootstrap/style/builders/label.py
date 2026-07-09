@@ -106,6 +106,8 @@ def build_label_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     builder.configure(
         ttk_style, foreground=foreground, background=background
     )
+    builder.style.map(ttk_style, foreground=[('disabled', builder.disabled("text"))])
+
     # register ttkstyle
     builder.register_ttkstyle(ttk_style)
 

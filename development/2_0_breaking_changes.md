@@ -865,3 +865,117 @@ mechanism noted in the `card`/`highlight` entry above.)
 **Why.** The `SOLID` border read slightly heavier than the input borders it sits
 next to; matching the inputs' `RAISED`-with-neutralized-bevel technique gives cards
 and inputs one consistent hairline weight across the theme.
+
+## DatePickerDialog: frameless popover; dismisses on outside click / Escape  *(Behavioral)*
+
+**What.** `DatePickerDialog` (and therefore `Querybox.get_date` and the
+`DateEntry` calendar button) now shows as a **frameless** window
+(`override_redirect=True`; a no-op on macOS/aqua, where Tk keeps the chrome).
+It no longer takes a modal grab: clicking anywhere outside the popup, or pressing
+`Escape`, cancels the selection and closes it — in addition to the existing
+"click a day to select and close". Because there is no grab, the parent window
+stays interactive while the popup is open (clicking it dismisses the popup).
+`show(wait_for_result=True)` still blocks the caller until the popup closes, so
+`get_date` returns synchronously as before. The old titlebar `X`-to-cancel
+affordance is gone (there is no titlebar); outside-click / `Escape` replace it.
+
+**Why.** The popup was a chrome'd modal window that could open partly off-screen
+and could only be cancelled via the window-manager `X`. A frameless popover that
+closes on outside click is the conventional date-picker interaction and mirrors
+bootstack's popover date dialog.
+
+u## Popups: dropdown placement + on-screen clamping  *(Behavioral / bugfix)*
+
+**What.** The date-picker popup now drops **directly below its target widget,
+left-aligned** (standard dropdown placement) instead of anchoring to the target's
+bottom-*right* corner. Because `DateEntry` targets its entry field, the calendar
+now appears beneath the **input** rather than under the calendar button. When
+there isn't room below the target on its monitor, the popup **flips to sit above**
+the target (new `internal.positioning.below_widget` helper). Every placement path
+— the date picker's, and the base dialog's explicit-`position` path used by
+`Messagebox`/`Querybox` — is routed through `ensure_on_screen`, so a popup near a
+screen edge is clamped to stay fully on its monitor instead of overflowing. The
+date picker centers via `center_on_screen` (monitor under the cursor) when it has
+no parent.
+
+**Why.** Previously the date picker anchored to the parent's bottom-right corner
+with a raw `+x+y` geometry and no bounds check: it dropped under the button rather
+than the input, and routinely spilled past the screen edge (a target near the
+bottom had nowhere to go). `Messagebox`/`Querybox` had the same off-screen gap on
+an explicit `position`. Dropping below-left with an above-flip and a hard on-screen
+clamp is the conventional, robust dropdown behavior (mirrors bootstack).
+
+## DatePickerDialog: no longer mutates the global `LC_TIME` locale  *(Behavioral / bugfix)*
+
+**What.** `DatePickerDialog.__init__` no longer calls
+`locale.setlocale(locale.LC_TIME, "")`. Opening the calendar (directly, or via
+`Querybox.get_date` / a `DateEntry` button) previously switched the process-wide
+time locale from the ambient/C locale to the OS default as a side effect. That
+desynced `DateEntry`'s `%x` round-trip — the field's text is written with
+`strftime` at construction (C-locale `%x`, e.g. `07/09/26`) but was then parsed
+with `strptime` under the freshly-changed OS locale (`%x` now expects a 4-digit
+year), so the next button click logged a spurious *"Date entry text does not match
+with date format: %x"* `UserWarning`. The date display format is now stable for
+the whole session instead of flipping after the first picker open.
+
+**Why.** The `setlocale` was both the source of that mismatch and counterproductive
+for the dialog's own i18n: the calendar localizes month/weekday names through
+`MessageCatalog`, keyed on the **English** `strftime("%B")` output, so it relies on
+the ambient (C) locale returning English names — exactly what setting the OS locale
+broke. Removing the global mutation fixes the warning and makes the calendar's month
+titles localize consistently with its (already `MessageCatalog`-based) weekday
+headers.
+
+## DateEntry / DatePickerDialog: `show_outside_days` option  *(New)*
+
+**What.** `DatePickerDialog`, `Querybox.get_date`, and `DateEntry` gained a
+`show_outside_days: bool = True` option. When True (default, current behavior),
+the calendar shows the leading/trailing days of the adjacent months as muted,
+non-selectable labels. When False, those cells are blank so only the current
+month's days are visible. On `DateEntry` it is a configure option
+(`cget`/`configure("show_outside_days")`); it applies to the popup the next time
+it opens.
+
+**Why.** Additive parity with bootstack's `Calendar.show_outside_days` — some
+layouts prefer a calendar that only shows the current month.
+
+## DateEntry: `button_icon` option  *(New)*
+
+**What.** `DateEntry` gained a `button_icon: str = "calendar-week"` option to
+choose the glyph shown on the calendar button (any Bootstrap-icon name the icon
+engine renders). It is a full `configure`/`cget` option: setting it live
+re-renders the button glyph (theme/state-aware, via `apply_icon`).
+
+**Why.** Additive — lets callers pick a different calendar/date glyph without
+subclassing.
+
+## DatePickerDialog / DateEntry: popup title no longer displayed  *(Behavioral)*
+
+**What.** The calendar popup is now a frameless (override-redirect) window, so it
+has no titlebar — the `DatePickerDialog(title=...)` / `Querybox.get_date(title=...)`
+/ `DateEntry(popup_title=...)` text is **no longer displayed** anywhere. The
+parameters are retained (accepted, stored) for API compatibility but have no
+visible effect.
+
+**Why.** Consequence of the frameless-popover redesign (see the *DatePickerDialog:
+frameless popover* entry above). A borderless popup has no window chrome to render
+the title in; the calendar's own month/year header remains the visible heading.
+
+## Removed the dead `Date.TButton` calendar-button style (`date` internal modifier)  *(Internal cleanup)*
+
+**What.** The bespoke date-button style recipe (`@register_builder("date", "button")`
+→ `Date.TButton`, a button with a baked-in `calendar3` glyph image) and the
+`"date"` token in `BOOTSTYLE_INTERNAL_MODIFIERS` were removed. `DateEntry`'s
+button no longer uses `bootstyle="…-date"`; it is a normal button styled with the
+widget's `bootstyle` and its glyph supplied by the icon engine
+(`Button(icon=button_icon)`), so the dedicated style became dead code.
+
+**Why.** The icon engine (Workstream I) now renders the calendar glyph on an
+ordinary button, making a separate image-baking button recipe redundant. `"date"`
+was an internal-only modifier (undocumented, never in the public `BootStyle`
+Literal), so its removal is not a public-grammar change and needed no reference
+regeneration.
+
+**Impact.** Internal only. `bootstyle="date"` / `"…-date"` was never a documented
+form; it now tokenizes as an unknown token (warns by default, raises under strict
+mode) like any other retired keyword.

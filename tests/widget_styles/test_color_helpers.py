@@ -343,6 +343,3 @@ def test_solid_button_recipe_uses_helper_state_contract(
         assert option_map(style_name, 'fieldbackground')[
             ('readonly',)
         ] == readonly
-
-    builder.build_style('date', 'button', colorname, required=True)
-    assert option_map(f'{colorname}.Date.TButton', 'image')[('disabled',)]

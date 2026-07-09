@@ -78,7 +78,6 @@ def test_reclassification_fixed_the_audit():
         ("primary outline", ("primary", "outline", "", "")),
         # internal composite modifiers are valid tokens
         ("primary-meter", ("primary", "meter", "", "")),
-        ("date", ("", "date", "", "")),
     ],
 )
 def test_classify_slots(text, expected):

@@ -90,6 +90,49 @@ def center_on_parent(window: tkinter.Misc, parent: tkinter.Misc) -> Tuple[int, i
     return int(x), int(y)
 
 
+def below_widget(
+        window: tkinter.Misc,
+        target: tkinter.Misc,
+        padding: int = 20,
+        gap: int = 3,
+) -> Tuple[int, int]:
+    """Coordinates that drop ``window`` directly below ``target``, left-aligned.
+
+    Standard dropdown placement: the window's top-left sits at the target's
+    bottom-left, plus a small ``gap`` so the two don't touch. When there is not
+    enough room below the target on its monitor (the window would run off the
+    bottom), it is flipped to sit *above* the target instead — its bottom-left a
+    ``gap`` above the target's top-left — provided there is room there. The result
+    is passed through :func:`ensure_on_screen` so it never overflows horizontally
+    or off the opposite edge.
+    """
+    window.update_idletasks()
+    target.update_idletasks()
+    _, w_height = _window_size(window)
+    tx = target.winfo_rootx()
+    ty = target.winfo_rooty()
+    t_height = max(target.winfo_height(), target.winfo_reqheight())
+
+    monitor = _monitor_at_point(tx, ty)
+    if monitor:
+        _, screen_y0, _, screen_h = monitor
+    else:
+        screen_y0 = window.winfo_vrooty()
+        screen_h = window.winfo_vrootheight()
+    screen_y1 = screen_y0 + screen_h
+
+    x = tx
+    y = ty + t_height + gap
+    # Flip above only when the drop would overflow the bottom AND there is room
+    # above; otherwise stay below and let ensure_on_screen clamp the edge.
+    if y + w_height > screen_y1:
+        y_above = ty - w_height - gap
+        if y_above >= screen_y0:
+            y = y_above
+    # titlebar_height=0: a dropdown is frameless, so no decoration to reserve.
+    return ensure_on_screen(window, x, y, padding=padding, titlebar_height=0)
+
+
 def ensure_on_screen(
         window: tkinter.Misc,
         x: int,

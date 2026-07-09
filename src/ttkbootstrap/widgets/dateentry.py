@@ -30,8 +30,8 @@ from datetime import date, datetime
 from tkinter import Misc
 from typing import Any, Optional, Tuple, Union
 
-from ttkbootstrap import Button, Entry, Frame
-from ttkbootstrap.constants import END, LEFT, X, YES
+from ttkbootstrap import Button, Entry, Frame, apply_icon
+from ttkbootstrap.constants import BOTH, END, LEFT, X, YES
 from ttkbootstrap.dialogs import Querybox
 from ttkbootstrap.internal.configure_delegation import (
     ConfigureDelegationMixin,
@@ -81,6 +81,10 @@ class DateEntry(ConfigureDelegationMixin, Frame):
     # coercing the live entry text to a date.
     _FALLBACK_FORMATS = ("%Y-%m-%d", "%m/%d/%Y")
 
+    # Logical size of the calendar-button glyph (shared by construction and the
+    # `button_icon` configure delegate so live changes match the initial render).
+    _BUTTON_ICON_SIZE = 18
+
     def __init__(
             self,
             master: Optional[Misc] = None,
@@ -88,7 +92,9 @@ class DateEntry(ConfigureDelegationMixin, Frame):
             date_format: str = r"%x",
             first_weekday: int = 6,
             start_date: Optional[Union[datetime, date]] = None,
-            bootstyle: str = "",
+            bootstyle: str = "primary",
+            button_icon: str = "calendar-week",
+            show_outside_days: bool = True,
             popup_title: str = 'Select new date',
             raise_exception: bool = False,
             position: Optional[Tuple[int, int]] = None,
@@ -119,8 +125,18 @@ class DateEntry(ConfigureDelegationMixin, Frame):
                 options include -> primary, secondary, success, info,
                 warning, danger, dark, light.
 
+            button_icon (str, optional):
+                The icon to use in the button. Defaults to "calendar-week".
+
+            show_outside_days (bool, optional):
+                If True (default), the calendar popup shows the leading/trailing
+                days of the adjacent months as muted, non-selectable labels. If
+                False, those cells are blank (only the current month is shown).
+
             popup_title (str, optional):
-                Title for PopUp window (Default: `Select new date`)
+                Window title for the calendar popup. NOTE: the popup is now a
+                frameless (borderless) window, so this title is not displayed;
+                it is retained for API compatibility. (Default: `Select new date`)
 
             raise_exception (bool, optional):
                 If a `ValueError` should be raised when the user enters an
@@ -148,6 +164,8 @@ class DateEntry(ConfigureDelegationMixin, Frame):
         self._firstweekday = first_weekday
         self._startdate = start_date or datetime.today()
         self._bootstyle = bootstyle
+        self._button_icon = button_icon
+        self._show_outside_days = show_outside_days
         self._popup_title = popup_title
         self._raise_exception = raise_exception
         self._position = position
@@ -163,15 +181,27 @@ class DateEntry(ConfigureDelegationMixin, Frame):
         if entry_width is not None:
             entry_kwargs["width"] = entry_width
         self.entry = Entry(self, **entry_kwargs)
-        self.entry.pack(side=LEFT, fill=X, expand=YES)
 
-        # Build datepicker button & place it right to the date widget
+        # Build datepicker button.
         self.button = Button(
             master=self,
             command=self._on_date_ask,
-            bootstyle=f"{self._bootstyle}-date",
+            bootstyle=self._bootstyle,
+            icon=self._button_icon,
+            icon_size=self._BUTTON_ICON_SIZE,
+            padding=2
         )
-        self.button.pack(side=LEFT)
+        # The button is *placed* over the entry's right edge (not packed beside
+        # it) so it covers the entry's right border/corner-radius -- the field +
+        # button then read as a single control. The entry reserves the button's
+        # width on its right via `padx`, minus a few px of deliberate overlap so
+        # the button sits on top of that border rather than flush against it.
+        self.button.update_idletasks()
+        overlap = 3
+        reserve = max(0, self.button.winfo_reqwidth() - overlap)
+        self.entry.pack(side=LEFT, fill=BOTH, expand=YES, padx=(0, reserve))
+        self.button.place(relx=1.0, rely=0, relheight=1.0, anchor="ne")
+        self.button.lift()
 
         # Mark the entry `invalid` on blur when its text is not a valid date.
         self.entry.bind("<FocusOut>", self._on_entry_blur, add="+")
@@ -201,6 +231,22 @@ class DateEntry(ConfigureDelegationMixin, Frame):
             return self._firstweekday
         self._firstweekday = value
 
+    @configure_delegate("show_outside_days")
+    def _cfg_show_outside_days(self, value):
+        # Applies to the calendar popup the next time it is opened.
+        if value is None:
+            return self._show_outside_days
+        self._show_outside_days = bool(value)
+
+    @configure_delegate("button_icon")
+    def _cfg_button_icon(self, value):
+        # Re-render the button glyph live (theme/state-aware) via apply_icon,
+        # matching the size used at construction.
+        if value is None:
+            return self._button_icon
+        self._button_icon = value
+        apply_icon(self.button, value, size=self._BUTTON_ICON_SIZE)
+
     @configure_delegate("start_date")
     def _cfg_start_date(self, value):
         if value is None:
@@ -213,7 +259,7 @@ class DateEntry(ConfigureDelegationMixin, Frame):
             return self._bootstyle
         self._bootstyle = value
         self.entry.configure(bootstyle=self._bootstyle)
-        self.button.configure(bootstyle=f"{self._bootstyle}-date")
+        self.button.configure(bootstyle=self._bootstyle)
 
     @configure_delegate("state")
     def _cfg_state(self, value):
@@ -488,6 +534,7 @@ class DateEntry(ConfigureDelegationMixin, Frame):
                 start_date=old_date,
                 first_weekday=self._firstweekday,
                 bootstyle=self._bootstyle,
+                show_outside_days=self._show_outside_days,
                 position=self._position,
             )
             # get_date returns None when the picker is cancelled (2.0); leave

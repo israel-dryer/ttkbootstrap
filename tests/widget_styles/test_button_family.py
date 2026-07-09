@@ -60,13 +60,13 @@ def test_ghost_is_a_canonical_bootstyle():
     assert "primary-ghost" in canonical
 
 
-def test_date_button_has_hairline_border(root):
-    """DateEntry's button gets the same fill-derived border as other buttons."""
-    style = root.style
-    ttk.DateEntry(root)
+def test_dateentry_button_uses_icon_button_style(root):
+    """DateEntry's button is a normal (icon-bearing) button, not a bespoke
+    ``Date.TButton`` style -- the dedicated date-button recipe was removed once
+    the button switched to the icon engine."""
+    de = ttk.DateEntry(root)
     root.update_idletasks()
-    border = _lookup(root, "Date.TButton", "bordercolor")
-    assert border, "date button must have a border"
-    # a distinct edge derived from the fill, not the raw fill
-    assert border != _lookup(root, "Date.TButton", "background")
-    assert _lookup(root, "Date.TButton", "relief") == "raised"
+    # It resolves to an icon-derived variant of the bootstyle's TButton...
+    assert de.button.cget("style").endswith(".TButton")
+    # ...and the dead bespoke style is gone.
+    assert not root.style.style_exists_in_theme("Date.TButton")
