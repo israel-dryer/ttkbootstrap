@@ -72,10 +72,15 @@ def _build_round_toggle_style(builder: StyleBuilderTTK, colorname, ttk_class):
         padding=0,
         foreground=builder.colors.fg,
         background=builder.colors.bg,
+        # 1px keyboard-focus ring around the label (via the `Toolbutton.focus`
+        # element in the layout below), matching the rest of the button family.
+        focuscolor=builder.colors.fg,
+        focusthickness=builder.scale_size(1),
     )
     builder.style.map(
         ttk_style,
         foreground=[("disabled", disabled_fg)],
+        focuscolor=[("disabled", disabled_fg)],
         background=[("selected", builder.colors.bg)],
     )
     a = builder.assets
@@ -107,7 +112,8 @@ def _build_round_toggle_style(builder: StyleBuilderTTK, colorname, ttk_class):
             El("Toolbutton.padding", sticky=NSEW, children=[
                 El(f"{ttk_style}.indicator", side=LEFT),
                 El(spacer_name, side=LEFT),
-                El("Toolbutton.label", side=LEFT)])]))
+                El("Toolbutton.focus", side=LEFT, sticky="", children=[
+                    El("Toolbutton.label", side=LEFT)])])]))
     # register ttkstyle
     builder.register_ttkstyle(ttk_style)
 
@@ -143,10 +149,16 @@ def build_square_toggle_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     else:
         accent = builder.colors.get(colorname)
 
-    builder.configure(ttk_style, relief=tk.FLAT, borderwidth=0, foreground=builder.colors.fg)
+    builder.configure(
+        ttk_style, relief=tk.FLAT, borderwidth=0, foreground=builder.colors.fg,
+        # 1px keyboard-focus ring around the label (via the `Toolbutton.focus`
+        # element in the layout below), matching the rest of the button family.
+        focuscolor=builder.colors.fg, focusthickness=builder.scale_size(1),
+    )
     builder.style.map(
         ttk_style,
         foreground=[("disabled", disabled_fg)],
+        focuscolor=[("disabled", disabled_fg)],
         background=[
             ("selected", builder.colors.bg),
             ("!selected", builder.colors.bg),
@@ -174,7 +186,8 @@ def build_square_toggle_style(builder: StyleBuilderTTK, colorname=DEFAULT):
             El("Toolbutton.padding", sticky=NSEW, children=[
                 El(f"{ttk_style}.indicator", side=LEFT),
                 El(spacer_name, side=LEFT),
-                El("Toolbutton.label", side=LEFT)])]))
+                El("Toolbutton.focus", side=LEFT, sticky="", children=[
+                    El("Toolbutton.label", side=LEFT)])])]))
 
     # register ttk style
     builder.register_ttkstyle(ttk_style)
