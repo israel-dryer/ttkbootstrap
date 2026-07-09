@@ -15,6 +15,7 @@
 |---|---|---|
 | Theme model, `Theme`, default theme, ramp addressing | API | `development/2_0_theme_migration.md` |
 | **Legacy theme names auto-register on use (no hard-stop)** | Fix/Deprecated | this doc, below (Slice 1) |
+| **`App` (canonical) / `Window` alias; `theme` / `themename` alias** | New | this doc, below (Slice 2) |
 | Canonical `bootstyle` grammar (closed vocab, strict mode) | API | `development/2_0_bootstyle_grammar_design.md` |
 | Character-based icons removed (`ttkbootstrap.icons`) | API | `development/2_0_icon_drop_design.md` (PR #1094) |
 | Delivery API (mixins, no import-time monkey-patch) | API | handoff / PR #1075 |
@@ -67,6 +68,42 @@ while keeping its deprecation nudge (a per-name `DeprecationWarning`).
 
 **Not changed.** The default theme: `ttk.Window()` with no name still renders
 `bootstrap-light` — a documented *visual* change, not a crash.
+
+---
+
+## `App`/`Window` and `theme`/`themename` naming aliases  *(New — no break)*
+
+**What.** Two disambiguating renames, both delivered as **additive permanent
+aliases** — nothing existing breaks, and **no deprecation warnings** (these are
+the most-typed identifiers in every app).
+
+- **`App` is now the canonical application-root class; `Window` is a permanent,
+  fully-supported alias** (`Window = App`, the same class object). So
+  `type(app).__name__`, `repr`, and tracebacks read `App`, while `ttk.Window(...)`,
+  `isinstance(x, Window)`, and existing `class MyApp(ttk.Window)` subclasses keep
+  working unchanged. `Toplevel` is untouched (already unambiguous).
+- **`theme` is now the canonical constructor argument on `App`/`Window`/`Style`;
+  `themename` is a permanent, non-deprecated alias.** `Style` already used
+  `theme`; only the window classes were out of step. `theme` is the second
+  positional on `App`/`Window` (so `App("Title", "darkly")` still means theme),
+  and both `theme=` and `themename=` are accepted (canonical `theme` wins if both
+  are given).
+
+**Unchanged (deliberately).** `Style.theme_use(themename)` and
+`Style.theme_create(themename)` **keep the `themename` parameter** — they override
+`ttk.Style` methods whose tkinter parameter is literally `themename`, so they keep
+Tk's spelling for drop-in compatibility (and are almost always called
+positionally). This sharpens the 2.0 naming convention rather than breaking it:
+`theme` on the authored constructors, Tk spelling on the ttk.Style method
+overrides.
+
+**Why.** `Window` is ambiguous — a `Toplevel` is also a window. `App` (the one
+root, paired with the singleton `Style`) vs `Toplevel` (many) is the clearer
+split and mirrors tkinter's `Tk`/`Toplevel`. And `Style` already spelled it
+`theme`, so accepting `theme` on the window constructors removes a needless
+inconsistency. Both are aliases (not deprecations) because a warning on `Window`
+or `themename` would fire in ~100% of existing apps for a pure naming preference.
+Docs lead with `App`/`theme`; `Window`/`themename` are documented as the aliases.
 
 ---
 

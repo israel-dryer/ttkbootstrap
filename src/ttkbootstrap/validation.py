@@ -282,7 +282,7 @@ def add_option_validation(widget: Misc, options: list[Any], when: str = "focusou
 
 
 if __name__ == "__main__":
-    app = ttk.Window()
+    app = ttk.App()
 
 
     @validator

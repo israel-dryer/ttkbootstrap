@@ -1,8 +1,11 @@
-"""Window and Toplevel classes for ttkbootstrap applications.
+"""App (root) and Toplevel classes for ttkbootstrap applications.
 
-`Window` and `Toplevel` wrap `tkinter.Tk`/`tkinter.Toplevel` with integrated
+`App` and `Toplevel` wrap `tkinter.Tk`/`tkinter.Toplevel` with integrated
 ttkbootstrap `Style` support and a consolidated construction API — theme, title,
 size/position/geometry, resizability, high-DPI, alpha, and icon handling.
+
+`App` is the application root (one per process, paired with the singleton
+`Style`); `Window` is a permanent, fully-supported alias for `App`.
 """
 import sys
 import tkinter
@@ -83,7 +86,7 @@ def _require_single_root(new_root: tkinter.Misc) -> None:
         raise RuntimeError(
             "ttkbootstrap supports a single application root window. A Style "
             "is already bound to an existing live root; create one "
-            "Window/Tk per process and reuse it (or destroy the existing "
+            "App/Tk per process and reuse it (or destroy the existing "
             "root before creating a new one). Multi-root support is out of "
             "scope."
         )
@@ -129,7 +132,7 @@ def apply_all_bindings(window: tkinter.Widget) -> None:
 def on_visibility(event: tkinter.Event) -> None:
     """Set Window or Toplevel alpha value on Visibility (X11)"""
     widget = event.widget
-    if isinstance(widget, (Window, Toplevel)) and widget.alpha_bind:
+    if isinstance(widget, (App, Toplevel)) and widget.alpha_bind:
         widget.unbind(widget.alpha_bind)
         widget.attributes("-alpha", widget.alpha)
 
@@ -183,7 +186,7 @@ def on_select_all(event: tkinter.Event) -> None:
 
 
 class _BaseWindow:
-    """Window logic shared by `Window` (root) and `Toplevel` (secondary).
+    """Window logic shared by `App` (root) and `Toplevel` (secondary).
 
     Used as a mixin alongside `tkinter.Tk`/`tkinter.Toplevel`, so both classes
     stop duplicating -- and drifting on -- their icon, geometry, alpha, and
@@ -204,7 +207,7 @@ class _BaseWindow:
 
         Semantics (identical for `Window` and `Toplevel`):
             None  -> leave the icon untouched (skip).
-            ''    -> use `default_data` if given (the brand icon on `Window`),
+            ''    -> use `default_data` if given (the brand icon on `App`),
                      otherwise inherit the application default (`Toplevel`).
             path  -> load the image, falling back to `default_data` on failure.
 
@@ -346,17 +349,21 @@ class _BaseWindow:
     position_center = place_window_center  # alias
 
 
-class Window(_BaseWindow, tkinter.Tk):
-    """A class that wraps the tkinter.Tk class in order to provide a
-    more convenient api with additional bells and whistles. For more
-    information on how to use the inherited `Tk` methods, see the
-    [tcl/tk documentation](https://tcl.tk/man/tcl8.6/TkCmd/wm.htm)
+class App(_BaseWindow, tkinter.Tk):
+    """The ttkbootstrap application root: a class that wraps the tkinter.Tk
+    class in order to provide a more convenient api with additional bells and
+    whistles. For more information on how to use the inherited `Tk` methods, see
+    the [tcl/tk documentation](https://tcl.tk/man/tcl8.6/TkCmd/wm.htm)
     and the [Python documentation](https://docs.python.org/3/library/tkinter.html#tkinter.Tk).
+
+    `Window` is a permanent, fully-supported alias for `App`; the two are the
+    same class, so `Window(...)`, `isinstance(x, Window)`, and subclasses keep
+    working. Docs and new code should prefer `App`.
 
     Examples:
 
         ```python
-        app = Window(title="My Application", themename="bootstrap-dark")
+        app = App(title="My Application", theme="bootstrap-dark")
         app.mainloop()
         ```
     """
@@ -364,8 +371,9 @@ class Window(_BaseWindow, tkinter.Tk):
     def __init__(
             self,
             title: str = "ttkbootstrap",
-            themename: str = "bootstrap-light",
+            theme: Optional[str] = None,
             *,
+            themename: Optional[str] = None,
             default_button: str = "neutral",
             iconphoto: Optional[str] = '',
             size: Optional[Tuple[int, int]] = None,
@@ -386,9 +394,10 @@ class Window(_BaseWindow, tkinter.Tk):
             title (str):
                 The title that appears on the application titlebar.
 
-            themename (str):
+            theme (str):
                 The name of the ttkbootstrap theme to apply to the
-                application.
+                application. `themename` is a permanent, non-deprecated alias
+                accepted for the same purpose (pre-2.0 spelling); pass either.
 
             default_button (str):
                 The color a bare `Button`/`Menubutton` (no `bootstyle`) uses.
@@ -406,31 +415,31 @@ class Window(_BaseWindow, tkinter.Tk):
             size (tuple[int, int]):
                 The width and height of the application window.
                 Internally, this argument is passed to the
-                `Window.geometry` method.
+                `App.geometry` method.
 
             position (tuple[int, int]):
                 The horizontal and vertical position of the window on
                 the screen relative to the top-left coordinate. Negative
                 values are edge-relative (e.g. `(-10, -10)` places the
                 window near the bottom-right). Internally this is passed
-                to the `Window.geometry` method.
+                to the `App.geometry` method.
 
             minsize (tuple[int, int]):
                 Specifies the minimum permissible dimensions for the
                 window. Internally, this argument is passed to the
-                `Window.minsize` method.
+                `App.minsize` method.
 
             maxsize (tuple[int, int]):
                 Specifies the maximum permissible dimensions for the
                 window. Internally, this argument is passed to the
-                `Window.maxsize` method.
+                `App.maxsize` method.
 
             resizable (tuple[bool, bool]):
                 Specifies whether the user may interactively resize the
                 toplevel window. Must pass in two arguments that specify
                 this flag for _horizontal_ and _vertical_ dimensions.
                 This can be adjusted after the window is created by using
-                the `Window.resizable` method.
+                the `App.resizable` method.
 
             high_dpi (bool):
                 Enable high-dpi support for Windows OS. This option is
@@ -446,18 +455,18 @@ class Window(_BaseWindow, tkinter.Tk):
             transient (Union[Tk, Widget]):
                 Instructs the window manager that this widget is
                 transient with regard to the widget master. Internally
-                this is passed to the `Window.transient` method.
+                this is passed to the `App.transient` method.
 
             override_redirect (bool):
                 Instructs the window manager to ignore this widget if
                 True. Internally, this argument is passed to the
-                `Window.overrideredirect(1)` method. Ignored on macOS
+                `App.overrideredirect(1)` method. Ignored on macOS
                 (aqua), where it destabilizes Tk. (Renamed from
                 `overrideredirect` in 2.0.)
 
             alpha (float):
                 Sets the window's alpha transparency level (1.0 is opaque).
-                Applied immediately via `Window.attributes('-alpha', alpha)`,
+                Applied immediately via `App.attributes('-alpha', alpha)`,
                 except on X11 where it is deferred until the window becomes
                 visible.
 
@@ -465,6 +474,13 @@ class Window(_BaseWindow, tkinter.Tk):
                 Any other keyword arguments that are passed through to tkinter.Tk() constructor
                 List of available keywords available at: https://docs.python.org/3/library/tkinter.html#tkinter.Tk
         """
+        # `theme` is canonical; `themename` is a permanent, non-deprecated alias
+        # (the pre-2.0 spelling). Prefer `theme` when both are given; fall back
+        # to the theme engine's default when neither is.
+        theme = theme if theme is not None else themename
+        if theme is None:
+            theme = DEFAULT_THEME
+
         # Accept the pre-2.0 raw-Tk kwarg spellings with a deprecation warning.
         aliases = normalize_window_kwargs(kwargs)
         high_dpi = aliases.get("high_dpi", high_dpi)
@@ -503,7 +519,7 @@ class Window(_BaseWindow, tkinter.Tk):
 
         apply_class_bindings(self)
         apply_all_bindings(self)
-        self._style = Style(themename, default_button=default_button)
+        self._style = Style(theme, default_button=default_button)
 
     @staticmethod
     def _set_app_user_model_id() -> None:
@@ -699,8 +715,16 @@ class Toplevel(_BaseWindow, tkinter.Toplevel):
         self._setup_alpha(alpha)
 
 
+#: Permanent, fully-supported alias for `App`. `App` is the canonical name (one
+#: application root, paired with the singleton `Style`, mirroring tkinter's
+#: `Tk`/`Toplevel` split); `Window` predates it and is kept working forever --
+#: `Window(...)`, `isinstance(x, Window)`, and existing subclasses are unchanged.
+#: Not deprecated: a warning here would fire in ~every existing app.
+Window = App
+
+
 if __name__ == "__main__":
-    root = Window(themename="bootstrap-dark", alpha=0.5, size=(1000, 1000))
+    root = App(theme="bootstrap-dark", alpha=0.5, size=(1000, 1000))
     # root.withdraw()
     root.place_window_center()
     # root.deiconify()

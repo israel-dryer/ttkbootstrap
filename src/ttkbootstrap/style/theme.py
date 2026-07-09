@@ -916,7 +916,7 @@ class Theme:
         style = Style.get_instance()
         if style is None:
             raise RuntimeError(
-                "No Style instance yet; create a Window/Style before registering "
+                "No Style instance yet; create an App/Style before registering "
                 "a Theme, or add it to the built-in catalog."
             )
         definitions = self.to_definitions()

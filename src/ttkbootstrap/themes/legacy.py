@@ -92,7 +92,7 @@ def install_legacy_themes(style=None) -> None:
         style = Style.get_instance()
         if style is None:
             raise RuntimeError(
-                "No Style instance yet; create a Window/Style before calling "
+                "No Style instance yet; create an App/Style before calling "
                 "install_legacy_themes()."
             )
     warnings.warn(

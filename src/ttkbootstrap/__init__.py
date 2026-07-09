@@ -7,7 +7,7 @@ This package provides:
     - A comprehensive collection of modern, flat-style themes
     - Custom widgets extending tkinter/ttk functionality
     - Easy-to-use styling API with color keywords
-    - Window and Toplevel classes with enhanced functionality
+    - App (application root) and Toplevel classes with enhanced functionality
     - Cross-platform compatibility
 
 Examples:
@@ -15,8 +15,8 @@ Examples:
     import ttkbootstrap as ttk
     from ttkbootstrap.constants import *
 
-    # Create a themed window
-    root = ttk.Window(themename="bootstrap-dark")
+    # Create a themed application root
+    root = ttk.App(theme="bootstrap-dark")
 
     # Create styled widgets
     btn = ttk.Button(root, text="Click Me", bootstyle="success")
@@ -241,7 +241,7 @@ from ttkbootstrap.widgets import (
     ToastNotification,
     ToolTip,
 )
-from ttkbootstrap.window import Toplevel, Window
+from ttkbootstrap.window import App, Toplevel, Window
 
 # Dialogs re-exported at top level so the common front doors are reachable as
 # ttk.Messagebox / ttk.Querybox, matching how widgets are exposed (2.0). The
@@ -309,7 +309,8 @@ __all__ = [
     "contrast_color",
     "conform_color_model",
 
-    # Windows
+    # Application root + windows
+    "App",
     "Toplevel",
     "Window",
 

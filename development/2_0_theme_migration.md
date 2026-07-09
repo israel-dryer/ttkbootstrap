@@ -34,7 +34,7 @@ tokyo-night  one  everforest  vapor  minty  pulse  united  sandstone
 
 ```python
 import ttkbootstrap as ttk
-app = ttk.Window(themename="bootstrap-dark")   # was e.g. "darkly"
+app = ttk.App(theme="bootstrap-dark")   # was e.g. ttk.Window(themename="darkly")
 ```
 
 ### The old theme names still work
@@ -46,7 +46,7 @@ one auto-registers that theme on demand and emits a one-time
 
 ```python
 import ttkbootstrap as ttk
-app = ttk.Window(themename="darkly")   # works; warns once that "darkly" is legacy
+app = ttk.App(theme="darkly")   # works; warns once that "darkly" is legacy
 ```
 
 Legacy themes keep their authored accent and background/foreground colors; only
@@ -83,7 +83,7 @@ ttk.Theme(
     dark=dict(background="#222222",  foreground="#f8f9fa"),
 ).register()                      # registers acme-light + acme-dark
 
-app = ttk.Window(themename="acme-light")
+app = ttk.App(theme="acme-light")
 ```
 
 - Declare **one or both** of `light`/`dark`; each defined block yields a variant.

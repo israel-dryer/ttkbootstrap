@@ -38,7 +38,7 @@ class ScrolledText(ConfigureDelegationMixin, ttk.Frame):
         import ttkbootstrap as ttk
         from ttkbootstrap.constants import *
 
-        app = ttk.Window()
+        app = ttk.App()
 
         # scrolled text with an auto-hide vertical scrollbar
         st = ttk.ScrolledText(app, padding=5, height=10, auto_hide=True)
@@ -315,7 +315,7 @@ class ScrolledFrame(ttk.Frame):
         import ttkbootstrap as ttk
         from ttkbootstrap.constants import *
 
-        app = ttk.Window()
+        app = ttk.App()
 
         sf = ttk.ScrolledFrame(app, auto_hide=True)
         sf.pack(fill=BOTH, expand=YES, padx=10, pady=10)

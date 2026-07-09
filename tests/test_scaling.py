@@ -131,13 +131,13 @@ def test_style_builder_utility_and_assets_share_root_service(root):
 def test_window_and_style_initialize_scaling_before_style_builds():
     package = Path(__file__).parents[1] / "src" / "ttkbootstrap"
     window_source = (package / "window.py").read_text(encoding="utf-8")
-    init_source = window_source[window_source.index("class Window"):]
+    init_source = window_source[window_source.index("class App"):]
     assert init_source.index("utility.enable_high_dpi_awareness()") < init_source.index(
         "super().__init__(**kwargs)"
     )
     assert init_source.index("super().__init__(**kwargs)") < init_source.index(
         "utility.enable_high_dpi_awareness(self, scaling)"
-    ) < init_source.index("self._style = Style(themename")
+    ) < init_source.index("self._style = Style(theme")
 
     engine_source = (package / "style" / "engine.py").read_text(encoding="utf-8")
     style_init = engine_source[engine_source.index("class Style"):]
