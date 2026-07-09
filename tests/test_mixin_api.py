@@ -176,3 +176,9 @@ def test_enable_global_api_is_idempotent_and_styles_stock_widgets(root):
     # the blessed subclass still resolves exactly once (guard defers to mixin)
     b2 = ttk.Button(root, bootstyle="info")
     assert b2.cget("style") == "info.TButton"
+
+    # fluent geometry now reaches stock/native widgets too (opt-in global);
+    # a plain tk widget's pack/grid/place return the widget
+    stock = tkinter.Frame(root)
+    assert stock.pack() is stock
+    assert stock.winfo_manager() == "pack"

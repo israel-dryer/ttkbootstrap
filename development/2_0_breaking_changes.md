@@ -1021,6 +1021,12 @@ to one line without changing semantics.
 
 **Scope.** Delivered by a new `FluentGeometryMixin` shared by `BootMixin` (ttk)
 and `AutoStyleMixin` (tk), so every shipped widget and anything wrapped with
-`bootify()` gets it. A raw `tk`/`ttk` widget constructed directly does not —
-same scoping as the rest of the `bootstyle` API. `FluentGeometryMixin` is
-re-exported from `ttkbootstrap` and `ttkbootstrap.style` for custom subclasses.
+`bootify()` gets it by default. A raw `tk`/`ttk` widget constructed directly
+does not — same scoping as the rest of the `bootstyle` API. `FluentGeometryMixin`
+is re-exported from `ttkbootstrap` and `ttkbootstrap.style` for custom subclasses.
+
+**Global opt-in.** `enable_global_api()` now also patches tkinter's shared
+`Pack`/`Grid`/`Place` mixins, so `pack`/`grid`/`place` return the widget on
+*stock, native, and third-party* widgets too — consistent with how the global
+`bootstyle` patch already works. Importing ttkbootstrap stays side-effect-free;
+the geometry patch only happens when you explicitly opt in.
