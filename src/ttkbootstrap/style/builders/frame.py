@@ -36,9 +36,11 @@ def build_card_frame(builder: StyleBuilderTTK, colorname=DEFAULT):
     """A simple inert bordered surface (a "card").
 
     A container that owns a single flat 1px border so its contents sit inside
-    one frame. `relief=SOLID` draws the border in `bordercolor`. Give the frame
-    a little widget `padding` so its children don't paint over the border (ttk
-    frames inset from the widget's padding, not the style's).
+    one frame. `relief=RAISED` with `lightcolor`/`darkcolor` blended into the
+    background suppresses the bevel, leaving just the `bordercolor` hairline --
+    the same border weight the inputs draw. Give the frame a little widget
+    `padding` so its children don't paint over the border (ttk frames inset from
+    the widget's padding, not the style's).
     """
     ttk_class = "Card.TFrame"
     if any([colorname == DEFAULT, colorname == ""]):
@@ -54,8 +56,10 @@ def build_card_frame(builder: StyleBuilderTTK, colorname=DEFAULT):
     builder.configure(
         ttk_style,
         background=background,
+        darkcolor=background,
+        lightcolor=background,
         bordercolor=border,
-        relief=SOLID,
+        relief=RAISED,
         borderwidth=builder.scale_size(1),
     )
 
@@ -88,10 +92,17 @@ def build_highlight_frame(builder: StyleBuilderTTK, colorname=DEFAULT):
         ttk_style,
         background=background,
         bordercolor=resting,
-        relief=SOLID,
+        darkcolor=background,
+        lightcolor=background,
+        relief=RAISED,
         borderwidth=builder.scale_size(1),
     )
-    builder.style.map(ttk_style, bordercolor=[("focus", accent)])
+    builder.style.map(
+        ttk_style,
+        bordercolor=[("focus", accent)],
+        lightcolor=[("focus", accent)],
+        darkcolor=[("focus", accent)],
+    )
 
     # register style
     builder.register_ttkstyle(ttk_style)
