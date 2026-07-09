@@ -6,6 +6,7 @@ ttkbootstrap applications.
 Functions:
     enable_high_dpi_awareness: Enable high-DPI scaling on Windows/Linux
     scale_size: Scale a size value for high-DPI displays
+    windowing_system: Detect the Tk windowing system ('win32'/'aqua'/'x11')
 
 Example:
     ```python
@@ -130,3 +131,23 @@ def scale_size(widget, size):
     from ttkbootstrap.style.scaling import Scaling
 
     return Scaling.for_widget(widget).logical(size)
+
+
+def windowing_system(widget):
+    """Return the Tk windowing system for `widget`'s display.
+
+    One of `'win32'` (Windows), `'aqua'` (macOS), or `'x11'` (Linux/Unix).
+    Wraps `widget.tk.call('tk', 'windowingsystem')` so platform checks read the
+    same everywhere instead of repeating the raw Tcl call.
+
+    Parameters:
+
+        widget (Misc):
+            Any widget (or the root) whose interpreter is queried.
+
+    Returns:
+
+        str:
+            The windowing system identifier.
+    """
+    return str(widget.tk.call('tk', 'windowingsystem'))

@@ -2562,7 +2562,7 @@ class Tableview(ttk.Frame):
         self.view.bind("<Button-1>", self._header_leftclick)
 
         if not self.disable_right_click:
-            if self.tk.call("tk", "windowingsystem") == "aqua":
+            if utility.windowing_system(self) == "aqua":
                 sequence = "<Button-2>"
             else:
                 sequence = "<Button-3>"

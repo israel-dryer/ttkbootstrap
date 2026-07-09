@@ -33,6 +33,15 @@ Example:
 from PIL import ImageColor
 from colorsys import rgb_to_hls
 
+__all__ = [
+    "color_to_rgb",
+    "color_to_hex",
+    "color_to_hsl",
+    "update_hsl_value",
+    "contrast_color",
+    "conform_color_model",
+]
+
 RGB = 'rgb'
 HSL = 'hsl'
 HEX = 'hex'

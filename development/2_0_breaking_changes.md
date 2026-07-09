@@ -1057,3 +1057,34 @@ but `ToolTip` became keyword-only in the #1114 normalization.
 **Migration.** None. `ColorChooser`/`ColorChooserDialog` (and `Querybox.get_color`)
 now work without `enable_global_api()`. `ttk.TkLabel` is available for any tk
 label that must carry explicit, un-themed colors.
+
+---
+
+## Public utilities re-exported at the top level + `windowing_system`  *(New)*
+
+**What.** The public utility helpers are now reachable directly on the package,
+the same way widgets and dialogs are (`ttk.<name>`), instead of only via their
+submodules:
+
+- from `ttkbootstrap.utility`: `enable_high_dpi_awareness`, `scale_size`, and a
+  **new** `windowing_system(widget)` helper (returns `'win32'`/`'aqua'`/`'x11'`).
+- from `ttkbootstrap.colorutils`: `color_to_rgb`, `color_to_hex`, `color_to_hsl`,
+  `update_hsl_value`, `contrast_color`, `conform_color_model`.
+
+`windowing_system(widget)` wraps `widget.tk.call('tk', 'windowingsystem')` and
+now backs the ~8 first-party sites that previously repeated that raw Tcl call
+(`window.py`, `dialogs/base.py`, `dialogs/datepicker.py`, `widgets/toast.py`,
+`widgets/tableview.py`, `widgets/scrolled.py`). `style/scaling.py` keeps its own
+leaf `windowing_system` property (it sits in the early style-init path, so it
+stays free of a cross-package import).
+
+**Why.** These are documented public helpers, but reaching them meant knowing the
+submodule path (`from ttkbootstrap.utility import scale_size`). Surfacing them on
+the top-level namespace matches how the rest of the public API is exposed and
+makes `ttk.scale_size(...)` / `ttk.contrast_color(...)` "just work". The
+`windowing_system` helper also gives platform checks one spelling instead of a
+scattered raw Tcl call. `colorutils` gained an `__all__` so its public surface is
+explicit.
+
+**Migration.** None — purely additive. The `ttkbootstrap.utility` /
+`ttkbootstrap.colorutils` import paths remain valid.
