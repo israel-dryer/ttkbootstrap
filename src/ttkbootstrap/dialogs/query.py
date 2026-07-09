@@ -91,8 +91,7 @@ class QueryDialog(Dialog):
         if self._prompt:
             for p in self._prompt.split("\n"):
                 prompt = "\n".join(textwrap.wrap(p, width=self._width))
-                prompt_label = ttk.Label(frame, text=prompt)
-                prompt_label.pack(pady=(0, 5), fill=X, anchor=N)
+                ttk.Label(frame, text=prompt).pack(pady=(0, 5), fill=X, anchor=N)
         if self._items is None or len(self._items) == 0:
             entry = ttk.Entry(master=frame)
         else:

@@ -143,8 +143,7 @@ class MessageDialog(Dialog):
         if self._message:
             for msg in self._message.split("\n"):
                 message = "\n".join(textwrap.wrap(msg, width=self._width))
-                message_label = ttk.Label(container, text=message)
-                message_label.pack(pady=(0, 3), fill=X, anchor=N)
+                ttk.Label(container, text=message).pack(pady=(0, 3), fill=X, anchor=N)
         container.pack(fill=X, expand=True)
 
     def _create_icon_label(self, container: tkinter.Misc) -> "Optional[ttk.Label]":

@@ -123,13 +123,10 @@ class ColorChooser(ttk.Frame):
                 default padding.
         """
         super().__init__(master, padding=padding)
-        self.tframe = ttk.Frame(self, padding=5)
-        self.tframe.pack(fill=X)
-        self.bframe = ttk.Frame(self, padding=(5, 0, 5, 5))
-        self.bframe.pack(fill=X)
+        self.tframe = ttk.Frame(self, padding=5).pack(fill=X)
+        self.bframe = ttk.Frame(self, padding=(5, 0, 5, 5)).pack(fill=X)
 
-        self.notebook = ttk.Notebook(self.tframe)
-        self.notebook.pack(fill=BOTH)
+        self.notebook = ttk.Notebook(self.tframe).pack(fill=BOTH)
 
         self.style = ttk.Style.get_instance()
         self.colors = self.style.colors
@@ -333,20 +330,13 @@ class ColorChooser(ttk.Frame):
         rgb_cnf = {'master': container, 'from_': 0, 'to': 255, 'width': 3}
         sl_cnf = {'master': container, 'from_': 0, 'to': 100, 'width': 3}
         hue_cnf = {'master': container, 'from_': 0, 'to': 360, 'width': 3}
-        sb_hue = ttk.Spinbox(**hue_cnf, textvariable=self.hue)
-        sb_hue.grid(row=0, column=1, padx=4, pady=2, sticky=EW)
-        sb_sat = ttk.Spinbox(**sl_cnf, textvariable=self.sat)
-        sb_sat.grid(row=1, column=1, padx=4, pady=2, sticky=EW)
-        sb_lum = ttk.Spinbox(**sl_cnf, textvariable=self.lum)
-        sb_lum.grid(row=2, column=1, padx=4, pady=2, sticky=EW)
-        sb_red = ttk.Spinbox(**rgb_cnf, textvariable=self.red)
-        sb_red.grid(row=0, column=3, padx=4, pady=2, sticky=EW)
-        sb_grn = ttk.Spinbox(**rgb_cnf, textvariable=self.grn)
-        sb_grn.grid(row=1, column=3, padx=4, pady=2, sticky=EW)
-        sb_blu = ttk.Spinbox(**rgb_cnf, textvariable=self.blu)
-        sb_blu.grid(row=2, column=3, padx=4, pady=2, sticky=EW)
-        ent_hex = ttk.Entry(container, textvariable=self.hex)
-        ent_hex.grid(row=3, column=1, padx=4, columnspan=3, pady=2, sticky=EW)
+        sb_hue = ttk.Spinbox(**hue_cnf, textvariable=self.hue).grid(row=0, column=1, padx=4, pady=2, sticky=EW)
+        sb_sat = ttk.Spinbox(**sl_cnf, textvariable=self.sat).grid(row=1, column=1, padx=4, pady=2, sticky=EW)
+        sb_lum = ttk.Spinbox(**sl_cnf, textvariable=self.lum).grid(row=2, column=1, padx=4, pady=2, sticky=EW)
+        sb_red = ttk.Spinbox(**rgb_cnf, textvariable=self.red).grid(row=0, column=3, padx=4, pady=2, sticky=EW)
+        sb_grn = ttk.Spinbox(**rgb_cnf, textvariable=self.grn).grid(row=1, column=3, padx=4, pady=2, sticky=EW)
+        sb_blu = ttk.Spinbox(**rgb_cnf, textvariable=self.blu).grid(row=2, column=3, padx=4, pady=2, sticky=EW)
+        ent_hex = ttk.Entry(container, textvariable=self.hex).grid(row=3, column=1, padx=4, columnspan=3, pady=2, sticky=EW)
 
         # add input validation
         add_validation(ent_hex, validate_color)

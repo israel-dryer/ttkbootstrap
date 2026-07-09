@@ -2420,8 +2420,7 @@ class Tableview(ttk.Frame):
         if self._searchable:
             self._build_search_frame()
 
-        table_frame = ttk.Frame(self)
-        table_frame.pack(fill=BOTH, expand=YES, side=TOP)
+        table_frame = ttk.Frame(self).pack(fill=BOTH, expand=YES, side=TOP)
 
         self.view = ttk.Treeview(
             master=table_frame,
@@ -2469,11 +2468,9 @@ class Tableview(ttk.Frame):
         frame is only created if `searchable=True` when creating the
         widget.
         """
-        frame = ttk.Frame(self, padding=5)
-        frame.pack(fill=X, side=TOP)
+        frame = ttk.Frame(self, padding=5).pack(fill=X, side=TOP)
         ttk.Label(frame, text=MessageCatalog.translate("Search")).pack(side=LEFT, padx=5)
-        searchterm = ttk.Entry(frame, textvariable=self._searchcriteria)
-        searchterm.pack(fill=X, side=LEFT, expand=YES)
+        searchterm = ttk.Entry(frame, textvariable=self._searchcriteria).pack(fill=X, side=LEFT, expand=YES)
         searchterm.bind("<Return>", self._search_table_data)
         searchterm.bind("<KP_Enter>", self._search_table_data)
         if not self._paginated:
@@ -2489,8 +2486,7 @@ class Tableview(ttk.Frame):
         frame is only built if `pagination=True` when creating the
         widget.
         """
-        pageframe = ttk.Frame(self, padding=5)
-        pageframe.pack(fill=X, anchor=N)
+        pageframe = ttk.Frame(self, padding=5).pack(fill=X, anchor=N)
 
         ttk.Button(
             pageframe,
@@ -2535,12 +2531,10 @@ class Tableview(ttk.Frame):
 
         self._add_page_separator(pageframe)
 
-        lbl = ttk.Label(pageframe, textvariable=self._pagelimit)
-        lbl.pack(side=RIGHT, padx=(0, 5))
+        lbl = ttk.Label(pageframe, textvariable=self._pagelimit).pack(side=RIGHT, padx=(0, 5))
         ttk.Label(pageframe, text=MessageCatalog.translate("of")).pack(side=RIGHT, padx=(5, 0))
 
-        index = ttk.Entry(pageframe, textvariable=self._pageindex, width=4)
-        index.pack(side=RIGHT)
+        index = ttk.Entry(pageframe, textvariable=self._pageindex, width=4).pack(side=RIGHT)
         index.bind("<Return>", self.goto_page, "+")
         index.bind("<KP_Enter>", self.goto_page, "+")
 

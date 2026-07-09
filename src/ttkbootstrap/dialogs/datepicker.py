@@ -306,12 +306,9 @@ class DatePickerDialog:
         """Setup the calendar widget"""
         # create the widget containers
         frm_style = "Card.TFrame" if self.root.tk.call('tk', 'windowingsystem') != 'aqua' else  "TFrame"
-        self.frm_calendar = ttk.Frame(master=self.root, padding=2, style=frm_style)
-        self.frm_calendar.pack(fill=BOTH, expand=YES)
-        self.frm_title = ttk.Frame(self.frm_calendar, padding=(3, 3))
-        self.frm_title.pack(fill=X)
-        self.frm_header = ttk.Frame(self.frm_calendar)
-        self.frm_header.pack(fill=X)
+        self.frm_calendar = ttk.Frame(master=self.root, padding=2, style=frm_style).pack(fill=BOTH, expand=YES)
+        self.frm_title = ttk.Frame(self.frm_calendar, padding=(3, 3)).pack(fill=X)
+        self.frm_header = ttk.Frame(self.frm_calendar).pack(fill=X)
 
         # setup the toplevel widget
         self.root.withdraw()  # reset the iconify state
@@ -329,8 +326,7 @@ class DatePickerDialog:
     def _draw_calendar(self) -> None:
         self._set_title()
         self._current_month_days()
-        self.frm_dates = ttk.Frame(self.frm_calendar)
-        self.frm_dates.pack(fill=BOTH, expand=YES)
+        self.frm_dates = ttk.Frame(self.frm_calendar).pack(fill=BOTH, expand=YES)
 
         for row, weekday_list in enumerate(self.monthdays):
             for col, day in enumerate(weekday_list):

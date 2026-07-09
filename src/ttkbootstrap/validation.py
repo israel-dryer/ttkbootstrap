@@ -338,10 +338,8 @@ if __name__ == "__main__":
         return True
 
 
-    entry = ttk.Entry()
-    entry.pack(padx=10, pady=10)
-    entry2 = ttk.Entry()
-    entry2.pack(padx=10, pady=10)
+    entry = ttk.Entry().pack(padx=10, pady=10)
+    entry2 = ttk.Entry().pack(padx=10, pady=10)
     # add_validation(entry, validate_range, startrange=5, endrange=10)
     # add_validation(entry, validate_regex, pattern="israel")
     add_text_validation(entry, when="key")  # prevents from using any numbers
