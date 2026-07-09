@@ -51,7 +51,6 @@ Example:
 """
 import tkinter
 from collections import namedtuple
-from tkinter import Frame as tkFrame, Label as tkLabel
 from typing import Any, List, Optional, Tuple
 
 from PIL import ImageColor
@@ -238,7 +237,7 @@ class ColorChooser(ttk.Frame):
         for row in color_rows:
             rowframe = ttk.Frame(container)
             for j, color in enumerate(row):
-                swatch = tkFrame(
+                swatch = ttk.TkFrame(
                     master=rowframe,
                     bg=color,
                     width=boxwidth,
@@ -264,7 +263,7 @@ class ColorChooser(ttk.Frame):
         container = ttk.Frame(master)
 
         # the frame and label for the original color (current)
-        old = tkFrame(
+        old = ttk.TkFrame(
             master=container,
             relief=FLAT,
             bd=2,
@@ -278,7 +277,7 @@ class ColorChooser(ttk.Frame):
             color=self.initialcolor,
             model='hex',
         )
-        tkLabel(
+        ttk.TkLabel(
             master=old,
             text=MessageCatalog.translate('Current'),
             background=self.initialcolor,
@@ -288,7 +287,7 @@ class ColorChooser(ttk.Frame):
         ).pack(anchor=NW)
 
         # the frame and label for the new color
-        self.preview = tkFrame(
+        self.preview = ttk.TkFrame(
             master=container,
             relief=FLAT,
             bd=2,
@@ -298,7 +297,7 @@ class ColorChooser(ttk.Frame):
             autostyle=False
         )
         self.preview.pack(side=LEFT, fill=BOTH, expand=YES, padx=(2, 0))
-        self.preview_lbl = tkLabel(
+        self.preview_lbl = ttk.TkLabel(
             master=self.preview,
             text=MessageCatalog.translate('New'),
             background=self.initialcolor,
@@ -533,7 +532,7 @@ class ColorChooser(ttk.Frame):
 
     def on_press_swatch(self, event: tkinter.Event) -> None:
         """Update the widget colors when a color swatch is clicked."""
-        button: tkFrame = self.nametowidget(event.widget)
+        button: ttk.TkFrame = self.nametowidget(event.widget)
         color = button.cget('background')
         self.hex.set(color)
         self.sync_color_values(HEX)
@@ -649,7 +648,7 @@ class ColorChooserDialog(Dialog):
         # color dropper (not supported on Mac OS)
         if self._toplevel.winsys != 'aqua':
             dropper = ttk.Label(frame, text=PEN, font=('-size 16'))
-            ToolTip(dropper, MessageCatalog.translate('color dropper'))  # add tooltip
+            ToolTip(dropper, text=MessageCatalog.translate('color dropper'))  # add tooltip
             dropper.pack(side=RIGHT, padx=2)
             dropper.bind("<Button-1>", self.on_show_colordropper)
 

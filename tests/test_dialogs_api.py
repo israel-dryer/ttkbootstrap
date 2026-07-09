@@ -134,3 +134,32 @@ def test_datepicker_has_show_and_autoshow():
     assert "autoshow" in sig.parameters
     assert hasattr(DatePickerDialog, "show")
     assert isinstance(inspect.getattr_static(DatePickerDialog, "result"), property)
+
+
+# --- ColorChooser: builds under the 2.0 default (no global monkey-patch) ----
+# Regression: the swatch/preview widgets used native tk.Frame/tk.Label with
+# `autostyle=False`, which stock tkinter rejects unless enable_global_api() has
+# patched the tk constructors. They now use the blessed ttk.TkFrame/ttk.TkLabel
+# (AutoStyleMixin), which honor `autostyle=` in both modes.
+
+def test_blessed_tk_label_opts_out_of_theming(root):
+    lbl = ttk.TkLabel(root, text="x", background="#ff0000", autostyle=False)
+    from ttkbootstrap.style import AutoStyleMixin
+    assert isinstance(lbl, AutoStyleMixin)
+    assert getattr(lbl, "_tb_no_autostyle", False) is True
+    assert lbl.cget("background") == "#ff0000"   # theme did not repaint it
+
+
+def test_colorchooser_builds_without_global_api(root):
+    from ttkbootstrap.dialogs.colorchooser import ColorChooser
+    cc = ColorChooser(root, initialcolor="#3366cc")
+    assert isinstance(cc.preview, ttk.TkFrame)
+    assert isinstance(cc.preview_lbl, ttk.TkLabel)
+
+
+def test_colorchooserdialog_build_without_global_api(root):
+    from ttkbootstrap.dialogs.colorchooser import ColorChooserDialog
+    dlg = ColorChooserDialog(initialcolor="#3366cc")
+    dlg.build()   # full body + buttonbox (regressed on the ToolTip call)
+    assert dlg._toplevel is not None
+    dlg._toplevel.destroy()

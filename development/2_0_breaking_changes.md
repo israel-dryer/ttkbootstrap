@@ -18,6 +18,7 @@
 | Character-based icons removed (`ttkbootstrap.icons`) | API | `development/2_0_icon_drop_design.md` (PR #1094) |
 | Delivery API (mixins, no import-time monkey-patch) | API | handoff / PR #1075 |
 | **Fluent geometry (`pack`/`grid`/`place` return the widget)** | New | this doc, below |
+| **`TkLabel` blessed tk.Label + ColorChooser default-mode fix** | New/Fix | this doc, below |
 | **`neutral` color** | New | this doc, below |
 | **`ghost` button variant** | New | this doc, below |
 | **`thin` scrollbar variant** | New | this doc, below |
@@ -1030,3 +1031,29 @@ is re-exported from `ttkbootstrap` and `ttkbootstrap.style` for custom subclasse
 *stock, native, and third-party* widgets too — consistent with how the global
 `bootstyle` patch already works. Importing ttkbootstrap stays side-effect-free;
 the geometry patch only happens when you explicitly opt in.
+
+---
+
+## `TkLabel` blessed tk.Label + ColorChooser default-mode fix  *(New / Fix)*
+
+**What.** Added `ttk.TkLabel` — a blessed `AutoStyleMixin` subclass of
+`tkinter.Label` (mirroring the existing `TkFrame`), re-exported from
+`ttkbootstrap`. Like the other blessed tk widgets it accepts `autostyle=` and,
+with `autostyle=False`, opts out of theming entirely (keeps its explicit
+colors). Used it to fix a **ColorChooser** crash.
+
+**Why (the bug).** `ColorChooser` built its color swatches and preview panels
+from *native* `tkinter.Frame`/`tkinter.Label` passed `autostyle=False`. But
+`autostyle` is a ttkbootstrap concept — stock tkinter rejects `-autostyle`
+unless `enable_global_api()` has patched the tk constructors. Since 2.0 no
+longer monkey-patches at import (PR 3), opening the color chooser in the default
+configuration raised `TclError: unknown option "-autostyle"`. The swatches use
+`autostyle=False` deliberately (they must show literal colors the theme must not
+repaint), so the fix is to build them from the blessed `TkFrame`/`TkLabel`,
+which honor `autostyle=` in both modes. A second latent break in the same dialog
+was fixed too: `create_buttonbox` called `ToolTip(widget, text)` positionally,
+but `ToolTip` became keyword-only in the #1114 normalization.
+
+**Migration.** None. `ColorChooser`/`ColorChooserDialog` (and `Querybox.get_color`)
+now work without `enable_global_api()`. `ttk.TkLabel` is available for any tk
+label that must carry explicit, un-themed colors.

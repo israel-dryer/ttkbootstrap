@@ -39,7 +39,7 @@ For more information, see: https://ttkbootstrap.readthedocs.io/
 """
 from tkinter import (
     Menu as _tkMenu, Text as _tkText, Canvas as _tkCanvas, Tk as _tkTk,
-    Frame as _tkFrame, LabelFrame as _tkLabelFrame,
+    Frame as _tkFrame, LabelFrame as _tkLabelFrame, Label as _tkLabel,
     Variable, StringVar, IntVar, BooleanVar, DoubleVar, PhotoImage
 )
 from tkinter.ttk import (
@@ -192,6 +192,15 @@ class TkFrame(AutoStyleMixin, _tkFrame):
     """
 
 
+class TkLabel(AutoStyleMixin, _tkLabel):
+    """tk Label with ttkbootstrap theming (accepts `autostyle=`).
+
+    Exported as ``TkLabel`` to avoid colliding with the ttk ``Label`` above.
+    Use it (with ``autostyle=False``) for a label that must show explicit
+    colors the theme should not repaint.
+    """
+
+
 class LabelFrame(AutoStyleMixin, _tkLabelFrame):
     """tk LabelFrame with ttkbootstrap theming (accepts `autostyle=`)."""
 
@@ -235,7 +244,7 @@ from ttkbootstrap.dialogs import (
 
 __all__ = [
     # Tk exports
-    "Tk", "Menu", "Text", "Canvas", "TkFrame", "LabelFrame", "Variable", "StringVar", "IntVar", "BooleanVar",
+    "Tk", "Menu", "Text", "Canvas", "TkFrame", "TkLabel", "LabelFrame", "Variable", "StringVar", "IntVar", "BooleanVar",
     "DoubleVar", "PhotoImage",
 
     # TTk exports
