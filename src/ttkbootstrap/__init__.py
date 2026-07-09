@@ -73,6 +73,24 @@ from ttkbootstrap.style import (
 # Opt-in migration path for the pre-2.0 theme names (Workstream E/F).
 from ttkbootstrap.themes.legacy import install_legacy_themes
 
+# Public utilities re-exported at the top level for convenience. The
+# `ttkbootstrap.utility` / `ttkbootstrap.colorutils` module paths remain valid;
+# these names just make `ttk.scale_size(...)` / `ttk.contrast_color(...)` work
+# the same way the widgets and dialogs are reachable as `ttk.<Name>`.
+from ttkbootstrap.utility import (
+    enable_high_dpi_awareness,
+    scale_size,
+    windowing_system,
+)
+from ttkbootstrap.colorutils import (
+    color_to_rgb,
+    color_to_hex,
+    color_to_hsl,
+    update_hsl_value,
+    contrast_color,
+    conform_color_model,
+)
+
 
 # --------------------------------------------------------------------------- #
 # Concrete ttk widget classes — the blessed `bootstyle` set.
@@ -279,6 +297,17 @@ __all__ = [
     "icon_element",
     "set_bootstyle_strict",
     "is_bootstyle_strict",
+
+    # Public utilities
+    "enable_high_dpi_awareness",
+    "scale_size",
+    "windowing_system",
+    "color_to_rgb",
+    "color_to_hex",
+    "color_to_hsl",
+    "update_hsl_value",
+    "contrast_color",
+    "conform_color_model",
 
     # Windows
     "Toplevel",

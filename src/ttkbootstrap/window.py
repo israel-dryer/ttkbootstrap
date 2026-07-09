@@ -526,7 +526,7 @@ class Window(_BaseWindow, tkinter.Tk):
         self._set_app_user_model_id()
 
         super().__init__(**kwargs)
-        self.winsys: str = self.tk.call('tk', 'windowingsystem')
+        self.winsys: str = utility.windowing_system(self)
 
         if scaling is not None:
             utility.enable_high_dpi_awareness(self, scaling)
@@ -699,7 +699,7 @@ class Toplevel(_BaseWindow, tkinter.Toplevel):
         tool_window = aliases.get("tool_window", tool_window)
 
         super().__init__(**kwargs)
-        self.winsys: str = self.tk.call('tk', 'windowingsystem')
+        self.winsys: str = utility.windowing_system(self)
 
         # On aqua, give a borderless popup type (tooltip/splash/...) a native
         # macOS window class instead of the default chrome, so it isn't drawn

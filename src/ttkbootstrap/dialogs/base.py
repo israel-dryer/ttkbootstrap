@@ -11,6 +11,7 @@ from typing import Any, Optional, Tuple
 import ttkbootstrap as ttk
 from ttkbootstrap.internal.utility import center_on_parent
 from ttkbootstrap.internal.positioning import ensure_on_screen
+from ttkbootstrap.utility import windowing_system
 
 
 class Dialog(BaseWidget):
@@ -34,7 +35,7 @@ class Dialog(BaseWidget):
                 Ring the display's bell when the dialog is shown.
         """
         BaseWidget._setup(self, parent, {})
-        self._winsys = self.master.tk.call("tk", "windowingsystem")
+        self._winsys = windowing_system(self.master)
         self._parent = parent
         self._toplevel = None
         self._title = title or " "

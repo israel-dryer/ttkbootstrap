@@ -242,7 +242,7 @@ class ToastNotification:
         # with the tooltip); set it at construction, so probe the windowing
         # system from the existing root before creating the Toplevel.
         if _default_root is not None and "window_type" not in self.kwargs:
-            if _default_root.tk.call("tk", "windowingsystem") == "aqua":
+            if utility.windowing_system(_default_root) == "aqua":
                 self.kwargs["window_type"] = "tooltip"
 
         self.toplevel = Toplevel(**self.kwargs)
@@ -359,7 +359,7 @@ class ToastNotification:
     def _setup(self, window) -> None:
         from ttkbootstrap import utility
 
-        winsys = window.tk.call("tk", "windowingsystem")
+        winsys = utility.windowing_system(window)
         self.toplevel.configure(relief=RAISED)
 
         if "minsize" not in self.kwargs:
