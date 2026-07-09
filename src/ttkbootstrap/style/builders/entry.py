@@ -51,7 +51,6 @@ def build_entry_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         bordercolor=[
             ("invalid", builder.colors.danger),
             ("focus !disabled", focus_ring),
-            ("hover !disabled", focus_ring),
         ],
         lightcolor=[
             ("focus invalid", builder.colors.danger),

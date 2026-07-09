@@ -98,7 +98,6 @@ def build_spinbox_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         bordercolor=[
             ("invalid", builder.colors.danger),
             ("focus !disabled", focus_color),
-            ("hover !disabled", focus_color),
         ],
     )
 
