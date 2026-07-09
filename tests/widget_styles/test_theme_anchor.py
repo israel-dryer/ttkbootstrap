@@ -6,7 +6,6 @@ Covers the schema->16-key derivation, the curated built-in catalog, the legacy
 Workstream E was chartered to land (a themed dark field must not desaturate).
 """
 import warnings
-from tkinter import TclError
 
 import pytest
 
@@ -209,17 +208,25 @@ def test_from_existing_overrides_and_rejects_unknown_tokens():
         Theme.from_existing(BOOTSTRAP, name="acme", bogus="x")
 
 
-def test_install_legacy_themes_error_then_opt_in(root):
+def test_legacy_theme_use_lazy_registers_then_bulk_opt_in(root):
+    """Slice 1: theme_use on a legacy name lazily registers just that theme
+    (warns once) instead of hard-stopping; install_legacy_themes() bulk-registers
+    the rest."""
     style = root.style
     before = set(style._theme_names)
     assert "darkly" not in before
-    # helpful error before opt-in
-    with pytest.raises(TclError, match="install_legacy_themes"):
-        style.theme_use("darkly")
     try:
+        # Slice 1: a legacy name via theme_use no longer hard-stops -- it
+        # lazily adapts+registers that ONE theme and switches to it.
+        with pytest.warns(DeprecationWarning, match="legacy"):
+            style.theme_use("darkly")
+        assert style.theme.name == "darkly"
+        assert "darkly" in style._theme_names
+        # only that one name was registered, not the whole legacy catalog
+        assert "superhero" not in style._theme_names
+        # bulk opt-in registers the rest
         with pytest.warns(DeprecationWarning):
             ttk.install_legacy_themes()
-        assert "darkly" in style._theme_names
         # idempotent: a second call adds nothing new
         count = len(style._theme_names)
         with warnings.catch_warnings():
@@ -228,8 +235,8 @@ def test_install_legacy_themes_error_then_opt_in(root):
         assert len(style._theme_names) == count
         # every legacy name is now registered and usable
         assert set(STANDARD_THEMES) <= style._theme_names
-        style.theme_use("darkly")
-        assert style.theme.name == "darkly"
+        style.theme_use("superhero")
+        assert style.theme.name == "superhero"
     finally:
         # restore the shared session registry for later tests
         for name in list(style._theme_names):
