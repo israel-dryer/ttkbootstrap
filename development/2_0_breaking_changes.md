@@ -979,3 +979,21 @@ regeneration.
 **Impact.** Internal only. `bootstyle="date"` / `"…-date"` was never a documented
 form; it now tokenizes as an unknown token (warns by default, raises under strict
 mode) like any other retired keyword.
+
+## App icon: multi-resolution `.ico` on Windows, PNG on macOS/Linux  *(New / behavioral)*
+
+**What.** The default `Window` brand icon is now applied per-platform, mirroring
+bootstack: **Windows** uses a multi-resolution `assets/app_icons/ttkbootstrap.ico`
+via `wm_iconbitmap`; **macOS/Linux** use `assets/app_icons/ttkbootstrap.png` (the
+512px render) via `iconphoto`. It falls back to the embedded base64
+`_DEFAULT_ICON_DATA` if the packaged asset can't be found, so the icon is always
+set. New build script `tools/make_app_ico.py` reads the per-size source PNGs from
+the repo-root `assets/app_icons/` (`16x16.png`..`512x512.png`) and writes the two
+shipped runtime assets into `src/ttkbootstrap/assets/app_icons/`: `ttkbootstrap.ico`
+(Pillow `save(format="ICO", sizes=..., append_images=...)`) and `ttkbootstrap.png`.
+Only those two are packaged; the source PNGs are build inputs, not shipped.
+
+**Why.** The previous default was a single low-resolution embedded PNG, so the
+titlebar/taskbar icon looked soft at larger sizes. A packed `.ico` lets Windows
+pick the crisp frame per DPI/context; macOS/Linux take a full-size PNG. Rebuild
+the `.ico` with `python tools/make_app_ico.py` after changing the source PNGs.

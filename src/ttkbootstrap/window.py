@@ -46,6 +46,7 @@ Example:
 import sys
 import tkinter
 import warnings
+from pathlib import Path
 from typing import Any, Optional, Tuple, Union
 
 from ttkbootstrap import utility
@@ -58,8 +59,18 @@ from ttkbootstrap.style._compat import normalize_window_kwargs
 # Window/Toplevel is created with ``iconphoto=''``. This is a base64-encoded
 # PhotoImage data string -- a brand mark, not a Bootstrap glyph, so it stays an
 # embedded asset rather than routing through the icon-font engine. (Formerly
-# ``ttkbootstrap.icons.Icon.icon``, removed in 2.0.)
+# ``ttkbootstrap.icons.Icon.icon``, removed in 2.0.) Used as the last-resort
+# fallback when the packaged app-icon files below can't be found.
 _DEFAULT_ICON_DATA = "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAFxEAABcRAcom8z8AAAT/SURBVFhHzZd9TNR1HMff/O64BwKOp+NRnkIScJI2n7ZqFmqjVhkrHExrrDFZLnPkqmEyW2WtlQ1SQawWPSAYiJLNGvK0VhJOaDgVBDPCw0PwEOUQfsfd/fp+v/cFbt0Bd6yxXvfP5+F79/l+P9+H+3w8wMnO3r40I+P5vOCQ4I1ymVzrQeCu/wSJYDabB/sHbp45XlnzQUnJgcvcBRQUHEjX6/vH6aCFQK/XjxcWHnyBxpbRle/Ysf3n0NAQJTWMmiRUnB/FNy1GNHaNYdwsIS7IE4JdPqxWKxoam3D0aAVq6+rR39+P2NhYKBQKPsJGx3Abyq8dxGldBbrvXkSoVyR8Pf3g7e0tj46O2mQ0Gqs96urqv1u/PmUL/cLfQ2a8/O0t9A2b2Q9MsjpGicOZQfBSeEAURbyZtxstLee410awVovCgk8RGxPD9NLuT1B6dT+TJ/EUFMhL/gwpYZuYXl/fUCbQPaeKVQJyqwwOwSnnekR8VDvM5JIjnzsEpwwMDmL32/mwWCxoHqhzCE6ZsJrw4YWduHGvh+k0tkAPHFXadSZc1k8whzNOtt+DcWwCJ2p+4BZH/urpwfnWNpzs/YpbHJmwivjxehmTaWxh8rTT9M+GSM7CpZ5BjI2NcYtzdH069PEVzsSkn8YWmETQek+JTpER9/3h/pDL5dzinKDAQAQqg7nmHHv/VNRV5KCFaWRcc2RdvBpajRopjz/GLY4EBARgzerVeCKc3TCneJDPxohp/9QEFDIPfJwWwE76v1nkL8fep/yYnLvzNURFRTLZHqVSib35e6BSqfDkokysC32ae6ahwbPidyFRs4JbiK2jo1NKSFjCVaDHYMaRX0fQ3mcikwIeiVMh+2EfaNTTW2Q0jqKsvBxnzzaza5mYmICXXtw6dQUpVslK7n85ztyogkEcQIRXLNKis7BWu4GPADo7rzhOYCGZ9wQmxi249NN19P5xCxaTFdo4XyQ/Gw3fEDUf4RrzmoA4MoFT77RiqNfILTY8VTKk5i1HWJI/t8wNncDsd88JzV93OQSn0Kw0FF5kGXEHtyZgJj/+5283uebI6JAI3QUD11zDrQmIIyZYzLOvcNQgcsk13JqASqOAXDnzY0XxcfMgujUBmVzAkpRwrjmiCfNCxLIArrmG24dwzZbFTk+6mmRnw+vLIJAX1R3m9Q5IpHjo/kWP3jYDOZgW9g4sTY2EyseTj3CN/8VL6PYWMO70A1W7gHeTgfzFwBcZpBpp4U7OuAl4jxQm8ZvJ/pB/0IeygC9P0fKYD7DhfgaGeoFDzwAjA9zAEcjtyDwEPEjqPZFUVqm5QFMbd9rxShpQ9AYT55eBmj2OwSlWC1D9Fln5XaC42nlwSvEJoLGVK+7eApE8wVcauOKEsTtAVxPwfT03zMCxab9AGwUuz834iG2lszF6GzCQLMzGkM1PYwu0XWKaK/iQAlqt4coMhDwAJE0XJk7hfhpboL0a01xBIAXpo9u44oRIUmrFriV1G7kV9q2UPb73AdueYyKNLfNSazpXrlyRTdslZp2LmFXAbR2gn+4tGSHkJmWVkgz5AtGhpOsgT3ItaWBIGzeFnw9QuQ9YHk/bObG4qGgrs9NGkTaMdE9c5trvknR6nyTV5EtS23HS+pq4w46rOkl6v1SSXt0vSQXHJGlwmJltzWkhK42n8pSTk5OUnr5598K055WkPS8hKQT+AVyRrtzM5URAAAAAAElFTkSuQmCC"
+
+# Packaged app-icon files, both built by ``tools/make_app_ico.py`` from the
+# top-level (unshipped) source PNGs. The Windows titlebar/taskbar icon uses the
+# multi-resolution ``.ico``; macOS/Linux use the 512px ``.png`` through
+# ``iconphoto``. Resolved relative to this file so it works from an installed
+# package.
+_APP_ICONS_DIR = Path(__file__).parent / "assets" / "app_icons"
+_APP_ICON_ICO = _APP_ICONS_DIR / "ttkbootstrap.ico"
+_APP_ICON_PNG = _APP_ICONS_DIR / "ttkbootstrap.png"
 
 # On macOS, override-redirect is a no-op (it breaks Cocoa click handling), so a
 # borderless popup ``window_type`` would otherwise be drawn with full window
@@ -245,8 +256,7 @@ class _BaseWindow:
             return
         if iconphoto == '':
             if default_data is not None:
-                self._icon = tkinter.PhotoImage(master=self, data=default_data)
-                self.iconphoto(True, self._icon)
+                self._apply_default_icon(default_data)
             return
         try:
             path = str(iconphoto)
@@ -263,8 +273,29 @@ class _BaseWindow:
                 stacklevel=3,
             )
             if default_data is not None:
-                self._icon = tkinter.PhotoImage(master=self, data=default_data)
+                self._apply_default_icon(default_data)
+
+    def _apply_default_icon(self, default_data: str) -> None:
+        """Apply the brand app icon per-platform (mirrors bootstack).
+
+        Windows gets the multi-resolution ``.ico`` via ``wm_iconbitmap`` (built
+        by ``tools/make_app_ico.py``); macOS/Linux get a PNG via ``iconphoto``.
+        Falls back to the embedded ``default_data`` (base64 PNG) if the packaged
+        asset is missing or fails to load, so the icon is always set.
+        """
+        try:
+            if self.winsys == 'win32':
+                if _APP_ICON_ICO.is_file():
+                    self.wm_iconbitmap(str(_APP_ICON_ICO))
+                    return
+            elif _APP_ICON_PNG.is_file():
+                self._icon = tkinter.PhotoImage(master=self, file=str(_APP_ICON_PNG))
                 self.iconphoto(True, self._icon)
+                return
+        except tkinter.TclError:
+            pass
+        self._icon = tkinter.PhotoImage(master=self, data=default_data)
+        self.iconphoto(True, self._icon)
 
     def _apply_geometry(
             self,
