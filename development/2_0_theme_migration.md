@@ -17,7 +17,7 @@ changed and how to migrate.
 |---|---|
 | ~18 single-mode themes (`cosmo`, `darkly`, …) | 15 curated **families** → 30 `-light`/`-dark` themes |
 | Default `litera` | Default **`bootstrap-light`** |
-| `Window(themename="darkly")` just works | Curated names only; legacy names need `install_legacy_themes()` |
+| `Window(themename="darkly")` just works | Still works — a legacy name auto-registers on use (one-time `DeprecationWarning`) |
 | Author a 16-key `colors` dict | Author a `Theme(...)` (accent anchors + light/dark blocks) |
 | `style.colors.primary` (a string) | Still a string — **plus** `style.colors.primary[300]` ramp steps |
 
@@ -37,22 +37,32 @@ import ttkbootstrap as ttk
 app = ttk.Window(themename="bootstrap-dark")   # was e.g. "darkly"
 ```
 
-### Getting the old themes back
+### The old theme names still work
 
 The pre-2.0 names (`cosmo`, `flatly`, `litera`, `darkly`, `superhero`, `solar`,
-`cyborg`, `united`, `journal`, …) are available on demand:
+`cyborg`, `united`, `journal`, …) keep working with **no code change** — using
+one auto-registers that theme on demand and emits a one-time
+`DeprecationWarning`:
 
 ```python
 import ttkbootstrap as ttk
-ttk.install_legacy_themes()          # registers the pre-2.0 names
-app = ttk.Window(themename="darkly")
+app = ttk.Window(themename="darkly")   # works; warns once that "darkly" is legacy
 ```
 
 Legacy themes keep their authored accent and background/foreground colors; only
 their inconsistent plumbing (borders, input backgrounds) is regenerated, so they
-look the same but cleaner. Using a legacy name **without** calling
-`install_legacy_themes()` raises a clear error telling you what to do. These
-names are a migration convenience and are planned for removal in 3.0.
+look the same but cleaner.
+
+If you need the **whole** pre-2.0 catalog registered up front — e.g. to
+enumerate it via `Style.theme_names()` or to offer every legacy name in a theme
+picker — call `install_legacy_themes()` once after creating the app:
+
+```python
+ttk.install_legacy_themes()          # bulk-registers all pre-2.0 names
+```
+
+Either way, these names are a migration convenience and are planned for removal
+in 3.0.
 
 ## Authoring your own theme
 

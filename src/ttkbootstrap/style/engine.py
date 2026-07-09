@@ -5,6 +5,7 @@ theme definitions, the active theme, the version-stamped theme walk, and the
 content-addressed image cache. Split out of the monolithic `style.py` in 2.0.
 """
 import json
+import warnings
 from tkinter import TclError, ttk
 from typing import Any
 
@@ -231,12 +232,28 @@ class Style(ttk.Style):
             # new theme and builds its default (".") styles.
             self._theme_objects[themename] = StyleBuilderTTK()
         elif themename in STANDARD_THEMES:
-            raise TclError(
-                f"{themename!r} is a legacy (pre-2.0) theme name. Call "
-                f"ttkbootstrap.install_legacy_themes() to enable the legacy "
-                f"catalog, or use a 2.0 theme such as 'bootstrap-dark' "
-                f"(see Style.theme_names())."
+            # Legacy (pre-2.0) name: lazily adapt+register just this one theme
+            # so the first line of ~every existing app
+            # (Window(themename="darkly")) keeps working, warn once, then fall
+            # through to the normal build path below. The full legacy catalog
+            # stays opt-in via install_legacy_themes() (bulk register, so
+            # theme_names()/ttkcreator can enumerate it).
+            from ttkbootstrap.themes.legacy import theme_from_legacy_dict
+
+            warnings.warn(
+                f"{themename!r} is a legacy (pre-2.0) theme name, kept as a "
+                f"migration convenience and planned for removal in 3.0; prefer "
+                f"a 2.0 theme (see Style.theme_names()).",
+                DeprecationWarning,
+                stacklevel=2,
             )
+            self.register_theme(
+                theme_from_legacy_dict(themename, STANDARD_THEMES[themename])
+            )
+            self.theme = self._theme_definitions.get(themename)
+            # Creating the builder also runs theme_create + theme_use for the
+            # new theme and builds its default (".") styles.
+            self._theme_objects[themename] = StyleBuilderTTK()
         else:
             raise TclError(themename, "is not a valid theme.")
 

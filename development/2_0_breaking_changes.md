@@ -14,6 +14,7 @@
 | Area | Kind | Where |
 |---|---|---|
 | Theme model, `Theme`, default theme, ramp addressing | API | `development/2_0_theme_migration.md` |
+| **Legacy theme names auto-register on use (no hard-stop)** | Fix/Deprecated | this doc, below (Slice 1) |
 | Canonical `bootstyle` grammar (closed vocab, strict mode) | API | `development/2_0_bootstyle_grammar_design.md` |
 | Character-based icons removed (`ttkbootstrap.icons`) | API | `development/2_0_icon_drop_design.md` (PR #1094) |
 | Delivery API (mixins, no import-time monkey-patch) | API | handoff / PR #1075 |
@@ -40,6 +41,32 @@
 | **Inputs: focus color on focus only (not hover)** | Visual | this doc, below |
 | **`card` / `highlight` frames: hairline border (`RAISED`, no bevel)** | Visual | this doc, below |
 | **Control-height parity + check/radio/menubutton focus rings** | Visual | this doc, below |
+
+---
+
+## Legacy (pre-2.0) theme names auto-register on use  *(Fix / Deprecated)*
+
+**What.** `ttk.Window(themename="darkly")` (and any `theme_use("<legacy>")`)
+works again. In 2.0 the curated semantic-anchor catalog replaced the pre-2.0
+theme names, and those old names were opt-in only via
+`ttk.install_legacy_themes()` — so `theme_use("darkly")` on a legacy name raised
+`TclError` with no ordering that fixed it from user code (the first line of
+~every existing app broke). Now, when a name is in `STANDARD_THEMES` but not yet
+registered, `theme_use` **lazily adapts + registers just that one theme**
+(`theme_from_legacy_dict` → `register_theme`), emits a one-time
+`DeprecationWarning`, and builds it normally. `darkly` still looks like darkly
+(only its buggy plumbing is regenerated). `install_legacy_themes()` stays as the
+explicit **bulk** register so `theme_names()`/ttkcreator can enumerate the full
+legacy set.
+
+**Why.** Prefer deprecation over a hard break. There is no 1:1 legacy→2.0 theme
+mapping (`darkly` ≠ `bootstrap-dark`, different palettes), so forcing migration
+would change every app's colors *and* its code. This intentionally reverses
+Workstream E's "opt-in only" decision — that decision is what created the wall —
+while keeping its deprecation nudge (a per-name `DeprecationWarning`).
+
+**Not changed.** The default theme: `ttk.Window()` with no name still renders
+`bootstrap-light` — a documented *visual* change, not a crash.
 
 ---
 
