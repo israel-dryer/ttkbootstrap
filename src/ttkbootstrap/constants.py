@@ -133,7 +133,7 @@ BOOTSTYLE_MODIFIERS: Final = (
 # public Literal -- end users never type these. `card`/`highlight` are the bordered
 # and focus-accent frame variants ScrolledText uses to own its border.
 BOOTSTYLE_INTERNAL_MODIFIERS: Final = (
-    "meter", "metersubtxt", "date", "table", "card", "highlight",
+    "meter", "metersubtxt", "table", "card", "highlight",
 )
 # User-nameable base-types -- matches BootBase.
 BOOTSTYLE_BASES: Final = ("toggle", "toolbutton")

@@ -26,17 +26,13 @@ def build_calendar_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     if any([colorname == DEFAULT, colorname == ""]):
         accent = builder.colors.primary
         ttk_style = ttk_class
-        chevron_style = "Chevron.TButton"
     else:
         accent = builder.colors.get(colorname)
         ttk_style = f"{colorname}.{ttk_class}"
-        chevron_style = f"Chevron.{colorname}.TButton"
 
     on_disabled = builder.disabled("text")
-    pressed = builder.pressed(accent)
-    active = builder.active(accent)
-    on_pressed = builder.on_color(pressed)
-    on_active = builder.on_color(active)
+    active = builder.mute(accent, builder.colors.bg, 0.16)
+    pressed = builder.mute(accent, builder.colors.bg, 0.26)
 
     builder.configure(
         ttk_style,
@@ -60,9 +56,6 @@ def build_calendar_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         ttk_style,
         foreground=[
             ("disabled", on_disabled),
-            ("pressed !disabled", on_pressed),
-            ("selected !disabled", on_pressed),
-            ("hover !disabled", on_active),
         ],
         background=[
             ("pressed !disabled", pressed),
@@ -87,36 +80,7 @@ def build_calendar_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         ],
         focuscolor=[
             ("disabled", on_disabled),
-            ("pressed !disabled", on_pressed),
-            ("selected !disabled", on_pressed),
-            ("hover !disabled", on_active),
         ]
     )
-    # The prev/next chevrons sit on the accent-colored title bar. Style them as
-    # ghost buttons: blend into the header (no border, no fill of their own, no
-    # padding) with a subtle darken/lighten on hover/press.
-    builder.configure(
-        chevron_style,
-        font="-size 12",
-        foreground=builder.on_color(accent),
-        focuscolor='',
-        background=accent,
-        relief=tk.FLAT,
-        padding=builder.scale_size(4),
-        anchor=tk.CENTER,
-    )
-    chevron_states = [
-        ("pressed !disabled", pressed),
-        ("hover !disabled", active),
-    ]
-    builder.style.map(
-        chevron_style,
-        background=chevron_states,
-        bordercolor=chevron_states,
-        darkcolor=chevron_states,
-        lightcolor=chevron_states,
-    )
 
-    # register ttk_style
     builder.register_ttkstyle(ttk_style)
-    builder.register_ttkstyle(chevron_style)

@@ -4,13 +4,11 @@ from ttkbootstrap.constants import *
 root = ttk.Window()
 
 frame = ttk.Frame(root, padding=10)
-frame.pack(padx=10, pady=10)
+frame.pack(padx=10, pady=10, expand=True, fill="both")
 
-de = ttk.DateEntry(frame)
+de = ttk.DateEntry(frame, bootstyle="secondary", button_icon="cake")
 
-ttk.Button(frame, text="TtkBootstrap", icon="house", icon_size=14).pack()
-
-de.pack(fill=X)
+de.pack(fill=X, expand=True)
 
 root.mainloop()
 

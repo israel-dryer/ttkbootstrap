@@ -119,6 +119,42 @@ def test_ensure_on_screen_clamps_far_offscreen(root):
     assert y < root.winfo_screenheight()
 
 
+def test_below_widget_drops_below_left_aligned(root):
+    # A target with room beneath it: the popup's top-left sits at the target's
+    # bottom-left (standard dropdown placement).
+    target = ttk.Frame(root, width=120, height=24)
+    target.place(x=10, y=10)
+    target.update_idletasks()
+    popup = ttk.Toplevel(size=(200, 100))
+    popup.update_idletasks()
+    x, y = positioning.below_widget(popup, target)
+    assert x == target.winfo_rootx()
+    assert y >= target.winfo_rooty() + target.winfo_height() - 1
+    popup.destroy()
+    target.destroy()
+
+
+def test_below_widget_flips_above_when_no_room_below(root):
+    # A target pinned near the bottom of its monitor: the popup flips to sit
+    # above the target rather than overflowing the screen bottom.
+    top = ttk.Toplevel(size=(300, 40))
+    screen_h = top.winfo_screenheight()
+    top.geometry(f"300x40+200+{screen_h - 60}")
+    target = ttk.Frame(top, width=120, height=24)
+    target.pack(padx=4, pady=4)
+    top.update_idletasks()
+    top.update()
+
+    popup = ttk.Toplevel(size=(200, 220))
+    popup.update_idletasks()
+    x, y = positioning.below_widget(popup, target)
+    # Placed above: the popup's bottom edge is at/above the target's top edge.
+    assert y + 220 <= target.winfo_rooty() + 2
+    popup.destroy()
+    target.destroy()
+    top.destroy()
+
+
 # --------------------------------------------------------------------------
 # icon semantics
 # --------------------------------------------------------------------------

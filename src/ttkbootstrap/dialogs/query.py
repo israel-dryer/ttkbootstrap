@@ -236,6 +236,7 @@ class Querybox:
             start_date: Optional[date] = None,
             bootstyle: str = "primary",
             *,
+            show_outside_days: bool = True,
             position: Optional[Tuple[int, int]] = None,
             **kwargs: Any,
     ) -> Optional[date]:
@@ -245,6 +246,9 @@ class Querybox:
         without choosing a day). Previously it always returned a ``date`` --
         falling back to ``start_date``/today -- so cancellation was
         indistinguishable from a real selection.
+
+        Set ``show_outside_days=False`` to blank the leading/trailing days that
+        belong to the adjacent months (only the current month's days are shown).
 
         The pre-2.0 ``firstweekday``/``startdate`` spellings are accepted
         through 2.x with a ``DeprecationWarning`` (removed in 3.0).
@@ -263,6 +267,7 @@ class Querybox:
             first_weekday=first_weekday,
             start_date=start_date,
             bootstyle=bootstyle,
+            show_outside_days=show_outside_days,
             autoshow=False,
         )
         chooser.show(position)

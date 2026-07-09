@@ -10,6 +10,7 @@ from typing import Any, Optional, Tuple
 
 import ttkbootstrap as ttk
 from ttkbootstrap.internal.utility import center_on_parent
+from ttkbootstrap.internal.positioning import ensure_on_screen
 
 
 class Dialog(BaseWidget):
@@ -63,6 +64,9 @@ class Dialog(BaseWidget):
         else:
             try:
                 x, y = position
+                # Clamp so an explicit position near a screen edge doesn't push
+                # the dialog partly (or fully) off-screen.
+                x, y = ensure_on_screen(self._toplevel, x, y)
                 self._toplevel.geometry(f'+{x}+{y}')
             except Exception:
                 self._locate()

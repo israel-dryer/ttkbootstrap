@@ -18,7 +18,6 @@ from ttkbootstrap.style.builders.registry import (
 
 
 EXPECTED_KEYS = {
-    ("date", "button"),
     ("default", "button"),
     ("ghost", "button"),
     ("default", "calendar"),
@@ -230,11 +229,11 @@ def test_new_theme_keeps_nondefault_recipes_lazy(root):
                 "primary.Vertical.TPanedwindow",
             ),
         ),
-        (
-            "default",
-            "calendar",
-            ("primary.TCalendar", "Chevron.primary.TButton"),
-        ),
+        # NOTE: the "calendar" recipe used to also register a
+        # "Chevron.primary.TButton" style for the popup's month-nav buttons; the
+        # datepicker now draws those with the icon engine (ghost buttons), so the
+        # calendar recipe registers only "primary.TCalendar" -- a single-output
+        # recipe, no longer exercised by this multi-output test.
     ],
 )
 def test_multi_output_recipes_keep_related_style_registrations(

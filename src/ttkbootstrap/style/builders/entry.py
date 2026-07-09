@@ -32,7 +32,6 @@ def build_entry_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         # colored style
         ttk_style = f"{colorname}.{ttk_class}"
         focus_ring = builder.colors.get(colorname)
-        border = focus_ring
 
     builder.configure(
         ttk_style,
