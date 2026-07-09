@@ -8,7 +8,7 @@ out of the monolithic `style.py` in 2.0.
 """
 import difflib
 import re
-from tkinter import TclError, ttk
+from tkinter import Grid, Pack, Place, TclError, ttk
 
 from ttkbootstrap.constants import (
     BOOTSTYLE_COLORS,
@@ -699,6 +699,43 @@ class Bootstyle:
             _init = Bootstyle.override_tk_widget_constructor(widget.__init__)
             widget.__init__ = _init
 
+        # Make the geometry managers fluent on every stock/native/third-party
+        # widget too, matching `FluentGeometryMixin` (which only covers the
+        # blessed subclasses).
+        Bootstyle.patch_geometry_managers()
+
+    @staticmethod
+    def patch_geometry_managers():
+        """Make tkinter's geometry managers return the widget (opt-in global).
+
+        The global-API counterpart to `FluentGeometryMixin`: it patches the
+        shared ``Pack``/``Grid``/``Place`` mixin methods that every tk and ttk
+        widget inherits, so ``pack``/``grid``/``place`` return ``self`` on
+        stock, native, and third-party widgets — not just the blessed
+        subclasses. Idempotent: a patched method is tagged so a repeat call is
+        a no-op.
+        """
+        for klass, configure_name in (
+            (Pack, "pack_configure"),
+            (Grid, "grid_configure"),
+            (Place, "place_configure"),
+        ):
+            orig = klass.__dict__.get(configure_name)
+            if orig is None or getattr(orig, "_tb_returns_self", False):
+                continue
+
+            def make_wrapper(orig):
+                def wrapper(self, *args, **kwargs):
+                    orig(self, *args, **kwargs)
+                    return self
+                wrapper._tb_returns_self = True
+                return wrapper
+
+            patched = make_wrapper(orig)
+            setattr(klass, configure_name, patched)
+            # pack/grid/place are class-body aliases of the *_configure methods
+            setattr(klass, configure_name.split("_")[0], patched)
+
     @staticmethod
     def stamp_theme_version(widget):
         """Stamp a widget with the current theme version.
@@ -785,7 +822,37 @@ class Bootstyle:
 _UNSET = object()  # sentinel: distinguish "icon kwarg omitted" from "icon=None"
 
 
-class BootMixin:
+class FluentGeometryMixin:
+    """Mixin that makes the geometry managers return the widget.
+
+    tkinter's ``pack``/``grid``/``place`` return ``None``; returning ``self``
+    instead lets a widget be constructed and placed in a single expression::
+
+        btn = ttk.Button(root, text="Save").pack(padx=10)
+
+    ``pack``/``grid``/``place`` are tkinter aliases for the ``*_configure``
+    methods, so overriding the configure variants (and re-aliasing) covers both
+    call names. Shared by `BootMixin` (ttk) and `AutoStyleMixin` (tk).
+    """
+
+    def pack_configure(self, cnf={}, **kwargs):
+        super().pack_configure(cnf, **kwargs)
+        return self
+
+    def grid_configure(self, cnf={}, **kwargs):
+        super().grid_configure(cnf, **kwargs)
+        return self
+
+    def place_configure(self, cnf={}, **kwargs):
+        super().place_configure(cnf, **kwargs)
+        return self
+
+    pack = pack_configure
+    grid = grid_configure
+    place = place_configure
+
+
+class BootMixin(FluentGeometryMixin):
     """Mixin that adds the ``bootstyle`` API to a ttk widget class.
 
     This is the 2.0 delivery vehicle for the styling API. Instead of
@@ -911,7 +978,7 @@ class BootMixin:
         return super().__getitem__(key)
 
 
-class AutoStyleMixin:
+class AutoStyleMixin(FluentGeometryMixin):
     """Mixin that auto-applies the theme to a legacy ``tk`` widget class.
 
     The tk counterpart to `BootMixin`. Legacy tk widgets have no ttk style;
@@ -986,7 +1053,10 @@ def enable_global_api():
     the stock ``tkinter``/``tkinter.ttk`` classes. Call this once if you have
     code that creates *vanilla* ttk/tk widgets (e.g. ``from tkinter import
     ttk; ttk.Button(..., bootstyle=...)``) and want the ``bootstyle``/
-    ``autostyle`` keywords on them anyway.
+    ``autostyle`` keywords on them anyway. It also makes ``pack``/``grid``/
+    ``place`` return the widget on every widget (see
+    `Bootstyle.patch_geometry_managers`), extending `FluentGeometryMixin`
+    beyond the blessed subclasses.
 
     Idempotent. The installed wrappers defer to `BootMixin`/`AutoStyleMixin`
     instances (the blessed subclasses), so enabling the global API never

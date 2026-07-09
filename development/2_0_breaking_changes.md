@@ -17,6 +17,7 @@
 | Canonical `bootstyle` grammar (closed vocab, strict mode) | API | `development/2_0_bootstyle_grammar_design.md` |
 | Character-based icons removed (`ttkbootstrap.icons`) | API | `development/2_0_icon_drop_design.md` (PR #1094) |
 | Delivery API (mixins, no import-time monkey-patch) | API | handoff / PR #1075 |
+| **Fluent geometry (`pack`/`grid`/`place` return the widget)** | New | this doc, below |
 | **`neutral` color** | New | this doc, below |
 | **`ghost` button variant** | New | this doc, below |
 | **`thin` scrollbar variant** | New | this doc, below |
@@ -997,3 +998,35 @@ Only those two are packaged; the source PNGs are build inputs, not shipped.
 titlebar/taskbar icon looked soft at larger sizes. A packed `.ico` lets Windows
 pick the crisp frame per DPI/context; macOS/Linux take a full-size PNG. Rebuild
 the `.ico` with `python tools/make_app_ico.py` after changing the source PNGs.
+
+---
+
+## Fluent geometry — `pack`/`grid`/`place` return the widget  *(New)*
+
+**What.** On ttkbootstrap's widgets the geometry managers now return the widget
+instead of `None`, so a widget can be created and placed in one expression:
+
+```python
+btn = ttk.Button(root, text="Save", bootstyle="success").pack(padx=10, pady=10)
+```
+
+Both the short names (`pack`/`grid`/`place`) and the `*_configure` spellings
+return `self`. Additive and backwards compatible — tkinter's managers returned
+`None`, which nothing consumed, so returning `self` only *adds* a usable value;
+existing `w.pack()` calls are unaffected.
+
+**Why.** The common construct-then-place pattern otherwise costs two statements
+(and a name binding) even for throwaway widgets. Returning `self` collapses it
+to one line without changing semantics.
+
+**Scope.** Delivered by a new `FluentGeometryMixin` shared by `BootMixin` (ttk)
+and `AutoStyleMixin` (tk), so every shipped widget and anything wrapped with
+`bootify()` gets it by default. A raw `tk`/`ttk` widget constructed directly
+does not — same scoping as the rest of the `bootstyle` API. `FluentGeometryMixin`
+is re-exported from `ttkbootstrap` and `ttkbootstrap.style` for custom subclasses.
+
+**Global opt-in.** `enable_global_api()` now also patches tkinter's shared
+`Pack`/`Grid`/`Place` mixins, so `pack`/`grid`/`place` return the widget on
+*stock, native, and third-party* widgets too — consistent with how the global
+`bootstyle` patch already works. Importing ttkbootstrap stays side-effect-free;
+the geometry patch only happens when you explicitly opt in.

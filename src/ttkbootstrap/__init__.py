@@ -57,7 +57,7 @@ from tkinter.ttk import (
 # (colorutils, constants, themes); it does not depend on the widget classes
 # defined below, so it is safe this early in package init.
 from ttkbootstrap.style import (
-    Bootstyle, Style, BootMixin, AutoStyleMixin,
+    Bootstyle, Style, FluentGeometryMixin, BootMixin, AutoStyleMixin,
     bootify, apply_bootstyle, enable_global_api,
     # Semantic-anchor theme authoring (Workstream E).
     Theme,
@@ -247,6 +247,7 @@ __all__ = [
     # Styling API
     "Bootstyle",
     "Style",
+    "FluentGeometryMixin",
     "BootMixin",
     "AutoStyleMixin",
     "bootify",

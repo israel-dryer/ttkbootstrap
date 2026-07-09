@@ -93,6 +93,46 @@ def test_optionmenu_constructs_and_keeps_item_access(root):
 
 
 # --------------------------------------------------------------------------- #
+# fluent geometry: pack/grid/place return the widget
+# --------------------------------------------------------------------------- #
+def test_pack_returns_self_and_places_widget(root):
+    b = ttk.Button(root)
+    assert b.pack(padx=5) is b
+    assert b.winfo_manager() == "pack"
+    # the *_configure spelling is covered too
+    assert b.pack_configure(padx=10) is b
+
+
+def test_grid_returns_self_and_places_widget(root):
+    f = ttk.Frame(root)
+    b = ttk.Button(f)
+    assert b.grid(row=0, column=0) is b
+    assert b.winfo_manager() == "grid"
+    assert b.grid_configure(padx=2) is b
+
+
+def test_place_returns_self_and_places_widget(root):
+    f = ttk.Frame(root)
+    b = ttk.Button(f)
+    assert b.place(x=0, y=0) is b
+    assert b.winfo_manager() == "place"
+    assert b.place_configure(x=5) is b
+
+
+def test_fluent_geometry_on_autostyle_tk_widget(root):
+    c = ttk.Canvas(root)
+    assert c.pack() is c
+    assert c.winfo_manager() == "pack"
+
+
+def test_construct_and_pack_in_one_expression(root):
+    b = ttk.Button(root, text="Save", bootstyle="success").pack(padx=10)
+    assert isinstance(b, ttk.Button)
+    assert b.cget("style") == "success.TButton"
+    assert b.winfo_manager() == "pack"
+
+
+# --------------------------------------------------------------------------- #
 # autostyle (tk) path + opt-out
 # --------------------------------------------------------------------------- #
 def test_autostyle_widget_is_stamped(root):
@@ -136,3 +176,9 @@ def test_enable_global_api_is_idempotent_and_styles_stock_widgets(root):
     # the blessed subclass still resolves exactly once (guard defers to mixin)
     b2 = ttk.Button(root, bootstyle="info")
     assert b2.cget("style") == "info.TButton"
+
+    # fluent geometry now reaches stock/native widgets too (opt-in global);
+    # a plain tk widget's pack/grid/place return the widget
+    stock = tkinter.Frame(root)
+    assert stock.pack() is stock
+    assert stock.winfo_manager() == "pack"

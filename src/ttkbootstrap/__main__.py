@@ -35,8 +35,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
     style = ttk.Style()
     theme_names = style.theme_names()
 
-    theme_selection = ttk.Frame(root, padding=(10, 10, 10, 0))
-    theme_selection.pack(fill=X, expand=YES)
+    theme_selection = ttk.Frame(root, padding=(10, 10, 10, 0)).pack(fill=X, expand=YES)
 
     theme_selected = ttk.Label(
         master=theme_selection, text="litera", font="-size 24 -weight bold"
@@ -63,11 +62,9 @@ Namespaces are one honking great idea -- let's do more of those!"""
 
     theme_cbo.bind("<<ComboboxSelected>>", change_theme)
 
-    lframe = ttk.Frame(root, padding=5)
-    lframe.pack(side=LEFT, fill=BOTH, expand=YES)
+    lframe = ttk.Frame(root, padding=5).pack(side=LEFT, fill=BOTH, expand=YES)
 
-    rframe = ttk.Frame(root, padding=5)
-    rframe.pack(side=RIGHT, fill=BOTH, expand=YES)
+    rframe = ttk.Frame(root, padding=5).pack(side=RIGHT, fill=BOTH, expand=YES)
 
     color_group = ttk.Labelframe(
         master=lframe, text="Theme color options", padding=10
@@ -75,8 +72,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
     color_group.pack(fill=X, side=TOP)
 
     for color in style.colors:
-        cb = ttk.Button(color_group, text=color, bootstyle=color)
-        cb.pack(side=LEFT, expand=YES, padx=5, fill=X)
+        cb = ttk.Button(color_group, text=color, bootstyle=color).pack(side=LEFT, expand=YES, padx=5, fill=X)
 
     rb_group = ttk.Labelframe(
         lframe, text="Checkbuttons & radiobuttons", padding=10
@@ -110,8 +106,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
     )
     radio3.pack(side=LEFT, expand=YES, padx=5)
 
-    ttframe = ttk.Frame(lframe)
-    ttframe.pack(pady=5, fill=X, side=TOP)
+    ttframe = ttk.Frame(lframe).pack(pady=5, fill=X, side=TOP)
 
     table_data = [
         ("South Island, New Zealand", 1),
@@ -133,8 +128,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
     tv.pack(side=LEFT, anchor=NE, fill=X)
 
     # # notebook with table and text tabs
-    nb = ttk.Notebook(ttframe)
-    nb.pack(side=LEFT, padx=(10, 0), expand=YES, fill=BOTH)
+    nb = ttk.Notebook(ttframe).pack(side=LEFT, padx=(10, 0), expand=YES, fill=BOTH)
     nb_text = "This is a notebook tab.\nYou can put any widget you want here."
     nb.add(ttk.Label(nb, text=nb_text), text="Tab 1", sticky=NW)
     nb.add(
@@ -148,8 +142,7 @@ Namespaces are one honking great idea -- let's do more of those!"""
     txt = ScrolledText(master=lframe, height=5, width=50, autohide=True)
     txt.insert(END, ZEN)
     txt.pack(side=LEFT, anchor=NW, pady=5, fill=BOTH, expand=YES)
-    lframe_inner = ttk.Frame(lframe)
-    lframe_inner.pack(fill=BOTH, expand=YES, padx=10)
+    lframe_inner = ttk.Frame(lframe).pack(fill=BOTH, expand=YES, padx=10)
     s1 = ttk.Scale(
         master=lframe_inner, orient=HORIZONTAL, value=75, from_=100, to=0
     )
@@ -262,16 +255,14 @@ Namespaces are one honking great idea -- let's do more of those!"""
         master=rframe, text="Other input widgets", padding=10
     )
     input_group.pack(fill=BOTH, pady=(10, 5), expand=YES)
-    entry = ttk.Entry(input_group)
-    entry.pack(fill=X)
+    entry = ttk.Entry(input_group).pack(fill=X)
     entry.insert(END, "entry widget")
 
     password = ttk.Entry(master=input_group, show="•")
     password.pack(fill=X, pady=5)
     password.insert(END, "password")
 
-    spinbox = ttk.Spinbox(master=input_group, from_=0, to=100)
-    spinbox.pack(fill=X)
+    spinbox = ttk.Spinbox(master=input_group, from_=0, to=100).pack(fill=X)
     spinbox.set(45)
 
     cbo = ttk.Combobox(
