@@ -44,7 +44,7 @@ class Style(ttk.Style):
         style = Style()
 
         # instantiate the style with another theme
-        style = Style(theme='superhero')
+        style = Style(theme='bootstrap-dark')
 
         # check all available themes
         for theme in style.theme_names():
@@ -132,6 +132,21 @@ class Style(ttk.Style):
             return []  # TODO refactor this
 
     def configure(self, style, query_opt: Any = None, **kw):
+        """Configure a ttk style, resolving `style` through the bootstyle
+        parser if it is not already a registered ttk style name.
+
+        Parameters:
+
+            style (str):
+                A ttk style name or a `bootstyle` string to resolve first.
+
+            query_opt (Any):
+                If given, query this single style option instead of setting
+                options; forwarded to `ttk.Style.configure`.
+
+            **kw:
+                Style options to configure (forwarded to `ttk.Style.configure`).
+        """
         if query_opt:
             return super().configure(style, query_opt=query_opt, **kw)
 
@@ -336,7 +351,7 @@ class Style(ttk.Style):
 
     @staticmethod
     def get_instance():
-        """Returns and instance of the style class"""
+        """Returns the singleton `Style` instance (or `None` if not yet created)."""
         return Style.instance
 
     @staticmethod
@@ -346,7 +361,7 @@ class Style(ttk.Style):
 
         Returns:
 
-            ThemeBuilderTTK:
+            StyleBuilderTTK:
                 The theme builder object that builds the ttk styles for
                 the current theme.
         """
@@ -361,7 +376,7 @@ class Style(ttk.Style):
 
         Returns:
 
-            ThemeBuilderTK:
+            StyleBuilderTK:
                 The theme builder object that builds the ttk styles for
                 the current theme.
         """

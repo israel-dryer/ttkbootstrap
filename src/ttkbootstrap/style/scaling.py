@@ -21,6 +21,7 @@ class Scaling:
     """Convert logical UI units for one Tk root/interpreter."""
 
     def __init__(self, root):
+        """Bind the service to `root`'s Tk interpreter."""
         self.root = root
 
     @classmethod
@@ -36,14 +37,17 @@ class Scaling:
 
     @property
     def windowing_system(self) -> str:
+        """Name of the underlying Tk windowing system (`x11`, `win32`, or `aqua`)."""
         return str(self.root.tk.call("tk", "windowingsystem"))
 
     @property
     def baseline(self) -> float:
+        """Tk scaling value that corresponds to a 1.0 (unscaled) UI factor."""
         return 1.0 if self.windowing_system == "aqua" else 4 / 3
 
     @property
     def tk_scaling(self) -> float:
+        """Current Tk scaling factor, falling back to a fpixels-based estimate."""
         try:
             return float(self.root.tk.call("tk", "scaling"))
         except Exception:
@@ -51,6 +55,7 @@ class Scaling:
 
     @property
     def factor(self) -> float:
+        """Scaling factor relative to `baseline`, snapped to the nearest quarter step when close."""
         raw = self.tk_scaling / self.baseline
         quarter = round(raw * 4) / 4
         if abs(raw - quarter) <= _QUARTER_STEP_TOLERANCE:

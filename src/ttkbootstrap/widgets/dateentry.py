@@ -1,30 +1,7 @@
 """DateEntry widget for ttkbootstrap.
 
-This module provides the DateEntry widget, which combines an Entry field
-with a calendar button to allow users to select dates from a popup calendar.
-
-Example:
-    ```python
-    import ttkbootstrap as ttk
-    from datetime import datetime
-
-    root = ttk.Window()
-
-    # Create a date entry widget
-    date_entry = ttk.DateEntry(root, first_weekday=0, start_date=datetime.now())
-    date_entry.pack(padx=10, pady=10)
-
-    # Get the selected date (reads the live entry text)
-    selected_date = date_entry.get_date()
-
-    # Handle date selection events
-    def on_date_selected(event):
-        print(f"Selected date: {date_entry.get_date()}")
-
-    date_entry.bind("<<DateEntrySelected>>", on_date_selected)
-
-    root.mainloop()
-    ```
+An Entry field paired with a button that opens a popup calendar for date
+selection; the chosen date is written back into the entry.
 """
 from datetime import date, datetime
 from tkinter import Misc
@@ -73,8 +50,6 @@ class DateEntry(ConfigureDelegationMixin, Frame):
     Widget Attributes:
         entry (ttk.Entry): The entry field displaying the selected date
         button (ttk.Button): The button that opens the calendar popup
-
-    ![](../../assets/widgets/date-entry.png)
     """
 
     # Common fallback formats tried (after the widget's own `date_format`) when

@@ -10,21 +10,15 @@ from ttkbootstrap.style.theme import Colors, ThemeDefinition, _accent_on_color
 
 
 class StyleBuilderTK:
-    """A class for styling legacy tkinter widgets (not ttk).
+    """Styles legacy tkinter widgets (not ttk) to match the active theme.
 
-    The methods in this classed are used internally to update tk widget
-    style configurations and are not intended to be called by the end
-    user.
+    The methods here update tk widget style configurations internally and
+    are not intended to be called by the end user. All legacy tkinter
+    widgets are restyled via a callback whenever the theme changes.
 
-    All legacy tkinter widgets are updated with a callback whenever the
-    theme is changed. The color configuration of the widget is updated
-    to match the current theme. Legacy ttk widgets are not the primary
-    focus of this library, however, an attempt was made to make sure they
-    did not stick out amongst ttk widgets if used.
-
-    Some ttk widgets contain legacy components that must be updated
-    such as the Combobox popdown, so this ensures they are styled
-    completely to match the current theme.
+    Some ttk widgets contain legacy components that must be updated too,
+    such as the Combobox popdown, so this ensures they stay in sync with
+    the current theme.
     """
 
     def __init__(self):
@@ -190,7 +184,7 @@ class StyleBuilderTK:
 
         Parameters:
 
-            widget (tkinter.scale):
+            widget (tkinter.Scale):
                 The scale object to update.
         """
         bordercolor = self.colors.border
@@ -214,7 +208,7 @@ class StyleBuilderTK:
         Parameters:
 
             widget (tkinter.Spinbox):
-                THe spinbox object to update.
+                The spinbox object to update.
         """
         bordercolor = self.colors.border
 

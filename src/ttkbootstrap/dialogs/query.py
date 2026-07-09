@@ -87,6 +87,7 @@ class QueryDialog(Dialog):
         self._result = None
 
     def create_body(self, master: tkinter.Misc) -> None:
+        """Build the prompt label and input widget (Entry or Combobox)."""
         frame = ttk.Frame(master, padding=self._padding)
         if self._prompt:
             for p in self._prompt.split("\n"):
@@ -106,6 +107,7 @@ class QueryDialog(Dialog):
         self._initial_focus = entry
 
     def create_buttonbox(self, master: tkinter.Misc) -> None:
+        """Build the Submit/Cancel button row."""
         frame = ttk.Frame(master, padding=(5, 10))
 
         submit = ttk.Button(
@@ -130,6 +132,7 @@ class QueryDialog(Dialog):
         frame.pack(side=BOTTOM, fill=X, anchor=S)
 
     def on_submit(self, *_: Any) -> None:
+        """Capture the input value, validate it, and close the dialog if valid."""
         self._result = self._initial_focus.get()
         valid_result = self.validate()
         if not valid_result:
@@ -138,10 +141,12 @@ class QueryDialog(Dialog):
         self.apply()
 
     def on_cancel(self, *_: Any) -> None:
+        """Close the dialog without setting a result."""
         self._toplevel.destroy()
         return
 
     def on_filter_list(self, event: tkinter.Event) -> None:
+        """Filter the Combobox values to those matching the typed text."""
         value = event.widget.get().lower()
         if not value:
             event.widget["values"] = self._items

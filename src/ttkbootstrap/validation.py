@@ -1,65 +1,10 @@
 r"""Validation framework for ttkbootstrap entry widgets.
 
-This module provides classes and functions for adding validation to Entry,
-Spinbox, and Combobox widgets. When validation fails, a 'danger' colored
-border is applied to the widget, which disappears when the contents become valid.
-
-The module includes:
-    - Predefined validation functions (text, numeric, phone number, regex, etc.)
-    - Custom validation decorator (@validator)
-    - Helper functions starting with "add_" prefix for quick validation setup
-
-Classes:
-    ValidationEvent: Contains attributes of a validation event from tkinter
-
-Functions:
-    add_validation: Core function to add validation to any compatible widget
-    add_text_validation: Validate that contents is alphabetic text
-    add_numeric_validation: Validate that contents is numeric
-    add_phonenumber_validation: Validate phone number format
-    add_regex_validation: Validate against custom regex pattern
-    add_range_validation: Validate numeric value is within range
-    add_option_validation: Validate value is in list of options
-
-Example:
-    Using predefined validation:
-    ```python
-    import ttkbootstrap as ttk
-    from ttkbootstrap.validation import *
-
-    app = ttk.Window()
-    entry = ttk.Entry()
-    entry.pack(padx=10, pady=10)
-
-    # Check if contents is text
-    add_text_validation(entry)
-
-    # Prevent any entry except text
-    add_text_validation(entry, when='key')
-
-    # Check for specific list of options
-    add_option_validation(entry, ['red', 'blue', 'green'])
-
-    # Validate against regex expression
-    add_regex_validation(entry, r'\d{4}-\d{2}-\d{2}')
-
-    app.mainloop()
-    ```
-
-    Creating custom validation:
-    ```python
-    from ttkbootstrap.validation import validator, add_validation
-
-    @validator
-    def validate_long_text(event):
-        if len(event.postchangetext) > 20:
-            return True
-        else:
-            return False
-
-    # Apply custom validation
-    add_validation(entry, validate_long_text)
-    ```
+Adds input validation to Entry, Spinbox, and Combobox widgets: a failing value
+flags the widget with a 'danger'-colored border that clears once the contents
+become valid. Provides the `@validator` decorator, the core `add_validation`,
+and a family of `add_*` helpers for common cases (text, numeric, phone number,
+regex, range, options).
 """
 import re
 from tkinter import Misc
@@ -299,6 +244,12 @@ def add_range_validation(
         widget (Widget):
             The widget on which to add validation.
 
+        startrange (Union[int, float]):
+            The lower bound of the accepted range, inclusive.
+
+        endrange (Union[int, float]):
+            The upper bound of the accepted range, inclusive.
+
         when (str):
             Specifies when to apply validation. See the `add_validation`
             method docstring for a full list of options.
@@ -315,11 +266,13 @@ def add_range_validation(
 def add_option_validation(widget: Misc, options: list[Any], when: str = "focusout") -> None:
     """Check if the widget contents is in a list of options.
 
-
     Parameters:
 
         widget (Widget):
             The widget on which to add validation.
+
+        options (list):
+            The list of acceptable values.
 
         when (str):
             Specifies when to apply validation. See the `add_validation`

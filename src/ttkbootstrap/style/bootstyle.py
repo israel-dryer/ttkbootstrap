@@ -3,8 +3,7 @@
 `Bootstyle` maps a `bootstyle`/`style` string to a built ttk style (reading the
 `Keywords` grammar). `BootMixin`/`AutoStyleMixin` are the concrete-subclass
 delivery path; `bootify`/`apply_bootstyle`/`enable_global_api` are the dynamic
-and opt-in-global delivery primitives. Top layer of the `style` package. Split
-out of the monolithic `style.py` in 2.0.
+and opt-in-global delivery primitives. Top layer of the `style` package.
 """
 import difflib
 import re
@@ -39,12 +38,12 @@ class Keywords:
     This class is internal to the styling system and not intended to be
     instantiated.
 
-    As of 2.0 (Workstream D) the token lists are sourced from the single
-    vocabulary in `ttkbootstrap.constants` -- this class no longer keeps a
-    second copy. The "type" slot spans both public modifiers (`outline`,
-    `round`, ...) and the internal composite modifiers (`meter`, `date`, ...).
-    The compiled patterns are retained for the orientation lookup and any
-    back-compat callers; the primary parse path is the token classifier below.
+    The token lists are sourced from the single vocabulary in
+    `ttkbootstrap.constants`. The "type" slot spans both public modifiers
+    (`outline`, `round`, ...) and the internal composite modifiers (`meter`,
+    `date`, ...). The compiled patterns are retained for the orientation
+    lookup and any back-compat callers; the primary parse path is the token
+    classifier below.
     """
 
     COLORS = list(BOOTSTYLE_COLORS)
@@ -565,7 +564,7 @@ class Bootstyle:
                 The widget instance being updated.
 
             style_string (str):
-                The style string to evalulate. May be the `style`, `ttkstyle`
+                The style string to evaluate. May be the `style`, `ttkstyle`
                 or `bootstyle` argument depending on the context and scenario.
 
             **kwargs:
@@ -645,8 +644,8 @@ class Bootstyle:
         """Monkey-patch the stock tkinter/ttk widget classes with the
         bootstyle/autostyle api.
 
-        As of 2.0 this is the legacy *global* path and is no longer run at
-        import time; the default api is delivered through concrete subclasses
+        This is the legacy *global* path and is not run at import time; the
+        default api is delivered through concrete subclasses
         (`BootMixin`/`AutoStyleMixin`). Call `enable_global_api` to opt back
         into patching the stock classes (e.g. for code that creates vanilla
         ``tkinter.ttk`` widgets)."""
@@ -755,13 +754,13 @@ class Bootstyle:
 
     @staticmethod
     def update_tk_widget_style(widget):
-        """Lookup the widget name and call the appropriate update
-        method
+        """Look up and call the appropriate style-update method for a
+        legacy tk widget.
 
         Parameters:
 
-            widget (object):
-                The tcl/tk name given by `tkinter.Widget.winfo_name()`
+            widget (tkinter.Widget):
+                The tk widget instance to style.
         """
         try:
             style = Style.get_instance()
@@ -836,14 +835,17 @@ class FluentGeometryMixin:
     """
 
     def pack_configure(self, cnf={}, **kwargs):
+        """Pack the widget, then return it for chaining."""
         super().pack_configure(cnf, **kwargs)
         return self
 
     def grid_configure(self, cnf={}, **kwargs):
+        """Grid the widget, then return it for chaining."""
         super().grid_configure(cnf, **kwargs)
         return self
 
     def place_configure(self, cnf={}, **kwargs):
+        """Place the widget, then return it for chaining."""
         super().place_configure(cnf, **kwargs)
         return self
 
@@ -855,11 +857,9 @@ class FluentGeometryMixin:
 class BootMixin(FluentGeometryMixin):
     """Mixin that adds the ``bootstyle`` API to a ttk widget class.
 
-    This is the 2.0 delivery vehicle for the styling API. Instead of
-    monkey-patching ttk widget classes at import time, ttkbootstrap ships
-    concrete subclasses such as ``class Button(BootMixin, ttk.Button)`` and
-    re-exports them. Mixing this in front of any ttk-derived class gives that
-    class:
+    Concrete subclasses such as ``class Button(BootMixin, ttk.Button)`` are
+    shipped and re-exported. Mixing this in front of any ttk-derived class
+    gives that class:
 
     - a ``bootstyle=`` (and bare ``style=``) keyword on the constructor,
     - an ``icon=``/``icon_size=`` keyword for a theme-aware glyph (see
@@ -867,14 +867,25 @@ class BootMixin(FluentGeometryMixin):
     - ``configure``/``config`` that accept and report ``bootstyle``,
     - ``widget["bootstyle"]`` / ``widget["bootstyle"] = ...`` access.
 
-    All resolution flows through the unchanged `Bootstyle.update_ttk_widget_style`
-    engine, so the mixin only changes *delivery* — not how a style string maps
-    to a ttk style. Because the accessors are real methods that use ``super()``
-    (not closures captured in a loop), the late-binding bug of the old
-    monkey-patch is gone.
+    All resolution flows through `Bootstyle.update_ttk_widget_style`, so the
+    mixin only changes *delivery* — not how a style string maps to a ttk
+    style.
     """
 
     def __init__(self, *args, **kwargs):
+        """Construct the widget, then resolve and apply its style and icon.
+
+        Parameters:
+
+            *args:
+                Positional arguments forwarded to the wrapped ttk widget's
+                constructor.
+
+            **kwargs:
+                Keyword arguments forwarded to the wrapped ttk widget's
+                constructor. ``bootstyle``, ``style``, ``icon``, and
+                ``icon_size`` are consumed here rather than forwarded.
+        """
         # capture bootstyle, style, and icon arguments
         bootstyle = kwargs.pop("bootstyle", "")
         style = kwargs.pop("style", "") or ""
@@ -920,6 +931,19 @@ class BootMixin(FluentGeometryMixin):
             pass
 
     def configure(self, cnf=None, **kwargs):
+        """Get or set widget options, resolving ``bootstyle``/``style``/
+        ``icon`` changes along the way.
+
+        Parameters:
+
+            cnf (str | dict | None):
+                An option name to query, a dict of options to set, or
+                ``None`` to set from ``**kwargs``.
+
+            **kwargs:
+                Options to set, including ``bootstyle``, ``style``, ``icon``,
+                and ``icon_size``.
+        """
         # query a single option
         if cnf in ("bootstyle", "style"):
             return self.cget("style")
@@ -989,11 +1013,24 @@ class AutoStyleMixin(FluentGeometryMixin):
 
     Passing ``autostyle=False`` opts the widget out of theming entirely: it
     keeps its native tk look and the theme walk skips it on switch (the
-    ``_tb_no_autostyle`` flag), matching the pre-2.0 behavior where an
-    unstyled widget never subscribed for repaints.
+    ``_tb_no_autostyle`` flag).
     """
 
     def __init__(self, *args, **kwargs):
+        """Construct the widget, then apply the active theme unless
+        ``autostyle=False`` is passed.
+
+        Parameters:
+
+            *args:
+                Positional arguments forwarded to the wrapped tk widget's
+                constructor.
+
+            **kwargs:
+                Keyword arguments forwarded to the wrapped tk widget's
+                constructor. ``autostyle`` (default ``True``) is consumed
+                here rather than forwarded.
+        """
         autostyle = kwargs.pop("autostyle", True)
         super().__init__(*args, **kwargs)
         if autostyle:
@@ -1048,8 +1085,8 @@ _global_api_installed = False
 def enable_global_api():
     """Re-apply the legacy global monkey-patch (opt-in).
 
-    In 2.0 the default styling API is delivered through concrete subclasses
-    (`BootMixin`/`AutoStyleMixin`), so importing ttkbootstrap no longer mutates
+    By default the styling API is delivered through concrete subclasses
+    (`BootMixin`/`AutoStyleMixin`), so importing ttkbootstrap does not mutate
     the stock ``tkinter``/``tkinter.ttk`` classes. Call this once if you have
     code that creates *vanilla* ttk/tk widgets (e.g. ``from tkinter import
     ttk; ttk.Button(..., bootstyle=...)``) and want the ``bootstyle``/

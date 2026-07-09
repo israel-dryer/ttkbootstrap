@@ -167,7 +167,7 @@ def _build_neutral_outline_menubutton(builder: StyleBuilderTTK, ttk_class, disab
 
 @register_builder("outline", "menubutton")
 def build_outline_menubutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
-    """Create an outline button style for the ttk.Menubutton widget
+    """Create an outline button style for the ttk.Menubutton widget.
 
     Parameters:
 

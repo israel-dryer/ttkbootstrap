@@ -258,9 +258,12 @@ def normalize_bootstyle(value, *, warn: bool = False) -> str:
     a plain string, and returns a single dash-joined string the tokenizer can
     split. Slot re-ordering is handled downstream by the tokenizer, not here.
 
-    In 2.0 D1 this is called with ``warn=False`` so the internal tuple callers
-    (Meter/DateEntry/...) stay quiet until they are migrated in D2; D2 flips the
-    default caller to ``warn=True`` so genuine external tuple use is flagged.
+    Parameters:
+        value: legacy bootstyle value -- a tuple/list, a plain string, or ``None``.
+        warn: emit a deprecation warning when a non-empty tuple/list is passed.
+
+    Returns:
+        The canonical dash-joined string (``""`` for ``None``).
     """
     if value is None:
         return ""

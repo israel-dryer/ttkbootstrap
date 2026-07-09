@@ -22,11 +22,11 @@ class Dialog(BaseWidget):
         Parameters:
 
             parent (Widget):
-                Makes the window the logical parent of the message box.
-                The messagebox is displayed on top of its parent window.
+                Makes the window the logical parent of the dialog.
+                The dialog is displayed on top of its parent window.
 
             title (str):
-                The string displayed as the title of the message box.
+                The string displayed as the title of the dialog.
                 This option is ignored on Mac OS X, where platform
                 guidelines forbid the use of a title on this kind of
                 dialog.
@@ -48,13 +48,16 @@ class Dialog(BaseWidget):
         center_on_parent(toplevel, self._parent)
 
     def show(self, position: Optional[Tuple[int, int]] = None, wait_for_result: bool = True) -> None:
-        """Show the popup dialog
+        """Show the popup dialog.
+
         Parameters:
 
-            wait_for_result:
-            position: tuple[int, int]
-                The x and y coordinates used to position the dialog. If no parent
-                then the dialog will anchor to the center of the parent window.
+            position (tuple[int, int], optional):
+                The x and y coordinates used to position the dialog. If not
+                given, the dialog is centered on the parent window.
+
+            wait_for_result (bool):
+                Grab input focus and block until the dialog is closed.
         """
         self.update_idletasks()
         self._result = None
@@ -102,7 +105,7 @@ class Dialog(BaseWidget):
 
         This method should be overridden and is called by the `build`
         method. Set the `self._initial_focus` for the button that
-        should receive the intial focus.
+        should receive the initial focus.
 
         Parameters:
 
@@ -158,9 +161,7 @@ class Dialog(BaseWidget):
         Safe to read whether the toplevel is already destroyed (e.g.
         ``QueryDialog`` destroys it synchronously on submit) or only queued for
         destruction (``MessageDialog`` uses ``after_idle``); the grab is released
-        only if the window still exists. This is the single result accessor for
-        every ``Dialog`` subclass -- facades must read ``.result``, not the
-        private ``._result`` (2.0 result-convention unification).
+        only if the window still exists.
         """
         toplevel = self._toplevel
         if toplevel is not None:

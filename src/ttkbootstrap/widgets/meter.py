@@ -1,41 +1,8 @@
 """Meter widget for ttkbootstrap.
 
-This module provides the Meter widget, a radial progress indicator that can
-display progress in various styles (full circle, semi-circle, solid, striped).
-The meter can be interactive, allowing users to adjust values with mouse input.
-
-Module Constants:
-    M (int): Meter image scale factor (3). Higher values increase resolution
-             of the rendered meter image.
-
-Example:
-    ```python
-    import ttkbootstrap as ttk
-    from ttkbootstrap.constants import *
-
-    root = ttk.Window()
-
-    # Create a meter
-    meter = ttk.Meter(
-        root,
-        meter_size=200,
-        amount_used=65,
-        amount_total=100,
-        meter_type="semi",
-        subtext="CPU Usage",
-        interactive=True,
-        bootstyle="success"
-    )
-    meter.pack(padx=10, pady=10)
-
-    # Update the value
-    meter.configure(amount_used=75)
-
-    # Access the value
-    print(meter.value)
-
-    root.mainloop()
-    ```
+A radial progress indicator that shows progress as a full or semi circle, with
+solid or striped fill and optional center/side text. Can be made interactive so
+the user drags to set the value.
 """
 import math
 from tkinter import Event, Misc, TclError
@@ -86,8 +53,6 @@ class Meter(ConfigureDelegationMixin, Frame):
     The current value is available through the `value` property (and
     the `amount_used_var` variable); the value can also be retrieved
     or set via the `configure`/`cget` methods.
-
-    ![](../../assets/widgets/meter.gif)
 
     Examples:
 

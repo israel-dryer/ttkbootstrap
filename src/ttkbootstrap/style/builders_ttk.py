@@ -38,6 +38,7 @@ class StyleBuilderTTK:
     """
 
     def __init__(self, build: bool = True):
+        """Bind to the active `Style` instance and build the theme unless `build` is False."""
         # local import breaks the builders<-engine cycle (engine imports builders)
         from ttkbootstrap.style.engine import Style
 
@@ -114,8 +115,7 @@ class StyleBuilderTTK:
     def shade(self, color: str, weight: float = _TROUGH_SHADE) -> str:
         """Return `color` darkened by mixing `weight` of black into it.
 
-        The recessed dark-theme track/trough recipes use the default weight;
-        this replaces their `Colors.update_hsv(..., vd=-0.2)` darken.
+        The default weight matches the recessed dark-theme track/trough recipes.
         """
         return _shade(color, weight)
 
@@ -131,12 +131,7 @@ class StyleBuilderTTK:
         self, color: str, surface: str | None = None,
         amount: float = _MUTE_AMOUNT,
     ) -> str:
-        """Return `color` alpha-blended onto a surface to mute an indicator.
-
-        Replaces `Colors.make_transparent(amount, color, surface)`; visually
-        identical (that helper truncated, `_mix_colors` rounds — at most 1/255
-        per channel).
-        """
+        """Return `color` alpha-blended onto a surface to mute an indicator."""
         return _mix_colors(color, surface or self.colors.bg, amount)
 
     def on_color(self, color: str) -> str:
@@ -176,9 +171,7 @@ class StyleBuilderTTK:
         return True
 
     def register_ttkstyle(self, style_name: str):
-        """Register that a ttk style name. This ensures that the builder will not attempt to build a style
-        that has already been created.
-        """
+        """Mark `style_name` as built so the builder will not recreate it."""
         return self.style._register_ttkstyle(style_name)
 
     def create_theme(self):

@@ -1,58 +1,7 @@
-"""Table view widget with sorting, searching, and pagination for ttkbootstrap.
+"""Table view widget for ttkbootstrap.
 
-This module provides a powerful table widget built on top of ttk.Treeview with
-enhanced features like column sorting, row striping, pagination, searching,
-and data loading from various sources.
-
-Classes:
-    TableColumn: Represents a column in the Tableview
-    Tableview: Enhanced treeview widget for displaying tabular data
-
-Features:
-    - Automatic column sorting with visual indicators
-    - Row striping for better readability
-    - Pagination with configurable page size
-    - Column-specific searching
-    - Loading data from lists, dicts, CSV files
-    - Row selection with callback events
-    - Autofit columns and autoalign numeric data
-    - Localization support for date formatting
-
-Example:
-    ```python
-    import ttkbootstrap as ttk
-    from ttkbootstrap.widgets.tableview import Tableview
-
-    app = ttk.Window()
-
-    # Define column structure
-    coldata = [
-        {"text": "Name", "stretch": False},
-        {"text": "Age", "stretch": False},
-        {"text": "Email", "stretch": True}
-    ]
-
-    # Define row data
-    rowdata = [
-        ["John Doe", 28, "john@example.com"],
-        ["Jane Smith", 35, "jane@example.com"],
-        ["Bob Wilson", 42, "bob@example.com"],
-    ]
-
-    # Create tableview
-    tv = Tableview(
-        master=app,
-        coldata=coldata,
-        rowdata=rowdata,
-        paginated=True,
-        searchable=True,
-        bootstyle="primary",
-        stripecolor=(None, None),
-    )
-    tv.pack(fill="both", expand=True, padx=10, pady=10)
-
-    app.mainloop()
-    ```
+A `ttk.Treeview`-based table with column sorting, row striping, pagination,
+searching, and data loading from lists, dicts, or CSV files.
 """
 import tkinter as tk
 from datetime import datetime
@@ -93,7 +42,7 @@ class TableColumn:
             tableview (Tableview):
                 The parent tableview object.
 
-            cid (str):
+            cid (int):
                 The column id.
 
             text (str):
@@ -473,15 +422,11 @@ class Tableview(ttk.Frame):
     The object has a right-click menu on the header and the cells that
     allow you to configure various settings.
 
-    ![](../../assets/widgets/tableview-1.png)
-    ![](../../assets/widgets/tableview-2.png)
-
     Examples:
 
         Adding data with the constructor
         ```python
         import ttkbootstrap as ttk
-        from ttkbootstrap.widgets.tableview import Tableview
         from ttkbootstrap.constants import *
 
         app = ttk.Window()
@@ -499,7 +444,7 @@ class Tableview(ttk.Frame):
             ('A158', 'Farmadding Co.', 36)
         ]
 
-        dt = Tableview(
+        dt = ttk.Tableview(
             master=app,
             coldata=coldata,
             rowdata=rowdata,
@@ -545,10 +490,10 @@ class Tableview(ttk.Frame):
                 The parent widget.
 
             bootstyle (str):
-                A style keyword used to set the focus color of the entry
-                and the background color of the date button. Available
-                options include -> primary, secondary, success, info,
-                warning, danger, dark, light.
+                A color keyword used to set the color of the table headers,
+                selection, and other accents. Available options include ->
+                primary, secondary, success, info, warning, danger, dark,
+                light.
 
             coldata (list[str | dict]):
                 An iterable containing either the heading name or a

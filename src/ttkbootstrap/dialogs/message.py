@@ -75,8 +75,8 @@ class MessageDialog(Dialog):
             command (Callable):
                 Optional zero-argument callback to run when a button is
                 pressed. The legacy ``(callable, label)`` tuple form is
-                deprecated (the label was never used) and will be removed in
-                3.0; pass the callable directly.
+                deprecated and will be removed in 3.0; pass the callable
+                directly.
 
             width (int):
                 Maximum width in characters for text wrapping (default=50).
@@ -246,13 +246,8 @@ class Messagebox:
     and alert options, and return the label of the button the user pressed
     (or ``None`` if the dialog was dismissed via Escape / the window close).
 
-    2.0 signature normalization: every method takes ``(message, title, *,
-    parent, alert, position, buttons, icon, localize)``. ``parent``/``alert``
-    are now **keyword-only** and in a uniform order (previously some methods
-    ordered them ``parent, alert`` and others ``alert, parent`` positionally,
-    so a positional third argument was ambiguous). The formerly hidden
-    ``**kwargs`` options -- ``position``, ``buttons``, ``icon``, ``localize`` --
-    are now discoverable named parameters.
+    Every method takes ``(message, title, *, parent, alert, position,
+    buttons, icon, localize)``; ``parent`` and ``alert`` are keyword-only.
     """
 
     @staticmethod

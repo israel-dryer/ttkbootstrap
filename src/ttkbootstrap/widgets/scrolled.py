@@ -1,39 +1,8 @@
-"""Scrolling widgets with optional autohide scrollbars for ttkbootstrap.
+"""Scrolling containers for ttkbootstrap.
 
-This module provides enhanced scrolling widgets that wrap standard tkinter
-and ttk widgets with automatic scrollbar management. The scrollbars can be
-configured to auto-hide when the mouse is not over the widget.
-
-Classes:
-    ScrolledText: Text widget with vertical/horizontal scrollbars
-    ScrolledFrame: Frame container with a vertical scrollbar (Canvas viewport)
-
-Features:
-    - Optional auto-hide scrollbars (hide when the mouse leaves the widget)
-    - Configurable vertical and horizontal scrollbars
-    - Seamless delegation of widget methods
-    - Bootstrap styling support via the bootstyle parameter
-
-Example:
-    ```python
-    import ttkbootstrap as ttk
-    from ttkbootstrap.constants import *
-
-    app = ttk.Window()
-
-    # Scrolled text with an auto-hide scrollbar
-    st = ttk.ScrolledText(app, padding=5, height=10, auto_hide=True)
-    st.pack(fill=BOTH, expand=YES)
-    st.insert(END, 'Insert your text here.')
-
-    # Scrolled frame for multiple widgets
-    sf = ttk.ScrolledFrame(app, auto_hide=True)
-    sf.pack(fill=BOTH, expand=YES, padx=10, pady=10)
-    for x in range(20):
-        ttk.Checkbutton(sf, text=f"Checkbutton {x}").pack(anchor=W)
-
-    app.mainloop()
-    ```
+`ScrolledText` and `ScrolledFrame` wrap a Text widget / Frame with managed
+vertical and horizontal scrollbars that can optionally auto-hide when the mouse
+leaves the widget.
 """
 import tkinter
 from tkinter import Grid, Pack, Place
@@ -62,8 +31,6 @@ class ScrolledText(ConfigureDelegationMixin, ttk.Frame):
     This widget is identical in configuration to the `Text` widget other
     than the scrolling frame; `configure`/`cget` and unknown method access
     are delegated to the internal `Text`. https://tcl.tk/man/tcl8.6/TkCmd/text.htm
-
-    ![scrolled text](../../../assets/scrolled/scrolledtext.gif)
 
     Examples:
 

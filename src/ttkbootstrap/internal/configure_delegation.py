@@ -1,13 +1,7 @@
-"""Configure/cget delegation for ttkbootstrap's custom widgets.
+"""Configure/cget delegation mixin for ttkbootstrap's custom widgets.
 
 Custom widgets (Meter, Floodgauge, DateEntry, ...) add their own options on top
-of a real ttk/tk widget. Historically each hand-maintained two parallel `if/else`
-ladders — one in a `configure` override to *set*, one to *get* — and often forgot
-a `cget` override entirely, so an option could be set but never read back (or a
-construction-only option had no `configure` branch at all). Those ladders are
-where the round-trip bugs live.
-
-This mixin replaces them. A widget marks one method per option with
+of a real ttk/tk widget. A widget marks one method per option with
 `@configure_delegate("name")`; `__init_subclass__` collects every such method in
 the MRO into a `key -> handler` map at class-creation time; and `configure`,
 `config`, `cget`, `keys`, `__getitem__`, and `__setitem__` all route delegated
@@ -24,15 +18,14 @@ class Meter(ConfigureDelegationMixin, Frame):
 ```
 
 `cget("amountused")`, `configure("amountused")`, `meter["amountused"]`,
-`configure(amountused=…)`, and `meter["amountused"] = …` now all work and stay in
-sync, with no ladder to keep aligned.
+`configure(amountused=…)`, and `meter["amountused"] = …` all route through this
+handler.
 
-**Inner-widget fallthrough** (the piece bootstack's original lacks): a composite
-that proxies to an inner widget — e.g. `ScrolledText` wrapping a `Text` — can
-override `_configure_delegate_target()` to return that inner widget. Non-delegated
-options then route to it instead of the outer frame, so `st.configure(font=…)` /
-`st.cget("wrap")` reach the `Text`. The default returns `None` (use the widget
-itself), which is what the non-composite widgets want.
+Inner-widget fallthrough: a composite that proxies to an inner widget — e.g.
+`ScrolledText` wrapping a `Text` — can override `_configure_delegate_target()`
+to return that inner widget. Non-delegated options then route to it instead of
+the outer frame, so `st.configure(font=…)` / `st.cget("wrap")` reach the `Text`.
+The default returns `None` (use the widget itself).
 
 This module is internal (`ttkbootstrap.internal`): no back-compat guarantee.
 """

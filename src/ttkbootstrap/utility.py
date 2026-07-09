@@ -1,24 +1,6 @@
 """Public utility functions for ttkbootstrap.
 
-This module provides high-DPI support and size scaling helpers for
-ttkbootstrap applications.
-
-Functions:
-    enable_high_dpi_awareness: Enable high-DPI scaling on Windows/Linux
-    scale_size: Scale a size value for high-DPI displays
-    windowing_system: Detect the Tk windowing system ('win32'/'aqua'/'x11')
-
-Example:
-    ```python
-    from ttkbootstrap.utility import enable_high_dpi_awareness
-    import ttkbootstrap as ttk
-
-    # Enable high-DPI before creating window
-    enable_high_dpi_awareness()
-
-    root = ttk.Window()
-    root.mainloop()
-    ```
+High-DPI awareness and size-scaling helpers for ttkbootstrap applications.
 """
 import warnings
 

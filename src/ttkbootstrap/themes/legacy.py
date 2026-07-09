@@ -34,6 +34,13 @@ def theme_from_legacy_dict(name, spec) -> ThemeDefinition:
     Authored accents, `bg`/`fg`, `selectbg`/`selectfg`, and the `light`/`dark`
     accents are preserved; `border`, `inputbg`, and `active` are regenerated
     from `bg` with the mode-aware, hue-preserving surface derivation.
+
+    Parameters:
+        name: Theme name to assign.
+        spec: Legacy spec, `{'type': 'light'|'dark', 'colors': {16 keys}}`.
+
+    Returns:
+        ThemeDefinition: The resolved theme definition.
     """
     c = spec["colors"]
     mode = spec["type"]

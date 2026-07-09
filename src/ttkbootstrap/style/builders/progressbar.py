@@ -9,18 +9,19 @@ from ttkbootstrap.style.builders.registry import register_builder
 
 
 def _create_striped_progressbar_assets(builder, colorname=DEFAULT):
-    """Create the striped progressbar image and return as a
-    `PhotoImage`
+    """Create the horizontal and vertical striped progressbar images.
 
     Parameters:
 
+        builder (StyleBuilderTTK):
+            The style builder.
         colorname (str):
             The color label used to style the widget.
 
     Returns:
 
-        tuple[str]:
-            A list of photoimage names.
+        tuple[str, str]:
+            The horizontal and vertical photoimage names.
     """
     if any([colorname == DEFAULT, colorname == ""]):
         bar_color = builder.colors.primary

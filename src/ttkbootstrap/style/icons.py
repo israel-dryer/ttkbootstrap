@@ -2,10 +2,9 @@
 
 `IconRenderer` rasterizes a single named glyph from the vendored Bootstrap Icons
 font (`assets/icons/`) to a PIL image, using a precomputed per-glyph ink box to
-fit-and-center it accurately -- the alignment fix ported from the sibling
-bootstack project. Pillow's `font.getbbox()` under-reports the ink of full-bleed
-icon glyphs, which skews sizing/centering; `icon_metrics.json` instead carries
-each glyph's true inked bounds (in em-fractions) measured offline, so the
+fit-and-center it accurately. Pillow's `font.getbbox()` under-reports the ink of
+full-bleed icon glyphs, which skews sizing/centering; `icon_metrics.json` instead
+carries each glyph's true inked bounds (in em-fractions) measured offline, so the
 renderer fits the real ink to the frame with no per-glyph fudge.
 
 The public surface layered on top:
@@ -17,11 +16,8 @@ The public surface layered on top:
     ttk widget state and bakes a validated image element (the `Style.map`-aligned
     analog of `image_element`, with the icon as the asset source).
 
-Layering: this module's top-level imports are PIL + stdlib + the two leaf toolkit
-modules (`assets`, `layout`); it carries **no module-level engine edge** (the
-`Style` singleton is reached function-locally inside `Icon`), so it stays a leaf
-and imports standalone. Asset loading is lazy: `import ttkbootstrap` does not read
-the font -- `IconRenderer` loads it on first `render`.
+Asset loading is lazy: `import ttkbootstrap` does not read the font --
+`IconRenderer` loads it on first `render`.
 """
 import hashlib
 import io
@@ -64,11 +60,9 @@ def _icon_oversample(w, h):
 
     Glyph outlines (circle/chevron) carry thin curved strokes; the smoothness of
     those curves is set by the *supersample*, not the sharpen -- a hard sharpen
-    just stair-steps them. So push samples high (6x) for the small indicator tier
-    and pair it with a gentle UnsharpMask (see `render`): the curves stay smooth
-    and the straight strokes stay defined. bootstack stops at 3x + a gentle
-    sharpen (soft but smooth); the richer supersample here is what lets the edges
-    read crisp without pixelating the rings.
+    just stair-steps them. Samples are pushed high (6x) for the small indicator
+    tier and paired with a gentle UnsharpMask (see `render`), keeping curves
+    smooth and straight strokes defined without pixelating the rings.
     """
     longest = max(w, h)
     if longest < 32:
@@ -142,7 +136,7 @@ class IconRenderer:
         a literal color string (already resolved). The glyph is drawn onto an
         adaptively oversampled canvas, fit-and-centered via its precomputed ink
         box, then LANCZOS-downscaled with an `UnsharpMask` to restore edge
-        crispness (bootstack's pipeline, shared with `assets._render`).
+        crispness (shared with `assets._render`).
 
         Raises `ValueError` for a name absent from the Bootstrap Icons glyphmap
         (a typo fails loudly rather than rendering a blank image).
@@ -254,10 +248,10 @@ def Icon(name, size=16, color=None):
             The logical UI size. It is converted once by the root-bound service;
             final dimensions may be odd.
 
-        color (str):
+        color (str | None):
             A bootstyle keyword ("primary", "success", "fg", ...) resolved against
-            the active theme, or a hex string passed through. Defaults to the
-            theme foreground.
+            the active theme, or a hex string passed through. `None` (the
+            default) resolves to the theme foreground.
     """
     from ttkbootstrap.style.engine import Style  # back-edge; keeps this a leaf
 
@@ -297,8 +291,7 @@ def icon_element(style, name, *, size, default, states=None, **options):
 
     The `Style.map`-aligned analog of `image_element`, with the icon as the asset
     source: each per-state spec is rendered via `Icon`/`Assets.icon` and assembled
-    into one validated, first-match-wins image element. One declarative call
-    replaces a `create_*_assets` method plus its `image_element` wiring.
+    into one validated, first-match-wins image element.
 
     `name` is the element name and must be `"<ttkstyle>.<element>"` (e.g.
     `"Favorite.TCheckbutton.indicator"`); the foreground a color-less spec follows
@@ -496,7 +489,7 @@ def apply_icon(widget, name, *, size=14, states=None, compound=None):
     so it inverts on ``outline``/``toggle`` buttons, mutes when disabled, and
     re-colors on a theme switch. It does so by giving the widget a derived,
     content-hashed style that augments (inherits) its current ``style``/
-    ``bootstyle`` -- see the design doc's "What this does to your widget's style".
+    ``bootstyle``.
 
     Parameters:
 
