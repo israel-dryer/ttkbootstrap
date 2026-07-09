@@ -8,7 +8,7 @@ from tkinter import Event, Misc, TclError
 from typing import Any, Optional, Union
 
 from ttkbootstrap import Canvas, DoubleVar, IntVar, Progressbar, StringVar
-from ttkbootstrap.colorutils import contrast_color
+from ttkbootstrap.utils import contrast_color
 from ttkbootstrap.constants import DETERMINATE, HORIZONTAL, PRIMARY
 from ttkbootstrap.internal.configure_delegation import (
     ConfigureDelegationMixin,

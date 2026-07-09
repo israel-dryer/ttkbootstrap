@@ -54,7 +54,7 @@ from tkinter.ttk import (
 )
 
 # The styling primitives. Importing style here only pulls in submodules
-# (colorutils, constants, themes); it does not depend on the widget classes
+# (utils, constants, themes); it does not depend on the widget classes
 # defined below, so it is safe this early in package init.
 from ttkbootstrap.style import (
     Bootstyle, Style, FluentGeometryMixin, BootMixin, AutoStyleMixin,
@@ -73,16 +73,15 @@ from ttkbootstrap.style import (
 # Opt-in migration path for the pre-2.0 theme names (Workstream E/F).
 from ttkbootstrap.themes.legacy import install_legacy_themes
 
-# Public utilities re-exported at the top level for convenience. The
-# `ttkbootstrap.utility` / `ttkbootstrap.colorutils` module paths remain valid;
-# these names just make `ttk.scale_size(...)` / `ttk.contrast_color(...)` work
-# the same way the widgets and dialogs are reachable as `ttk.<Name>`.
-from ttkbootstrap.utility import (
+# Public utilities re-exported at the top level for convenience, so
+# `ttk.scale_size(...)` / `ttk.contrast_color(...)` work the same way the widgets
+# and dialogs are reachable as `ttk.<Name>`. Their home is the `ttkbootstrap.utils`
+# package (2.0); the old `ttkbootstrap.utility` / `ttkbootstrap.colorutils`
+# module paths still work as warn-and-forward shims (removed in 3.0).
+from ttkbootstrap.utils import (
     enable_high_dpi_awareness,
     scale_size,
     windowing_system,
-)
-from ttkbootstrap.colorutils import (
     color_to_rgb,
     color_to_hex,
     color_to_hsl,

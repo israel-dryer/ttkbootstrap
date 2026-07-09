@@ -5,7 +5,7 @@ from tkinter import font
 from typing import Any, Optional
 
 import ttkbootstrap as ttk
-from ttkbootstrap import utility
+from ttkbootstrap import utils
 from ttkbootstrap.constants import *
 from ttkbootstrap.localization import MessageCatalog
 from ttkbootstrap.dialogs.base import Dialog
@@ -79,8 +79,8 @@ class FontDialog(Dialog):
                 self._families.add(f)
 
     def create_body(self, master: tkinter.Misc) -> None:
-        width = utility.scale_size(master, 600)
-        height = utility.scale_size(master, 500)
+        width = utils.scale_size(master, 600)
+        height = utils.scale_size(master, 500)
         self._toplevel.geometry(f"{width}x{height}")
 
         # A borderless Treeview: the list border is carried by a wrapping frame
@@ -137,7 +137,7 @@ class FontDialog(Dialog):
             columns=[0],
             style="Flat.Treeview",
         )
-        listbox.column(0, width=utility.scale_size(listbox, 250))
+        listbox.column(0, width=utils.scale_size(listbox, 250))
 
         listbox_vbar = ttk.Scrollbar(
             listbox_frame,
@@ -176,7 +176,7 @@ class FontDialog(Dialog):
 
         sizes_listbox = ttk.Treeview(
             sizes_frame, height=7, columns=[0], show="", style="Flat.Treeview")
-        sizes_listbox.column(0, width=utility.scale_size(sizes_listbox, 24))
+        sizes_listbox.column(0, width=utils.scale_size(sizes_listbox, 24))
 
         sizes = [*range(8, 13), *range(13, 30, 2), 36, 48, 72]
         for s in sizes:

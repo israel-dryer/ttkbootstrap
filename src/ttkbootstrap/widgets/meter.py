@@ -11,7 +11,7 @@ from typing import Any, Optional, Union
 from PIL import Image, ImageDraw, ImageTk
 from PIL.Image import Resampling
 
-from ttkbootstrap import DoubleVar, Frame, Label, StringVar, utility
+from ttkbootstrap import DoubleVar, Frame, Label, StringVar, utils
 from ttkbootstrap.constants import CENTER, DEFAULT, FULL, LEFT, RIGHT, S, Y
 from ttkbootstrap.internal.configure_delegation import (
     ConfigureDelegationMixin,
@@ -309,11 +309,11 @@ class Meter(ConfigureDelegationMixin, Frame):
     # -- scaling seam -------------------------------------------------------- #
     def _physical_size(self) -> int:
         """Physical (dpi-scaled) meter size in pixels from the logical size."""
-        return utility.scale_size(self, self._meter_size)
+        return utils.scale_size(self, self._meter_size)
 
     def _physical_thickness(self) -> int:
         """Physical (dpi-scaled) indicator thickness from the logical value."""
-        return utility.scale_size(self, self._meter_thickness)
+        return utils.scale_size(self, self._meter_thickness)
 
     def _update_meter(self, *_: Any) -> None:
         """Redraw the indicator and refresh the display text on value change."""

@@ -13,7 +13,7 @@ from ttkbootstrap.internal.positioning import (
     center_on_screen,
     ensure_on_screen,
 )
-from ttkbootstrap.utility import windowing_system
+from ttkbootstrap.utils import windowing_system
 from ttkbootstrap.style._compat import normalize_datepicker_kwargs
 
 

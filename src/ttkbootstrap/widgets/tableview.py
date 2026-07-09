@@ -10,7 +10,7 @@ from tkinter import font
 from typing import Any, Callable, Dict, List, Optional, Sequence, Union
 
 import ttkbootstrap as ttk
-from ttkbootstrap import utility
+from ttkbootstrap import utils
 from ttkbootstrap.constants import *
 from ttkbootstrap.localization import MessageCatalog
 from ttkbootstrap.style._compat import warn_deprecated
@@ -2092,7 +2092,7 @@ class Tableview(ttk.Frame):
     def autofit_columns(self):
         """Autofit all columns in the current view"""
         f = font.nametofont("TkDefaultFont")
-        pad = utility.scale_size(self, 20)
+        pad = utils.scale_size(self, 20)
         col_widths = []
 
         # measure header sizes
@@ -2312,8 +2312,8 @@ class Tableview(ttk.Frame):
         from PIL import Image, ImageTk
         from ttkbootstrap.style.icons import IconRenderer
 
-        size = utility.scale_size(self, 14)
-        gap = utility.scale_size(self, 6)
+        size = utils.scale_size(self, 14)
+        gap = utils.scale_size(self, 6)
         glyph = IconRenderer.render(name, size, fg)  # physical-pixel PIL RGBA
         canvas = Image.new("RGBA", (glyph.width + gap, glyph.height), (0, 0, 0, 0))
         canvas.paste(glyph, (gap, 0))  # pad on the leading side (text | gap | glyph)
@@ -2493,7 +2493,7 @@ class Tableview(ttk.Frame):
         an oversized bar. Bounding it in a fixed, DPI-scaled height frame keeps
         the divider inset and lets the (shorter) controls set the bar height.
         """
-        height, width = utility.scale_size(self, [20, 1])
+        height, width = utils.scale_size(self, [20, 1])
         box = ttk.Frame(parent, height=height, width=width)
         box.pack_propagate(False)
         box.pack(side=RIGHT, padx=10)
@@ -2507,7 +2507,7 @@ class Tableview(ttk.Frame):
         self.view.bind("<Button-1>", self._header_leftclick)
 
         if not self.disable_right_click:
-            if utility.windowing_system(self) == "aqua":
+            if utils.windowing_system(self) == "aqua":
                 sequence = "<Button-2>"
             else:
                 sequence = "<Button-3>"
