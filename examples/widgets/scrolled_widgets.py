@@ -4,12 +4,11 @@ from ttkbootstrap.widgets.scrolled import ScrolledText
 
 app = ttk.Window()
 
-st = ScrolledText(app, padding=5, height=10, hbar=True, autohide=True)
-st.text.configure(padx=15, pady=15)
+st = ScrolledText(app, padding=5, height=10, autohide=True)
+st.text.configure(padx=8, pady=8)
 st.pack(fill=BOTH, expand=YES)
 st.insert(END, 'Insert your text here.')
 # st.text.configure(state=DISABLED)
-st.vbar.configure(bootstyle=ROUND)
 
 app.mainloop()
 

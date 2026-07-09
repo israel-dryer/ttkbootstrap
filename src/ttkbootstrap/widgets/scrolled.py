@@ -44,6 +44,11 @@ from ttkbootstrap.constants import *
 from ttkbootstrap.internal.configure_delegation import ConfigureDelegationMixin
 from ttkbootstrap.style._compat import normalize_scrolled_kwargs, warn_deprecated
 
+# Small pad at both long-axis ends of a scrollbar so it isn't flush against the
+# container edge -- applied on both ends because either can sit at the border
+# (e.g. the vbar's bottom when there is no hbar to inset it).
+_SCROLLBAR_END_PAD = 1
+
 
 class ScrolledText(ConfigureDelegationMixin, ttk.Frame):
     """A text widget with optional vertical and horizontal scrollbars.
@@ -123,13 +128,25 @@ class ScrolledText(ConfigureDelegationMixin, ttk.Frame):
 
         super().__init__(master, padding=padding)
 
-        # a grid layout keeps the text + bars aligned with a stable gutter,
-        # which removes the old place()/relwidth math (and its hbar-without-vbar
+        # The border is owned by an inner "card" frame, so the text and the
+        # scrollbar sit inside a single bordered box (the inner Text is kept
+        # borderless -- see StyleBuilderTK.update_text_style) rather than the
+        # scrollbar hanging outside the text's own edge. A grid inside it keeps
+        # the text + bars aligned in fixed gutters (reserved below), which
+        # removes the old place()/relwidth math (and its hbar-without-vbar
         # AttributeError).
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(0, weight=1)
+        # widget-level padding insets the text + scrollbars off the frame edge
+        # so they don't paint over the border (a ttk frame reserves space from
+        # its widget padding, not the style's borderwidth) -- 1px border + a
+        # hair of breathing room.
+        self._border: ttk.Frame = ttk.Frame(self, bootstyle="highlight", padding=2)
+        self._border.pack(fill=BOTH, expand=YES)
+        self._border.grid_rowconfigure(0, weight=1)
+        self._border.grid_columnconfigure(0, weight=1)
 
-        self._text: ttk.Text = ttk.Text(self, padx=50, **kwargs)
+        self._text: ttk.Text = ttk.Text(self._border, **kwargs)
+        # the container owns the border; keep the text itself edgeless
+        self._text.configure(highlightthickness=0, borderwidth=0, relief=FLAT)
         self._hbar: Optional[ttk.Scrollbar] = None
         self._vbar: Optional[ttk.Scrollbar] = None
         self._auto_hide = auto_hide
@@ -138,27 +155,53 @@ class ScrolledText(ConfigureDelegationMixin, ttk.Frame):
 
         if vbar:
             self._vbar = ttk.Scrollbar(
-                master=self,
+                master=self._border,
                 bootstyle=bootstyle,
                 command=self._text.yview,
                 orient=VERTICAL,
             )
-            self._vbar.grid(row=0, column=1, sticky=NS)
+            self._vbar.grid(row=0, column=1, sticky=NS, pady=_SCROLLBAR_END_PAD)
             self._text.configure(yscrollcommand=self._vbar.set)
 
         if hbar:
             self._hbar = ttk.Scrollbar(
-                master=self,
+                master=self._border,
                 bootstyle=bootstyle,
                 command=self._text.xview,
                 orient=HORIZONTAL,
             )
-            self._hbar.grid(row=1, column=0, sticky=EW)
+            self._hbar.grid(row=1, column=0, sticky=EW, padx=_SCROLLBAR_END_PAD)
             self._text.configure(xscrollcommand=self._hbar.set, wrap="none")
+
+        # Reserve each scrollbar's lane so auto-hide (grid_remove/grid on hover)
+        # neither grows the window nor reflows the text: the bar fades in a
+        # fixed-width gutter instead of adding/removing space on every crossing.
+        # winfo_reqwidth/height is the styled bar's size and is valid pre-map.
+        if self._vbar is not None:
+            self._border.grid_columnconfigure(
+                1, minsize=self._vbar.winfo_reqwidth()
+            )
+        if self._hbar is not None:
+            self._border.grid_rowconfigure(
+                1, minsize=self._hbar.winfo_reqheight()
+            )
+
+        # highlight the border while the text has focus (like a focused input)
+        self._text.bind("<FocusIn>", self._on_focus_in, add="+")
+        self._text.bind("<FocusOut>", self._on_focus_out, add="+")
 
         if self._auto_hide:
             self._enable_auto_hide()
             self.hide_scrollbars()
+
+    # -- focus-tracked border ------------------------------------------------ #
+    def _on_focus_in(self, event: Any = None) -> None:
+        """Put the border frame in the `focus` state so its map draws the ring."""
+        self._border.state(["focus"])
+
+    def _on_focus_out(self, event: Any = None) -> None:
+        """Drop the `focus` state so the border returns to its resting color."""
+        self._border.state(["!focus"])
 
     # -- configure/cget delegation ------------------------------------------- #
     def _configure_delegate_target(self):
@@ -215,13 +258,37 @@ class ScrolledText(ConfigureDelegationMixin, ttk.Frame):
             self._hbar.grid()
 
     def _enable_auto_hide(self) -> None:
-        self.bind("<Enter>", self.show_scrollbars)
-        self.bind("<Leave>", self.hide_scrollbars)
+        # add="+" so a user's own enter/leave handlers survive; keep the funcids
+        # to unbind precisely when auto-hide is turned back off.
+        self._autohide_funcids = {
+            "<Enter>": self.bind("<Enter>", self.show_scrollbars, add="+"),
+            "<Leave>": self.bind("<Leave>", self._auto_hide_scrollbars, add="+"),
+        }
 
     def _disable_auto_hide(self) -> None:
-        self.unbind("<Enter>")
-        self.unbind("<Leave>")
+        for seq, funcid in getattr(self, "_autohide_funcids", {}).items():
+            try:
+                self.unbind(seq, funcid)
+            except tkinter.TclError:
+                pass
+        self._autohide_funcids = {}
         self.show_scrollbars()
+
+    def _auto_hide_scrollbars(self, event: Any = None) -> None:
+        """Hide only once the pointer has truly left the widget.
+
+        A bare ``<Leave>`` on the frame also fires when the pointer crosses onto
+        a child -- the text or the scrollbar itself -- so hiding on it makes the
+        bar flicker on and off (and jump, as the gutter reflows) whenever the
+        pointer nears it. Ignore those inferior crossings: only hide when the
+        pointer is no longer over any part of this widget.
+        """
+        w = self.winfo_containing(*self.winfo_pointerxy())
+        while w is not None:
+            if w is self:
+                return
+            w = getattr(w, "master", None)
+        self.hide_scrollbars()
 
     def autohide_scrollbar(self, *args: Any) -> None:
         """Toggle the auto-hide behavior.

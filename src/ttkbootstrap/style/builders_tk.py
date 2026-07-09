@@ -312,29 +312,24 @@ class StyleBuilderTK:
     def update_text_style(self, widget: tk.Text):
         """Update the text style.
 
+        Only the colors are themed; the border/relief is intentionally left at
+        tk's default so a surrounding container can own it -- `ScrolledText`
+        draws a single card border and keeps the inner `Text` borderless. A
+        standalone `Text` keeps its native border; set `highlightthickness` /
+        `highlightbackground` yourself for a themed one.
+
         Parameters:
 
             widget (tkinter.Text):
                 The text object to update.
         """
-        bordercolor = self.colors.border
-
-        focuscolor = widget.cget("highlightbackground")
-
-        if focuscolor in ["SystemButtonFace", bordercolor]:
-            focuscolor = bordercolor
-
         widget.configure(
             background=self.colors.inputbg,
             foreground=self.colors.inputfg,
-            highlightcolor=focuscolor,
-            highlightbackground=bordercolor,
             insertbackground=self.colors.inputfg,
             selectbackground=self.colors.selectbg,
             selectforeground=self.colors.selectfg,
             insertwidth=self.style.scaling.logical(1),
-            highlightthickness=self.style.scaling.logical(1),
-            relief="flat",
             padx=self.style.scaling.logical(5),
-            pady=self.style.scaling.logical(5)
+            pady=self.style.scaling.logical(5),
         )
