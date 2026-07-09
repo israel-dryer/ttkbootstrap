@@ -29,3 +29,69 @@ def build_frame_style(builder: StyleBuilderTTK, colorname=DEFAULT):
 
     # register style
     builder.register_ttkstyle(ttk_style)
+
+
+@register_builder("card", "frame")
+def build_card_frame(builder: StyleBuilderTTK, colorname=DEFAULT):
+    """A simple inert bordered surface (a "card").
+
+    A container that owns a single flat 1px border so its contents sit inside
+    one frame. `relief=SOLID` draws the border in `bordercolor`. Give the frame
+    a little widget `padding` so its children don't paint over the border (ttk
+    frames inset from the widget's padding, not the style's).
+    """
+    ttk_class = "Card.TFrame"
+    if any([colorname == DEFAULT, colorname == ""]):
+        ttk_style = ttk_class
+        background = builder.colors.bg
+        border = builder.border(background)
+    else:
+        ttk_style = f"{colorname}.{ttk_class}"
+        surface = builder.colors.get(colorname)
+        background = builder.mute(builder.colors.fg, surface, 0.16)
+        border = builder.border(background)
+
+    builder.configure(
+        ttk_style,
+        background=background,
+        bordercolor=border,
+        relief=SOLID,
+        borderwidth=builder.scale_size(1),
+    )
+
+    # register style
+    builder.register_ttkstyle(ttk_style)
+
+
+@register_builder("highlight", "frame")
+def build_highlight_frame(builder: StyleBuilderTTK, colorname=DEFAULT):
+    """A `card` whose border tracks widget state -- a focus ring.
+
+    Identical to `card` at rest, but the border is state-mapped so it brightens
+    to the accent while the frame is in the `focus` state. Apply it once and
+    toggle the frame's state (`frame.state(["focus"])`) to drive the ring; no
+    style swap needed.
+    """
+    ttk_class = "Highlight.TFrame"
+    if any([colorname == DEFAULT, colorname == ""]):
+        ttk_style = ttk_class
+        background = builder.colors.bg
+        accent = builder.colors.primary
+    else:
+        ttk_style = f"{colorname}.{ttk_class}"
+        surface = builder.colors.get(colorname)
+        background = builder.mute(builder.colors.fg, surface, 0.16)
+        accent = builder.colors.get(colorname)
+
+    resting = builder.border(background)
+    builder.configure(
+        ttk_style,
+        background=background,
+        bordercolor=resting,
+        relief=SOLID,
+        borderwidth=builder.scale_size(1),
+    )
+    builder.style.map(ttk_style, bordercolor=[("focus", accent)])
+
+    # register style
+    builder.register_ttkstyle(ttk_style)

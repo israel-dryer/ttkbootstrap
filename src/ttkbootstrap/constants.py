@@ -128,11 +128,12 @@ NEUTRAL_FAMILIES: Final = ("button", "menubutton", "toolbutton")
 BOOTSTYLE_MODIFIERS: Final = (
     "outline", "link", "ghost", "inverse", "round", "square", "striped", "thin",
 )
-# Internal-only composite modifiers used by Meter/DateEntry/Tableview to build
-# their sub-styles. Valid grammar tokens, but undocumented and not in any public
-# Literal -- end users never type these.
+# Internal-only composite modifiers used by Meter/DateEntry/Tableview/Scrolled to
+# build their sub-styles. Valid grammar tokens, but undocumented and not in any
+# public Literal -- end users never type these. `card`/`highlight` are the bordered
+# and focus-accent frame variants ScrolledText uses to own its border.
 BOOTSTYLE_INTERNAL_MODIFIERS: Final = (
-    "meter", "metersubtxt", "date", "table",
+    "meter", "metersubtxt", "date", "table", "card", "highlight",
 )
 # User-nameable base-types -- matches BootBase.
 BOOTSTYLE_BASES: Final = ("toggle", "toolbutton")

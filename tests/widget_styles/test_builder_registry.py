@@ -27,6 +27,8 @@ EXPECTED_KEYS = {
     ("default", "entry"),
     ("default", "floodgauge"),
     ("default", "frame"),
+    ("card", "frame"),
+    ("highlight", "frame"),
     ("default", "label"),
     ("default", "labelframe"),
     ("default", "menubutton"),

@@ -31,6 +31,10 @@
 | **LabeledScale + ToolTip: DoubleVar, lifecycle, `configure`/`cget`** | Breaking/additive | this doc, below (PR 6) |
 | **ToastNotification: glyph icon, stack manager, keyword-only** | Breaking/additive | this doc, below (PR 7) |
 | **Borderless popups get native macOS chrome (no titlebar)** | Visual | this doc, below |
+| **`card` / `highlight` frame variants** | New | this doc, below |
+| **`Text` border left to tk default (not themed)** | Visual | this doc, below |
+| **ScrolledText: card border, focus ring, auto-hide fixes** | Visual | this doc, below |
+| **Scrollbar: no trough channel, darker light-mode thumb** | Visual | this doc, below |
 
 ---
 
@@ -772,3 +776,63 @@ trip) and, living in Tk's `unsupported` namespace, is wrapped in `try/except` an
 falls back to the previous default chrome when unavailable. Windows/Linux behavior
 is unchanged (`window_type` still resolves to `-type` on X11). Mechanism ported
 from bootstack (`_runtime/toplevel.py`); no API change. No effect off macOS.
+
+## `card` / `highlight` frame variants  *(New)*
+
+**What.** Two new frame style variants (internal `bootstyle` modifiers, so they
+route through the resolver but are not advertised in the public reference):
+`card` — a simple inert 1px-bordered surface — and `highlight` — the same border
+but state-mapped so it brightens to the accent while the frame is in the `focus`
+state (a focus ring). Apply `highlight` once and toggle `frame.state(["focus"])`.
+
+**Why.** Composite widgets need a container that owns a single border so their
+contents sit inside one frame instead of each child drawing its own edge, and a
+focus-tracked version so the whole box can light up when its content is focused.
+ScrolledText is the first consumer. Border drawn with `relief=SOLID` +
+`bordercolor` (bootstack's card idiom); a ttk frame reserves inset space from its
+*widget* `padding`, not the style's, so consumers give the frame a little padding
+so children don't paint over the border.
+
+## `Text` border left to the tk default  *(Visual)*
+
+**What.** `StyleBuilderTK.update_text_style` no longer imposes a border on `tk.Text`
+(the `highlightthickness`/`highlightbackground`/`highlightcolor`/`relief` settings
+were removed); only the colors + `insertwidth`/`padx`/`pady` are themed. A standalone
+`Text` now shows tk's native border; set `highlightthickness`/`highlightbackground`
+yourself for a themed one.
+
+**Why.** So a surrounding container can own the border (see ScrolledText below).
+Leaving the border to the tk default also means a one-off per-widget override is no
+longer stomped by the theme walk re-imposing a border on every theme switch.
+
+## ScrolledText: card border, focus ring, auto-hide fixes  *(Visual)*
+
+**What.** The text and scrollbars now sit inside a single bordered `highlight`
+"card" frame (the inner `Text` is kept borderless), instead of the scrollbar
+sitting in a gutter outside the text's own edge. The border tracks focus (accent
+ring while the text is focused, via the child's focus forwarded to the container
+with `state(["focus"])`). Auto-hide was also fixed: it no longer flickers (a
+`winfo_containing` guard ignores the inferior `<Leave>` crossings onto the text /
+scrollbar) and no longer grows the window on hover (each scrollbar's lane is
+reserved with a fixed `minsize`, so showing/hiding the bar neither resizes the
+frame nor reflows the text). Scrollbars get a 1px pad at both long-axis ends so
+they don't touch the container edge.
+
+**Why.** In 1.x the scrollbar floated *inside* the text's border via `place()`; the
+2.0 grid rewrite moved it to a gutter outside the border, and auto-hide toggled the
+scrollbar's own grid column (flicker + window growth). Owning the border on the
+container restores the "scrollbar inside the frame" look while keeping the grid
+robustness. No public API change.
+
+## Scrollbar: no trough channel, darker light-mode thumb  *(Visual)*
+
+**What.** The default/round scrollbar trough is again the surface color (no visible
+channel around the thumb), and the neutral thumb reads darker in light themes
+(`shade(border, 0.25)` instead of the pale `border`), so it is clearly visible
+against the near-white trough. The `thin` variant shares the same thumb color.
+The unused `scrollbar_thumb` recolor asset (`scrollbar-thumb.png` + its manifest
+entry) was removed — the thumb is drawn procedurally, so the asset was dead.
+
+**Why.** The faint `border`-colored thumb on a barely-off-white trough was hard to
+see in light mode; dropping the trough tint and darkening the thumb fixes the
+contrast without changing the bar's size.

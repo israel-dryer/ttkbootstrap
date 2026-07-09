@@ -16,20 +16,22 @@ _SCROLLBAR_THICKNESS = 8
 
 
 def _scrollbar_trough(builder):
-    """A subtle, visible track color for the scrollbar trough.
-
-    2.0 originally left the trough = surface (invisible), so the thumb floated
-    with no track. This gives it a faint recessed channel -- a touch off the
-    surface in either mode -- so the bar reads as a real scrollbar (the 1.0 look).
-    """
-    bg = builder.colors.bg
-    return builder.shade(bg, 0.05) if builder.is_light_theme else builder.tint(bg, 0.05)
+    """The scrollbar track color: the surface, so the thumb floats with no
+    visible channel around it."""
+    return builder.colors.bg
 
 
 def _scrollbar_thumb_color(builder, colorname):
-    """The default (neutral) thumb color, or the accent when a color is given."""
+    """The default (neutral) thumb color, or the accent when a color is given.
+
+    In light mode the raw border color is too pale to read against the near-white
+    trough, so darken it to a clearly visible mid-gray; dark mode's `selectbg`
+    already reads against the dark trough.
+    """
     if colorname in (DEFAULT, ""):
-        return builder.colors.border if builder.is_light_theme else builder.colors.selectbg
+        if builder.is_light_theme:
+            return builder.shade(builder.colors.border, 0.25)
+        return builder.colors.selectbg
     return builder.colors.get(colorname)
 
 
@@ -134,10 +136,10 @@ def build_thin_scrollbar_style(builder: StyleBuilderTTK, colorname=DEFAULT):
 
     A few-pixel flat thumb on a surface-matched track, no arrows -- for narrow
     lists and dropdowns where the bar is more a scroll *indicator* than a drag
-    handle (combobox popdown, font picker, ...). The thumb is neutral (the
-    surface border color) by default, or the accent when a color is given, and
-    darkens/lightens on hover/press. Ported from bootstack (mechanism, not API):
-    a solid box thumb via the `rect` toolkit rather than a rounded PNG.
+    handle (combobox popdown, font picker, ...). The thumb shares the neutral/
+    accent color of the standard bar (`_scrollbar_thumb_color`) and darkens/
+    lightens on hover/press. Ported from bootstack (mechanism, not API): a solid
+    box thumb via the `rect` toolkit rather than a rounded PNG.
 
     Parameters:
 
@@ -152,11 +154,11 @@ def build_thin_scrollbar_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     if any([colorname == DEFAULT, colorname == ""]):
         h_ttk_style = f"Thin.Horizontal.{ttk_class}"
         v_ttk_style = f"Thin.Vertical.{ttk_class}"
-        thumb = builder.border(surface)  # neutral by default
     else:
         h_ttk_style = f"{colorname}.Thin.Horizontal.{ttk_class}"
         v_ttk_style = f"{colorname}.Thin.Vertical.{ttk_class}"
-        thumb = builder.colors.get(colorname)
+    # share the darker, clearly-visible thumb color with the default/round bars
+    thumb = _scrollbar_thumb_color(builder, colorname)
 
     active = builder.active(thumb)
     pressed = builder.pressed(thumb)

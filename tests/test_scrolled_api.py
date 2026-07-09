@@ -189,6 +189,70 @@ def test_scrolledtext_autohide_scrollbar_toggles(root):
     st.autohide_scrollbar()
     assert st.auto_hide is True
 
+def test_scrolledtext_border_is_owned_by_a_highlight_card(root):
+    # The text + scrollbar sit inside one bordered "card" frame; the inner Text
+    # is kept borderless so there is no double edge and the scrollbar is inside.
+    st = ScrolledText(root, height=5)
+    st.pack()
+    st.update_idletasks()
+    assert st._border.cget("style") == "Highlight.TFrame"
+    assert int(st._text.cget("highlightthickness")) == 0
+    assert int(st._text.cget("borderwidth")) == 0
+    assert str(st._text.cget("relief")) == "flat"
+    # the scrollbar is a child of the bordered frame (inside the border), not a
+    # sibling of the text hanging outside it
+    assert st._vbar.winfo_parent() == str(st._border)
+
+
+def test_scrolledtext_autohide_does_not_resize_the_frame(root):
+    # Regression: the scrollbar had its own grid column, so showing it on hover
+    # grew the frame's requested width (and the auto-sizing window with it), then
+    # hiding shrank it -- a jitter on every crossing. Its lane is now reserved,
+    # so the requested size is stable across hide/show.
+    st = ScrolledText(root, height=6, width=40, hbar=True, autohide=True)
+    st.pack(fill="both", expand=True)
+    st.update_idletasks()
+    st.show_scrollbars()
+    st.update_idletasks()
+    w_shown, h_shown = st._border.winfo_reqwidth(), st._border.winfo_reqheight()
+    st.hide_scrollbars()
+    st.update_idletasks()
+    assert st._border.winfo_reqwidth() == w_shown
+    assert st._border.winfo_reqheight() == h_shown
+
+
+def test_scrolledtext_focus_drives_the_border_state(root):
+    # The border ring is a ttk state map on the highlight frame; focus toggles
+    # the frame's `focus` state rather than swapping the style name.
+    st = ScrolledText(root, height=5)
+    st.pack()
+    st.update_idletasks()
+    assert "focus" not in st._border.state()
+    st._on_focus_in()
+    assert "focus" in st._border.state()
+    st._on_focus_out()
+    assert "focus" not in st._border.state()
+
+
+def test_highlight_frame_border_maps_to_accent_on_focus(root):
+    # card = inert border; highlight = same resting border with a focus map to
+    # the accent (the focus ring).
+    st = ScrolledText(root, height=5)
+    st.pack()
+    # a plain card frame forces the (lazily built) Card.TFrame style to exist
+    card = ttk.Frame(root, bootstyle="card")
+    card.pack()
+    root.update_idletasks()
+    style = ttk.Style.get_instance()
+    resting = str(style.lookup("Highlight.TFrame", "bordercolor"))
+    focus_map = str(style.map("Highlight.TFrame", "bordercolor"))
+    assert "focus" in focus_map
+    assert str(style.colors.primary) in focus_map
+    # the card variant is inert: the same resting border, no focus map
+    assert not style.map("Card.TFrame", "bordercolor")
+    assert str(style.lookup("Card.TFrame", "bordercolor")) == resting
+
+
 def test_scrolledframe_vscroll_is_deprecated_alias_of_vbar(root):
     """`vbar` is canonical; the old `vscroll` still resolves but warns."""
     import warnings
