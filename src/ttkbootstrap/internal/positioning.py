@@ -60,19 +60,28 @@ def center_on_screen(window: tkinter.Misc) -> Tuple[int, int]:
 
     With ``screeninfo`` installed, centers on the monitor under the mouse
     cursor (the display the user is most likely looking at); otherwise centers
-    on Tk's single reported screen. Call ``update_idletasks()`` first for an
-    accurate size — this method does so as well.
+    on Tk's single reported screen. The result is clamped so the window stays
+    fully within that monitor — on a multi-monitor layout the target display can
+    have a negative origin (e.g. a screen to the left of the primary), and a
+    window larger than the monitor is pinned to its top-left rather than
+    overflowing. Call ``update_idletasks()`` first for an accurate size — this
+    method does so as well.
     """
     window.update_idletasks()
     w_width, w_height = _window_size(window)
     monitor = _monitor_at_point(window.winfo_pointerx(), window.winfo_pointery())
     if monitor:
         mx, my, mw, mh = monitor
-        x = mx + (mw - w_width) // 2
-        y = my + (mh - w_height) // 2
     else:
-        x = (window.winfo_screenwidth() - w_width) // 2
-        y = (window.winfo_screenheight() - w_height) // 2
+        mx, my = 0, 0
+        mw, mh = window.winfo_screenwidth(), window.winfo_screenheight()
+    x = mx + (mw - w_width) // 2
+    y = my + (mh - w_height) // 2
+    # Keep the window inside the monitor: never let a large window overflow past
+    # the monitor's own origin (which may itself be negative on a secondary
+    # display), and never off its far edge.
+    x = max(mx, min(x, mx + mw - w_width))
+    y = max(my, min(y, my + mh - w_height))
     return int(x), int(y)
 
 

@@ -97,10 +97,24 @@ def test_apply_geometry_nothing_is_a_noop():
 # --------------------------------------------------------------------------
 
 def test_center_on_screen_is_within_bounds(root):
+    # The window must land fully inside its target monitor. On a multi-monitor
+    # layout that monitor can have a negative origin (a display left of/above the
+    # primary), so asserting `x >= 0` is wrong — resolve the same monitor the
+    # function centers on and assert against its bounds.
     x, y = positioning.center_on_screen(root)
-    assert x >= 0 and y >= 0
-    assert x <= root.winfo_screenwidth()
-    assert y <= root.winfo_screenheight()
+    w_width, w_height = positioning._window_size(root)
+    monitor = positioning._monitor_at_point(
+        root.winfo_pointerx(), root.winfo_pointery()
+    )
+    if monitor:
+        mx, my, mw, mh = monitor
+    else:
+        mx, my = 0, 0
+        mw, mh = root.winfo_screenwidth(), root.winfo_screenheight()
+    # `max(0, ...)` keeps the bound valid even if the window is larger than the
+    # monitor, in which case the function pins it to the monitor's top-left.
+    assert mx <= x <= mx + max(0, mw - w_width)
+    assert my <= y <= my + max(0, mh - w_height)
 
 
 def test_center_on_parent_offsets_from_parent_origin(root):
