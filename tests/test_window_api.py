@@ -243,3 +243,33 @@ def test_apply_mac_window_style_ignores_unknown_type(root):
     top.winsys = "aqua"
     assert _capture_mac_style(top, "dialog") == []
     top.destroy()
+
+
+# --------------------------------------------------------------------------
+# packaged app icon (built by tools/make_app_ico.py)
+# --------------------------------------------------------------------------
+
+def test_app_ico_is_packed_with_expected_sizes():
+    """The committed .ico must exist and carry every advertised size, so a stale
+    or un-regenerated asset is caught rather than shipping a broken icon."""
+    from PIL import Image
+    from ttkbootstrap.window import _APP_ICON_ICO
+
+    assert _APP_ICON_ICO.is_file(), "run tools/make_app_ico.py to build the .ico"
+    with Image.open(_APP_ICON_ICO) as im:
+        packed = {s[0] for s in im.ico.sizes()}
+    assert {16, 24, 32, 48, 64, 128, 256} <= packed
+
+
+def test_default_icon_falls_back_when_asset_missing(root, monkeypatch):
+    """If the packaged icon files are missing, the default brand icon still
+    applies via the embedded base64 fallback (icon is always set)."""
+    import ttkbootstrap.window as win
+    from pathlib import Path
+
+    monkeypatch.setattr(win, "_APP_ICON_ICO", Path("does-not-exist.ico"))
+    monkeypatch.setattr(win, "_APP_ICON_PNG", Path("does-not-exist.png"))
+    top = ttk.Toplevel(title="fallback")
+    top._apply_default_icon(win._DEFAULT_ICON_DATA)
+    assert top._icon is not None  # base64 fallback produced a PhotoImage
+    top.destroy()
