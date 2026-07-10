@@ -16,9 +16,12 @@ from ttkbootstrap.constants import (
     BOOTSTYLE_INTERNAL_MODIFIERS,
     BOOTSTYLE_FAMILIES,
     BOOTSTYLE_ORIENTS,
+    BOOTSTYLE_SURFACE_TOKENS,
+    DEFAULT_SURFACE,
     NEUTRAL,
     NEUTRAL_FAMILIES,
     BootStyle,
+    surface_segment,
 )
 from ttkbootstrap.style import _compat
 from ttkbootstrap.style.engine import Style
@@ -89,21 +92,71 @@ _SUGGESTION_POOL = tuple(
 _SENTINELS = frozenset({"", "default"})
 _TOKEN_SPLIT = re.compile(r"[-\s]+")
 
+# Surface vocabulary (2.0 surface-color). A surface is a named neutral surface OR
+# an accent color; it rides INSIDE the bootstyle string as an `@<surface>` token
+# (e.g. "@primary success ghost") and, when non-default, prefixes the style name
+# with an `@<surface>.` segment. `_SURFACE_FAMILIES` gates which families a recipe
+# consumes surface for yet -- it grows one PR at a time as families are migrated;
+# a surface for any other family is silently ignored (frames are intentionally
+# never in it -- they are surface producers, not consumers). The token vocab lives
+# once in constants (`BOOTSTYLE_SURFACE_TOKENS`).
+_SURFACE_TOKENS = frozenset(BOOTSTYLE_SURFACE_TOKENS)
+_SURFACE_FAMILIES = frozenset({"button"})
+
+
+def _normalize_surface(surface, family, source, warn):
+    """Normalize/validate a surface token to a canonical token or ``""``.
+
+    Lowercases and trims; maps the default/empty surface to ``""`` (no prefix).
+    An unrecognized token routes through the shared `_compat` strictness gate
+    (warn-and-drop by default, raise in strict) exactly like an unknown bootstyle
+    token -- but `warn` is False for the lenient already-built-style-name dialect,
+    so a custom ``@brand.TLabel`` style name never warns/raises on the theme walk.
+    A valid token for a family not yet surface-capable is dropped silently (the
+    rollout gate). Returns the token to embed in the style name, or ``""``.
+    """
+    if not surface:
+        return ""
+    surface = str(surface).strip().lower()
+    if not surface or surface == DEFAULT_SURFACE:
+        return ""
+    if surface not in _SURFACE_TOKENS:
+        if warn:
+            suggestions = difflib.get_close_matches(
+                surface, sorted(_SURFACE_TOKENS), n=1
+            )
+            _compat.report_invalid("surface", surface, source, suggestions)
+        return ""
+    if family not in _SURFACE_FAMILIES:
+        return ""
+    return surface
+
 
 def _classify_tokens(style_string, *, source=None, warn=False):
     """Split a bootstyle string and classify each token into a slot.
 
-    Returns ``(color, modifier, base, orient)`` -- the first token seen for each
-    slot (matching the pre-2.0 leftmost-wins behavior). When ``warn`` is true,
-    an unrecognized token and a duplicate-slot token are reported through the
-    `_compat` loud-failure path (warn by default, raise in strict mode).
+    Returns ``(color, modifier, base, orient, surface)`` -- the first token seen
+    for each slot (matching the pre-2.0 leftmost-wins behavior). A ``@<surface>``
+    token (2.0 surface-color) names the background the widget sits on; it is
+    position-free and may appear anywhere in the string
+    (``"@primary success ghost"``). When ``warn`` is true, an unrecognized token
+    and a duplicate-slot token are reported through the `_compat` loud-failure
+    path (warn by default, raise in strict mode). The surface token is only
+    *extracted* here; it is validated by `_normalize_surface`.
     """
     source = style_string if source is None else source
-    color = modifier = base = orient = ""
+    color = modifier = base = orient = surface = ""
     for token in _TOKEN_SPLIT.split(style_string.strip().lower()):
         if token in _SENTINELS:
             continue
-        if token in _COLORS:
+        if token.startswith("@"):
+            surf = token[1:]
+            if not surf:
+                continue  # a bare '@' carries no surface
+            if warn and surface and surf != surface:
+                _compat.report_invalid("surface", surf, source)
+            surface = surface or surf
+        elif token in _COLORS:
             if warn and color and token != color:
                 _compat.report_invalid("color", token, source)
             color = color or token
@@ -122,7 +175,7 @@ def _classify_tokens(style_string, *, source=None, warn=False):
                 token, _SUGGESTION_POOL, n=1
             )
             _compat.report_invalid("token", token, source, suggestions)
-    return color, modifier, base, orient
+    return color, modifier, base, orient, surface
 
 
 def _looks_like_style_name(style_string):
@@ -134,10 +187,15 @@ def _looks_like_style_name(style_string):
     or space (``"TFrame"``, ``"primary.Outline.TButton"``, ``"symbol.Link.
     TButton"``); a dotted string is always a style name. This lets the theme
     walk re-resolve a widget's dotted ``cget("style")`` (including a bare base
-    like ``"TFrame"``) without misreading it as a mistyped bootstyle.
+    like ``"TFrame"``) without misreading it as a mistyped bootstyle. A
+    leading-``@`` string with no ``.`` is a bootstyle carrying only a surface
+    token (``"@primaryy"``), not a built name -- so it stays on the loud
+    bootstyle path and a typo'd surface is reported.
     """
     if "." in style_string:
         return True
+    if style_string.startswith("@"):
+        return False
     return (
         "-" not in style_string
         and " " not in style_string
@@ -153,18 +211,21 @@ def _classify_style_name(name):
     (``"primary.Outline.TButton"``, ``"symbol.Link.TButton"``). The latter
     arrives from the theme-walk repaint (a widget's current ``cget("style")``),
     from `Style.configure` subclassing a base style, and from user-supplied
-    custom style names. Segments are split on ``.``; the class segment is
+    custom style names. Segments are split on ``.``; a leading ``@surface``
+    segment is the surface-color prefix (2.0 surface-color); the class segment is
     title-cased with an optional ``T`` prefix, so ``TButton`` -> ``button`` but
     ``Treeview``/``Toggle`` map directly. Unknown segments (custom prefixes such
     as ``symbol``) are ignored *without* warning -- style names legitimately
     carry them, unlike a user's bootstyle.
     """
-    color = modifier = base = orient = ""
+    color = modifier = base = orient = surface = ""
     for segment in name.split("."):
         seg = segment.strip().lower()
         if not seg or seg in _SENTINELS:
             continue
-        if seg in _COLORS:
+        if seg.startswith("@"):
+            surface = surface or seg[1:]
+        elif seg in _COLORS:
             color = color or seg
         elif seg in _MODIFIERS:
             modifier = modifier or seg
@@ -175,7 +236,7 @@ def _classify_style_name(name):
         elif seg.startswith("t") and seg[1:] in _FAMILIES:
             base = base or seg[1:]
         # else: an unknown custom segment -- ignore it silently
-    return color, modifier, base, orient
+    return color, modifier, base, orient, surface
 
 
 def _infer_family(widget):
@@ -192,13 +253,17 @@ def _infer_family(widget):
     return ""
 
 
-def _build_ttkstyle_name(color, modifier, orient, family):
+def _build_ttkstyle_name(color, modifier, orient, family, surface=""):
     """Assemble the dotted ttk style name from resolved slot tokens.
 
     Preserves the exact pre-2.0 casing: the color stays lowercase, the modifier
     and orientation are title-cased, and the family is title-cased with a ``T``
-    prefix unless it already starts with ``t`` (``Treeview``, ``Toplevel``).
+    prefix unless it already starts with ``t`` (``Treeview``, ``Toplevel``). A
+    non-default `surface` (2.0 surface-color) prefixes an ``@<surface>.`` segment
+    (lowercase); the default/empty surface adds nothing, so a surfaceless style
+    name is byte-for-byte the pre-surface name.
     """
+    surface = surface_segment(surface)
     color = f"{color}." if color else ""
     modifier = f"{modifier.title()}." if modifier else ""
     orient = f"{orient.title()}." if orient else ""
@@ -206,7 +271,7 @@ def _build_ttkstyle_name(color, modifier, orient, family):
         family = family.title()
     else:
         family = f"T{family.title()}"
-    return f"{color}{modifier}{orient}{family}"
+    return f"{surface}{color}{modifier}{orient}{family}"
 
 
 class Bootstyle:
@@ -244,7 +309,7 @@ class Bootstyle:
         """
         # an explicit base-type token in the string wins; otherwise infer the
         # family from the widget's Tcl class
-        _, _, base, _ = _classify_tokens(string)
+        _, _, base, _, _ = _classify_tokens(string)
         if base:
             return base
         return _infer_family(widget)
@@ -263,7 +328,7 @@ class Bootstyle:
             str:
                 A widget type keyword.
         """
-        _, modifier, _, _ = _classify_tokens(string)
+        _, modifier, _, _, _ = _classify_tokens(string)
         return modifier
 
     @staticmethod
@@ -330,7 +395,7 @@ class Bootstyle:
             str:
                 A color keyword.
         """
-        color, _, _, _ = _classify_tokens(string)
+        color, _, _, _, _ = _classify_tokens(string)
         return color
 
     @staticmethod
@@ -354,37 +419,51 @@ class Bootstyle:
                 A ttk style name
         """
         style_string = _compat.normalize_bootstyle(string)
-        color, modifier, _, orient, family = Bootstyle._parse_components(
-            widget, style_string, warn=False, **kwargs
+        color, modifier, _, orient, family, surface = (
+            Bootstyle._parse_components(
+                widget, style_string, warn=False, **kwargs
+            )
         )
-        return _build_ttkstyle_name(color, modifier, orient, family)
+        return _build_ttkstyle_name(color, modifier, orient, family, surface)
 
     @staticmethod
     def _parse_components(widget, style_string, *, warn, **kwargs):
         """Resolve a bootstyle/style string to ``(color, modifier, base,
-        orient, family)``.
+        orient, family, surface)``.
 
         A dotted input is an already-built ttk style name and is parsed
         leniently (`_classify_style_name`); a dashed/spaced input is a bootstyle
         and goes through the closed-vocab tokenizer, which fails loudly on
         unknown tokens when ``warn`` is set. ``family`` is the explicit base
-        token if present, else inferred from the widget.
+        token if present, else inferred from the widget. ``surface`` (2.0
+        surface-color) is carried in the string itself -- a ``@surface`` token in
+        a bootstyle, or a ``@surface`` segment in an already-built style name (the
+        theme-walk re-resolve). It is normalized/gated against the resolved family
+        (`_normalize_surface`). The already-built-style-name dialect normalizes
+        the surface *leniently* (``surface_warn=False``) so a custom ``@brand``
+        prefix never warns/raises, matching the lenient handling of other unknown
+        style-name segments.
         """
         if _looks_like_style_name(style_string):
-            color, modifier, base, orient = _classify_style_name(style_string)
+            color, modifier, base, orient, surface = (
+                _classify_style_name(style_string)
+            )
+            surface_warn = False
             if not orient:
                 orient = Bootstyle.ttkstyle_widget_orient(
                     widget, "", **kwargs
                 )
         else:
-            color, modifier, base, _ = _classify_tokens(
+            color, modifier, base, _, surface = _classify_tokens(
                 style_string, warn=warn
             )
+            surface_warn = warn
             orient = Bootstyle.ttkstyle_widget_orient(
                 widget, style_string, **kwargs
             )
         family = base or _infer_family(widget)
-        return color, modifier, base, orient, family
+        surface = _normalize_surface(surface, family, style_string, surface_warn)
+        return color, modifier, base, orient, family, surface
 
     @staticmethod
     def ttkstyle_method_name(widget=None, string=""):
@@ -569,6 +648,10 @@ class Bootstyle:
             style_string (str):
                 The style string to evaluate. May be the `style`, `ttkstyle`
                 or `bootstyle` argument depending on the context and scenario.
+                A surface (2.0 surface-color) rides inside it as an `@<surface>`
+                token (bootstyle) or `@<surface>.` segment (built style name);
+                when non-default it prefixes the style name and is threaded to
+                the builder.
 
             **kwargs:
                 Other optional keyword arguments.
@@ -600,8 +683,10 @@ class Bootstyle:
         # for an already-built ttk style name); build the ttk style name from
         # the resolved tokens rather than re-parsing the generated name.
         is_bootstyle = not _looks_like_style_name(style_string)
-        color, modifier, _, orient, family = Bootstyle._parse_components(
-            widget, style_string, warn=True, **kwargs
+        color, modifier, _, orient, family, surface = (
+            Bootstyle._parse_components(
+                widget, style_string, warn=True, **kwargs
+            )
         )
         variant = modifier or DEFAULT_VARIANT
 
@@ -616,12 +701,12 @@ class Bootstyle:
                 _compat.report_invalid("color", f"{NEUTRAL}-{family}", style_string)
             color = ""
 
-        ttkstyle = _build_ttkstyle_name(color, modifier, orient, family)
+        ttkstyle = _build_ttkstyle_name(color, modifier, orient, family, surface)
 
         # build style if not existing (example: theme changed)
         if not style.style_exists_in_theme(ttkstyle):
             builder: StyleBuilderTTK = style._get_builder()
-            if not builder.build_style(variant, family, color):
+            if not builder.build_style(variant, family, color, surface):
                 if family in _FAMILIES and variant != DEFAULT_VARIANT:
                     # An invalid modifier for one of our own widgets
                     # (e.g. "outline-scale"): fail loudly for a bootstyle string,
@@ -631,9 +716,13 @@ class Bootstyle:
                         _compat.report_invalid(
                             "combination", f"{modifier}-{family}", style_string
                         )
-                    ttkstyle = _build_ttkstyle_name(color, "", orient, family)
+                    ttkstyle = _build_ttkstyle_name(
+                        color, "", orient, family, surface
+                    )
                     if not style.style_exists_in_theme(ttkstyle) and (
-                        not builder.build_style(DEFAULT_VARIANT, family, color)
+                        not builder.build_style(
+                            DEFAULT_VARIANT, family, color, surface
+                        )
                     ):
                         return style_string
                 else:
@@ -964,7 +1053,8 @@ class BootMixin(FluentGeometryMixin):
 
             **kwargs:
                 Options to set, including ``bootstyle``, ``style``, ``icon``,
-                and ``icon_size``.
+                and ``icon_size``. A surface (2.0 surface-color) rides in the
+                ``bootstyle``/``style`` string as an ``@<surface>`` token.
         """
         # query a single option
         if cnf in ("bootstyle", "style"):

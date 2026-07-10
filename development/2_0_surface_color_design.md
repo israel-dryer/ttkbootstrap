@@ -9,10 +9,12 @@
 >
 > **Status: CONFIRMED (author sign-off 2026-07-10).** Motivating case + the accept-
 > regular-color-tokens requirement raised while running
-> `gallery/collapsing_frame.py`. All gating forks resolved: surface = separate
-> kwarg (§5.1); minimal named set `background`+`card` (§5.2); auto on-surface
-> foreground (§5.3); sigil `@<surface>` — verified safe (§5.4); manual-only /
-> auto-inheritance deferred to Phase 2 (§5.5); raw-hex hatch deferred (§9.3).
+> `gallery/collapsing_frame.py`. All gating forks resolved: surface = a `@surface`
+> token INSIDE `bootstyle`, no separate param (§5.1, reversed on review); minimal
+> named set `background`+`card` (§5.2); auto on-surface foreground (§5.3); sigil
+> `@<surface>` — verified safe (§5.4); manual-only / auto-inheritance deferred to
+> Phase 2 (§5.5); raw-hex hatch deferred (§9.3). Spaces are the recommended
+> bootstyle separator (`"@primary success ghost"`).
 > Implementation proceeds PR-by-PR per §6. **PR 1 (resolver + `card` token +
 > vocab; additive/no-behavior-change) is MERGED into `2.0` (#1149).** Next: PR 2.
 
@@ -186,9 +188,22 @@ the widgets on it consume it.**
 
 ## 5. Decisions / gating forks
 
-### 5.1 Surface = separate kwarg, not a bootstyle token — **AGREED**
-Folding surface into the bootstyle string would blow open the closed D vocabulary.
-Orthogonal kwarg: `bootstyle="success-toggle", surface="card"`.
+### 5.1 Surface delivery — **REVERSED (2026-07-10): a `@surface` token INSIDE `bootstyle`, no separate param**
+Originally a separate `surface=` kwarg. On review the author reframed it:
+**`bootstyle` is not "the accent param" — it is a compact spelling of the ttk
+style name** (color + variant + type), and the style name already carries the
+`@surface` segment. So surface belongs in the one pathway that spells the style
+name; a second `surface=` channel is redundant and reintroduced a whole class of
+two-axis reconcile bugs (clearing, preserve-across-change, `style=`+`surface=`
+conflicts — all found in review of the param version, all gone with one string).
+The `@` sigil (§5.4) is a *distinct sigil-prefixed token*, so it does **not** blow
+open the closed dash-slot vocabulary — the `BootStyle` `Literal` stays the core
+grammar and `@<surface>` is a documented optional prefix (`bootstyle` already
+accepts `str`). Spelling: `bootstyle="@primary success ghost"`. **Spaces are the
+recommended separator** (the tokenizer always accepted `[-\s]+`; easier to type,
+reads better). Deferred **spaces sweep** (regenerate the dash-joined `BootStyle`
+Literal + reference to spaces, touch up docstrings) happens before the docs
+initiative, not in the surface PRs. See memory `bootstyle-spaces-and-surface-token`.
 
 ### 5.2 How large a named surface family? — **LOCKED: minimal (`background` + `card`)**
 `background` (default) + `card` (one elevate), derived by lightening/darkening bg
@@ -229,15 +244,36 @@ Proposed, PR-by-PR per the 2.0 hard rule:
   expanding the 16-field `Colors` (avoids rippling every constructor). Unknown
   surface routes through the shared `_compat` strictness gate. No behavior change
   (default surface == `colors.bg`; nothing consumes it yet). Suite 581.
-- **PR 2 — style-name segment + kwarg plumbing.** `surface=` on the mixins →
-  resolver; namespaced segment (§4c) emitted only when non-default; round-trip
-  through `_classify_style_name`; theme-walk rebuild (§4d). Tests: name assembly,
-  parse round-trip, default-surface produces today's exact names (no regression).
-- **PR 3 — builder migration.** Point the §3 `colors.bg` sites at the resolved
-  surface, starting with the button family (the motivating case), then
-  check/radio/toggle/frame/label/scale/progressbar/scrollbar. Asset recolor falls
-  out for free. Update `gallery/collapsing_frame.py` as the acceptance proof
-  (ghost/link button on the accent toolbar). Visual spot-check light↔dark.
+**PR split revised (2026-07-10):** reading the code showed the style *name* and
+the surface *color* both live inside each recipe (recipes hand-build their name,
+which the resolver independently recomputes and requires to match — `bootstyle.py`
+`_build_ttkstyle_name` vs `button.py`; the `colors.bg` sites are recipe-local
+too). So the original name-then-color split touched every recipe twice. Split by
+**widget family** instead — each recipe touched once, and each PR is a visible,
+working feature.
+
+- **PR 2 — mechanism + button family.** The full engine + grammar plumbing:
+  a `@surface` token in `bootstyle` (tokenized by `_classify_tokens`, mirroring
+  `_classify_style_name`) → `update_ttk_widget_style` → `@surface` in
+  `_build_ttkstyle_name` (emitted only when non-default; shared `surface_segment`
+  helper so the built name and the looked-up name cannot drift) +
+  `_classify_style_name` round-trip (theme walk, §4d, normalized *leniently* so a
+  custom `@` style name never warns) → `build_style` threads it to the recipe via
+  transient builder state (`_surface`). Surface is case-normalized and validated
+  through the `_compat` gate against one shared vocab (`BOOTSTYLE_SURFACE_TOKENS`);
+  a **family gate** (`_SURFACE_FAMILIES`, initially `{button}`) makes not-yet-
+  migrated families safely ignore surface. The **button family**
+  (solid/outline/link/ghost/neutral-outline) is wired end-to-end — name prefix +
+  `resolve_surface` colors + auto on-surface fg (§4b, `on_surface_fg`: accent
+  surfaces flip to `on_color`, near-bg `card`/`neutral` keep the soft theme fg) —
+  as the `collapsing_frame` acceptance proof. **No `surface=` param** (§5.1). A
+  high-effort `/code-review` on the param version drove the reversal + these fixes.
+- **PR 3 — roll out to remaining consuming families.** Extend the same mechanism
+  (add each to `_SURFACE_FAMILIES`, point their `colors.bg` sites at
+  `resolve_surface`) to check/radio/toggle/scale/progressbar/scrollbar/label; the
+  recolor-glyph asset half falls out for free (§3). Update
+  `gallery/collapsing_frame.py`; visual spot-check light↔dark. Frames stay out
+  (surface *producers*, §4e).
 
 ## 7. Phase 2 (deferred, not this pass)
 
@@ -249,11 +285,12 @@ separately once the manual path is proven.
 
 ## 8. Compat / breaking
 
-Additive: `surface=` defaults to the app background, so **every existing style
-name and appearance is byte-for-byte unchanged** when `surface` is unset. No
+Additive: with no `@surface` token the bootstyle resolves exactly as before, so
+**every existing style name and appearance is byte-for-byte unchanged**. No
 deprecation needed; log a `2_0_breaking_changes.md` entry only if any default
-rendering shifts (it should not). New public surface: the `surface=` kwarg + the
-named-surface tokens (feed the Workstream-H docs / BootStyle reference).
+rendering shifts (it should not). New public surface: the `@<surface>` bootstyle
+token + the named-surface tokens (feed the Workstream-H docs / BootStyle
+reference). The deferred spaces sweep regenerates the reference in space form.
 
 ## 9. Open questions for the author
 
@@ -262,3 +299,21 @@ named-surface tokens (feed the Workstream-H docs / BootStyle reference).
 3. ~~Raw-hex surfaces in PR 1?~~ — **LOCKED: deferred.** PR 1/2/3 ship the theme-
    reactive path only (named `card` + accent tokens); the static hex hatch is a
    later PR.
+
+## 10. Accepted-by-design edges (PR 2 review)
+
+A high-effort `/code-review` on the reworked PR 2 found no structural bugs. Fixed:
+a stray bare `@` no longer warns; a capitalized surface-only typo (`@Primaryy`)
+now loud-fails like any typo; two docstrings trimmed of rationale. **Accepted as
+by-design** (styling is permissive, not paternalistic — memory
+`styling-permissive-not-paternalistic`):
+
+- **Invisible accent-on-accent** (`@primary outline` → fg == bg): the user's
+  choice; no contrast guard.
+- **Redundant identical style**: a solid opaque button on an accent surface forks
+  a distinct `@surface` style that renders the same — an accident of the color
+  scheme; not gated at variant granularity.
+- **Silent gate-drop**: a valid surface on a producer/not-yet-migrated family is
+  dropped silently (surface is "not applicable" there, not a typo). **Deferred to
+  PR 3:** the `_SURFACE_FAMILIES` graceful-degrade net (retry without the prefix if
+  a surfaced style did not build) lands as families are migrated.

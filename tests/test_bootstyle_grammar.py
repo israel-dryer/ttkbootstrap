@@ -64,20 +64,25 @@ def test_reclassification_fixed_the_audit():
 @pytest.mark.parametrize(
     "text, expected",
     [
-        ("primary-outline", ("primary", "outline", "", "")),
-        ("success-round-toggle", ("success", "round", "toggle", "")),
-        ("info-striped", ("info", "striped", "", "")),
-        ("primary", ("primary", "", "", "")),
-        ("outline", ("", "outline", "", "")),
-        ("toolbutton", ("", "", "toolbutton", "")),
-        ("horizontal", ("", "", "", "horizontal")),
-        ("danger-inverse", ("danger", "inverse", "", "")),
+        # (color, modifier, base, orient, surface)
+        ("primary-outline", ("primary", "outline", "", "", "")),
+        ("success-round-toggle", ("success", "round", "toggle", "", "")),
+        ("info-striped", ("info", "striped", "", "", "")),
+        ("primary", ("primary", "", "", "", "")),
+        ("outline", ("", "outline", "", "", "")),
+        ("toolbutton", ("", "", "toolbutton", "", "")),
+        ("horizontal", ("", "", "", "horizontal", "")),
+        ("danger-inverse", ("danger", "inverse", "", "", "")),
         # order-free input still classifies to the same slots
-        ("outline-primary", ("primary", "outline", "", "")),
+        ("outline-primary", ("primary", "outline", "", "", "")),
         # whitespace separator is accepted alongside the dash
-        ("primary outline", ("primary", "outline", "", "")),
+        ("primary outline", ("primary", "outline", "", "", "")),
         # internal composite modifiers are valid tokens
-        ("primary-meter", ("primary", "meter", "", "")),
+        ("primary-meter", ("primary", "meter", "", "", "")),
+        # a @surface token (2.0 surface-color), position-free
+        ("@primary success ghost", ("success", "ghost", "", "", "primary")),
+        ("success ghost @primary", ("success", "ghost", "", "", "primary")),
+        ("@card ghost", ("", "ghost", "", "", "card")),
     ],
 )
 def test_classify_slots(text, expected):
@@ -85,9 +90,9 @@ def test_classify_slots(text, expected):
 
 
 def test_sentinels_classify_to_nothing():
-    assert _classify_tokens("default") == ("", "", "", "")
-    assert _classify_tokens("") == ("", "", "", "")
-    assert _classify_tokens("-primary-") == ("primary", "", "", "")
+    assert _classify_tokens("default") == ("", "", "", "", "")
+    assert _classify_tokens("") == ("", "", "", "", "")
+    assert _classify_tokens("-primary-") == ("primary", "", "", "", "")
 
 
 # --------------------------------------------------------------------------- #
@@ -96,7 +101,7 @@ def test_sentinels_classify_to_nothing():
 def test_unknown_token_is_silent_without_warn_flag():
     with warnings.catch_warnings():
         warnings.simplefilter("error")
-        assert _classify_tokens("primaryy") == ("", "", "", "")
+        assert _classify_tokens("primaryy") == ("", "", "", "", "")
 
 
 def test_unknown_token_warns():
@@ -194,7 +199,7 @@ def test_every_registry_key_roundtrips():
         if variant != DEFAULT_VARIANT:
             tokens.append(variant)
         tokens.append(family)
-        color, modifier, base, _ = _classify_tokens("-".join(tokens))
+        color, modifier, base, _, _ = _classify_tokens("-".join(tokens))
         assert color == "primary"
         assert base == family
         assert (modifier or DEFAULT_VARIANT) == variant

@@ -47,6 +47,10 @@ class StyleBuilderTTK:
 
         self.style: Style = Style.get_instance()
         self.builder_tk = StyleBuilderTK()
+        # transient surface token for the recipe currently building (2.0
+        # surface-color); set/restored by `build_style`, read by surface-aware
+        # recipes via `surface_prefix`/`resolve_surface`.
+        self._surface = ""
 
         if build:
             self.create_theme()
@@ -190,10 +194,9 @@ class StyleBuilderTTK:
                 from ttkbootstrap.style.builders.utils import neutral_fill
                 return neutral_fill(self)
             return self.colors.get(surface)
-        vocab = (*BOOTSTYLE_SURFACES, *BOOTSTYLE_COLORS)
         report_invalid(
             "surface", surface, surface,
-            suggestions=get_close_matches(surface, vocab, n=2),
+            suggestions=get_close_matches(surface, BOOTSTYLE_SURFACE_TOKENS, n=2),
         )
         return self.colors.bg
 
@@ -202,10 +205,17 @@ class StyleBuilderTTK:
         variant: str,
         widget_family: str,
         colorname: str = DEFAULT,
+        surface: str = "",
         *,
         required: bool = False,
     ) -> bool:
-        """Invoke one registered recipe, returning whether its key exists."""
+        """Invoke one registered recipe, returning whether its key exists.
+
+        `surface` (2.0 surface-color) is the background the widget sits on; it is
+        exposed to the recipe as transient state (`self._surface`) for the
+        duration of the build and restored afterward (save/restore, so a recipe
+        that itself builds another style does not clobber it).
+        """
         load_builders()
         recipe = (
             get_builder(variant, widget_family)
@@ -219,8 +229,37 @@ class StyleBuilderTTK:
                     f"{(variant, widget_family)!r}"
                 )
             return False
-        recipe(self, colorname)
+        prev_surface = self._surface
+        self._surface = surface or ""
+        try:
+            recipe(self, colorname)
+        finally:
+            self._surface = prev_surface
         return True
+
+    def surface_prefix(self, name: str) -> str:
+        """Prefix a style name with the active `@<surface>.` segment, if any.
+
+        Recipes build their style name normally (`f"{color}.{ttk_class}"`) and
+        wrap it here. Uses the shared `surface_segment` (constants) that the
+        resolver's `_build_ttkstyle_name` also uses, so the *built* name and the
+        *looked-up* name cannot drift; a default/empty surface adds nothing.
+        """
+        return f"{surface_segment(self._surface)}{name}"
+
+    def on_surface_fg(self) -> str:
+        """Foreground that reads against the active surface (2.0 surface-color).
+
+        A genuine accent surface (primary/success/light/dark/...) needs a
+        contrast flip to `on_color`; the near-background neutral surfaces
+        (`background`/`card`/`neutral`) keep the theme's soft `fg`, so a control
+        on a card does not harden its text vs the same control on the app
+        background. No surface -> the theme `fg`.
+        """
+        surface = self._surface
+        if surface and surface in BOOTSTYLE_COLORS and surface != NEUTRAL:
+            return self.on_color(self.resolve_surface(surface))
+        return self.colors.fg
 
     def register_ttkstyle(self, style_name: str):
         """Mark `style_name` as built so the builder will not recreate it."""
