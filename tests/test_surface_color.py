@@ -51,6 +51,24 @@ def test_unknown_surface_warns_and_falls_back(root):
     assert value == b.colors.bg
 
 
+def test_unknown_surface_raises_in_strict_mode(root):
+    """Strict mode turns the unknown-surface warning into a hard error, matching
+    how the resolver treats an unknown bootstyle token."""
+    from ttkbootstrap.style._compat import (
+        is_bootstyle_strict,
+        set_bootstyle_strict,
+    )
+
+    b = _builder()
+    prior = is_bootstyle_strict()
+    set_bootstyle_strict(True)
+    try:
+        with pytest.raises(ValueError):
+            b.resolve_surface("bogus-surface")
+    finally:
+        set_bootstyle_strict(prior)
+
+
 def test_raw_hex_surface_is_deferred(root):
     """A raw hex is not yet a valid surface -- it warns and falls back."""
     b = _builder()

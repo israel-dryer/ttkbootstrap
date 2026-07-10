@@ -1,9 +1,10 @@
 """Per-theme coordinator for private ttk widget-family style recipes."""
 
-import warnings
+from difflib import get_close_matches
 from tkinter import ttk
 
 from ttkbootstrap.constants import *
+from ttkbootstrap.style._compat import report_invalid
 from ttkbootstrap.style.assets import Assets
 from ttkbootstrap.style.builders import load_builders
 from ttkbootstrap.style.builders.registry import (
@@ -173,8 +174,11 @@ class StyleBuilderTTK:
             container (e.g. an accent toolbar).
 
         Named and accent surfaces are theme-reactive: they re-resolve on a theme
-        switch. An unknown token warns and falls back to the background. Raw-hex
-        surfaces are not yet accepted (deferred).
+        switch. An unknown token routes through the shared strictness gate --
+        warn-and-fall-back-to-background by default, raise under strict mode
+        (`set_bootstyle_strict` / `TTKBOOTSTRAP_STRICT`), matching how the
+        resolver treats an unknown bootstyle token. Raw-hex surfaces are not yet
+        accepted (deferred).
         """
         if not surface or surface == DEFAULT_SURFACE:
             return self.colors.bg
@@ -186,11 +190,10 @@ class StyleBuilderTTK:
                 from ttkbootstrap.style.builders.utils import neutral_fill
                 return neutral_fill(self)
             return self.colors.get(surface)
-        warnings.warn(
-            f"Unknown surface {surface!r}; falling back to the application "
-            f"background. Valid surfaces: {', '.join(BOOTSTYLE_SURFACES)}, an "
-            f"accent color, or 'neutral'.",
-            stacklevel=2,
+        vocab = (*BOOTSTYLE_SURFACES, *BOOTSTYLE_COLORS)
+        report_invalid(
+            "surface", surface, surface,
+            suggestions=get_close_matches(surface, vocab, n=2),
         )
         return self.colors.bg
 
