@@ -181,8 +181,13 @@ class DatePickerDialog:
                 If True (default), block until the dialog is closed; read the
                 selection from :attr:`result` afterward.
         """
-        if position is not None:
-            self._set_window_position(position)
+        # Position while still withdrawn, THEN show, so the popup never flashes
+        # at the window manager's default spot before moving to its real place.
+        # update_idletasks first so the size used for centering/anchoring is the
+        # fully-laid-out one, not a partial measurement.
+        self.root.update_idletasks()
+        self._set_window_position(position)
+        self.root.deiconify()
         self.root.lift()
         self.root.focus_force()
         self._arm_dismiss()
@@ -320,10 +325,10 @@ class DatePickerDialog:
         self._draw_titlebar()
         self._draw_calendar()
 
-        # make toplevel visible
+        # Actualize geometry but stay withdrawn -- show() positions the popup and
+        # then deiconifies it, so it never flashes on screen during construction
+        # (notably with autoshow=False, e.g. Querybox.get_date / DateEntry).
         self.root.update_idletasks()
-        self.root.deiconify()
-        self._set_window_position()
 
     def _draw_calendar(self) -> None:
         self._set_title()
