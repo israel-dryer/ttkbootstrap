@@ -213,14 +213,33 @@ shims, #1141), Slice 5 (deferred-config pending-apply seam + `set_default_button
 #1143), Slice 3 (localization: msgcat `tk.call` fixes + `L()`/`LocaleVar`/
 `set_locale` + `<<LocaleChanged>>`, #1144), and Slice 4 (typography: `ttk.Fonts` +
 `ttk.set_global_family` over the standard Tk named fonts, #1145) are all MERGED into
-`2.0` (born into `utils/`); suite ~552 excl. the two known flakes. **With all slices
-in, the last substantive code work before release is done.** **NEXT (deferred to the
-end, by author decision):** the cumulative **pre-release review** per
-`development/2_0_prerelease_review_plan.md` (Track A agentic `2.0…master` sweep ·
-Track B human visual/cross-platform · Track C migration-contract validation),
-which subsumes the earlier breaking/deprecation-audit item; and **docs Workstream
-H** — nav/IA skeleton + un-break the API `:::` stubs, per
-`development/2_0_docs_design.md` §11.
+`2.0` (born into `utils/`); suite ~552 excl. the two known flakes. **With all
+slices in, the last substantive code work before release was done.**
+
+**The cumulative pre-release review is now COMPLETE** (per
+`development/2_0_prerelease_review_plan.md`; results appended there). **#1146**
+(`53f5b72b`) landed **Track A** (8-subsystem agentic `2.0…master` sweep — found +
+fixed the `bootstyle="neutral"` crash on non-button families), **Track C**
+(migration-contract diff — no silent breaks), and the **RC gates** (green suite —
+root-caused the `TSpinbox.uparrow` bug via an idempotent `Style.element_create`;
+`nl.msg` confirmed an env-only transient; clean-env install smoke; 3.10 parse;
+warning-free import), plus visual-pass fixes (datepicker stale-highlight, dialog
+icon scoping, Querybox/Messagebox) and **two author-sanctioned utilities**
+(utilities, not widgets): **`theme_mode`** light/dark toggle and **`icon_only=True`**.
+The **pyproject version is bumped to 2.0.0.** **Track B** (human visual/
+cross-platform) was then largely run **on macOS**; its aqua fixes merged as
+**#1147** (`745fb997`): toast off-screen/stack/icon, `get_date` centering,
+DatePicker no-flash + aqua-gated tooltip popover, `place_window_center` using the
+real mapped size. A high-effort `/code-review` gated both PRs. Suite ~567 excl. the
+two known flakes (`nl.msg` env + the order-dependent `test_color_helpers`).
+
+**NEXT — docs Workstream H** (`development/2_0_docs_design.md` §11): the nav/IA
+skeleton + un-break the API `:::` stubs (9 broken `docs/en` stubs point at removed
+paths — `ttkbootstrap.icons`/`scrolled`/`tableview`/`toast`/`tooltip`; repoint to
+`ttkbootstrap.widgets.*` / delete the icons stubs). Remaining Track B odds/ends
+(Linux/x11, the DPI matrix) are optional. The user keeps live WIP in the working
+tree (`dialogs/colorchooser.py`, `dialogs/fontdialog.py`,
+`examples/widgets/dialogs.py` — dialog-button styling) — **leave it untouched.**
 
 ## Repository layout
 

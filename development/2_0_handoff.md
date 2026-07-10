@@ -3,6 +3,50 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
+_Last updated: 2026-07-10 (**Pre-release review COMPLETE (#1146) + macOS Track B
+visual pass (#1147); NEXT = docs Workstream H**). The cumulative pre-release review
+(`development/2_0_prerelease_review_plan.md`) ran end-to-end. **#1146** (`53f5b72b`,
+branch deleted) bundled: **Track A** (8-subsystem agentic `2.0…master` Workflow +
+adversarial verify) — the one release-blocker was **`bootstyle="neutral"` crashing
+construction on every non-button family** (`NEUTRAL_FAMILIES` was never enforced at
+runtime); fixed with a resolver gate (drop to family default + loud warning).
+**Green-suite gate:** the `test_color_helpers` *Duplicate element TSpinbox.uparrow*
+"flake" was a **real** bug — `element_create` wasn't idempotent, so a recipe re-run
+on an already-materialized ttk theme crashed; fixed with an idempotent
+`Style.element_create` override. The `nl.msg`/`test_msgcat` failure is **confirmed
+env-only** (transient Tcl file read; flips run-to-run). Other gates pass (clean-env
+wheel install smoke, 3.10 parse, warning-free import). **Track C** (public-API diff
+`master`→`2.0` vs `2_0_breaking_changes.md`): **no silent breaks, no phantom
+entries.** Also in #1146: visual-pass bug fixes (datepicker stale-highlight, toast
+overlap, dialog app-icon win32 scoping + Toplevel per-window, Querybox/Messagebox
+spacing + icon warn/centering); **two author-sanctioned utilities** (utilities, NOT
+widgets — the "no new features" rule is widgets-only): **`ttk`/`Style`/`App` light-
+dark `theme_mode` / `toggle_theme_mode` / `use_theme_mode` / `set_theme_modes`** (+
+`App(light_theme=, dark_theme=)`), and **`icon_only=True`** on icon widgets (fixed
+`size=17`/`padding=3` pair -> square ~normal-button height; explicit overrides win;
+dogfooded onto datepicker chevrons / Tableview pagination / DateEntry button);
+**version bumped to 2.0.0.** New `examples/prerelease_visual_review.py` (Track B
+"everything-bagel" harness). Then **Track B was largely run on macOS**, fixes merged
+as **#1147** (`745fb997`, branch deleted): toast off-screen (absolute-positive
+geometry) + minsize-floored stack height + `e`/`w` offset + icon centering; `get_date`
+centers on its window; DatePicker built-hidden-then-shown (kills the flash) +
+aqua-gated `window_type="tooltip"` native popover; `place_window_center` uses the real
+mapped size (`_window_size` now keys on `winfo_ismapped()`, reused for parent/target).
+Both PRs were gated by a high-effort `/code-review` (caught the `neutral` blocker's
+sibling issues, the Toplevel-icon leak, the toast e/w-overlap regression, and the
+x11 focus break from the tooltip window type — all fixed pre-merge). **Known-accepted:**
+the DateEntry calendar clamps at the app bar instead of flipping on a short screen
+(author OK). Suite **567 passed** excl. the two known flakes. **>>> NEXT: docs
+Workstream H** (`development/2_0_docs_design.md` §11) — nav/IA skeleton + un-break the
+**9 broken `docs/en/api` `:::` stubs** (point at removed paths: `ttkbootstrap.icons`,
+`.scrolled`, `.tableview`, `.toast`, `.tooltip` — repoint to `ttkbootstrap.widgets.*`
+/ delete the icons stubs). Optional remaining Track B: Linux/x11 + the DPI matrix.
+**Env:** `.venv-home/Scripts/python.exe` launches (repo `.venv` exits 127); run
+pytest `-p no:cacheprovider`. **User keeps live WIP in the working tree — dialog-
+button styling in `dialogs/colorchooser.py`, `dialogs/fontdialog.py`,
+`examples/widgets/dialogs.py` — LEAVE IT UNTOUCHED (do not stage/commit it).** Prior
+entry follows._
+
 _Last updated: 2026-07-09 (**Compat & utilities — Slice 4 (typography) MERGED into
 `2.0` (#1145); the initiative's code work is now COMPLETE**). **Slice 4**
 adds `ttkbootstrap/utils/fonts.py` — a tiny surface over the standard Tk named
