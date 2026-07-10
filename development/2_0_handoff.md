@@ -4,10 +4,11 @@
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
 _Last updated: 2026-07-10 (**Docs Workstream H — User Guide IA revised to a
-FOUR-BAND structure + skeleton re-scaffolded. Committed on `docs/2.0-user-guide-ia`
-and OPENED as PR #1156 against `2.0` (docs-only; no `/code-review` — the diff is
-all rST/markdown prose, nothing for a correctness pass to bite; clean `-W` build is
-the gate). Awaiting review/merge.**
+FOUR-BAND structure + skeleton re-scaffolded. MERGED into `2.0` as PR #1156
+(merge `4e15fa3a`, branch deleted; docs-only, no `/code-review` — the diff was all
+rST/markdown prose, clean `-W` build was the gate). >>> NEXT = §11 sub-PR 2
+(reference generators) OR author User Guide prose band-by-band (flagship +
+delivery-model first).**
 This is the "iterate the skeleton" fast-follow to sub-PR 1 the prior entry
 anticipated, driven by the author's steer: **plan the User Guide topics around the
 2.0 utilities/non-widget features + common tkinter concerns** (and mine bootstack's
