@@ -13,8 +13,8 @@
 > kwarg (§5.1); minimal named set `background`+`card` (§5.2); auto on-surface
 > foreground (§5.3); sigil `@<surface>` — verified safe (§5.4); manual-only /
 > auto-inheritance deferred to Phase 2 (§5.5); raw-hex hatch deferred (§9.3).
-> Implementation proceeds PR-by-PR per §6, starting with **PR 1** (resolver +
-> `card` token + on-surface fg; no behavior change).
+> Implementation proceeds PR-by-PR per §6. **PR 1 (resolver + `card` token +
+> vocab; additive/no-behavior-change) is MERGED into `2.0` (#1149).** Next: PR 2.
 
 ## 1. Why this, why now
 
@@ -221,10 +221,14 @@ Explicit `surface=` this pass; parent/container-derived surface = Phase 2 (§7).
 
 Proposed, PR-by-PR per the 2.0 hard rule:
 
-- **PR 1 — resolver + theme tokens.** Add the surface resolver (§4a) + on-surface
-  fg (§4b) on the builder; add the minimal named-surface set to the theme model
-  (§5.2). No behavior change yet (default surface == `colors.bg`). Tests: resolver
-  dialects (named/accent/hex), theme-reactivity.
+- **PR 1 — resolver + theme tokens. [MERGED #1149]** Added `resolve_surface`
+  (§4a) + `card_surface` (§5.2) on the builder + `BOOTSTYLE_SURFACES`/
+  `DEFAULT_SURFACE` vocab. On-surface fg (§4b) reuses the existing `on_color`
+  helper — no new API needed, so it lands where builders consume it (PR 3).
+  Named-neutral surfaces derive from `colors.bg` in the resolver rather than
+  expanding the 16-field `Colors` (avoids rippling every constructor). Unknown
+  surface routes through the shared `_compat` strictness gate. No behavior change
+  (default surface == `colors.bg`; nothing consumes it yet). Suite 581.
 - **PR 2 — style-name segment + kwarg plumbing.** `surface=` on the mixins →
   resolver; namespaced segment (§4c) emitted only when non-default; round-trip
   through `_classify_style_name`; theme-walk rebuild (§4d). Tests: name assembly,
