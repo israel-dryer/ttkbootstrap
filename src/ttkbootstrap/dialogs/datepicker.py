@@ -131,7 +131,12 @@ class DatePickerDialog:
             topmost=True,
             minsize=(226, 1),
             iconify=True,
-            override_redirect=True
+            override_redirect=True,
+            # On aqua this maps to a native borderless popover (MacWindowStyle),
+            # the same treatment tooltips/toasts use -- a plain override-redirect
+            # window positions unreliably there. No-op on win32; sets `-type` on
+            # x11. (override_redirect is itself a no-op on aqua.)
+            window_type="tooltip",
         )
         # Outside-click / Escape dismissal bookkeeping. The popup is frameless
         # (no titlebar 'X'), so a click outside its bounds -- or Escape -- cancels
