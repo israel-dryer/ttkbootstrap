@@ -48,10 +48,20 @@ def _monitor_at_point(x: int, y: int) -> Optional[Rect]:
 
 
 def _window_size(window: tkinter.Misc) -> Tuple[int, int]:
-    """Best-available (width, height): the realized size, or the requested
-    size before the window has been mapped."""
-    width = max(window.winfo_reqwidth(), window.winfo_width())
-    height = max(window.winfo_reqheight(), window.winfo_height())
+    """Best-available (width, height): the realized (mapped) size, else the
+    requested size before the window has been mapped.
+
+    ``winfo_width``/``winfo_height`` return ``1`` until the window is mapped, so
+    fall back to the request only then. Do NOT ``max()`` the two: once mapped, a
+    window whose content wants more than its actual size reports a larger
+    ``reqheight`` than it occupies, and using that inflated value mis-centers the
+    window (e.g. pinning it to the top of a small screen instead of centering)."""
+    width = window.winfo_width()
+    height = window.winfo_height()
+    if width <= 1:
+        width = window.winfo_reqwidth()
+    if height <= 1:
+        height = window.winfo_reqheight()
     return width, height
 
 
