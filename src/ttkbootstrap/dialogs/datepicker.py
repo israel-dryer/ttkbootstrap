@@ -10,6 +10,7 @@ from ttkbootstrap.constants import *
 from ttkbootstrap.localization import MessageCatalog
 from ttkbootstrap.internal.positioning import (
     below_widget,
+    center_on_parent,
     center_on_screen,
     ensure_on_screen,
 )
@@ -123,6 +124,16 @@ class DatePickerDialog:
         # output, so the ambient (C) locale is exactly what's wanted.
 
         self.parent = parent
+        # On aqua, window_type="tooltip" makes the popup a native borderless
+        # popover (MacWindowStyle) -- the same treatment tooltips/toasts use --
+        # since a plain override-redirect window positions unreliably there.
+        # Gate it to aqua: on x11 it sets `-type tooltip`, which some window
+        # managers make non-focusable, which would break THIS calendar's
+        # focus_force()/Escape/arrow-key navigation (unlike a passive tooltip).
+        _ref = self.parent if self.parent is not None else tkinter._default_root
+        window_kwargs = {}
+        if _ref is not None and windowing_system(_ref) == "aqua":
+            window_kwargs["window_type"] = "tooltip"
         self.root = ttk.Toplevel(
             title=title,
             transient=self.parent,
@@ -130,7 +141,8 @@ class DatePickerDialog:
             topmost=True,
             minsize=(226, 1),
             iconify=True,
-            override_redirect=True
+            override_redirect=True,
+            **window_kwargs,
         )
         # Outside-click / Escape dismissal bookkeeping. The popup is frameless
         # (no titlebar 'X'), so a click outside its bounds -- or Escape -- cancels
@@ -180,8 +192,13 @@ class DatePickerDialog:
                 If True (default), block until the dialog is closed; read the
                 selection from :attr:`result` afterward.
         """
-        if position is not None:
-            self._set_window_position(position)
+        # Position while still withdrawn, THEN show, so the popup never flashes
+        # at the window manager's default spot before moving to its real place.
+        # update_idletasks first so the size used for centering/anchoring is the
+        # fully-laid-out one, not a partial measurement.
+        self.root.update_idletasks()
+        self._set_window_position(position)
+        self.root.deiconify()
         self.root.lift()
         self.root.focus_force()
         self._arm_dismiss()
@@ -319,10 +336,10 @@ class DatePickerDialog:
         self._draw_titlebar()
         self._draw_calendar()
 
-        # make toplevel visible
+        # Actualize geometry but stay withdrawn -- show() positions the popup and
+        # then deiconifies it, so it never flashes on screen during construction
+        # (notably with autoshow=False, e.g. Querybox.get_date / DateEntry).
         self.root.update_idletasks()
-        self.root.deiconify()
-        self._set_window_position()
 
     def _draw_calendar(self) -> None:
         self._set_title()
@@ -531,8 +548,18 @@ class DatePickerDialog:
         # titlebar_height=0: the popup is frameless, so no decoration to reserve.
         if position is not None:
             x, y = ensure_on_screen(self.root, *position, titlebar_height=0)
-        elif self.parent:
+        elif self.parent and not isinstance(
+                self.parent, (tkinter.Tk, tkinter.Toplevel)):
+            # A dropdown *target* (e.g. a DateEntry's entry field): drop the
+            # calendar directly below it.
             x, y = below_widget(self.root, self.parent)
+        elif self.parent:
+            # The parent is a whole window (e.g. Querybox.get_date(parent=app)):
+            # centering on it is right -- dropping "below" it would land the
+            # popup at the window's bottom edge / off it.
+            x, y = ensure_on_screen(
+                self.root, *center_on_parent(self.root, self.parent),
+                titlebar_height=0)
         else:
             x, y = ensure_on_screen(self.root, *center_on_screen(self.root), titlebar_height=0)
         self.root.geometry(f"+{x}+{y}")

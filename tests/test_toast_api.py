@@ -37,7 +37,8 @@ def _reset_stack():
 
 
 def _ypos(toast):
-    """The signed y offset from a toast's geometry string (e.g. '300x75-5-110')."""
+    """The absolute y coordinate from a toast's geometry string (e.g.
+    '300x75+2255+1315')."""
     m = re.search(r"([+-]\d+)([+-]\d+)$", toast.toplevel.geometry())
     return int(m.group(2))
 
@@ -160,10 +161,28 @@ def test_two_toasts_stack_without_overlap(root):
     assert t1._height >= t1.toplevel.minsize()[1]
     assert t1._height == max(t1.toplevel.winfo_reqheight(), t1.toplevel.minsize()[1])
     # t2 is offset from t1 by its full occupied height + the gap, so the two
-    # windows are exactly one gap apart (no overlap).
+    # windows are exactly one gap apart (no overlap). Geometry is now absolute
+    # positive coords and the SE stack grows upward (y decreases), so compare the
+    # magnitude of the gap between the two.
     expected = t1._height + t1._scaled_gap()
-    assert abs((abs(y2) - abs(y1)) - expected) <= 2
+    assert abs(abs(y2 - y1) - expected) <= 2
     assert len(_TOAST_STACK._corners["se"]) == 2
+    t1.hide()
+    t2.hide()
+
+
+def test_horizontal_anchor_toasts_still_stack(root):
+    # 'e'/'w' anchors are vertically centered; concurrent ones must still get the
+    # stack offset (regression: the absolute-geometry rewrite applied the offset
+    # only in the n/s branches, so e/w toasts overlapped).
+    t1 = ToastNotification("A", "a", position=(5, 0, "e"))
+    t2 = ToastNotification("B", "b", position=(5, 0, "e"))
+    t1.show_toast()
+    t2.show_toast()
+    root.update_idletasks()
+    assert _ypos(t1) != _ypos(t2)  # not overlapping
+    expected = t1._height + t1._scaled_gap()
+    assert abs(abs(_ypos(t2) - _ypos(t1)) - expected) <= 2
     t1.hide()
     t2.hide()
 
