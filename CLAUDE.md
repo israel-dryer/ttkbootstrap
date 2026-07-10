@@ -204,10 +204,21 @@ tk/ttk widgets taking `bootstyle=`/`autostyle=`, and positional args to now-
 keyword-only APIs — found **no other crash-class bugs** in `src/`; the only extra
 finding was the `__main__` demo tripping its own deprecation warnings, fixed in
 #1132 (`meter_size`/`amount_used`/`auto_hide`). Expected suite on `2.0` ~492
-(excl. the known `nl.msg` localization flake). **NEXT
-(deferred):** the **breaking/deprecation audit → *Migrating-to-2.0* guide** (see
-`2_0_breaking_changes.md`, the running log), and **docs Workstream H** — nav/IA
-skeleton + un-break the API `:::` stubs, per `development/2_0_docs_design.md` §11.
+(excl. the known `nl.msg` localization flake). **The compat & utilities initiative
+(the last substantive code work before release,
+`development/2_0_compat_and_utilities_design.md`) is now underway: Slice 1 (legacy
+theme-name auto-register, #1139), Slice 2 (`App`/`Window` + `theme`/`themename`
+aliases, #1140), and Slice 0 (`ttkbootstrap.utils` package + `utility`/`colorutils`
+shims, #1141) are MERGED into `2.0`; suite ~505 excl. the two known flakes. NEXT →
+the remaining slices in order: Slice 5 (deferred-config seam) → Slice 3
+(localization: msgcat fixes + `L()`/`LocaleVar`) → Slice 4 (typography `Fonts`
+utility) — all born into `utils/`.** **THEN (deferred to the end, by author
+decision):** the cumulative **pre-release review** per
+`development/2_0_prerelease_review_plan.md` (Track A agentic `2.0…master` sweep ·
+Track B human visual/cross-platform · Track C migration-contract validation),
+which subsumes the earlier breaking/deprecation-audit item; and **docs Workstream
+H** — nav/IA skeleton + un-break the API `:::` stubs, per
+`development/2_0_docs_design.md` §11.
 
 ## Repository layout
 
