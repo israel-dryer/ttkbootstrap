@@ -12,9 +12,9 @@ value. This guide covers everything that string can express.
 
    app = ttk.App()
 
-   ttk.Button(app, text="Save",   bootstyle="success").pack(padx=8, pady=4)
-   ttk.Button(app, text="Cancel", bootstyle="secondary outline").pack(padx=8, pady=4)
-   ttk.Button(app, text="Delete", bootstyle="danger ghost").pack(padx=8, pady=4)
+   ttk.Button(app, text="Save",   bootstyle="success").pack()
+   ttk.Button(app, text="Cancel", bootstyle="secondary outline").pack()
+   ttk.Button(app, text="Delete", bootstyle="danger ghost").pack()
 
    app.mainloop()
 
@@ -77,7 +77,7 @@ accent bar instead of the window background:
 .. code-block:: python
 
    card = ttk.Frame(app, bootstyle="card", padding=12)
-   ttk.Button(card, text="More", bootstyle="@card primary ghost").pack()
+   ttk.Button(card, text="More", bootstyle="@card primary ghost")
 
 Chameleon base-types
 --------------------
