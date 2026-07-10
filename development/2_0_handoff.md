@@ -3,6 +3,46 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
+_Last updated: 2026-07-09 (**Compat & utilities — Slices 0/1/2 MERGED into `2.0`;
+pre-release review plan written**). Working through the compat & utilities
+initiative (`development/2_0_compat_and_utilities_design.md`, the last substantive
+code work before release). **Merged this session:** **#1139** Slice 1 (theme compat
+— `theme_use` on a legacy (pre-2.0) name no longer hard-stops; it lazily
+adapts+registers that one theme via `theme_from_legacy_dict`→`register_theme`,
+warns once per name, and builds it — so `Window(themename="darkly")` works again;
+`install_legacy_themes()` stays the bulk register); **#1140** Slice 2 (naming —
+`App` is now the canonical root class, `Window = App` a permanent non-deprecated
+alias; `theme` canonical on `App`/`Window`/`Style` ctors with `themename` a
+permanent alias; `theme_use`/`theme_create` keep Tk's `themename`; full source
+docstring/example/error-message sweep to the canonical names per author request);
+**#1141** Slice 0 (utilities — new first-class `ttkbootstrap.utils` package:
+`color.py`←colorutils, `scaling.py`+`platform.py`←utility; old `utility`/`colorutils`
+modules become warn-and-forward shims like `publisher.py`; all first-party callers
+migrated so import stays warning-free; a high-effort `/code-review` caught one
+low-sev gap — `utils` didn't re-export the color-model constants — fixed in the
+same PR). Expected suite on `2.0` ~**505 passed** excl. the two known flakes
+(`nl.msg` localization env flake + the order-dependent `test_color_helpers`
+*Duplicate element TSpinbox.uparrow*, which is a real theme-rebuild bug, not
+noise). Every slice: branch from `2.0` → PR → author merge (one in flight), entry
+in `2_0_breaking_changes.md`, migration-guide touch-ups.
+
+**>>> NEXT-SESSION PICKUP:** finish the remaining compat & utilities slices in the
+design's order — **Slice 5** (deferred-config pending-apply seam; enables 3 & 4) →
+**Slice 3** (localization: msgcat `tk.call` fixes + `L()`/`LocaleVar` +
+`<<LocaleChanged>>`) → **Slice 4** (typography: a `Fonts` utility over the standard
+Tk named fonts). Slices 3/4/5 are **born into `utils/`**. **THEN**, as the capstone
+before an RC, run the cumulative pre-release review per the new
+**`development/2_0_prerelease_review_plan.md`** (Track A agentic `2.0…master` sweep
+· Track B human visual/cross-platform · Track C migration-contract validation +
+green-suite / install-smoke gates). Decision (author, 2026-07-09): **continue the
+initiative, run the full review at the end**, not now.
+
+**Env note (unchanged):** repo `.venv` fails to launch on this box (exit 127); use
+`.venv-home/Scripts/python.exe` for python/pytest (run with `-p no:cacheprovider`).
+Leave the user's `gallery/` WIP untouched.
+
+Prior entry (2026-07-08) follows._
+
 _Last updated: 2026-07-08 (**Remaining shipped-widget API review — COMPLETE; the
 whole widget-review series (PRs 0–7) is MERGED into `2.0`**). The all-widgets API
 review (design + all forks in `development/2_0_widget_api_review_design.md`) is

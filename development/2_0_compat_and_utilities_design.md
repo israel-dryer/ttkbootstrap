@@ -235,12 +235,17 @@ bracket DSL (needs to intercept `font=` — framework territory).
 ## Suggested PR order
 
 1. **Utility organization** (Slice 0) — `utils/` package + source-only shims; the
-   home Slices 3/4/5 build into.
+   home Slices 3/4/5 build into. **DONE — #1141.**
 2. **Theme lazy-register** (Slice 1) — highest impact, unblocks every app; standalone.
+   **DONE — #1139.**
 3. **Naming aliases** (Slice 2) — `App`/`Window`, `theme`/`themename`; standalone.
+   **DONE — #1140.**
 4. **Deferred-config seam** (Slice 5 core) — small, enables localization & typography.
 5. **Localization** (Slice 3) — msgcat fixes + `L()`/`LocaleVar` + event.
 6. **Typography** (Slice 4) — `Fonts` utility, wired through the seam.
 
+(Actual merge order was 1/2/0, all standalone; the remaining three are 5 → 3 → 4.)
+
 Each is a small PR **branched from `2.0`** (not from a feature branch) with its
-own tests; each lands an entry in `2_0_breaking_changes.md`.
+own tests; each lands an entry in `2_0_breaking_changes.md`. After Slice 4, the
+cumulative capstone review runs per `2_0_prerelease_review_plan.md`.
