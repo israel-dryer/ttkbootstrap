@@ -39,7 +39,7 @@ without hard-coding a color.
 Variants
 --------
 
-Combine a color with a modifier to change visual weight — ``outline``, ``link``,
+Combine a color with a variant to change visual weight — ``outline``, ``link``,
 or ``ghost``:
 
 .. code-block:: python

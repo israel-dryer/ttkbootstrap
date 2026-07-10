@@ -24,7 +24,7 @@ The slots
 A ``bootstyle`` value is a single string of space-separated tokens in a fixed
 slot order::
 
-   [@surface] [color] [modifier] <base-type> [orient]
+   [@surface] [color] [variant] <base-type> [orient]
 
 - **@surface** — the surface the control sits on: ``@card`` (a neutral raised
   panel) or an accent (``@primary`` …), so a ghost, outline, or link control
@@ -32,7 +32,7 @@ slot order::
   Optional and position-free.
 - **color** — the semantic intent: ``primary``, ``secondary``, ``success``,
   ``info``, ``warning``, ``danger``, ``light``, ``dark``, ``neutral``.
-- **modifier** — a variant such as ``outline``, ``link``, ``ghost``, ``round``,
+- **variant** — a look such as ``outline``, ``link``, ``ghost``, ``round``,
   ``striped``.
 - **base-type** — the widget family. Usually inferred from the widget, so you
   leave it out; you spell it only for the chameleon families ``toggle`` /
@@ -54,7 +54,7 @@ Start with a **color** — the widget picks the right shape from its own class:
    ttk.Label(app, text="Heads up", bootstyle="warning")
    ttk.Progressbar(app, bootstyle="success")   # orient inferred → horizontal
 
-Add a **modifier** to change visual weight. The color still leads:
+Add a **variant** to change visual weight. The color still leads:
 
 .. code-block:: python
 
@@ -63,7 +63,7 @@ Add a **modifier** to change visual weight. The color still leads:
    ttk.Button(app, text="Link",    bootstyle="primary link")
    ttk.Button(app, text="Ghost",   bootstyle="primary ghost")
 
-A modifier with no color falls back to the family default (``primary`` for most):
+A variant with no color falls back to the family default (``primary`` for most):
 
 .. code-block:: python
 
