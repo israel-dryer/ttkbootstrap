@@ -330,17 +330,18 @@ def test_bootstyle_literal_matches_registry():
     assert set(get_args(C.BootStyle)) == set(gen.canonical_bootstyles())
 
 
-def test_bootstyle_reference_markdown_is_current():
+def test_bootstyle_reference_rst_is_current():
     gen = _load_reference_generator()
     path = (
         pathlib.Path(__file__).resolve().parents[1]
-        / "development"
-        / "2_0_bootstyle_reference.md"
+        / "docs"
+        / "_generated"
+        / "bootstyle_reference.rst"
     )
     current = path.read_text(encoding="utf-8")
-    expected = gen.reference_table_markdown() + "\n"
+    expected = gen.reference_table_rst() + "\n"
     assert current == expected, (
-        "development/2_0_bootstyle_reference.md is stale; regenerate with "
+        "docs/_generated/bootstyle_reference.rst is stale; regenerate with "
         "`python tools/generate_bootstyle_reference.py`"
     )
 
