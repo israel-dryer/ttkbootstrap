@@ -38,6 +38,14 @@ def test_utils_package_exposes_the_full_surface():
         assert name in utils.__all__, f"{name} missing from utils.__all__"
 
 
+def test_utils_reexports_color_model_constants():
+    # the color-model selector constants must resolve from the canonical package
+    # too (so migrating `from ttkbootstrap.colorutils import RGB` -> `.utils`
+    # doesn't ImportError), even though they stay out of __all__.
+    from ttkbootstrap.utils import RGB, HSL, HEX, NAME, HUE, SAT, LUM
+    assert (RGB, HSL, HEX, NAME) == ("rgb", "hsl", "hex", "name")
+
+
 def test_top_level_names_are_the_utils_objects():
     # the re-exports must be the real functions, not shadowing copies
     assert ttk.scale_size is utils.scale_size

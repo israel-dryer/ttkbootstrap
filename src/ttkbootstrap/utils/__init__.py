@@ -16,6 +16,17 @@ Later 2.0 slices add `fonts` (typography) and `config` (deferred-config seam)
 here, and re-export the `localization` helpers through this namespace.
 """
 from ttkbootstrap.utils.color import (
+    # color-model selector constants (usable as the `model=` argument). Not in
+    # `__all__` (they weren't in colorutils' `__all__` either -- semi-internal),
+    # but re-exported so `from ttkbootstrap.utils import RGB` resolves for anyone
+    # migrating off the deprecated `ttkbootstrap.colorutils` path.
+    RGB,
+    HSL,
+    HEX,
+    NAME,
+    HUE,
+    SAT,
+    LUM,
     color_to_rgb,
     color_to_hex,
     color_to_hsl,

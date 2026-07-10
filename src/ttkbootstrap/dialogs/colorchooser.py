@@ -12,7 +12,7 @@ from PIL import ImageColor
 
 import ttkbootstrap as ttk
 from ttkbootstrap import utils
-from ttkbootstrap.utils.color import HEX, HSL, HUE, LUM, RGB, SAT
+from ttkbootstrap.utils import HEX, HSL, HUE, LUM, RGB, SAT
 from ttkbootstrap.constants import *
 from ttkbootstrap.localization import MessageCatalog
 from ttkbootstrap.widgets.tooltip import ToolTip
