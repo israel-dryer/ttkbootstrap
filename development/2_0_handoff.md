@@ -4,8 +4,8 @@
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
 _Last updated: 2026-07-10 (**Surface-color workstream — PRs 1/2/3 MERGED into `2.0`
-(#1149 / #1150 / #1152); PR 4 (bar families) IMPLEMENTED on
-`feat/2.0-surface-color-pr4` (committed, not yet pushed/merged) — this COMPLETES the
+(#1149 / #1150 / #1152); PR 4 (bar families) = **PR #1154, OPEN against `2.0`**
+(branch `feat/2.0-surface-color-pr4`, `/code-review` clean) — this COMPLETES the
 family rollout; then RESUME docs Workstream H below**).
 A mid-stream initiative that interrupted the docs work (next entry). Fixes a real
 theming gap: every built style assumed widget bg == app bg (`colors.bg`), so a
@@ -60,8 +60,9 @@ the `border(colors.bg)` trough sites → `border(resolve_surface(_surface))`, th
 scale/progressbar/scrollbar per surface. Additive — surfaceless names/appearance are
 byte-for-byte unchanged (no `2_0_breaking_changes.md` entry needed, design §8). Suite
 618 (+3). **This COMPLETES the surface-color family rollout** (frames stay out —
-producers). **>>> NEXT: push `feat/2.0-surface-color-pr4` + open the PR against `2.0`
-(1–2 `/code-review` passes per the prior PRs), then RESUME docs Workstream H.**
+producers). Opened as **PR #1154** against `2.0` (high-effort `/code-review` came
+back clean — surfaceless path proven byte-for-byte unchanged; no hardcoded
+consumers break). **>>> NEXT: merge PR #1154, then RESUME docs Workstream H.**
 **Still pending before the docs finalize:** the **deferred "spaces sweep"** —
 regenerate the dash-joined `BootStyle` Literal + reference to the space form and touch
 up docstrings so autocomplete/docs match the recommended spelling
