@@ -380,23 +380,33 @@ class ToastNotification:
         tl = self.toplevel
         tl.update_idletasks()  # actualize the requested geometry
         anchor = self._anchor
-        x_anchor = "+" if "w" in anchor else "-"
-        y_anchor = "+" if "n" in anchor else "-"
 
-        screen_w = tl.winfo_screenwidth() // 2
-        screen_h = tl.winfo_screenheight() // 2
-        top_w = tl.winfo_reqwidth() // 2
-        top_h = tl.winfo_reqheight() // 2
+        screen_w = tl.winfo_screenwidth()
+        screen_h = tl.winfo_screenheight()
+        # The toast is floored to its minsize, so use the size it actually
+        # occupies -- reqwidth/reqheight alone undershoot the floor.
+        win_w = max(tl.winfo_reqwidth(), tl.minsize()[0])
+        win_h = max(tl.winfo_reqheight(), tl.minsize()[1])
+        inset_x, inset_y = self.position[0], self.position[1]
 
-        if "e" not in anchor and "w" not in anchor:
-            xpos = screen_w - top_w
+        # Absolute positive coordinates from the top-left. A negative offset
+        # geometry ("-x") for an east/south anchor is unreliable on aqua for a
+        # borderless window (the toast lands half off-screen), so resolve the
+        # edge distances to an explicit left/top origin instead.
+        if "w" in anchor:
+            xpos = inset_x
+        elif "e" in anchor:
+            xpos = screen_w - win_w - inset_x
         else:
-            xpos = self.position[0]
-        if "n" not in anchor and "s" not in anchor:
-            ypos = screen_h - top_h
-        else:
-            ypos = self.position[1]
+            xpos = (screen_w - win_w) // 2
 
         # the stack offset moves the toast away from its anchored edge
-        ypos += offset
-        return f"{x_anchor}{xpos}{y_anchor}{ypos}"
+        # (downward from a top anchor, upward from a bottom anchor)
+        if "n" in anchor:
+            ypos = inset_y + offset
+        elif "s" in anchor:
+            ypos = screen_h - win_h - inset_y - offset
+        else:
+            ypos = (screen_h - win_h) // 2
+
+        return f"+{max(0, xpos)}+{max(0, ypos)}"

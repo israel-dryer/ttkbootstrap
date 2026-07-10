@@ -10,6 +10,7 @@ from ttkbootstrap.constants import *
 from ttkbootstrap.localization import MessageCatalog
 from ttkbootstrap.internal.positioning import (
     below_widget,
+    center_on_parent,
     center_on_screen,
     ensure_on_screen,
 )
@@ -531,8 +532,18 @@ class DatePickerDialog:
         # titlebar_height=0: the popup is frameless, so no decoration to reserve.
         if position is not None:
             x, y = ensure_on_screen(self.root, *position, titlebar_height=0)
-        elif self.parent:
+        elif self.parent and not isinstance(
+                self.parent, (tkinter.Tk, tkinter.Toplevel)):
+            # A dropdown *target* (e.g. a DateEntry's entry field): drop the
+            # calendar directly below it.
             x, y = below_widget(self.root, self.parent)
+        elif self.parent:
+            # The parent is a whole window (e.g. Querybox.get_date(parent=app)):
+            # centering on it is right -- dropping "below" it would land the
+            # popup at the window's bottom edge / off it.
+            x, y = ensure_on_screen(
+                self.root, *center_on_parent(self.root, self.parent),
+                titlebar_height=0)
         else:
             x, y = ensure_on_screen(self.root, *center_on_screen(self.root), titlebar_height=0)
         self.root.geometry(f"+{x}+{y}")
