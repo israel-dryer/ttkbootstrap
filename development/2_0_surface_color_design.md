@@ -268,7 +268,7 @@ working feature.
   surfaces flip to `on_color`, near-bg `card`/`neutral` keep the soft theme fg) —
   as the `collapsing_frame` acceptance proof. **No `surface=` param** (§5.1). A
   high-effort `/code-review` on the param version drove the reversal + these fixes.
-- **PR 3 — indicator + label families.** Extended the mechanism to the common
+- **PR 3 — indicator + label families. [MERGED #1152]** Extended the mechanism to the common
   "on a surface" controls: **checkbutton, radiobutton, toggle** (round + square),
   **label** (added to `_SURFACE_FAMILIES`; `colors.bg`/glyph-bg/`colors.fg` sites
   → `resolve_surface`/`on_surface_fg`; `StyleName` gained a `surface=` param so
