@@ -206,14 +206,16 @@ finding was the `__main__` demo tripping its own deprecation warnings, fixed in
 #1132 (`meter_size`/`amount_used`/`auto_hide`). Expected suite on `2.0` ~492
 (excl. the known `nl.msg` localization flake). **The compat & utilities initiative
 (the last substantive code work before release,
-`development/2_0_compat_and_utilities_design.md`) is now underway: Slice 1 (legacy
+`development/2_0_compat_and_utilities_design.md`) is now COMPLETE: Slice 1 (legacy
 theme-name auto-register, #1139), Slice 2 (`App`/`Window` + `theme`/`themename`
-aliases, #1140), and Slice 0 (`ttkbootstrap.utils` package + `utility`/`colorutils`
-shims, #1141) are MERGED into `2.0`; suite ~505 excl. the two known flakes. NEXT →
-the remaining slices in order: Slice 5 (deferred-config seam) → Slice 3
-(localization: msgcat fixes + `L()`/`LocaleVar`) → Slice 4 (typography `Fonts`
-utility) — all born into `utils/`.** **THEN (deferred to the end, by author
-decision):** the cumulative **pre-release review** per
+aliases, #1140), Slice 0 (`ttkbootstrap.utils` package + `utility`/`colorutils`
+shims, #1141), Slice 5 (deferred-config pending-apply seam + `set_default_button`,
+#1143), Slice 3 (localization: msgcat `tk.call` fixes + `L()`/`LocaleVar`/
+`set_locale` + `<<LocaleChanged>>`, #1144), and Slice 4 (typography: `ttk.Fonts` +
+`ttk.set_global_family` over the standard Tk named fonts, #1145) are all MERGED into
+`2.0` (born into `utils/`); suite ~552 excl. the two known flakes. **With all slices
+in, the last substantive code work before release is done.** **NEXT (deferred to the
+end, by author decision):** the cumulative **pre-release review** per
 `development/2_0_prerelease_review_plan.md` (Track A agentic `2.0…master` sweep ·
 Track B human visual/cross-platform · Track C migration-contract validation),
 which subsumes the earlier breaking/deprecation-audit item; and **docs Workstream
