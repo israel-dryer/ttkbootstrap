@@ -217,6 +217,31 @@ bracket DSL (needs to intercept `font=` — framework territory).
 - Flushed in `App.__init__`; applied live if a root already exists.
 - Re-exported as top-level `ttk.set_locale` / `ttk.set_global_family` / etc.
 
+### Slice 5 — IMPLEMENTED (#TBD, 2026-07-09)
+
+Shipped as `ttkbootstrap/utils/config.py`: a `defer(key, apply)` /
+`flush_pending_config()` registry + the `default_button(color=None)` setter/getter
+(the one existing tenant; locale/font hang off the same seam in Slices 3/4).
+Resolved forks:
+
+- **Flush hook lives in `Style.__init__`, not `App.__init__`** — the `Style`
+  singleton is the true root-bound object (an `App` just creates one), so flushing
+  there also covers a bare `Style()`, and it runs *before* `theme_use()` so a
+  queued `default_button` is in place before the base button styles build.
+- **`default_button` when a root already exists → pre-root-only + warn** (author,
+  2026-07-09): set it for buttons built after the call and emit a `UserWarning`,
+  rather than rebuilding the base styles + repainting mounted buttons live. A plain
+  theme-walk won't pick it up (the base `TButton` is already registered → resolves
+  unchanged), so a live rebuild would be real engine work + a visual gate; not worth
+  it for a setting whose whole point is "set before the app." locale/font (3/4) do
+  apply live, since that's cheap for them.
+- **Precedence: explicit `default_button=` argument wins** over the global pre-root
+  setter (applied after the flush). Implemented via a `None` sentinel default on
+  `App`/`Style` so an explicit value is distinguishable (behavior for existing code
+  is identical — omitting it still yields `"neutral"`).
+- **One-shot flush** — the queue is cleared on flush, so a pre-root setter applies
+  to the next root created.
+
 ---
 
 ## Out of scope for this pass (explicit)

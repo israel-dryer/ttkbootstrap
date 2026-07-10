@@ -64,7 +64,7 @@ class Style(ttk.Style):
         else:
             return Style.instance
 
-    def __init__(self, theme=None, default_button="neutral", *, themename=None):
+    def __init__(self, theme=None, default_button=None, *, themename=None):
         """
         Parameters:
 
@@ -77,7 +77,9 @@ class Style(ttk.Style):
                 The color a bare `Button`/`Menubutton` (no `bootstyle`) uses.
                 Defaults to `"neutral"`; pass `"primary"` for the pre-2.0
                 accented default. Read once when the base styles build, so set it
-                on the first `Style`/`App`; ignored on the existing singleton.
+                on the first `Style`/`App`; ignored on the existing singleton. If
+                omitted, a pre-root `ttk.default_button(...)` setting is used, else
+                `"neutral"`; an explicit argument here wins over that setter.
         """
         # `theme` is canonical; `themename` is a permanent, non-deprecated alias
         # (the pre-2.0 spelling). Prefer `theme` when both are given.
@@ -89,9 +91,6 @@ class Style(ttk.Style):
             if theme != DEFAULT_THEME:
                 Style.instance.theme_use(theme)
             return
-        # Set before theme_use() below, which builds the base TButton/TMenubutton
-        # styles that read this to resolve their default (no-color) fill.
-        self.default_button = default_button
         self._theme_objects = {}
         self._theme_definitions = {}
         self._style_registry = set()  # all styles used
@@ -114,6 +113,18 @@ class Style(ttk.Style):
         self.scaling = Scaling.for_widget(self.master)
 
         Style.instance = self
+
+        # Resolve the default (no-color) button fill BEFORE theme_use() builds the
+        # base TButton/TMenubutton styles that read it. Order: baseline NEUTRAL,
+        # then any pre-root config queued before the root existed (Slice 5's
+        # deferred-config seam -- default_button/locale/fonts), then an explicit
+        # `default_button=` argument, which wins over the global pre-root setter.
+        self.default_button = NEUTRAL
+        from ttkbootstrap.utils import config
+        config.flush_pending_config()
+        if default_button is not None:
+            self.default_button = default_button
+
         self.theme_use(theme)
 
         # apply localization
