@@ -40,8 +40,10 @@ slot order::
 - **orient** — ``horizontal`` / ``vertical``, inferred from the widget where it
   applies.
 
-Every slot is optional. A bare widget with no ``bootstyle`` gets the theme's
-default look; each token you add refines it.
+Every slot is optional. A bare widget with no ``bootstyle`` takes the theme's
+default look — for the **button family** (``Button``, ``Menubutton``, and the
+``toolbutton`` variant) that default is ``neutral``, a quiet no-accent fill;
+other widgets use their standard theme style. Each token you add refines it.
 
 Building up a style
 -------------------
@@ -63,11 +65,11 @@ Add a **variant** to change visual weight. The color still leads:
    ttk.Button(app, text="Link",    bootstyle="primary link")
    ttk.Button(app, text="Ghost",   bootstyle="primary ghost")
 
-A variant with no color falls back to the family default (``primary`` for most):
+You can drop the color as well — a bare ``outline`` button uses ``primary``:
 
 .. code-block:: python
 
-   ttk.Button(app, text="Outline", bootstyle="outline")   # == "primary outline"
+   ttk.Button(app, text="Outline", bootstyle="outline")   # primary outline
 
 Point a control at a **surface** with an ``@`` token so it blends on a card or an
 accent bar instead of the window background:
