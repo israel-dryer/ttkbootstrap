@@ -16,7 +16,7 @@ Set the indicator color with ``bootstyle=``:
 
    import ttkbootstrap as ttk
 
-   app = ttk.Window()
+   app = ttk.App()
 
    meter = ttk.Meter(
        app,

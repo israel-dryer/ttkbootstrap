@@ -100,34 +100,78 @@ Themes · Gallery · Cookbook).
 | Destination | Diátaxis role | Contains |
 |---|---|---|
 | **Landing** | — | marketing hero (light+dark hero shot), "why" cards, a glimpse (minimal code + screenshot), install |
-| **User Guide** | tutorial + how-to + explanation | Getting Started · Concepts (guides) · How-To |
+| **User Guide** | tutorial + how-to + explanation | Getting Started · Concepts (styling core) · Feature guides (2.0 subsystems) · How-To |
 | **Widgets** | (task/reference hybrid) | the visual catalog — grouped native vs. shipped |
 | **Reference** | reference | **Style Reference** (generated) + **API Reference** (mkdocstrings) |
 | *(supporting)* | — | Release Notes (link to GH releases), optional Roadmap |
 
-### User Guide internal structure
+### User Guide internal structure — FOUR BANDS (revised 2026-07-10)
+
+Revised after the compat-and-utilities pass (Slices 0–5) and the other 2.0
+non-widget additions landed — the original two-band plan (5 Concepts + a vague
+How-To) had nowhere to teach the delivery model, fonts, localization,
+validation, or windowing. Adopts bootstack's proven **four-band** shape (Getting
+Started · Concepts · Feature guides · How-To), scoped down to a *styling
+extension* (its framework-only bands — signals/store/streams/CLI/hot-reload —
+are dropped). Two author decisions locked the shape (2026-07-10): **adopt the
+four-band structure**, and **teach generic tkinter tasks "ttkbootstrap-flavored"**
+in How-To (every example uses ttkbootstrap idioms and links out to python.org for
+the raw tk API) — this is the concrete fill for the "modern tkinter docs" gap.
 
 ```
 User Guide
-├─ Getting Started
-│   ├─ Quickstart              first window; Window vs Tk; choosing a theme
+├─ Getting Started              ← the tutorial path
+│   ├─ Installation            pip, requires-python >=3.10
+│   ├─ Quickstart              first themed window; Window vs Tk; choosing a theme
+│   ├─ Structuring an app      Window vs Tk, the single-root rule, an app skeleton
 │   └─ Migrating to 2.0        bootstyle strings, theme names, removed shims, icons
-├─ Concepts (the guides)       ← the "modern tkinter docs" gap-fill
+├─ Concepts — the styling core (the FLAGSHIP band)
 │   ├─ The bootstyle grammar   ★ FLAGSHIP — canonical grammar + reference table
+│   ├─ How styling is delivered ★ NEW — no monkey-patch: blessed subclasses,
+│   │                             BootMixin/AutoStyleMixin, enable_global_api,
+│   │                             bootify, apply_bootstyle, fluent geometry
 │   ├─ Theming                 semantic-anchor model + 2-column light/dark gallery
-│   ├─ Make your own style     ☆ second act — the custom-style toolkit
-│   ├─ Make your own theme     Theme() API + ttkcreator
-│   └─ Working with color      style.colors, ramp addressing (c.primary[300])
-└─ How-To (tasks)              validate input, animate a gif, … (absorbs Cookbook)
+│   ├─ Working with color      style.colors, ramp addressing (c.primary[300])
+│   ├─ Make your own style     ☆ the custom-style toolkit + icon engine
+│   └─ Make your own theme     Theme() API + ttkcreator
+├─ Feature guides — 2.0 subsystems (each a utility we shipped)
+│   ├─ Typography              Fonts, set_global_family over the named fonts
+│   ├─ Localization            L(), LocaleVar, set_locale, <<LocaleChanged>>
+│   ├─ Input validation        add_*_validation, @validator
+│   └─ Windows, icons & DPI    App/Toplevel, positioning, apply_icon,
+│                                enable_high_dpi_awareness, window_type; the
+│                                deferred-config seam as a sidebar
+└─ How-To — short task recipes (absorbs Cookbook; ttkbootstrap-flavored tkinter)
+    layout (pack/grid/place) · events & variables · menus & context menus ·
+    images & PhotoImage · scrollable content · message boxes & dialogs ·
+    multiple windows · background work without freezing the UI (after + threads) ·
+    splash screen · app icon · validate a form · animate a GIF (salvaged)
 ```
 
 - **Flagship = the bootstyle grammar** — leads the Landing hero and the User
-  Guide (the universal "how do I style anything" front door). *Make your own
-  style/theme* is the prominent second act (the biggest *new* 2.0 capability).
+  Guide (the universal "how do I style anything" front door). **How styling is
+  delivered** sits second: it is the single biggest 2.0 conceptual shift
+  (`import ttkbootstrap` no longer monkey-patches tkinter). *Make your own
+  style/theme* remains a prominent act (the biggest *new* 2.0 capability).
+- **Feature guides** is the NEW band that homes the shipped non-widget utilities
+  end-to-end (typography, localization, validation, windowing); keeping them out
+  of Concepts leaves the styling band uncluttered.
 - **Themes** is folded here as the *Theming* guide; its gallery renders the 30
   themes as **light/dark pairs in a 2-column layout**.
-- **Cookbook** is removed; its pages become **How-To** entries.
+- **Cookbook** is removed; its pages become **How-To** entries. The How-To band
+  also gap-fills the common *generic-tkinter* tasks newcomers arrive needing
+  (layout, events, threading, menus, images), each written ttkbootstrap-flavored.
 - **Gallery** (real-app demos) is removed for 2.0; can return later.
+
+**Authoring conventions (locked 2026-07-10, apply to every page):**
+- **Lead with ``App``, not ``Window``.** ``App`` is the actual class; ``Window``
+  is a permanent alias (``window.py`` `Window = App`). Prose and code examples
+  teach ``ttk.App(...)`` as canonical and mention ``ttk.Window`` once as the
+  alias. (Existing skeleton pages were swept to match.)
+- **Use fluent geometry in examples where appropriate.** ``pack``/``grid``/
+  ``place`` return the widget (2.0 `FluentGeometryMixin`), so construct-and-place
+  in one expression — ``ttk.Button(app, text="Save").pack(...)`` — whenever the
+  example does not need to keep a reference. Showcases a real 2.0 ergonomic.
 
 ## 4. The native / shipped dichotomy (the core design idea)
 
@@ -306,9 +350,12 @@ Docs work is continuous but breaks into reviewable slices:
 2. **Reference generators** — `tools/generate_style_reference.py` (offline, emits
    committed rST); retarget `tools/generate_bootstyle_reference.py` md→rST and wire
    it in; sync tests.
-3. **User Guide** — Quickstart (rewrite the tutorial), the 5 Concept guides
-   (flagship first), How-To (salvage cookbook), Migrating to 2.0 (fold theme +
-   icon migration).
+3. **User Guide** — the four-band IA (revised §3): Getting Started (Installation,
+   Quickstart rewrite, Structuring an app, Migrating), Concepts (6 styling guides,
+   flagship + delivery-model first), Feature guides (typography, localization,
+   validation, windowing), How-To (salvage cookbook + ttkbootstrap-flavored
+   generic-tkinter recipes). The IA skeleton (index + honest stubs) lands as a
+   fast-follow to sub-PR 1; prose fills in per band.
 4. **Widgets catalog** — the shared template across all widgets, grouped native/
    shipped, cross-linked to the deep reference.
 5. **Landing + screenshots** — marketing hero; light+dark screenshots (author,

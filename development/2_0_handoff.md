@@ -3,6 +3,51 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
+_Last updated: 2026-07-10 (**Docs Workstream H — User Guide IA revised to a
+FOUR-BAND structure + skeleton re-scaffolded. On branch `docs/2.0-user-guide-ia`
+(NOT yet committed/pushed — author go-ahead pending).**
+This is the "iterate the skeleton" fast-follow to sub-PR 1 the prior entry
+anticipated, driven by the author's steer: **plan the User Guide topics around the
+2.0 utilities/non-widget features + common tkinter concerns** (and mine bootstack's
+IA for ideas). **What changed:** the design doc's original two-band User Guide
+(5 Concepts + a vague How-To, written pre-utilities-pass) had nowhere to teach the
+delivery model, fonts, localization, validation, or windowing. Revised
+`development/2_0_docs_design.md` §3 to bootstack's proven **four-band** shape,
+scoped to a styling extension (its framework-only bands dropped):
+**Getting Started** (Installation · Quickstart · Structuring an app · Migrating) ·
+**Concepts — styling core** (bootstyle grammar ★ · **How styling is delivered** ★NEW ·
+Theming · Working with color · Make your own style · Make your own theme) ·
+**Feature guides — 2.0 subsystems** (Typography · Localization · Input validation ·
+Windows/icons/DPI) · **How-To** (common tkinter tasks, ttkbootstrap-flavored;
+absorbs cookbook). **Two author decisions locked (both via AskUserQuestion):**
+(1) *teach generic tkinter "ttkbootstrap-flavored"* in How-To (fills the "modern
+tkinter docs" gap; examples use ttkb idioms + link out to python.org); (2) *adopt
+the four-band shape* (splits styling-concepts from subsystem feature-guides).
+**Two authoring conventions LOCKED in design §3** (apply to every page): **lead with
+`App`, not `Window`** (`App` is the real class, `Window = App` alias — corrected
+mid-session by the author; swept all existing skeleton pages incl. landing glimpse +
+button/meter catalog), and **use fluent geometry in examples** (`pack`/`grid`/`place`
+return the widget — construct-and-place in one expression). **Files:** rebuilt
+`docs/user-guide/index.rst` (4 grid-card bands + 4 hidden toctrees); new stubs
+`getting-started/{installation,app-structures}.rst`, `concepts/delivery-model.rst`,
+`feature-guides/{typography,localization,validation,windows}.rst`; expanded
+`how-to/index.rst` into a grouped recipe list (no per-recipe toctree yet — recipes
+become files in sub-PR 3). Each stub is an honest "being written for 2.0" note +
+seeded intro naming the real APIs. **Build gate:** 29 pages, **zero warnings** with
+`-W --keep-going` (warnings-as-errors). **ENV GOTCHA (important):** `.venv-home`'s
+base Python lives under a different user profile (`C:\Users\Israel Dryer\...`) that
+this account (`Logistiview`) gets **Access is denied** on — `.venv-home` python/
+sphinx-build all fail with "did not find executable". Workaround used: built a fresh
+docs venv from `py -3.13` (Python 3.13.7, under `Logistiview`) in the **scratchpad**
+(`.../scratchpad/docsenv`), `pip install -r docs/requirements.txt`, then
+`PYTHONPATH=src .../docsenv/Scripts/python.exe -m sphinx -b html -W ...`. (The
+scratchpad venv is outside the repo so it can't be committed; note `.gitignore`'s
+bare `venv`/`pyvenv` rules would NOT catch a repo-local `.venv-docs`.) **User WIP
+`gallery/collapsing_frame.py`** still modified — LEFT UNTOUCHED. **>>> NEXT:** author
+reviews the IA/stubs; then commit + PR this slice, and proceed down §11 — **sub-PR 2
+= reference generators**, or continue authoring User Guide prose per band. Prior
+entry (surface-color complete) follows._
+
 _Last updated: 2026-07-10 (**Surface-color workstream COMPLETE — ALL PRs MERGED into
 `2.0`: PR 1 #1149 / PR 2 #1150 / PR 3 #1152 / PR 4 (bar families) #1154 (merge
 `7953d2de`, branch deleted). PR 4 COMPLETES the family rollout, so the whole
