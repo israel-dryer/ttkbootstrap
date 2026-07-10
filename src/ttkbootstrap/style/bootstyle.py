@@ -101,7 +101,9 @@ _TOKEN_SPLIT = re.compile(r"[-\s]+")
 # never in it -- they are surface producers, not consumers). The token vocab lives
 # once in constants (`BOOTSTYLE_SURFACE_TOKENS`).
 _SURFACE_TOKENS = frozenset(BOOTSTYLE_SURFACE_TOKENS)
-_SURFACE_FAMILIES = frozenset({"button"})
+_SURFACE_FAMILIES = frozenset(
+    {"button", "checkbutton", "radiobutton", "toggle", "label"}
+)
 
 
 def _normalize_surface(surface, family, source, warn):
@@ -729,6 +731,18 @@ class Bootstyle:
                     # A third-party widget whose class maps to no ttkbootstrap
                     # builder: pass its style through untouched.
                     return style_string
+
+        # Graceful degrade (2.0 surface-color): if a surface was requested but the
+        # surfaced style still isn't registered after the build -- a family listed
+        # in `_SURFACE_FAMILIES` whose recipe did not emit `surface_prefix` -- fall
+        # back to the plain style so the widget renders normally, not bare clam.
+        if surface and not style.style_exists_in_theme(ttkstyle):
+            builder = style._get_builder()
+            plain = _build_ttkstyle_name(color, modifier, orient, family)
+            if not style.style_exists_in_theme(plain):
+                builder.build_style(variant, family, color)
+            if style.style_exists_in_theme(plain):
+                ttkstyle = plain
 
         # Repaint the combobox popdown. It is a Tcl-level toplevel that the
         # theme walk's winfo_children() DFS cannot reach, so it is refreshed

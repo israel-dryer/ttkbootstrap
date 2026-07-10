@@ -18,8 +18,11 @@ def build_radiobutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         colorname (str):
             The color label used to style the widget.
     """
-    sn = StyleName("TRadiobutton", colorname)
-    fg = builder.colors.fg
+    sn = StyleName("TRadiobutton", colorname, surface=builder._surface)
+    # The unselected radio's knockout interior shows the surface (2.0
+    # surface-color); the label text reads against it too.
+    surface = builder.resolve_surface(builder._surface)
+    fg = builder.on_surface_fg()
     disabled = builder.disabled("text")
     fg_muted = builder.mute(fg)
 
@@ -48,9 +51,9 @@ def build_radiobutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
 
     a = builder.assets
     selected = a.recolor("radiobutton", white=accent, black=accent)
-    unselected = a.recolor("radiobutton", white=builder.colors.bg, black=fg_muted)
+    unselected = a.recolor("radiobutton", white=surface, black=fg_muted)
     disabled_selected = a.recolor("radiobutton", white=disabled, black=disabled)
-    disabled_unselected = a.recolor("radiobutton", white=builder.colors.bg, black=disabled)
+    disabled_unselected = a.recolor("radiobutton", white=surface, black=disabled)
     image_element(
         builder.style, f"{sn.ttk_style}.indicator", default=selected.image,
         states={

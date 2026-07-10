@@ -92,15 +92,17 @@ def build_label_style(builder: StyleBuilderTTK, colorname=DEFAULT):
             The color label used to style the widget.
     """
     ttk_class = "TLabel"
+    # The surface the label sits on (2.0 surface-color); default == theme bg.
+    surface = builder.resolve_surface(builder._surface)
 
     if any([colorname == DEFAULT, colorname == ""]):
-        ttk_style = ttk_class
-        foreground = builder.colors.fg
-        background = builder.colors.bg
+        ttk_style = builder.surface_prefix(ttk_class)
+        foreground = builder.on_surface_fg()
+        background = surface
     else:
-        ttk_style = f"{colorname}.{ttk_class}"
+        ttk_style = builder.surface_prefix(f"{colorname}.{ttk_class}")
         foreground = builder.colors.get(colorname)
-        background = builder.colors.bg
+        background = surface
 
     # standard label
     builder.configure(

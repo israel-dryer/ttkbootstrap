@@ -268,12 +268,22 @@ working feature.
   surfaces flip to `on_color`, near-bg `card`/`neutral` keep the soft theme fg) —
   as the `collapsing_frame` acceptance proof. **No `surface=` param** (§5.1). A
   high-effort `/code-review` on the param version drove the reversal + these fixes.
-- **PR 3 — roll out to remaining consuming families.** Extend the same mechanism
-  (add each to `_SURFACE_FAMILIES`, point their `colors.bg` sites at
-  `resolve_surface`) to check/radio/toggle/scale/progressbar/scrollbar/label; the
-  recolor-glyph asset half falls out for free (§3). Update
-  `gallery/collapsing_frame.py`; visual spot-check light↔dark. Frames stay out
-  (surface *producers*, §4e).
+- **PR 3 — indicator + label families.** Extended the mechanism to the common
+  "on a surface" controls: **checkbutton, radiobutton, toggle** (round + square),
+  **label** (added to `_SURFACE_FAMILIES`; `colors.bg`/glyph-bg/`colors.fg` sites
+  → `resolve_surface`/`on_surface_fg`; `StyleName` gained a `surface=` param so
+  check/radio/scale names prefix cleanly). Added the **`_SURFACE_FAMILIES`
+  graceful-degrade net** (deferred from PR 2 review): if a listed family's recipe
+  did not emit `surface_prefix`, the resolver falls back to the plain style rather
+  than a bare-clam unregistered `@` name. `examples/surface_preview.py` is the
+  light↔dark visual proof (accent producing-frames + matching `@<accent>`
+  controls). `gallery/collapsing_frame.py` left untouched (author WIP). Frames
+  stay out (producers, §4e).
+- **PR 4 — bar families (deferred).** scale / progressbar / scrollbar — lower
+  value on a distinct surface and more complex (H/V × glyph assets); same
+  mechanism, split out for reviewability. Map already produced (each pulls
+  `border(colors.bg)` for the trough + bakes `colors.bg` in the slider/handle
+  glyphs).
 
 ## 7. Phase 2 (deferred, not this pass)
 

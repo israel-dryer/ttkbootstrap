@@ -18,8 +18,10 @@ def build_checkbutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         colorname (str):
             The color label used to style the widget.
     """
-    sn = StyleName("TCheckbutton", colorname)
-    fg = builder.colors.fg
+    sn = StyleName("TCheckbutton", colorname, surface=builder._surface)
+    # Label/focus text reads against the surface (2.0 surface-color); the
+    # indicator glyph is self-contained (its paper is `on_accent`, not the bg).
+    fg = builder.on_surface_fg()
 
     disabled = builder.disabled("text")
     fg_muted = builder.mute(fg)
