@@ -69,6 +69,55 @@ def test_base_result_is_safe_without_a_toplevel(root):
     assert dialog.result is None
 
 
+def test_close_before_show_is_a_safe_noop(root):
+    # close() on a dialog that was never shown has no toplevel; it must be a
+    # no-op rather than raising on None.
+    dialog = MessageDialog(message="hi", parent=root)
+    assert dialog._toplevel is None
+    dialog.close()  # must not raise
+
+
+def test_close_destroys_the_toplevel_and_is_idempotent(root):
+    dialog = MessageDialog(message="hi", parent=root, buttons=["OK:primary"])
+    dialog.build()
+    dialog._toplevel.withdraw()
+    assert dialog._toplevel.winfo_exists()
+    dialog.close()
+    assert not dialog._toplevel.winfo_exists()
+    dialog.close()  # second call is a no-op (winfo_exists guard), must not raise
+
+
+def test_close_is_safe_after_interpreter_teardown(root):
+    # winfo_exists() raises TclError once the application is destroyed; close()
+    # must swallow that and stay a no-op (matching the result property's guard),
+    # not propagate the error out of a cleanup path. Simulate the torn-down
+    # state with a stub rather than destroying a real root -- destroying a second
+    # root would corrupt the process-wide Style singleton for other tests.
+    import tkinter
+
+    class _DeadToplevel:
+        def winfo_exists(self):
+            raise tkinter.TclError("application has been destroyed")
+
+        def destroy(self):  # pragma: no cover - must never be reached
+            raise AssertionError("destroy() should not run when the app is gone")
+
+    dialog = MessageDialog(message="hi", parent=root)
+    dialog._toplevel = _DeadToplevel()
+    dialog.close()  # must not raise
+
+
+def test_escape_binding_is_installed_for_dismissal(root):
+    # The base class wires <Escape> to dismiss the dialog (it routes through the
+    # public close()). Synthesizing the keypress needs a mapped window + running
+    # loop the headless fixture can't guarantee, so assert the binding exists;
+    # close()'s destroy behavior is covered above.
+    dialog = MessageDialog(message="hi", parent=root, buttons=["OK:primary"])
+    dialog.build()
+    dialog._toplevel.withdraw()
+    assert dialog._toplevel.bind("<Escape>"), "an <Escape> binding should be installed"
+
+
 def test_querybox_get_string_returns_via_result_property():
     # Every get_* now returns dialog.result, not the private ._result.
     src = inspect.getsource(Querybox.get_string)
