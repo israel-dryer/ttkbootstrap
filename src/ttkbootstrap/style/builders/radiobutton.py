@@ -23,8 +23,8 @@ def build_radiobutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     # surface-color); the label text reads against it too.
     surface = builder.resolve_surface(builder._surface)
     fg = builder.on_surface_fg()
-    disabled = builder.disabled("text")
-    fg_muted = builder.mute(fg)
+    disabled = builder.disabled("text", surface)
+    fg_muted = builder.mute(fg, surface)
 
     # Resolve the "on" accent; LIGHT/DARK on their own background need a
     # contrasting indicator so the knockout interior stays readable

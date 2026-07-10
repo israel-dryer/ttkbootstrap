@@ -45,10 +45,10 @@ def build_round_toggle_style(builder: StyleBuilderTTK, colorname=DEFAULT):
 
 def _build_round_toggle_style(builder: StyleBuilderTTK, colorname, ttk_class):
     """Build a round toggle under `ttk_class` (`Toggle` or `Round.Toggle`)."""
-    disabled_fg = builder.disabled("text")
     # The surface the toggle sits on (2.0 surface-color): the off track, the
     # background, and the switch glyph's knockout (black channel) all track it.
     surface = builder.resolve_surface(builder._surface)
+    disabled_fg = builder.disabled("text", surface)
     fg = builder.on_surface_fg()
     off_track = builder.border(surface)  # bootstack: off track = border(surface)
 
@@ -136,9 +136,9 @@ def build_square_toggle_style(builder: StyleBuilderTTK, colorname=DEFAULT):
             The color label used to style the widget.
     """
     ttk_class = "Square.Toggle"
-    disabled_fg = builder.disabled("text")
     # The surface the toggle sits on (2.0 surface-color).
     surface = builder.resolve_surface(builder._surface)
+    disabled_fg = builder.disabled("text", surface)
     fg = builder.on_surface_fg()
     off_track = builder.border(surface)  # bootstack: off track = border(surface)
 

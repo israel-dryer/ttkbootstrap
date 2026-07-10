@@ -109,6 +109,34 @@ def test_surfaced_family_is_theme_reactive(root):
     assert light != dark
 
 
+# --- gate <-> recipe correspondence --------------------------------------- #
+
+def test_every_gated_family_honors_surface(root):
+    """Every family in `_SURFACE_FAMILIES` must actually emit the `@surface`
+    prefix -- guards the hand-maintained gate against drifting from the recipes
+    (a listed-but-unwired family would silently degrade instead)."""
+    import ttkbootstrap.style.bootstyle as bs
+    cases = {
+        "button": ttk.Button(root, bootstyle="@card"),
+        "checkbutton": ttk.Checkbutton(root, bootstyle="@card"),
+        "radiobutton": ttk.Radiobutton(root, bootstyle="@card"),
+        "toggle": ttk.Checkbutton(root, bootstyle="@card toggle"),
+        "label": ttk.Label(root, bootstyle="@card"),
+    }
+    # the test must cover exactly the gate (update both together)
+    assert set(cases) == set(bs._SURFACE_FAMILIES)
+    for family, w in cases.items():
+        assert w.cget("style").startswith("@card."), f"{family} dropped its surface"
+
+
+def test_inverse_label_prefixes_not_degrades(root):
+    """Every label variant honors the surface in its name (no degrade churn)."""
+    assert (
+        ttk.Label(root, bootstyle="@card inverse").cget("style")
+        == "@card.Inverse.TLabel"
+    )
+
+
 # --- graceful-degrade net ------------------------------------------------- #
 
 def test_surface_degrades_when_family_recipe_unwired(root, monkeypatch):

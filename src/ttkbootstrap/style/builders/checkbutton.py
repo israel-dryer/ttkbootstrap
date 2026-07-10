@@ -21,10 +21,11 @@ def build_checkbutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     sn = StyleName("TCheckbutton", colorname, surface=builder._surface)
     # Label/focus text reads against the surface (2.0 surface-color); the
     # indicator glyph is self-contained (its paper is `on_accent`, not the bg).
+    surface = builder.resolve_surface(builder._surface)
     fg = builder.on_surface_fg()
 
-    disabled = builder.disabled("text")
-    fg_muted = builder.mute(fg)
+    disabled = builder.disabled("text", surface)
+    fg_muted = builder.mute(fg, surface)
 
     accent = builder.colors.get(colorname or 'primary')
     on_accent = builder.on_color(accent)
