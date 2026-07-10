@@ -182,7 +182,7 @@ fixing shared bugs and adding two ergonomic helpers, all dependency-free.
   reuse the name `LV` for a variable (collides with bootstack's meaning); the
   live handle is `LocaleVar`.
 
-### Slice 3 — IMPLEMENTED (#TBD, 2026-07-09)
+### Slice 3 — IMPLEMENTED (#1144, 2026-07-09)
 
 - **msgcat bug fixes** (`localization/msgcat.py`): every command moved from
   `tk.eval(f"…")` to `tk.call(…)` (`translate`/`locale`/`set`/`set_many`/`load`/
@@ -246,7 +246,7 @@ bracket DSL (needs to intercept `font=` — framework territory).
 - Flushed in `App.__init__`; applied live if a root already exists.
 - Re-exported as top-level `ttk.set_locale` / `ttk.set_global_family` / etc.
 
-### Slice 5 — IMPLEMENTED (#TBD, 2026-07-09)
+### Slice 5 — IMPLEMENTED (#1143, 2026-07-09)
 
 Shipped as `ttkbootstrap/utils/config.py`: a `defer(key, apply)` /
 `flush_pending_config()` registry + the `set_default_button(color)` setter (the
@@ -303,7 +303,7 @@ Resolved forks:
    **DONE — #1140.**
 4. **Deferred-config seam** (Slice 5 core) — small, enables localization & typography.
 5. **Localization** (Slice 3) — msgcat fixes + `L()`/`LocaleVar` + event.
-   **DONE — #TBD.**
+   **DONE — #1144.**
 6. **Typography** (Slice 4) — `Fonts` utility, wired through the seam.
 
 (Actual merge order was 1/2/0, all standalone; the remaining three are 5 → 3 → 4.
