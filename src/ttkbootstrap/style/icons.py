@@ -360,6 +360,19 @@ _ICON_WIDGET_CLASSES = frozenset({
     "TCheckbutton", "TRadiobutton",
 })
 
+#: Default logical glyph size for a normal icon (icon + text).
+_ICON_SIZE = 14
+#: Default logical glyph size + symmetric padding for an icon-only widget. The
+#: pair is chosen once for the expected height: a button is
+#: ``content + 2*padding + chrome``, and a normal button (text lineheight ~15,
+#: base padding 4, chrome ~6) is ~29 px, so ``size + 2*padding = 23`` lands an
+#: icon-only square on that same height. 17 + 2*3 = 23 -> a compact square the
+#: height of a normal button, with a glyph a touch larger than the text line.
+#: Both are logical units (DPI-scaled). Explicit ``icon_size=`` / ``padding=``
+#: override them, and then the control's size changes to match (by design).
+_ICON_ONLY_SIZE = 17
+_ICON_ONLY_PADDING = 3
+
 # A derived icon style is named "Icon<8 hex>.<base style>"; this strips the
 # prefix back to the base so re-applies are idempotent.
 _ICON_STYLE_PREFIX = re.compile(r"^Icon[0-9a-f]{8}\.")
@@ -381,7 +394,7 @@ def _widget_has_text(widget):
         return False
 
 
-def _build_icon_style(style, base, name, size, states, compound):
+def _build_icon_style(style, base, name, size, states, compound, icon_only=False):
     """(Re)configure a derived ``Icon<hash>.<base>`` style and return its name.
 
     Renders one glyph per state in that state's *base foreground* color (so the
@@ -394,7 +407,15 @@ def _build_icon_style(style, base, name, size, states, compound):
     assets = Assets(style)
     states = states or {}
 
-    key = f"{base}|{name}|{size}|{sorted(states.items())}|{compound}"
+    # icon-only: image-only compound + the fixed symmetric padding chosen (with
+    # the default size) so the default control is a square ~a normal button's
+    # height. Fixed, not derived: an explicit size/padding just changes the size.
+    padding = None
+    if icon_only:
+        compound = "image"  # ttk compound value; no tkinter constant for it
+        padding = assets.scaling.logical(_ICON_ONLY_PADDING)
+
+    key = f"{base}|{name}|{size}|{sorted(states.items())}|{compound}|{padding}"
     digest = hashlib.md5(key.encode("utf-8")).hexdigest()[:8]
     derived = f"Icon{digest}.{base}"
 
@@ -422,6 +443,8 @@ def _build_icon_style(style, base, name, size, states, compound):
     config = {"image": rest_image}
     if compound is not None:
         config["compound"] = compound
+    if padding is not None:
+        config["padding"] = padding
     style.configure(derived, **config)
     if image_map:
         style.map(derived, image=image_map)
@@ -450,7 +473,7 @@ def _rebuild_widget_icon(widget):
     try:
         derived = _build_icon_style(
             style, spec["base"], spec["name"], spec["size"],
-            spec["states"], spec["compound"],
+            spec["states"], spec["compound"], spec.get("icon_only", False),
         )
         _set_icon_style(widget, derived)
     except tk.TclError:
@@ -481,7 +504,8 @@ def _clear_widget_icon(widget):
     return None
 
 
-def apply_icon(widget, name, *, size=14, states=None, compound=None):
+def apply_icon(widget, name, *, size=None, states=None, compound=None,
+               icon_only=False):
     """Put a theme-aware Bootstrap Icons glyph on ``widget``.
 
     Unlike a bare `Icon(...)` used as ``image=``, this tracks the active theme and
@@ -514,7 +538,15 @@ def apply_icon(widget, name, *, size=14, states=None, compound=None):
 
         compound (str | None):
             The ttk ``-compound`` option (icon/text arrangement). Defaults to
-            ``LEFT`` when the widget has text, else icon-only.
+            ``LEFT`` when the widget has text, else icon-only. Ignored (forced to
+            ``IMAGE``) when ``icon_only`` is set.
+
+        icon_only (bool):
+            Render the widget as an icon-only control: hide any text
+            (``compound=IMAGE``) and give it a symmetric padding that makes it a
+            square the same height as a normal widget. The default glyph is a
+            touch larger; an explicit ``size`` (and a widget ``padding=`` option,
+            which wins over the style) still take precedence.
 
     Returns the derived ttk style name, or ``None`` when the icon was cleared.
     """
@@ -533,18 +565,21 @@ def apply_icon(widget, name, *, size=14, states=None, compound=None):
             f"API, not a widget-level style.)"
         )
 
-    if compound is None and _widget_has_text(widget):
+    if size is None:
+        size = _ICON_ONLY_SIZE if icon_only else _ICON_SIZE
+    if not icon_only and compound is None and _widget_has_text(widget):
         compound = tk.LEFT
 
     base = _icon_base_style(widget)
-    derived = _build_icon_style(style, base, name, size, states, compound)
+    derived = _build_icon_style(style, base, name, size, states, compound,
+                                icon_only)
     _set_icon_style(widget, derived)
 
     # remember the spec so a <<ThemeChanged>> (or a bootstyle change that re-calls
     # apply_icon) can rebuild the glyphs for the new theme
     widget._tb_icon = {
         "base": base, "name": name, "size": size,
-        "states": states, "compound": compound,
+        "states": states, "compound": compound, "icon_only": icon_only,
     }
     # single bind: replace, never stack, on repeated apply_icon calls
     old = getattr(widget, "_tb_icon_bindid", None)

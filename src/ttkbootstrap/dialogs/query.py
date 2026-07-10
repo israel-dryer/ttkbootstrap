@@ -116,16 +116,15 @@ class QueryDialog(Dialog):
             text=MessageCatalog.translate("Submit"),
             command=self.on_submit,
         )
-        submit.pack(padx=5, side=RIGHT)
+        submit.pack(padx=2, side=RIGHT)
         submit.lower()
 
         cancel = ttk.Button(
             master=frame,
-            bootstyle="secondary",
             text=MessageCatalog.translate("Cancel"),
             command=self.on_cancel,
         )
-        cancel.pack(padx=5, side=RIGHT)
+        cancel.pack(padx=2, side=RIGHT)
         cancel.lower()
 
         ttk.Separator(self._toplevel).pack(fill=X)

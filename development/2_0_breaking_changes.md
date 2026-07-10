@@ -20,6 +20,7 @@
 | **Deferred-config seam + `ttk.set_default_button()` pre-root setter** | New | this doc, below (Slice 5) |
 | **Localization: msgcat bug fixes + `L()` / `LocaleVar` / `set_locale`** | Fix/New | this doc, below (Slice 3) |
 | **Typography: `ttk.Fonts` + `ttk.set_global_family()` over the Tk named fonts** | New | this doc, below (Slice 4) |
+| **Light/dark theme mode toggle (`theme_mode`/`toggle_theme_mode`)** | New | this doc, below |
 | Canonical `bootstyle` grammar (closed vocab, strict mode) | API | `development/2_0_bootstyle_grammar_design.md` |
 | Character-based icons removed (`ttkbootstrap.icons`) | API | `development/2_0_icon_drop_design.md` (PR #1094) |
 | Delivery API (mixins, no import-time monkey-patch) | API | handoff / PR #1075 |
@@ -46,6 +47,40 @@
 | **Inputs: focus color on focus only (not hover)** | Visual | this doc, below |
 | **`card` / `highlight` frames: hairline border (`RAISED`, no bevel)** | Visual | this doc, below |
 | **Control-height parity + check/radio/menubutton focus rings** | Visual | this doc, below |
+
+---
+
+## Light/dark theme mode toggle  *(New)*
+
+**What.** A small utility over the light/dark theme pairing that was previously
+implicit. Every built-in family ships a `<family>-light` / `<family>-dark` pair,
+but there was no first-class way to flip between them. Named `theme_mode` (not
+bare `mode`) so it does not collide with the widget `mode` option
+(`Progressbar`/`Floodgauge` determinate/indeterminate). Now:
+
+- `style.theme_mode` → `"light"` or `"dark"` (the active theme's type).
+- `style.toggle_theme_mode()` → switch to the counterpart, returns the new mode.
+- `style.use_theme_mode("light" | "dark")` → set a specific mode (e.g. to follow
+  an OS preference).
+- `style.set_theme_modes(light=..., dark=...)` and `App(light_theme=...,
+  dark_theme=...)` → optionally *designate* the pair.
+- `App`/`Toplevel` expose `theme_mode` / `toggle_theme_mode()` /
+  `use_theme_mode()` / `set_theme_modes()` as convenience delegates to the
+  singleton `Style`.
+
+**Counterpart resolution.** If a pair is designated, toggling switches between
+exactly those two themes (they may cross families, e.g. `bootstrap-light` ↔
+`dracula-dark`). Otherwise the counterpart is derived from the `<family>-light` /
+`<family>-dark` naming convention. If neither yields a counterpart (a single
+legacy theme with no sibling), toggling warns and no-ops.
+
+**Why.** The anchor-theme model already generates matched light/dark pairs; this
+exposes the toggle every app was otherwise hand-rolling (string-swapping the
+`-light`/`-dark` suffix). Rides the existing theme walk — no engine change, and a
+toggle emits `<<ThemeChanged>>` like any `theme_use`.
+
+**Scope note.** This is a *utility*, not a widget — it fits the 2.0 "no new
+*widgets*" rule. No migration required; purely additive.
 
 ---
 
@@ -310,7 +345,12 @@ a light button on a colored header); use `neutral` for "no emphasis, follow the
 theme."
 
 **Scope.** Buttons (and the extending button-family widgets — see below).
-`NEUTRAL_FAMILIES` in `constants.py` gates where it is advertised.
+`NEUTRAL_FAMILIES` in `constants.py` (`button`/`menubutton`/`toolbutton`) gates
+where it is advertised **and enforced**: the resolver drops `neutral` on any
+other family (e.g. `Label`, `Entry`, `Scale`) back to that family's default
+style with a loud warning (raise under `set_bootstyle_strict(True)`) rather than
+building it. Before that gate, `neutral` on a non-button family resolved to an
+undefined color and crashed widget construction — see the pre-release review fix.
 
 **Migration.** None required. Optionally replace `bootstyle="light"` buttons that
 were standing in for a quiet/subtle button with `bootstyle="neutral"` — it will
@@ -625,13 +665,26 @@ with deprecated aliases.
 **What.** New public surface for putting a theme-aware Bootstrap Icons glyph on a
 widget (design `development/2_0_icon_theme_awareness_design.md`):
 
-- `ttk.apply_icon(widget, name, *, size=14, states=None, compound=None)` — renders
-  the glyph following the widget's style `foreground` (so it inverts on
-  outline/toggle, mutes when disabled) and re-renders on `<<ThemeChanged>>`.
-- `icon=`/`icon_size=` keyword sugar on every blessed ttk widget (`BootMixin`) —
-  routes to `apply_icon` after the base style resolves.
+- `ttk.apply_icon(widget, name, *, size=None, states=None, compound=None,
+  icon_only=False)` — renders the glyph following the widget's style `foreground`
+  (so it inverts on outline/toggle, mutes when disabled) and re-renders on
+  `<<ThemeChanged>>`.
+- `icon=`/`icon_size=`/`icon_only=` keyword sugar on every blessed ttk widget
+  (`BootMixin`) — routes to `apply_icon` after the base style resolves.
 - Supported on label-image widgets (`Button`/`Label`/`Menubutton`/`Checkbutton`/
   `Radiobutton`); other classes raise `TypeError`.
+
+**Icon-only controls (`icon_only=True`).** Renders the widget as a compact
+icon-only control: hides text (`compound=image`) and applies a fixed default glyph
+size + symmetric padding chosen together for the expected height (a button is
+`size + 2*padding + chrome`; the pair `size=17, padding=3` lands on the ~29 px
+normal-button height, the glyph a touch larger than the text line). So every
+default icon-only control is a **square about a normal button's height, and all of
+them the same size**. Both defaults are **overridable, and an override changes the
+control's size — by design**: `icon_size=` sizes the glyph (bigger glyph → bigger
+square) and a widget `padding=` (a ttk instance option, which overrides the style
+padding) sets your own — e.g. a dense toolbar button. Without an `icon=`,
+`icon_only=True` warns and is ignored.
 
 **Why.** A bare `Icon(...)` used as `image=` bakes its color once and goes stale on
 a theme switch — style-delivered icons (builder recipes) were theme-aware, inline
@@ -646,7 +699,12 @@ restores the base style. The static `Icon(...)` escape hatch is unchanged (a raw
 `-image`, no style, not themed).
 
 **Not breaking.** Purely additive; no existing signature changed. First-party: the
-datepicker header carets were migrated onto `apply_icon` (internal, no API change).
+datepicker header carets were migrated onto `apply_icon` (internal, no API change),
+and the icon-only controls (datepicker nav chevrons, `Tableview` pagination/reset
+buttons, the `DateEntry` calendar button) now use `icon_only=True` instead of
+hand-tuned per-site padding/size — they render as uniform squares the button
+height (a minor visual tidy: the `DateEntry` glyph is 17 vs the old 18, and the
+chevrons/pagination buttons are now square rather than the wider default).
 
 ## Tableview pagination: glyph nav buttons + boundary-disable  *(behavior)*
 
@@ -728,6 +786,9 @@ rename was coordinated across the date-picker dialog layer:
   remain as date-typed synonyms.
 - On unparseable text the entry is flagged **`invalid`** on blur (`<FocusOut>`).
 - New **`position=`** passthrough to the picker popup.
+- The constructor's default **`bootstyle`** is now explicitly `"primary"` (was an
+  empty default that resolved to the primary look anyway) — codifies the existing
+  1.x appearance, no visible change.
 
 **Migration.** The old `dateformat`/`firstweekday`/`startdate` spellings are accepted
 through 2.x with a `DeprecationWarning` naming the new form (via `style/_compat.py`),
@@ -901,8 +962,9 @@ int. Nothing warns — these are source-level breaks, not deprecations.
 - **The constructor is keyword-only** after `title, message`.
 - **A bad `position` anchor now raises `ValueError`** (was silently dropped to
   the OS default). `position` stays a 3-tuple `(x, y, anchor)`.
-- **`set_geometry()` is now private (`_set_geometry` internals)** — it was public
-  but always internal. `titlefont` internal attribute → `title_font`.
+- **`set_geometry()` is removed** — it was public but always internal; its logic
+  is now inlined into the toast's private setup/geometry path. `titlefont`
+  internal attribute → `title_font`.
 
 *Additive.*
 - **Concurrent toasts no longer overlap.** Toasts anchored to the same screen
@@ -1244,6 +1306,13 @@ Only those two are packaged; the source PNGs are build inputs, not shipped.
 titlebar/taskbar icon looked soft at larger sizes. A packed `.ico` lets Windows
 pick the crisp frame per DPI/context; macOS/Linux take a full-size PNG. Rebuild
 the `.ico` with `python tools/make_app_ico.py` after changing the source PNGs.
+
+**Child toplevels inherit it.** On Windows the `.ico` is applied with
+`wm_iconbitmap(default=...)` (and a user-supplied `.ico` path likewise), so
+dialogs, pickers, and other toplevels inherit the app icon instead of showing the
+Tk feather — matching the `iconphoto(True, ...)` default flag used on macOS/Linux.
+(Pre-release-review fix: without `-default` the icon was set on the root window
+only.)
 
 ---
 

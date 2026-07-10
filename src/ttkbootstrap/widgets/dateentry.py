@@ -56,10 +56,6 @@ class DateEntry(ConfigureDelegationMixin, Frame):
     # coercing the live entry text to a date.
     _FALLBACK_FORMATS = ("%Y-%m-%d", "%m/%d/%Y")
 
-    # Logical size of the calendar-button glyph (shared by construction and the
-    # `button_icon` configure delegate so live changes match the initial render).
-    _BUTTON_ICON_SIZE = 18
-
     def __init__(
             self,
             master: Optional[Misc] = None,
@@ -163,7 +159,7 @@ class DateEntry(ConfigureDelegationMixin, Frame):
             command=self._on_date_ask,
             bootstyle=self._bootstyle,
             icon=self._button_icon,
-            icon_size=self._BUTTON_ICON_SIZE,
+            icon_only=True,
             padding=2
         )
         # The button is *placed* over the entry's right edge (not packed beside
@@ -220,7 +216,7 @@ class DateEntry(ConfigureDelegationMixin, Frame):
         if value is None:
             return self._button_icon
         self._button_icon = value
-        apply_icon(self.button, value, size=self._BUTTON_ICON_SIZE)
+        apply_icon(self.button, value, icon_only=True)
 
     @configure_delegate("start_date")
     def _cfg_start_date(self, value):

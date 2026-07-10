@@ -2423,6 +2423,7 @@ class Tableview(ttk.Frame):
                 frame,
                 bootstyle=GHOST,
                 icon="arrow-counterclockwise",
+                icon_only=True,
                 command=self.reset_table,
             ).pack(side=LEFT)
 
@@ -2437,6 +2438,7 @@ class Tableview(ttk.Frame):
             pageframe,
             bootstyle=GHOST,
             icon="arrow-counterclockwise",
+            icon_only=True,
             command=self.reset_table,
         ).pack(side=RIGHT, fill=Y)
 
@@ -2448,6 +2450,7 @@ class Tableview(ttk.Frame):
             master=pageframe,
             bootstyle=GHOST,
             icon="chevron-bar-right",
+            icon_only=True,
             command=self.goto_last_page,
         )
         self._pagelast.pack(side=RIGHT, fill=Y)
@@ -2455,6 +2458,7 @@ class Tableview(ttk.Frame):
             master=pageframe,
             bootstyle=GHOST,
             icon="chevron-right",
+            icon_only=True,
             command=self.goto_next_page,
         )
         self._pagenext.pack(side=RIGHT, fill=Y)
@@ -2463,6 +2467,7 @@ class Tableview(ttk.Frame):
             master=pageframe,
             bootstyle=GHOST,
             icon="chevron-left",
+            icon_only=True,
             command=self.goto_prev_page,
         )
         self._pageprev.pack(side=RIGHT, fill=Y)
@@ -2470,6 +2475,7 @@ class Tableview(ttk.Frame):
             master=pageframe,
             bootstyle=GHOST,
             icon="chevron-bar-left",
+            icon_only=True,
             command=self.goto_first_page,
         )
         self._pagefirst.pack(side=RIGHT, fill=Y)

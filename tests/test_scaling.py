@@ -137,7 +137,7 @@ def test_window_and_style_initialize_scaling_before_style_builds():
     )
     assert init_source.index("super().__init__(**kwargs)") < init_source.index(
         "utils.enable_high_dpi_awareness(self, scaling)"
-    ) < init_source.index("self._style = Style(theme")
+    ) < init_source.index("self._style = Style(")
 
     engine_source = (package / "style" / "engine.py").read_text(encoding="utf-8")
     style_init = engine_source[engine_source.index("class Style"):]

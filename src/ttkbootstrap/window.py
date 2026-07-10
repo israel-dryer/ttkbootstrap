@@ -200,6 +200,26 @@ class _BaseWindow:
         """Return a reference to the `ttkbootstrap.style.Style` object."""
         return Style.get_instance()
 
+    # -- light/dark theme mode (convenience delegates to Style) ------------
+
+    @property
+    def theme_mode(self) -> Optional[str]:
+        """The active theme mode (`"light"` or `"dark"`)."""
+        return self.style.theme_mode
+
+    def set_theme_modes(self, light: Optional[str] = None,
+                        dark: Optional[str] = None) -> None:
+        """Designate the light/dark theme pair the toggle switches between."""
+        self.style.set_theme_modes(light=light, dark=dark)
+
+    def use_theme_mode(self, mode: str) -> Optional[str]:
+        """Switch to the light or dark theme; returns the resulting mode."""
+        return self.style.use_theme_mode(mode)
+
+    def toggle_theme_mode(self) -> Optional[str]:
+        """Toggle between the light and dark theme; returns the new mode."""
+        return self.style.toggle_theme_mode()
+
     # -- setup helpers -----------------------------------------------------
 
     def _setup_icon(self, iconphoto: Optional[str], default_data: Optional[str] = None) -> None:
@@ -222,11 +242,19 @@ class _BaseWindow:
             return
         try:
             path = str(iconphoto)
+            # The application root's icon is the app-wide default, so child
+            # toplevels (dialogs, pickers) inherit it instead of the Tk feather;
+            # a secondary `Toplevel`'s own icon applies to that window only (it
+            # must not re-skin the whole app).
+            app_wide = isinstance(self, tkinter.Tk)
             if path.lower().endswith('.ico') and self.winsys == 'win32':
-                self.wm_iconbitmap(path)
+                if app_wide:
+                    self.wm_iconbitmap(default=path)
+                else:
+                    self.wm_iconbitmap(path)
             else:
                 self._icon = tkinter.PhotoImage(file=path, master=self)
-                self.iconphoto(True, self._icon)
+                self.iconphoto(app_wide, self._icon)
         except tkinter.TclError:
             warnings.warn(
                 f"iconphoto path {iconphoto!r} could not be loaded; "
@@ -248,7 +276,9 @@ class _BaseWindow:
         try:
             if self.winsys == 'win32':
                 if _APP_ICON_ICO.is_file():
-                    self.wm_iconbitmap(str(_APP_ICON_ICO))
+                    # `default=` propagates the icon to every future toplevel
+                    # (dialogs/pickers), which otherwise show the Tk feather.
+                    self.wm_iconbitmap(default=str(_APP_ICON_ICO))
                     return
             elif _APP_ICON_PNG.is_file():
                 self._icon = tkinter.PhotoImage(master=self, file=str(_APP_ICON_PNG))
@@ -374,6 +404,8 @@ class App(_BaseWindow, tkinter.Tk):
             theme: Optional[str] = None,
             *,
             themename: Optional[str] = None,
+            light_theme: Optional[str] = None,
+            dark_theme: Optional[str] = None,
             default_button: Optional[str] = None,
             iconphoto: Optional[str] = '',
             size: Optional[Tuple[int, int]] = None,
@@ -520,7 +552,10 @@ class App(_BaseWindow, tkinter.Tk):
 
         apply_class_bindings(self)
         apply_all_bindings(self)
-        self._style = Style(theme, default_button=default_button)
+        self._style = Style(
+            theme, default_button=default_button,
+            light_theme=light_theme, dark_theme=dark_theme,
+        )
 
     @staticmethod
     def _set_app_user_model_id() -> None:

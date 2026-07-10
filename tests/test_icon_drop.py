@@ -25,8 +25,12 @@ def _icon_label_image(container):
     # is the icon Label when an icon was supplied.
     inner = container.winfo_children()[0]
     for w in inner.winfo_children():
+        # Only Labels carry an -image option; the message lives in a sub-frame
+        # that would raise on cget("image"), so gate on the class first.
+        if w.winfo_class() != "TLabel":
+            continue
         image = w.cget("image")
-        if w.winfo_class() == "TLabel" and image:
+        if image:
             # Tk may hand back a 1-tuple for the -image option; normalize to str.
             return image[0] if isinstance(image, tuple) else image
     return None

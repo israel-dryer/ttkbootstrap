@@ -14,6 +14,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap.dialogs import Messagebox, Querybox
 from ttkbootstrap.dialogs.base import Dialog
 from ttkbootstrap.dialogs.message import MessageDialog
+from ttkbootstrap.dialogs.query import QueryDialog
 from ttkbootstrap.dialogs.datepicker import DatePickerDialog
 
 
@@ -127,6 +128,56 @@ def test_datepicker_result_is_none_until_a_day_is_selected(root):
             chooser.root.destroy()
         except Exception:
             pass
+
+
+def test_datepicker_selection_highlight_does_not_bleed_across_months(root):
+    # Regression: `datevar` (shared by every day cell) was only re-set in the
+    # branch matching the selected month, so browsing to another month left it
+    # pinned to the selected day number and that day was spuriously highlighted
+    # in every month. Each redraw must clear it (0 = no cell) and re-select the
+    # day only in the selected month.
+    import datetime
+    picker = DatePickerDialog(
+        parent=root, start_date=datetime.date(2026, 7, 9), autoshow=False
+    )
+    try:
+        assert picker.datevar.get() == 9          # selected month: day is selected
+        picker.on_next_month()
+        assert picker.datevar.get() == 0          # other month: nothing selected
+        picker.on_next_year()
+        assert picker.datevar.get() == 0
+        picker.on_prev_year()
+        picker.on_prev_month()
+        assert picker.datevar.get() == 9          # back to selected month: restored
+    finally:
+        try:
+            picker.root.destroy()
+        except Exception:
+            pass
+
+
+def test_message_and_query_dialogs_use_consistent_button_spacing(root):
+    # Regression: QueryDialog packed its Submit/Cancel buttons with padx=5 while
+    # MessageDialog uses padx=2, so the Querybox button row read visibly looser
+    # than the Messagebox row. The two sibling dialogs must space buttons alike.
+    def button_padx(dlg):
+        dlg.build()
+        dlg._toplevel.withdraw()
+        pads = [
+            w.pack_info().get("padx")
+            for child in dlg._toplevel.winfo_children()
+            for w in child.winfo_children()
+            if isinstance(w, ttk.Button)
+        ]
+        dlg._toplevel.destroy()
+        return pads
+
+    md = button_padx(
+        MessageDialog("body", title="m", parent=root, buttons=["Cancel", "OK:primary"])
+    )
+    qd = button_padx(QueryDialog("prompt", title="q", parent=root))
+    assert md and qd
+    assert set(md) == set(qd) == {2}
 
 
 def test_datepicker_has_show_and_autoshow():

@@ -329,6 +329,15 @@ class DatePickerDialog:
         self._current_month_days()
         self.frm_dates = ttk.Frame(self.frm_calendar).pack(fill=BOTH, expand=YES)
 
+        # All day cells share `datevar`; a Radiobutton is "selected" when its
+        # value equals it. Clear it to a value no cell uses (days are 1..31) so a
+        # month other than the selected one shows no selection -- the match
+        # branch below re-sets it to the selected day only when this redraw is of
+        # the selected month. Without this reset, `datevar` stays pinned to the
+        # selected day number and that day is spuriously highlighted in every
+        # month the user browses to.
+        self.datevar.set(0)
+
         for row, weekday_list in enumerate(self.monthdays):
             for col, day in enumerate(weekday_list):
                 self.frm_dates.columnconfigure(col, weight=1)
@@ -384,7 +393,7 @@ class DatePickerDialog:
             command=self.on_prev_year,
             bootstyle="ghost",
             icon="chevron-double-left",
-            padding=4,
+            icon_only=True,
         )
         self.prev_year.pack(side=LEFT, fill=Y)
         self.prev_period = ttk.Button(
@@ -392,7 +401,7 @@ class DatePickerDialog:
             command=self.on_prev_month,
             bootstyle="ghost",
             icon="chevron-left",
-            padding=4
+            icon_only=True,
         )
         self.prev_period.pack(side=LEFT, fill=Y)
 
@@ -409,7 +418,7 @@ class DatePickerDialog:
             command=self.on_next_month,
             bootstyle="ghost",
             icon="chevron-right",
-            padding=4
+            icon_only=True,
         )
         self.next_period.pack(side=LEFT, fill=Y)
 
@@ -418,7 +427,7 @@ class DatePickerDialog:
             command=self.on_next_year,
             bootstyle="ghost",
             icon="chevron-double-right",
-            padding=4
+            icon_only=True,
         )
         self.next_year.pack(side=LEFT, fill=Y)
 

@@ -7,6 +7,7 @@ and opt-in-global delivery primitives. Top layer of the `style` package.
 """
 import difflib
 import re
+import warnings
 from tkinter import Grid, Pack, Place, TclError, ttk
 
 from ttkbootstrap.constants import (
@@ -15,6 +16,8 @@ from ttkbootstrap.constants import (
     BOOTSTYLE_INTERNAL_MODIFIERS,
     BOOTSTYLE_FAMILIES,
     BOOTSTYLE_ORIENTS,
+    NEUTRAL,
+    NEUTRAL_FAMILIES,
     BootStyle,
 )
 from ttkbootstrap.style import _compat
@@ -601,6 +604,18 @@ class Bootstyle:
             widget, style_string, warn=True, **kwargs
         )
         variant = modifier or DEFAULT_VARIANT
+
+        # `neutral` is a no-accent fill that only the button-family recipes
+        # implement (constants.NEUTRAL_FAMILIES). For any other family it
+        # resolves to a color the theme never defines (Colors.get("neutral")
+        # -> None), which crashes the recipe mid-build. Treat it like an invalid
+        # color for that family: fail loudly for a bootstyle string, then drop
+        # the color and fall back to the family's default style.
+        if color == NEUTRAL and family not in NEUTRAL_FAMILIES:
+            if is_bootstyle:
+                _compat.report_invalid("color", f"{NEUTRAL}-{family}", style_string)
+            color = ""
+
         ttkstyle = _build_ttkstyle_name(color, modifier, orient, family)
 
         # build style if not existing (example: theme changed)
@@ -883,14 +898,16 @@ class BootMixin(FluentGeometryMixin):
 
             **kwargs:
                 Keyword arguments forwarded to the wrapped ttk widget's
-                constructor. ``bootstyle``, ``style``, ``icon``, and
-                ``icon_size`` are consumed here rather than forwarded.
+                constructor. ``bootstyle``, ``style``, ``icon``, ``icon_size``,
+                and ``icon_only`` are consumed here rather than forwarded.
         """
         # capture bootstyle, style, and icon arguments
         bootstyle = kwargs.pop("bootstyle", "")
         style = kwargs.pop("style", "") or ""
         icon = kwargs.pop("icon", None)
-        icon_size = kwargs.pop("icon_size", 14)
+        # size defaults inside apply_icon (icon-only-aware); None = "not given"
+        icon_size = kwargs.pop("icon_size", None)
+        icon_only = kwargs.pop("icon_only", False)
 
         # instantiate the underlying ttk widget first so winfo_class() is
         # available to the resolver below
@@ -922,7 +939,12 @@ class BootMixin(FluentGeometryMixin):
             # style (see ttkbootstrap.apply_icon).
             if icon:
                 from ttkbootstrap.style.icons import apply_icon
-                apply_icon(self, icon, size=icon_size)
+                apply_icon(self, icon, size=icon_size, icon_only=icon_only)
+            elif icon_only:
+                warnings.warn(
+                    "icon_only=True has no effect without icon=...; ignoring.",
+                    UserWarning, stacklevel=2,
+                )
         except AttributeError:
             # Third-party widgets (e.g. tkcalendar.Calendar) override
             # configure() and may touch instance attributes not yet set when
@@ -953,6 +975,7 @@ class BootMixin(FluentGeometryMixin):
         # capture icon changes; applied after the base style resolves below
         icon = kwargs.pop("icon", _UNSET)
         icon_size = kwargs.pop("icon_size", _UNSET)
+        icon_only = kwargs.pop("icon_only", _UNSET)
 
         # set configuration
         bootstyle = kwargs.pop("bootstyle", "")
@@ -972,20 +995,31 @@ class BootMixin(FluentGeometryMixin):
         # otherwise a base-style change under an existing icon re-derives it onto
         # the new base. The _tb_applying_icon guard skips the re-derive while
         # apply_icon is itself setting the derived style (avoids recursion).
-        if icon is not _UNSET or icon_size is not _UNSET:
+        if icon is not _UNSET or icon_size is not _UNSET or icon_only is not _UNSET:
             from ttkbootstrap.style.icons import apply_icon
             existing = getattr(self, "_tb_icon", None)
             name = icon if icon is not _UNSET else (existing["name"] if existing else None)
-            size = icon_size if icon_size is not _UNSET else (existing["size"] if existing else 14)
+            # size: explicit wins; else if icon_only was just toggled, re-default
+            # (None -> apply_icon's icon-only-aware default); else keep the spec's.
+            if icon_size is not _UNSET:
+                size = icon_size
+            elif icon_only is not _UNSET:
+                size = None
+            else:
+                size = existing["size"] if existing else None
             states = existing["states"] if existing else None
             compound = existing["compound"] if existing else None
-            apply_icon(self, name, size=size, states=states, compound=compound)
+            only = (icon_only if icon_only is not _UNSET
+                    else (existing.get("icon_only", False) if existing else False))
+            apply_icon(self, name, size=size, states=states,
+                       compound=compound, icon_only=only)
         elif (base_changed and getattr(self, "_tb_icon", None)
                 and not getattr(self, "_tb_applying_icon", False)):
             from ttkbootstrap.style.icons import apply_icon
             spec = self._tb_icon
             apply_icon(self, spec["name"], size=spec["size"],
-                       states=spec["states"], compound=spec["compound"])
+                       states=spec["states"], compound=spec["compound"],
+                       icon_only=spec.get("icon_only", False))
 
         return result
 
