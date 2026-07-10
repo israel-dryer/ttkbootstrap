@@ -9,6 +9,7 @@ The suite shares one session root, and named fonts are interpreter-global, so
 every test that retints a font snapshots and restores it via the
 `restore_fonts` fixture to avoid bleeding into other tests.
 """
+import tkinter
 import warnings
 from tkinter import font
 
@@ -131,6 +132,16 @@ def test_reset_clears_the_wrapper_cache(restore_fonts):
     assert fonts._font_cache
     Fonts.reset()
     assert not fonts._font_cache
+
+
+def test_live_method_before_root_raises_not_spawns_phantom(monkeypatch):
+    # with no default root, a live Fonts.* call must raise a clear "too early"
+    # error rather than silently spawning a stray Tk() the real App won't use
+    monkeypatch.setattr(tkinter, "_default_root", None)
+    with pytest.raises(RuntimeError, match="[Tt]oo early"):
+        Fonts.configure("TkDefaultFont", size=12)
+    # and it did not create a phantom default root as a side effect
+    assert tkinter._default_root is None
 
 
 # --------------------------------------------------------------------------

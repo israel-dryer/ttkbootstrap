@@ -13,7 +13,9 @@ Two surfaces:
 
 - `Fonts` -- a namespace of classmethods operating on the *live* root:
   `set_global_family` / `configure` / `describe` / `names` / `create_alias` /
-  `reset`. Each needs an interpreter, so call them after `App()` exists.
+  `reset`. Each needs an interpreter, so call them after `App()` exists -- a
+  pre-root call raises a clear "too early" `RuntimeError` (it does not spawn a
+  stray root); for the pre-root case use the module-level `set_global_family`.
 - `set_global_family(family, *, mono_family=None)` -- the headline one-liner as
   a **module-level** function that rides the deferred-config seam (Slice 5): set
   it at the top of a file before `App()` and it applies when the root comes up;
@@ -54,7 +56,9 @@ def _named_font(name: str) -> font.Font:
     # utils/__init__, so it must not pull in window at module load.
     from ttkbootstrap.window import get_default_root
 
-    root = get_default_root()
+    # pass `what` so a pre-root call raises a clear "too early" error instead of
+    # get_default_root() silently spawning a stray Tk() the real App won't use.
+    root = get_default_root("configure fonts")
     cached = _font_cache.get(name)
     if cached is not None and cached._tk is root.tk:
         return cached
@@ -113,7 +117,7 @@ class Fonts:
         """
         from ttkbootstrap.window import get_default_root
 
-        root = get_default_root()
+        root = get_default_root("create a font alias")
         if name in font.names(root):
             # already registered -> reconfigure rather than error on duplicate
             alias = font.nametofont(name, root=root)
