@@ -19,6 +19,7 @@
 | **`utils/` package; `utility`/`colorutils` → warn-and-forward shims** | Deprecated | this doc, below (Slice 0) |
 | **Deferred-config seam + `ttk.set_default_button()` pre-root setter** | New | this doc, below (Slice 5) |
 | **Localization: msgcat bug fixes + `L()` / `LocaleVar` / `set_locale`** | Fix/New | this doc, below (Slice 3) |
+| **Typography: `ttk.Fonts` + `ttk.set_global_family()` over the Tk named fonts** | New | this doc, below (Slice 4) |
 | Canonical `bootstyle` grammar (closed vocab, strict mode) | API | `development/2_0_bootstyle_grammar_design.md` |
 | Character-based icons removed (`ttkbootstrap.icons`) | API | `development/2_0_icon_drop_design.md` (PR #1094) |
 | Delivery API (mixins, no import-time monkey-patch) | API | handoff / PR #1075 |
@@ -167,6 +168,50 @@ every i18n app expects. The spec-object model and Babel-backed value formatting
 (`LV`) are intentionally **out** — they need a widget mixin / a new dependency
 (framework territory); the helpers here work on **vanilla** widgets via
 tkinter's own variable + virtual-event seams.
+
+---
+
+## Typography: `ttk.Fonts` + `ttk.set_global_family()` over the Tk named fonts  *(New)*
+
+**What.** A tiny typography utility (`ttkbootstrap.utils.fonts`) over the
+**standard Tk named fonts** — the ones every interpreter ships (`TkDefaultFont`,
+`TkTextFont`, `TkFixedFont`, `TkHeadingFont`, `TkMenuFont`, `TkCaptionFont`,
+`TkSmallCaptionFont`, `TkIconFont`, `TkTooltipFont`). No new font vocabulary and
+no `font="body[bold]"` bracket DSL (both would need to intercept `font=` —
+framework territory).
+
+- **`ttk.set_global_family(family, *, mono_family=None)`** — the headline
+  one-liner: retint every proportional named font at once (and `TkFixedFont` from
+  `mono_family`). A **module-level** setter riding the Slice 5 deferred-config
+  seam, so it can be called at the top of a file before `App()` (queued, applied
+  when the root comes up) or live against an existing root.
+- **`ttk.Fonts`** — a namespace of classmethods operating on the *live* root:
+  `set_global_family` · `configure(name, **opts)` (tweak one named font) ·
+  `describe(name=None)` / `names()` (see the resolved family/size/weight/slant) ·
+  `create_alias(name, **opts)` (register a user named font, e.g. `font="Body"`) ·
+  `reset()` (drop cached wrappers — called from `App.destroy`, same root-rebind
+  hazard `Style` clears).
+
+```python
+import ttkbootstrap as ttk
+ttk.set_global_family("Inter", mono_family="Cascadia Code")  # before or after App()
+app = ttk.App()
+ttk.Fonts.configure("TkHeadingFont", size=18, weight="bold")
+ttk.Fonts.create_alias("Body", family="Inter", size=11)      # font="Body" everywhere
+print(ttk.Fonts.describe())                                  # {'TkDefaultFont': {...}, ...}
+```
+
+Re-exported at the top level (`ttk.Fonts` / `ttk.set_global_family`) and through
+`ttkbootstrap.utils`.
+
+**Why.** "How do I change the global font?" had no supported answer — widgets
+read `TkDefaultFont` / built ad-hoc `font.Font(...)` with no central control.
+The standard named fonts already exist in every interpreter, every widget reads
+them, and `font="TkHeadingFont"` works on stock tkinter widgets with zero
+interception — so retinting them is the whole-app font change, no widget
+ownership required. A parallel token set (`body` / `heading-lg`) would be
+overhead to document and sync for no payoff, and the bracket DSL fails the
+boundary rule.
 
 ---
 

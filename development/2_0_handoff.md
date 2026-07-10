@@ -3,6 +3,27 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
+_Last updated: 2026-07-09 (**Compat & utilities — Slice 4 (typography) OPENED as
+#1145; the initiative's code work is now COMPLETE pending merge**). **Slice 4**
+adds `ttkbootstrap/utils/fonts.py` — a tiny surface over the standard Tk named
+fonts: module-level **`ttk.set_global_family(family, *, mono_family=None)`** (rides
+the Slice 5 deferred-config seam — queued before `App()`, live if a root exists),
+plus a **`ttk.Fonts`** namespace of live-root classmethods (`set_global_family` /
+`configure` / `describe` / `names` / `create_alias` / `reset`); `Fonts.reset()` is
+wired into `App.destroy` (root-rebind hazard). No new font vocabulary / no bracket
+DSL (boundary rule); the optional macOS size-bump + platform default families were
+dropped as scope creep. Re-exported top level + through `utils`. Mirrors the Slice
+3/5 shape. `tests/test_fonts_api.py` (+10); suite **539 passed** excl. the two known
+flakes (`nl.msg` env + order-dependent `test_color_helpers` *Duplicate element*);
+warning-free import. **PR #1145 against `2.0`, holding for author merge.** With 5→3→4
+done, **all compat & utilities slices are complete.** **>>> NEXT (author decision):
+the cumulative pre-release review** per `development/2_0_prerelease_review_plan.md`
+(Track A agentic `2.0…master` sweep · Track B human visual/cross-platform · Track C
+migration-contract validation), then docs Workstream H. Env: `.venv-home/Scripts/
+python.exe` launches on this box (repo `.venv` exits 127); run pytest with
+`-p no:cacheprovider`. Leave the user's `gallery/text_reader.py` WIP untouched (not
+staged). Prior entry follows._
+
 _Last updated: 2026-07-09 (**Compat & utilities — Slices 0/1/2 MERGED into `2.0`;
 pre-release review plan written**). Working through the compat & utilities
 initiative (`development/2_0_compat_and_utilities_design.md`, the last substantive

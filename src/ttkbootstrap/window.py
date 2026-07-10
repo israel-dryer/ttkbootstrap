@@ -540,6 +540,10 @@ class App(_BaseWindow, tkinter.Tk):
         # Clear the process-wide singleton (a class attribute) so a later root
         # rebinds the Style cleanly instead of reusing this destroyed one.
         Style.instance = None
+        # Drop cached named-font wrappers pinned to this (now dead) root, so a
+        # later root does not reuse them -- same root-rebind hazard as Style.
+        from ttkbootstrap.utils.fonts import Fonts
+        Fonts.reset()
         super().destroy()
 
 

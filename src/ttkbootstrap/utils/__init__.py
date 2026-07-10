@@ -9,11 +9,12 @@ re-exported for `ttk.<tab>` discovery).
 
 Submodules:
     color     — color-model conversion and manipulation
+    fonts     — typography over the standard Tk named fonts
     scaling   — `enable_high_dpi_awareness`, `scale_size`
     platform  — `windowing_system`
+    config    — the deferred-config seam (pre-root setters)
 
-Later 2.0 slices add `fonts` (typography) and `config` (deferred-config seam)
-here, and re-export the `localization` helpers through this namespace.
+The `localization` helpers are also re-exported through this namespace.
 """
 from ttkbootstrap.utils.color import (
     # color-model selector constants (usable as the `model=` argument). Not in
@@ -40,6 +41,7 @@ from ttkbootstrap.utils.scaling import (
 )
 from ttkbootstrap.utils.platform import windowing_system
 from ttkbootstrap.utils.config import set_default_button
+from ttkbootstrap.utils.fonts import Fonts, set_global_family
 
 # Localization helpers live in the `localization` package (the i18n engine stays
 # there); they are surfaced here for discoverability. Imported lazily via
@@ -70,6 +72,9 @@ __all__ = [
     "scale_size",
     # platform
     "windowing_system",
+    # fonts (typography over the standard Tk named fonts)
+    "Fonts",
+    "set_global_family",
     # deferred config (pre-root setters)
     "set_default_button",
     # localization (surfaced lazily from the localization package)
