@@ -37,10 +37,23 @@ sibling issues, the Toplevel-icon leak, the toast e/w-overlap regression, and th
 x11 focus break from the tooltip window type — all fixed pre-merge). **Known-accepted:**
 the DateEntry calendar clamps at the app bar instead of flipping on a short screen
 (author OK). Suite **567 passed** excl. the two known flakes. **>>> NEXT: docs
-Workstream H** (`development/2_0_docs_design.md` §11) — nav/IA skeleton + un-break the
-**9 broken `docs/en/api` `:::` stubs** (point at removed paths: `ttkbootstrap.icons`,
-`.scrolled`, `.tableview`, `.toast`, `.tooltip` — repoint to `ttkbootstrap.widgets.*`
-/ delete the icons stubs). Optional remaining Track B: Linux/x11 + the DPI matrix.
+Workstream H — a from-scratch rebuild on a NEW toolchain** (design LOCKED at the top
+of `development/2_0_docs_design.md` §1, 2026-07-10). Move **off mkdocs onto
+bootstack's stack** (sibling repo `D:/Development/bootstack`): **Sphinx +
+`pydata_sphinx_theme` + `autodoc`/`napoleon` + `sphinx_design`**, authored in
+**rST** (bootstack is 319 rst / 19 md). Lift bootstack's `conf.py` + `_static/` CSS
++ `_templates/` + `docs/screenshots/` + `docs/scripts/` tooling + page templates
+wholesale; borrow the *infra & IA*, author ttkbootstrap content, keep the
+styling-extension positioning (not a widget library). ttkbootstrap's `Parameters:`/
+`Examples:` docstrings feed `autodoc` as-is (napoleon Google) — **no docstring
+rewrite**. **Clean cut:** delete the whole mkdocs `docs/` tree (incl. `ja`/`zh`,
+~134 files + the `i18n` plugin) — the 9 broken `:::` API stubs resolve by
+*replacement*, not repointing. Style-Reference + BootStyle generators stay
+**offline `tools/` steps emitting committed rST** (RTD build has no display; the
+Style Reference needs a live Tk root). **First task: a Sphinx-skeleton spike** —
+lift bootstack's `conf.py` + one widget page to prove the structure — then the §11
+sub-PR sequence (skeleton → generators → user guide → catalog → landing/screenshots).
+Optional remaining Track B: Linux/x11 + the DPI matrix.
 **Env:** `.venv-home/Scripts/python.exe` launches (repo `.venv` exits 127); run
 pytest `-p no:cacheprovider`. **User keeps live WIP in the working tree — dialog-
 button styling in `dialogs/colorchooser.py`, `dialogs/fontdialog.py`,

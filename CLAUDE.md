@@ -233,13 +233,23 @@ DatePicker no-flash + aqua-gated tooltip popover, `place_window_center` using th
 real mapped size. A high-effort `/code-review` gated both PRs. Suite ~567 excl. the
 two known flakes (`nl.msg` env + the order-dependent `test_color_helpers`).
 
-**NEXT — docs Workstream H** (`development/2_0_docs_design.md` §11): the nav/IA
-skeleton + un-break the API `:::` stubs (9 broken `docs/en` stubs point at removed
-paths — `ttkbootstrap.icons`/`scrolled`/`tableview`/`toast`/`tooltip`; repoint to
-`ttkbootstrap.widgets.*` / delete the icons stubs). Remaining Track B odds/ends
-(Linux/x11, the DPI matrix) are optional. The user keeps live WIP in the working
-tree (`dialogs/colorchooser.py`, `dialogs/fontdialog.py`,
-`examples/widgets/dialogs.py` — dialog-button styling) — **leave it untouched.**
+**NEXT — docs Workstream H, a from-scratch rebuild on a new toolchain**
+(`development/2_0_docs_design.md`; toolchain LOCKED at the top of §1, 2026-07-10).
+The docs move **off mkdocs onto bootstack's stack** (sibling repo at
+`D:/Development/bootstack`): **Sphinx + `pydata_sphinx_theme` + `autodoc`/`napoleon`
++ `sphinx_design`**, authored in **rST**. Lift bootstack's `conf.py` + `_static/`
+CSS + `screenshots/`/`scripts/` tooling + page templates wholesale; borrow the
+*infra & IA*, author ttkbootstrap content, keep the styling-extension positioning.
+ttkbootstrap's `Parameters:`/`Examples:` docstrings feed `autodoc` as-is (napoleon
+Google) — no docstring rewrite. **Clean cut:** delete the whole mkdocs `docs/` tree
+(incl. `ja`/`zh`); the 9 broken `:::` API stubs resolve by *replacement*. Keep the
+introspection Style-Reference + BootStyle generators as **offline `tools/` steps
+emitting committed rST** (RTD has no display). **First task next session: a Sphinx
+skeleton spike** — lift bootstack's `conf.py` + one widget page, prove the
+structure. Remaining Track B odds/ends (Linux/x11, the DPI matrix) are optional.
+The user keeps live WIP in the working tree (`dialogs/colorchooser.py`,
+`dialogs/fontdialog.py`, `examples/widgets/dialogs.py` — dialog-button styling) —
+**leave it untouched.**
 
 ## Repository layout
 

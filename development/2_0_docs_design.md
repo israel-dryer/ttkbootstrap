@@ -14,9 +14,40 @@ that teaches semantic styling, custom styles/themes, and the shipped widgets —
 modeled on **bootstack.org**'s IA (Diátaxis), but adapted to ttkbootstrap's
 nature as a **styling extension for vanilla ttk** (not a widget framework).
 
-Toolchain stays **mkdocs + mkdocstrings + material** (adopt bootstack's *IA*, not
-its Sphinx stack). English only for 2.0; the thin `ja/zh` trees (about/index/
-license only) are left as-is.
+### Toolchain decision — LOCKED 2026-07-10 (supersedes the mkdocs assumptions below)
+
+The docs move **off mkdocs onto bootstack's stack**: **Sphinx +
+`pydata_sphinx_theme` + `autodoc`/`napoleon` + `autosummary` + `sphinx_design` +
+`myst_parser`**, authored in **reStructuredText** (bootstack is rST-primary — 319
+rst / 19 md; MyST is enabled only to pull in `CHANGELOG.md`). Rationale: the PyData
+theme is the numpy/pandas/scipy theme our scientific/utility audience already
+reads; `autodoc` keeps docstring-driven API pages (ttkbootstrap's `Parameters:`/
+`Examples:` docstrings parse under `napoleon_google_docstring=True` **as-is** — no
+docstring rewrite); Sphinx stays readthedocs-native (no publishing change); and
+authoring in rST lets us copy-adapt bootstack's mature page templates + reuse its
+`conf.py`, `_static/` CSS, `_templates/`, and **`docs/screenshots/` + `docs/scripts/`
+screenshot tooling** wholesale (only the palette + the images themselves change).
+Borrow the **infrastructure and IA**, author ttkbootstrap-specific **content**, and
+keep the **styling-extension positioning** (bootstack is a widget library; we are
+not) — the code-side [[borrow-bootstack-mechanisms-not-api]] rule, applied to docs.
+
+**Clean cut:** delete `docs/` (the mkdocs tree) — `docs/ja` + `docs/zh` go (English
+only for 2.0; ~134 files + the `i18n` plugin), and the stale `docs/en` pages are
+rebuilt, not repointed. So the "9 broken `:::` API stubs" resolve by *replacement*.
+
+**Generators:** the introspection-based Style Reference and
+`tools/generate_bootstyle_reference.py` stay **offline `tools/` steps that emit
+committed rST** (the Style Reference needs a live Tk root — never a Sphinx
+build-time extension, since readthedocs has no display). `autodoc` importing
+ttkbootstrap at build is safe (Pillow-only, no Tk root created); keep
+`autodoc_mock_imports` as a backstop.
+
+**Mapping for the mkdocs-era references in the sections below:** mkdocstrings `:::`
+→ `autodoc` (`automodule`/`autoclass` / `autosummary`); material → pydata; mkdocs
+`nav:` → Sphinx `toctree`; `inherited_members: false` → autodoc's
+`:no-inherited-members:` (or `autodoc_default_options`). The IA (§3), the native/
+shipped dichotomy (§4), and the page templates (§5) are framework-agnostic and
+stand.
 
 ## 2. Prerequisite (code, before docs): drop the character-based icons
 
@@ -245,13 +276,18 @@ and the 7 API stubs.
 
 Docs work is continuous but breaks into reviewable slices:
 
-0. **(prereq, code)** Drop character-based icons + rewire dialog icons. *(own mini
-   design pass; before screenshots.)*
-1. **Structure + un-break** — new mkdocs nav/IA skeleton; fix/repoint the 7 API
-   stubs; `inherited_members: false`; delete removed-feature pages (icons/emoji,
-   cookbook, gallery). Site builds clean.
-2. **Reference generators** — `tools/generate_style_reference.py`; wire the
-   bootstyle reference table in; sync tests.
+0. **(prereq, code)** ~~Drop character-based icons~~ — DONE (#1094). *(kept for
+   history.)*
+1. **Sphinx skeleton (clean cut)** — delete the mkdocs `docs/` tree (incl.
+   `ja`/`zh`); lift bootstack's `conf.py` + `_static/` CSS + `_templates/` +
+   `screenshots/`/`scripts/` tooling; stand up the pydata theme + `toctree` IA
+   skeleton; `autodoc`/`napoleon`/`sphinx_design` wired; a **spike** first — one
+   widget page + the api-reference pattern lifted from bootstack — to prove the
+   structure. Site builds clean (no dead autodoc targets). *(First task next
+   session.)*
+2. **Reference generators** — `tools/generate_style_reference.py` (offline, emits
+   committed rST); retarget `tools/generate_bootstyle_reference.py` md→rST and wire
+   it in; sync tests.
 3. **User Guide** — Quickstart (rewrite the tutorial), the 5 Concept guides
    (flagship first), How-To (salvage cookbook), Migrating to 2.0 (fold theme +
    icon migration).
@@ -260,12 +296,14 @@ Docs work is continuous but breaks into reviewable slices:
 5. **Landing + screenshots** — marketing hero; light+dark screenshots (author,
    bootstack mechanism) across catalog + theme gallery.
 
-## 11a. Caveat: shipped-widget APIs are still pre-normalization
+## 11a. ~~Caveat: shipped-widget APIs are still pre-normalization~~ — RESOLVED
 
-`Window`, the dialogs, `Tableview`/datagrid, and other shipped-widget public
-APIs have **not** had a 2.0 cleanup/normalization pass yet. Docs will be written
-against **provisional** signatures. Per the author (2026-07-06), that API pass can
-follow the docs — docs-first is accepted, with eyes open to some rework.
+**Update 2026-07-10: this caveat is obsolete.** The shipped-widget API
+normalization is **DONE** — `Window`/`Toplevel` (#1103), dialogs (#1102),
+`Tableview` (#1104), and the full widget-review series (Meter/DateEntry/Floodgauge/
+Scrolled/LabeledScale/ToolTip/Toast, #1110–#1115) all landed, plus the
+property/accessor pass. Docs are now written against **final** signatures — the
+churn risk below no longer applies. (Original text kept for history.)
 
 Churn is asymmetric, so mitigate by page type:
 - **API Reference (autogen, mkdocstrings)** — cheap. Regenerates from the new
