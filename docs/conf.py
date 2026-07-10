@@ -82,6 +82,11 @@ html_theme = "pydata_sphinx_theme"
 
 html_theme_options = {
     "github_url": "https://github.com/israel-dryer/ttkbootstrap",
+    "logo": {
+        "image_light": "_static/ttkbootstrap-wordmark-light.svg",
+        "image_dark": "_static/ttkbootstrap-wordmark-dark.svg",
+        "alt_text": "ttkbootstrap",
+    },
     "navbar_start": ["navbar-logo"],
     "navbar_center": ["navbar-nav"],
     "navbar_end": ["navbar-icon-links", "theme-switcher"],
