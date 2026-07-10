@@ -43,10 +43,25 @@ couldn't police; and consolidating three parallel family tables into one
 `.venv-home` is inaccessible under this account, so build docs with a scratchpad
 `docsenv` (`py -3.13 -m venv`, `pip install -r docs/requirements.txt`,
 `PYTHONPATH=src <docsenv>/Scripts/python.exe -m sphinx -b html -W ...`). User WIP
-`gallery/collapsing_frame.py` LEFT UNTOUCHED (not in the commit). **Still pending
-before docs finalize:** the deferred **spaces sweep** (dash→space in the
-`BootStyle` Literal + reference to match the recommended `@primary success ghost`
-spelling), and screenshots (author, bootstack mechanism). Prior entry
+`gallery/collapsing_frame.py` LEFT UNTOUCHED (not in the commit; a `git commit -a`
+briefly swept it in — recovered, WIP restored to the worktree unstaged).
+**Then, same session, more docs work landed on the SAME branch/PR #1159 (author
+was live-previewing):** (a) the **spaces sweep is now DONE** — both generators emit
+the space form, the `BootStyle` Literal was regenerated to spaces (autocomplete-only;
+`bootstyle` accepts `BootStyle | str`, dashes still parse), `bootstyle-grammar.rst`
+now teaches `[@surface] [color] [modifier] <base-type> [orient]` + a Surfaces
+section, and the canonical-string tests assert the space form
+([[bootstyle-spaces-and-surface-token]]); (b) fixed 6 **nested inline-markup** bugs
+(`**``code``**` renders literal backticks — rST can't nest) on the User Guide stubs
+from #1156 (app-structures/localization/typography); (c) dropped the **"Section
+Navigation"** sidebar heading via a `_templates/sidebar-nav-bs.html` override
+(bootstack's mechanism); (d) **unified the Widgets catalog** — dropped the
+native/shipped split (usage guides are identical for both), each page links to the
+API where it lives (python.org `tkinter.ttk` for native, API Reference for shipped)
++ the Style Reference; **revised design §4** and recorded
+[[docs-widgets-catalog-unified]]. All rebuild `-W` clean; suite 621. **Still pending
+before docs finalize:** screenshots (author, bootstack mechanism); optional cosmetic
+dash→space in the demo call sites (`__main__.py`/`ttkcreator`). Prior entry
 (User Guide IA slice) follows._
 
 _Last updated: 2026-07-10 (**Docs Workstream H — User Guide IA revised to a
