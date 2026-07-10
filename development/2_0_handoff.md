@@ -3,6 +3,53 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
+_Last updated: 2026-07-10 (**Docs Workstream H — Sphinx skeleton spike OPENED as
+#1148 against `2.0`; NEXT = iterate the skeleton, then sub-PR 2 (generators)**).
+Sub-PR 1 of the docs rebuild (`development/2_0_docs_design.md` §11) is up on branch
+`docs/2.0-sphinx-skeleton` (PR #1148, held for author merge per cadence). It moves
+the docs off mkdocs onto bootstack's stack and **proves the structure end to end**;
+content is deliberately skeletal (stubs) and will be iterated. **What landed:**
+**Clean cut** — deleted the whole mkdocs `docs/` tree (incl. `ja`/`zh`, ~134 files)
++ `mkdocs.yml`; repointed `.readthedocs.yaml` `mkdocs:`→`sphinx:` (py3.12); root
+`requirements.txt` now `-r docs/requirements.txt`. **Lifted+adapted from bootstack:**
+`docs/conf.py` (pydata theme + autodoc/napoleon/autosummary/intersphinx),
+`_static/custom.css` (bootstack palette is already Bootstrap blue; screenshot/hero
+classes reprefixed `bs-`→`tb-`), `_templates/autosummary/class.rst`, `Makefile` +
+`make.bat`. **IA (4 destinations):** Landing (`index.rst`) → User Guide
+(getting-started · concepts · how-to) → Widgets (grouped *Styling ttk widgets* /
+*ttkbootstrap widgets*) → Reference (Style Reference + API Reference); every
+`toctree` entry resolves, guide bodies are honest "being written for 2.0" stubs.
+**Spike proof pages:** `widgets/button.rst` (native — leads with `bootstyle`,
+cross-links Style Reference) + `widgets/meter.rst` (shipped catalog) +
+`reference/api/widgets.rst` (autodoc `Meter` via `autosummary :toctree: generated`).
+**Three spike findings baked in (IMPORTANT for the design doc):** (1) ttkbootstrap
+documents ctor params in `__init__`, so `autoclass_content = "both"` (bootstack docs
+params on the class — the one conf divergence); (2) `inherited-members: False` keeps
+tkinter's ~200 members off the pages; (3) **the design's "docstrings feed autodoc
+as-is / no rewrite" assumption is only half true** — ttkbootstrap docstrings use
+**Markdown ```` ```python ```` code fences** (authored for mkdocstrings) that
+napoleon/rST renders as broken inline literals. Resolved WITHOUT a docstring rewrite
+via a small `autodoc-process-docstring` shim in `conf.py` (`_convert_markdown_fences`)
+that converts fences to `.. code-block::` at build time. **Open decision for a later
+slice:** keep the build-time shim vs. sweep the docstrings to rST. **Build gate:**
+`.venv-home/Scripts/python.exe -m sphinx -b html -q docs docs/_build/html` → **22
+pages, ZERO warnings**; Meter API page renders the `__init__` Parameters table +
+converted example code block, no leaked inherited members. Sphinx 9.1.0 + deps were
+`pip install`ed into `.venv-home`. Live demo: `.venv-home/Scripts/python.exe -m
+sphinx_autobuild docs docs/_build/html --open-browser`. **gitignore:** added
+`docs/_build/` + `docs/reference/api/generated/` (autosummary output) and a
+`!docs/_static/` re-include (the pre-existing broad `*_static` rule would ignore the
+committed CSS). **>>> NEXT SESSION:** author will note skeleton changes to make
+(iterate content/IA on the same branch or a fast-follow), then proceed down §11:
+**sub-PR 2 = reference generators** (`tools/generate_style_reference.py` offline→rST;
+retarget `tools/generate_bootstyle_reference.py` md→rST + wire in; sync tests) →
+sub-PR 3 User Guide → sub-PR 4 Widgets catalog → sub-PR 5 Landing + screenshots.
+Screenshots need bootstack's `docs/screenshots/`+`scripts/` tooling ported (not yet
+done). **Env unchanged:** `.venv-home/Scripts/python.exe` launches (repo `.venv`
+exits 127). **User WIP still in the working tree — dialog-button styling in
+`dialogs/colorchooser.py`, `dialogs/fontdialog.py`, `examples/widgets/dialogs.py` —
+LEFT UNTOUCHED (verified unstaged); keep leaving it alone.** Prior entry follows._
+
 _Last updated: 2026-07-10 (**Pre-release review COMPLETE (#1146) + macOS Track B
 visual pass (#1147); NEXT = docs Workstream H**). The cumulative pre-release review
 (`development/2_0_prerelease_review_plan.md`) ran end-to-end. **#1146** (`53f5b72b`,

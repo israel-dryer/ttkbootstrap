@@ -251,6 +251,23 @@ The user keeps live WIP in the working tree (`dialogs/colorchooser.py`,
 `dialogs/fontdialog.py`, `examples/widgets/dialogs.py` — dialog-button styling) —
 **leave it untouched.**
 
+**Docs H sub-PR 1 — the Sphinx skeleton spike — is OPENED as #1148** (branch
+`docs/2.0-sphinx-skeleton`, held for author merge). Clean cut done (mkdocs `docs/`
+tree + `mkdocs.yml` deleted, `.readthedocs.yaml`→sphinx); bootstack `conf.py` +
+`_static/custom.css` + autosummary template lifted/adapted; the 4-destination IA
+toctree stands up with browsable stubs; **spike proof pages** = `widgets/button.rst`
+(native) + `widgets/meter.rst` (shipped) + `reference/api/widgets.rst` (autodoc
+`Meter`). Builds clean (**22 pages, zero warnings**). **Three findings baked in:**
+`autoclass_content = "both"` (ttkbootstrap docs ctor params in `__init__`, not the
+class); `inherited-members: False`; and — correcting the design's "docstrings feed
+autodoc as-is" claim — ttkbootstrap docstrings use **Markdown ```` ```python ````
+fences** that rST can't parse, resolved via a build-time `autodoc-process-docstring`
+shim in `conf.py` (no docstring rewrite; keep-shim-vs-sweep is a later-slice
+decision). Sphinx deps live in `.venv-home` (`pip install`ed this session). **NEXT:**
+iterate skeleton content/IA (author has changes in mind), then §11 sub-PR 2 =
+reference generators. See `development/2_0_handoff.md` top entry for the full spike
+detail.
+
 ## Repository layout
 
 ```

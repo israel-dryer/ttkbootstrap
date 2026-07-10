@@ -1,0 +1,125 @@
+/* ── Bootstrap palette — override pydata-sphinx-theme color variables ───── */
+
+html,
+html[data-theme="light"] {
+    --pst-color-primary:               #0d6efd;
+    --pst-color-primary-bg:            #cfe2ff;
+    --pst-color-primary-highlight:     #0a58ca;
+    --pst-color-link:                  #0d6efd;
+    --pst-color-link-hover:            #0a58ca;
+    --pst-color-link-higher-contrast:  #0a58ca;
+    --pst-color-secondary:             #6c757d;
+    --pst-color-secondary-bg:          #e2e3e5;
+    --pst-color-secondary-highlight:   #5c636a;
+    --pst-color-background:    #ffffff;
+    --pst-color-on-background: #ffffff;
+    --pst-color-surface:       #f8f9fa;
+    --pst-color-on-surface:    #212529;
+    --pst-color-text-base:     #212529;
+    --pst-color-text-muted:    #6c757d;
+    --pst-color-border:        #dee2e6;
+    --pst-color-border-muted:  #e9ecef;
+    --pst-color-inline-code:   #d63384;
+    --pst-color-target:        #fff3cd;
+}
+
+html[data-theme="dark"] {
+    --pst-color-primary:               #6ea8fe;
+    --pst-color-primary-bg:            #031633;
+    --pst-color-primary-highlight:     #8bb9fe;
+    --pst-color-link:                  #6ea8fe;
+    --pst-color-link-hover:            #8bb9fe;
+    --pst-color-link-higher-contrast:  #8bb9fe;
+    --pst-color-secondary:             #adb5bd;
+    --pst-color-secondary-bg:          #343a40;
+    --pst-color-secondary-highlight:   #bcc4cc;
+    --pst-color-background:    #212529;
+    --pst-color-on-background: #212529;
+    --pst-color-surface:       #343a40;
+    --pst-color-on-surface:    #dee2e6;
+    --pst-color-text-base:     #dee2e6;
+    --pst-color-text-muted:    #adb5bd;
+    --pst-color-border:        #495057;
+    --pst-color-border-muted:  #373b3e;
+    --pst-color-inline-code:   #e685b5;
+    --pst-color-target:        #6e5611;
+    --pst-color-info:          #6ea8fe;
+    --pst-color-info-bg:       #0d306e;
+}
+
+/* Ensure all code blocks scroll horizontally rather than overflowing. */
+.highlight pre {
+    overflow-x: auto;
+}
+
+/* Screenshot light/dark switching.
+   Two-layer approach: (1) prefers-color-scheme as a CSS-only fallback that
+   applies instantly on navigation before JS sets data-theme; (2) explicit
+   data-theme overrides for when the user has toggled the theme switcher. */
+
+.tb-screenshot-dark,
+.tb-screenshot-light {
+    display: block;
+    margin: 0.75rem 0 !important;
+}
+
+/* Default: show light, hide dark. */
+.tb-screenshot-dark  { display: none  !important; }
+.tb-screenshot-light { display: block !important; }
+
+/* System dark preference — CSS-only, fires before JS runs. */
+@media (prefers-color-scheme: dark) {
+    .tb-screenshot-dark  { display: block !important; }
+    .tb-screenshot-light { display: none  !important; }
+}
+
+/* Explicit theme selection overrides the system preference. */
+html[data-theme="light"] .tb-screenshot-dark  { display: none  !important; }
+html[data-theme="light"] .tb-screenshot-light { display: block !important; }
+html[data-theme="dark"]  .tb-screenshot-dark  { display: block !important; }
+html[data-theme="dark"]  .tb-screenshot-light { display: none  !important; }
+
+/* Override pydata's dark-mode content-image rule, which paints a white
+   background-color and a border-radius that flashes during image decode. Our
+   screenshots are already theme-matched, so strip it. */
+html[data-theme="dark"] .bd-content img.tb-screenshot-dark,
+html[data-theme="dark"] .bd-content img.tb-screenshot-light {
+    background-color: transparent !important;
+    border-radius: 0 !important;
+    filter: none !important;
+}
+html[data-theme="dark"] .bd-content img.tb-window-screenshot,
+html[data-theme="dark"] .bd-content img.tb-dialog-screenshot {
+    border-radius: 6px !important;   /* windows and dialogs keep rounded corners */
+}
+
+/* Full-window screenshots. The native OS border is cropped during capture, so
+   draw a clean border in its place, following the theme's border token. */
+.tb-window-screenshot,
+.tb-dialog-screenshot {
+    border-radius: 6px;
+    border: 1px solid var(--pst-color-border);
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.16);
+}
+html[data-theme="dark"] .tb-window-screenshot,
+html[data-theme="dark"] .tb-dialog-screenshot {
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+}
+
+/* Promo home page: a prominent lead line and a row of hero call-to-action
+   buttons (the sphinx-design button directives are block-level, so wrap them in
+   a flex container to sit side by side). */
+.tb-lead {
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+}
+.hero-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    margin: 1.25rem 0 1.75rem;
+}
+.hero-ctas p { margin: 0; }

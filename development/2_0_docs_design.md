@@ -31,6 +31,24 @@ Borrow the **infrastructure and IA**, author ttkbootstrap-specific **content**, 
 keep the **styling-extension positioning** (bootstack is a widget library; we are
 not) — the code-side [[borrow-bootstack-mechanisms-not-api]] rule, applied to docs.
 
+> **Spike outcome (2026-07-10, PR #1148 — sub-PR 1).** The skeleton spike built
+> clean (22 pages, zero warnings) and confirmed the toolchain. Three deltas from
+> the assumptions above, now baked into `docs/conf.py`:
+> 1. **`autoclass_content = "both"`** — ttkbootstrap documents constructor params in
+>    each widget's `__init__` docstring (bootstack documents them on the class), so
+>    autodoc must concatenate class + `__init__` to render the `Parameters:` tables.
+> 2. **`inherited-members: False`** globally (as §5c specifies) — keeps tkinter's
+>    ~200 inherited members off our pages.
+> 3. **The "docstrings feed autodoc as-is — no docstring rewrite" claim is only
+>    half true.** ttkbootstrap's `Examples:` blocks use **Markdown ```` ```python ````
+>    code fences** (authored for mkdocstrings); napoleon/rST renders them as broken
+>    inline literals. Resolved WITHOUT touching the source via a small
+>    `autodoc-process-docstring` shim (`_convert_markdown_fences`) that rewrites
+>    fences to `.. code-block::` at build time — so the "no rewrite" goal holds via
+>    infrastructure. **Open decision for a later slice:** keep the build-time shim,
+>    or sweep the docstrings to native rST (single-backtick inline code already
+>    renders fine via `default_role = "code"`; only the triple-backtick fences break).
+
 **Clean cut:** delete `docs/` (the mkdocs tree) — `docs/ja` + `docs/zh` go (English
 only for 2.0; ~134 files + the `i18n` plugin), and the stale `docs/en` pages are
 rebuilt, not repointed. So the "9 broken `:::` API stubs" resolve by *replacement*.
