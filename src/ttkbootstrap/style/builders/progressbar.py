@@ -70,15 +70,15 @@ def build_striped_progressbar_style(builder: StyleBuilderTTK, colorname=DEFAULT)
     thickness = builder.scale_size(12)
 
     if any([colorname == DEFAULT, colorname == ""]):
-        h_ttk_style = h_ttk_class
-        v_ttk_style = v_ttk_class
+        h_ttk_style = builder.surface_prefix(h_ttk_class)
+        v_ttk_style = builder.surface_prefix(v_ttk_class)
     else:
-        h_ttk_style = f"{colorname}.{h_ttk_class}"
-        v_ttk_style = f"{colorname}.{v_ttk_class}"
+        h_ttk_style = builder.surface_prefix(f"{colorname}.{h_ttk_class}")
+        v_ttk_style = builder.surface_prefix(f"{colorname}.{v_ttk_class}")
 
     # Recessed neutral trough = border(surface) (bootstack parity), subtle in
-    # both modes.
-    trough_color = builder.border(builder.colors.bg)
+    # both modes. The surface (2.0 surface-color) defaults to the theme bg.
+    trough_color = builder.border(builder.resolve_surface(builder._surface))
     border_color = trough_color
 
     # ( horizontal, vertical )
@@ -160,15 +160,19 @@ def _create_recolored_progressbar_style(
     """Build horizontal and vertical progressbars from one source asset."""
     h_base = f"{type_name}Horizontal.TProgressbar"
     v_base = f"{type_name}Vertical.TProgressbar"
-    trough_color = builder.border(builder.colors.bg)
+    # The surface the bar sits on (2.0 surface-color); default == theme bg. The
+    # recessed trough and the widget background both derive from it.
+    surface = builder.resolve_surface(builder._surface)
+    trough_color = builder.border(surface)
 
     if colorname in (DEFAULT, ""):
         bar_color = builder.colors.primary
-        h_ttk_style, v_ttk_style = h_base, v_base
+        h_ttk_style = builder.surface_prefix(h_base)
+        v_ttk_style = builder.surface_prefix(v_base)
     else:
         bar_color = builder.colors.get(colorname)
-        h_ttk_style = f"{colorname}.{h_base}"
-        v_ttk_style = f"{colorname}.{v_base}"
+        h_ttk_style = builder.surface_prefix(f"{colorname}.{h_base}")
+        v_ttk_style = builder.surface_prefix(f"{colorname}.{v_base}")
 
     a = builder.assets
     h_trough = a.recolor(
@@ -210,10 +214,10 @@ def _create_recolored_progressbar_style(
                El(v_bar_name, side=tk.BOTTOM, sticky=tk.NS)]))
 
     builder.configure(
-        h_ttk_style, background=builder.colors.bg, troughcolor=trough_color,
+        h_ttk_style, background=surface, troughcolor=trough_color,
         thickness=h_trough.meta.height, borderwidth=0)
     builder.configure(
-        v_ttk_style, background=builder.colors.bg, troughcolor=trough_color,
+        v_ttk_style, background=surface, troughcolor=trough_color,
         thickness=v_trough.meta.width, borderwidth=0)
 
     # register styles

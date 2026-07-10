@@ -102,7 +102,8 @@ _TOKEN_SPLIT = re.compile(r"[-\s]+")
 # once in constants (`BOOTSTYLE_SURFACE_TOKENS`).
 _SURFACE_TOKENS = frozenset(BOOTSTYLE_SURFACE_TOKENS)
 _SURFACE_FAMILIES = frozenset(
-    {"button", "checkbutton", "radiobutton", "toggle", "label"}
+    {"button", "checkbutton", "radiobutton", "toggle", "label",
+     "scale", "progressbar", "scrollbar"}
 )
 
 

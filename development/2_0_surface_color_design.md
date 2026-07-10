@@ -279,11 +279,21 @@ working feature.
   light↔dark visual proof (accent producing-frames + matching `@<accent>`
   controls). `gallery/collapsing_frame.py` left untouched (author WIP). Frames
   stay out (producers, §4e).
-- **PR 4 — bar families (deferred).** scale / progressbar / scrollbar — lower
-  value on a distinct surface and more complex (H/V × glyph assets); same
-  mechanism, split out for reviewability. Map already produced (each pulls
-  `border(colors.bg)` for the trough + bakes `colors.bg` in the slider/handle
-  glyphs).
+- **PR 4 — bar families. [DONE — pending PR/merge]** scale / progressbar /
+  scrollbar wired onto the same mechanism. Each family added to
+  `_SURFACE_FAMILIES`; the `border(colors.bg)` trough sites → `border(resolve_
+  surface(_surface))`, the `white=colors.bg` slider-handle glyph bake → `white=
+  surface`, and the widget `background`/scrollbar trough → the resolved surface.
+  Names prefixed via `StyleName(surface=)` (scale — it builds H+V through
+  StyleName) and inline `builder.surface_prefix(...)` (progressbar/scrollbar —
+  they hand-build H+V f-string names, incl. the striped/thin/round variants).
+  Covered by the three new `_SURFACE_FAMILIES` cases in
+  `test_every_gated_family_honors_surface` + per-family behavior tests
+  (`test_scale_tracks_surface`, `test_progressbar_trough_tracks_surface`,
+  `test_scrollbar_trough_tracks_surface`) in `tests/test_surface_families.py`;
+  `examples/surface_preview.py` extended with a scale/progressbar/scrollbar on
+  each surface. Headless suite 618 (+3). **This completes the surface-color
+  family rollout** (frames stay out — producers, §4e).
 
 ## 7. Phase 2 (deferred, not this pass)
 

@@ -4,8 +4,9 @@
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
 _Last updated: 2026-07-10 (**Surface-color workstream — PRs 1/2/3 MERGED into `2.0`
-(#1149 / #1150 / #1152, branches deleted); NEXT = PR 4 (bar families), then RESUME
-docs Workstream H below**).
+(#1149 / #1150 / #1152); PR 4 (bar families) IMPLEMENTED on
+`feat/2.0-surface-color-pr4` (committed, not yet pushed/merged) — this COMPLETES the
+family rollout; then RESUME docs Workstream H below**).
 A mid-stream initiative that interrupted the docs work (next entry). Fixes a real
 theming gap: every built style assumed widget bg == app bg (`colors.bg`), so a
 ghost/link/outline control on a non-default surface (a card, an accent toolbar)
@@ -45,16 +46,22 @@ contrasting `light` accents.
 reversal that review drove out), PR 3 #1152 (checkbutton/radiobutton/toggle/label +
 degrade net + `examples/surface_preview.py` visual proof + a gate↔recipe
 correspondence test). Each PR had 1–2 high-effort `/code-review` passes.
-**>>> NEXT — PR 4 = the bar families (scale / progressbar / scrollbar):** the last
-rollout piece, split out (lower value on a distinct surface, more complex: H/V ×
-glyph assets). Same template. Recipe map already produced (design doc §6): each pulls
-`border(colors.bg)` for the trough + bakes `colors.bg` in the slider/handle glyphs
-(`recolor(... white=colors.bg ...)`); add each to `_SURFACE_FAMILIES`, resolve the
-surface, prefix names (`StyleName(surface=)` for scale — it builds H+V via StyleName;
-inline `surface_prefix` for progressbar/scrollbar — they build H+V f-string names),
-swap the `colors.bg` sites, and ADD the three to
-`tests/test_surface_families.py::test_every_gated_family_honors_surface` (that test
-asserts the gate == the wired families, so it will fail until PR 4 is done — expected).
+**PR 4 = the bar families (scale / progressbar / scrollbar) — DONE (committed on
+`feat/2.0-surface-color-pr4`, not yet pushed/PR'd).** The last rollout piece,
+following the same template. Added all three to `_SURFACE_FAMILIES` (now 8); swapped
+the `border(colors.bg)` trough sites → `border(resolve_surface(_surface))`, the
+`white=colors.bg` slider-handle glyph bake → `white=surface`, and the widget
+`background`/scrollbar trough → the resolved surface; prefixed names via
+`StyleName(surface=)` (scale) and inline `builder.surface_prefix(...)`
+(progressbar/scrollbar — incl. striped/thin/round). Extended
+`test_every_gated_family_honors_surface` with the three cases + added
+`test_scale_tracks_surface` / `test_progressbar_trough_tracks_surface` /
+`test_scrollbar_trough_tracks_surface`; `examples/surface_preview.py` now shows a
+scale/progressbar/scrollbar per surface. Additive — surfaceless names/appearance are
+byte-for-byte unchanged (no `2_0_breaking_changes.md` entry needed, design §8). Suite
+618 (+3). **This COMPLETES the surface-color family rollout** (frames stay out —
+producers). **>>> NEXT: push `feat/2.0-surface-color-pr4` + open the PR against `2.0`
+(1–2 `/code-review` passes per the prior PRs), then RESUME docs Workstream H.**
 **Still pending before the docs finalize:** the **deferred "spaces sweep"** —
 regenerate the dash-joined `BootStyle` Literal + reference to the space form and touch
 up docstrings so autocomplete/docs match the recommended spelling
