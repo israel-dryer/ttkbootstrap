@@ -16,6 +16,7 @@
 | Theme model, `Theme`, default theme, ramp addressing | API | `development/2_0_theme_migration.md` |
 | **Legacy theme names auto-register on use (no hard-stop)** | Fix/Deprecated | this doc, below (Slice 1) |
 | **`App` (canonical) / `Window` alias; `theme` / `themename` alias** | New | this doc, below (Slice 2) |
+| **`utils/` package; `utility`/`colorutils` → warn-and-forward shims** | Deprecated | this doc, below (Slice 0) |
 | Canonical `bootstyle` grammar (closed vocab, strict mode) | API | `development/2_0_bootstyle_grammar_design.md` |
 | Character-based icons removed (`ttkbootstrap.icons`) | API | `development/2_0_icon_drop_design.md` (PR #1094) |
 | Delivery API (mixins, no import-time monkey-patch) | API | handoff / PR #1075 |
@@ -68,6 +69,42 @@ while keeping its deprecation nudge (a per-name `DeprecationWarning`).
 
 **Not changed.** The default theme: `ttk.Window()` with no name still renders
 `bootstrap-light` — a documented *visual* change, not a crash.
+
+---
+
+## Utilities reorganized into a `utils/` package  *(Deprecated old paths — no break)*
+
+**What.** The public utility helpers now live in a first-class **`ttkbootstrap.utils`**
+package instead of the pre-2.0 scatter (`ttkbootstrap.utility` grab-bag +
+`ttkbootstrap.colorutils`):
+
+- `utils/color.py` — `color_to_rgb`/`color_to_hex`/`color_to_hsl`/
+  `update_hsl_value`/`contrast_color`/`conform_color_model` (was `colorutils`).
+- `utils/scaling.py` — `enable_high_dpi_awareness`, `scale_size` (from `utility`).
+- `utils/platform.py` — `windowing_system` (from `utility`).
+- `utils/__init__.py` re-exports the whole surface, so `from ttkbootstrap.utils
+  import ...` reaches everything from one namespace.
+
+The old module paths **still work** as thin **warn-and-forward shims** (same
+pattern as `ttkbootstrap.publisher`): importing `ttkbootstrap.utility` or
+`ttkbootstrap.colorutils` emits a one-time `DeprecationWarning` and re-exports the
+moved names (including the `colorutils` model constants and the two
+already-internal `utility` forwards). Removed in 3.0. Everything also stays
+re-exported at the **top level** (`ttk.scale_size`, `ttk.contrast_color`, …) — the
+primary discovery path — unchanged.
+
+**Migration.** `from ttkbootstrap.utility import scale_size` →
+`from ttkbootstrap.utils import scale_size` (or keep using `ttk.scale_size`);
+`from ttkbootstrap import colorutils` → `from ttkbootstrap import utils`. No
+behavior changed — the functions are the same objects.
+
+**Why.** Utilities are a first-class concern in ttkbootstrap (a styling
+extension) in a way they aren't in a widget library, so they get a deliberate,
+discoverable home instead of a `utility.py` grab-bag plus a separate
+`colorutils.py`. This also gives the later 2.0 slices (typography, deferred-config)
+a place to be *born* rather than bolted onto the grab-bag. The old paths shim
+rather than break, matching "prefer deprecation over hard breaks." (The shims are
+source-only back-compat and are not documented; docs present `utils/` as the home.)
 
 ---
 

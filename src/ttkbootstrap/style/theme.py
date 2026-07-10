@@ -13,7 +13,7 @@ from types import MappingProxyType
 
 from PIL import ImageColor
 
-from ttkbootstrap import colorutils
+from ttkbootstrap import utils
 from ttkbootstrap.constants import *
 
 
@@ -609,7 +609,7 @@ class Colors:
             tuple[float, float, float]:
                 The rgb color value, each channel normalized to 0-1.
         """
-        r, g, b = colorutils.color_to_rgb(color)
+        r, g, b = utils.color_to_rgb(color)
         return r / 255, g / 255, b / 255
 
     @staticmethod
@@ -635,7 +635,7 @@ class Colors:
         r_ = int(r * 255)
         g_ = int(g * 255)
         b_ = int(b * 255)
-        return colorutils.color_to_hex((r_, g_, b_))
+        return utils.color_to_hex((r_, g_, b_))
 
     @staticmethod
     def update_hsv(color, hd=0, sd=0, vd=0):

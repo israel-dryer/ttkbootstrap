@@ -9,7 +9,7 @@ from tkinter import Event, Misc
 from typing import Any, Literal, Optional
 
 import ttkbootstrap as ttk
-from ttkbootstrap import utility
+from ttkbootstrap import utils
 from ttkbootstrap.constants import *
 from ttkbootstrap.internal.positioning import ensure_on_screen
 
@@ -113,7 +113,7 @@ class ToolTip:
         self.justify = justify
         self.image = image
         self.bootstyle = bootstyle
-        self.wraplength = wraplength or utility.scale_size(self.widget, 300)
+        self.wraplength = wraplength or utils.scale_size(self.widget, 300)
         self.toplevel = None
         self.delay = delay
         self.position = position.lower() if position else None

@@ -12,7 +12,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from ttkbootstrap.internal.configure_delegation import ConfigureDelegationMixin
 from ttkbootstrap.style._compat import normalize_scrolled_kwargs, warn_deprecated
-from ttkbootstrap.utility import windowing_system
+from ttkbootstrap.utils import windowing_system
 
 # Small pad at both long-axis ends of a scrollbar so it isn't flush against the
 # container edge -- applied on both ends because either can sit at the border

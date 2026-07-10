@@ -2,7 +2,7 @@
 
 These are implementation details with no backward-compatibility guarantee.
 Public utility functions (`enable_high_dpi_awareness`, `scale_size`) live in
-the top-level `ttkbootstrap.utility` module.
+the `ttkbootstrap.utils` package.
 """
 
 

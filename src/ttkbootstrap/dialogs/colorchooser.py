@@ -11,8 +11,8 @@ from typing import Any, List, Optional, Tuple
 from PIL import ImageColor
 
 import ttkbootstrap as ttk
-from ttkbootstrap import colorutils, utility
-from ttkbootstrap.colorutils import HEX, HSL, HUE, LUM, RGB, SAT
+from ttkbootstrap import utils
+from ttkbootstrap.utils import HEX, HSL, HUE, LUM, RGB, SAT
 from ttkbootstrap.constants import *
 from ttkbootstrap.localization import MessageCatalog
 from ttkbootstrap.widgets.tooltip import ToolTip
@@ -85,8 +85,8 @@ class ColorChooser(ttk.Frame):
 
         # color variables
         r, g, b = ImageColor.getrgb(self.initialcolor)
-        h, s, l = colorutils.color_to_hsl((r, g, b), RGB)
-        hx = colorutils.color_to_hex((r, g, b), RGB)
+        h, s, l = utils.color_to_hsl((r, g, b), RGB)
+        hx = utils.color_to_hex((r, g, b), RGB)
 
         self.hue = ttk.IntVar(value=h)
         self.sat = ttk.IntVar(value=s)
@@ -97,10 +97,10 @@ class ColorChooser(ttk.Frame):
         self.hex = ttk.StringVar(value=hx)
 
         # widget sizes (adjusted by widget scaling)
-        self.spectrum_height = utility.scale_size(self, 240)
-        self.spectrum_width = utility.scale_size(self, 530)  # looks better on Mac OS
-        # self.spectrum_width = utility.scale_size(self, 480)
-        self.spectrum_point = utility.scale_size(self, 12)
+        self.spectrum_height = utils.scale_size(self, 240)
+        self.spectrum_width = utils.scale_size(self, 530)  # looks better on Mac OS
+        # self.spectrum_width = utils.scale_size(self, 480)
+        self.spectrum_point = utils.scale_size(self, 12)
 
         # build widgets
         spectrum_frame = ttk.Frame(self.notebook)
@@ -149,11 +149,11 @@ class ColorChooser(ttk.Frame):
     def create_spectrum_indicator(self) -> None:
         """Create a square indicator that displays in the position of
         the selected color"""
-        s = utility.scale_size(self, 10)
-        width = utility.scale_size(self, 2)
+        s = utils.scale_size(self, 10)
+        width = utils.scale_size(self, 2)
         values = self.get_variables()
         x1, y1 = self.coords_from_color(values.hex)
-        colorutils.contrast_color(values.hex, 'hex')
+        utils.contrast_color(values.hex, 'hex')
         tag = ['spectrum-indicator']
         self.color_spectrum.create_rectangle(
             x1, y1, x1 + s, y1 + s, width=width, tags=[tag])
@@ -176,7 +176,7 @@ class ColorChooser(ttk.Frame):
             lum = int(l * LUM)
             row = []
             for color in colors:
-                color = colorutils.update_hsl_value(
+                color = utils.update_hsl_value(
                     color=color,
                     lum=lum,
                     inmodel='hex',
@@ -225,7 +225,7 @@ class ColorChooser(ttk.Frame):
             autostyle=False
         )
         old.pack(side=LEFT, fill=BOTH, expand=YES, padx=(0, 2))
-        contrastfg = colorutils.contrast_color(
+        contrastfg = utils.contrast_color(
             color=self.initialcolor,
             model='hex',
         )
@@ -336,7 +336,7 @@ class ColorChooser(ttk.Frame):
         # add color points to scale
         for x, l in enumerate(range(0, width, xf)):
             lum = l / width * LUM
-            fill = colorutils.update_hsl_value(
+            fill = utils.update_hsl_value(
                 color=values.hex,
                 lum=lum,
                 inmodel='hex',
@@ -367,7 +367,7 @@ class ColorChooser(ttk.Frame):
     def coords_from_color(self, hexcolor: str) -> Tuple[float, float]:
         """Get the coordinates on the color spectrum from the color
         value"""
-        h, s, _ = colorutils.color_to_hsl(hexcolor)
+        h, s, _ = utils.color_to_hsl(hexcolor)
         x = (h / HUE) * self.spectrum_width
         y = (1 - (s / SAT)) * self.spectrum_height
         return x, y
@@ -380,8 +380,8 @@ class ColorChooser(ttk.Frame):
         h = int(min(HUE, max(0, (HUE / WIDTH) * x)))
         s = int(min(SAT, max(0, SAT - ((SAT / HEIGHT) * y))))
         l = 50
-        hx = colorutils.color_to_hex([h, s, l], 'hsl')
-        r, g, b = colorutils.color_to_rgb(hx)
+        hx = utils.color_to_hex([h, s, l], 'hsl')
+        r, g, b = utils.color_to_rgb(hx)
         return ColorValues(h, s, l, r, g, b, hx)
 
     def set_variables(self, h: int, s: int, l: int, r: int, g: int, b: int, hx: str) -> None:
@@ -409,7 +409,7 @@ class ColorChooser(ttk.Frame):
     def update_preview(self) -> None:
         """Update the color in the preview frame"""
         hx = self.hex.get()
-        fg = colorutils.contrast_color(
+        fg = utils.contrast_color(
             color=hx,
             model='hex',
         )
@@ -423,7 +423,7 @@ class ColorChooser(ttk.Frame):
         xf = self.spectrum_point
         for x, l in enumerate(range(0, width, xf)):
             lum = l / width * LUM
-            fill = colorutils.update_hsl_value(
+            fill = utils.update_hsl_value(
                 color=values.hex,
                 lum=lum,
                 inmodel='hex',
@@ -448,7 +448,7 @@ class ColorChooser(ttk.Frame):
         self.color_spectrum.moveto('spectrum-indicator', x, y)
         self.color_spectrum.tag_raise('spectrum-indicator')
         # adjust the outline color based on contrast of background
-        color = colorutils.contrast_color(values.hex, 'hex')
+        color = utils.contrast_color(values.hex, 'hex')
         self.color_spectrum.itemconfig('spectrum-indicator', outline=color)
 
     # color events
@@ -459,16 +459,16 @@ class ColorChooser(ttk.Frame):
         values = self.get_variables()
         if model == HEX:
             hx = values.hex
-            r, g, b = colorutils.color_to_rgb(hx)
-            h, s, l = colorutils.color_to_hsl(hx)
+            r, g, b = utils.color_to_rgb(hx)
+            h, s, l = utils.color_to_hsl(hx)
         elif model == RGB:
             r, g, b = values.r, values.g, values.b
-            h, s, l = colorutils.color_to_hsl([r, g, b], 'rgb')
-            hx = colorutils.color_to_hex([r, g, b])
+            h, s, l = utils.color_to_hsl([r, g, b], 'rgb')
+            hx = utils.color_to_hex([r, g, b])
         elif model == HSL:
             h, s, l = values.h, values.s, values.l
-            r, g, b = colorutils.color_to_rgb([h, s, l], 'hsl')
-            hx = colorutils.color_to_hex([h, s, l], 'hsl')
+            r, g, b = utils.color_to_rgb([h, s, l], 'hsl')
+            hx = utils.color_to_hex([h, s, l], 'hsl')
         self.set_variables(h, s, l, r, g, b, hx)
         self.update_preview()
         self.update_luminance_indicator()

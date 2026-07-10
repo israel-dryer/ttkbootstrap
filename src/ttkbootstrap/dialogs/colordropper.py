@@ -11,7 +11,7 @@ from PIL import ImageGrab, ImageTk
 from PIL.Image import Resampling
 
 import ttkbootstrap as ttk
-from ttkbootstrap import colorutils, utility
+from ttkbootstrap import utils
 from ttkbootstrap.constants import *
 
 ColorChoice = namedtuple('ColorChoice', 'rgb hsl hex')
@@ -53,10 +53,10 @@ class ColorDropperDialog:
     def build_zoom_toplevel(self, master: tk.Misc) -> None:
         """Build the toplevel widget that shows the zoomed version of
         the pixels underneath the mouse cursor."""
-        height = utility.scale_size(self.toplevel, 100)
-        width = utility.scale_size(self.toplevel, 100)
-        text_xoffset = utility.scale_size(self.toplevel, 50)
-        text_yoffset = utility.scale_size(self.toplevel, 50)
+        height = utils.scale_size(self.toplevel, 100)
+        width = utils.scale_size(self.toplevel, 100)
+        text_xoffset = utils.scale_size(self.toplevel, 50)
+        text_yoffset = utils.scale_size(self.toplevel, 50)
         toplevel = ttk.Toplevel(master=master)
         toplevel.transient(master=master)
         if self.toplevel and self.toplevel.winsys == 'x11':
@@ -93,8 +93,8 @@ class ColorDropperDialog:
         the toplevel widget"""
         # add logic here to capture the image color
         hx = self.get_hover_color()
-        hsl = colorutils.color_to_hsl(hx)
-        rgb = colorutils.color_to_rgb(hx)
+        hsl = utils.color_to_hsl(hx)
+        rgb = utils.color_to_rgb(hx)
         self.result.set(ColorChoice(rgb, hsl, hx))
         if self.toplevel:
             self.toplevel.destroy()
@@ -130,7 +130,7 @@ class ColorDropperDialog:
         self.zoom_image: ImageTk.PhotoImage = ImageTk.PhotoImage(self.zoom_data)
         self.zoom_canvas.itemconfig('image', image=self.zoom_image)
         hover_color = self.get_hover_color()
-        contrast_color = colorutils.contrast_color(hover_color, 'hex')
+        contrast_color = utils.contrast_color(hover_color, 'hex')
         self.zoom_canvas.itemconfig('indicator', fill=contrast_color)
 
     def get_hover_color(self) -> str:
@@ -139,7 +139,7 @@ class ColorDropperDialog:
         x = x1 + (x2 - x1) // 2
         y = y1 + (y2 - y2) // 2
         r, g, b = self.zoom_data.getpixel((x, y))
-        hx = colorutils.color_to_hex((r, g, b))
+        hx = utils.color_to_hex((r, g, b))
         return hx
 
     def show(self) -> None:
@@ -164,10 +164,10 @@ class ColorDropperDialog:
         self.zoom_toplevel: Optional[ttk.Toplevel] = None
         self.zoom_data: Any = None
         self.zoom_image: Optional[ImageTk.PhotoImage] = None
-        self.zoom_height: int = utility.scale_size(self.toplevel, 100)
-        self.zoom_width: int = utility.scale_size(self.toplevel, 100)
-        self.zoom_xoffset: int = utility.scale_size(self.toplevel, 10)
-        self.zoom_yoffset: int = utility.scale_size(self.toplevel, 10)
+        self.zoom_height: int = utils.scale_size(self.toplevel, 100)
+        self.zoom_width: int = utils.scale_size(self.toplevel, 100)
+        self.zoom_xoffset: int = utils.scale_size(self.toplevel, 10)
+        self.zoom_yoffset: int = utils.scale_size(self.toplevel, 10)
 
         self.build_zoom_toplevel(self.toplevel)
         self.toplevel.grab_set()

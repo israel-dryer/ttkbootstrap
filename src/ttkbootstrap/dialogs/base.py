@@ -11,7 +11,7 @@ from typing import Any, Optional, Tuple
 import ttkbootstrap as ttk
 from ttkbootstrap.internal.utility import center_on_parent
 from ttkbootstrap.internal.positioning import ensure_on_screen
-from ttkbootstrap.utility import windowing_system
+from ttkbootstrap.utils import windowing_system
 
 
 class Dialog(BaseWidget):

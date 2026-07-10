@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from ttkbootstrap import utility
+from ttkbootstrap import utils
 from ttkbootstrap.style.assets import Assets
 from ttkbootstrap.style.builders_ttk import StyleBuilderTTK
 from ttkbootstrap.style.elements import RecolorRenderer
@@ -119,7 +119,7 @@ def test_public_utility_reuses_root_service():
     root = _FakeRoot("x11", (4 / 3) * 1.5)
     service = Scaling.for_widget(root)
     assert Scaling.for_widget(root) is service
-    assert utility.scale_size(root, [22, 6]) == [33, 9]
+    assert utils.scale_size(root, [22, 6]) == [33, 9]
 
 
 def test_style_builder_utility_and_assets_share_root_service(root):
@@ -132,11 +132,11 @@ def test_window_and_style_initialize_scaling_before_style_builds():
     package = Path(__file__).parents[1] / "src" / "ttkbootstrap"
     window_source = (package / "window.py").read_text(encoding="utf-8")
     init_source = window_source[window_source.index("class App"):]
-    assert init_source.index("utility.enable_high_dpi_awareness()") < init_source.index(
+    assert init_source.index("utils.enable_high_dpi_awareness()") < init_source.index(
         "super().__init__(**kwargs)"
     )
     assert init_source.index("super().__init__(**kwargs)") < init_source.index(
-        "utility.enable_high_dpi_awareness(self, scaling)"
+        "utils.enable_high_dpi_awareness(self, scaling)"
     ) < init_source.index("self._style = Style(theme")
 
     engine_source = (package / "style" / "engine.py").read_text(encoding="utf-8")

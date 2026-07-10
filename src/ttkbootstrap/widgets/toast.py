@@ -200,7 +200,7 @@ class ToastNotification:
         """Create, place, and show the toast; returns ``self`` (a dismiss handle)."""
         from tkinter import _default_root
 
-        from ttkbootstrap import Frame, Label, Toplevel, apply_icon, utility
+        from ttkbootstrap import Frame, Label, Toplevel, apply_icon, utils
 
         self._hidden = False
 
@@ -208,7 +208,7 @@ class ToastNotification:
         # with the tooltip); set it at construction, so probe the windowing
         # system from the existing root before creating the Toplevel.
         if _default_root is not None and "window_type" not in self.kwargs:
-            if utility.windowing_system(_default_root) == "aqua":
+            if utils.windowing_system(_default_root) == "aqua":
                 self.kwargs["window_type"] = "tooltip"
 
         self.toplevel = Toplevel(**self.kwargs)
@@ -239,7 +239,7 @@ class ToastNotification:
         Label(
             self.container,
             text=self.message,
-            wraplength=utility.scale_size(self.toplevel, 300),
+            wraplength=utils.scale_size(self.toplevel, 300),
             bootstyle=f"{self.bootstyle}-inverse",
             anchor=NW,
         ).grid(row=1, column=1, sticky=NSEW, padx=10, pady=(0, 5))
@@ -323,13 +323,13 @@ class ToastNotification:
 
     # -- setup / geometry ---------------------------------------------------- #
     def _setup(self, window) -> None:
-        from ttkbootstrap import utility
+        from ttkbootstrap import utils
 
-        winsys = utility.windowing_system(window)
+        winsys = utils.windowing_system(window)
         self.toplevel.configure(relief=RAISED)
 
         if "minsize" not in self.kwargs:
-            w, h = utility.scale_size(self.toplevel, [300, 75])
+            w, h = utils.scale_size(self.toplevel, [300, 75])
             self.toplevel.minsize(w, h)
 
         # heading font
@@ -343,21 +343,21 @@ class ToastNotification:
         # default position by windowing system
         if self.position is None:
             if winsys == "win32":
-                x, y = utility.scale_size(self.toplevel, [5, 50])
+                x, y = utils.scale_size(self.toplevel, [5, 50])
                 self.position = (x, y, SE)
             elif winsys == "x11":
-                x, y = utility.scale_size(self.toplevel, [0, 0])
+                x, y = utils.scale_size(self.toplevel, [0, 0])
                 self.position = (x, y, SE)
             else:  # aqua (window_type='tooltip' was set at construction)
-                x, y = utility.scale_size(self.toplevel, [50, 50])
+                x, y = utils.scale_size(self.toplevel, [50, 50])
                 self.position = (x, y, NE)
 
         self._anchor = str(self.position[-1]).lower()
 
     def _scaled_gap(self) -> int:
-        from ttkbootstrap import utility
+        from ttkbootstrap import utils
         try:
-            return utility.scale_size(self.toplevel, _ToastStack._GAP)
+            return utils.scale_size(self.toplevel, _ToastStack._GAP)
         except Exception:
             return _ToastStack._GAP
 

@@ -13,7 +13,7 @@ import warnings
 from pathlib import Path
 from typing import Any, Optional, Tuple, Union
 
-from ttkbootstrap import utility
+from ttkbootstrap import utils
 from ttkbootstrap.constants import *
 from ttkbootstrap.internal import positioning
 from ttkbootstrap.style import Style, Bootstyle
@@ -492,17 +492,17 @@ class App(_BaseWindow, tkinter.Tk):
         _require_single_root(self)
 
         if high_dpi:
-            utility.enable_high_dpi_awareness()
+            utils.enable_high_dpi_awareness()
 
         # On win32, tag the process so the taskbar shows the app icon rather
         # than the generic python.exe one (bootstack app.py:534-540).
         self._set_app_user_model_id()
 
         super().__init__(**kwargs)
-        self.winsys: str = utility.windowing_system(self)
+        self.winsys: str = utils.windowing_system(self)
 
         if scaling is not None:
-            utility.enable_high_dpi_awareness(self, scaling)
+            utils.enable_high_dpi_awareness(self, scaling)
 
         self._setup_icon(iconphoto, default_data=_DEFAULT_ICON_DATA)
         self.title(title)
@@ -671,7 +671,7 @@ class Toplevel(_BaseWindow, tkinter.Toplevel):
         tool_window = aliases.get("tool_window", tool_window)
 
         super().__init__(**kwargs)
-        self.winsys: str = utility.windowing_system(self)
+        self.winsys: str = utils.windowing_system(self)
 
         # On aqua, give a borderless popup type (tooltip/splash/...) a native
         # macOS window class instead of the default chrome, so it isn't drawn
