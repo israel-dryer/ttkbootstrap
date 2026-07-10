@@ -404,12 +404,13 @@ class ToastNotification:
             xpos = (screen_w - win_w) // 2
 
         # the stack offset moves the toast away from its anchored edge
-        # (downward from a top anchor, upward from a bottom anchor)
+        # (downward from a top anchor, upward from a bottom anchor; downward from
+        # a vertically-centered 'e'/'w' anchor, so those still stack too).
         if "n" in anchor:
             ypos = inset_y + offset
         elif "s" in anchor:
             ypos = screen_h - win_h - inset_y - offset
         else:
-            ypos = (screen_h - win_h) // 2
+            ypos = (screen_h - win_h) // 2 + offset
 
         return f"+{max(0, xpos)}+{max(0, ypos)}"

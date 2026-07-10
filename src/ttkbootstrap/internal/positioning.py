@@ -48,21 +48,19 @@ def _monitor_at_point(x: int, y: int) -> Optional[Rect]:
 
 
 def _window_size(window: tkinter.Misc) -> Tuple[int, int]:
-    """Best-available (width, height): the realized (mapped) size, else the
-    requested size before the window has been mapped.
+    """The size a widget actually occupies: its realized (mapped) size, else its
+    requested size before it has been mapped. Also used for drop targets/parents.
 
-    ``winfo_width``/``winfo_height`` return ``1`` until the window is mapped, so
-    fall back to the request only then. Do NOT ``max()`` the two: once mapped, a
-    window whose content wants more than its actual size reports a larger
-    ``reqheight`` than it occupies, and using that inflated value mis-centers the
-    window (e.g. pinning it to the top of a small screen instead of centering)."""
-    width = window.winfo_width()
-    height = window.winfo_height()
-    if width <= 1:
-        width = window.winfo_reqwidth()
-    if height <= 1:
-        height = window.winfo_reqheight()
-    return width, height
+    Use ``winfo_ismapped()`` (not a ``winfo_width <= 1`` sniff, which a genuinely
+    1px window -- e.g. the datepicker's ``minsize=(226, 1)`` -- would trip): a
+    mapped widget's realized size IS its footprint. Do NOT ``max()`` it with the
+    request -- once mapped, content that wants more than its box reports a larger
+    ``reqheight``/``reqwidth`` than it occupies, and that inflated value
+    mis-centers/mis-anchors (e.g. pinning a window to the top of a small screen).
+    A withdrawn/unmapped widget has no realized size, so its request is best."""
+    if window.winfo_ismapped():
+        return window.winfo_width(), window.winfo_height()
+    return window.winfo_reqwidth(), window.winfo_reqheight()
 
 
 def center_on_screen(window: tkinter.Misc) -> Tuple[int, int]:
@@ -102,8 +100,8 @@ def center_on_parent(window: tkinter.Misc, parent: tkinter.Misc) -> Tuple[int, i
     w_width, w_height = _window_size(window)
     p_x = parent.winfo_rootx()
     p_y = parent.winfo_rooty()
-    p_width = max(parent.winfo_width(), parent.winfo_reqwidth())
-    p_height = max(parent.winfo_height(), parent.winfo_reqheight())
+    # actual occupied size, not the inflated content request (see _window_size)
+    p_width, p_height = _window_size(parent)
     x = p_x + max(0, (p_width - w_width) // 2)
     y = p_y + max(0, (p_height - w_height) // 2)
     return int(x), int(y)
@@ -130,7 +128,8 @@ def below_widget(
     _, w_height = _window_size(window)
     tx = target.winfo_rootx()
     ty = target.winfo_rooty()
-    t_height = max(target.winfo_height(), target.winfo_reqheight())
+    # actual occupied height, not the inflated content request (see _window_size)
+    _, t_height = _window_size(target)
 
     monitor = _monitor_at_point(tx, ty)
     if monitor:

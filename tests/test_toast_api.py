@@ -171,6 +171,22 @@ def test_two_toasts_stack_without_overlap(root):
     t2.hide()
 
 
+def test_horizontal_anchor_toasts_still_stack(root):
+    # 'e'/'w' anchors are vertically centered; concurrent ones must still get the
+    # stack offset (regression: the absolute-geometry rewrite applied the offset
+    # only in the n/s branches, so e/w toasts overlapped).
+    t1 = ToastNotification("A", "a", position=(5, 0, "e"))
+    t2 = ToastNotification("B", "b", position=(5, 0, "e"))
+    t1.show_toast()
+    t2.show_toast()
+    root.update_idletasks()
+    assert _ypos(t1) != _ypos(t2)  # not overlapping
+    expected = t1._height + t1._scaled_gap()
+    assert abs(abs(_ypos(t2) - _ypos(t1)) - expected) <= 2
+    t1.hide()
+    t2.hide()
+
+
 def test_dismiss_reflows_remaining(root):
     t1 = ToastNotification("One", "first", position=(5, 50, "se"))
     t2 = ToastNotification("Two", "second", position=(5, 50, "se"))

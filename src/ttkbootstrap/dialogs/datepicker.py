@@ -124,6 +124,16 @@ class DatePickerDialog:
         # output, so the ambient (C) locale is exactly what's wanted.
 
         self.parent = parent
+        # On aqua, window_type="tooltip" makes the popup a native borderless
+        # popover (MacWindowStyle) -- the same treatment tooltips/toasts use --
+        # since a plain override-redirect window positions unreliably there.
+        # Gate it to aqua: on x11 it sets `-type tooltip`, which some window
+        # managers make non-focusable, which would break THIS calendar's
+        # focus_force()/Escape/arrow-key navigation (unlike a passive tooltip).
+        _ref = self.parent if self.parent is not None else tkinter._default_root
+        window_kwargs = {}
+        if _ref is not None and windowing_system(_ref) == "aqua":
+            window_kwargs["window_type"] = "tooltip"
         self.root = ttk.Toplevel(
             title=title,
             transient=self.parent,
@@ -132,11 +142,7 @@ class DatePickerDialog:
             minsize=(226, 1),
             iconify=True,
             override_redirect=True,
-            # On aqua this maps to a native borderless popover (MacWindowStyle),
-            # the same treatment tooltips/toasts use -- a plain override-redirect
-            # window positions unreliably there. No-op on win32; sets `-type` on
-            # x11. (override_redirect is itself a no-op on aqua.)
-            window_type="tooltip",
+            **window_kwargs,
         )
         # Outside-click / Escape dismissal bookkeeping. The popup is frameless
         # (no titlebar 'X'), so a click outside its bounds -- or Escape -- cancels
