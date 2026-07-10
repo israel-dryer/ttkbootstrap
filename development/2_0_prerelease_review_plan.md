@@ -77,21 +77,38 @@ rewrite (the guide is the docs' migration page).
 
 ## Gates before tagging an RC
 
-- [ ] **Deterministically green suite.** Root-cause the two "flakes" rather than
-      wave them through: the `test_color_helpers` *Duplicate element
-      TSpinbox.uparrow* failure is a real order-dependent theme-rebuild bug, not
-      noise; confirm `nl.msg`/`zh_cn.msg` is genuinely env-only (Tcl can't read
-      the catalog) and not a real localization regression.
-- [ ] **Clean-env install smoke.** Build the wheel, `pip install` into a fresh
-      venv, import warning-free (`-W error::DeprecationWarning`), and construct
-      one of every widget/dialog. Catches missing package-data / subpackages
-      (assets globs don't recurse; the new `utils/` subpackage; icon font).
-- [ ] **Min-Python parse.** 3.10 grammar parse of all `src/` + PEP 649
-      annotation evaluation (the sweep the color PRs ran).
-- [ ] **Warning-free import** of `ttkbootstrap` and every submodule; the
-      deprecation shims warn *only* when the old path is actually used.
-- [ ] **Docs stubs.** The broken API `:::` stubs that crash mkdocstrings are
-      release-blocking (Workstream H §11).
+- [x] **Deterministically green suite.** Both "flakes" root-caused (2026-07-09):
+      the `test_color_helpers` *Duplicate element TSpinbox.uparrow* was a **real**
+      theme-rebuild bug — `element_create` was not idempotent, so any recipe re-run
+      on an already-materialized ttk theme (a test force-build, or a production
+      `_theme_styles`/Tcl desync) crashed. **Fixed** by an idempotent
+      `Style.element_create` override (`style/engine.py`) that no-ops when the
+      element already exists in the current theme; +14 regression tests. The
+      `nl.msg` failure (`test_msgcat`/`test_set`) is **confirmed genuinely
+      env-only**: the localization file flips pass/fail across identical runs
+      (6/6 pass in some runs, one transient `couldn't read file nl.msg: No error`
+      in others), the catalog is present and readable, and ttkbootstrap only calls
+      the standard `::msgcat::mclocale`. Not a regression; a transient Tcl file-read
+      hiccup. (Optional: de-flake by retrying the msgcat load in the test.)
+- [x] **Clean-env install smoke** (2026-07-09). Built the wheel, `pip install`ed
+      into a fresh venv, imported warning-free (`-W error::DeprecationWarning`), and
+      constructed one of every widget + dialog. **Pass** — all subpackages ship
+      (incl. `utils/`), the `assets/icons/bootstrap.ttf` font + `assets/elements`
+      + `assets/app_icons` + json manifests are present; the non-recursive globs
+      dropped nothing (asset dirs are one level deep and each is listed).
+      **Finding: `pyproject.toml` version is still `1.20.4`** — bump before tagging.
+- [x] **Min-Python parse** (2026-07-09). 3.10 (`py -V:3.10`) `py_compile` of all
+      84 `src/` files: clean. PEP 649 annotation force-eval: 352 targets resolve;
+      the single `get_type_hints`-on-`constants` `Final` complaint is a
+      module-level-`Final` artifact, not an evaluation failure.
+- [x] **Warning-free import** (2026-07-09) of `ttkbootstrap` and all 83 submodules;
+      the only three that warn (`colorutils`/`utility`/`publisher`) do so **only**
+      when the old path is imported directly — correct shim behavior.
+- [ ] **Docs stubs.** 9 broken API `:::` stubs in `docs/en/api` point at removed
+      paths — `ttkbootstrap.icons` (Emoji/Icon), `ttkbootstrap.scrolled`,
+      `ttkbootstrap.tableview`, `ttkbootstrap.toast`, `ttkbootstrap.tooltip`.
+      They crash mkdocstrings; repoint to `ttkbootstrap.widgets.*` / delete the
+      icons stubs. Release-blocking; **belongs to Workstream H** (docs).
 
 ## Sequencing
 
@@ -116,11 +133,50 @@ tag RC  ──►  Workstream H docs  ──►  final release
 
 ## Known latent items already logged (feed the triage)
 
-- `test_color_helpers` order-dependent *Duplicate element TSpinbox.uparrow*
-  (theme-rebuild path) — real bug, currently reads as a flake.
-- `center_on_screen` negative-origin multi-monitor bug (parked from PR B).
+- ~~`test_color_helpers` order-dependent *Duplicate element TSpinbox.uparrow*~~ —
+  **FIXED** 2026-07-09 (idempotent `Style.element_create`; see the green-suite gate).
+- `center_on_screen` negative-origin multi-monitor bug (parked from PR B) — still
+  open; a "Recenter window" button in the Track B harness exercises it.
 - `colorutils`/`utils.color` `color_to_rgb` swallows errors with a bare
   `except: print('this')` — behavior-preserving-move wart, worth fixing pre-3.0.
 - Cross-platform gates owed but never eyeballed: win32 AppUserModelID/taskbar
   icon, aqua `overrideredirect`/`MacWindowStyle` popups, multi-monitor centering.
-- Docs Workstream H: nav/IA skeleton + un-break the API `:::` stubs.
+- Docs Workstream H: nav/IA skeleton + un-break the API `:::` stubs (9 broken —
+  see the docs-stubs gate).
+
+## Pre-release review run — 2026-07-09 (results)
+
+**Track A (agentic sweep)** — 8-subsystem Workflow + adversarial verify. 5
+candidates, 2 confirmed:
+- **RELEASE-BLOCKER (FIXED):** `bootstyle="neutral"` crashed construction on every
+  non-button widget family (Label/Entry/Checkbutton/Progressbar/Scale/Scrollbar/
+  Combobox). `neutral` is in the global color vocab + the canonical `BootStyle`
+  Literal + exported `NEUTRAL`, but `NEUTRAL_FAMILIES` was consulted only by the
+  reference generator, never enforced at runtime → `Colors.get("neutral")` → None →
+  TclError/TypeError inside the recipe, before `build_style`'s graceful fallback.
+  Fixed: the resolver now gates `neutral` on `NEUTRAL_FAMILIES`, dropping it to the
+  family default with a loud warning (raise in strict mode). +14 regression tests.
+- **POST-RELEASE (open, minor/cosmetic):** `DatePickerDialog` highlights the wrong
+  day when browsing away from the selected month. 2.0 added `datevar.set(day)` for
+  the toolbutton "on" look, but the shared `datevar` is only re-set in the branch
+  that matches the selected month, so navigating to another month leaves it pinned
+  and that month's same day-number renders falsely selected. `datepicker.py:360`.
+  The returned selection is correct (grid-coord based); purely a cosmetic stray
+  highlight while browsing. Fix = reset/track `datevar` per redraw. **Author's call
+  whether to fix now or defer.**
+
+**Track B (visual/cross-platform)** — human-gated, cannot be automated. Delivered
+`examples/prerelease_visual_review.py`: a single warning-clean window with one of
+every native + shipped widget in its states, a theme picker + light/dark toggle, a
+dialogs launcher, a "Recenter window" button (for the parked multi-monitor bug),
+and the run-matrix checklist in its docstring. **The eyeball pass itself is still
+owed** (light/dark × 100/125/150/200% DPI × win32/aqua/x11).
+
+**Track C (migration contract)** — mechanical `master→2.0` public-surface diff
+(runtime `inspect.signature` + `dir()`), reconciled against
+`2_0_breaking_changes.md`. **No silent breaks; no phantom entries.** 9 top-level
+removals (1 real+documented `icons`, 3 shim-forwarded+documented, 5 incidental
+typing-name leakage), 13 constructor signature changes all documented, no dropped
+`__all__`/widget/dialog exports. Two doc nits fixed: the Toast `set_geometry` entry
+referenced a non-existent `_set_geometry`; DateEntry's `""`→`"primary"` default was
+unstated.

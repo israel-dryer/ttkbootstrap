@@ -153,7 +153,14 @@ def test_two_toasts_stack_without_overlap(root):
 
     y1, y2 = _ypos(t1), _ypos(t2)
     assert y1 != y2  # non-overlapping
-    # t2 is offset from t1 by ~t1's height + the gap
+    # The offset basis must be the height the toast actually OCCUPIES on screen,
+    # which is floored to its minsize -- not the (smaller) requested height.
+    # Regression: using winfo_reqheight() alone undershot the floor and the
+    # stacked toasts overlapped by the minsize/reqheight gap.
+    assert t1._height >= t1.toplevel.minsize()[1]
+    assert t1._height == max(t1.toplevel.winfo_reqheight(), t1.toplevel.minsize()[1])
+    # t2 is offset from t1 by its full occupied height + the gap, so the two
+    # windows are exactly one gap apart (no overlap).
     expected = t1._height + t1._scaled_gap()
     assert abs((abs(y2) - abs(y1)) - expected) <= 2
     assert len(_TOAST_STACK._corners["se"]) == 2

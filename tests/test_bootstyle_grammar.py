@@ -241,6 +241,40 @@ def test_invalid_pair_warns_for_our_widget(root):
         ttk.Button(root, bootstyle="thin")
 
 
+@pytest.mark.parametrize(
+    "factory",
+    [ttk.Label, ttk.Entry, ttk.Checkbutton, ttk.Radiobutton, ttk.Progressbar,
+     ttk.Scale, ttk.Scrollbar, ttk.Combobox, ttk.Spinbox, ttk.Frame],
+)
+def test_neutral_on_non_button_family_falls_back_not_crashes(root, factory):
+    # `neutral` is a real color but only the button-family recipes implement it
+    # (constants.NEUTRAL_FAMILIES); on any other family it used to resolve to
+    # Colors.get("neutral") -> None and crash the recipe mid-build. It must now
+    # loud-fail and fall back to the family default, never crash construction.
+    with pytest.warns(UserWarning, match="neutral-"):
+        widget = factory(root, bootstyle="neutral")
+    applied = widget.cget("style")
+    assert applied  # a real, built default style, not an unusable fragment
+    assert root.style.style_exists_in_theme(applied)
+
+
+@pytest.mark.parametrize(
+    "factory, bootstyle, expected_name",
+    [
+        (ttk.Button, "neutral", "neutral.TButton"),
+        (ttk.Button, "neutral-outline", "neutral.Outline.TButton"),
+        (ttk.Button, "neutral-toolbutton", "neutral.Toolbutton"),
+        (ttk.Menubutton, "neutral", "neutral.TMenubutton"),
+    ],
+)
+def test_neutral_still_builds_for_button_family(root, factory, bootstyle, expected_name):
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")  # button-family neutral must be warning-free
+        widget = factory(root, bootstyle=bootstyle)
+    assert widget.cget("style") == expected_name
+    assert root.style.style_exists_in_theme(expected_name)
+
+
 def test_valid_widget_construction_is_warning_free(root):
     with warnings.catch_warnings():
         warnings.simplefilter("error")

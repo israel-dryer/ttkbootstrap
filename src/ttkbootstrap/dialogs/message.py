@@ -2,6 +2,7 @@
 
 import textwrap
 import tkinter
+import warnings
 from typing import Any, Callable, List, Optional, Tuple
 
 import ttkbootstrap as ttk
@@ -138,12 +139,18 @@ class MessageDialog(Dialog):
         if self._icon:
             icon_lbl = self._create_icon_label(container)
             if icon_lbl is not None:
-                icon_lbl.pack(side=LEFT, anchor=N, padx=(0, 5))
+                # Center the icon against the message so a single-line message
+                # sits level with the icon's middle (top-anchoring left the icon
+                # hanging below a short line); a taller multi-line message instead
+                # centers the icon against the block.
+                icon_lbl.pack(side=LEFT, anchor=CENTER, padx=(0, 5))
 
         if self._message:
+            msg_frame = ttk.Frame(container)
             for msg in self._message.split("\n"):
                 message = "\n".join(textwrap.wrap(msg, width=self._width))
-                ttk.Label(container, text=message).pack(pady=(0, 3), fill=X, anchor=N)
+                ttk.Label(msg_frame, text=message).pack(pady=(0, 3), fill=X, anchor=N)
+            msg_frame.pack(side=LEFT, fill=X, expand=True, anchor=CENTER)
         container.pack(fill=X, expand=True)
 
     def _create_icon_label(self, container: tkinter.Misc) -> "Optional[ttk.Label]":
@@ -172,7 +179,12 @@ class MessageDialog(Dialog):
                 continue
             self._img = image
             return label
-        print("MessageDialog icon is invalid")
+        warnings.warn(
+            f"MessageDialog icon {self._icon!r} could not be loaded as an image "
+            "name, base64 data, or file path; no icon will be shown.",
+            UserWarning,
+            stacklevel=2,
+        )
         return None
 
     def create_buttonbox(self, master: tkinter.Misc) -> None:
@@ -196,7 +208,7 @@ class MessageDialog(Dialog):
             elif is_default:
                 bootstyle = "primary"
             else:
-                bootstyle = "secondary"
+                bootstyle = "default"
 
             if self._localize is True:
                 text = MessageCatalog.translate(text)

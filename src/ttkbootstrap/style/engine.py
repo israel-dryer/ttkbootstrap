@@ -7,7 +7,7 @@ content-addressed image cache. Split out of the monolithic `style.py` in 2.0.
 import json
 import warnings
 from tkinter import TclError, ttk
-from typing import Any
+from typing import Any, Optional
 
 from ttkbootstrap.internal import utility as util
 from ttkbootstrap.constants import *
@@ -64,7 +64,8 @@ class Style(ttk.Style):
         else:
             return Style.instance
 
-    def __init__(self, theme=None, default_button=None, *, themename=None):
+    def __init__(self, theme=None, default_button=None, *, themename=None,
+                 light_theme=None, dark_theme=None):
         """
         Parameters:
 
@@ -72,6 +73,15 @@ class Style(ttk.Style):
                 The name of the theme to use when styling the widget.
                 `themename` is a permanent, non-deprecated alias accepted for
                 the same purpose (pre-2.0 spelling); pass either.
+
+            light_theme, dark_theme (str):
+                Optionally designate the themes that `toggle_theme_mode()` /
+                `use_theme_mode()` switch between. If omitted, the counterpart
+                is derived from the `<family>-light` / `<family>-dark` naming
+                convention, so designation is only needed to pin a specific
+                pair (e.g. a light theme from one family with a dark theme from
+                another). Read once on the first `Style`/`App`; ignored on the
+                existing singleton (set later via `set_theme_modes(...)`).
 
             default_button (str):
                 The color a bare `Button`/`Menubutton` (no `bootstyle`) uses.
@@ -96,6 +106,10 @@ class Style(ttk.Style):
         self._style_registry = set()  # all styles used
         self._theme_styles = {}  # styles used in theme
         self._theme_names = set()
+        # Optional designated light/dark theme pair for use_theme_mode()/
+        # toggle_theme_mode(); None means "derive from the -light/-dark naming".
+        self._light_theme = None
+        self._dark_theme = None
         # Monotonic counter bumped on every theme switch. The theme walk
         # repaints (and restamps) only widgets stamped older than this, so a
         # widget is repainted at most once per switch. Replaces the old
@@ -124,6 +138,9 @@ class Style(ttk.Style):
         config.flush_pending_config()
         if default_button is not None:
             self.default_button = default_button
+
+        if light_theme is not None or dark_theme is not None:
+            self.set_theme_modes(light=light_theme, dark=dark_theme)
 
         self.theme_use(theme)
 
@@ -284,6 +301,102 @@ class Style(ttk.Style):
         self._theme_version += 1
         self._theme_walk()
 
+    # ------------------------------------------------------------------ #
+    # Light/dark theme mode toggling
+    # ------------------------------------------------------------------ #
+    @property
+    def theme_mode(self) -> Optional[str]:
+        """The active theme mode (`"light"` or `"dark"`).
+
+        Reads the active theme's type; `None` before a theme is applied.
+        """
+        theme = getattr(self, "theme", None)
+        return theme.type if theme is not None else None
+
+    def set_theme_modes(self, light: str = None, dark: str = None) -> None:
+        """Designate the light and/or dark theme that `use_theme_mode()` /
+        `toggle_theme_mode()` switch between.
+
+        By default the counterpart is derived from the `<family>-light` /
+        `<family>-dark` naming convention, so this is only needed to pin a
+        specific pair (e.g. a light theme from one family with a dark theme
+        from another). Each name must be a registered theme; a name whose own
+        type disagrees with the slot it is assigned to earns a warning.
+
+        Parameters:
+
+            light (str):
+                Theme to use as the light-mode target.
+
+            dark (str):
+                Theme to use as the dark-mode target.
+        """
+        for mode, name in (("light", light), ("dark", dark)):
+            if name is None:
+                continue
+            if name not in self._theme_names:
+                raise ValueError(f"{name!r} is not a registered theme name.")
+            definition = self._theme_definitions.get(name)
+            if definition is not None and definition.type != mode:
+                warnings.warn(
+                    f"designating {name!r} (a {definition.type} theme) as the "
+                    f"{mode} theme; toggling will not change appearance the way "
+                    "a matching-type theme would.",
+                    UserWarning,
+                    stacklevel=2,
+                )
+            setattr(self, f"_{mode}_theme", name)
+
+    def _theme_for_mode(self, mode: str) -> Optional[str]:
+        """Resolve the theme name for `mode`: a designated theme if set, else
+        the `<current-family>-<mode>` sibling if it is registered, else None.
+        """
+        designated = getattr(self, f"_{mode}_theme", None)
+        if designated:
+            return designated
+        current = self.theme.name if getattr(self, "theme", None) else DEFAULT_THEME
+        family = current
+        for suffix in ("-light", "-dark"):
+            if current.endswith(suffix):
+                family = current[: -len(suffix)]
+                break
+        candidate = f"{family}-{mode}"
+        return candidate if candidate in self._theme_names else None
+
+    def use_theme_mode(self, mode: str) -> Optional[str]:
+        """Switch to the light or dark theme (the designated one, else the
+        current family's `-light`/`-dark` sibling).
+
+        Returns the resulting mode. No-ops with a warning if no counterpart
+        exists (e.g. a single legacy theme with no sibling).
+
+        Parameters:
+
+            mode (str):
+                `"light"` or `"dark"`.
+        """
+        mode = str(mode).lower()
+        if mode not in ("light", "dark"):
+            raise ValueError(f"mode must be 'light' or 'dark', got {mode!r}")
+        target = self._theme_for_mode(mode)
+        if target is None:
+            warnings.warn(
+                f"no {mode} theme for {self.theme.name!r}; designate one via "
+                f"set_theme_modes({mode}=...) or use a theme that has a "
+                f"'-{mode}' variant.",
+                UserWarning,
+                stacklevel=2,
+            )
+            return self.theme_mode
+        if target != self.theme.name:
+            self.theme_use(target)
+        return self.theme_mode
+
+    def toggle_theme_mode(self) -> Optional[str]:
+        """Toggle between the light and dark theme, returning the new mode."""
+        other = "dark" if self.theme_mode == "light" else "light"
+        return self.use_theme_mode(other)
+
     def theme_create(self, themename: str, parent: str = None, settings: dict = None) -> None:
         """
         Create a new theme in the Tcl interpreter. If the parent is a registered
@@ -422,6 +535,23 @@ class Style(ttk.Style):
     def _build_configure(self, style, **kw):
         """Calls configure of superclass; used by style builder classes."""
         super().configure(style, **kw)
+
+    def element_create(self, elementname, etype, *args, **kw):
+        """Create a ttk element, idempotently within the current theme.
+
+        ttk raises ``Duplicate element`` if the same element name is created
+        twice in one theme. Every ttkbootstrap theme maps to a single
+        clam-derived Tcl theme with fixed colors, so an element only ever needs
+        to be created once per theme; the second run of a recipe -- whether a
+        test that force-rebuilds a style, or a production theme-rebuild after
+        the per-theme style registry (`_theme_styles`) desyncs from the Tcl
+        theme -- must be a safe no-op, not a crash. The `configure`/`layout`/
+        `map` steps that follow are already idempotent, so skipping the redundant
+        element create makes the whole recipe re-runnable.
+        """
+        if elementname in self.element_names():
+            return
+        super().element_create(elementname, etype, *args, **kw)
 
     def _load_themes(self, EXTERNAL_THEMES=None):
         """Register the curated 2.0 theme catalog (and any user themes).

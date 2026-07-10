@@ -246,10 +246,15 @@ class ToastNotification:
 
         self.toplevel.bind("<ButtonPress>", self.hide)
 
-        # measure the requested size (valid even while withdrawn) BEFORE placing,
-        # so the stack offset is correct and there is no reposition flash.
+        # measure the on-screen height (valid even while withdrawn) BEFORE
+        # placing, so the stack offset is correct and there is no reposition
+        # flash. The toast is floored to its `minsize`, so the height it actually
+        # occupies is the larger of the requested and minimum heights; using
+        # reqheight alone undershoots and the stacked toasts overlap.
         self.toplevel.update_idletasks()
-        self._height = self.toplevel.winfo_reqheight()
+        self._height = max(
+            self.toplevel.winfo_reqheight(), self.toplevel.minsize()[1]
+        )
 
         _TOAST_STACK.add(self)
         self._reposition()

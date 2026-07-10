@@ -185,6 +185,42 @@ def test_toplevel_bad_iconphoto_path_warns_not_prints(root):
     top.destroy()
 
 
+def test_app_default_icon_uses_default_flag_on_win32(root):
+    # Regression: dialogs/pickers showed the Tk feather because the win32 app
+    # icon was applied via `wm_iconbitmap(path)` (no `-default`), so child
+    # toplevels did not inherit it. It must be applied with `default=` so it
+    # becomes the app-wide default for every future toplevel.
+    from ttkbootstrap.window import _APP_ICON_ICO, _DEFAULT_ICON_DATA
+    if not _APP_ICON_ICO.is_file():
+        pytest.skip("packaged .ico not present")
+    top = ttk.Toplevel(title="iconspy")
+    top.winsys = "win32"  # exercise the win32 branch regardless of host OS
+    recorded = {}
+    top.wm_iconbitmap = lambda bitmap=None, default=None: recorded.update(
+        bitmap=bitmap, default=default
+    )
+    top._apply_default_icon(_DEFAULT_ICON_DATA)
+    assert recorded.get("default") == str(_APP_ICON_ICO)
+    assert recorded.get("bitmap") is None  # not the per-window positional form
+    top.destroy()
+
+
+def test_toplevel_explicit_ico_is_per_window_not_app_wide(root):
+    # Regression: a secondary Toplevel's own .ico must apply to that window
+    # only, not become the app-wide default (which would re-skin App + every
+    # sibling toplevel). Only the root App's icon is app-wide (default=).
+    top = ttk.Toplevel(title="own-icon")
+    top.winsys = "win32"  # exercise the win32 branch regardless of host OS
+    recorded = {}
+    top.wm_iconbitmap = lambda bitmap=None, default=None: recorded.update(
+        bitmap=bitmap, default=default
+    )
+    top._setup_icon("C:/some/custom.ico", default_data=None)
+    assert recorded.get("default") is None                  # NOT app-wide
+    assert recorded.get("bitmap") == "C:/some/custom.ico"   # this window only
+    top.destroy()
+
+
 # --------------------------------------------------------------------------
 # style property + aqua guard
 # --------------------------------------------------------------------------

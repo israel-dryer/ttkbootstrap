@@ -246,3 +246,82 @@ def test_legacy_theme_use_lazy_registers_then_bulk_opt_in(root):
                 style._theme_styles.pop(name, None)
                 style._theme_objects.pop(name, None)
         style.theme_use("bootstrap-light")
+
+
+# --------------------------------------------------------------------------- #
+# Light/dark theme mode (theme_mode / toggle_theme_mode / use_theme_mode /
+# set_theme_modes)
+# --------------------------------------------------------------------------- #
+def test_mode_reflects_active_theme_type(root):
+    style = root.style
+    style.theme_use("bootstrap-light")
+    assert style.theme_mode == "light"
+    style.theme_use("bootstrap-dark")
+    assert style.theme_mode == "dark"
+
+
+def test_toggle_mode_swaps_family_sibling(root):
+    style = root.style
+    style.theme_use("bootstrap-light")
+    assert style.toggle_theme_mode() == "dark"
+    assert style.theme.name == "bootstrap-dark"
+    assert style.toggle_theme_mode() == "light"
+    assert style.theme.name == "bootstrap-light"
+
+
+def test_use_mode_is_explicit_and_idempotent(root):
+    style = root.style
+    style.theme_use("bootstrap-light")
+    assert style.use_theme_mode("dark") == "dark"
+    assert style.theme.name == "bootstrap-dark"
+    # already dark -> no-op, stays put
+    assert style.use_theme_mode("dark") == "dark"
+    assert style.theme.name == "bootstrap-dark"
+    with pytest.raises(ValueError):
+        style.use_theme_mode("sepia")
+
+
+def test_designated_pair_can_cross_families(root):
+    style = root.style
+    try:
+        style.set_theme_modes(light="bootstrap-light", dark="dracula-dark")
+        style.use_theme_mode("light")
+        assert style.theme.name == "bootstrap-light"
+        assert style.toggle_theme_mode() == "dark"
+        assert style.theme.name == "dracula-dark"
+    finally:
+        style._light_theme = style._dark_theme = None
+        style.theme_use("bootstrap-light")
+
+
+def test_set_mode_themes_rejects_unregistered_and_warns_on_type_mismatch(root):
+    style = root.style
+    with pytest.raises(ValueError):
+        style.set_theme_modes(light="no-such-theme")
+    try:
+        with pytest.warns(UserWarning, match="dark theme"):
+            style.set_theme_modes(light="bootstrap-dark")  # dark in the light slot
+    finally:
+        style._light_theme = style._dark_theme = None
+
+
+def test_toggle_without_sibling_warns_and_noops(root):
+    style = root.style
+    before = set(style._theme_names)
+    try:
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            ttk.install_legacy_themes()
+        style.theme_use("darkly")  # a single legacy theme, no -light sibling
+        with pytest.warns(UserWarning, match="no light theme"):
+            assert style.toggle_theme_mode() == "dark"  # unchanged
+        assert style.theme.name == "darkly"
+    finally:
+        for name in list(style._theme_names):
+            if name not in before:
+                style._theme_names.discard(name)
+                style._theme_definitions.pop(name, None)
+                style._theme_styles.pop(name, None)
+                style._theme_objects.pop(name, None)
+        style._light_theme = style._dark_theme = None
+        style.theme_use("bootstrap-light")

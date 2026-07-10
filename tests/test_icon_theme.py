@@ -136,3 +136,84 @@ def test_datepicker_carets_use_apply_icon(root):
         assert getattr(dp.prev_period, "_tb_icon", None)
     finally:
         dp.root.destroy()
+
+
+# --------------------------------------------------------------------------
+# icon_only: square, same height as a normal button; explicit overrides win
+# --------------------------------------------------------------------------
+
+def test_icon_only_is_square_and_matches_normal_height(root):
+    normal = ttk.Button(root, text="Normal")
+    normal.pack()
+    only = ttk.Button(root, icon="gear-fill", icon_only=True)
+    only.pack()
+    root.update_idletasks()
+    w, h = only.winfo_reqwidth(), only.winfo_reqheight()
+    assert abs(w - h) <= 1                                  # square (exact)
+    assert abs(h - normal.winfo_reqheight()) <= 1           # same height (exact)
+    # compound is image-only (text hidden)
+    assert str(root.style.lookup(only.cget("style"), "compound")) == "image"
+
+
+def test_icon_only_is_always_square_but_size_override_changes_the_control(root):
+    # Icon-only uses a fixed default (size, padding) pair, so the default is a
+    # square ~a normal button's height; it stays square at any size, but an
+    # explicit icon_size deliberately changes the control's size (not forced).
+    for size in (12, 16, 20, 24):
+        b = ttk.Button(root, icon="gear-fill", icon_only=True, icon_size=size)
+        b.pack()
+        root.update_idletasks()
+        w, h = b.winfo_reqwidth(), b.winfo_reqheight()
+        assert abs(w - h) <= 1, f"size={size} not square: {w}x{h}"
+    small = ttk.Button(root, icon="gear-fill", icon_only=True, icon_size=12)
+    big = ttk.Button(root, icon="gear-fill", icon_only=True, icon_size=24)
+    small.pack()
+    big.pack()
+    root.update_idletasks()
+    assert big.winfo_reqheight() > small.winfo_reqheight()  # size is not forced
+
+
+def test_icon_only_explicit_padding_wins(root):
+    # A widget `padding=` (instance option) overrides the icon_only style padding.
+    b = ttk.Button(root, icon="gear-fill", icon_only=True, padding=(12, 2))
+    b.pack()
+    root.update_idletasks()
+    assert b.cget("padding") == (12, 2)
+
+
+def test_icon_only_via_configure_toggles(root):
+    normal = ttk.Button(root, text="N")
+    normal.pack()
+    root.update_idletasks()
+    H = normal.winfo_reqheight()
+    b = ttk.Button(root, icon="gear-fill", text="Settings")
+    b.pack()
+    root.update_idletasks()
+    wide = b.winfo_reqwidth()
+    b.configure(icon_only=True)
+    root.update_idletasks()
+    assert abs(b.winfo_reqwidth() - b.winfo_reqheight()) <= 3   # now square
+    assert abs(b.winfo_reqheight() - H) <= 2
+    b.configure(icon="bell-fill")                               # icon_only persists
+    root.update_idletasks()
+    assert abs(b.winfo_reqwidth() - b.winfo_reqheight()) <= 3
+    b.configure(icon_only=False)                               # back to icon+text
+    root.update_idletasks()
+    assert b.winfo_reqwidth() > b.winfo_reqheight()
+
+
+def test_icon_only_recomputes_on_theme_change(root):
+    b = ttk.Button(root, icon="gear-fill", icon_only=True)
+    b.pack()
+    root.update_idletasks()
+    before = (b.winfo_reqwidth(), b.winfo_reqheight())
+    root.style.theme_use("bootstrap-dark")
+    root.update()
+    after = (b.winfo_reqwidth(), b.winfo_reqheight())
+    assert abs(after[0] - after[1]) <= 3           # still square after switch
+    assert abs(before[1] - after[1]) <= 2          # height stable
+
+
+def test_icon_only_without_icon_warns(root):
+    with pytest.warns(UserWarning, match="icon_only"):
+        ttk.Button(root, icon_only=True, text="x")
