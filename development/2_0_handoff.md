@@ -3,10 +3,10 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
-_Last updated: 2026-07-10 (**Docs Workstream H — Sphinx skeleton spike OPENED as
-#1148 against `2.0`; NEXT = iterate the skeleton, then sub-PR 2 (generators)**).
-Sub-PR 1 of the docs rebuild (`development/2_0_docs_design.md` §11) is up on branch
-`docs/2.0-sphinx-skeleton` (PR #1148, held for author merge per cadence). It moves
+_Last updated: 2026-07-10 (**Docs Workstream H — Sphinx skeleton spike MERGED into
+`2.0` (#1148, merge `e88bd525`, branch deleted); NEXT = iterate the skeleton, then
+sub-PR 2 (generators)**).
+Sub-PR 1 of the docs rebuild (`development/2_0_docs_design.md` §11) is merged. It moves
 the docs off mkdocs onto bootstack's stack and **proves the structure end to end**;
 content is deliberately skeletal (stubs) and will be iterated. **What landed:**
 **Clean cut** — deleted the whole mkdocs `docs/` tree (incl. `ja`/`zh`, ~134 files)

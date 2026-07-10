@@ -251,8 +251,8 @@ The user keeps live WIP in the working tree (`dialogs/colorchooser.py`,
 `dialogs/fontdialog.py`, `examples/widgets/dialogs.py` — dialog-button styling) —
 **leave it untouched.**
 
-**Docs H sub-PR 1 — the Sphinx skeleton spike — is OPENED as #1148** (branch
-`docs/2.0-sphinx-skeleton`, held for author merge). Clean cut done (mkdocs `docs/`
+**Docs H sub-PR 1 — the Sphinx skeleton spike — is MERGED into `2.0` (#1148, merge
+`e88bd525`).** Clean cut done (mkdocs `docs/`
 tree + `mkdocs.yml` deleted, `.readthedocs.yaml`→sphinx); bootstack `conf.py` +
 `_static/custom.css` + autosummary template lifted/adapted; the 4-destination IA
 toctree stands up with browsable stubs; **spike proof pages** = `widgets/button.rst`
