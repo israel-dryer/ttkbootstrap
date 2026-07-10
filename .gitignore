@@ -24,3 +24,10 @@ tests/themes.json
 publish.bat
 /issues/
 site
+
+# Sphinx docs
+docs/_build/
+# autosummary-generated API stubs are regenerated on every build
+docs/reference/api/generated/
+# the broad `*_static` rule above would ignore the committed docs static assets
+!docs/_static/
