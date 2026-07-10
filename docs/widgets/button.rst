@@ -25,7 +25,7 @@ without hard-coding a color.
 
    import ttkbootstrap as ttk
 
-   app = ttk.Window()
+   app = ttk.App()
 
    ttk.Button(app, text="Primary",   bootstyle="primary").pack(padx=8, pady=4)
    ttk.Button(app, text="Secondary", bootstyle="secondary").pack(padx=8, pady=4)

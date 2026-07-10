@@ -10,7 +10,7 @@ Hello ttkbootstrap
 
    import ttkbootstrap as ttk
 
-   app = ttk.Window(title="Hello", themename="bootstrap-light")
+   app = ttk.App(title="Hello", themename="bootstrap-light")
 
    ttk.Label(app, text="Hello from ttkbootstrap!").pack(padx=16, pady=(16, 8))
    ttk.Button(app, text="Primary", bootstyle="primary").pack(padx=16, pady=4)
@@ -21,20 +21,24 @@ Hello ttkbootstrap
 
 A few things to notice:
 
-- ``ttk.Window`` creates the root window and installs a theme in one step. Pass
+- ``ttk.App`` creates the root window and installs a theme in one step. Pass
   ``themename=`` to choose one; it defaults to ``bootstrap-light``.
 - Every ttkbootstrap widget accepts ``bootstyle=``. The value describes intent
   — a color (``"primary"``), a variant (``"outline"``), or both
   (``"danger-outline"``) — not a literal color.
+- ``pack`` (and ``grid``/``place``) **return the widget**, so you can construct
+  and place in one expression — no separate variable needed unless you keep a
+  reference.
 - ``app.mainloop()`` starts the event loop, exactly as in stock tkinter.
 
-Window vs Tk
-------------
+App vs Tk
+---------
 
-``ttk.Window`` is a drop-in replacement for ``tkinter.Tk`` that also owns the
-theme. If you already have a ``Tk`` root, create a :class:`~ttkbootstrap.style.Style`
-instead — the styling engine attaches to whichever root exists. Prefer
-``ttk.Window`` for new code.
+``ttk.App`` is a drop-in replacement for ``tkinter.Tk`` that also owns the theme.
+(It is also exported under its longtime alias ``ttk.Window`` — both name the same
+class.) If you already have a ``Tk`` root, create a
+:class:`~ttkbootstrap.style.Style` instead — the styling engine attaches to
+whichever root exists. Prefer ``ttk.App`` for new code.
 
 Choosing a theme
 ----------------
