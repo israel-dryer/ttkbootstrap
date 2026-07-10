@@ -1,5 +1,6 @@
 """Per-theme coordinator for private ttk widget-family style recipes."""
 
+import warnings
 from tkinter import ttk
 
 from ttkbootstrap.constants import *
@@ -27,6 +28,7 @@ from ttkbootstrap.style.theme import (
 _TROUGH_SHADE = 0.2    # recessed dark-theme track/trough behind a filled bar
 _STRIPE_TINT = 0.2     # lighter diagonal highlight over a progress bar
 _MUTE_AMOUNT = 0.4     # unchecked-indicator muting
+_CARD_ELEVATION = 0.06  # mode-aware raise of the background for the `card` surface
 
 
 class StyleBuilderTTK:
@@ -144,6 +146,53 @@ class StyleBuilderTTK:
         See `_accent_on_color`.
         """
         return _accent_on_color(color)
+
+    def card_surface(self) -> str:
+        """Return the `card` surface: a mode-aware raise of the background.
+
+        Darkens the background in a light theme, lightens it in a dark theme, so
+        a card reads as a subtly raised panel in either mode. Derived from
+        `colors.bg` at build time, so it follows theme switches.
+        """
+        bg = self.colors.bg
+        if self.is_light_theme:
+            return self.shade(bg, _CARD_ELEVATION)
+        return self.tint(bg, _CARD_ELEVATION)
+
+    def resolve_surface(self, surface: str | None = None) -> str:
+        """Resolve a surface token to a concrete background color.
+
+        The *surface* is the background a widget is placed on. Accepts:
+
+          - `None` / `""` / `"background"` -- the application background
+            (`colors.bg`); the default, and the only surface that produces no
+            style-name segment.
+          - `"card"` -- a mode-aware raised surface (`card_surface`).
+          - an accent color name (`primary`, `success`, ..., `neutral`) -- that
+            color, so a ghost/outline/link control can blend into an accent
+            container (e.g. an accent toolbar).
+
+        Named and accent surfaces are theme-reactive: they re-resolve on a theme
+        switch. An unknown token warns and falls back to the background. Raw-hex
+        surfaces are not yet accepted (deferred).
+        """
+        if not surface or surface == DEFAULT_SURFACE:
+            return self.colors.bg
+        if surface == "card":
+            return self.card_surface()
+        if surface in BOOTSTYLE_COLORS:
+            if surface == NEUTRAL:
+                # local import breaks the builders<-utils cycle
+                from ttkbootstrap.style.builders.utils import neutral_fill
+                return neutral_fill(self)
+            return self.colors.get(surface)
+        warnings.warn(
+            f"Unknown surface {surface!r}; falling back to the application "
+            f"background. Valid surfaces: {', '.join(BOOTSTYLE_SURFACES)}, an "
+            f"accent color, or 'neutral'.",
+            stacklevel=2,
+        )
+        return self.colors.bg
 
     def build_style(
         self,
