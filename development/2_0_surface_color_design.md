@@ -252,7 +252,7 @@ too). So the original name-then-color split touched every recipe twice. Split by
 **widget family** instead — each recipe touched once, and each PR is a visible,
 working feature.
 
-- **PR 2 — mechanism + button family.** The full engine + grammar plumbing:
+- **PR 2 — mechanism + button family. [MERGED #1150]** The full engine + grammar plumbing:
   a `@surface` token in `bootstyle` (tokenized by `_classify_tokens`, mirroring
   `_classify_style_name`) → `update_ttk_widget_style` → `@surface` in
   `_build_ttkstyle_name` (emitted only when non-default; shared `surface_segment`
