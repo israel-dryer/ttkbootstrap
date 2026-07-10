@@ -96,6 +96,33 @@ def test_square_toggle_tracks_surface(root):
     assert mapped == style.colors.primary
 
 
+# --- bar families (scale / progressbar / scrollbar) ----------------------- #
+
+def test_scale_tracks_surface(root):
+    style = Style.get_instance()
+    sc = ttk.Scale(root, bootstyle="@primary")
+    assert sc.cget("style") == "@primary.Horizontal.TScale"
+    assert style.style_exists_in_theme(sc.cget("style"))
+
+
+def test_progressbar_trough_tracks_surface(root):
+    b = StyleBuilderTTK(build=False)
+    pb = ttk.Progressbar(root, bootstyle="@card")
+    assert pb.cget("style") == "@card.Horizontal.TProgressbar"
+    # recessed trough = border(surface); widget bg = the surface itself
+    assert _lookup(root, pb.cget("style"), "troughcolor") == b.border(b.card_surface())
+    assert _lookup(root, pb.cget("style"), "background") == b.card_surface()
+
+
+def test_scrollbar_trough_tracks_surface(root):
+    b = StyleBuilderTTK(build=False)
+    sb = ttk.Scrollbar(root, bootstyle="@primary")
+    # scrollbar default orient is vertical
+    assert sb.cget("style") == "@primary.Vertical.TScrollbar"
+    # the track floats the thumb on the (accent) surface, no visible channel
+    assert _lookup(root, sb.cget("style"), "troughcolor") == b.colors.primary
+
+
 # --- theme reactivity ----------------------------------------------------- #
 
 def test_surfaced_family_is_theme_reactive(root):
@@ -122,6 +149,9 @@ def test_every_gated_family_honors_surface(root):
         "radiobutton": ttk.Radiobutton(root, bootstyle="@card"),
         "toggle": ttk.Checkbutton(root, bootstyle="@card toggle"),
         "label": ttk.Label(root, bootstyle="@card"),
+        "scale": ttk.Scale(root, bootstyle="@card"),
+        "progressbar": ttk.Progressbar(root, bootstyle="@card"),
+        "scrollbar": ttk.Scrollbar(root, bootstyle="@card"),
     }
     # the test must cover exactly the gate (update both together)
     assert set(cases) == set(bs._SURFACE_FAMILIES)

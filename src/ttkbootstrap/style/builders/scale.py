@@ -24,10 +24,13 @@ def _create_scale_assets(builder, colorname=DEFAULT):
     """
     a = builder.assets
     disabled_color = builder.disabled("text")
+    # The surface the scale sits on (2.0 surface-color); default == theme bg. The
+    # handle's transparent halo is baked against it, and the track derives from it.
+    surface = builder.resolve_surface(builder._surface)
     # The track is a recessed neutral: bootstack derives it as border(surface),
     # so it reads as a subtle groove in both modes (shading the now-light
     # selectbg made it too strong on dark backgrounds).
-    track_color = builder.border(builder.colors.bg)
+    track_color = builder.border(surface)
 
     if any([colorname == DEFAULT, colorname == ""]):
         normal_color = builder.colors.primary
@@ -38,13 +41,13 @@ def _create_scale_assets(builder, colorname=DEFAULT):
 
     # ( normal, pressed, hover, disabled thumbs; horizontal, vertical track )
     return (
-        a.recolor("slider_handle", white=builder.colors.bg,
+        a.recolor("slider_handle", white=surface,
                   black=disabled_color, magenta=normal_color),
-        a.recolor("slider_handle", white=builder.colors.bg,
+        a.recolor("slider_handle", white=surface,
                   black=disabled_color, magenta=pressed_color),
-        a.recolor("slider_handle", white=builder.colors.bg,
+        a.recolor("slider_handle", white=surface,
                   black=disabled_color, magenta=hover_color),
-        a.recolor("slider_handle", white=builder.colors.bg,
+        a.recolor("slider_handle", white=surface,
                   black=disabled_color, magenta=disabled_color),
         a.recolor("slider_track", white=track_color, black=track_color),
         a.recolor("slider_track", white=track_color, black=track_color,
@@ -63,8 +66,8 @@ def build_scale_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         colorname (str):
             The color label used to style the widget.
     """
-    h = StyleName("TScale", colorname, orient="Horizontal")
-    v = StyleName("TScale", colorname, orient="Vertical")
+    h = StyleName("TScale", colorname, orient="Horizontal", surface=builder._surface)
+    v = StyleName("TScale", colorname, orient="Vertical", surface=builder._surface)
 
     # ( normal, pressed, hover, disabled, htrack, vtrack )
     images = _create_scale_assets(builder, colorname)

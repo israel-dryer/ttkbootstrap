@@ -36,6 +36,16 @@ def build_controls(parent, surface):
                     ).pack(anchor=W, pady=2)
     ttk.Button(parent, text="Ghost button", bootstyle=f"{at}{color}ghost".strip()
                ).pack(anchor=W, pady=(2, 0))
+    # bar families: trough/track derives from the surface (2.0 PR 4)
+    ttk.Scale(parent, value=40, from_=0, to=100,
+              bootstyle=f"{at}{color}".strip()).pack(anchor=W, fill=X, pady=(8, 2))
+    ttk.Progressbar(parent, value=60, bootstyle=f"{at}{color}".strip()
+                    ).pack(anchor=W, fill=X, pady=2)
+    bar = ttk.Frame(parent)
+    bar.pack(anchor=W, fill=X, pady=2)
+    sb = ttk.Scrollbar(bar, orient=HORIZONTAL, bootstyle=f"{at}{color}".strip())
+    sb.set(0.2, 0.6)  # partial thumb so both track and thumb show
+    sb.pack(fill=X)
 
 
 def main():

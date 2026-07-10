@@ -17,8 +17,9 @@ _SCROLLBAR_THICKNESS = 8
 
 def _scrollbar_trough(builder):
     """The scrollbar track color: the surface, so the thumb floats with no
-    visible channel around it."""
-    return builder.colors.bg
+    visible channel around it. Honors the 2.0 surface-color token (default ==
+    theme bg)."""
+    return builder.resolve_surface(builder._surface)
 
 
 def _scrollbar_thumb_color(builder, colorname):
@@ -105,7 +106,7 @@ def _build_scrollbar(builder: StyleBuilderTTK, colorname, rounded):
         ("vertical", "ns", "Vertical.Scrollbar.trough"),
     ):
         axis = "Horizontal" if orient == "horizontal" else "Vertical"
-        ttk_style = f"{base}{axis}.{ttk_class}"
+        ttk_style = builder.surface_prefix(f"{base}{axis}.{ttk_class}")
         builder.configure(
             ttk_style,
             troughcolor=trough,
@@ -149,14 +150,15 @@ def build_thin_scrollbar_style(builder: StyleBuilderTTK, colorname=DEFAULT):
             The color label used to style the widget.
     """
     ttk_class = "TScrollbar"
-    surface = builder.colors.bg
+    # The surface the bar sits on (2.0 surface-color); default == theme bg.
+    surface = builder.resolve_surface(builder._surface)
 
     if any([colorname == DEFAULT, colorname == ""]):
-        h_ttk_style = f"Thin.Horizontal.{ttk_class}"
-        v_ttk_style = f"Thin.Vertical.{ttk_class}"
+        h_ttk_style = builder.surface_prefix(f"Thin.Horizontal.{ttk_class}")
+        v_ttk_style = builder.surface_prefix(f"Thin.Vertical.{ttk_class}")
     else:
-        h_ttk_style = f"{colorname}.Thin.Horizontal.{ttk_class}"
-        v_ttk_style = f"{colorname}.Thin.Vertical.{ttk_class}"
+        h_ttk_style = builder.surface_prefix(f"{colorname}.Thin.Horizontal.{ttk_class}")
+        v_ttk_style = builder.surface_prefix(f"{colorname}.Thin.Vertical.{ttk_class}")
     # share the darker, clearly-visible thumb color with the default/round bars
     thumb = _scrollbar_thumb_color(builder, colorname)
 
