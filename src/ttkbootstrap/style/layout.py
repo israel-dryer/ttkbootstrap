@@ -12,7 +12,7 @@ with raw `style.element_create`/`style.layout`/`style.map` calls. Top-level
 imports are tkinter constants only -- no engine edge, so these stay leaves in
 the package layering.
 """
-from ttkbootstrap.constants import DEFAULT, PRIMARY
+from ttkbootstrap.constants import DEFAULT, PRIMARY, surface_segment
 
 
 # The canonical ttk widget state tokens. `statespec`/`state_map` validate against
@@ -201,15 +201,16 @@ class StyleName:
 
     __slots__ = ("colorname", "ttk_style", "element")
 
-    def __init__(self, ttk_class, colorname=DEFAULT, orient=None):
+    def __init__(self, ttk_class, colorname=DEFAULT, orient=None, surface=""):
         is_default = colorname in (DEFAULT, "")
         self.colorname = PRIMARY if is_default else colorname
 
+        prefix = surface_segment(surface)
         orient_prefix = f"{orient}." if orient else ""
         if is_default:
-            self.ttk_style = f"{orient_prefix}{ttk_class}"
+            self.ttk_style = f"{prefix}{orient_prefix}{ttk_class}"
         else:
-            self.ttk_style = f"{colorname}.{orient_prefix}{ttk_class}"
+            self.ttk_style = f"{prefix}{colorname}.{orient_prefix}{ttk_class}"
 
         element_class = ttk_class[1:] if ttk_class.startswith("T") else ttk_class
         self.element = self.ttk_style.replace(ttk_class, element_class)

@@ -18,18 +18,19 @@ def build_meter_subtxt_label_style(builder: StyleBuilderTTK, colorname=DEFAULT):
             The color label used to style the widget.
     """
     ttk_class = "Metersubtxt.TLabel"
+    surface = builder.resolve_surface(builder._surface)
 
     if any([colorname == DEFAULT, colorname == ""]):
-        ttk_style = ttk_class
+        ttk_style = builder.surface_prefix(ttk_class)
         if builder.is_light_theme:
             foreground = builder.colors.secondary
         else:
             foreground = builder.colors.light
     else:
-        ttk_style = f"{colorname}.{ttk_class}"
+        ttk_style = builder.surface_prefix(f"{colorname}.{ttk_class}")
         foreground = builder.colors.get(colorname)
 
-    background = builder.colors.bg
+    background = surface
 
     builder.configure(
         ttk_style, foreground=foreground, background=background
@@ -58,17 +59,18 @@ def build_meter_label_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     # text color = `foreground`
     # trough color = `space`
 
+    surface = builder.resolve_surface(builder._surface)
     # Recessed neutral trough = border(surface) (bootstack parity).
-    trough_color = builder.border(builder.colors.bg)
+    trough_color = builder.border(surface)
 
     if any([colorname == DEFAULT, colorname == ""]):
-        ttk_style = ttk_class
-        background = builder.colors.bg
+        ttk_style = builder.surface_prefix(ttk_class)
+        background = surface
         textcolor = builder.colors.primary
     else:
-        ttk_style = f"{colorname}.{ttk_class}"
+        ttk_style = builder.surface_prefix(f"{colorname}.{ttk_class}")
         textcolor = builder.colors.get(colorname)
-        background = builder.colors.bg
+        background = surface
 
     builder.configure(
         ttk_style,
@@ -92,15 +94,17 @@ def build_label_style(builder: StyleBuilderTTK, colorname=DEFAULT):
             The color label used to style the widget.
     """
     ttk_class = "TLabel"
+    # The surface the label sits on (2.0 surface-color); default == theme bg.
+    surface = builder.resolve_surface(builder._surface)
 
     if any([colorname == DEFAULT, colorname == ""]):
-        ttk_style = ttk_class
-        foreground = builder.colors.fg
-        background = builder.colors.bg
+        ttk_style = builder.surface_prefix(ttk_class)
+        foreground = builder.on_surface_fg()
+        background = surface
     else:
-        ttk_style = f"{colorname}.{ttk_class}"
+        ttk_style = builder.surface_prefix(f"{colorname}.{ttk_class}")
         foreground = builder.colors.get(colorname)
-        background = builder.colors.bg
+        background = surface
 
     # standard label
     builder.configure(
@@ -128,12 +132,15 @@ def build_inverse_label_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     """
     ttk_class = "Inverse.TLabel"
 
+    # An inverse label is a deliberate high-contrast chip; it does not blend into
+    # a surface, but its name is still prefixed so an `@surface inverse` resolves
+    # to a real (if identical) style rather than degrading (2.0 surface-color).
     if any([colorname == DEFAULT, colorname == ""]):
-        ttk_style = ttk_class
+        ttk_style = builder.surface_prefix(ttk_class)
         background = builder.colors.fg
         foreground = builder.colors.bg
     else:
-        ttk_style = f"{colorname}.{ttk_class}"
+        ttk_style = builder.surface_prefix(f"{colorname}.{ttk_class}")
         background = builder.colors.get(colorname)
         foreground = builder.on_color(background)
 

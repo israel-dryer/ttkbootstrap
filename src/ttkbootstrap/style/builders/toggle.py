@@ -45,14 +45,18 @@ def build_round_toggle_style(builder: StyleBuilderTTK, colorname=DEFAULT):
 
 def _build_round_toggle_style(builder: StyleBuilderTTK, colorname, ttk_class):
     """Build a round toggle under `ttk_class` (`Toggle` or `Round.Toggle`)."""
-    disabled_fg = builder.disabled("text")
-    off_track = builder.border(builder.colors.bg)  # bootstack: off track = border(surface)
+    # The surface the toggle sits on (2.0 surface-color): the off track, the
+    # background, and the switch glyph's knockout (black channel) all track it.
+    surface = builder.resolve_surface(builder._surface)
+    disabled_fg = builder.disabled("text", surface)
+    fg = builder.on_surface_fg()
+    off_track = builder.border(surface)  # bootstack: off track = border(surface)
 
     if any([colorname == DEFAULT, colorname == ""]):
-        ttk_style = ttk_class
+        ttk_style = builder.surface_prefix(ttk_class)
         colorname = PRIMARY
     else:
-        ttk_style = f"{colorname}.{ttk_class}"
+        ttk_style = builder.surface_prefix(f"{colorname}.{ttk_class}")
 
 
     # Resolve the "on" accent; LIGHT/DARK on their own background need a
@@ -70,24 +74,24 @@ def _build_round_toggle_style(builder: StyleBuilderTTK, colorname, ttk_class):
         relief=tk.FLAT,
         borderwidth=0,
         padding=0,
-        foreground=builder.colors.fg,
-        background=builder.colors.bg,
+        foreground=fg,
+        background=surface,
         # 1px keyboard-focus ring around the label (via the `Toolbutton.focus`
         # element in the layout below), matching the rest of the button family.
-        focuscolor=builder.colors.fg,
+        focuscolor=fg,
         focusthickness=builder.scale_size(1),
     )
     builder.style.map(
         ttk_style,
         foreground=[("disabled", disabled_fg)],
         focuscolor=[("disabled", disabled_fg)],
-        background=[("selected", builder.colors.bg)],
+        background=[("selected", surface)],
     )
     a = builder.assets
-    on = a.recolor("switch_round", white=accent, black=builder.colors.bg)
-    off = a.recolor("switch_round", white=off_track, black=builder.colors.bg, transform="flip-x")
-    disabled_on = a.recolor("switch_round", white=disabled_fg, black=builder.colors.bg)
-    disabled_off = a.recolor("switch_round", white=disabled_fg, black=builder.colors.bg, transform="flip-x")
+    on = a.recolor("switch_round", white=accent, black=surface)
+    off = a.recolor("switch_round", white=off_track, black=surface, transform="flip-x")
+    disabled_on = a.recolor("switch_round", white=disabled_fg, black=surface)
+    disabled_off = a.recolor("switch_round", white=disabled_fg, black=surface, transform="flip-x")
     spacer_name = f"{ttk_style}.spacer"
     try:
         image_element(
@@ -132,14 +136,17 @@ def build_square_toggle_style(builder: StyleBuilderTTK, colorname=DEFAULT):
             The color label used to style the widget.
     """
     ttk_class = "Square.Toggle"
-    disabled_fg = builder.disabled("text")
-    off_track = builder.border(builder.colors.bg)  # bootstack: off track = border(surface)
+    # The surface the toggle sits on (2.0 surface-color).
+    surface = builder.resolve_surface(builder._surface)
+    disabled_fg = builder.disabled("text", surface)
+    fg = builder.on_surface_fg()
+    off_track = builder.border(surface)  # bootstack: off track = border(surface)
 
     if any([colorname == DEFAULT, colorname == ""]):
-        ttk_style = ttk_class
+        ttk_style = builder.surface_prefix(ttk_class)
         colorname = PRIMARY
     else:
-        ttk_style = f"{colorname}.{ttk_class}"
+        ttk_style = builder.surface_prefix(f"{colorname}.{ttk_class}")
 
     # Resolve the "on" accent (same logic as round-toggle).
     if colorname == LIGHT:
@@ -150,25 +157,25 @@ def build_square_toggle_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         accent = builder.colors.get(colorname)
 
     builder.configure(
-        ttk_style, relief=tk.FLAT, borderwidth=0, foreground=builder.colors.fg,
+        ttk_style, relief=tk.FLAT, borderwidth=0, foreground=fg,
         # 1px keyboard-focus ring around the label (via the `Toolbutton.focus`
         # element in the layout below), matching the rest of the button family.
-        focuscolor=builder.colors.fg, focusthickness=builder.scale_size(1),
+        focuscolor=fg, focusthickness=builder.scale_size(1),
     )
     builder.style.map(
         ttk_style,
         foreground=[("disabled", disabled_fg)],
         focuscolor=[("disabled", disabled_fg)],
         background=[
-            ("selected", builder.colors.bg),
-            ("!selected", builder.colors.bg),
+            ("selected", surface),
+            ("!selected", surface),
         ],
     )
     a = builder.assets
-    on = a.recolor("switch_square", white=accent, black=builder.colors.bg)
-    off = a.recolor("switch_square", white=off_track, black=builder.colors.bg, transform="flip-x")
-    disabled_on = a.recolor("switch_square", white=disabled_fg, black=builder.colors.bg)
-    disabled_off = a.recolor("switch_square", white=disabled_fg, black=builder.colors.bg, transform="flip-x")
+    on = a.recolor("switch_square", white=accent, black=surface)
+    off = a.recolor("switch_square", white=off_track, black=surface, transform="flip-x")
+    disabled_on = a.recolor("switch_square", white=disabled_fg, black=surface)
+    disabled_off = a.recolor("switch_square", white=disabled_fg, black=surface, transform="flip-x")
     spacer_name = f"{ttk_style}.spacer"
     image_element(
         builder.style, f"{ttk_style}.indicator", default=on.image,
