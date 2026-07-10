@@ -3,6 +3,52 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
+_Last updated: 2026-07-10 (**Docs Workstream H — §11 sub-PR 2 (reference
+generators) DONE; opened as PR #1159 against `2.0` (branch
+`feat/2.0-docs-h-reference-generators`, commit `96926197`). >>> NEXT = author
+User Guide prose band-by-band (sub-PR 3: flagship bootstyle grammar +
+delivery-model first), OR sub-PR 4 (widgets catalog).**
+Populates the two **generated** reference surfaces the Sphinx docs promised.
+**What landed:** (1) NEW `tools/generate_style_reference.py` — introspects the
+live ttk engine (`style._get_builder().build_style(...)` to force lazy styles,
+then `layout`/`element_options`/`map`) and emits **one committed rST page per
+ttk-styled family (22)** under `docs/reference/style-reference/`, each with the
+`bootstyle`→style-name table, element layout, configurable options, supported
+states, and a hand-styling example; regenerated `index.rst` splits Native ttk vs
+Variant/shipped (card grids + toctrees, mirroring `widgets/index.rst`). Offline
+(needs a display; RTD builds the committed rST). (2) RETARGETED
+`tools/generate_bootstyle_reference.py` md→rST: writes
+`docs/_generated/bootstyle_reference.rst`, folded into the flagship
+`bootstyle-grammar.rst` via `.. include::`; **deleted**
+`development/2_0_bootstyle_reference.md`. The `BootStyle` Literal path is
+untouched. (3) `conf.py` excludes `_generated` so the include partial isn't a
+standalone doc (no `-W` orphan warning). (4) Sync tests: retargeted the bootstyle
+byte-compare to the rST; added a **structural** (registry-complete, headless)
+style-reference test (`tests/test_style_reference.py`) that byte-checks the
+registry-derived `index.rst` and asserts every family has a page — deliberately
+NOT byte-comparing introspected content (varies by Tk version/OS; freshness is
+the documented `python tools/generate_style_reference.py` regen step).
+**Two design forks locked with the author (both AskUserQuestion):** one page per
+family (not a single consolidated page); structural sync test (not byte-exact).
+**Build gate:** `sphinx -b html -W --keep-going` → **zero warnings**; sync tests
+64 passed; full suite green except the two known flakes. **A high-effort
+`/code-review` (8 finder angles) ran on the diff** and drove fixes: a **High** bug
+where the hand-styling example hardcoded `text="Custom"` on ~12 widgets that
+reject `-text` (Scale/Frame/Treeview/…) → crash on copy-paste (fixed via an
+empirically-probed `_TEXT_BEARING` set); misleading empty-state wording for
+image-driven families; hardcoded color-count prose ("eight"/"nine") the sync test
+couldn't police; and consolidating three parallel family tables into one
+`_FAMILIES` metadata dict guarded by `_check_families()`. **ENV NOTES:** the repo
+`.venv` exits 127 — run the suite with `PYTHONPATH=src python -m pytest -q`;
+`.venv-home` is inaccessible under this account, so build docs with a scratchpad
+`docsenv` (`py -3.13 -m venv`, `pip install -r docs/requirements.txt`,
+`PYTHONPATH=src <docsenv>/Scripts/python.exe -m sphinx -b html -W ...`). User WIP
+`gallery/collapsing_frame.py` LEFT UNTOUCHED (not in the commit). **Still pending
+before docs finalize:** the deferred **spaces sweep** (dash→space in the
+`BootStyle` Literal + reference to match the recommended `@primary success ghost`
+spelling), and screenshots (author, bootstack mechanism). Prior entry
+(User Guide IA slice) follows._
+
 _Last updated: 2026-07-10 (**Docs Workstream H — User Guide IA revised to a
 FOUR-BAND structure + skeleton re-scaffolded. MERGED into `2.0` as PR #1156
 (merge `4e15fa3a`, branch deleted; docs-only, no `/code-review` — the diff was all
