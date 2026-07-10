@@ -4,10 +4,15 @@
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
 _Last updated: 2026-07-10 (**Docs Workstream H — §11 sub-PR 2 (reference
-generators) DONE; opened as PR #1159 against `2.0` (branch
-`feat/2.0-docs-h-reference-generators`, commit `96926197`). >>> NEXT = author
-User Guide prose band-by-band (sub-PR 3: flagship bootstyle grammar +
-delivery-model first), OR sub-PR 4 (widgets catalog).**
+generators) + a live-preview docs slice: MERGED into `2.0` as PR #1159 (merge
+`a8490143`, branch deleted). PR grew past its title to also carry the bootstyle
+spaces/@surface grammar sweep, the unified Widgets catalog (design §4 revised),
+nested-markup fixes, the "Section Navigation" sidebar removal, and the docs
+favicon + navbar wordmark logo. >>> NEXT = author User Guide prose band-by-band
+(sub-PR 3: flagship bootstyle grammar + delivery-model first), OR sub-PR 4
+(widgets catalog — now a single unified usage-guide list). Remaining before docs
+finalize: screenshots (author, bootstack mechanism); optional cosmetic dash→space
+in the demo call sites.**
 Populates the two **generated** reference surfaces the Sphinx docs promised.
 **What landed:** (1) NEW `tools/generate_style_reference.py` — introspects the
 live ttk engine (`style._get_builder().build_style(...)` to force lazy styles,
