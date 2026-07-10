@@ -78,7 +78,7 @@ before `App()` exists (locale, global font, default button). Rather than solve
 each with its own chicken-and-egg, a small **pending-apply registry**:
 
 - Pre-root setters (`ttk.set_locale(...)`, `ttk.set_global_family(...)`,
-  `ttk.default_button(...)`) record intent into a module-level registry.
+  `ttk.set_default_button(...)`) record intent into a module-level registry.
 - `App.__init__` flushes the registry once the root exists (one ordered hook).
 - If a root already exists, the setter applies live immediately.
 
@@ -220,9 +220,16 @@ bracket DSL (needs to intercept `font=` — framework territory).
 ### Slice 5 — IMPLEMENTED (#TBD, 2026-07-09)
 
 Shipped as `ttkbootstrap/utils/config.py`: a `defer(key, apply)` /
-`flush_pending_config()` registry + the `default_button(color=None)` setter/getter
-(the one existing tenant; locale/font hang off the same seam in Slices 3/4).
+`flush_pending_config()` registry + the `set_default_button(color)` setter (the
+one existing tenant; locale/font hang off the same seam in Slices 3/4).
 Resolved forks:
+
+- **Setter named `set_default_button` (verb), set-only** (author, code review):
+  matches the seam's `set_locale`/`set_global_family` siblings rather than a
+  noun get/set overload. Dropping the getter let the queued applier capture its
+  color in the closure, so there is no shared module-level pending value to keep
+  in sync (a code-review altitude finding). Read the current value from
+  `App().style.default_button`.
 
 - **Flush hook lives in `Style.__init__`, not `App.__init__`** — the `Style`
   singleton is the true root-bound object (an `App` just creates one), so flushing

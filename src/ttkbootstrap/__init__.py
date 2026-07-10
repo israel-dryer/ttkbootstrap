@@ -88,7 +88,7 @@ from ttkbootstrap.utils import (
     update_hsl_value,
     contrast_color,
     conform_color_model,
-    default_button,
+    set_default_button,
 )
 
 
@@ -308,7 +308,7 @@ __all__ = [
     "update_hsl_value",
     "contrast_color",
     "conform_color_model",
-    "default_button",
+    "set_default_button",
 
     # Application root + windows
     "App",

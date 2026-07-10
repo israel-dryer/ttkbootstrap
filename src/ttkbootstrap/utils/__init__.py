@@ -39,7 +39,7 @@ from ttkbootstrap.utils.scaling import (
     scale_size,
 )
 from ttkbootstrap.utils.platform import windowing_system
-from ttkbootstrap.utils.config import default_button
+from ttkbootstrap.utils.config import set_default_button
 
 __all__ = [
     # color
@@ -55,5 +55,5 @@ __all__ = [
     # platform
     "windowing_system",
     # deferred config (pre-root setters)
-    "default_button",
+    "set_default_button",
 ]

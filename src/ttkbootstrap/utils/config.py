@@ -13,18 +13,12 @@ so the flush hook lives in `Style.__init__`; that covers both `App()` and a bare
 """
 import warnings
 from collections import OrderedDict
-from typing import Callable, Optional
-
-from ttkbootstrap.constants import NEUTRAL
+from typing import Callable
 
 # key -> zero-arg applier. Ordered so appliers run in the order they were set;
 # last write per key wins. Cleared by flush_pending_config() when the root comes
 # up, so a queued setter applies to the next root created.
 _pending: "OrderedDict[str, Callable[[], None]]" = OrderedDict()
-
-# The default-button color queued before a root existed (kept so the getter can
-# report the effective value pre-root); None once applied/never set.
-_pending_default_button: Optional[str] = None
 
 
 def _style():
@@ -58,11 +52,8 @@ def flush_pending_config() -> None:
         apply()
 
 
-def default_button(color: Optional[str] = None) -> str:
-    """Get or set the fill for a bare (no-`bootstyle`) Button/Menubutton.
-
-    Called with no argument, returns the current effective default. Called with a
-    color name (e.g. ``"primary"``, ``"neutral"``), sets it:
+def set_default_button(color: str) -> None:
+    """Set the fill for a bare (no-`bootstyle`) Button/Menubutton.
 
     - **Before the app root exists** the setting is queued and applied when the
       root is created -- the intended use, at the top of a file.
@@ -70,34 +61,21 @@ def default_button(color: Optional[str] = None) -> str:
       call (existing buttons are not restyled) and a `UserWarning` is emitted,
       because `default_button` is consumed when a button's base style is first
       built. Pass ``App(default_button=...)`` to style every bare button.
+
+    Read the current value from ``App().style.default_button``.
     """
-    global _pending_default_button
     style = _style()
-
-    if color is None:
-        if style is not None:
-            return getattr(style, "default_button", NEUTRAL)
-        return _pending_default_button if _pending_default_button is not None else NEUTRAL
-
     if style is not None:
         style.default_button = color
         warnings.warn(
-            "default_button was set after the application root was created; it "
-            "affects only Button/Menubutton widgets built after this call. Set "
-            "it before creating App() (or pass App(default_button=...)) to style "
-            "every bare button.",
+            "set_default_button() was called after the application root was "
+            "created; it affects only Button/Menubutton widgets built after this "
+            "call. Set it before creating App() (or pass App(default_button=...)) "
+            "to style every bare button.",
             UserWarning,
             stacklevel=2,
         )
     else:
-        _pending_default_button = color
-        defer("default_button", _apply_pending_default_button)
-    return color
-
-
-def _apply_pending_default_button() -> None:
-    """Flush applier for a pre-root `default_button` setting."""
-    global _pending_default_button
-    if _pending_default_button is not None:
-        _style().default_button = _pending_default_button
-        _pending_default_button = None
+        # Capture `color` in the closure so the queued applier carries its own
+        # value -- no shared module-level state to keep in sync.
+        defer("default_button", lambda: setattr(_style(), "default_button", color))

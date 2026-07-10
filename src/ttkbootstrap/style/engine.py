@@ -78,8 +78,8 @@ class Style(ttk.Style):
                 Defaults to `"neutral"`; pass `"primary"` for the pre-2.0
                 accented default. Read once when the base styles build, so set it
                 on the first `Style`/`App`; ignored on the existing singleton. If
-                omitted, a pre-root `ttk.default_button(...)` setting is used, else
-                `"neutral"`; an explicit argument here wins over that setter.
+                omitted, a pre-root `ttk.set_default_button(...)` setting is used,
+                else `"neutral"`; an explicit argument here wins over that setter.
         """
         # `theme` is canonical; `themename` is a permanent, non-deprecated alias
         # (the pre-2.0 spelling). Prefer `theme` when both are given.

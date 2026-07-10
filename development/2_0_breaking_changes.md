@@ -17,7 +17,7 @@
 | **Legacy theme names auto-register on use (no hard-stop)** | Fix/Deprecated | this doc, below (Slice 1) |
 | **`App` (canonical) / `Window` alias; `theme` / `themename` alias** | New | this doc, below (Slice 2) |
 | **`utils/` package; `utility`/`colorutils` → warn-and-forward shims** | Deprecated | this doc, below (Slice 0) |
-| **Deferred-config seam + `ttk.default_button()` pre-root setter** | New | this doc, below (Slice 5) |
+| **Deferred-config seam + `ttk.set_default_button()` pre-root setter** | New | this doc, below (Slice 5) |
 | Canonical `bootstyle` grammar (closed vocab, strict mode) | API | `development/2_0_bootstyle_grammar_design.md` |
 | Character-based icons removed (`ttkbootstrap.icons`) | API | `development/2_0_icon_drop_design.md` (PR #1094) |
 | Delivery API (mixins, no import-time monkey-patch) | API | handoff / PR #1075 |
@@ -73,17 +73,17 @@ while keeping its deprecation nudge (a per-name `DeprecationWarning`).
 
 ---
 
-## Deferred-config seam + `ttk.default_button()` pre-root setter  *(New)*
+## Deferred-config seam + `ttk.set_default_button()` pre-root setter  *(New)*
 
 **What.** A small **pending-apply registry** (`ttkbootstrap.utils.config`) so
 settings that need a live Tk root can be configured at the top of a file, before
-`App()` exists. Its first tenant is a new top-level **`ttk.default_button(color)`**
+`App()` exists. Its first tenant is a new top-level **`ttk.set_default_button(color)`**
 setter (Slices 3/4 add `set_locale` / `set_global_family` onto the same seam):
 
 ```python
 import ttkbootstrap as ttk
-ttk.default_button("primary")   # before App() -> queued, applied when the root comes up
-app = ttk.App()                 # every bare Button/Menubutton is now "primary"
+ttk.set_default_button("primary")   # before App() -> queued, applied when the root comes up
+app = ttk.App()                     # every bare Button/Menubutton is now "primary"
 ```
 
 - **Before the root exists** the setting is queued and flushed when the `Style`
@@ -93,7 +93,9 @@ app = ttk.App()                 # every bare Button/Menubutton is now "primary"
   `default_button` is consumed when a button's base style is first built. Author
   decision (2026-07-09): pre-root-only + warn, rather than a live rebuild — keeps
   the seam small.
-- `ttk.default_button()` with no argument **returns** the current effective value.
+- Read the current value from `App().style.default_button` (the setter is
+  set-only; its `set_*` name matches the seam's `set_locale`/`set_global_family`
+  siblings).
 - Precedence: an explicit `App(default_button=...)` / `Style(default_button=...)`
   argument **wins** over the global pre-root setter (it is applied after the flush).
 

@@ -403,7 +403,7 @@ class App(_BaseWindow, tkinter.Tk):
                 The color a bare `Button`/`Menubutton` (no `bootstyle`) uses.
                 Defaults to `"neutral"` (a quiet, unaccented button); pass
                 `"primary"` to restore the pre-2.0 accented default. An explicit
-                value wins over a pre-root `ttk.default_button(...)` setting.
+                value wins over a pre-root `ttk.set_default_button(...)` setting.
 
             iconphoto (str):
                 A path to the image used for the titlebar icon.
