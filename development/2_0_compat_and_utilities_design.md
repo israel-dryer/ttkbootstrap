@@ -182,6 +182,30 @@ fixing shared bugs and adding two ergonomic helpers, all dependency-free.
   reuse the name `LV` for a variable (collides with bootstack's meaning); the
   live handle is `LocaleVar`.
 
+### Slice 3 — IMPLEMENTED (#TBD, 2026-07-09)
+
+- **msgcat bug fixes** (`localization/msgcat.py`): every command moved from
+  `tk.eval(f"…")` to `tk.call(…)` (`translate`/`locale`/`set`/`set_many`/`load`/
+  `max`), deleting `__join`; `translate`'s `%`-style args are preserved (msgcat
+  applies them). `preferences()` now keeps every non-empty entry. Added module
+  `normalize_locale()` (`-`→`_`, lowercase), applied on `locale`/`set`/`set_many`.
+- **`<<LocaleChanged>>`** emitted on the default root by `locale(new)` (constant
+  `LOCALE_CHANGED` in msgcat).
+- **Ergonomic helpers** born in `localization/api.py`: `L(src, *args, **kwargs)`
+  (translate + Python `str.format`), `LocaleVar(StringVar)` (re-translates on
+  `<<LocaleChanged>>`; `set_source()` / `stop_tracking()`), `set_locale(locale)`
+  (rides the Slice 5 seam via `config.defer("locale", …)`).
+- **Exposure**: re-exported from `localization/__init__.py`, surfaced through
+  `ttkbootstrap.utils` (lazily via module `__getattr__`, so importing `utils`
+  during style-package init does not pull in the `localization → window` chain
+  before `window` is ready), and at the top level (`ttk.L` / `ttk.LocaleVar` /
+  `ttk.set_locale`). `LocaleVar` binds on the root (not `bind_all`) so the
+  tracking binding is scoped and removable by funcid.
+- **Tests**: `tests/localization/test_locale_helpers.py` (+17), using a throwaway
+  `zz` locale so no bundled `.msg` is auto-loaded (never touches the
+  environment-flaky `nl`). The existing `test_msgcat.py` format/escaping tests
+  still pass unchanged, confirming the `tk.call` move is behavior-preserving.
+
 ## Slice 4 — Typography: a tiny `Fonts` utility over the standard Tk named fonts
 
 The FAQ ("how do I change the global font?") has no answer today — widgets read
@@ -274,9 +298,11 @@ Resolved forks:
    **DONE — #1140.**
 4. **Deferred-config seam** (Slice 5 core) — small, enables localization & typography.
 5. **Localization** (Slice 3) — msgcat fixes + `L()`/`LocaleVar` + event.
+   **DONE — #TBD.**
 6. **Typography** (Slice 4) — `Fonts` utility, wired through the seam.
 
-(Actual merge order was 1/2/0, all standalone; the remaining three are 5 → 3 → 4.)
+(Actual merge order was 1/2/0, all standalone; the remaining three are 5 → 3 → 4.
+Slice 5 and Slice 3 done; Slice 4 next.)
 
 Each is a small PR **branched from `2.0`** (not from a feature branch) with its
 own tests; each lands an entry in `2_0_breaking_changes.md`. After Slice 4, the
