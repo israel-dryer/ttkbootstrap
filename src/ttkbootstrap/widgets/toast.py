@@ -221,9 +221,12 @@ class ToastNotification:
         icon_lbl = Label(
             self.container,
             bootstyle=f"{self.bootstyle}-inverse",
-            anchor=NW,
+            anchor=CENTER,
         )
-        icon_lbl.grid(row=0, column=0, rowspan=2, sticky=NSEW, padx=(5, 0))
+        # rowspan=2 -> the icon cell is as tall as the title+message block;
+        # anchor=CENTER vertically centers the glyph against that block instead
+        # of pinning it to the top (matching the Messagebox icon alignment).
+        icon_lbl.grid(row=0, column=0, rowspan=2, sticky=NSEW, padx=(10, 0))
         if self.icon:
             # Theme-aware glyph: follows the (inverse) label foreground and
             # re-renders on a theme switch.
