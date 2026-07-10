@@ -8,7 +8,7 @@ Structuring an app
 Where :doc:`Quickstart <quickstart>` shows the smallest possible window, this
 guide covers how to structure a real application:
 
-- **``App`` vs ``Tk``.** ``App`` (also exported as ``ttk.Window``) is the enhanced
+- **App vs Tk.** ``App`` (also exported as ``ttk.Window``) is the enhanced
   root — it owns the theme and sets title, geometry, icon, alpha, and DPI in one
   constructor. Use it for new code; a bare ``tk.Tk`` still works if you attach a
   :class:`~ttkbootstrap.style.Style` yourself.
