@@ -96,6 +96,10 @@ html_css_files   = ["custom.css"]
 html_title       = "ttkbootstrap"
 html_short_title = "ttkbootstrap"
 
+# Browser-tab icon — the packaged square brand mark (blue-circle feather),
+# copied from src/ttkbootstrap/assets/app_icons/ttkbootstrap.ico (multi-res 16..256).
+html_favicon = "_static/favicon.ico"
+
 # Hide reST source exposure — the docs are the interface, not the page source.
 html_show_sourcelink = False
 html_copy_source     = False
