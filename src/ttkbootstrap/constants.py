@@ -116,6 +116,17 @@ BOOTSTYLE_FAMILIES: Final = (
 )
 BOOTSTYLE_ORIENTS: Final = ("horizontal", "vertical")
 
+# Named neutral surfaces a widget can be placed on (2.0 surface-color). The
+# *surface* is the background a widget renders against; the style engine resolves
+# it to a concrete color (style/builders_ttk.py `resolve_surface`). `background`
+# is the application default -- the only surface that produces no style-name
+# segment; `card` is a mode-aware raised panel. Accent colors (BOOTSTYLE_COLORS)
+# are ALSO valid surfaces (resolved separately), so a ghost/outline/link control
+# can blend into an accent container. A non-default surface prefixes the style
+# name with an `@<surface>.` segment. Raw-hex surfaces are deferred.
+DEFAULT_SURFACE: Final = "background"
+BOOTSTYLE_SURFACES: Final = ("background", "card")
+
 # ---------------------------------------------------------------------------
 # Canonical bootstyle strings (generated). The closed set of bootstyle values
 # that resolve to a real ttk style, derived from the vocabulary above x the
@@ -457,6 +468,7 @@ __all__ = [
     # bootstyle vocabulary (single source of truth)
     "BOOTSTYLE_COLORS", "BOOTSTYLE_MODIFIERS", "BOOTSTYLE_INTERNAL_MODIFIERS",
     "BOOTSTYLE_BASES", "BOOTSTYLE_FAMILIES", "BOOTSTYLE_ORIENTS", "NEUTRAL_FAMILIES",
+    "BOOTSTYLE_SURFACES", "DEFAULT_SURFACE",
     # constants
     "NO", "FALSE", "OFF", "YES", "TRUE", "ON",
     "N", "S", "W", "E", "NW", "SW", "NE", "SE", "NS", "EW", "NSEW", "CENTER",
