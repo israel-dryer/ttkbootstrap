@@ -163,8 +163,15 @@ class Dialog(BaseWidget):
         `command` here rather than reaching into `self._toplevel`.
         """
         toplevel = self._toplevel
-        if toplevel is not None and toplevel.winfo_exists():
-            toplevel.destroy()
+        if toplevel is None:
+            return
+        try:
+            if toplevel.winfo_exists():
+                toplevel.destroy()
+        except tkinter.TclError:
+            # The interpreter was already torn down (winfo_exists raises once
+            # the application is destroyed); nothing left to close.
+            pass
 
     @property
     def result(self) -> Any:

@@ -87,6 +87,26 @@ def test_close_destroys_the_toplevel_and_is_idempotent(root):
     dialog.close()  # second call is a no-op (winfo_exists guard), must not raise
 
 
+def test_close_is_safe_after_interpreter_teardown(root):
+    # winfo_exists() raises TclError once the application is destroyed; close()
+    # must swallow that and stay a no-op (matching the result property's guard),
+    # not propagate the error out of a cleanup path. Simulate the torn-down
+    # state with a stub rather than destroying a real root -- destroying a second
+    # root would corrupt the process-wide Style singleton for other tests.
+    import tkinter
+
+    class _DeadToplevel:
+        def winfo_exists(self):
+            raise tkinter.TclError("application has been destroyed")
+
+        def destroy(self):  # pragma: no cover - must never be reached
+            raise AssertionError("destroy() should not run when the app is gone")
+
+    dialog = MessageDialog(message="hi", parent=root)
+    dialog._toplevel = _DeadToplevel()
+    dialog.close()  # must not raise
+
+
 def test_escape_binding_is_installed_for_dismissal(root):
     # The base class wires <Escape> to dismiss the dialog (it routes through the
     # public close()). Synthesizing the keypress needs a mapped window + running
