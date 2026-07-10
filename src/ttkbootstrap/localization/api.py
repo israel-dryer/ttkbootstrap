@@ -10,10 +10,31 @@ Three dependency-free conveniences on top of the msgcat engine:
   for live language switching on vanilla widgets via `textvariable=`.
 """
 import tkinter
+import weakref
 from typing import Any, Optional
 
 from ttkbootstrap.localization.msgcat import LOCALE_CHANGED, MessageCatalog
 from ttkbootstrap.window import get_default_root
+
+# Weak references to the live LocaleVars, plus the roots the dispatcher is bound
+# on. `tkinter.Variable` (and a `weakref.ref` to it) is unhashable, so the vars
+# are tracked in a dict keyed by id(); each ref's finalizer pops its entry, so a
+# dropped LocaleVar leaves the registry with no explicit unbind.
+_locale_var_refs: "dict[int, weakref.ref]" = {}
+_dispatch_roots: "weakref.WeakSet[tkinter.Misc]" = weakref.WeakSet()
+
+
+def _dispatch_locale_change(event: Optional[tkinter.Event] = None) -> None:
+    """Re-translate every live `LocaleVar` (one root binding drives them all)."""
+    for key, ref in list(_locale_var_refs.items()):
+        var = ref()
+        if var is None:
+            continue
+        try:
+            var._retranslate()
+        except tkinter.TclError:
+            # the var's interpreter is gone; drop it so we stop retrying
+            _locale_var_refs.pop(key, None)
 
 
 def set_locale(locale: str) -> None:
@@ -51,8 +72,11 @@ class LocaleVar(tkinter.StringVar):
     re-translates itself. Format args, if any, are applied with Python
     `str.format` (like `L`).
 
-    The variable tracks the locale for its whole lifetime. If it outlives the
-    widgets that use it, call `stop_tracking()` to release the binding.
+    Every live `LocaleVar` is driven by a single `<<LocaleChanged>>` binding on
+    the application root (where `locale()` generates the event), regardless of
+    the variable's own `master`. The registry holds only weak references, so a
+    dropped `LocaleVar` is collected without any cleanup call; use
+    `stop_tracking()` to opt one out explicitly while keeping it alive.
     """
 
     def __init__(
@@ -67,11 +91,19 @@ class LocaleVar(tkinter.StringVar):
         self._args = args
         self._kwargs = kwargs
         super().__init__(master, name=name)
-        # Bind on the root (where locale() generates the event) rather than
-        # bind_all, so the binding is scoped and removable by funcid.
-        self._root = master or get_default_root()
-        self._bind_id: Optional[str] = self._root.bind(
-            LOCALE_CHANGED, self._retranslate, add="+"
+        # Bind the shared dispatcher on the *default root* -- the widget on which
+        # locale() generates <<LocaleChanged>> -- not on `master`, which may be a
+        # child/Toplevel the event would never reach. One binding per root drives
+        # every registered var, so opting out is just leaving the WeakSet (no
+        # per-var unbind, which mis-fires across Tk/Python versions).
+        root = get_default_root()
+        if root not in _dispatch_roots:
+            root.bind(LOCALE_CHANGED, _dispatch_locale_change, add="+")
+            _dispatch_roots.add(root)
+        # ref finalizer pops the entry when this var is collected
+        self._key = id(self)
+        _locale_var_refs[self._key] = weakref.ref(
+            self, lambda _ref, key=self._key: _locale_var_refs.pop(key, None)
         )
         self._retranslate()
 
@@ -88,7 +120,7 @@ class LocaleVar(tkinter.StringVar):
         self._retranslate()
 
     def stop_tracking(self) -> None:
-        """Stop re-translating on `<<LocaleChanged>>` (releases the binding)."""
-        if self._bind_id is not None:
-            self._root.unbind(LOCALE_CHANGED, self._bind_id)
-            self._bind_id = None
+        """Stop re-translating on `<<LocaleChanged>>` (leaves it at its current
+        value). Also happens automatically when the variable is garbage-collected.
+        """
+        _locale_var_refs.pop(self._key, None)

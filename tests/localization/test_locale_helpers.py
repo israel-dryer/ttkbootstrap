@@ -131,6 +131,39 @@ def test_localevar_translates_on_locale_change(locale_reset):
     var.stop_tracking()
 
 
+def test_localevar_tracks_with_non_root_master(locale_reset):
+    # a LocaleVar whose master is a child widget (the natural `LocaleVar(self,
+    # ...)` inside a view) must still update: the event fires on the root, so the
+    # binding lives there, not on `master`.
+    root = locale_reset
+    frame = ttk.Frame(root)
+    MessageCatalog.set("zz", "Save", "Speichern")
+    MessageCatalog.locale("en")
+    var = LocaleVar(frame, "Save")
+    assert var.get() == "Save"
+    MessageCatalog.locale("zz")
+    root.update()
+    assert var.get() == "Speichern"
+    var.stop_tracking()
+
+
+def test_localevar_stop_tracking_is_isolated(locale_reset):
+    # stopping one var must not stop others (a per-var unbind by funcid would
+    # clobber every <<LocaleChanged>> binding before Python 3.13)
+    root = locale_reset
+    MessageCatalog.set("zz", "A", "Aa")
+    MessageCatalog.set("zz", "B", "Bb")
+    MessageCatalog.locale("en")
+    a = LocaleVar(root, "A")
+    b = LocaleVar(root, "B")
+    a.stop_tracking()
+    MessageCatalog.locale("zz")
+    root.update()
+    assert a.get() == "A"       # stopped
+    assert b.get() == "Bb"      # still tracking
+    b.stop_tracking()
+
+
 def test_localevar_stop_tracking_releases_binding(locale_reset):
     root = locale_reset
     MessageCatalog.set("zz", "Dog", "Hond")

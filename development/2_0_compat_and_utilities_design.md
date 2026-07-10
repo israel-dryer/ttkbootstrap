@@ -199,8 +199,13 @@ fixing shared bugs and adding two ergonomic helpers, all dependency-free.
   `ttkbootstrap.utils` (lazily via module `__getattr__`, so importing `utils`
   during style-package init does not pull in the `localization → window` chain
   before `window` is ready), and at the top level (`ttk.L` / `ttk.LocaleVar` /
-  `ttk.set_locale`). `LocaleVar` binds on the root (not `bind_all`) so the
-  tracking binding is scoped and removable by funcid.
+  `ttk.set_locale`). All live `LocaleVar`s are driven by a **single**
+  `<<LocaleChanged>>` binding on the default root (where `locale()` fires the
+  event) via a module `WeakSet` -- not a per-var binding on the var's `master`
+  (which may be a child/Toplevel the root-generated event never reaches). Weak
+  refs mean a dropped `LocaleVar` is collected with no cleanup call; opting out
+  is just leaving the set (no per-var `unbind`, which mis-fires before Python
+  3.13 / Tk clobbers all bindings for the sequence).
 - **Tests**: `tests/localization/test_locale_helpers.py` (+17), using a throwaway
   `zz` locale so no bundled `.msg` is auto-loaded (never touches the
   environment-flaky `nl`). The existing `test_msgcat.py` format/escaping tests
