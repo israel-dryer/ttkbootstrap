@@ -18,7 +18,7 @@ Any of the accent colors -- ``primary``, ``secondary``, ``success``, ``info``, `
      - ttk style name
    * - ``primary``
      - ``primary.TLabel``
-   * - ``primary-inverse``
+   * - ``primary inverse``
      - ``primary.Inverse.TLabel``
 
 Layout (elements)

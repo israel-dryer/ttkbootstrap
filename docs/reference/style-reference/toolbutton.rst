@@ -16,9 +16,9 @@ Any of the accent colors -- ``primary``, ``secondary``, ``success``, ``info``, `
 
    * - ``bootstyle``
      - ttk style name
-   * - ``primary-toolbutton``
+   * - ``primary toolbutton``
      - ``primary.Toolbutton``
-   * - ``primary-outline-toolbutton``
+   * - ``primary outline toolbutton``
      - ``primary.Outline.Toolbutton``
 
 Layout (elements)

@@ -16,11 +16,11 @@ Any of the accent colors -- ``primary``, ``secondary``, ``success``, ``info``, `
 
    * - ``bootstyle``
      - ttk style name
-   * - ``primary-toggle``
+   * - ``primary toggle``
      - ``primary.Toggle``
-   * - ``primary-round-toggle``
+   * - ``primary round toggle``
      - ``primary.Round.Toggle``
-   * - ``primary-square-toggle``
+   * - ``primary square toggle``
      - ``primary.Square.Toggle``
 
 Layout (elements)

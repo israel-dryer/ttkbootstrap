@@ -18,7 +18,7 @@ Any of the accent colors -- ``primary``, ``secondary``, ``success``, ``info``, `
      - ttk style name
    * - ``primary``
      - ``primary.TMenubutton``
-   * - ``primary-outline``
+   * - ``primary outline``
      - ``primary.Outline.TMenubutton``
 
 Layout (elements)

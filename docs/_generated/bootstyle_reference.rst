@@ -7,6 +7,13 @@ Colors
 
 The color slot accepts any of the semantic colors: ``primary``, ``secondary``, ``success``, ``info``, ``warning``, ``danger``, ``light``, ``dark``, ``neutral``.
 
+Surfaces
+--------
+
+The optional ``@<surface>`` slot names the surface a control sits on so it can blend on a card or an accent bar. It accepts:
+
+``@card``, ``@primary``, ``@secondary``, ``@success``, ``@info``, ``@warning``, ``@danger``, ``@light``, ``@dark``.
+
 Widget families and variants
 ----------------------------
 
@@ -80,47 +87,47 @@ families ``toggle`` / ``toolbutton``.
      - ``primary``
    * - ``toggle``
      - default
-     - ``primary-toggle``
+     - ``primary toggle``
    * - ``toolbutton``
      - default
-     - ``primary-toolbutton``
+     - ``primary toolbutton``
    * - ``treeview``
      - default
      - ``primary``
    * - ``button``
      - ghost
-     - ``primary-ghost``
+     - ``primary ghost``
    * - ``label``
      - inverse
-     - ``primary-inverse``
+     - ``primary inverse``
    * - ``button``
      - link
-     - ``primary-link``
+     - ``primary link``
    * - ``button``
      - outline
-     - ``primary-outline``
+     - ``primary outline``
    * - ``menubutton``
      - outline
-     - ``primary-outline``
+     - ``primary outline``
    * - ``toolbutton``
      - outline
-     - ``primary-outline-toolbutton``
+     - ``primary outline toolbutton``
    * - ``scrollbar``
      - round
-     - ``primary-round``
+     - ``primary round``
    * - ``toggle``
      - round
-     - ``primary-round-toggle``
+     - ``primary round toggle``
    * - ``toggle``
      - square
-     - ``primary-square-toggle``
+     - ``primary square toggle``
    * - ``progressbar``
      - striped
-     - ``primary-striped``
+     - ``primary striped``
    * - ``progressbar``
      - thin
-     - ``primary-thin``
+     - ``primary thin``
    * - ``scrollbar``
      - thin
-     - ``primary-thin``
+     - ``primary thin``
 

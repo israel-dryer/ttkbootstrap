@@ -18,11 +18,11 @@ Any of the accent colors -- ``primary``, ``secondary``, ``success``, ``info``, `
      - ttk style name
    * - ``primary``
      - ``primary.TButton``
-   * - ``primary-ghost``
+   * - ``primary ghost``
      - ``primary.Ghost.TButton``
-   * - ``primary-link``
+   * - ``primary link``
      - ``primary.Link.TButton``
-   * - ``primary-outline``
+   * - ``primary outline``
      - ``primary.Outline.TButton``
 
 Layout (elements)

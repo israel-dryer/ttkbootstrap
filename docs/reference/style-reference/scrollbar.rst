@@ -18,9 +18,9 @@ Any of the accent colors -- ``primary``, ``secondary``, ``success``, ``info``, `
      - ttk style name
    * - ``primary``
      - ``primary.TScrollbar``
-   * - ``primary-round``
+   * - ``primary round``
      - ``primary.Round.TScrollbar``
-   * - ``primary-thin``
+   * - ``primary thin``
      - ``primary.Thin.TScrollbar``
 
 Layout (elements)

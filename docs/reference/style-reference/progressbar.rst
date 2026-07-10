@@ -21,9 +21,9 @@ A vertical widget resolves to the ``Vertical.`` twin of each style name above.
      - ttk style name
    * - ``primary``
      - ``primary.Horizontal.TProgressbar``
-   * - ``primary-striped``
+   * - ``primary striped``
      - ``primary.Striped.Horizontal.TProgressbar``
-   * - ``primary-thin``
+   * - ``primary thin``
      - ``primary.Thin.Horizontal.TProgressbar``
 
 Layout (elements)

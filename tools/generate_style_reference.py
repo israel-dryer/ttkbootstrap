@@ -158,7 +158,8 @@ def _bootstyle_and_name(color, variant, family):
     base = family if family in BOOTSTYLE_BASES else ""
     orient = _orient_for(family)
     parts = [p for p in (color, modifier, base) if p]
-    bootstyle = "-".join(parts)
+    # spaces are the recommended bootstyle separator (dashes still parse).
+    bootstyle = " ".join(parts)
     name = _bs._build_ttkstyle_name(color, modifier, orient, family)
     return bootstyle, name
 
