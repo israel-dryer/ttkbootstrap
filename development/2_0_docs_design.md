@@ -173,7 +173,7 @@ User Guide
   in one expression — ``ttk.Button(app, text="Save").pack(...)`` — whenever the
   example does not need to keep a reference. Showcases a real 2.0 ergonomic.
 
-## 4. The native / shipped dichotomy (the core design idea)
+## 4. The native / shipped dichotomy — where it lives (revised 2026-07-10)
 
 ttkbootstrap has a split bootstack doesn't: **native ttk widgets it *styles***
 (Button, Entry, Combobox, Treeview…) vs. **widgets it *ships*** (Meter,
@@ -185,16 +185,23 @@ Two orthogonal axes:
 - **Axis B — page purpose:** catalog/usage vs. manual-styling reference vs. API
   reference.
 
-**Resolution — 1 catalog + 2 references:**
-- The **Widgets catalog** is *grouped* by Axis A ("Styling ttk widgets" /
-  "ttkbootstrap widgets"). Membership carries the distinction — cheap, obvious,
-  no duplicated machinery. It is the common front door for both kinds.
-- A widget's *depth* lands on exactly one reference side: native → **Style
-  Reference**; shipped → **API Reference**. The catalog cross-links to whichever
-  is deep for that widget.
-- The native/shipped split *already* half-falls-out of API docs (shipped widgets
-  have API pages, native don't); the catalog-vs-manual-styling split is the part
-  we design deliberately.
+**Resolution — the split lives in the *references*, NOT the catalog (revised).**
+The original design grouped the Widgets catalog itself by Axis A ("Styling ttk
+widgets" / "ttkbootstrap widgets"). That was reversed 2026-07-10 (author call):
+the catalog is *usage guides* — set ``bootstyle``, pick a variant/color, handle
+states — and that recipe is identical for native and shipped widgets, so the
+split adds friction without meaning there. Where the distinction *does* pay off,
+it already has its own section:
+- The **Widgets catalog** is **one unified list** of usage guides, uniform shape,
+  no native/shipped grouping. Each page ends with an **API link that points where
+  the API actually lives** — python.org's ``tkinter.ttk`` for a native widget,
+  the **API Reference** for a shipped one — plus a link to the deep **Style
+  Reference**.
+- A widget's *depth* still lands on exactly one reference side: native → **Style
+  Reference** (the ttk styling surface); shipped → **API Reference** (the authored
+  API). Those two references *are* where Axis A is expressed.
+- "Make your own style" (Concepts) is a third, separate section; unifying the
+  catalog does not touch it.
 
 ## 5. Page templates (with worked examples)
 

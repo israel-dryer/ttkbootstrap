@@ -75,11 +75,11 @@ def test_neutral_scope_matches_neutral_families():
     assert NEUTRAL_FAMILIES == ("button", "menubutton", "toolbutton")
     canonical = set(typing.get_args(BootStyle))
     assert "neutral" in canonical
-    assert "neutral-outline" in canonical
-    # toolbutton spells its chameleon base, so neutral-toolbutton is advertised
-    assert "neutral-toolbutton" in canonical
-    assert "neutral-outline-toolbutton" in canonical
+    assert "neutral outline" in canonical
+    # toolbutton spells its chameleon base, so "neutral toolbutton" is advertised
+    assert "neutral toolbutton" in canonical
+    assert "neutral outline toolbutton" in canonical
     # but the base is not spelled for menubutton (you type "neutral" on a
     # Menubutton), and neutral is not a family for toggles
-    for absent in ("neutral-menubutton", "neutral-round-toggle"):
+    for absent in ("neutral menubutton", "neutral round toggle"):
         assert absent not in canonical

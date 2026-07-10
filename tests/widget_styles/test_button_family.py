@@ -57,7 +57,7 @@ def test_ghost_is_a_canonical_bootstyle():
     from ttkbootstrap.constants import BootStyle
     canonical = set(typing.get_args(BootStyle))
     assert "ghost" in canonical
-    assert "primary-ghost" in canonical
+    assert "primary ghost" in canonical
 
 
 def test_dateentry_button_uses_icon_button_style(root):

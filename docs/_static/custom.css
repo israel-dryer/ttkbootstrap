@@ -52,6 +52,11 @@ html[data-theme="dark"] {
     overflow-x: auto;
 }
 
+/* Navbar wordmark: cap the logo height so it sits comfortably in the header. */
+.navbar-brand.logo {
+    max-height: 48px !important;
+}
+
 /* Screenshot light/dark switching.
    Two-layer approach: (1) prefers-color-scheme as a CSS-only fallback that
    applies instantly on navigation before JS sets data-theme; (2) explicit

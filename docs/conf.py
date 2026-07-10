@@ -82,6 +82,11 @@ html_theme = "pydata_sphinx_theme"
 
 html_theme_options = {
     "github_url": "https://github.com/israel-dryer/ttkbootstrap",
+    "logo": {
+        "image_light": "_static/ttkbootstrap-wordmark-light.svg",
+        "image_dark": "_static/ttkbootstrap-wordmark-dark.svg",
+        "alt_text": "ttkbootstrap",
+    },
     "navbar_start": ["navbar-logo"],
     "navbar_center": ["navbar-nav"],
     "navbar_end": ["navbar-icon-links", "theme-switcher"],
@@ -96,11 +101,19 @@ html_css_files   = ["custom.css"]
 html_title       = "ttkbootstrap"
 html_short_title = "ttkbootstrap"
 
+# Browser-tab icon — the packaged square brand mark (blue-circle feather),
+# copied from src/ttkbootstrap/assets/app_icons/ttkbootstrap.ico (multi-res 16..256).
+html_favicon = "_static/favicon.ico"
+
 # Hide reST source exposure — the docs are the interface, not the page source.
 html_show_sourcelink = False
 html_copy_source     = False
 
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+# `_generated/` holds committed rST *include partials* emitted by the offline
+# tools/ generators (e.g. the bootstyle reference table). They are folded into
+# real pages via `.. include::`, so they must not be treated as standalone
+# documents (that would raise a "not in any toctree" warning under -W).
+exclude_patterns = ["_build", "_generated", "Thumbs.db", ".DS_Store"]
 
 # ---------------------------------------------------------------------------
 # Autodoc mock imports (Pillow is the only runtime dep; keep as a backstop so a
