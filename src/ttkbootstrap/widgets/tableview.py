@@ -2118,20 +2118,30 @@ class Tableview(ttk.Frame):
 
     def autofit_columns(self):
         """Autofit all columns in the current view"""
-        f = font.nametofont("TkDefaultFont")
+        # measure with the fonts actually configured on the treeview style
+        # rather than assuming TkDefaultFont; fall back to the default font
+        # when the style does not override it (fixes #399).
+        style = ttk.Style.get_instance()
+        tree_style = self.view.cget("style") or "Treeview"
+        cell_font = font.Font(font=style.lookup(tree_style, "font") or "TkDefaultFont")
+        head_font = font.Font(
+            font=style.lookup(f"{tree_style}.Heading", "font")
+            or style.lookup(tree_style, "font")
+            or "TkDefaultFont"
+        )
         pad = utility.scale_size(self, 20)
         col_widths = []
 
         # measure header sizes
         for col in self.tablecolumns:
-            width = f.measure(f"{col._headertext} {DOWNARROW}") + pad
+            width = head_font.measure(f"{col._headertext} {DOWNARROW}") + pad
             col_widths.append(width)
 
         for row in self.tablerows_visible:
             values = row.values
             for i, value in enumerate(values):
                 old_width = col_widths[i]
-                new_width = f.measure(str(value)) + pad
+                new_width = cell_font.measure(str(value)) + pad
                 width = max(old_width, new_width)
                 col_widths[i] = width
 
