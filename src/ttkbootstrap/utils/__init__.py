@@ -41,6 +41,22 @@ from ttkbootstrap.utils.scaling import (
 from ttkbootstrap.utils.platform import windowing_system
 from ttkbootstrap.utils.config import set_default_button
 
+# Localization helpers live in the `localization` package (the i18n engine stays
+# there); they are surfaced here for discoverability. Imported lazily via
+# module `__getattr__` so that importing `utils` -- which happens during style/
+# package init -- does not pull in the localization -> window import chain before
+# window is ready.
+_LOCALIZATION_EXPORTS = ("L", "LocaleVar", "set_locale")
+
+
+def __getattr__(name):
+    if name in _LOCALIZATION_EXPORTS:
+        from ttkbootstrap import localization
+
+        return getattr(localization, name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
 __all__ = [
     # color
     "color_to_rgb",
@@ -56,4 +72,8 @@ __all__ = [
     "windowing_system",
     # deferred config (pre-root setters)
     "set_default_button",
+    # localization (surfaced lazily from the localization package)
+    "L",
+    "LocaleVar",
+    "set_locale",
 ]

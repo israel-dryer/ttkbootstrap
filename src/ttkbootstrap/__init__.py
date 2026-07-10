@@ -260,6 +260,12 @@ from ttkbootstrap.dialogs import (
     Querybox,
 )
 
+# Localization helpers re-exported at the top level (`ttk.L`, `ttk.set_locale`,
+# `ttk.LocaleVar`). Imported after `window` above so the localization -> window
+# import chain resolves cleanly. The `ttkbootstrap.localization` package remains
+# the canonical home / import path.
+from ttkbootstrap.localization import L, LocaleVar, set_locale
+
 __all__ = [
     # Tk exports
     "Tk", "Menu", "Text", "Canvas", "TkFrame", "TkLabel", "LabelFrame", "Variable", "StringVar", "IntVar", "BooleanVar",
@@ -309,6 +315,11 @@ __all__ = [
     "contrast_color",
     "conform_color_model",
     "set_default_button",
+
+    # Localization
+    "L",
+    "LocaleVar",
+    "set_locale",
 
     # Application root + windows
     "App",

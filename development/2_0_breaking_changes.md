@@ -18,6 +18,7 @@
 | **`App` (canonical) / `Window` alias; `theme` / `themename` alias** | New | this doc, below (Slice 2) |
 | **`utils/` package; `utility`/`colorutils` → warn-and-forward shims** | Deprecated | this doc, below (Slice 0) |
 | **Deferred-config seam + `ttk.set_default_button()` pre-root setter** | New | this doc, below (Slice 5) |
+| **Localization: msgcat bug fixes + `L()` / `LocaleVar` / `set_locale`** | Fix/New | this doc, below (Slice 3) |
 | Canonical `bootstyle` grammar (closed vocab, strict mode) | API | `development/2_0_bootstyle_grammar_design.md` |
 | Character-based icons removed (`ttkbootstrap.icons`) | API | `development/2_0_icon_drop_design.md` (PR #1094) |
 | Delivery API (mixins, no import-time monkey-patch) | API | handoff / PR #1075 |
@@ -110,6 +111,62 @@ font next) share the same chicken-and-egg — they need a root but users want to
 them before one exists. One tiny lazy-until-root registry solves them all,
 mirroring the style builder's own lazy-until-root model, instead of each growing
 its own workaround. Deliberately a registry, **not** a config framework.
+
+---
+
+## Localization: msgcat bug fixes + `L()` / `LocaleVar` / `set_locale`  *(Fix + New)*
+
+**What.** The `MessageCatalog` msgcat wrapper (`localization/msgcat.py`) is fixed
+and given three ergonomic helpers, all dependency-free.
+
+*Bug fixes (behavioral — correctness):*
+
+- **`tk.eval(f"…")` → `tk.call(…)`** across `translate`/`locale`/`set`/`set_many`/
+  `load`/`max`. The old hand-built command strings (`{%s}` brace-wrapping +
+  `.strip('"')`) mangled any source/argument containing `{ } [ ] $` or spaces;
+  `tk.call` passes each argument as a proper Tcl value (no quoting, no injection).
+  The private `__join` helper is gone. `translate`'s `%`-style format arguments are
+  unchanged (msgcat still applies them).
+- **`preferences()`** now returns every non-empty preference (`[p for p in items
+  if p]`) instead of slicing off the last item — that slice assumed a trailing
+  empty root locale that Tcl 8.7 no longer emits, silently dropping a real
+  preference.
+- **Locale normalization** (`normalize_locale`): `de-DE` / `pt_BR` → `de_de` /
+  `pt_br` on `locale()` / `set()` / `set_many()`, so `locale("de-DE")` reliably
+  matches the catalog.
+
+*New:*
+
+- **`<<LocaleChanged>>`** virtual event, emitted on the default root when
+  `locale(new)` sets a new locale — the runtime-relocalize hook ttkbootstrap
+  lacked.
+- **`ttk.L(src, *args, **kwargs)`** — the universal `_()` idiom: `translate(src)`
+  then Python `str.format`. Uses `{}` fields (sidesteps the Tcl `format` path);
+  resolved at call time.
+- **`ttk.LocaleVar`** — a `StringVar` that re-translates its source on
+  `<<LocaleChanged>>`; pass it as `textvariable=` to any (vanilla or themed)
+  widget for live language switching. `stop_tracking()` releases the binding.
+- **`ttk.set_locale(locale)`** — the pre-root locale setter, riding the Slice 5
+  deferred-config seam (queued before `App()`, applied live if a root exists).
+
+```python
+import ttkbootstrap as ttk
+ttk.set_locale("de")                       # before App() -> queued, applied at root
+app = ttk.App()
+label = ttk.Label(app, textvariable=ttk.LocaleVar(app, "Save"))  # live-translating
+ttk.set_locale("fr")                       # label re-translates itself
+```
+
+All three helpers are re-exported at the top level (`ttk.L` / `ttk.LocaleVar` /
+`ttk.set_locale`) and through `ttkbootstrap.utils`; `ttkbootstrap.localization`
+stays the canonical home.
+
+**Why.** i18n was quietly buggy for any non-ASCII-simple message, and there was
+no supported way to switch languages at runtime or to write the `_()`-style call
+every i18n app expects. The spec-object model and Babel-backed value formatting
+(`LV`) are intentionally **out** — they need a widget mixin / a new dependency
+(framework territory); the helpers here work on **vanilla** widgets via
+tkinter's own variable + virtual-event seams.
 
 ---
 

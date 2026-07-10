@@ -182,6 +182,35 @@ fixing shared bugs and adding two ergonomic helpers, all dependency-free.
   reuse the name `LV` for a variable (collides with bootstack's meaning); the
   live handle is `LocaleVar`.
 
+### Slice 3 — IMPLEMENTED (#1144, 2026-07-09)
+
+- **msgcat bug fixes** (`localization/msgcat.py`): every command moved from
+  `tk.eval(f"…")` to `tk.call(…)` (`translate`/`locale`/`set`/`set_many`/`load`/
+  `max`), deleting `__join`; `translate`'s `%`-style args are preserved (msgcat
+  applies them). `preferences()` now keeps every non-empty entry. Added module
+  `normalize_locale()` (`-`→`_`, lowercase), applied on `locale`/`set`/`set_many`.
+- **`<<LocaleChanged>>`** emitted on the default root by `locale(new)` (constant
+  `LOCALE_CHANGED` in msgcat).
+- **Ergonomic helpers** born in `localization/api.py`: `L(src, *args, **kwargs)`
+  (translate + Python `str.format`), `LocaleVar(StringVar)` (re-translates on
+  `<<LocaleChanged>>`; `set_source()` / `stop_tracking()`), `set_locale(locale)`
+  (rides the Slice 5 seam via `config.defer("locale", …)`).
+- **Exposure**: re-exported from `localization/__init__.py`, surfaced through
+  `ttkbootstrap.utils` (lazily via module `__getattr__`, so importing `utils`
+  during style-package init does not pull in the `localization → window` chain
+  before `window` is ready), and at the top level (`ttk.L` / `ttk.LocaleVar` /
+  `ttk.set_locale`). All live `LocaleVar`s are driven by a **single**
+  `<<LocaleChanged>>` binding on the default root (where `locale()` fires the
+  event) via a module `WeakSet` -- not a per-var binding on the var's `master`
+  (which may be a child/Toplevel the root-generated event never reaches). Weak
+  refs mean a dropped `LocaleVar` is collected with no cleanup call; opting out
+  is just leaving the set (no per-var `unbind`, which mis-fires before Python
+  3.13 / Tk clobbers all bindings for the sequence).
+- **Tests**: `tests/localization/test_locale_helpers.py` (+17), using a throwaway
+  `zz` locale so no bundled `.msg` is auto-loaded (never touches the
+  environment-flaky `nl`). The existing `test_msgcat.py` format/escaping tests
+  still pass unchanged, confirming the `tk.call` move is behavior-preserving.
+
 ## Slice 4 — Typography: a tiny `Fonts` utility over the standard Tk named fonts
 
 The FAQ ("how do I change the global font?") has no answer today — widgets read
@@ -217,7 +246,7 @@ bracket DSL (needs to intercept `font=` — framework territory).
 - Flushed in `App.__init__`; applied live if a root already exists.
 - Re-exported as top-level `ttk.set_locale` / `ttk.set_global_family` / etc.
 
-### Slice 5 — IMPLEMENTED (#TBD, 2026-07-09)
+### Slice 5 — IMPLEMENTED (#1143, 2026-07-09)
 
 Shipped as `ttkbootstrap/utils/config.py`: a `defer(key, apply)` /
 `flush_pending_config()` registry + the `set_default_button(color)` setter (the
@@ -274,9 +303,11 @@ Resolved forks:
    **DONE — #1140.**
 4. **Deferred-config seam** (Slice 5 core) — small, enables localization & typography.
 5. **Localization** (Slice 3) — msgcat fixes + `L()`/`LocaleVar` + event.
+   **DONE — #1144.**
 6. **Typography** (Slice 4) — `Fonts` utility, wired through the seam.
 
-(Actual merge order was 1/2/0, all standalone; the remaining three are 5 → 3 → 4.)
+(Actual merge order was 1/2/0, all standalone; the remaining three are 5 → 3 → 4.
+Slice 5 and Slice 3 done; Slice 4 next.)
 
 Each is a small PR **branched from `2.0`** (not from a feature branch) with its
 own tests; each lands an entry in `2_0_breaking_changes.md`. After Slice 4, the
