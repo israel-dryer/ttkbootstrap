@@ -28,7 +28,7 @@ class MessageDialog(Dialog):
             message: str,
             title: str = " ",
             buttons: Optional[List[str]] = None,
-            command: Optional[Tuple[Callable[..., Any], str]] = None,
+            command: Optional[Callable[[], Any]] = None,
             width: int = 50,
             parent: Optional[tkinter.Misc] = None,
             alert: bool = False,
@@ -86,7 +86,7 @@ class MessageDialog(Dialog):
         """
         super().__init__(parent, title, alert)
         self._message = message
-        self._command: Optional[Tuple[Callable[..., Any], str]] = command
+        self._command: Optional[Callable[[], Any]] = command
         self._width = width
         self._alert = alert
         self._default = default
