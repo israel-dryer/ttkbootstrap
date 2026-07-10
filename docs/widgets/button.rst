@@ -67,10 +67,12 @@ automatically:
    btn = ttk.Button(app, text="Disabled", bootstyle="primary")
    btn.state(["disabled"])
 
-Style reference
+API & reference
 ---------------
 
-``Button`` is a native ttk widget with no ttkbootstrap Python API — for the full
-hand-styling surface (the ``bootstyle`` → ttk style-name mapping, element
-layout, configurable options, and supported states) see
+``Button`` is the native ``ttk.Button`` — ttkbootstrap adds no Python API of its
+own. For its constructor and options, see the
+`tkinter.ttk.Button <https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Button>`__
+reference. For the full hand-styling surface (the ``bootstyle`` → ttk style-name
+mapping, element layout, configurable options, and supported states) see the
 :doc:`Style Reference </reference/style-reference/index>`.
