@@ -126,6 +126,20 @@ BOOTSTYLE_ORIENTS: Final = ("horizontal", "vertical")
 # name with an `@<surface>.` segment. Raw-hex surfaces are deferred.
 DEFAULT_SURFACE: Final = "background"
 BOOTSTYLE_SURFACES: Final = ("background", "card")
+# The full accepted surface vocabulary: named neutral surfaces + every accent
+# color (an accent doubles as a surface). Single source of truth, shared by the
+# bootstyle-string validator and the builder's resolver so they cannot diverge.
+BOOTSTYLE_SURFACE_TOKENS: Final = (*BOOTSTYLE_SURFACES, *BOOTSTYLE_COLORS)
+
+
+def surface_segment(surface: str) -> str:
+    """Return the ``@<surface>.`` style-name prefix for a surface.
+
+    The default/empty surface returns ``""``.
+    """
+    if surface and surface != DEFAULT_SURFACE:
+        return f"@{surface}."
+    return ""
 
 # ---------------------------------------------------------------------------
 # Canonical bootstyle strings (generated). The closed set of bootstyle values
@@ -468,7 +482,8 @@ __all__ = [
     # bootstyle vocabulary (single source of truth)
     "BOOTSTYLE_COLORS", "BOOTSTYLE_MODIFIERS", "BOOTSTYLE_INTERNAL_MODIFIERS",
     "BOOTSTYLE_BASES", "BOOTSTYLE_FAMILIES", "BOOTSTYLE_ORIENTS", "NEUTRAL_FAMILIES",
-    "BOOTSTYLE_SURFACES", "DEFAULT_SURFACE",
+    "BOOTSTYLE_SURFACES", "DEFAULT_SURFACE", "BOOTSTYLE_SURFACE_TOKENS",
+    "surface_segment",
     # constants
     "NO", "FALSE", "OFF", "YES", "TRUE", "ON",
     "N", "S", "W", "E", "NW", "SW", "NE", "SE", "NS", "EW", "NSEW", "CENTER",

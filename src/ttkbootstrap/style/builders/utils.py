@@ -3,29 +3,32 @@
 from ttkbootstrap.constants import NEUTRAL
 
 
-def default_button_fill(builder):
+def default_button_fill(builder, base=None):
     """Return the fill for a bare (no-color) button/menubutton.
 
     Reads the Style's `default_button` setting (default `"neutral"`): returns
     the neutral elevation fill for `"neutral"`, or the resolved accent color
-    for any other color name.
+    for any other color name. `base` (2.0 surface-color) is the surface the
+    neutral fill elevates from; defaults to the theme background.
     """
     color = getattr(builder.style, "default_button", NEUTRAL)
     if color == NEUTRAL:
-        return neutral_fill(builder)
+        return neutral_fill(builder, base=base)
     return builder.colors.get(color)
 
 
-def neutral_fill(builder, level=1):
-    """Return a mode-aware elevation of the theme surface color.
+def neutral_fill(builder, level=1, base=None):
+    """Return a mode-aware elevation of a surface color.
 
     Darkens the surface in a light theme, lightens it in a dark theme, so an
     unaccented control reads as a subtly raised surface in either mode. `level`
     1 (~6%) is the quiet neutral fill; `level` 2 (~12%) is a stronger raise used
-    to distinguish an "on"/selected neutral state from the "off" fill.
+    to distinguish an "on"/selected neutral state from the "off" fill. `base`
+    (2.0 surface-color) is the surface to elevate from; defaults to the theme
+    background.
     """
     weight = level * 0.06
-    surface = builder.colors.bg
+    surface = builder.colors.bg if base is None else base
     if builder.is_light_theme:
         return builder.shade(surface, weight)
     return builder.tint(surface, weight)

@@ -21,21 +21,25 @@ def build_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     """
     ttk_class = "TButton"
 
+    # The surface the button sits on (2.0 surface-color); default == theme bg,
+    # so the branches below are byte-for-byte the pre-surface recipe when unset.
+    surface = builder.resolve_surface(builder._surface)
+
     # Every solid button carries a subtle border derived from its own fill
     # (`border(fill)` -- the fill blended toward its text color), so the shape
     # stays defined on any surface. `darkcolor`/`lightcolor` track the fill so
     # only the border ring shows (no clam bevel). `neutral` is just the
     # no-accent fill (a mode-aware raise of the surface) through this same path.
     if colorname == NEUTRAL:
-        ttk_style = f"{NEUTRAL}.{ttk_class}"
-        fill = neutral_fill(builder)
+        ttk_style = builder.surface_prefix(f"{NEUTRAL}.{ttk_class}")
+        fill = neutral_fill(builder, base=surface)
     elif any([colorname == DEFAULT, colorname == ""]):
         # The base (no-color) button follows the Style's default_button setting
         # (neutral by default; "primary" restores the pre-2.0 accented default).
-        ttk_style = ttk_class
-        fill = default_button_fill(builder)
+        ttk_style = builder.surface_prefix(ttk_class)
+        fill = default_button_fill(builder, base=surface)
     else:
-        ttk_style = f"{colorname}.{ttk_class}"
+        ttk_style = builder.surface_prefix(f"{colorname}.{ttk_class}")
         fill = builder.colors.get(colorname)
 
     on_fill = builder.on_color(fill)
@@ -92,9 +96,10 @@ def _build_neutral_outline_button_style(builder: StyleBuilderTTK, ttk_class):
     fill = the surface itself; border = `border(bg)`; text = normal `fg`. Hover
     fills with a subtle elevate of the surface (`active`), staying unaccented.
     """
-    ttk_style = f"{NEUTRAL}.{ttk_class}"
-    surface = builder.colors.bg
-    fg = builder.colors.fg
+    ttk_style = builder.surface_prefix(f"{NEUTRAL}.{ttk_class}")
+    surface = builder.resolve_surface(builder._surface)
+    # On a non-default surface the text must read against it, not the app bg.
+    fg = builder.on_surface_fg()
     hover = builder.active(surface)
     pressed = builder.pressed(surface)
     on_disabled = builder.disabled("text")
@@ -156,11 +161,14 @@ def build_outline_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         return
 
     if any([colorname == DEFAULT, colorname == ""]):
-        ttk_style = ttk_class
+        ttk_style = builder.surface_prefix(ttk_class)
         colorname = PRIMARY
     else:
-        ttk_style = f"{colorname}.{ttk_class}"
+        ttk_style = builder.surface_prefix(f"{colorname}.{ttk_class}")
 
+    # The surface the button sits on (2.0 surface-color); the flat rest fill and
+    # the clam dark/light regions track it so the outline stays flush.
+    surface = builder.resolve_surface(builder._surface)
     accent = builder.colors.get(colorname)
     pressed = accent
     hover = accent
@@ -172,10 +180,10 @@ def build_outline_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     builder.configure(
         ttk_style,
         foreground=accent,
-        background=builder.colors.bg,
+        background=surface,
         bordercolor=border,
-        darkcolor=builder.colors.bg,
-        lightcolor=builder.colors.bg,
+        darkcolor=surface,
+        lightcolor=surface,
         relief=tk.RAISED,
         borderwidth=1,  # 1px hairline; intentionally unscaled
         focusthickness=builder.scale_size(1),
@@ -229,16 +237,21 @@ def build_link_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     """
     style_class = "Link.TButton"
 
+    # The surface the link sits on (2.0 surface-color); its (transparent-looking)
+    # background tracks it so the link is flush with an accent bar/card.
+    surface = builder.resolve_surface(builder._surface)
+    # On a non-default surface the default/light link text reads against it.
+    on_surface_default = builder.on_surface_fg()
 
     if any([colorname == DEFAULT, colorname == ""]):
-        on_surface = builder.colors.fg
-        ttk_style = style_class
+        on_surface = on_surface_default
+        ttk_style = builder.surface_prefix(style_class)
     elif colorname == LIGHT:
-        on_surface = builder.colors.fg
-        ttk_style = f"{colorname}.{style_class}"
+        on_surface = on_surface_default
+        ttk_style = builder.surface_prefix(f"{colorname}.{style_class}")
     else:
         on_surface = builder.colors.get(colorname)
-        ttk_style = f"{colorname}.{style_class}"
+        ttk_style = builder.surface_prefix(f"{colorname}.{style_class}")
 
     pressed = builder.colors.info
     hover = builder.colors.info
@@ -247,7 +260,7 @@ def build_link_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     builder.configure(
         ttk_style,
         foreground=on_surface,
-        background=builder.colors.bg,
+        background=surface,
         relief=tk.FLAT,
         focusthickness=builder.scale_size(1),
         focuscolor=on_surface,
@@ -267,9 +280,9 @@ def build_link_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
             ("hover !disabled", pressed),
         ],
         background=[
-            ("disabled", builder.colors.bg),
-            ("pressed !disabled", builder.colors.bg),
-            ("hover !disabled", builder.colors.bg),
+            ("disabled", surface),
+            ("pressed !disabled", surface),
+            ("hover !disabled", surface),
         ]
     )
     # register ttkstyle
@@ -295,17 +308,22 @@ def build_ghost_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
             The color label used to style the widget.
     """
     style_class = "Ghost.TButton"
-    surface = builder.colors.bg
+    # The surface the ghost sits on (2.0 surface-color): it is transparent at
+    # rest, so its background *is* the surface -- this is what lets it ghost on
+    # an accent bar/card instead of only the app background.
+    surface = builder.resolve_surface(builder._surface)
 
     if colorname in (DEFAULT, "", NEUTRAL):
         # default/neutral ghost: normal text, a neutral surface raise on hover
-        ttk_style = style_class if colorname in (DEFAULT, "") else f"{NEUTRAL}.{style_class}"
-        fg = builder.colors.fg
-        hover = neutral_fill(builder, 1)
-        pressed = neutral_fill(builder, 2)
+        base = style_class if colorname in (DEFAULT, "") else f"{NEUTRAL}.{style_class}"
+        ttk_style = builder.surface_prefix(base)
+        # On a non-default surface the text reads against it, not the app bg.
+        fg = builder.on_surface_fg()
+        hover = neutral_fill(builder, 1, base=surface)
+        pressed = neutral_fill(builder, 2, base=surface)
     else:
         # colored ghost: accent text, a subtle wash of the accent on hover
-        ttk_style = f"{colorname}.{style_class}"
+        ttk_style = builder.surface_prefix(f"{colorname}.{style_class}")
         fg = builder.colors.get(colorname)
         hover = builder.mute(fg, surface, 0.16)
         pressed = builder.mute(fg, surface, 0.26)
