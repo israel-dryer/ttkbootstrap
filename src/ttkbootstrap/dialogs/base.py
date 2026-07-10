@@ -139,7 +139,7 @@ class Dialog(BaseWidget):
         self._toplevel.withdraw()  # reset the iconify state
 
         # bind <Escape> event to window close
-        self._toplevel.bind("<Escape>", lambda _: self._toplevel.destroy())
+        self._toplevel.bind("<Escape>", lambda _: self.close())
 
         # create widgets
         self.create_body(self._toplevel)
@@ -153,6 +153,18 @@ class Dialog(BaseWidget):
         height = self._toplevel.winfo_reqheight()
         if width > 0 and height > 0:
             self._toplevel.geometry(f"{width}x{height}")        
+
+    def close(self) -> None:
+        """Close (destroy) the dialog window.
+
+        The public way to dismiss a dialog. Safe to call more than once and
+        before `show()` (a no-op if the window was never built or is already
+        gone). Subclasses that draw their own close button should route its
+        `command` here rather than reaching into `self._toplevel`.
+        """
+        toplevel = self._toplevel
+        if toplevel is not None and toplevel.winfo_exists():
+            toplevel.destroy()
 
     @property
     def result(self) -> Any:
