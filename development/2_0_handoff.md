@@ -3,6 +3,69 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
+_Last updated: 2026-07-10 (**Surface-color workstream — PRs 1/2/3 MERGED into `2.0`
+(#1149 / #1150 / #1152, branches deleted); NEXT = PR 4 (bar families), then RESUME
+docs Workstream H below**).
+A mid-stream initiative that interrupted the docs work (next entry). Fixes a real
+theming gap: every built style assumed widget bg == app bg (`colors.bg`), so a
+ghost/link/outline control on a non-default surface (a card, an accent toolbar)
+could not blend — surfaced running old examples (`gallery/collapsing_frame.py`).
+Full design + per-PR log: `development/2_0_surface_color_design.md`.
+**THE API (locked — learn this first):** a widget's surface is a `@<surface>` TOKEN
+INSIDE the bootstyle string, NOT a separate param (because `bootstyle` is the compact
+spelling of the ttk style name, and the style name already carries the `@surface`
+segment). **Spaces are the recommended separator:**
+`ttk.Button(bootstyle="@primary success ghost")` → style name
+`@primary.success.Ghost.TButton`. A surface is a named neutral (`card`) OR an accent
+color (`@primary`, so a control ghosts against an accent container). **Additive:** no
+`@token` ⇒ byte-for-byte the pre-surface names/appearance. Memories:
+`bootstyle-spaces-and-surface-token`, `styling-permissive-not-paternalistic`,
+`project-surface-color-pass`.
+**MECHANISM (`style/`):** `constants.surface_segment()` = the single `@<surface>.`
+formatter shared by resolver + builder (so names can't drift) + `BOOTSTYLE_SURFACE_TOKENS`.
+`bootstyle._classify_tokens` reads the `@token`; `_build_ttkstyle_name` /
+`_classify_style_name` emit/round-trip the segment (theme walk stays lenient — a
+custom `@brand` style name never warns); `_normalize_surface` case-normalizes +
+validates through the `_compat` strict gate; a **family gate** `_SURFACE_FAMILIES`
+(now {button, checkbutton, radiobutton, toggle, label}) makes not-yet-migrated
+families ignore surface. `builders_ttk`: `build_style` exposes the surface to the
+recipe as transient `self._surface`; `surface_prefix` (f-string recipes) /
+`StyleName(surface=)` (check/radio/scale) prefix the name; `resolve_surface(_surface)`
+gives the color; `on_surface_fg()` flips fg for **accent** surfaces (near-bg
+card/neutral keep the soft theme fg); `neutral_fill`/`mute`/`disabled` take a
+`base=`/`surface` arg. A **graceful-degrade net** in `update_ttk_widget_style`: if a
+gated family's recipe forgot `surface_prefix`, fall back to the plain style (not bare
+clam). Frames are surface **PRODUCERS** — never gated (out of scope). Phase-2
+parent-inheritance + raw-hex surfaces are DEFERRED (design §7 / §9). **Accepted
+by-design (permissive, not paternalistic):** a control on its own matching accent
+surface renders low-contrast (fg≈bg) — the user's color choice; the example uses
+contrasting `light` accents.
+**MERGED:** PR 1 #1149 (resolver + `card` token + strict-gate follow-up), PR 2 #1150
+(grammar + engine + button family — squashed after a `surface=`-param → `@token`
+reversal that review drove out), PR 3 #1152 (checkbutton/radiobutton/toggle/label +
+degrade net + `examples/surface_preview.py` visual proof + a gate↔recipe
+correspondence test). Each PR had 1–2 high-effort `/code-review` passes.
+**>>> NEXT — PR 4 = the bar families (scale / progressbar / scrollbar):** the last
+rollout piece, split out (lower value on a distinct surface, more complex: H/V ×
+glyph assets). Same template. Recipe map already produced (design doc §6): each pulls
+`border(colors.bg)` for the trough + bakes `colors.bg` in the slider/handle glyphs
+(`recolor(... white=colors.bg ...)`); add each to `_SURFACE_FAMILIES`, resolve the
+surface, prefix names (`StyleName(surface=)` for scale — it builds H+V via StyleName;
+inline `surface_prefix` for progressbar/scrollbar — they build H+V f-string names),
+swap the `colors.bg` sites, and ADD the three to
+`tests/test_surface_families.py::test_every_gated_family_honors_surface` (that test
+asserts the gate == the wired families, so it will fail until PR 4 is done — expected).
+**Still pending before the docs finalize:** the **deferred "spaces sweep"** —
+regenerate the dash-joined `BootStyle` Literal + reference to the space form and touch
+up docstrings so autocomplete/docs match the recommended spelling
+(`tools/generate_bootstyle_reference.py`, sync-tested).
+**Env/tests:** repo `.venv` exits 127 — run the headless suite with
+`PYTHONPATH=src python -m pytest -q`; baseline ~609 passed EXCL two known order/env
+flakes (`test_msgcat` nl.msg, one order-dependent `test_color_helpers`). Import must
+stay warning-free. **User WIP: `gallery/collapsing_frame.py`** is modified in the
+working tree — LEFT UNTOUCHED all session; keep leaving it alone. Prior entry
+(docs Workstream H) follows._
+
 _Last updated: 2026-07-10 (**Docs Workstream H — Sphinx skeleton spike MERGED into
 `2.0` (#1148, merge `e88bd525`, branch deleted); NEXT = iterate the skeleton, then
 sub-PR 2 (generators)**).
