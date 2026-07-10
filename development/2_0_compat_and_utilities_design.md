@@ -238,6 +238,41 @@ overhead to document and sync for no payoff.
 **Out.** The token scale as a *new vocabulary*, and the `font="body[bold]"`
 bracket DSL (needs to intercept `font=` — framework territory).
 
+### Slice 4 — IMPLEMENTED (2026-07-09)
+
+Shipped as `ttkbootstrap/utils/fonts.py`, mirroring the Slice 3/5 pattern (a live
+engine surface + a thin deferred-seam setter):
+
+- **`Fonts`** namespace class (live-root classmethods): `set_global_family(family,
+  *, mono_family=None)` retints the eight proportional standard named fonts
+  (`TkDefaultFont`/`TkTextFont`/`TkMenuFont`/`TkHeadingFont`/`TkCaptionFont`/
+  `TkSmallCaptionFont`/`TkIconFont`/`TkTooltipFont`), `TkFixedFont` only when
+  `mono_family` is given; `configure(name, **opts)`; `describe(name=None)` (resolved
+  `.actual()` specs — one font or all managed); `names()` (the managed set);
+  `create_alias(name, **opts)` (a user named font); `reset()` (clears the wrapper
+  cache). Fonts absent on a platform are skipped/guarded (`TclError`).
+- **Module-level `set_global_family(family, *, mono_family=None)`** — rides the
+  Slice 5 seam via `config.defer("global_family", …)`: queued before a root,
+  applied live if one exists. The deferred-seam sibling of `set_locale` /
+  `set_default_button`.
+- **Wrapper cache** (`_font_cache`, name→`font.Font`) with a `_tk`-identity
+  staleness guard, cleared by `Fonts.reset()` **wired into `App.destroy`** (the
+  same singleton/root-rebind hazard `Style` clears). `_named_font` imports `window`
+  function-locally so `utils/__init__` can import `fonts` eagerly without pulling
+  the `utils → window` chain during style-package init.
+- **Exposure**: re-exported from `utils/__init__` and top level
+  (`ttk.Fonts` / `ttk.set_global_family`).
+- **Decisions / deferrals**: kept a `Fonts` namespace class (like `MessageCatalog`)
+  + a module setter (like `set_locale`), rather than all-module-functions, so the
+  live surface reads as one thing. The **optional macOS pt→pixel size bump** and
+  platform-aware default families from the sketch were **dropped** for 2.0 — extra
+  per-platform surface for a "keep it tiny" utility; `set_global_family` covers the
+  actual FAQ. `reset()` was **kept** (the root-rebind hazard is real).
+- **Tests**: `tests/test_fonts_api.py` (+10), snapshotting/restoring the managed
+  named fonts (interpreter-global on the shared session root). Suite green: **539
+  passed** excl. the two known flakes (`nl.msg` env + the order-dependent
+  `test_color_helpers` *Duplicate element* rebuild bug); warning-free import.
+
 ## Slice 5 — The deferred-config seam
 
 (See "Cross-cutting" above.) The small pending-apply registry, wired to:
@@ -304,10 +339,11 @@ Resolved forks:
 4. **Deferred-config seam** (Slice 5 core) — small, enables localization & typography.
 5. **Localization** (Slice 3) — msgcat fixes + `L()`/`LocaleVar` + event.
    **DONE — #1144.**
-6. **Typography** (Slice 4) — `Fonts` utility, wired through the seam.
+6. **Typography** (Slice 4) — `Fonts` utility, wired through the seam. **DONE.**
 
-(Actual merge order was 1/2/0, all standalone; the remaining three are 5 → 3 → 4.
-Slice 5 and Slice 3 done; Slice 4 next.)
+(Actual merge order was 1/2/0, all standalone; the remaining three landed 5 → 3 →
+4. **All slices complete** — next is the cumulative capstone review per
+`2_0_prerelease_review_plan.md`.)
 
 Each is a small PR **branched from `2.0`** (not from a feature branch) with its
 own tests; each lands an entry in `2_0_breaking_changes.md`. After Slice 4, the

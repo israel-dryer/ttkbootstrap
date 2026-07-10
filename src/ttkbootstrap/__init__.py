@@ -89,6 +89,8 @@ from ttkbootstrap.utils import (
     contrast_color,
     conform_color_model,
     set_default_button,
+    Fonts,
+    set_global_family,
 )
 
 
@@ -315,6 +317,8 @@ __all__ = [
     "contrast_color",
     "conform_color_model",
     "set_default_button",
+    "Fonts",
+    "set_global_family",
 
     # Localization
     "L",
