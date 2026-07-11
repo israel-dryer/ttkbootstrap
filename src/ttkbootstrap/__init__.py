@@ -271,6 +271,11 @@ from ttkbootstrap.dialogs import (
 # the canonical home / import path.
 from ttkbootstrap.localization import L, LocaleVar, set_locale
 
+# Input-validation namespace re-exported at the top level (`ttk.Validation`).
+# Imported last so the `validation -> ttkbootstrap` chain sees a fully built
+# package; `ttkbootstrap.validation` remains the canonical home / import path.
+from ttkbootstrap.validation import Validation, validator, ValidationEvent
+
 __all__ = [
     # Tk exports
     "Tk", "Menu", "Text", "Canvas", "TkFrame", "TkLabel", "LabelFrame", "Variable", "StringVar", "IntVar", "BooleanVar",
@@ -330,6 +335,11 @@ __all__ = [
     "L",
     "LocaleVar",
     "set_locale",
+
+    # Input validation
+    "Validation",
+    "validator",
+    "ValidationEvent",
 
     # Application root + windows
     "App",

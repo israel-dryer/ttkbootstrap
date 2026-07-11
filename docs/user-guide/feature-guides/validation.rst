@@ -7,47 +7,48 @@ that fails it flags the widget with a ``danger``-colored border until the
 contents become valid again. This guide covers the ready-made rules, when they
 fire, and writing your own.
 
-Import the helpers from ``ttkbootstrap.validation``:
+The rules live on the :class:`~ttkbootstrap.Validation` namespace, re-exported
+at the top level — import it directly, or reach it as ``ttk.Validation``:
 
 .. code-block:: python
 
-   from ttkbootstrap.validation import add_numeric_validation, add_range_validation
+   from ttkbootstrap import Validation
 
 The ready-made rules
 --------------------
 
-Each helper takes the widget as its first argument and wires up a rule in one
+Each method takes the widget as its first argument and wires up a rule in one
 call:
 
 .. list-table::
    :header-rows: 1
    :widths: 46 54
 
-   * - Helper
+   * - Rule
      - Passes when the contents are…
-   * - ``add_text_validation(widget)``
+   * - ``Validation.text(widget)``
      - alphabetic (or empty).
-   * - ``add_numeric_validation(widget)``
+   * - ``Validation.numeric(widget)``
      - numeric (or empty).
-   * - ``add_range_validation(widget, start, end)``
+   * - ``Validation.range(widget, start, end)``
      - a number within ``start``–``end`` inclusive (or empty).
-   * - ``add_regex_validation(widget, pattern)``
+   * - ``Validation.regex(widget, pattern)``
      - a match for the regular expression ``pattern``.
-   * - ``add_option_validation(widget, options)``
+   * - ``Validation.options(widget, options)``
      - one of the values in ``options``.
-   * - ``add_phonenumber_validation(widget)``
+   * - ``Validation.phonenumber(widget)``
      - a match for a common phone-number pattern.
 
 .. code-block:: python
 
    import ttkbootstrap as ttk
-   from ttkbootstrap.validation import add_range_validation
+   from ttkbootstrap import Validation
 
    app = ttk.App()
 
    age = ttk.Entry(app)
    age.pack(padx=20, pady=20)
-   add_range_validation(age, 0, 120)      # 0–120 accepted; anything else flags danger
+   Validation.range(age, 0, 120)      # 0–120 accepted; anything else flags danger
 
    app.mainloop()
 
@@ -89,7 +90,7 @@ intrusive choice:
 
 .. code-block:: python
 
-   add_numeric_validation(entry, when="key")     # reject non-digits as they are typed
+   Validation.numeric(entry, when="key")     # reject non-digits as they are typed
 
 With ``when="key"`` the rule runs on each edit, so a rejected change keeps a bad
 character from ever landing in the field; with ``"focusout"`` the value is
@@ -109,18 +110,18 @@ Custom rules
 When no ready-made rule fits, write your own. A **rule** is a function that
 receives a :class:`~ttkbootstrap.validation.ValidationEvent` and returns
 ``True`` (valid) or ``False`` (invalid). Decorate it with ``@validator`` so it
-receives the event object, then attach it with ``add_validation``:
+receives the event object, then attach it with ``Validation.add``:
 
 .. code-block:: python
 
-   from ttkbootstrap.validation import validator, add_validation
+   from ttkbootstrap import Validation, validator
 
    @validator
    def is_even(event):
        text = event.postchangetext
        return text.isdigit() and int(text) % 2 == 0
 
-   add_validation(entry, is_even, when="focusout")
+   Validation.add(entry, is_even, when="focusout")
 
 The event's most useful attribute is ``postchangetext`` — the value the widget
 *will* hold if the change is allowed — along with ``widget`` (the widget being
@@ -128,8 +129,8 @@ validated). The full set (``actioncode``, ``insertdeletetext``,
 ``validationreason``, …) is documented on
 :class:`~ttkbootstrap.validation.ValidationEvent`.
 
-Pass extra keyword arguments through ``add_validation`` and they arrive at your
-rule — the same mechanism the built-in ``add_range_validation`` uses:
+Pass extra keyword arguments through ``Validation.add`` and they arrive at your
+rule — the same mechanism the built-in ``Validation.range`` uses:
 
 .. code-block:: python
 
@@ -137,7 +138,7 @@ rule — the same mechanism the built-in ``add_range_validation`` uses:
    def max_length(event, limit):
        return len(event.postchangetext) <= limit
 
-   add_validation(entry, max_length, when="key", limit=10)
+   Validation.add(entry, max_length, when="key", limit=10)
 
 .. seealso::
 
