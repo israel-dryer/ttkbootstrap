@@ -154,6 +154,20 @@ Each subsystem, end to end — its concepts and its usage in one place.
 
       ``add_*_validation`` helpers and the ``@validator`` decorator.
 
+   .. grid-item-card:: Variables
+      :link: feature-guides/variables
+      :link-type: doc
+
+      Variable types, traces (read/write/unset), computed fields, and
+      ``LocaleVar``.
+
+   .. grid-item-card:: Events
+      :link: feature-guides/events
+      :link-type: doc
+
+      The binding system in depth — scope & bindtags, stopping events, and
+      dispatching your own virtual events.
+
    .. grid-item-card:: Icons
       :link: feature-guides/icons
       :link-type: doc
@@ -213,6 +227,8 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way. See the
    feature-guides/typography
    feature-guides/localization
    feature-guides/validation
+   feature-guides/variables
+   feature-guides/events
    feature-guides/icons
    feature-guides/windows
 

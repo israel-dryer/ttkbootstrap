@@ -7,16 +7,19 @@ directly. A variable is the single source of truth for that value: set the
 variable and the widget updates; the user edits the widget and the variable
 updates. This two-way link is how tkinter keeps your data and your UI in sync.
 
-The variable classes are re-exported from ttkbootstrap, so you can reach them as
-``ttk.StringVar``, ``ttk.IntVar``, ``ttk.BooleanVar``, and ``ttk.DoubleVar``
-(they are the tkinter classes — import them from ``tkinter`` if you prefer).
+.. note::
+
+   This page covers the essentials. For the variable types in depth, traces (read
+   / write / unset) and their cleanup, and patterns like computed fields, see the
+   :doc:`Variables guide </user-guide/feature-guides/variables>`.
 
 Binding a widget to a variable
 ------------------------------
 
 Create a variable, then hand it to the widget through the option that fits:
 ``textvariable`` for text-bearing widgets (Entry, Label), ``variable`` for
-selection controls (Checkbutton, Radiobutton, Scale):
+selection controls (Checkbutton, Radiobutton, Scale). Read and write with
+``.get()`` and ``.set()``:
 
 .. code-block:: python
 
@@ -25,53 +28,30 @@ selection controls (Checkbutton, Radiobutton, Scale):
    ttk.Entry(app, textvariable=name).pack()
    ttk.Label(app, textvariable=name).pack()   # mirrors the entry live
 
-Read and write the value with ``.get()`` and ``.set()``:
+   name.set("Grace")                          # entry and label both update
 
-.. code-block:: python
-
-   name.get()          # -> "Ada"
-   name.set("Grace")   # entry and label both update
-
-Choose the class by value type
-------------------------------
-
-The class you pick determines what ``.get()`` returns:
+The variable classes are re-exported from ttkbootstrap — ``ttk.StringVar``,
+``ttk.IntVar``, ``ttk.BooleanVar``, ``ttk.DoubleVar`` — and the class you pick
+determines what ``.get()`` returns:
 
 - ``StringVar`` — text (entries, labels).
-- ``IntVar`` — whole numbers; also the on/off value of a Checkbutton or the
-  chosen value of a Radiobutton group.
+- ``IntVar`` — whole numbers; a Checkbutton's on/off value; a Radiobutton choice.
 - ``BooleanVar`` — ``True``/``False`` (a Checkbutton's checked state).
 - ``DoubleVar`` — floating-point numbers (a Scale's position).
-
-.. code-block:: python
-
-   agree = ttk.BooleanVar()
-   ttk.Checkbutton(app, text="I agree", variable=agree,
-                   bootstyle="success-round-toggle").pack()
-
-   agree.get()   # -> True once the box is checked
 
 Reacting to changes
 -------------------
 
-To run code whenever a variable changes, attach a trace. The callback fires on
-every write — useful for live validation, enabling a button, or updating a
-summary:
+To run code whenever a variable changes, attach a **trace**. The callback fires
+on every write — handy for live updates like enabling a button or refreshing a
+summary. Swallow the three callback arguments with ``*_``:
 
 .. code-block:: python
 
-   def on_change(*_):
-       print("value is now", name.get())
+   name.trace_add("write", lambda *_: print("value is now", name.get()))
 
-   trace_id = name.trace_add("write", on_change)
-
-Most traces live for the life of the app and need no cleanup. When you do need to
-stop reacting — say the callback closes over a widget you are about to destroy —
-``trace_add`` returns an id you pass to ``trace_remove``:
-
-.. code-block:: python
-
-   name.trace_remove("write", trace_id)
+Traces come in read/write/unset modes and can be removed again for cleanup — see
+the :doc:`Variables guide </user-guide/feature-guides/variables>`.
 
 A worked example
 ----------------
@@ -100,25 +80,8 @@ the box is checked:
 
    app.mainloop()
 
-``LocaleVar`` — a variable that re-translates
----------------------------------------------
-
-ttkbootstrap ships one specialized variable, :class:`~ttkbootstrap.LocaleVar`. It
-is a ``StringVar`` whose text is a translation key: bind a widget to it, and the
-text re-translates itself automatically whenever the app's locale changes. It is
-a concrete example of the same observer pattern — the variable listens for the
-``<<LocaleChanged>>`` event and updates every widget bound to it:
-
-.. code-block:: python
-
-   greeting = ttk.LocaleVar(app, "Hello")
-   ttk.Label(app, textvariable=greeting).pack()   # follows the locale
-
-See :doc:`Localization </user-guide/feature-guides/localization>` for the full
-localization subsystem.
-
 .. seealso::
 
-   The variable classes are standard tkinter. For the complete API, see
-   `Variable classes <https://docs.python.org/3/library/tkinter.html#coupling-widget-variables>`__
-   on python.org.
+   The :doc:`Variables guide </user-guide/feature-guides/variables>` for the full
+   picture, and :doc:`Localization </user-guide/feature-guides/localization>` for
+   ``LocaleVar``, a variable that re-translates itself when the locale changes.
