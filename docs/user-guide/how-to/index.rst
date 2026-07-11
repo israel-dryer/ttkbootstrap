@@ -34,6 +34,8 @@ Interaction and data
 - **Multiple windows** — ``Toplevel``, modality, and returning a value.
 - **Background work without freezing the UI** — ``after`` and worker threads,
   updating widgets safely from the main loop.
+- :doc:`Feedback: bell & busy <feedback>` — a system beep and a busy overlay that
+  blocks a window while it works.
 
 Presentation
 ------------
@@ -42,8 +44,3 @@ Presentation
   with ``PhotoImage``.
 - **Splash screen** — a borderless startup window with ``window_type``.
 - **Application icon** — set the window/taskbar icon.
-
-.. toctree::
-   :hidden:
-
-   working-with-images

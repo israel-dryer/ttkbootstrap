@@ -28,9 +28,25 @@ The lookup layer:
       tkinter's event system in Python terms — event types, modifiers, key
       symbols, the event object, and the built-in virtual events.
 
+   .. grid-item-card:: Widget & screen info
+      :link: winfo
+      :link-type: doc
+
+      The ``winfo_*`` methods every widget carries — class, size, position,
+      geometry manager, pointer location, and screen dimensions.
+
+   .. grid-item-card:: Cursors
+      :link: cursors
+      :link-type: doc
+
+      The mouse-pointer names the ``cursor`` option accepts — the common set,
+      the full portable list, and the platform-specific pointers.
+
 .. toctree::
    :hidden:
 
    style-reference/index
    api/index
    events/index
+   winfo
+   cursors

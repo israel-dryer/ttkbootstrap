@@ -142,6 +142,13 @@ ttkbootstrap widgets.
 
       ``add_*_validation`` helpers and the ``@validator`` decorator.
 
+   .. grid-item-card:: Icons
+      :link: feature-guides/icons
+      :link-type: doc
+
+      Theme-aware Bootstrap Icons glyphs — the ``icon=`` keyword, ``apply_icon``,
+      and the standalone ``Icon`` image.
+
    .. grid-item-card:: Windows, icons & high-DPI
       :link: feature-guides/windows
       :link-type: doc
@@ -189,6 +196,7 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way. See the
    feature-guides/typography
    feature-guides/localization
    feature-guides/validation
+   feature-guides/icons
    feature-guides/windows
 
 .. toctree::
@@ -196,3 +204,5 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way. See the
    :caption: How-To
 
    how-to/index
+   how-to/working-with-images
+   how-to/feedback
