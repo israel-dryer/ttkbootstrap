@@ -59,7 +59,7 @@ any order.
       :link: concepts/delivery-model
       :link-type: doc
 
-      Why 2.0 stopped monkey-patching tkinter — the blessed subclasses,
+      How the ``bootstyle`` API reaches your widgets — the blessed subclasses,
       ``enable_global_api``, ``bootify``, and ``apply_bootstyle``.
 
    .. grid-item-card:: Theming
@@ -89,8 +89,8 @@ any order.
 Feature guides
 --------------
 
-Each 2.0 subsystem, end to end — the utilities that work on plain tkinter, not
-just ttkbootstrap widgets.
+Each subsystem, end to end — the utilities that work on plain tkinter, not just
+ttkbootstrap widgets.
 
 .. grid:: 1 2 2 2
    :gutter: 3
