@@ -1,22 +1,149 @@
 Typography
 ==========
 
+Text in a tkinter app is styled through the **standard Tk named fonts** — a
+handful of fonts (``TkDefaultFont``, ``TkTextFont``, ``TkFixedFont``, …) that
+every interpreter ships and every widget reads by default. There is no separate
+ttkbootstrap font vocabulary: change a named font and every widget that uses it
+restyles at once. This guide covers the one-liner for the whole app, per-font
+tweaks, and registering your own named fonts.
+
+The named fonts
+---------------
+
+A **named font** is a font registered under a name in the interpreter. Widgets
+reference it by that name rather than carrying their own copy, so reconfiguring
+the name updates every widget that uses it — no interception, no per-widget
+loop. These are the fonts ttkbootstrap manages:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 34 18 48
+
+   * - Named font
+     - Kind
+     - Used by
+   * - ``TkDefaultFont``
+     - proportional
+     - Most widgets — buttons, labels, entries; the general UI font.
+   * - ``TkTextFont``
+     - proportional
+     - Text-entry widgets (``Entry``, ``Text``, ``Spinbox``).
+   * - ``TkHeadingFont``
+     - proportional
+     - Column headings and other emphasis.
+   * - ``TkMenuFont``
+     - proportional
+     - Menu items.
+   * - ``TkCaptionFont`` / ``TkSmallCaptionFont``
+     - proportional
+     - Window and dialog captions.
+   * - ``TkIconFont`` / ``TkTooltipFont``
+     - proportional
+     - Icon labels and tooltips.
+   * - ``TkFixedFont``
+     - monospace
+     - Code and console-style text.
+
+You can hand any of these to a widget's ``font=`` option directly — it works on
+stock tkinter widgets too:
+
+.. code-block:: python
+
+   ttk.Label(app, text="Section", font="TkHeadingFont").pack()
+
 .. note::
 
-   This guide is being written for 2.0.
+   Some named fonts (``TkTooltipFont``, ``TkIconFont``, ``TkSmallCaptionFont``)
+   are absent on some platforms. The helpers below skip any that the current
+   interpreter does not define, so you never have to guard for them yourself.
 
-ttkbootstrap styles text through the **standard Tk named fonts**
-(``TkDefaultFont``, ``TkTextFont``, ``TkFixedFont``, ``TkHeadingFont``, …) — there
-is no separate font DSL. Retint a named font and every widget that uses it
-updates at once.
+Setting the global family
+-------------------------
 
-This guide will cover:
+The headline one-liner retints every proportional named font in a single call.
+Because widgets read those fonts, it restyles the whole app:
 
-- ``set_global_family(family, *, mono_family=None)`` — the one-liner: set the
-  proportional (and optionally monospace) family for the whole app. It rides the
-  deferred-config seam, so you can call it at the top of a file *before* the root
-  exists, or live afterward.
-- The ``Fonts`` namespace (call after the root exists): ``Fonts.configure``
-  to tweak one named font, ``Fonts.create_alias`` to register your own
-  (``font="Body"``), ``Fonts.names``/``Fonts.describe`` to introspect, and
-  ``Fonts.reset``.
+.. code-block:: python
+
+   import ttkbootstrap as ttk
+
+   ttk.set_global_family("Segoe UI")
+
+   app = ttk.App()
+   ttk.Button(app, text="Save", bootstyle="primary").pack(padx=20, pady=20)
+   app.mainloop()
+
+:func:`~ttkbootstrap.set_global_family` rides the **deferred-config seam**: call
+it at the top of a file *before* the root exists — as above — and the setting is
+queued and applied when ``App()`` comes up. If a root already exists, it applies
+live.
+
+The monospace font (``TkFixedFont``) is left alone unless you ask for it with
+``mono_family``:
+
+.. code-block:: python
+
+   ttk.set_global_family("Inter", mono_family="Cascadia Code")
+
+.. admonition:: 📷 Screenshot (placeholder)
+   :class: screenshot-placeholder
+
+   The same small window rendered with the default family and with a custom
+   ``set_global_family`` family side by side, showing the whole UI restyled.
+
+The ``Fonts`` namespace
+-----------------------
+
+For finer control against a **live** root, use the :class:`~ttkbootstrap.Fonts`
+namespace. Its methods operate on the running application, so call them once
+``App()`` exists — a pre-root call raises a clear "too early" error rather than
+spawning a stray root. (For the top-of-file case, use the module-level
+``set_global_family`` above.)
+
+**Tweak one named font** with ``Fonts.configure`` — pass any font option
+(``family``, ``size``, ``weight``, ``slant``, ``underline``). Every widget
+reading that font updates live:
+
+.. code-block:: python
+
+   ttk.Fonts.configure("TkDefaultFont", size=11)
+   ttk.Fonts.configure("TkHeadingFont", weight="bold", size=13)
+
+``Fonts.set_global_family`` is the live sibling of the module-level function —
+retint every proportional font now, against the existing root:
+
+.. code-block:: python
+
+   ttk.Fonts.set_global_family("Segoe UI", mono_family="Consolas")
+
+**Register your own named font** with ``Fonts.create_alias``. Define it once and
+refer to it by name everywhere — the same mechanism the ``Tk*Font`` names use.
+It returns the ``font.Font`` wrapper for further tweaking, and re-registering a
+name reconfigures it instead of erroring:
+
+.. code-block:: python
+
+   ttk.Fonts.create_alias("Body", family="Georgia", size=12)
+
+   ttk.Label(app, text="Chapter one", font="Body").pack()
+
+**Introspect** with ``Fonts.names`` (the managed named fonts) and
+``Fonts.describe`` (their resolved family/size/weight/…):
+
+.. code-block:: python
+
+   ttk.Fonts.names()               # ('TkDefaultFont', 'TkTextFont', …)
+   ttk.Fonts.describe("TkDefaultFont")
+   # {'family': 'Segoe UI', 'size': 9, 'weight': 'normal', …}
+   ttk.Fonts.describe()            # every managed font, as a mapping
+
+``Fonts.reset`` drops ttkbootstrap's cached font wrappers; it runs automatically
+when the app is destroyed, so you rarely call it yourself.
+
+.. seealso::
+
+   The named-font families are the standard tkinter fonts; for the underlying
+   options and the ``font.Font`` object, see
+   `tkinter.font <https://docs.python.org/3/library/tkinter.font.html>`__ on
+   python.org.
