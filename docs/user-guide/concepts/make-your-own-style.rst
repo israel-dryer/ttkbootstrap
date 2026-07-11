@@ -60,14 +60,26 @@ map**, and a **layout**. Each piece is a small toolkit call:
 
    pill = assets.rounded_rect(style.colors.primary, size=(80, 28), radius=14)
 
-   image_element(style, "Pill.TButton.background", default=pill, border=14, sticky="nsew")
-   state_map(style, "Pill.TButton", foreground={"disabled": style.colors.border})
-   layout(style, "Pill.TButton", El(
-       "Pill.TButton.background", sticky="nsew",
-       children=[El("Button.label", side="left", expand=True)],
-   ))
+   image_element(
+        style,
+        "Pill.TButton.background",
+        default=pill,
+        border=14,
+        sticky="nsew"
+   )
 
-   ttk.Button(app, text="Go", style="Pill.TButton").pack(padx=20, pady=20)
+   state_map(
+        style,
+        "Pill.TButton",
+        foreground={"disabled": style.colors.border}
+   )
+
+   layout(style, "Pill.TButton",
+            El("Pill.TButton.background", sticky="nsew", children=[
+                El("Button.label", side="left", expand=True)])
+   )
+
+   ttk.Button(app, text="Go", style="Pill.TButton").pack()
 
    app.mainloop()
 
@@ -86,8 +98,9 @@ returns a cached image name you can drop into any ``image=`` option:
 
    from ttkbootstrap import Icon
 
-   ttk.Button(app, text="Save", image=Icon("save", size=16, color="light"),
-              compound="left").pack()
+   save_icon = Icon("save", size=16, color="light")
+
+   ttk.Button(app, text="Save", image=save_icon, compound="left").pack()
 
 For an icon that follows the widget's foreground and state automatically, pass
 the ``icon=`` keyword instead of building the image yourself:
