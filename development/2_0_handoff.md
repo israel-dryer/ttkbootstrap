@@ -32,10 +32,20 @@ the store was destroyed on upgrade anyway).
 from 1.x" admonitions + the Migrating page — no "new in 2.0" framing in body
 prose); one runnable example per page + focused fragments, no geometry noise;
 features that drop into ttk internals get an "Advanced" admonition + a
-`tkinter.ttk` cross-reference. **>>> NEXT = the remaining User Guide bands (§11
-sub-PR 3 continues):** Getting Started (installation, quickstart, app-structures,
-migrating), Feature guides (typography, localization, validation, windows),
-How-To. Then sub-PR 4 (widgets catalog) + sub-PR 5 (landing + screenshots).
+`tkinter.ttk` cross-reference. **>>> NEXT (author-approved 2026-07-11): a NEW
+`Foundations` band** between Getting Started and Concepts — a tkinter conceptual
+on-ramp for newcomers (design §3 revised to FIVE bands). **3 pages:** *Arranging
+widgets* (pack/grid/place model + fluent geometry), *State & variables*
+(StringVar/IntVar/BooleanVar + textvariable binding; LocaleVar example), *Events &
+callbacks* (command=/bind/virtual events like `<<ThemeChanged>>`/`after()`).
+**Scope guardrail:** concept-level + ttkbootstrap-flavored + link out to
+python.org `tkinter`/`tkinter.ttk` for exhaustive detail — a welcoming on-ramp,
+NOT a tkinter tutorial (ttkbootstrap stays a styling extension). **Use bootstack's
+docs as a reference for this band** (sibling repo `D:/Development/bootstack`).
+**Then** the remaining bands (§11 sub-PR 3): Getting Started (installation,
+quickstart, app-structures, migrating), Feature guides (typography, localization,
+validation, windows), How-To; then sub-PR 4 (widgets catalog) + sub-PR 5 (landing
++ screenshots).
 **Env:** repo `.venv` exits 127 → suite via `PYTHONPATH=src python -m pytest -q`
 (baseline ~640 excl. the known `nl.msg`/`test_color_helpers` flakes); docs build
 needs a scratchpad `docsenv` (`.venv-home` is inaccessible under this account) —

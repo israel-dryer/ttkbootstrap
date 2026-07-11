@@ -105,6 +105,22 @@ Themes · Gallery · Cookbook).
 | **Reference** | reference | **Style Reference** (generated) + **API Reference** (mkdocstrings) |
 | *(supporting)* | — | Release Notes (link to GH releases), optional Roadmap |
 
+### User Guide internal structure — FIVE BANDS (revised 2026-07-11)
+
+**Revision 2026-07-11 — added a `Foundations` band (author call).** With the
+Concepts styling band authored, review found newcomers arriving with no tkinter
+experience have no *conceptual* on-ramp: they jump from Getting Started straight
+into advanced styling with no grasp of how widgets are arranged, how UI binds to
+data, or how it responds to input. Those are mental models (not tasks), so they
+belong in the guide as concepts, not only as How-To recipes. Added a small
+**Foundations** band between Getting Started and Concepts (3 pages: *Arranging
+widgets*, *State & variables*, *Events & callbacks*). **Scope guardrail:** keep
+them concept-level and ttkbootstrap-flavored, and link out to python.org's
+`tkinter`/`tkinter.ttk` reference for exhaustive detail (the same see-also pattern
+used for ttk styling internals) — a welcoming on-ramp, NOT a tkinter tutorial that
+turns the library into a widget library. **bootstack's docs are a useful reference
+for this band.** The four-band note below is kept for history.
+
 ### User Guide internal structure — FOUR BANDS (revised 2026-07-10)
 
 Revised after the compat-and-utilities pass (Slices 0–5) and the other 2.0
@@ -125,6 +141,13 @@ User Guide
 │   ├─ Quickstart              first themed window; Window vs Tk; choosing a theme
 │   ├─ Structuring an app      Window vs Tk, the single-root rule, an app skeleton
 │   └─ Migrating to 2.0        bootstyle strings, theme names, removed shims, icons
+├─ Foundations — tkinter mental models for newcomers (NEW 2026-07-11)
+│   ├─ Arranging widgets        pack/grid/place — the model + when to use which;
+│   │                             fluent geometry (.pack() returns the widget)
+│   ├─ State & variables        StringVar/IntVar/BooleanVar + textvariable/variable
+│   │                             binding (observer pattern); LocaleVar as example
+│   └─ Events & callbacks        command=, bind + event objects, virtual events
+│                                 (<<…>>, e.g. <<ThemeChanged>>), after()
 ├─ Concepts — the styling core (the FLAGSHIP band)
 │   ├─ The bootstyle grammar   ★ FLAGSHIP — canonical grammar + reference table
 │   ├─ How styling is delivered ★ NEW — no monkey-patch: blessed subclasses,
