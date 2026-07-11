@@ -1,16 +1,21 @@
 r"""Validation framework for ttkbootstrap entry widgets.
 
 Adds input validation to Entry, Spinbox, and Combobox widgets: a failing value
-flags the widget with a 'danger'-colored border that clears once the contents
-become valid. Provides the `@validator` decorator, the core `add_validation`,
-and a family of `add_*` helpers for common cases (text, numeric, phone number,
-regex, range, options).
+flags the widget with the ttk ``invalid`` state (a 'danger'-colored border) that
+clears once the contents become valid. The public surface is the `Validation`
+namespace (`Validation.numeric`, `Validation.range`, ..., and `Validation.add`
+for a custom rule) plus the `@validator` decorator and the `ValidationEvent`
+passed to a rule.
+
+The pre-2.0 module-level `add_*_validation` functions remain as thin deprecated
+aliases (removed in 3.0); new code should call the `Validation` namespace.
 """
 import re
 from tkinter import Misc
 from typing import Any, Callable, Union
 
 import ttkbootstrap as ttk
+from ttkbootstrap.style._compat import warn_deprecated
 
 
 class ValidationEvent:
@@ -85,38 +90,6 @@ def validator(func: Callable[[ValidationEvent], bool]) -> Callable[..., bool]:
     return inner
 
 
-def add_validation(widget: Misc, func: Callable[..., bool], when: str = "focusout", **kwargs: Any) -> None:
-    """Adds validation to the widget of type `Entry`, `Combobox`, or
-    `Spinbox`. The func should accept a parameter of type
-    `ValidationEvent` and should return a boolean value.
-
-    Parameters:
-
-        widget (Widget):
-            The widget on which validation will be applied.
-
-        func (Callable):
-            The function that will be called when a validation event
-            occurs.
-
-        when (str):
-            Indicates when the validation event should occur. Possible
-            values include:
-
-            * focus - whenever the widget gets or loses focus
-            * focusin - whenever the widget gets focus
-            * focusout - whenever the widget loses focus
-            * key - whenever a key is pressed
-            * all - validate in all of the above situations
-
-        kwargs (Dict):
-            Optional arguments passed to the callback.
-    """
-    f = widget.register(lambda *e: func(*e, **kwargs))
-    subs = (r"%d", r"%i", r"%P", r"%s", r"%S", r"%v", r"%V", r"%W")
-    widget.configure(validate=when, validatecommand=(f, *subs))
-
-
 @validator
 def _validate_text(event: ValidationEvent) -> bool:
     """Contents is text."""
@@ -163,71 +136,141 @@ def _validate_regex(event: ValidationEvent, pattern: str) -> bool:
     return match is not None
 
 
-# helper methods
+# A common phone-number shape, shared by Validation.phonenumber.
+_PHONE_PATTERN = r"^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$"
+
+
+class Validation:
+    """Namespace of input-validation rules for ``Entry``, ``Spinbox``, and
+    ``Combobox``.
+
+    Each method attaches a rule to a widget; a value that fails the rule flags
+    the widget with the ttk ``invalid`` state (a ``danger``-colored border) until
+    the contents become valid again. Call them like ``Validation.numeric(entry)``.
+
+    The ``when`` argument on every method controls *when* the rule runs:
+
+    * ``"focusout"`` — when the widget loses focus (the default)
+    * ``"focusin"`` — when the widget gains focus
+    * ``"focus"`` — on both focus in and focus out
+    * ``"key"`` — on every keystroke, as the user types
+    * ``"all"`` — in all of the above situations
+
+    Use ``Validation.add`` for a custom rule (a function decorated with
+    ``@validator``).
+    """
+
+    @staticmethod
+    def add(widget: Misc, func: Callable[..., bool], when: str = "focusout", **kwargs: Any) -> None:
+        """Attach a custom rule to `widget`.
+
+        The rule `func` receives a `ValidationEvent` and returns a boolean; it is
+        usually written with the `@validator` decorator. Extra keyword arguments
+        are forwarded to the rule on each call (as `add_range_validation` forwards
+        its bounds).
+
+        Parameters:
+
+            widget (Widget):
+                The `Entry`, `Combobox`, or `Spinbox` to validate.
+
+            func (Callable):
+                The validation function, called on each validation event.
+
+            when (str):
+                When the rule runs. See the class docstring for the options.
+
+            kwargs (Dict):
+                Optional arguments forwarded to `func`.
+        """
+        f = widget.register(lambda *e: func(*e, **kwargs))
+        subs = (r"%d", r"%i", r"%P", r"%s", r"%S", r"%v", r"%V", r"%W")
+        widget.configure(validate=when, validatecommand=(f, *subs))
+
+    @staticmethod
+    def text(widget: Misc, when: str = "focusout") -> None:
+        """Require the contents to be alphabetic (an empty field passes)."""
+        Validation.add(widget, _validate_text, when=when)
+
+    @staticmethod
+    def numeric(widget: Misc, when: str = "focusout") -> None:
+        """Require the contents to be numeric (an empty field passes)."""
+        Validation.add(widget, _validate_number, when=when)
+
+    @staticmethod
+    def range(
+        widget: Misc,
+        start: Union[int, float],
+        end: Union[int, float],
+        when: str = "focusout",
+    ) -> None:
+        """Require a number within `start`–`end` inclusive (an empty field passes).
+
+        Parameters:
+
+            widget (Widget):
+                The widget on which to add validation.
+
+            start (int or float):
+                The lower bound of the accepted range, inclusive.
+
+            end (int or float):
+                The upper bound of the accepted range, inclusive.
+
+            when (str):
+                When the rule runs. See the class docstring for the options.
+        """
+        Validation.add(widget, _validate_range, startrange=start, endrange=end, when=when)
+
+    @staticmethod
+    def regex(widget: Misc, pattern: str, when: str = "focusout") -> None:
+        """Require the contents to match the regular expression `pattern`."""
+        Validation.add(widget, _validate_regex, pattern=pattern, when=when)
+
+    @staticmethod
+    def options(widget: Misc, options: list[Any], when: str = "focusout") -> None:
+        """Require the contents to be one of the values in `options`."""
+        Validation.add(widget, _validate_options, options=options, when=when)
+
+    @staticmethod
+    def phonenumber(widget: Misc, when: str = "focusout") -> None:
+        """Require the contents to match a common phone-number pattern."""
+        Validation.add(widget, _validate_regex, pattern=_PHONE_PATTERN, when=when)
+
+
+# ---------------------------------------------------------------------------
+# Deprecated pre-2.0 free functions -> Validation namespace (removed in 3.0).
+# ---------------------------------------------------------------------------
+
+
+def add_validation(widget: Misc, func: Callable[..., bool], when: str = "focusout", **kwargs: Any) -> None:
+    """Deprecated alias for `Validation.add` (removed in 3.0)."""
+    warn_deprecated("add_validation()", "Validation.add()")
+    Validation.add(widget, func, when=when, **kwargs)
 
 
 def add_text_validation(widget: Misc, when: str = "focusout") -> None:
-    """Check if widget contents is alpha. Sets the state to 'Invalid'
-    if not text.
-
-    Parameters:
-
-        widget (Widget):
-            The widget on which to add validation.
-
-        when (str):
-            Specifies when to apply validation. See the `add_validation`
-            method docstring for a full list of options.
-    """
-    add_validation(widget, _validate_text, when=when)
+    """Deprecated alias for `Validation.text` (removed in 3.0)."""
+    warn_deprecated("add_text_validation()", "Validation.text()")
+    Validation.text(widget, when=when)
 
 
 def add_numeric_validation(widget: Misc, when: str = "focusout") -> None:
-    """Check if widget contents is numeric. Sets the state to 'Invalid'
-    if not a number.
-
-    Parameters:
-
-        widget (Widget):
-            The widget on which to add validation.
-
-        when (str):
-            Specifies when to apply validation. See the `add_validation`
-            method docstring for a full list of options.
-    """
-    add_validation(widget, _validate_number, when=when)
+    """Deprecated alias for `Validation.numeric` (removed in 3.0)."""
+    warn_deprecated("add_numeric_validation()", "Validation.numeric()")
+    Validation.numeric(widget, when=when)
 
 
 def add_phonenumber_validation(widget: Misc, when: str = "focusout") -> None:
-    """Check if the widget contents matches a phone number pattern.
-
-    Parameters:
-
-        widget (Widget):
-            The widget on which to add validation.
-
-        when (str):
-            Specifies when to apply validation. See the `add_validation`
-            method docstring for a full list of options.
-    """
-    pattern = r"^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$"
-    add_validation(widget, _validate_regex, pattern=pattern, when=when)
+    """Deprecated alias for `Validation.phonenumber` (removed in 3.0)."""
+    warn_deprecated("add_phonenumber_validation()", "Validation.phonenumber()")
+    Validation.phonenumber(widget, when=when)
 
 
 def add_regex_validation(widget: Misc, pattern: str, when: str = "focusout") -> None:
-    """Check if widget contents matches regular expresssion. Sets the
-    state to 'Invalid' if no match is found.
-
-    Parameters:
-
-        widget (Widget):
-            The widget on which to add validation.
-
-        when (str):
-            Specifies when to apply validation. See the `add_validation`
-            method docstring for a full list of options.
-    """
-    add_validation(widget, _validate_regex, pattern=pattern, when=when)
+    """Deprecated alias for `Validation.regex` (removed in 3.0)."""
+    warn_deprecated("add_regex_validation()", "Validation.regex()")
+    Validation.regex(widget, pattern, when=when)
 
 
 def add_range_validation(
@@ -236,68 +279,28 @@ def add_range_validation(
     endrange: Union[int, float],
     when: str = "focusout",
 ) -> None:
-    """Check if widget contents is within a range of numbers, inclusive.
-    Sets the state to 'Invalid' if the number is outside of the range.
-
-    Parameters:
-
-        widget (Widget):
-            The widget on which to add validation.
-
-        startrange (Union[int, float]):
-            The lower bound of the accepted range, inclusive.
-
-        endrange (Union[int, float]):
-            The upper bound of the accepted range, inclusive.
-
-        when (str):
-            Specifies when to apply validation. See the `add_validation`
-            method docstring for a full list of options.
-    """
-    add_validation(
-        widget,
-        _validate_range,
-        startrange=startrange,
-        endrange=endrange,
-        when=when,
-    )
+    """Deprecated alias for `Validation.range` (removed in 3.0)."""
+    warn_deprecated("add_range_validation()", "Validation.range()")
+    Validation.range(widget, startrange, endrange, when=when)
 
 
 def add_option_validation(widget: Misc, options: list[Any], when: str = "focusout") -> None:
-    """Check if the widget contents is in a list of options.
-
-    Parameters:
-
-        widget (Widget):
-            The widget on which to add validation.
-
-        options (list):
-            The list of acceptable values.
-
-        when (str):
-            Specifies when to apply validation. See the `add_validation`
-            method docstring for a full list of options.
-    """
-    add_validation(widget, _validate_options, options=options, when=when)
+    """Deprecated alias for `Validation.options` (removed in 3.0)."""
+    warn_deprecated("add_option_validation()", "Validation.options()")
+    Validation.options(widget, options, when=when)
 
 
 if __name__ == "__main__":
     app = ttk.App()
-
 
     @validator
     def my_validation(event: ValidationEvent) -> bool:
         print(event.postchangetext)
         return True
 
-
     entry = ttk.Entry().pack(padx=10, pady=10)
     entry2 = ttk.Entry().pack(padx=10, pady=10)
-    # add_validation(entry, validate_range, startrange=5, endrange=10)
-    # add_validation(entry, validate_regex, pattern="israel")
-    add_text_validation(entry, when="key")  # prevents from using any numbers
-    add_text_validation(entry2, when="key")
-    # add_option_validation(entry, ['red', 'blue', 'green'], 'focusout')
-    # add_regex_validation(entry, r'\d{4}-\d{2}-\d{2}')
+    Validation.text(entry, when="key")  # prevents from using any numbers
+    Validation.text(entry2, when="key")
     ttk.Button(text="Other").pack(padx=10, pady=10)
     app.mainloop()
