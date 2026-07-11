@@ -21,6 +21,7 @@
 | **Deferred-config seam + `ttk.set_default_button()` pre-root setter** | New | this doc, below (Slice 5) |
 | **Localization: msgcat bug fixes + `L()` / `LocaleVar` / `set_locale`** | Fix/New | this doc, below (Slice 3) |
 | **Typography: `ttk.Fonts` + `ttk.set_global_family()` over the Tk named fonts** | New | this doc, below (Slice 4) |
+| **Validation rules grouped under a `Validation` namespace** | API | this doc, below |
 | **Light/dark theme mode (settable `theme_mode`/`toggle_theme()`)** | New | this doc, below |
 | **Theme-aware custom styles (`on_theme_change` / `@theme_aware`)** | New | this doc, below |
 | Canonical `bootstyle` grammar (closed vocab, strict mode) | API | `development/2_0_bootstyle_grammar_design.md` |
@@ -1492,3 +1493,36 @@ Inputs are unchanged (they signal focus with a border-color highlight, not a
 ring — see "Inputs: focus color on focus only").
 
 **Migration.** None (appearance only).
+
+## Validation rules grouped under a `Validation` namespace  *(API — deprecated aliases, not a hard break)*
+
+The input-validation helpers moved from flat `add_*_validation` free functions to
+a `Validation` namespace (mirroring `Fonts` / `MessageCatalog`), re-exported at the
+top level as `ttk.Validation`:
+
+| Pre-2.0 (deprecated) | 2.0 |
+|---|---|
+| `add_text_validation(w)` | `Validation.text(w)` |
+| `add_numeric_validation(w)` | `Validation.numeric(w)` |
+| `add_range_validation(w, start, end)` | `Validation.range(w, start, end)` |
+| `add_regex_validation(w, pattern)` | `Validation.regex(w, pattern)` |
+| `add_option_validation(w, options)` | `Validation.options(w, options)` |
+| `add_phonenumber_validation(w)` | `Validation.phonenumber(w)` |
+| `add_validation(w, func)` | `Validation.add(w, func)` |
+
+**Why.** The `add_X_validation` names bracketed the one varying word (`text`/
+`numeric`/`range`) with a redundant verb+noun repeated across all seven. The
+namespace drops the `_validation` suffix, groups the rules for discovery
+(`Validation.<tab>`), and — unlike a flat `validate_range()` — reads as
+*attaching a rule* rather than colliding with tkinter's existing
+`widget.validate()` (which runs a check now and returns a bool). `@validator` and
+`ValidationEvent` are unchanged (also re-exported at top level).
+
+**Migration.** The seven `add_*` functions (public through v1.9.0) stay as thin
+deprecated aliases that warn-and-forward, removed in 3.0. First-party callers
+(the built-in `ColorChooser`) are already migrated so the shipped dialogs don't
+trip the warning. `when=` semantics are identical; only the call name changes.
+
+**Scope.** `validation.py` (new `Validation` namespace + deprecated aliases),
+`__init__.py` (top-level `Validation`/`validator`/`ValidationEvent` re-export),
+`dialogs/colorchooser.py` (4 call sites migrated).
