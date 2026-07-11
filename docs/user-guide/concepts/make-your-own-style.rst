@@ -125,11 +125,18 @@ against the new theme's ``style.colors``:
    def build_pill(style):
        fill = style.colors.primary
        pill = Assets(style).rounded_rect(fill, size=(80, 28), radius=14)
-       image_element(style, "Pill.TButton.background", default=pill, border=14, sticky="nsew")
-       layout(style, "Pill.TButton", El(
-           "Pill.TButton.background", sticky="nsew",
-           children=[El("Button.label", side="left", expand=True)],
-       ))
+       image_element(
+            style,
+            "Pill.TButton.background",
+            default=pill,
+            border=14,
+            sticky="nsew"
+       )
+
+       layout(style, "Pill.TButton",
+            El("Pill.TButton.background", sticky="nsew", children=[
+                El("Button.label", side="left", expand=True)])
+       )
 
 Now ``ttk.Button(app, style="Pill.TButton")`` stays correct through
 ``theme_use`` and ``toggle_theme``. ``theme_aware`` even works at module top
