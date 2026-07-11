@@ -21,6 +21,7 @@
 | **Localization: msgcat bug fixes + `L()` / `LocaleVar` / `set_locale`** | Fix/New | this doc, below (Slice 3) |
 | **Typography: `ttk.Fonts` + `ttk.set_global_family()` over the Tk named fonts** | New | this doc, below (Slice 4) |
 | **Light/dark theme mode (settable `theme_mode`/`toggle_theme()`)** | New | this doc, below |
+| **Theme-aware custom styles (`on_theme_change` / `@theme_aware`)** | New | this doc, below |
 | Canonical `bootstyle` grammar (closed vocab, strict mode) | API | `development/2_0_bootstyle_grammar_design.md` |
 | Character-based icons removed (`ttkbootstrap.icons`) | API | `development/2_0_icon_drop_design.md` (PR #1094) |
 | Delivery API (mixins, no import-time monkey-patch) | API | handoff / PR #1075 |
@@ -83,6 +84,37 @@ toggle emits `<<ThemeChanged>>` like any `theme_use`.
 
 **Scope note.** This is a *utility*, not a widget — it fits the 2.0 "no new
 *widgets*" rule. No migration required; purely additive.
+
+---
+
+## Theme-aware custom styles: `on_theme_change` / `@theme_aware`  *(New)*
+
+**What.** A hook that re-runs a style-building callback after every theme change,
+so a hand-built ttk style tracks the active theme instead of going stale on
+switch. Serves the 2.0 goal of making user-defined custom styles easy.
+
+- `Style.on_theme_change(callback, *, call_now=True)` → register `callback(style)`
+  to run after each `theme_use`/`toggle_theme` (and once immediately by default).
+  Returns the callback, so it doubles as a decorator.
+  `Style.remove_theme_change_callback(callback)` unregisters it.
+- `ttk.on_theme_change(...)` (top level) → same, but works **before the root
+  exists**: the registration queues on the deferred-config seam and applies when
+  the app is created.
+- `ttk.theme_aware` → decorator sugar:
+
+  ```python
+  @theme_aware
+  def build_styles(style):
+      style.configure("Pill.TButton", background=style.colors.primary)
+  ```
+
+**Why.** Custom styles are configured against the *active* theme's Tcl style DB;
+a theme switch repaints built-in widgets but not styles you built by hand. This
+gives those styles a place to rebuild. A callback that raises warns and is
+skipped — one bad callback never breaks theming. Rides the existing theme walk.
+
+**Scope note.** A *utility* over the existing theme walk, not new widget
+behavior. Purely additive; no migration required.
 
 ---
 

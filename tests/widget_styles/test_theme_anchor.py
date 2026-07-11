@@ -336,3 +336,157 @@ def test_toggle_without_sibling_warns_and_noops(root):
                 style._theme_objects.pop(name, None)
         style._light_theme = style._dark_theme = None
         style.theme_use("bootstrap-light")
+
+
+# --------------------------------------------------------------------------- #
+# Theme-aware custom styles (on_theme_change / theme_aware)
+# --------------------------------------------------------------------------- #
+def test_on_theme_change_runs_now_and_on_switch(root):
+    style = root.style
+    style.theme_use("bootstrap-light")
+    seen = []
+    cb = lambda s: seen.append(s.theme_use())
+    try:
+        style.on_theme_change(cb)
+        assert seen == ["bootstrap-light"]                    # call_now
+        style.theme_use("bootstrap-dark")
+        assert seen == ["bootstrap-light", "bootstrap-dark"]  # re-ran on switch
+    finally:
+        style.remove_theme_change_callback(cb)
+
+
+def test_on_theme_change_call_now_false_skips_initial(root):
+    style = root.style
+    style.theme_use("bootstrap-light")
+    seen = []
+    cb = lambda s: seen.append(1)
+    try:
+        style.on_theme_change(cb, call_now=False)
+        assert seen == []                                     # not called now
+        style.theme_use("bootstrap-dark")
+        assert seen == [1]                                    # only on switch
+    finally:
+        style.remove_theme_change_callback(cb)
+
+
+def test_theme_use_query_does_not_fire_callbacks(root):
+    style = root.style
+    seen = []
+    cb = lambda s: seen.append(1)
+    try:
+        style.on_theme_change(cb, call_now=False)
+        style.theme_use()                                     # no-arg query
+        assert seen == []
+    finally:
+        style.remove_theme_change_callback(cb)
+
+
+def test_on_theme_change_dedups_same_callback(root):
+    style = root.style
+    cb = lambda s: None
+    try:
+        style.on_theme_change(cb, call_now=False)
+        style.on_theme_change(cb, call_now=False)
+        assert style._theme_change_callbacks.count(cb) == 1
+    finally:
+        style.remove_theme_change_callback(cb)
+
+
+def test_bad_callback_warns_but_does_not_break_theming(root):
+    style = root.style
+    style.theme_use("bootstrap-light")
+    good = []
+    boom = lambda s: (_ for _ in ()).throw(RuntimeError("boom"))
+    keep = lambda s: good.append(s.theme_use())
+    try:
+        style.on_theme_change(boom, call_now=False)
+        style.on_theme_change(keep, call_now=False)
+        with pytest.warns(UserWarning, match="boom"):
+            style.theme_use("bootstrap-dark")
+        assert style.theme_use() == "bootstrap-dark"          # switch still happened
+        assert good == ["bootstrap-dark"]                     # other callback still ran
+    finally:
+        style.remove_theme_change_callback(boom)
+        style.remove_theme_change_callback(keep)
+
+
+def test_theme_aware_decorator_returns_and_registers(root):
+    root.theme_use("bootstrap-light")
+    seen = []
+
+    @ttk.theme_aware
+    def build(style):
+        seen.append(style.theme_use())
+
+    try:
+        assert build.__name__ == "build"                      # returns the function
+        assert seen == ["bootstrap-light"]                    # ran once now
+        root.theme_use("bootstrap-dark")
+        assert seen[-1] == "bootstrap-dark"
+    finally:
+        root.style.remove_theme_change_callback(build)
+
+
+def test_call_now_does_not_double_fire_on_reregister(root):
+    style = root.style
+    style.theme_use("bootstrap-light")
+    calls = []
+    cb = lambda s: calls.append(1)
+    try:
+        style.on_theme_change(cb, call_now=True)   # runs once
+        style.on_theme_change(cb, call_now=True)   # duplicate -> must NOT run again
+        assert calls == [1]
+    finally:
+        style.remove_theme_change_callback(cb)
+
+
+def test_callback_calling_theme_use_does_not_recurse(root):
+    style = root.style
+    style.theme_use("bootstrap-light")
+    ran = []
+
+    def cb(s):
+        ran.append(1)
+        s.theme_use("nord-dark")   # nested switch inside the callback
+
+    try:
+        style.on_theme_change(cb, call_now=False)
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")   # a recursion-in-callback would warn -> error here
+            style.theme_use("nord-light")    # fires cb, which re-enters theme_use
+        assert ran == [1]                     # guard blocks re-entry: callback ran once
+        assert style.theme_use() == "nord-dark"   # the nested switch still took effect
+    finally:
+        style.remove_theme_change_callback(cb)
+        style.theme_use("bootstrap-light")
+
+
+def test_top_level_remove_theme_change_callback(root):
+    style = root.style
+    calls = []
+    cb = lambda s: calls.append(1)
+    ttk.on_theme_change(cb, call_now=False)
+    ttk.remove_theme_change_callback(cb)
+    style.theme_use("nord-dark")
+    assert calls == []                        # removed -> never fires
+    style.theme_use("bootstrap-light")
+
+
+def test_pre_root_registration_defers_then_applies(root, monkeypatch):
+    # the trickiest branch: registering before a root exists queues on the
+    # deferred-config seam and applies when the app is created.
+    from ttkbootstrap.utils import config
+    style = root.style
+    cb = lambda s: None
+    key = f"on_theme_change:{id(cb)}"
+    try:
+        monkeypatch.setattr(config, "_style", lambda: None)   # pretend no root yet
+        config.on_theme_change(cb, call_now=True)
+        assert key in config._pending                          # queued, not applied
+        assert cb not in style._theme_change_callbacks
+        monkeypatch.undo()                                     # root now exists
+        config.flush_pending_config()                          # the App-create flush
+        assert cb in style._theme_change_callbacks             # now live
+    finally:
+        style.remove_theme_change_callback(cb)
+        config._pending.pop(key, None)

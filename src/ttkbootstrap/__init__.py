@@ -89,6 +89,9 @@ from ttkbootstrap.utils import (
     contrast_color,
     conform_color_model,
     set_default_button,
+    on_theme_change,
+    theme_aware,
+    remove_theme_change_callback,
     Fonts,
     set_global_family,
 )
@@ -317,6 +320,9 @@ __all__ = [
     "contrast_color",
     "conform_color_model",
     "set_default_button",
+    "on_theme_change",
+    "theme_aware",
+    "remove_theme_change_callback",
     "Fonts",
     "set_global_family",
 
