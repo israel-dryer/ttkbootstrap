@@ -109,8 +109,8 @@ the ``icon=`` keyword instead of building the image yourself:
 
    ttk.Button(app, text="Save", icon="save", bootstyle="success").pack()
 
-Keeping a style across theme switches
--------------------------------------
+Creating theme-aware styles
+---------------------------
 
 A custom style is built against the **active** theme, so a theme switch repaints
 the built-in widgets but leaves your style untouched — its colors go stale. Wrap
