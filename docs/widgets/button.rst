@@ -39,7 +39,7 @@ without hard-coding a color.
 Variants
 --------
 
-Combine a color with a modifier to change visual weight — ``outline``, ``link``,
+Combine a color with a variant to change visual weight — ``outline``, ``link``,
 or ``ghost``:
 
 .. code-block:: python
@@ -54,7 +54,16 @@ Colors
 
 The nine semantic colors — ``primary``, ``secondary``, ``success``, ``info``,
 ``warning``, ``danger``, ``light``, ``dark``, and ``neutral`` — combine with any
-variant. A bare ``Button`` with no ``bootstyle`` uses the ``neutral`` default.
+variant. A bare ``Button`` with no ``bootstyle`` uses the ``neutral`` default (as
+does ``Menubutton``). To restore the pre-2.0 accented default, set it **before**
+the app is created — the setting is consumed when a button's style is first
+built:
+
+.. code-block:: python
+
+   import ttkbootstrap as ttk
+
+   app = ttk.App(default_button="primary")   # or ttk.set_default_button("primary")
 
 States
 ------
