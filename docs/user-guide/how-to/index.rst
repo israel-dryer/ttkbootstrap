@@ -28,13 +28,17 @@ Building interfaces
 Interaction and data
 ---------------------
 
-- **Message boxes and dialogs** — ``Messagebox``/``Querybox`` and the shipped
-  dialogs.
+- **Message boxes and dialogs** — for ``Messagebox``/``Querybox`` and the shipped
+  pickers, see the :doc:`Dialogs guide </user-guide/feature-guides/dialogs>`.
 - **Validate a form** — attach validation rules and read the result.
 - :doc:`Multiple windows & modal dialogs <multiple-windows>` — a second
   ``Toplevel``, a modal dialog that returns a value, and the close button.
 - **Background work without freezing the UI** — ``after`` and worker threads,
   updating widgets safely from the main loop.
+- :doc:`Clipboard & selection <clipboard>` — copy and paste text, and read the
+  current selection.
+- :doc:`Handle callback errors <error-handling>` — take over
+  ``report_callback_exception`` and deal with ``TclError``.
 - :doc:`Feedback: bell & busy <feedback>` — a system beep and a busy overlay that
   blocks a window while it works.
 

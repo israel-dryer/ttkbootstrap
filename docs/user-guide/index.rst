@@ -149,6 +149,13 @@ Each subsystem, end to end — its concepts and its usage in one place.
       ``App``/``Toplevel``, focus & modality, positioning, application icons, and
       DPI scaling.
 
+   .. grid-item-card:: Dialogs
+      :link: feature-guides/dialogs
+      :link-type: doc
+
+      ``Messagebox`` and ``Querybox``, the date/font/color pickers, ``filedialog``,
+      and what each returns.
+
    .. grid-item-card:: Theming
       :link: feature-guides/theming
       :link-type: doc
@@ -213,6 +220,7 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way. See the
    feature-guides/events
    feature-guides/icons
    feature-guides/windows
+   feature-guides/dialogs
    feature-guides/theming
    feature-guides/working-with-color
    feature-guides/make-your-own-style
@@ -225,4 +233,6 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way. See the
    how-to/index
    how-to/working-with-images
    how-to/feedback
+   how-to/clipboard
+   how-to/error-handling
    how-to/multiple-windows
