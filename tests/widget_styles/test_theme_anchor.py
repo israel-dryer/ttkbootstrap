@@ -170,9 +170,8 @@ def test_legacy_adapter_preserves_identity_regenerates_plumbing():
 
 
 def test_user_theme_spec_builds_and_registers(root):
-    # A USER_THEME_SPECS-style anchor spec (what ttkcreator persists) builds a
-    # Theme and registers usable light/dark variants -- the engine's user-theme
-    # load path.
+    # An anchor spec (what ttkcreator's exported Theme(...).register() snippet
+    # carries) builds a Theme and registers usable light/dark variants.
     style = root.style
     spec = {
         "primary": "#2780e3", "success": "#3fb618", "info": "#9954bb",
