@@ -1,21 +1,27 @@
 How styling is delivered
 ========================
 
-In 1.x, ``import ttkbootstrap`` **monkey-patched tkinter** at import time, so
-every ``ttk`` widget grew a ``bootstyle`` keyword — even widgets you created
-through plain ``tkinter.ttk``. 2.0 stops doing that. The styling API is delivered
-through **concrete widget subclasses** instead, so importing the library mutates
-nothing, and the widgets keep real signatures and docstrings your editor can see.
+ttkbootstrap delivers its styling API through **concrete widget subclasses**.
+``ttk.Button``, ``ttk.Entry``, ``ttk.Combobox``, … are real classes that carry
+the ``bootstyle`` keyword (via :class:`~ttkbootstrap.BootMixin`), so you build
+widgets from ``ttkbootstrap`` and style them inline. Importing the library
+changes nothing about tkinter — the widgets keep real signatures and docstrings
+your editor can see.
 
-This changes one thing in practice: to get ``bootstyle``, use ttkbootstrap's
-widget classes rather than ``tkinter.ttk``'s.
+The one rule to internalize: to get ``bootstyle``, use ttkbootstrap's widget
+classes rather than ``tkinter.ttk``'s.
+
+.. admonition:: Coming from 1.x
+   :class: note
+
+   1.x monkey-patched tkinter at import so *every* ttk widget grew ``bootstyle``,
+   even ones built through plain ``tkinter.ttk``. 2.0 patches nothing at import.
+   To opt back into that global behavior, see `The global API (opt-in)`_.
 
 Use ttkbootstrap's widgets
 --------------------------
 
-``ttk.Button``, ``ttk.Entry``, ``ttk.Combobox``, … are real subclasses that carry
-the ``bootstyle`` keyword (via :class:`~ttkbootstrap.BootMixin`). Import
-``ttkbootstrap as ttk`` and build widgets from it:
+Import ``ttkbootstrap as ttk`` and build widgets from it:
 
 .. code-block:: python
 
@@ -87,10 +93,9 @@ there are two escape hatches:
 The global API (opt-in)
 -----------------------
 
-If you are migrating a 1.x app and don't want to reroute every import,
-``enable_global_api()`` restores the old behavior: *vanilla* ``tkinter`` and
-``tkinter.ttk`` widgets accept ``bootstyle``, and everything gains fluent
-geometry. Call it once, before creating widgets:
+``enable_global_api()`` makes *vanilla* ``tkinter`` and ``tkinter.ttk`` widgets
+accept ``bootstyle`` and gain fluent geometry, without subclassing. Call it once,
+before creating widgets:
 
 .. code-block:: python
 
