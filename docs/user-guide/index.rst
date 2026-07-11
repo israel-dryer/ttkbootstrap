@@ -43,8 +43,8 @@ Foundations
 -----------
 
 New to tkinter? These pages cover the mental models everything else builds on —
-how an app runs, how widgets are arranged, how they bind to your data, and how
-they respond to input.
+how an app runs, how widgets are arranged, how they bind to your data, how they
+respond to input, and how ttkbootstrap styles them.
 
 .. grid:: 1 2 2 2
    :gutter: 3
@@ -81,52 +81,19 @@ they respond to input.
 
       ``command``, ``bind`` and event objects, virtual events, and ``after``.
 
-Concepts
---------
-
-The styling core. **Start with the bootstyle grammar**, then read the rest in
-any order.
-
-.. grid:: 1 2 2 2
-   :gutter: 3
-
-   .. grid-item-card:: The bootstyle grammar
-      :link: concepts/bootstyle-grammar
+   .. grid-item-card:: Styling with bootstyle
+      :link: foundations/bootstyle-grammar
       :link-type: doc
 
-      **Start here.** The canonical grammar for styling any widget, with the
-      full reference table.
+      The canonical grammar for styling any widget, with the full reference
+      table.
 
    .. grid-item-card:: How styling is delivered
-      :link: concepts/delivery-model
+      :link: foundations/delivery-model
       :link-type: doc
 
       How the ``bootstyle`` API reaches your widgets — the blessed subclasses,
       ``enable_global_api``, ``bootify``, and ``apply_bootstyle``.
-
-   .. grid-item-card:: Theming
-      :link: concepts/theming
-      :link-type: doc
-
-      The semantic-anchor color model and the built-in light/dark themes.
-
-   .. grid-item-card:: Working with color
-      :link: concepts/working-with-color
-      :link-type: doc
-
-      ``style.colors`` and ramp addressing (``c.primary[300]``).
-
-   .. grid-item-card:: Make your own style
-      :link: concepts/make-your-own-style
-      :link-type: doc
-
-      The custom style-construction toolkit — assets, layouts, and icons.
-
-   .. grid-item-card:: Make your own theme
-      :link: concepts/make-your-own-theme
-      :link-type: doc
-
-      The ``Theme`` API and the ttkcreator editor.
 
 Feature guides
 --------------
@@ -182,6 +149,30 @@ Each subsystem, end to end — its concepts and its usage in one place.
       ``App``/``Toplevel``, focus & modality, positioning, application icons, and
       DPI scaling.
 
+   .. grid-item-card:: Theming
+      :link: feature-guides/theming
+      :link-type: doc
+
+      Choosing and switching themes, light/dark, and the built-in catalog.
+
+   .. grid-item-card:: Working with color
+      :link: feature-guides/working-with-color
+      :link-type: doc
+
+      ``style.colors`` and ramp addressing (``c.primary[300]``).
+
+   .. grid-item-card:: Make your own style
+      :link: feature-guides/make-your-own-style
+      :link-type: doc
+
+      The custom style-construction toolkit — assets, layouts, and icons.
+
+   .. grid-item-card:: Make your own theme
+      :link: feature-guides/make-your-own-theme
+      :link-type: doc
+
+      The ``Theme`` API and the ttkcreator editor.
+
 How-To
 ------
 
@@ -208,17 +199,8 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way. See the
    foundations/layout-with-pack
    foundations/state-and-variables
    foundations/events-and-callbacks
-
-.. toctree::
-   :hidden:
-   :caption: Concepts
-
-   concepts/bootstyle-grammar
-   concepts/delivery-model
-   concepts/theming
-   concepts/working-with-color
-   concepts/make-your-own-style
-   concepts/make-your-own-theme
+   foundations/bootstyle-grammar
+   foundations/delivery-model
 
 .. toctree::
    :hidden:
@@ -231,6 +213,10 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way. See the
    feature-guides/events
    feature-guides/icons
    feature-guides/windows
+   feature-guides/theming
+   feature-guides/working-with-color
+   feature-guides/make-your-own-style
+   feature-guides/make-your-own-theme
 
 .. toctree::
    :hidden:

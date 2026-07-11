@@ -137,7 +137,7 @@ variants read better at small sizes.
    indicator, say), use ``icon_element``, which builds a ttk image element whose
    per-state image is a glyph. This works directly with ttk's element and layout
    model; see :doc:`Make your own style
-   </user-guide/concepts/make-your-own-style>` for the style-construction
+   </user-guide/feature-guides/make-your-own-style>` for the style-construction
    toolkit, and the `tkinter.ttk styling
    <https://docs.python.org/3/library/tkinter.ttk.html#ttk-styling>`__ reference
    for the underlying concepts.

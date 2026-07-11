@@ -115,7 +115,7 @@ ttkbootstrap emits two you will use:
    For rebuilding a **custom style** after a theme switch, ttkbootstrap offers
    :func:`~ttkbootstrap.on_theme_change` and the ``@theme_aware`` decorator,
    which are easier than a raw ``<<ThemeChanged>>`` binding. See
-   :doc:`Make your own style </user-guide/concepts/make-your-own-style>`.
+   :doc:`Make your own style </user-guide/feature-guides/make-your-own-style>`.
 
 Generating events
 -----------------

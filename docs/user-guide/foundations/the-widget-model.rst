@@ -58,7 +58,7 @@ are the place to look.
    ``bootstyle`` is just another option. Everything you already know about
    setting options applies — ``ttk.Button(app, text="Save", bootstyle="success")``
    or ``btn.configure(bootstyle="success")``. That's the whole styling API; see
-   :doc:`Styling with bootstyle </user-guide/concepts/bootstyle-grammar>`.
+   :doc:`Styling with bootstyle </user-guide/foundations/bootstyle-grammar>`.
 
 States (the ttk way)
 --------------------

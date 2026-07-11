@@ -833,11 +833,18 @@ one home per widget and avoids a second widget-docs axis in the User Guide.
 
 1. **Fundamentals core** — *How a tkinter app runs*, *The widget model*, and the
    *Arranging widgets* flesh-out. (Unblocks everything; biggest gap.)
-2. **Recompose the styling/theming pages** into the new shape — relocate
-   *bootstyle grammar* + *delivery* to Fundamentals; split the *How theming works*
-   concept out; fold today's *Theming*/*Working with color*/*Make your own theme*
-   into the **Theming** feature guide; *Make your own style* → **Custom styles**
-   guide. (Mostly moves of authored content; low risk, high IA payoff.)
+2. **Recompose the styling/theming pages** — **DONE 2026-07-11 (Concepts band
+   dissolved).** `git mv`'d all 6 concepts pages into their band dirs (filenames
+   kept): *bootstyle-grammar* (H1 → **"Styling with bootstyle"**) + *delivery-model*
+   → **Fundamentals** (styling-essentials cluster, after the tkinter mechanics);
+   *theming* / *working-with-color* / *make-your-own-style* / *make-your-own-theme*
+   → **Feature guides**. All ~17 cross-refs repointed; index rewired (Concepts
+   band gone); `-W` clean. **Deferred refinements** (not blocking): (a) extract a
+   short *How theming works* essential into Fundamentals (theming concept still
+   lives in the theming feature guide's opening); (b) consolidate *theming* +
+   *working-with-color* + *make-your-own-theme* into one **Theming** guide (kept
+   as 3 separate feature pages for now); (c) optional slug renames to match titles
+   (`make-your-own-style` → `custom-styles`, etc.).
 3. **Finish the essentials strand** — winfo ✓ / cursors ✓ done; add clipboard and
    error-handling How-Tos.
 4. **Author the feature-guide stubs** — Typography, Localization, Validation;

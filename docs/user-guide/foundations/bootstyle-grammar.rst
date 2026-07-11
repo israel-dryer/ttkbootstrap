@@ -1,5 +1,5 @@
-The bootstyle grammar
-=====================
+Styling with bootstyle
+======================
 
 Every ttkbootstrap widget is styled through one keyword: ``bootstyle``. You give
 it a short string that names *intent* — a color, a variant, a surface — and the
@@ -161,7 +161,7 @@ Beyond the grammar
 
 When you need a look the grammar can't name — a bespoke color, a custom element
 layout — you register your own ttk style and apply it with ``style=``. See
-:doc:`Make your own style <make-your-own-style>`.
+:doc:`Make your own style </user-guide/feature-guides/make-your-own-style>`.
 
 The rest of this page is the full vocabulary and every registered widget family,
 generated from the closed vocabulary and the builder registry.
