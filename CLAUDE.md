@@ -268,6 +268,32 @@ iterate skeleton content/IA (author has changes in mind), then §11 sub-PR 2 =
 reference generators. See `development/2_0_handoff.md` top entry for the full spike
 detail.
 
+**Docs H — progress since the spike (through 2026-07-11, all MERGED into `2.0`).**
+#1159 reference generators (per-family Style Reference + rST BootStyle table via
+`tools/`) + unified Widgets catalog + the `bootstyle` spaces/`@surface` grammar
+sweep; #1162 theme-API consolidation (`theme_mode`/`toggle_theme`); #1163
+theme-aware custom styles (`on_theme_change`/`@theme_aware`); #1164 Concepts band;
+#1165 removed the in-library user-theme store (ttkcreator now exports a
+`Theme(...).register()` snippet); #1166 Foundations band + tkinter **event
+reference** + images how-to; **#1167 (merge `4f73aaa4`) the FUNDAMENTALS band +
+the Concepts-band DISSOLUTION.** Governing rule now:
+[[feedback_docs_teach_tkinter_ttkbootstrap_dialect]] — **the docs teach tkinter
+itself, in the ttkbootstrap dialect** (a self-sufficient learning source; teach,
+don't defer). **Bands sort by DEPTH:** Getting Started · **Fundamentals** ·
+Feature guides · How-To — **there is NO "Concepts" band** (dissolved: styling
+essentials → Fundamentals; deep styling/theming → Feature guides). **Variables &
+events are FEATURES** (Foundations gives the on-ramp; robust `Variables`/`Events`
+feature guides own the depth). Author was firm: **teach layout/mechanics
+BY BUILDING, never option-tours.** The full IA (charters, §14 curriculum map,
+tkinter-surface coverage audit + supersession map, screenshot-placeholder
+convention) lives in `development/2_0_docs_design.md`. **NEXT (content authoring,
+fresh branch off `2.0`):** the 3 feature-guide **stubs** (Typography/Localization/
+Validation); the **Dialogs** guide (incl. stdlib `filedialog`) + essentials
+How-Tos (clipboard, error handling); the **Build-your-first-app** tutorial;
+**Widgets-catalog** depth (usage-first per design §5a). Screenshots are a later
+slice (placeholders are in place). See `development/2_0_handoff.md` top entry for
+the full current state.
+
 ## Repository layout
 
 ```
