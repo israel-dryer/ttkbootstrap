@@ -4,9 +4,9 @@
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
 _Last updated: 2026-07-11 (**Docs Workstream H — the FUNDAMENTALS band + Concepts
-dissolution. PR #1167 OPEN against `2.0`** (branch
-`docs/2.0-fundamentals-and-ia-recompose`; 6 commits; docs-only; every example
-verified headlessly; full-site `sphinx -b html -W` clean). **Major IA reshape this
+dissolution. PR #1167 MERGED into `2.0`** (merge `4f73aaa4`; branch deleted;
+docs-only; every example verified headlessly; full-site `sphinx -b html -W`
+clean). **Major IA reshape this
 session, all captured in `development/2_0_docs_design.md` (§3 charters + §14
 map):** governing principle **"teach tkinter in the ttkbootstrap dialect"** (docs
 are a self-sufficient tkinter learning source; teach-don't-defer — supersedes the
