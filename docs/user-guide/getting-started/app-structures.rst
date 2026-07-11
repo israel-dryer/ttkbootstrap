@@ -20,6 +20,6 @@ guide covers how to structure a real application:
 
 .. seealso::
 
-   :doc:`Windows, icons & high-DPI </user-guide/feature-guides/windows>` for the
+   :doc:`Windows & high-DPI </user-guide/feature-guides/windows>` for the
    full ``App``/``Toplevel`` surface (positioning, icons, ``window_type``,
    light/dark mode).

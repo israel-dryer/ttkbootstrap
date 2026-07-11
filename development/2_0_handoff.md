@@ -3,6 +3,118 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
+_Last updated: 2026-07-11 (**Docs Workstream H — the FUNDAMENTALS band + Concepts
+dissolution. PR #1167 OPEN against `2.0`** (branch
+`docs/2.0-fundamentals-and-ia-recompose`; 6 commits; docs-only; every example
+verified headlessly; full-site `sphinx -b html -W` clean). **Major IA reshape this
+session, all captured in `development/2_0_docs_design.md` (§3 charters + §14
+map):** governing principle **"teach tkinter in the ttkbootstrap dialect"** (docs
+are a self-sufficient tkinter learning source; teach-don't-defer — supersedes the
+old "on-ramp not tutorial" guardrail); **bands sort by DEPTH/altitude** (Getting
+Started · Fundamentals · Feature guides · How-To); **the "Concepts" band is
+DISSOLVED** — styling essentials (*Styling with bootstyle*, *How styling is
+delivered*) → Fundamentals; deep styling/theming (*theming*/*working-with-color*/
+*make-your-own-style*/*make-your-own-theme*) → Feature guides. **Variables & events
+are FEATURES** (author call): Foundations touches them at essential level, robust
+**Variables**/**Events** feature guides own the depth. **Content authored:** the
+Fundamentals band end-to-end, teach-BY-BUILDING (author was firm: *no option
+tours*) — *How a tkinter app runs*, *The widget model*, *Arranging widgets* (hub +
+grid-first *Layout with grid* + *Layout with pack* tutorials), trimmed *State &
+variables*/*Events & callbacks* on-ramps; + the tkinter-essentials strand
+(`winfo`/`cursors` reference, `feedback`/`multiple-windows` how-tos, `icons`
+guide). **Build-safe screenshot placeholders** (described admonitions, `:class:
+screenshot-placeholder`) added to the visual pages (layout tutorials + bootstyle/
+theming/widget-model/images/icons) — the real captures are a later slice (§7).
+**Coverage audit vs the real tkinter surface** (§14): supersession map (teach the
+ttkbootstrap version — Messagebox/Querybox/ColorChooserDialog/FontDialog/
+ScrolledText — vs the styled tk widget; only `filedialog` stays stdlib), gaps
+(`filedialog`, `Listbox`, tk-only Text/Canvas/Menu, keyboard-nav home). New memory:
+[[feedback_docs_teach_tkinter_ttkbootstrap_dialect]],
+[[project_arranging_widgets_docs_flesh_out]]. **NEXT (all content authoring, fresh
+branch off `2.0`):** the 3 feature-guide **stubs** (Typography/Localization/
+Validation, robust like Variables/Events); the **Dialogs** guide (incl.
+`filedialog`) + essentials How-Tos (clipboard, error handling); the **Build-your-
+first-app** tutorial; **Widgets-catalog** depth (usage-first per §5a — the button
+prototype is thin; model on bootstack). **Deferred recompose refinements** (§14,
+non-blocking): extract a short *How theming works* into Fundamentals; consolidate
+theming+color+custom-theme into one Theming guide; optional slug renames. **Env:**
+Sphinx 9.1 in `.venv-home` — `PYTHONPATH=src .venv-home/Scripts/python.exe -m
+sphinx -b html -W --keep-going docs <out>`. User WIP `gallery/collapsing_frame.py`
+LEFT UNTOUCHED. Prior entry follows.**)_
+
+_Last updated: 2026-07-11 (**Docs Workstream H — the `winfo_*` widget & screen
+info Reference page (the "tkinter essentials" strand, design §12 roadmap — the
+highest-value next item).** New single-page catalog `docs/reference/winfo.rst`
+grouping all 49 `winfo_*` methods into task-oriented tables — Identity &
+hierarchy, Position & size, Pointer, Screen & display, Unit & color conversion,
+and a compact "Rarely needed" table for the X11/visual/atom introspection — each
+row **ground-truthed** live (return types + values captured from a real root:
+e.g. `winfo_parent`/`winfo_name` return path-name *strings* not objects,
+`winfo_children`/`winfo_toplevel` return *widgets*, `winfo_ismapped`/`viewable`/
+`exists` return int 0/1, `winfo_rgb` returns 16-bit triples, `winfo_pixels`
+honors DPI). Headline gotcha called out in a `.. warning::`: **`winfo_width`/
+`winfo_height` return `1` before the widget is drawn** — force a layout pass with
+`update_idletasks()` (or read `winfo_reqwidth`/`reqheight`, valid immediately).
+One runnable Example (center a window) + a `.. tip::` pointing at
+`Window.place_window_center()`. Wired in as a **4th card + toctree entry** in
+`reference/index.rst`. Same Reference=names / Guide=usage split as the events
+strand; cross-refs to the events guide (class bindings) and the Windows feature
+guide. **Build:** `sphinx -b html -W --keep-going` → **zero warnings** (~59
+source files / rendered `reference/winfo`); the center-window Example verified
+headlessly against a live root (`update_idletasks` → real w,h; `reqwidth`
+matches; `place_window_center` present). Fixed three would-be broken xrefs before
+building (invented `events-binding-scope` label → `:doc:` the events guide;
+non-existent `how-to/windows-icons-dpi` → the real `feature-guides/windows`;
+invalid `:meth:` with a doc target → plain code + `:doc:` link).
+**Also this session (author-flagged mid-review):**
+**(a) NEW Icons feature guide** `docs/user-guide/feature-guides/icons.rst` — the
+author noted the images How-To led with the low-level `apply_icon`, when
+`icon="gear-fill"` **works out of the box** (the `BootMixin` forwards
+`icon=`/`icon_size=`/`icon_only=` to `apply_icon`; also settable via
+`configure(icon=...)`, cleared with `configure(icon=None)`). New full guide (not a
+stub) covering the whole surface: `icon=` (lead), sizing + `icon_only=`,
+change/remove, per-state glyphs via `apply_icon(states={...})`, the imperative
+`apply_icon` (+`compound=`), the **static** `Icon(name,size,color)` image handle
+(explicitly contrasted: NOT theme/state-aware, a baked snapshot), glyph-name
+discovery (**full 2,078-glyph Bootstrap Icons set** vendored at
+`src/ttkbootstrap/assets/icons/bootstrap.ttf` + `glyphmap.json`; names = the
+`icons.getbootstrap.com` names), and an Advanced admonition pointing at
+`icon_element` + make-your-own-style. Added as the **5th Feature-guides card +
+toctree entry**; every example verified headlessly. The images How-To's "Themed
+glyph icons" section was **retrimmed to lead with `icon=`** and point here.
+**(b) Flattened the How-To nav** — the author spotted "how-to nested in a how-to":
+the User-Guide toctree had a `:caption: How-To` whose only entry was
+`how-to/index` (page title also "How-To") which carried its OWN child toctree
+(`working-with-images`) → sidebar showed *How-To (caption) → How-To (expandable) →
+Working with images*. Fix: removed the child toctree from `how-to/index.rst` and
+listed `how-to/working-with-images` **directly under the caption** (sibling of the
+index), matching the other four bands. Verified in the built nav HTML: flat
+siblings, no nesting. **Env:** docsenv
+is gone (session-scoped); **Sphinx 9.1 lives in `.venv-home`** — build with
+`PYTHONPATH=src .venv-home/Scripts/python.exe -m sphinx -b html -W --keep-going
+docs <out>`. Whole-site rebuild after all the above: **`-W` clean, exit 0.** User
+WIP `gallery/collapsing_frame.py` + dialog WIP LEFT UNTOUCHED.
+**(c) Cursors strand (design §12, next after winfo).** NEW Reference page
+`docs/reference/cursors.rst` — a curated **Common cursors** table (meaning + use)
++ the full **portable** X11 name list (`.. hlist::`, 4-col) + the **Windows-
+specific** set, macOS linked out to the Tk `cursor` man page. Ground-truthed: all
+79 portable + 9 Windows names accepted on this box (Windows Tk accepts *any*
+name and falls back silently — documented as a `.. warning::`); `cursor=""`
+resets. Added as the **5th Reference card + toctree**. NEW How-To
+`docs/user-guide/how-to/feedback.rst` (**Feedback: bell & busy**) — `bell()`, the
+`tk_busy_hold`/`tk_busy_forget`/`tk_busy_status` overlay (blocks input + wait
+cursor; `update_idletasks()` before blocking; `try/finally`; vs bare `cursor=`;
+short `busy_*` aliases are 3.13+; long work still needs a thread). Wired into the
+How-To index (prose bullet + toctree sibling); examples verified headlessly;
+whole-site `-W` clean, exit 0. Title polish: the winfo page is titled just
+**"Widget & screen info"** (dropped the `(winfo_*)` suffix per author — messy;
+`winfo_*` kept in the lede).
+**NEXT (design §12 order, cursors now done):** the remaining **usage guides** —
+focus/modality/lifecycle (`focus`/`grab`/`lift`/`lower`/`destroy`/
+`WM_DELETE_WINDOW`) folded into the Windows feature guide; then How-Tos for
+clipboard/selection (`clipboard_*`/`selection_*`) and error handling
+(`report_callback_exception`, `TclError`). Prior entry follows.**)_
+
 _Last updated: 2026-07-11 (**Docs Workstream H — Foundations band + a NEW
 "tkinter essentials" reference/guide strand (events + images). MERGED into `2.0`
 as PR #1166; docs-only, `-W` clean.**

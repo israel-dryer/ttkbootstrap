@@ -43,17 +43,30 @@ Foundations
 -----------
 
 New to tkinter? These pages cover the mental models everything else builds on —
-how widgets are arranged, how they bind to your data, and how they respond to
-input.
+how an app runs, how widgets are arranged, how they bind to your data, how they
+respond to input, and how ttkbootstrap styles them.
 
 .. grid:: 1 2 2 2
    :gutter: 3
+
+   .. grid-item-card:: How a tkinter app runs
+      :link: foundations/how-a-tkinter-app-runs
+      :link-type: doc
+
+      The event loop, ``mainloop``, callbacks, ``after``, and not freezing the UI.
+
+   .. grid-item-card:: The widget model
+      :link: foundations/the-widget-model
+      :link-type: doc
+
+      The widget tree, options (``configure``/``cget``), and ttk states.
 
    .. grid-item-card:: Arranging widgets
       :link: foundations/arranging-widgets
       :link-type: doc
 
-      ``pack``, ``grid``, and ``place`` — the layout model and when to use each.
+      The three geometry managers and when to use each — start here, then the
+      grid and pack tutorials.
 
    .. grid-item-card:: State & variables
       :link: foundations/state-and-variables
@@ -68,58 +81,24 @@ input.
 
       ``command``, ``bind`` and event objects, virtual events, and ``after``.
 
-Concepts
---------
-
-The styling core. **Start with the bootstyle grammar**, then read the rest in
-any order.
-
-.. grid:: 1 2 2 2
-   :gutter: 3
-
-   .. grid-item-card:: The bootstyle grammar
-      :link: concepts/bootstyle-grammar
+   .. grid-item-card:: Styling with bootstyle
+      :link: foundations/bootstyle-grammar
       :link-type: doc
 
-      **Start here.** The canonical grammar for styling any widget, with the
-      full reference table.
+      The canonical grammar for styling any widget, with the full reference
+      table.
 
    .. grid-item-card:: How styling is delivered
-      :link: concepts/delivery-model
+      :link: foundations/delivery-model
       :link-type: doc
 
       How the ``bootstyle`` API reaches your widgets — the blessed subclasses,
       ``enable_global_api``, ``bootify``, and ``apply_bootstyle``.
 
-   .. grid-item-card:: Theming
-      :link: concepts/theming
-      :link-type: doc
-
-      The semantic-anchor color model and the built-in light/dark themes.
-
-   .. grid-item-card:: Working with color
-      :link: concepts/working-with-color
-      :link-type: doc
-
-      ``style.colors`` and ramp addressing (``c.primary[300]``).
-
-   .. grid-item-card:: Make your own style
-      :link: concepts/make-your-own-style
-      :link-type: doc
-
-      The custom style-construction toolkit — assets, layouts, and icons.
-
-   .. grid-item-card:: Make your own theme
-      :link: concepts/make-your-own-theme
-      :link-type: doc
-
-      The ``Theme`` API and the ttkcreator editor.
-
 Feature guides
 --------------
 
-Each subsystem, end to end — the utilities that work on plain tkinter, not just
-ttkbootstrap widgets.
+Each subsystem, end to end — its concepts and its usage in one place.
 
 .. grid:: 1 2 2 2
    :gutter: 3
@@ -142,11 +121,57 @@ ttkbootstrap widgets.
 
       ``add_*_validation`` helpers and the ``@validator`` decorator.
 
-   .. grid-item-card:: Windows, icons & high-DPI
+   .. grid-item-card:: Variables
+      :link: feature-guides/variables
+      :link-type: doc
+
+      Variable types, traces (read/write/unset), computed fields, and
+      ``LocaleVar``.
+
+   .. grid-item-card:: Events
+      :link: feature-guides/events
+      :link-type: doc
+
+      The binding system in depth — scope & bindtags, stopping events, and
+      dispatching your own virtual events.
+
+   .. grid-item-card:: Icons
+      :link: feature-guides/icons
+      :link-type: doc
+
+      Theme-aware Bootstrap Icons glyphs — the ``icon=`` keyword, ``apply_icon``,
+      and the standalone ``Icon`` image.
+
+   .. grid-item-card:: Windows & high-DPI
       :link: feature-guides/windows
       :link-type: doc
 
-      ``App``/``Toplevel``, positioning, application icons, and DPI scaling.
+      ``App``/``Toplevel``, focus & modality, positioning, application icons, and
+      DPI scaling.
+
+   .. grid-item-card:: Theming
+      :link: feature-guides/theming
+      :link-type: doc
+
+      Choosing and switching themes, light/dark, and the built-in catalog.
+
+   .. grid-item-card:: Working with color
+      :link: feature-guides/working-with-color
+      :link-type: doc
+
+      ``style.colors`` and ramp addressing (``c.primary[300]``).
+
+   .. grid-item-card:: Make your own style
+      :link: feature-guides/make-your-own-style
+      :link-type: doc
+
+      The custom style-construction toolkit — assets, layouts, and icons.
+
+   .. grid-item-card:: Make your own theme
+      :link: feature-guides/make-your-own-theme
+      :link-type: doc
+
+      The ``Theme`` API and the ttkcreator editor.
 
 How-To
 ------
@@ -167,20 +192,15 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way. See the
    :hidden:
    :caption: Foundations
 
+   foundations/how-a-tkinter-app-runs
+   foundations/the-widget-model
    foundations/arranging-widgets
+   foundations/layout-with-grid
+   foundations/layout-with-pack
    foundations/state-and-variables
    foundations/events-and-callbacks
-
-.. toctree::
-   :hidden:
-   :caption: Concepts
-
-   concepts/bootstyle-grammar
-   concepts/delivery-model
-   concepts/theming
-   concepts/working-with-color
-   concepts/make-your-own-style
-   concepts/make-your-own-theme
+   foundations/bootstyle-grammar
+   foundations/delivery-model
 
 .. toctree::
    :hidden:
@@ -189,10 +209,20 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way. See the
    feature-guides/typography
    feature-guides/localization
    feature-guides/validation
+   feature-guides/variables
+   feature-guides/events
+   feature-guides/icons
    feature-guides/windows
+   feature-guides/theming
+   feature-guides/working-with-color
+   feature-guides/make-your-own-style
+   feature-guides/make-your-own-theme
 
 .. toctree::
    :hidden:
    :caption: How-To
 
    how-to/index
+   how-to/working-with-images
+   how-to/feedback
+   how-to/multiple-windows

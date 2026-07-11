@@ -96,17 +96,16 @@ Themed glyph icons
 
 For *icons* — the small symbols on buttons and menu items — you usually want a
 crisp, theme-following glyph rather than a raster file. ttkbootstrap renders
-those from a built-in Bootstrap Icons font, so they recolor with the theme
-automatically:
+those from a built-in Bootstrap Icons font. Just pass ``icon=`` — no image object
+to build or keep alive, and the glyph recolors with the theme and widget state:
 
 .. code-block:: python
 
-   btn = ttk.Button(app, text="Settings")
-   ttk.apply_icon(btn, "gear-fill")     # glyph follows the theme + widget state
+   ttk.Button(app, text="Settings", icon="gear-fill")
 
-See :doc:`Make your own style </user-guide/concepts/make-your-own-style>` for the
-icon toolkit, and :doc:`Windows, icons & high-DPI
-</user-guide/feature-guides/windows>` for setting the *application* icon.
+See the :doc:`Icons guide </user-guide/feature-guides/icons>` for the full icon
+API, and :doc:`Windows & high-DPI </user-guide/feature-guides/windows>`
+for setting the *application* icon.
 
 A worked example
 ----------------
@@ -129,6 +128,11 @@ stays on screen:
    label.pack()
 
    app.mainloop()
+
+.. admonition:: 📷 Screenshot (placeholder)
+   :class: screenshot-placeholder
+
+   The window showing the loaded, resized photo inside its padded label.
 
 .. seealso::
 
