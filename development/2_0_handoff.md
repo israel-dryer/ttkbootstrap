@@ -3,6 +3,46 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
+_Last updated: 2026-07-11 (**Docs Workstream H — Concepts band authored + a
+cluster of API refinements the docs surfaced. FIVE PRs MERGED into `2.0` this
+session (all clean, high-effort `/code-review` on the code PRs):**
+**#1159** reference generators (Style Reference: one rST page per ttk-styled
+family via `tools/generate_style_reference.py`; retargeted
+`generate_bootstyle_reference.py` md→rST; structural sync test) + the bootstyle
+**spaces/@surface** grammar sweep (both generators + the `BootStyle` Literal now
+emit the space form) + unified Widgets catalog (design §4 revised: no native/
+shipped split; API link points where it lives) + Section-Nav removal + favicon +
+navbar wordmark logo. **#1162** theme-API consolidation — settable `theme_mode`
+property + `toggle_theme()` (replaced `use_theme_mode`/`toggle_theme_mode`) +
+`App`/`Toplevel` now delegate the full common theming surface (`theme_use`/
+`theme_names`/`theme_mode`/`toggle_theme`/`set_theme_modes`); `app.style` is now
+just the engine. **#1163** theme-aware custom styles — `Style.on_theme_change` +
+top-level `ttk.on_theme_change`/`@theme_aware`/`remove_theme_change_callback`
+(re-run a build callback after every theme change; deferred-config seam for the
+pre-root case; re-entrancy guard; idempotent). **#1164** the User Guide **Concepts
+band** (6 pages: bootstyle grammar [flagship], delivery model, theming, color,
+make-your-own-style, make-your-own-theme) — teach-first, every example run against
+a live root, `-W` clean. **#1165** removed the in-library user theme store
+(`themes/user.py` + its auto-load) — ttkcreator now **exports a
+`Theme(...).register()` snippet** instead of writing into site-packages; migration
+via that export + `Style.load_user_themes(json)` (both verified), NO shim (author:
+the store was destroyed on upgrade anyway).
+**Conventions locked this session (apply to all remaining docs):** "variant" (not
+"modifier") for the bootstyle slot; teach-first (1.x comparisons only in "Coming
+from 1.x" admonitions + the Migrating page — no "new in 2.0" framing in body
+prose); one runnable example per page + focused fragments, no geometry noise;
+features that drop into ttk internals get an "Advanced" admonition + a
+`tkinter.ttk` cross-reference. **>>> NEXT = the remaining User Guide bands (§11
+sub-PR 3 continues):** Getting Started (installation, quickstart, app-structures,
+migrating), Feature guides (typography, localization, validation, windows),
+How-To. Then sub-PR 4 (widgets catalog) + sub-PR 5 (landing + screenshots).
+**Env:** repo `.venv` exits 127 → suite via `PYTHONPATH=src python -m pytest -q`
+(baseline ~640 excl. the known `nl.msg`/`test_color_helpers` flakes); docs build
+needs a scratchpad `docsenv` (`.venv-home` is inaccessible under this account) —
+`PYTHONPATH=src <docsenv>/Scripts/python.exe -m sphinx -b html -W ... docs
+docs/_build/html`. User WIP `gallery/collapsing_frame.py` LEFT UNTOUCHED. Prior
+entry (sub-PR 2 open) follows.**)_
+
 _Last updated: 2026-07-10 (**Docs Workstream H — §11 sub-PR 2 (reference
 generators) + a live-preview docs slice: MERGED into `2.0` as PR #1159 (merge
 `a8490143`, branch deleted). PR grew past its title to also carry the bootstyle
