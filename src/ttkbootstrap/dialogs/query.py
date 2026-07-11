@@ -2,6 +2,7 @@
 
 import textwrap
 import tkinter
+from tkinter import filedialog
 from datetime import date
 from typing import Any, List, Optional, Tuple
 
@@ -380,3 +381,58 @@ class Querybox:
         dialog = FontDialog(parent=parent, **kwargs)
         dialog.show(position)
         return dialog.result
+
+    # File dialogs. These wrap the *native* OS file dialogs
+    # (`tkinter.filedialog`) — the one standard dialog ttkbootstrap does not
+    # restyle, because the OS draws it. They live here so a file path is fetched
+    # through the same `Querybox.get_*` facade as every other value, and they
+    # normalize the stdlib "" -on-cancel to `None` to match that contract.
+
+    @staticmethod
+    def get_open_filename(parent: Optional[tkinter.Misc] = None, **kwargs: Any) -> Optional[str]:
+        """Show an *open file* dialog. Returns the chosen path, or ``None`` if
+        cancelled.
+
+        Wraps ``tkinter.filedialog.askopenfilename``; forward its options
+        (``title``, ``filetypes``, ``initialdir``, ``initialfile``, ...) as
+        keyword arguments.
+        """
+        if parent is not None:
+            kwargs["parent"] = parent
+        return filedialog.askopenfilename(**kwargs) or None
+
+    @staticmethod
+    def get_open_filenames(parent: Optional[tkinter.Misc] = None, **kwargs: Any) -> Optional[Tuple[str, ...]]:
+        """Show an *open multiple files* dialog. Returns a tuple of paths, or
+        ``None`` if cancelled.
+
+        Wraps ``tkinter.filedialog.askopenfilenames``.
+        """
+        if parent is not None:
+            kwargs["parent"] = parent
+        paths = filedialog.askopenfilenames(**kwargs)
+        return tuple(paths) if paths else None
+
+    @staticmethod
+    def get_save_filename(parent: Optional[tkinter.Misc] = None, **kwargs: Any) -> Optional[str]:
+        """Show a *save as* dialog. Returns the chosen path, or ``None`` if
+        cancelled.
+
+        Wraps ``tkinter.filedialog.asksaveasfilename``; forward its options
+        (``title``, ``filetypes``, ``defaultextension``, ``initialfile``, ...)
+        as keyword arguments.
+        """
+        if parent is not None:
+            kwargs["parent"] = parent
+        return filedialog.asksaveasfilename(**kwargs) or None
+
+    @staticmethod
+    def get_directory(parent: Optional[tkinter.Misc] = None, **kwargs: Any) -> Optional[str]:
+        """Show a *choose directory* dialog. Returns the chosen path, or ``None``
+        if cancelled.
+
+        Wraps ``tkinter.filedialog.askdirectory``.
+        """
+        if parent is not None:
+            kwargs["parent"] = parent
+        return filedialog.askdirectory(**kwargs) or None

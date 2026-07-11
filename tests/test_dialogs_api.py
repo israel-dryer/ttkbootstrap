@@ -263,3 +263,42 @@ def test_colorchooserdialog_build_without_global_api(root):
     dlg.build()   # full body + buttonbox (regressed on the ToolTip call)
     assert dlg._toplevel is not None
     dlg._toplevel.destroy()
+
+
+# --- Querybox file dialogs (native, surfaced through the facade) -----------
+
+_FILE_METHODS = ["get_open_filename", "get_open_filenames", "get_save_filename", "get_directory"]
+
+
+def test_filedialog_reexported_at_top_level():
+    import tkinter
+    assert ttk.filedialog is tkinter.filedialog
+    assert "filedialog" in ttk.__all__
+
+
+@pytest.mark.parametrize("method", _FILE_METHODS)
+def test_querybox_file_methods_are_static_with_parent(method):
+    assert isinstance(inspect.getattr_static(Querybox, method), staticmethod)
+    assert "parent" in inspect.signature(getattr(Querybox, method)).parameters
+
+
+def test_querybox_file_dialogs_normalize_cancel_to_none(monkeypatch):
+    # The stdlib file dialogs return "" / () on cancel; the wrappers normalize
+    # that to None to match the rest of the get_* facade. Monkeypatch the native
+    # calls so no OS dialog opens.
+    from ttkbootstrap.dialogs import query
+
+    monkeypatch.setattr(query.filedialog, "askopenfilename", lambda **kw: "")
+    assert Querybox.get_open_filename() is None
+    monkeypatch.setattr(query.filedialog, "askopenfilename", lambda **kw: "C:/a/b.txt")
+    assert Querybox.get_open_filename(title="Open") == "C:/a/b.txt"
+
+    monkeypatch.setattr(query.filedialog, "askopenfilenames", lambda **kw: ())
+    assert Querybox.get_open_filenames() is None
+    monkeypatch.setattr(query.filedialog, "askopenfilenames", lambda **kw: ("a", "b"))
+    assert Querybox.get_open_filenames() == ("a", "b")
+
+    monkeypatch.setattr(query.filedialog, "asksaveasfilename", lambda **kw: "")
+    assert Querybox.get_save_filename() is None
+    monkeypatch.setattr(query.filedialog, "askdirectory", lambda **kw: "")
+    assert Querybox.get_directory() is None

@@ -105,6 +105,12 @@ or ``None`` if the user cancels:
      - a ``tkinter.font.Font``.
    * - ``get_color(parent, initialcolor=)``
      - a ``ColorChoice`` (see below).
+   * - ``get_open_filename(parent)`` / ``get_open_filenames(parent)``
+     - a file path ``str`` / a ``tuple`` of paths (native file dialog).
+   * - ``get_save_filename(parent)``
+     - a file path ``str`` (native *save as* dialog).
+   * - ``get_directory(parent)``
+     - a directory path ``str`` (native folder dialog).
 
 The number pickers validate for you — a value outside ``minvalue``/``maxvalue``
 keeps the dialog open until it is corrected or cancelled:
@@ -149,31 +155,43 @@ three models, so you can take whichever you need:
    A Messagebox yes/no and a Querybox color picker side by side, both in the
    active theme.
 
-``filedialog`` — the one you still reach for stdlib
----------------------------------------------------
+File dialogs
+~~~~~~~~~~~~
 
-The **one** standard dialog ttkbootstrap does *not* replace is the file dialog:
-open, save, and choose-directory use the **native OS** dialog, which you want —
-so call tkinter's :mod:`tkinter.filedialog` directly. Each returns the chosen
-path as a string, or an empty string ``""`` if cancelled:
+Opening and saving files use the **native OS** dialog — the one standard dialog
+ttkbootstrap deliberately does *not* restyle, because the OS draws it and users
+expect their platform's file picker. They are still reached through ``Querybox``,
+so a path is fetched the same way as any other value, and — like the rest of the
+facade — they return ``None`` on cancel:
 
 .. code-block:: python
 
-   from tkinter import filedialog
-
-   path = filedialog.askopenfilename(
-       title="Open",
+   path = Querybox.get_open_filename(
+       parent=app,
        filetypes=[("Text files", "*.txt"), ("All files", "*.*")],
    )
-   if path:                              # "" means cancelled
+   if path is not None:                  # None means cancelled
        open(path).read()
 
-   save_to = filedialog.asksaveasfilename(defaultextension=".txt")
-   folder = filedialog.askdirectory()
+   save_to = Querybox.get_save_filename(parent=app, defaultextension=".txt")
+   folder  = Querybox.get_directory(parent=app)
+   many    = Querybox.get_open_filenames(parent=app)   # a tuple of paths
 
-The other stdlib dialogs (``messagebox``, ``simpledialog``, ``colorchooser``,
-the font chooser) *are* superseded — reach for ``Messagebox`` / ``Querybox``
-above instead, so they match your theme.
+Each forwards its keyword arguments (``title``, ``filetypes``, ``initialdir``,
+``defaultextension``, …) to the underlying ``tkinter.filedialog`` function. That
+module is also re-exported as ``ttk.filedialog`` if you need a variant these four
+don't cover (for example ``askopenfile``, which returns an open file object):
+
+.. code-block:: python
+
+   ttk.filedialog.askopenfile(parent=app)     # the stdlib module, surfaced
+
+.. note::
+
+   File dialogs are the **only** stdlib dialog ttkbootstrap keeps. The others —
+   ``messagebox``, ``simpledialog``, ``colorchooser``, the font chooser — are
+   superseded by ``Messagebox`` / ``Querybox`` above, so reach for those to get
+   themed, consistent dialogs.
 
 Building your own dialog
 ------------------------
