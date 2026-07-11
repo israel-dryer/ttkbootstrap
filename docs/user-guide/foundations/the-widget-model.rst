@@ -109,6 +109,12 @@ A small tree, configured, with a state toggled:
 
    app.mainloop()
 
+.. admonition:: 📷 Screenshot (placeholder)
+   :class: screenshot-placeholder
+
+   The Save button in both states — greyed-out (disabled) with the entry empty,
+   and solid green (enabled) once text is typed.
+
 .. seealso::
 
    :doc:`How a tkinter app runs </user-guide/foundations/how-a-tkinter-app-runs>`

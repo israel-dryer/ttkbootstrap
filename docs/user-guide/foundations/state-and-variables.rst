@@ -86,10 +86,11 @@ the box is checked:
    app = ttk.App(title="Terms")
 
    agree = ttk.BooleanVar()
-   submit = ttk.Button(app, text="Continue", bootstyle="primary", state="disabled")
+   submit = ttk.Button(app, text="Continue", bootstyle="primary")
+   submit.state(["disabled"])                 # ttk state flags — see The widget model
 
    def refresh(*_):
-       submit.configure(state="normal" if agree.get() else "disabled")
+       submit.state(["!disabled" if agree.get() else "disabled"])
 
    agree.trace_add("write", refresh)
 

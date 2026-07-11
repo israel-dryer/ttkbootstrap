@@ -50,6 +50,12 @@ the dialog left behind:
 
    who = ask_name(app)
 
+.. admonition:: 📷 Screenshot (placeholder)
+   :class: screenshot-placeholder
+
+   The modal "Your name" dialog centered over its parent window, with the entry
+   and OK button.
+
 .. tip::
 
    For text prompts, yes/no questions, and file or color pickers, use the shipped

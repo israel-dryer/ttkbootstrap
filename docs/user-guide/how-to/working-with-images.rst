@@ -129,6 +129,11 @@ stays on screen:
 
    app.mainloop()
 
+.. admonition:: 📷 Screenshot (placeholder)
+   :class: screenshot-placeholder
+
+   The window showing the loaded, resized photo inside its padded label.
+
 .. seealso::
 
    For the raster-image formats and manipulation, see the `Pillow

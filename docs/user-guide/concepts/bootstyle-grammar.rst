@@ -56,6 +56,12 @@ Start with a **color** — the widget picks the right shape from its own class:
    ttk.Label(app, text="Heads up", bootstyle="warning")
    ttk.Progressbar(app, bootstyle="success")   # orient inferred → horizontal
 
+.. admonition:: 📷 Screenshot (placeholder)
+   :class: screenshot-placeholder
+
+   A row of buttons in the semantic colors — primary, secondary, success, info,
+   warning, danger — light and dark themes side by side.
+
 Add a **variant** to change visual weight. The color still leads:
 
 .. code-block:: python
@@ -64,6 +70,12 @@ Add a **variant** to change visual weight. The color still leads:
    ttk.Button(app, text="Outline", bootstyle="primary outline")
    ttk.Button(app, text="Link",    bootstyle="primary link")
    ttk.Button(app, text="Ghost",   bootstyle="primary ghost")
+
+.. admonition:: 📷 Screenshot (placeholder)
+   :class: screenshot-placeholder
+
+   The same primary color as solid, outline, link, and ghost buttons in a row —
+   showing the four visual weights at a glance.
 
 You can drop the color as well — a bare ``outline`` button uses ``primary``:
 

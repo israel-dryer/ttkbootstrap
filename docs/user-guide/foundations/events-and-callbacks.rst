@@ -204,48 +204,24 @@ sequences with ``event_add``:
    information with a virtual event, store it where both sides can reach it. See
    :doc:`the event object </reference/events/event-object>`.
 
-``after`` — run code later
---------------------------
+``after`` — scheduling a callback
+---------------------------------
 
-Never call ``time.sleep`` in a GUI — it blocks ``mainloop()`` and freezes the
-window. To do something after a delay, or to poll on a timer, use ``after``,
-which schedules a callback to run in *n* milliseconds without blocking:
+A callback can also be scheduled to run *later*, without blocking, with
+``after`` — the loop-driven timer introduced in
+:doc:`How a tkinter app runs </user-guide/foundations/how-a-tkinter-app-runs>`
+(the tool for delays, polling, and animation; never ``time.sleep``, which
+freezes ``mainloop``).
 
-.. code-block:: python
-
-   app.after(2000, lambda: status.configure(text="Ready"))   # in 2 seconds
-
-Re-scheduling from inside the callback makes a repeating timer — the basis for
-clocks, progress polling, and animation:
-
-.. code-block:: python
-
-   def tick():
-       clock.configure(text=now())
-       app.after(1000, tick)   # again in 1 second
-
-   tick()
-
-``after`` returns a **job id**, and ``after_cancel`` stops a scheduled callback
-before it fires:
+One event-specific caution worth its own note: a **repeating** ``after`` timer
+keeps firing even after the widget it updates is destroyed, and then errors on
+the dead widget. Keep the job id and cancel it when the widget goes away — a
+``<Destroy>`` binding is the natural place:
 
 .. code-block:: python
 
    job = app.after(1000, tick)
-   app.after_cancel(job)        # tick will not run
-
-This matters most for a repeating timer: it keeps firing even after the widget it
-updates is destroyed, and the callback then errors on the dead widget. Keep the
-job id and cancel it when you tear the widget down (a ``<Destroy>`` binding is a
-natural place).
-
-For work that should happen only once the interface has caught up — after the
-pending events and redraws are processed — use ``after_idle``, which runs the
-callback the next time the event loop goes idle:
-
-.. code-block:: python
-
-   app.after_idle(finish_setup)   # runs after the UI settles
+   widget.bind("<Destroy>", lambda e: app.after_cancel(job))
 
 A worked example
 ----------------

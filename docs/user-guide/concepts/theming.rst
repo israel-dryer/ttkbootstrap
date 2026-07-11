@@ -64,6 +64,12 @@ A toggle button is the common case:
 
    app.mainloop()
 
+.. admonition:: 📷 Screenshot (placeholder)
+   :class: screenshot-placeholder
+
+   The same window in its light and dark mode side by side, showing the matched
+   surfaces of a single theme family.
+
 To pair themes from different families (say a light theme with an unrelated dark
 one), set the pair explicitly with ``app.set_theme_modes(light=..., dark=...)`` or
 ``App(light_theme=..., dark_theme=...)``.
@@ -76,6 +82,12 @@ ttkbootstrap ships **15 theme families** — ``bootstrap``, ``pydata``, ``nord``
 ``everforest``, ``vapor``, ``minty``, ``pulse``, ``united``, ``sandstone`` — each
 with a light and dark variant, for **30 built-in themes**. List them live with
 ``app.theme_names()``.
+
+.. admonition:: 📷 Screenshot (placeholder)
+   :class: screenshot-placeholder
+
+   The theme gallery — a sample card rendered in all 15 families, each as a
+   light/dark pair, so the reader can browse the built-in look and feel.
 
 .. admonition:: Coming from 1.x
    :class: note

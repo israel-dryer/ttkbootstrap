@@ -167,6 +167,12 @@ A small toolbar of icon-only buttons beside a labeled action:
 
    app.mainloop()
 
+.. admonition:: 📷 Screenshot (placeholder)
+   :class: screenshot-placeholder
+
+   The toolbar — three colored icon-only buttons (home, gear, trash) beside a
+   green "Save" button with a leading check glyph.
+
 .. seealso::
 
    For the *application* (window/taskbar) icon, see

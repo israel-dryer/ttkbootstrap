@@ -153,9 +153,11 @@ it sits in Fundamentals.
 start building, then links to the fuller treatment. A topic can have **both** — a
 Fundamentals intro *and* an in-depth Feature guide — and that overlap is intended,
 not redundant (e.g. Fundamentals *styling with bootstyle* → the *Custom styles*
-guide; Fundamentals *how theming works* → the *Theming* guide; a Fundamentals
-*events* intro → a *concurrency* guide). The Fundamentals page always points
-onward to the depth.
+guide; Fundamentals *how theming works* → the *Theming* guide; Fundamentals
+*State & variables* / *Events & callbacks* → the robust **Variables** / **Events**
+feature guides). The Fundamentals page always points onward to the depth. Author
+call 2026-07-11: **variables and events are *features*** — Foundations touches
+them at the essential level; the depth lives in feature guides.
 
 **The guide↔how-to split (the repeatable pattern):** a feature guide teaches a
 subsystem's concepts *and* usage in depth; the matching How-To applies them to one
@@ -759,8 +761,8 @@ Pages, in learning order (each links onward to depth):
 | **How a tkinter app runs** | ✓ | The run model: the root, `mainloop`, the **event loop**, callbacks-run-your-code, `after`/idle tasks, `update` vs `update_idletasks`, when the UI actually draws. The single most important mental model. → depth: *Concurrency* guide. |
 | **The widget model** | ✓ | What a widget *is*: the master/child tree, widget paths, common options (`text`/`width`/`state`/`cursor`/`takefocus`…), `configure`/`cget`/`widget["opt"]`, ttk `state()`/`instate()`, enable/disable. → depth: the Widgets catalog. |
 | Arranging widgets | ✓ | **Split into a hub + two build-by-example tutorials** (author call: no option tours): `arranging-widgets` (orientation: 3 managers, one-per-container, nest-frames) → `layout-with-grid` (grid-first: build a responsive form step by step — cells→sticky→padding→weight→span) → `layout-with-pack` (stacking→fill→expand→nested app-shell→place). Screenshot placeholders at each visual step. |
-| State & variables | ✓ | Var classes, `textvariable`/`variable` binding, `trace_add`/`remove`; `LocaleVar` as an example (defers to Localization). |
-| Events & callbacks | ✓ | `command`, `bind`, event objects, bindtags, virtual events, `after`. |
+| State & variables | ~ (trim) | **Touch only** — essential: Var classes, `textvariable`/`variable` binding, one trace, a worked example. Depth (all Var types, traces in full, validation binding, `LocaleVar`) → the **Variables** feature guide. |
+| Events & callbacks | ~ (trim) | **Touch only** — essential: `command`, `bind` + the event object, `after` (cross-ref the run-loop page), one virtual event. Depth (bindtags/`bind_class`, `add=`/`unbind`, `return "break"`, `event_add`, the virtual-event bus) → the **Events** feature guide. |
 
 *ttkbootstrap styling & theming essentials* (relocated from the dissolved
 Concepts band; content largely reused, reframed as essentials that hand off):
@@ -785,6 +787,8 @@ every few slices rather than treating it as fixed.
 
 | Page | Status | Scope |
 |---|---|---|
+| **Variables** | ★ | The state/data-binding subsystem in depth — every Var type, `trace_add`/`remove` fully, binding to validation, `LocaleVar`, patterns for keeping data and UI in sync. Foundations' *State & variables* is the on-ramp; this is the robust page. (Author call 2026-07-11: variables are a *feature*.) |
+| **Events** | ★ | The event system in depth — `bind` scope & **bindtags**/`bind_class`, `add=`/`unbind`, `return "break"`, virtual events + the producer/consumer bus, `event_add`, `event_generate`. Absorbs the advanced half of Foundations' *Events & callbacks*; pairs with the Event **reference**. (Author call 2026-07-11: events are a *feature*.) |
 | **Theming** | ✓→~ (recompose) | The theming subsystem *usage*: switch themes, `theme_mode`/light-dark, the 30-theme catalog, **color ramps** (`style.colors`, `c.primary[300]`), and **custom themes** (`Theme()` + ttkcreator). Absorbs today's *Theming* usage + *Working with color* + *Make your own theme*. Concept half → Fundamentals *How theming works*. |
 | **Custom styles** | ✓ (relocate) | The style-construction toolkit (Assets, layouts, elements, `icon_element`) — née *Make your own style*. |
 | Typography | ⊘ | `Fonts`, `set_global_family` over the named fonts — **author** |
