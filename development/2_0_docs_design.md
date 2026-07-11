@@ -411,7 +411,54 @@ Churn is asymmetric, so mitigate by page type:
 Track the pending API-normalization pass as its own future workstream (not H);
 when it lands, re-sweep the catalog/How-To examples for those widgets.
 
-## 12. Open / deferred
+## 12. "tkinter essentials" reference/guide strand (added 2026-07-11)
+
+Filling the *modern-tkinter-docs* gap (§1) is a first-class goal, and much of Tk's
+own material lives only in C-oriented man pages. This strand restates that material
+in Python terms — **ttkbootstrap-flavored, always linking out** to python.org /
+Tk for exhaustive detail (a welcoming reference, NOT a tkinter fork). The split,
+locked with the author, mirrors Diátaxis:
+
+- **Reference = the names / catalog** (tables of tokens, attributes, options).
+- **Guide = the usage** (how to bind, generate, keep a reference, etc.).
+
+**Landed (uncommitted):** the **Event reference** (`reference/events/`: index +
+event-types, modifiers-and-keys, event-object, event-generate-options,
+virtual-events) + the expanded **Events & callbacks** guide
+(`foundations/events-and-callbacks.rst`) + the **Working with images** How-To.
+
+**Roadmap (author-requested; recommended order winfo → cursors → usage guides):**
+
+| Topic | Home | Notes |
+|---|---|---|
+| `winfo_*` widget & screen info | **Reference** (new table page) | Highest-value next; undocumented-in-friendly-form |
+| Cursors + `bell`/`busy` | cursor-names **Reference** table; feedback **guide** | Cursor list is another "exists nowhere" table |
+| Focus, modality & lifecycle (`focus`/`grab`/`lift`/`lower`/`destroy`/`WM_DELETE_WINDOW`) | **Guide** — extend *Windows, icons & DPI* | Mostly usage |
+| Clipboard & selection (`clipboard_*`/`selection_*`) | **How-To** | Small recipe |
+| Error handling (`report_callback_exception`, `TclError`) | **How-To** | Pairs with the threading recipe; documents the swallowed-exception gotcha |
+| `bindtags` | **Done** (events guide) | Ref stub optional |
+
+### 12a. Image handling decision (2026-07-11)
+
+- **`ttk.PhotoImage` stays `tkinter.PhotoImage`.** Re-pointing it to
+  `ImageTk.PhotoImage` was considered and **rejected**: empirically not a drop-in
+  — base64 `data=` raises `UnidentifiedImageError`, it is not a subclass (breaks
+  `isinstance`), it drops ~18 methods (`put`/`get`/`zoom`/`subsample`/`copy`/
+  `configure`/`cget`/…), and it does **not** fix GC anyway (it wraps a
+  `tk.PhotoImage` whose `__del__` frees it; the Python wrapper must still be held).
+- **Docs approach (now):** the *Working with images* How-To documents the GC
+  keep-a-reference gotcha (applies to both classes) and **recommends Pillow**
+  (`ImageTk.PhotoImage`) for real image work — the "use the PIL version" guidance
+  delivered as a recommendation, not a class swap.
+- **2.1 candidate (design pass required):** a bootstack-style **`Image` handle**
+  (`D:/Development/bootstack/src/bootstack/images.py`) — a PIL-based handle that
+  owns its `PhotoImage`; the blessed widgets keep the handle, so GC-safety is
+  structural (widget → handle → photo). A NEW, distinctly named export (not a
+  reused `PhotoImage`); must NOT duplicate the font-glyph `Icon`/`icon_element`/
+  `apply_icon` engine. Auto-ref-keeping needs our widget classes to own `image=`,
+  so it brushes the utilities-not-widgets boundary — a conscious call, deferred.
+
+## 13. Open / deferred
 
 - Style Reference: one page per widget family vs. one big generated table (lean:
   per-family, browsable).
