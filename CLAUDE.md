@@ -276,7 +276,15 @@ theme-aware custom styles (`on_theme_change`/`@theme_aware`); #1164 Concepts ban
 #1165 removed the in-library user-theme store (ttkcreator now exports a
 `Theme(...).register()` snippet); #1166 Foundations band + tkinter **event
 reference** + images how-to; **#1167 (merge `4f73aaa4`) the FUNDAMENTALS band +
-the Concepts-band DISSOLUTION.** Governing rule now:
+the Concepts-band DISSOLUTION**; **#1168 (merge `c3daa3f2`) the three
+feature-guide stubs authored (Typography/Localization/Validation) + a
+`Validation` namespace API rename** (flat `add_*_validation` →
+`Validation.text`/`numeric`/`range`/… + `Validation.add`, re-exported
+`ttk.Validation`; old `add_*` kept as warn-and-forward deprecated aliases removed
+in 3.0; `ColorChooser` migrated; logged in `2_0_breaking_changes.md`). With that,
+the three natural utility families are all namespaced (`Fonts`/`MessageCatalog`/
+`Validation`) — the surface survey found no further namespacing worth doing.
+Governing rule now:
 [[feedback_docs_teach_tkinter_ttkbootstrap_dialect]] — **the docs teach tkinter
 itself, in the ttkbootstrap dialect** (a self-sufficient learning source; teach,
 don't defer). **Bands sort by DEPTH:** Getting Started · **Fundamentals** ·
@@ -287,12 +295,12 @@ feature guides own the depth). Author was firm: **teach layout/mechanics
 BY BUILDING, never option-tours.** The full IA (charters, §14 curriculum map,
 tkinter-surface coverage audit + supersession map, screenshot-placeholder
 convention) lives in `development/2_0_docs_design.md`. **NEXT (content authoring,
-fresh branch off `2.0`):** the 3 feature-guide **stubs** (Typography/Localization/
-Validation); the **Dialogs** guide (incl. stdlib `filedialog`) + essentials
-How-Tos (clipboard, error handling); the **Build-your-first-app** tutorial;
-**Widgets-catalog** depth (usage-first per design §5a). Screenshots are a later
-slice (placeholders are in place). See `development/2_0_handoff.md` top entry for
-the full current state.
+fresh branch off `2.0`):** the **Dialogs** guide (incl. stdlib `filedialog`) +
+essentials How-Tos (clipboard, error handling); the **Build-your-first-app**
+tutorial; **Widgets-catalog** depth (usage-first per design §5a). (The three
+feature-guide stubs — Typography/Localization/Validation — are now DONE, #1168.)
+Screenshots are a later slice (placeholders are in place). See
+`development/2_0_handoff.md` top entry for the full current state.
 
 ## Repository layout
 

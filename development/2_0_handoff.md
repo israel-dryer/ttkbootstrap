@@ -3,6 +3,45 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
+_Last updated: 2026-07-11 (**Feature-guide stubs authored + a `Validation`
+namespace API rename. PR #1168 MERGED into `2.0`** (merge `c3daa3f2`; branch
+deleted). Two related pieces:
+**(1) The three docs-H feature-guide stubs are now full guides**, modeled on
+Variables/Events (teach-by-example, list-tables, screenshot placeholders,
+`seealso`): **Typography** (standard Tk named fonts + `set_global_family` on the
+deferred-config seam + the `Fonts` namespace), **Localization** (message-catalog
+model, `L()`, registering translations via `MessageCatalog.set`/`set_many`/`load`,
+`set_locale`, live switching with `LocaleVar`), and **Input validation** (authored
+against the new namespace below). Every example verified headlessly; `LocaleVar`
+live re-translate confirmed (fires on the `<<LocaleChanged>>` tail event — needs an
+event-loop tick).
+**(2) `Validation` namespace** — while writing the validation guide the author
+flagged the flat `add_*_validation` names as verbose. Surveyed options
+(namespace vs flat `ttk.validate_*` vs leave); **chose the namespace** (mirrors
+`Fonts`/`MessageCatalog`; houses the custom-rule core cleanly as `Validation.add`;
+reads as *attaching* a rule, not colliding with tkinter's existing
+`widget.validate()` which checks-now). New surface: `Validation.text`/`numeric`/
+`range`/`regex`/`options`/`phonenumber` + `Validation.add`; `Validation`/
+`validator`/`ValidationEvent` re-exported top-level. The seven `add_*` functions
+(public through **v1.9.0** — released + documented + a cookbook example, so a hard
+break would hit users) stay as **warn-and-forward deprecated aliases** (removed
+3.0). First-party `ColorChooser` migrated (4 call sites) so shipped dialogs don't
+self-deprecate (cf. #1132). Logged in `development/2_0_breaking_changes.md`.
+**Namespacing survey (author asked "any other areas?"):** the three real
+utility families are now ALL namespaced (`Fonts`/`MessageCatalog`/`Validation`);
+everything else on the top-level surface is genuine one-off verbs
+(`apply_icon`/`enable_global_api`/`set_*`) or heterogeneous, so **no further
+namespacing**. Color-conversion funcs (`color_to_hex`/`contrast_color`/…) left
+flat — a `Color` namespace would collide badly with the existing `Colors` theme
+view. **Verification:** headless suite **636 passed** (incl. the normally-flaky
+`nl.msg` test this run); ColorChooser builds warning-free under `-W
+error::DeprecationWarning`; all six deprecated aliases warn+forward; full-site
+`sphinx -b html -W` clean, exit 0. **NEXT (docs-H content authoring, unchanged):**
+the **Dialogs** guide (incl. stdlib `filedialog`) + essentials How-Tos (clipboard,
+error handling); the **Build-your-first-app** tutorial; **Widgets-catalog** depth
+(usage-first per §5a). Screenshots remain a later slice (placeholders in place).
+User WIP `gallery/collapsing_frame.py` LEFT UNTOUCHED. Prior entry follows.**)_
+
 _Last updated: 2026-07-11 (**Docs Workstream H — the FUNDAMENTALS band + Concepts
 dissolution. PR #1167 MERGED into `2.0`** (merge `4f73aaa4`; branch deleted;
 docs-only; every example verified headlessly; full-site `sphinx -b html -W`
