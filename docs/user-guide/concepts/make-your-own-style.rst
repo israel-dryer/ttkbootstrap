@@ -2,8 +2,8 @@ Make your own style
 ===================
 
 ``bootstyle`` covers the looks the themes ship. When you need something it can't
-name — a bespoke shape, your own element tree, a one-off tweak — 2.0 gives you a
-public toolkit to build a ttk style yourself and apply it with ``style=``.
+name — a bespoke shape, your own element tree, a one-off tweak — a public toolkit
+lets you build a ttk style yourself and apply it with ``style=``.
 
 Tweak an existing style
 -----------------------
