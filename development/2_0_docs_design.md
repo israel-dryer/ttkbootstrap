@@ -459,6 +459,25 @@ No capture tooling exists in-repo today. The author generates screenshots,
 light+dark pairs). Every catalog page and the theme gallery need light+dark. This
 is gated on the icon-drop PR landing first (so arrows/date/dialog icons are final).
 
+**Placeholder convention (2026-07-11, author-requested).** Visual pages
+(especially the layout tutorials) are authored *now* with visible, build-safe
+**screenshot placeholders** — the real images drop in with the tooling slice.
+Use a described admonition, **not** a broken `.. image::` link (which fails the
+`-W` build):
+
+```
+.. admonition:: 📷 Screenshot (placeholder)
+   :class: screenshot-placeholder
+
+   <one line describing exactly what the shot shows — this doubles as the
+   capture spec for the screenshot slice>
+```
+
+Place one at each step where the *appearance* changes (layout is spatial —
+prose alone can't carry it). The `screenshot-placeholder` class is a hook for
+later CSS (a dashed box, say); unknown now, harmless. Precedent: the two layout
+tutorials (`layout-with-grid`, `layout-with-pack`).
+
 ## 8. Staleness inventory (from the 2026-07-06 audit)
 
 **HIGH — actively broken (fix or the build/examples break):**
@@ -739,7 +758,7 @@ Pages, in learning order (each links onward to depth):
 |---|---|---|
 | **How a tkinter app runs** | ✓ | The run model: the root, `mainloop`, the **event loop**, callbacks-run-your-code, `after`/idle tasks, `update` vs `update_idletasks`, when the UI actually draws. The single most important mental model. → depth: *Concurrency* guide. |
 | **The widget model** | ✓ | What a widget *is*: the master/child tree, widget paths, common options (`text`/`width`/`state`/`cursor`/`takefocus`…), `configure`/`cget`/`widget["opt"]`, ttk `state()`/`instate()`, enable/disable. → depth: the Widgets catalog. |
-| Arranging widgets | ~ | pack/grid/place + fluent geometry — **flesh out** (bootstack-modeled): nesting frames, `sticky`/`weight`/resize behavior, when to use which. [[project_arranging_widgets_docs_flesh_out]] — the #1 beginner wall. |
+| Arranging widgets | ✓ | **Split into a hub + two build-by-example tutorials** (author call: no option tours): `arranging-widgets` (orientation: 3 managers, one-per-container, nest-frames) → `layout-with-grid` (grid-first: build a responsive form step by step — cells→sticky→padding→weight→span) → `layout-with-pack` (stacking→fill→expand→nested app-shell→place). Screenshot placeholders at each visual step. |
 | State & variables | ✓ | Var classes, `textvariable`/`variable` binding, `trace_add`/`remove`; `LocaleVar` as an example (defers to Localization). |
 | Events & callbacks | ✓ | `command`, `bind`, event objects, bindtags, virtual events, `after`. |
 

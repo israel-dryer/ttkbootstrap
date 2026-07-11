@@ -65,7 +65,8 @@ they respond to input.
       :link: foundations/arranging-widgets
       :link-type: doc
 
-      ``pack``, ``grid``, and ``place`` — the layout model and when to use each.
+      The three geometry managers and when to use each — start here, then the
+      grid and pack tutorials.
 
    .. grid-item-card:: State & variables
       :link: foundations/state-and-variables
@@ -189,6 +190,8 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way. See the
    foundations/how-a-tkinter-app-runs
    foundations/the-widget-model
    foundations/arranging-widgets
+   foundations/layout-with-grid
+   foundations/layout-with-pack
    foundations/state-and-variables
    foundations/events-and-callbacks
 
