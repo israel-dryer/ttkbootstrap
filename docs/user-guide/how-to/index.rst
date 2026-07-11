@@ -31,7 +31,8 @@ Interaction and data
 - **Message boxes and dialogs** — ``Messagebox``/``Querybox`` and the shipped
   dialogs.
 - **Validate a form** — attach validation rules and read the result.
-- **Multiple windows** — ``Toplevel``, modality, and returning a value.
+- :doc:`Multiple windows & modal dialogs <multiple-windows>` — a second
+  ``Toplevel``, a modal dialog that returns a value, and the close button.
 - **Background work without freezing the UI** — ``after`` and worker threads,
   updating widgets safely from the main loop.
 - :doc:`Feedback: bell & busy <feedback>` — a system beep and a busy overlay that

@@ -105,7 +105,112 @@ Themes · Gallery · Cookbook).
 | **Reference** | reference | **Style Reference** (generated) + **API Reference** (mkdocstrings) |
 | *(supporting)* | — | Release Notes (link to GH releases), optional Roadmap |
 
-### User Guide internal structure — FIVE BANDS (revised 2026-07-11)
+### Governing principle + band charters (locked 2026-07-11)
+
+**"We teach tkinter, in the ttkbootstrap dialect."** The User Guide is authored as
+a place a reader can *learn tkinter*, start to finish, and may never consult
+another source. The **software** stays a styling library (no scope change — a ttk
+extension, no new widgets); the **docs** take on the second mission of being a
+self-sufficient tkinter learning resource. The two don't conflict: teaching
+tkinter well *is* teaching how to drive the thing ttkbootstrap styles, and every
+example is `import ttkbootstrap as ttk`, so a reader learns both at once.
+
+**This supersedes the earlier "welcoming on-ramp, NOT a tkinter tutorial, link
+out for the real content" guardrail** (kept below for history). New posture:
+
+- **Teach, don't defer.** The explanation lives *in* the docs. Link-outs
+  (python.org, Tk man pages) are for exhaustive API enumeration and "further
+  detail" — never the primary teacher.
+- **Comprehensive ≠ exhaustive-on-every-page.** Teach the common 80% thoroughly;
+  link the long tail. Depth where a beginner actually stumbles.
+- **The dialect carries it** — `ttk.` widgets, fluent geometry, blessed tk
+  widgets throughout.
+
+**Band charters** — every page must pass its band's test (overlap between bands
+is fine when it is *intentional*: a concept taught once, applied elsewhere):
+
+The bands sort primarily by **altitude/depth**, not by topic — the same subject
+can legitimately appear at more than one altitude:
+
+| Band | Owns | Test |
+|---|---|---|
+| **Getting Started** | Onboarding: install → first window → app skeleton → migrate | "Is this first-hour setup?" |
+| **Fundamentals** | The essential understanding needed to build a styled, themed app — tkinter mechanics *and* the ttkbootstrap styling/theming model, at a beginner altitude; each page hands off to a Feature guide / catalog / Reference for depth | "Is this the minimum a beginner needs to *understand* to build?" |
+| **Feature guides** | The **in-depth** treatment of a subsystem — the full concepts + usage a Fundamentals intro only gestures at | "Is this the complete, deep version of a topic?" |
+| **How-To** | A **specific task**, applied, minimal concept | "Does it answer 'how do I do X'?" |
+
+**"Concepts" band dissolved (2026-07-11).** It mixed pure mental models
+(bootstyle grammar, delivery), a subsystem (theming), and tasks/toolkits (make
+your own style/theme) — three altitudes in one bucket. Resolution: the
+*conceptual essentials* (bootstyle grammar, how styling is delivered, how theming
+works) move to **Fundamentals**; the *deep usage/authoring* (theming, custom
+styles, custom themes, color ramps) become **Feature guides**. Nothing is
+homeless: the only cross-cutting idea (the bootstyle grammar) is foundational, so
+it sits in Fundamentals.
+
+**Fundamentals ⊂ Feature guides, by depth.** Fundamentals is deliberately a
+*light, essential subset*: it teaches just enough of a topic to understand it and
+start building, then links to the fuller treatment. A topic can have **both** — a
+Fundamentals intro *and* an in-depth Feature guide — and that overlap is intended,
+not redundant (e.g. Fundamentals *styling with bootstyle* → the *Custom styles*
+guide; Fundamentals *how theming works* → the *Theming* guide; a Fundamentals
+*events* intro → a *concurrency* guide). The Fundamentals page always points
+onward to the depth.
+
+**The guide↔how-to split (the repeatable pattern):** a feature guide teaches a
+subsystem's concepts *and* usage in depth; the matching How-To applies them to one
+concrete task. Feature-*scoped* concepts live in the feature guide (e.g. window
+focus/modality/lifecycle → Windows guide). Precedent set 2026-07-11 by splitting
+window focus/modality (Windows guide) from the *Multiple windows* recipe (How-To).
+
+### User Guide internal structure — FOUR BANDS, Concepts dissolved (CURRENT, 2026-07-11)
+
+**This is the live structure** (supersedes the FIVE/FOUR-band notes below, kept
+for history). Bands sort by altitude: **Getting Started · Fundamentals *(flat)* ·
+Feature guides · How-To.** Concepts is dissolved (see the charter note above).
+
+```
+User Guide
+├─ Getting Started            ← onboarding + the tutorial spine
+│   ├─ Installation
+│   ├─ Quickstart             first themed window; App vs Tk; pick a theme
+│   ├─ Build your first app   ★ NEW — end-to-end guided tutorial
+│   ├─ Structuring an app     App vs Tk, single-root rule, app skeleton
+│   └─ Migrating to 2.0
+├─ Fundamentals — the essentials to understand & build (FLAT; ~8 pages)
+│   │   ‹tkinter mechanics›
+│   ├─ How a tkinter app runs   ★ the run/event loop; after; update vs update_idletasks
+│   ├─ The widget model         ★ the tree, options, configure/cget, ttk state()
+│   ├─ Arranging widgets        pack/grid/place + fluent geometry (flesh out)
+│   ├─ State & variables        Var classes, textvariable binding, traces
+│   ├─ Events & callbacks       command=, bind, virtual events, after
+│   │   ‹ttkbootstrap styling & theming essentials›
+│   ├─ Styling with bootstyle   ★ FLAGSHIP model — the grammar + reference table
+│   ├─ How styling is delivered  blessed subclasses, enable_global_api, bootify
+│   └─ How theming works         the semantic-anchor conceptual framework
+├─ Feature guides — use it, in depth (each = its concepts + usage; OPEN set)
+│   ├─ Theming                 switch/theme_mode/catalog/custom themes/color ramps
+│   ├─ Custom styles           the style-construction toolkit (née "make your own style")
+│   ├─ Typography              Fonts, set_global_family
+│   ├─ Localization            L(), LocaleVar, set_locale, <<LocaleChanged>>
+│   ├─ Input validation        add_*_validation, @validator
+│   ├─ Icons                   icon=, apply_icon, Icon, glyph discovery
+│   ├─ Windows & high-DPI      App/Toplevel, focus/modality/lifecycle, DPI
+│   └─ Dialogs                 ★ Messagebox/Querybox/date/font/color pickers
+└─ How-To — specific-task recipes (see §14 for the list)
+```
+
+- **Flagship = the bootstyle grammar** ("Styling with bootstyle") — still leads
+  the Landing hero + Quickstart; it now sits in Fundamentals rather than as page
+  one of a Concepts band. A returning tkinter user reaches it via Landing/
+  Quickstart; a newcomer reaches it via the "read in order" path.
+- **Fundamentals is FLAT** (no sub-groups in the nav) for scannability; the two
+  informal clusters above (tkinter mechanics / styling essentials) are authoring
+  order, not nav structure.
+- **Each Fundamentals styling/theming page hands off** to its deep Feature guide
+  (bootstyle → Custom styles; theming concept → Theming).
+
+### User Guide internal structure — FIVE BANDS (revised 2026-07-11) — HISTORICAL
 
 **Revision 2026-07-11 — added a `Foundations` band (author call).** With the
 Concepts styling band authored, review found newcomers arriving with no tkinter
@@ -195,6 +300,17 @@ User Guide
   ``place`` return the widget (2.0 `FluentGeometryMixin`), so construct-and-place
   in one expression — ``ttk.Button(app, text="Save").pack(...)`` — whenever the
   example does not need to keep a reference. Showcases a real 2.0 ergonomic.
+- **Annotate cross-platform gotchas where relevant.** tkinter behaves
+  differently across Windows/macOS/Linux, and a learner treating these docs as
+  their only source must be warned. Call out platform differences inline (a
+  `.. note::`/`.. warning::` admonition) *when they affect the reader* — e.g.
+  macOS menu/aqua behavior and the app menu, `MouseWheel` `event.delta`
+  direction/scale differing by platform, cursor names mapping to different
+  glyphs (and Windows accepting any name silently), high-DPI/scaling, native
+  file-dialog chrome, `bell` being the platform alert sound, `window_type`/
+  `override_redirect` aqua no-ops. Ground-truth the claim (test where possible,
+  or cite Tk docs); don't hand-wave "may vary." Precedent: the Cursors and
+  Feedback pages already do this.
 
 ## 4. The native / shipped dichotomy — where it lives (revised 2026-07-10)
 
@@ -234,15 +350,37 @@ it already has its own section:
 <Widget>
   one-liner
   [ light screenshot ] [ dark screenshot ]        ← all color variants
-  ## Semantic styling      → lead with bootstyle + copy-paste minimal example
-  ## Variants | Common tasks   (screenshot + 2-line snippet each)
+  ## Usage             → lead: what the widget is FOR + the common pattern that
+                          drives it (e.g. Button → wire an action with command=),
+                          as a real runnable example — NOT styling
+  ## Semantic styling  → bootstyle + copy-paste minimal example
+  ## <pattern sections>   one section PER common pattern/option, each a runnable
+                          snippet + light/dark screenshot (see below)
   ## Colors                (swatch strip, light+dark)
   ## States                (disabled/active/… where relevant)
-  → cross-link to the deep reference (Style Reference OR API Reference)
+  → PRIMARY link: the usage/API reference — tkinter.ttk options (native) or
+    API Reference (shipped)
+  → SECONDARY link: Style Reference, framed as "want to restyle it yourself?"
+    (customization/advanced — see §5b), not the default "learn more"
 ```
 
 Same skeleton regardless of widget kind — this is what makes 30+ pages read as
 one system.
+
+**Widget pages are USAGE pages, not styling catalogs (author note 2026-07-11).**
+The current `docs/widgets/button.rst` prototype is **sorely lacking** — it shows
+`bootstyle` values but never shows *using* a Button (no `command=`, no real
+patterns). Model the depth on **bootstack's** widget pages
+(`D:/Development/bootstack/docs/widgets/button.rst`): open with a **Usage**
+section ("a button runs an action — wire it with `command=`"), then a **section
+per common pattern**, each a runnable example + a light/dark screenshot pair.
+bootstack's Button, for reference, covers: Usage · Accent colors · Style variants
+· Icons · Icon position · Icon-only · Uniform width · Compact density · Disabled.
+The ttkbootstrap equivalent should cover the analogous real patterns — `command=`
+wiring, `icon=`/icon-only (2.0), a uniform-width button row, a toolbar, default
+button (`Return`), enable/disable — *then* the bootstyle/colors surface. Applies
+to **every** widget page: teach how to *use* the widget first, style it second.
+(Not part of Fundamentals; slots into the Widgets-catalog authoring phase.)
 
 **Button** (native) — catalog page leads with `bootstyle`, shows Solid/Outline/
 Link variants + 8 colors, cross-links to **Style Reference › Button**. No API
@@ -259,6 +397,18 @@ Reimagines today's thin "Style guide" into an *exhaustive, generated* reference
 of the hand-styling surface. Generated from ttk introspection (same play as
 `tools/generate_bootstyle_reference.py`): `style.element_options`, `style.layout`,
 state specs.
+
+**Framing — this is the CUSTOMIZATION surface, not a normal-usage reference
+(author note 2026-07-11).** The Style Reference answers *"I want to hand-customize
+the style myself"* — element layouts, configurable options, state maps. It is
+**not** what a typical user reaches for to *use* a widget; that path is the
+widget's **Usage page** (§5a) plus its `tkinter.ttk` constructor options. So:
+frame it as **advanced/customization**, and pair it with the **Custom styles**
+feature guide (its natural companion). The generator's index intro should say so
+(it's generated — update the generator, not the committed rST). On a widget
+catalog page, the Style-Reference cross-link is the *"want to restyle it
+yourself?"* link — deliberately secondary to the usage/API link, not the default
+"learn more."
 
 ```
 <Widget> — style reference
@@ -457,6 +607,233 @@ virtual-events) + the expanded **Events & callbacks** guide
   reused `PhotoImage`); must NOT duplicate the font-glyph `Icon`/`icon_element`/
   `apply_icon` engine. Auto-ref-keeping needs our widget classes to own `image=`,
   so it brushes the utilities-not-widgets boundary — a conscious call, deferred.
+
+## 14. The complete User Guide curriculum — the "learn tkinter" plan (2026-07-11)
+
+Planned end-to-end against the governing principle (§3): the User Guide is *the*
+place to learn tkinter, in the ttkbootstrap dialect. This section is the working
+map — the pages a complete curriculum needs, their band, and their status. It
+supersedes the older per-band sketches for the User Guide's *completeness*
+(individual page templates in §5 still apply).
+
+**This map is a living target, not a closed checklist.** No band is "done" until
+a reader can actually learn the framework from it; re-audit every band for gaps as
+the rest fills in. Statuses below are a snapshot, and the page *set* — especially
+Feature guides — is expected to grow.
+
+**Audience & promise.** The reader is a Python developer — often a
+scientific/utility/tools author ([[project_user_base]]) — who wants to *build a
+desktop UI and understand the framework for doing so*, possibly with no other
+tkinter source. By the end they can: lay out a window, choose and drive the right
+widgets, manage state, wire behavior, use the common widgets (including the hard
+ones — Text, Canvas, Treeview/Tableview), open windows and dialogs, style it all,
+and grasp *why* it works (the event loop, the widget tree).
+
+**Status key:** ✓ authored · ~ partial · ⊘ stub · + planned (in current IA) ·
+★ NEW-proposed here.
+
+### Coverage audit — against the tkinter surface + desktop-UI expectations (2026-07-11)
+
+Because the docs teach tkinter itself, completeness is judged against **what
+tkinter actually ships** and **what any desktop UI needs**, not just the 2.0
+additions. Grounded in the stdlib surface: tkinter's dialog submodules
+(`filedialog`, `colorchooser`, `messagebox`, `simpledialog`, `font`,
+`scrolledtext`, `dnd`) and the **tk-only widgets with no ttk version**
+(*Canvas, Listbox, Menu, Text, Message*). The canonical categories a desktop-UI /
+tkinter learner expects, and where each is homed:
+
+| # | Category | Home | Status / gap |
+|---|---|---|---|
+| 1 | Widgets — inputs & choices (Label/Button/Entry/Check/Radio/Combobox/Spinbox/Scale/OptionMenu) | Widgets catalog | structure ✓, pages pending |
+| 2 | Widgets — containers & layout (Frame/LabelFrame/Panedwindow/Notebook) | Widgets catalog | pending |
+| 3 | Widgets — collections & data (Treeview, **Listbox**, Tableview) | Widgets catalog (deep) | **Listbox easily missed — no ttk version** |
+| 4 | Widgets — text & drawing (**Text, Canvas**) | Widgets catalog (deep) | big tkinter topics; tk-only, hand-authored. (`Message` is legacy — superseded by `Label(wraplength=…)`; omit.) |
+| 5 | Widgets — indicators & feedback (Progressbar/Meter/Floodgauge/Toast/ToolTip/Separator/Sizegrip/Scrollbar) | Widgets catalog + *Feedback* | Progressbar/Meter etc. pending |
+| 6 | **Menus & menubars** (Menu, Menubutton) | How-To + catalog | + planned; a fundamental category |
+| 7 | Layout & geometry (pack/grid/place) | Fundamentals | ~ (flesh out) |
+| 8 | Events, bindings & protocols | Fundamentals + Reference | ✓ |
+| 9 | State, variables & data binding | Fundamentals | ✓ |
+| 10 | Input validation | Feature: Validation | ⊘ |
+| 11 | Windows: focus/modality/lifecycle/DPI | Feature: Windows | ~ |
+| 12 | **Standard dialogs** (file/color/message/font/simple + Querybox/Messagebox) | Feature: Dialogs | ★ — **`filedialog` is a real gap** (see below) |
+| 13 | Fonts & typography | Feature: Typography | ⊘ |
+| 14 | Images | How-To | ✓ |
+| 15 | Icons (glyphs) | Feature: Icons | ✓ |
+| 16 | Styling & theming | Fundamentals + Theming | mixed |
+| 17 | App lifecycle & the run loop | Fundamentals | ★ |
+| 18 | Concurrency (threads + `after`) | How-To (feature candidate) | + |
+| 19 | Clipboard & selection | How-To | ★ |
+| 20 | Scrolling (Scrollbar wiring, ScrolledText/Frame) | How-To (feature candidate) | + |
+| 21 | Keyboard nav, focus traversal, accelerators, mnemonics | **unhomed** | **gap — decide a home** |
+| 22 | Cursors & pointer feedback | Reference + *Feedback* | ✓ |
+| 23 | Introspection (`winfo_*`) | Reference | ✓ |
+| 24 | Error handling (`report_callback_exception`, `TclError`) | How-To | ★ |
+| 25 | Localization / i18n | Feature: Localization | ⊘ |
+| 26 | Drag & drop (`tkinter.dnd`; external `tkdnd`) | **scope call** | teach-lite + link out (weak in core) |
+| 27 | Persistence/settings · packaging/distribution | **scope call** | app-level; brief How-To or link out |
+| 28 | Accessibility | **scope note** | tkinter is limited; document honestly, don't overpromise |
+
+**Supersession — teach the ttkbootstrap version, not the tkinter original.**
+"Teach tkinter in the dialect" means: where ttkbootstrap ships a *superseding*
+version, that version **is** the dialect — teach it as primary, and mention the
+stdlib original only as "what it replaces (don't reach for it)." Confirmed map:
+
+| tkinter original | ttkbootstrap supersedes with | teach |
+|---|---|---|
+| `messagebox` | `Messagebox` (show_info/error/…, ok/okcancel/yesno) | ttkbootstrap |
+| `simpledialog` (askstring/askinteger/askfloat) | `Querybox` (get_string/get_integer/get_float/get_item) | ttkbootstrap |
+| `colorchooser` (askcolor) | `ColorChooserDialog` / `Querybox.get_color` (+ `ColorDropperDialog`) | ttkbootstrap |
+| font dialog | `FontDialog` / `Querybox.get_font` | ttkbootstrap |
+| `scrolledtext` | `ScrolledText` (+ `ScrolledFrame`) | ttkbootstrap |
+| *(no stdlib equiv)* | `DatePickerDialog` / `Querybox.get_date` | ttkbootstrap |
+| **`filedialog`** | **not superseded** (native OS dialogs; only used internally by Tableview) | **stdlib `filedialog`** |
+
+Not superseded — **teach the tkinter widget, styled** (ttkbootstrap has no
+replacement, only styling): **Text, Canvas, Menu, Listbox**, Progressbar
+(Meter/Floodgauge are *additions*, not replacements). (`Message` is legacy —
+`Label(wraplength=…)` replaced it; omit from the catalog.)
+
+**Concrete gaps this surfaced (act on these):**
+- **`filedialog`** (open/save/choose-directory) — the **one** standard dialog
+  ttkbootstrap does *not* supersede, essential for desktop apps, and currently
+  unaccounted-for. The **Dialogs** guide teaches the ttkbootstrap dialogs as
+  primary (per the map above) **and `filedialog` as the stdlib you still reach
+  for**. Everything else stdlib is "replaced — don't use."
+- **Listbox** — a native tk widget with **no ttk equivalent**; easy to omit from a
+  ttk-centric catalog. Explicitly include it.
+- **Text / Canvas / Menu / Listbox** — tk-only, so they won't fall out of ttk
+  introspection; they need deliberately hand-authored catalog pages. (`Message` is
+  omitted as legacy — `Label(wraplength=…)` replaced it.)
+- **Keyboard navigation & focus traversal** (tab order, `takefocus`, accelerators,
+  mnemonics, `Return`-to-default) — a baseline desktop-UI expectation with no home.
+  Decide: a Fundamentals subsection (basics) + a feature/how-to for depth.
+
+**Scope boundaries (intentional gaps, decide once):** drag-and-drop
+(core is weak — teach the basics, link `tkdnd`), packaging/distribution and
+settings-persistence (app-level, not tkinter — a short How-To or link out), and
+accessibility (document tkinter's real limits honestly). Marking these keeps a
+gap from reading as an oversight.
+
+### Getting Started — onboarding + the tutorial spine
+
+| Page | Status | Scope |
+|---|---|---|
+| Installation | ✓ | pip, Python 3.10+ |
+| Quickstart | ✓ | first themed window; `App` vs `Tk`; pick a theme |
+| **Build your first app** | ★ | A guided **end-to-end tutorial** (Diátaxis's weak leg today): a small but complete app — a form + a data table, say — touching layout, widgets, events, state, and styling. The learning-by-doing spine newcomers need. |
+| Structuring an app | ✓ | `App` vs `Tk`, single-root rule, app skeleton |
+| Migrating to 2.0 | ✓ | bootstyle strings, theme names, removed shims, icons |
+
+### Fundamentals — the essentials to understand & build (FLAT, the CORE expansion)
+
+The *essential* understanding needed to build a styled, themed app — a light
+subset at a beginner altitude, each page handing off to its deeper home (a Feature
+guide, the Widgets catalog, or Reference) rather than exhausting the topic. This
+band carries the "understand the framework" half of the promise and is the biggest
+gap. **Flat** (no nav sub-groups); the two clusters below are authoring order.
+Pages, in learning order (each links onward to depth):
+
+*tkinter mechanics:*
+
+| Page | Status | Scope |
+|---|---|---|
+| **How a tkinter app runs** | ✓ | The run model: the root, `mainloop`, the **event loop**, callbacks-run-your-code, `after`/idle tasks, `update` vs `update_idletasks`, when the UI actually draws. The single most important mental model. → depth: *Concurrency* guide. |
+| **The widget model** | ✓ | What a widget *is*: the master/child tree, widget paths, common options (`text`/`width`/`state`/`cursor`/`takefocus`…), `configure`/`cget`/`widget["opt"]`, ttk `state()`/`instate()`, enable/disable. → depth: the Widgets catalog. |
+| Arranging widgets | ~ | pack/grid/place + fluent geometry — **flesh out** (bootstack-modeled): nesting frames, `sticky`/`weight`/resize behavior, when to use which. [[project_arranging_widgets_docs_flesh_out]] — the #1 beginner wall. |
+| State & variables | ✓ | Var classes, `textvariable`/`variable` binding, `trace_add`/`remove`; `LocaleVar` as an example (defers to Localization). |
+| Events & callbacks | ✓ | `command`, `bind`, event objects, bindtags, virtual events, `after`. |
+
+*ttkbootstrap styling & theming essentials* (relocated from the dissolved
+Concepts band; content largely reused, reframed as essentials that hand off):
+
+| Page | Status | Scope |
+|---|---|---|
+| **Styling with bootstyle** | ✓ (relocate) | ★ FLAGSHIP model — the canonical grammar + reference table. → depth: *Custom styles* guide. |
+| How styling is delivered | ✓ (relocate) | blessed subclasses, `enable_global_api`, `bootify`, `apply_bootstyle`. |
+| **How theming works** | ~ (split) | The **semantic-anchor conceptual framework** — the concept half of today's *Theming* page. → depth: *Theming* guide (usage). |
+
+### Feature guides — subsystems, in depth (concepts + usage; OPEN set)
+
+**The set below is open, not closed** — don't assume this is the full list. A
+"subsystem" earns a guide when it's a nameable, reusable capability with its own
+concepts. Beyond the table, candidates to evaluate (promote from How-To to guide,
+or add fresh, when they warrant concept-level treatment): **Scrolling**
+(ScrolledFrame/Text + native scrollbar wiring), **Menus & menubars**,
+**Concurrency** (threads + `after`, keeping the UI responsive), **Keyboard &
+focus traversal** (tab order, accelerators, mnemonics), **Feedback/notifications**
+(ToolTip/Toast as a family), **Clipboard & drag-and-drop**. Revisit this list
+every few slices rather than treating it as fixed.
+
+| Page | Status | Scope |
+|---|---|---|
+| **Theming** | ✓→~ (recompose) | The theming subsystem *usage*: switch themes, `theme_mode`/light-dark, the 30-theme catalog, **color ramps** (`style.colors`, `c.primary[300]`), and **custom themes** (`Theme()` + ttkcreator). Absorbs today's *Theming* usage + *Working with color* + *Make your own theme*. Concept half → Fundamentals *How theming works*. |
+| **Custom styles** | ✓ (relocate) | The style-construction toolkit (Assets, layouts, elements, `icon_element`) — née *Make your own style*. |
+| Typography | ⊘ | `Fonts`, `set_global_family` over the named fonts — **author** |
+| Localization | ⊘ | `L()`, `LocaleVar`, `set_locale`, `<<LocaleChanged>>` — **author** |
+| Input validation | ⊘ | `add_*_validation`, `@validator` — **author** (pairs with a "validate a form" How-To) |
+| Icons | ✓ | `icon=`, `apply_icon`, `Icon`, glyph discovery |
+| Windows & high-DPI | ~ | focus/modality/lifecycle ✓; **finish**: constructor surface, positioning, light/dark `theme_mode`, Toplevel options, high-DPI, deferred-config seam |
+| **Dialogs** | ★ | The shipped-dialog subsystem — `Messagebox`, `Querybox`, date/font/color pickers: how to call them, what they return, modality. Currently homeless (scattered across How-Tos + API ref). |
+
+### How-To — specific tasks (recipes, not re-teaching)
+
+Generic "lay out widgets" / "wire events" are **dropped** — Foundations owns
+those; a How-To is a *specific* task. Keep and add:
+
+| Page | Status |
+|---|---|
+| Working with images | ✓ |
+| Feedback: bell & busy | ✓ |
+| Multiple windows & modal dialogs | ✓ |
+| Menus & context menus | + |
+| Make content scrollable | + |
+| Validate a form | + (pairs with Validation guide) |
+| Background work without freezing the UI (`after` + threads) | + |
+| Animate a GIF | + (salvaged from cookbook) |
+| Splash screen | + |
+| Set the application icon | + |
+| Clipboard & selection | ★ (essentials strand) |
+| Handle callback errors (`report_callback_exception`, `TclError`) | ★ (essentials strand) |
+
+### The complex widgets — where "learn tkinter" gets deep
+
+Text, Canvas, and Treeview are large, essential tkinter topics; the shipped
+Tableview/Meter/DateEntry/etc. are their ttkbootstrap counterparts. **Their
+teaching home is the Widgets catalog** (§4), where each widget's page goes as
+deep as the widget warrants — a `Button` page is short; a `Text` page teaches
+tags/marks/indices, a `Canvas` page teaches items/coords/tags, a `Treeview` page
+teaches columns/selection/sorting. Fundamentals' *widget model* + a short **widget
+toolbox** orientation (what each widget is for) link into the catalog. This keeps
+one home per widget and avoids a second widget-docs axis in the User Guide.
+
+### Suggested authoring order (highest learner-value first)
+
+1. **Fundamentals core** — *How a tkinter app runs*, *The widget model*, and the
+   *Arranging widgets* flesh-out. (Unblocks everything; biggest gap.)
+2. **Recompose the styling/theming pages** into the new shape — relocate
+   *bootstyle grammar* + *delivery* to Fundamentals; split the *How theming works*
+   concept out; fold today's *Theming*/*Working with color*/*Make your own theme*
+   into the **Theming** feature guide; *Make your own style* → **Custom styles**
+   guide. (Mostly moves of authored content; low risk, high IA payoff.)
+3. **Finish the essentials strand** — winfo ✓ / cursors ✓ done; add clipboard and
+   error-handling How-Tos.
+4. **Author the feature-guide stubs** — Typography, Localization, Validation;
+   finish Windows.
+5. **Dialogs guide** + the *Validate a form* / *Menus* / *Scrollable* / *Threads*
+   How-Tos.
+6. **Getting Started tutorial** — *Build your first app* (ties the above
+   together; best written once the pieces it references exist).
+7. **Widgets catalog depth** — the Text/Canvas/Treeview/Tableview pages (separate
+   destination; large, ongoing). **Usage-first** per §5a: every page opens with
+   real usage (`command=` wiring, common patterns) before styling; rework the
+   `button.rst` prototype to bootstack's depth. Include the tk-only widgets
+   (Text/Canvas/Menu/Listbox) and don't drop `Listbox`.
+
+### A visible learning path
+
+Surface a linear "**New to tkinter? Read in this order**" path on the User Guide
+landing: Getting Started → Fundamentals → *Build your first app* → the feature
+guides/how-tos as needed. A newcomer should never have to guess the sequence.
 
 ## 13. Open / deferred
 

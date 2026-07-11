@@ -43,11 +43,23 @@ Foundations
 -----------
 
 New to tkinter? These pages cover the mental models everything else builds on —
-how widgets are arranged, how they bind to your data, and how they respond to
-input.
+how an app runs, how widgets are arranged, how they bind to your data, and how
+they respond to input.
 
 .. grid:: 1 2 2 2
    :gutter: 3
+
+   .. grid-item-card:: How a tkinter app runs
+      :link: foundations/how-a-tkinter-app-runs
+      :link-type: doc
+
+      The event loop, ``mainloop``, callbacks, ``after``, and not freezing the UI.
+
+   .. grid-item-card:: The widget model
+      :link: foundations/the-widget-model
+      :link-type: doc
+
+      The widget tree, options (``configure``/``cget``), and ttk states.
 
    .. grid-item-card:: Arranging widgets
       :link: foundations/arranging-widgets
@@ -118,8 +130,7 @@ any order.
 Feature guides
 --------------
 
-Each subsystem, end to end — the utilities that work on plain tkinter, not just
-ttkbootstrap widgets.
+Each subsystem, end to end — its concepts and its usage in one place.
 
 .. grid:: 1 2 2 2
    :gutter: 3
@@ -149,11 +160,12 @@ ttkbootstrap widgets.
       Theme-aware Bootstrap Icons glyphs — the ``icon=`` keyword, ``apply_icon``,
       and the standalone ``Icon`` image.
 
-   .. grid-item-card:: Windows, icons & high-DPI
+   .. grid-item-card:: Windows & high-DPI
       :link: feature-guides/windows
       :link-type: doc
 
-      ``App``/``Toplevel``, positioning, application icons, and DPI scaling.
+      ``App``/``Toplevel``, focus & modality, positioning, application icons, and
+      DPI scaling.
 
 How-To
 ------
@@ -174,6 +186,8 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way. See the
    :hidden:
    :caption: Foundations
 
+   foundations/how-a-tkinter-app-runs
+   foundations/the-widget-model
    foundations/arranging-widgets
    foundations/state-and-variables
    foundations/events-and-callbacks
@@ -206,3 +220,4 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way. See the
    how-to/index
    how-to/working-with-images
    how-to/feedback
+   how-to/multiple-windows

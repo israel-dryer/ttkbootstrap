@@ -91,23 +91,15 @@ to the base.
 Icons
 -----
 
-The same asset pipeline renders Bootstrap Icons glyphs. :class:`~ttkbootstrap.Icon`
-returns a cached image name you can drop into any ``image=`` option:
+The same asset pipeline renders Bootstrap Icons glyphs. To put an icon *on a
+widget* — the ``icon=`` keyword, the imperative ``apply_icon``, or the standalone
+``Icon`` image — see the :doc:`Icons guide </user-guide/feature-guides/icons>`.
 
-.. code-block:: python
-
-   from ttkbootstrap import Icon
-
-   save_icon = Icon("save", size=16, color="light")
-
-   ttk.Button(app, text="Save", image=save_icon, compound="left").pack()
-
-For an icon that follows the widget's foreground and state automatically, pass
-the ``icon=`` keyword instead of building the image yourself:
-
-.. code-block:: python
-
-   ttk.Button(app, text="Save", icon="save", bootstyle="success").pack()
+What belongs *here* is placing a glyph inside a style **layout** you build
+yourself: ``icon_element`` creates a ttk image element whose per-state image is a
+glyph, so a custom indicator (a checkbox, a toggle) can be drawn from the font
+instead of a raster asset. Use it the same way as the ``image_element`` shown
+above, swapping in the glyph name.
 
 Creating theme-aware styles
 ---------------------------
