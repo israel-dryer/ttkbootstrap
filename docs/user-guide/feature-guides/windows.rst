@@ -16,8 +16,8 @@ This guide will cover:
   ``iconphoto``, plus the renamed ``high_dpi``/``override_redirect``.
 - **Positioning** — ``place_window_center()`` (monitor-aware when ``screeninfo``
   is installed, clamped on-screen).
-- **Light/dark mode** — the ``theme_mode`` property, ``set_theme_modes(light=,
-  dark=)``, ``use_theme_mode``, and ``toggle_theme_mode``.
+- **Light/dark mode** — the settable ``theme_mode`` property, ``toggle_theme()``,
+  and ``set_theme_modes(light=, dark=)``.
 - **Toplevels** — ``window_type``, ``topmost``, ``tool_window``, and inherited
   app icons.
 - **High-DPI** — ``enable_high_dpi_awareness()`` and ``scale_size()``.

@@ -20,7 +20,7 @@
 | **Deferred-config seam + `ttk.set_default_button()` pre-root setter** | New | this doc, below (Slice 5) |
 | **Localization: msgcat bug fixes + `L()` / `LocaleVar` / `set_locale`** | Fix/New | this doc, below (Slice 3) |
 | **Typography: `ttk.Fonts` + `ttk.set_global_family()` over the Tk named fonts** | New | this doc, below (Slice 4) |
-| **Light/dark theme mode toggle (`theme_mode`/`toggle_theme_mode`)** | New | this doc, below |
+| **Light/dark theme mode (settable `theme_mode`/`toggle_theme()`)** | New | this doc, below |
 | Canonical `bootstyle` grammar (closed vocab, strict mode) | API | `development/2_0_bootstyle_grammar_design.md` |
 | Character-based icons removed (`ttkbootstrap.icons`) | API | `development/2_0_icon_drop_design.md` (PR #1094) |
 | Delivery API (mixins, no import-time monkey-patch) | API | handoff / PR #1075 |
@@ -58,15 +58,17 @@ but there was no first-class way to flip between them. Named `theme_mode` (not
 bare `mode`) so it does not collide with the widget `mode` option
 (`Progressbar`/`Floodgauge` determinate/indeterminate). Now:
 
-- `style.theme_mode` → `"light"` or `"dark"` (the active theme's type).
-- `style.toggle_theme_mode()` → switch to the counterpart, returns the new mode.
-- `style.use_theme_mode("light" | "dark")` → set a specific mode (e.g. to follow
-  an OS preference).
+- `style.theme_mode` → `"light"` or `"dark"` (the active theme's type); it is
+  **settable** — assign `"light"`/`"dark"` to switch (e.g. to follow an OS
+  preference).
+- `style.toggle_theme()` → switch to the counterpart, returns the new mode.
 - `style.set_theme_modes(light=..., dark=...)` and `App(light_theme=...,
   dark_theme=...)` → optionally *designate* the pair.
-- `App`/`Toplevel` expose `theme_mode` / `toggle_theme_mode()` /
-  `use_theme_mode()` / `set_theme_modes()` as convenience delegates to the
-  singleton `Style`.
+- `App`/`Toplevel` expose the **full common theming surface** as convenience
+  delegates to the singleton `Style`: `theme_use()` / `theme_names()` /
+  `theme_mode` (get+set) / `toggle_theme()` / `set_theme_modes()`. Drop to
+  `app.style` for the engine (colors, `configure`, `register_theme`, the
+  custom-style toolkit).
 
 **Counterpart resolution.** If a pair is designated, toggling switches between
 exactly those two themes (they may cross families, e.g. `bootstrap-light` ↔

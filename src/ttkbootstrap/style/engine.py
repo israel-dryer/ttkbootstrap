@@ -75,8 +75,8 @@ class Style(ttk.Style):
                 the same purpose (pre-2.0 spelling); pass either.
 
             light_theme, dark_theme (str):
-                Optionally designate the themes that `toggle_theme_mode()` /
-                `use_theme_mode()` switch between. If omitted, the counterpart
+                Optionally designate the themes that `toggle_theme()` /
+                `theme_mode` switch between. If omitted, the counterpart
                 is derived from the `<family>-light` / `<family>-dark` naming
                 convention, so designation is only needed to pin a specific
                 pair (e.g. a light theme from one family with a dark theme from
@@ -106,8 +106,8 @@ class Style(ttk.Style):
         self._style_registry = set()  # all styles used
         self._theme_styles = {}  # styles used in theme
         self._theme_names = set()
-        # Optional designated light/dark theme pair for use_theme_mode()/
-        # toggle_theme_mode(); None means "derive from the -light/-dark naming".
+        # Optional designated light/dark theme pair for the theme_mode setter /
+        # toggle_theme(); None means "derive from the -light/-dark naming".
         self._light_theme = None
         self._dark_theme = None
         # Monotonic counter bumped on every theme switch. The theme walk
@@ -308,14 +308,24 @@ class Style(ttk.Style):
     def theme_mode(self) -> Optional[str]:
         """The active theme mode (`"light"` or `"dark"`).
 
+        Read it, or assign `"light"`/`"dark"` to switch the current family to
+        that mode (the designated theme, else the `-light`/`-dark` sibling)::
+
+            style.theme_mode           # -> "light"
+            style.theme_mode = "dark"  # switch
+
         Reads the active theme's type; `None` before a theme is applied.
         """
         theme = getattr(self, "theme", None)
         return theme.type if theme is not None else None
 
+    @theme_mode.setter
+    def theme_mode(self, mode: str) -> None:
+        self._apply_theme_mode(mode)
+
     def set_theme_modes(self, light: str = None, dark: str = None) -> None:
-        """Designate the light and/or dark theme that `use_theme_mode()` /
-        `toggle_theme_mode()` switch between.
+        """Designate the light and/or dark theme that `theme_mode` /
+        `toggle_theme()` switch between.
 
         By default the counterpart is derived from the `<family>-light` /
         `<family>-dark` naming convention, so this is only needed to pin a
@@ -363,17 +373,12 @@ class Style(ttk.Style):
         candidate = f"{family}-{mode}"
         return candidate if candidate in self._theme_names else None
 
-    def use_theme_mode(self, mode: str) -> Optional[str]:
+    def _apply_theme_mode(self, mode: str) -> Optional[str]:
         """Switch to the light or dark theme (the designated one, else the
-        current family's `-light`/`-dark` sibling).
+        current family's `-light`/`-dark` sibling); returns the resulting mode.
 
-        Returns the resulting mode. No-ops with a warning if no counterpart
-        exists (e.g. a single legacy theme with no sibling).
-
-        Parameters:
-
-            mode (str):
-                `"light"` or `"dark"`.
+        Backs the `theme_mode` setter and `toggle_theme()`. No-ops with a
+        warning if no counterpart exists (e.g. a single legacy theme).
         """
         mode = str(mode).lower()
         if mode not in ("light", "dark"):
@@ -392,10 +397,10 @@ class Style(ttk.Style):
             self.theme_use(target)
         return self.theme_mode
 
-    def toggle_theme_mode(self) -> Optional[str]:
+    def toggle_theme(self) -> Optional[str]:
         """Toggle between the light and dark theme, returning the new mode."""
         other = "dark" if self.theme_mode == "light" else "light"
-        return self.use_theme_mode(other)
+        return self._apply_theme_mode(other)
 
     def theme_create(self, themename: str, parent: str = None, settings: dict = None) -> None:
         """
