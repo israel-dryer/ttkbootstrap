@@ -57,5 +57,6 @@ To design a theme interactively rather than by hand, run the bundled editor:
    python -m ttkcreator
 
 Edit the accent anchors and the light/dark surfaces, preview against live
-widgets, and save. Saved themes persist as anchor specs and are registered
-automatically the next time you create an app.
+widgets, then **Export theme (.py)** -- you get a ``Theme(...).register()``
+snippet (the same shape as above) to drop into your app. The editor doesn't
+save into the library; your theme lives in your own code.
