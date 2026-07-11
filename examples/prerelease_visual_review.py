@@ -237,7 +237,7 @@ def build_controls(parent, app):
                 lambda e: style.theme_use(picker.get()))
 
     def on_toggle():
-        app.toggle_theme_mode()  # switches the current family's -light/-dark sibling
+        app.toggle_theme()  # switches the current family's -light/-dark sibling
         picker.set(style.theme.name)
 
     ttk.Button(bar, text="Toggle light/dark", command=on_toggle,

@@ -200,25 +200,35 @@ class _BaseWindow:
         """Return a reference to the `ttkbootstrap.style.Style` object."""
         return Style.get_instance()
 
-    # -- light/dark theme mode (convenience delegates to Style) ------------
+    # -- theme (convenience delegates to Style) ----------------------------
+    # The common theming surface lives on the window; drop to `self.style` for
+    # the engine (colors, configure, register_theme, custom-style toolkit).
+
+    def theme_use(self, themename: Optional[str] = None) -> Optional[str]:
+        """Switch to `themename`, or return the current theme name."""
+        return self.style.theme_use(themename)
+
+    def theme_names(self) -> list:
+        """Return every registered theme name."""
+        return self.style.theme_names()
 
     @property
     def theme_mode(self) -> Optional[str]:
-        """The active theme mode (`"light"` or `"dark"`)."""
+        """The active theme mode; assign `"light"`/`"dark"` to switch."""
         return self.style.theme_mode
+
+    @theme_mode.setter
+    def theme_mode(self, mode: str) -> None:
+        self.style.theme_mode = mode
 
     def set_theme_modes(self, light: Optional[str] = None,
                         dark: Optional[str] = None) -> None:
         """Designate the light/dark theme pair the toggle switches between."""
         self.style.set_theme_modes(light=light, dark=dark)
 
-    def use_theme_mode(self, mode: str) -> Optional[str]:
-        """Switch to the light or dark theme; returns the resulting mode."""
-        return self.style.use_theme_mode(mode)
-
-    def toggle_theme_mode(self) -> Optional[str]:
+    def toggle_theme(self) -> Optional[str]:
         """Toggle between the light and dark theme; returns the new mode."""
-        return self.style.toggle_theme_mode()
+        return self.style.toggle_theme()
 
     # -- setup helpers -----------------------------------------------------
 
