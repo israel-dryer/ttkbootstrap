@@ -40,7 +40,12 @@ from ttkbootstrap.utils.scaling import (
     scale_size,
 )
 from ttkbootstrap.utils.platform import windowing_system
-from ttkbootstrap.utils.config import set_default_button
+from ttkbootstrap.utils.config import (
+    set_default_button,
+    on_theme_change,
+    theme_aware,
+    remove_theme_change_callback,
+)
 from ttkbootstrap.utils.fonts import Fonts, set_global_family
 
 # Localization helpers live in the `localization` package (the i18n engine stays
@@ -77,6 +82,9 @@ __all__ = [
     "set_global_family",
     # deferred config (pre-root setters)
     "set_default_button",
+    "on_theme_change",
+    "theme_aware",
+    "remove_theme_change_callback",
     # localization (surfaced lazily from the localization package)
     "L",
     "LocaleVar",

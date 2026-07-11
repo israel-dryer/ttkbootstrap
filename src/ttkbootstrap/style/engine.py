@@ -121,6 +121,10 @@ class Style(ttk.Style):
         # dedupe and are rendered once. Replaces the per-builder theme_images
         # dicts that pinned a fresh PhotoImage per theme (the image leak).
         self._image_cache = {}
+        # Callbacks run after every theme change (register via on_theme_change),
+        # so a custom style can rebuild itself against the new theme's colors.
+        self._theme_change_callbacks = []
+        self._running_theme_callbacks = False
         self._load_themes()
         self._dynamic_foreground = False
         super().__init__()
@@ -301,6 +305,18 @@ class Style(ttk.Style):
         self._theme_version += 1
         self._theme_walk()
 
+        # Let theme-aware custom styles rebuild against the new theme. Run after
+        # the walk so the new theme's colors/styles are fully live. The guard
+        # keeps a callback that itself calls theme_use from recursing forever --
+        # a nested switch still repaints, it just doesn't re-enter this loop.
+        if not self._running_theme_callbacks:
+            self._running_theme_callbacks = True
+            try:
+                for callback in list(self._theme_change_callbacks):
+                    self._run_theme_change_callback(callback)
+            finally:
+                self._running_theme_callbacks = False
+
     # ------------------------------------------------------------------ #
     # Light/dark theme mode toggling
     # ------------------------------------------------------------------ #
@@ -401,6 +417,58 @@ class Style(ttk.Style):
         """Toggle between the light and dark theme, returning the new mode."""
         other = "dark" if self.theme_mode == "light" else "light"
         return self._apply_theme_mode(other)
+
+    # ------------------------------------------------------------------ #
+    # Theme-change callbacks (theme-aware custom styles)
+    # ------------------------------------------------------------------ #
+    def on_theme_change(self, callback, *, call_now: bool = True):
+        """Register ``callback(style)`` to run after every theme change.
+
+        Use it to (re)build a custom style so it tracks the active theme: the
+        callback re-runs on each ``theme_use`` / ``toggle_theme``. When
+        ``call_now`` (the default), it also runs once immediately if a theme is
+        already active, so the style exists before the first switch.
+
+        Returns ``callback``, so it doubles as a decorator.
+
+        Parameters:
+
+            callback (Callable[[Style], None]):
+                Called with this `Style`; typically rebuilds a style from
+                `style.colors`.
+
+            call_now (bool):
+                Also run it once now (if a theme is active).
+        """
+        newly_added = callback not in self._theme_change_callbacks
+        if newly_added:
+            self._theme_change_callbacks.append(callback)
+        # Only fire on first registration, so a duplicate register is a no-op
+        # (idempotent) rather than re-running the callback's side effects.
+        if call_now and newly_added and getattr(self, "theme", None) is not None:
+            self._run_theme_change_callback(callback)
+        return callback
+
+    def remove_theme_change_callback(self, callback) -> None:
+        """Unregister a callback previously passed to `on_theme_change`."""
+        try:
+            self._theme_change_callbacks.remove(callback)
+        except ValueError:
+            pass
+
+    def _run_theme_change_callback(self, callback) -> None:
+        """Run one theme-change callback; a failure warns but never breaks
+        theming for the rest of the app."""
+        try:
+            callback(self)
+        except Exception as exc:
+            warnings.warn(
+                f"theme-change callback "
+                f"{getattr(callback, '__name__', callback)!r} raised {exc!r}; "
+                "skipping it.",
+                UserWarning,
+                stacklevel=2,
+            )
 
     def theme_create(self, themename: str, parent: str = None, settings: dict = None) -> None:
         """
