@@ -109,9 +109,30 @@ the ``icon=`` keyword instead of building the image yourself:
 
    ttk.Button(app, text="Save", icon="save", bootstyle="success").pack()
 
-.. admonition:: Theme switches
-   :class: note
+Keeping a style across theme switches
+-------------------------------------
 
-   Custom styles are registered against the **active** theme and are not rebuilt
-   automatically when you switch themes. Re-apply them after a
-   ``theme_use``/``toggle_theme`` if you need them to survive a switch.
+A custom style is built against the **active** theme, so a theme switch repaints
+the built-in widgets but leaves your style untouched — its colors go stale. Wrap
+the build in ``@theme_aware`` and it re-runs after every switch, rebuilding
+against the new theme's ``style.colors``:
+
+.. code-block:: python
+
+   from ttkbootstrap import theme_aware
+
+   @theme_aware        # runs once now, and again after every theme change
+   def build_pill(style):
+       fill = style.colors.primary
+       pill = Assets(style).rounded_rect(fill, size=(80, 28), radius=14)
+       image_element(style, "Pill.TButton.background", default=pill, border=14, sticky="nsew")
+       layout(style, "Pill.TButton", El(
+           "Pill.TButton.background", sticky="nsew",
+           children=[El("Button.label", side="left", expand=True)],
+       ))
+
+Now ``ttk.Button(app, style="Pill.TButton")`` stays correct through
+``theme_use`` and ``toggle_theme``. ``theme_aware`` even works at module top
+level, before the app exists — the build is queued and runs when the app is
+created. Use ``on_theme_change(fn)`` for the plain-function form, and
+``remove_theme_change_callback(fn)`` to unregister.
