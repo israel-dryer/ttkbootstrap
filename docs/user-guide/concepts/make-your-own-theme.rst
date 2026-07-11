@@ -26,12 +26,12 @@ and foreground. Registration needs a running app (a style must exist first):
        dark=dict(background="#17141f", foreground="#e9ecef"),
    ).register()
 
-   app.style.theme_use("pulse-light")   # registered as pulse-light and pulse-dark
+   app.theme_use("pulse-light")   # registered as pulse-light and pulse-dark
    app.mainloop()
 
 Registering a theme generates a ``<name>-light`` and ``<name>-dark`` variant for
 whichever surfaces you declared, so it drops straight into
-:doc:`light/dark switching <theming>` — ``app.toggle_theme_mode()`` flips
+:doc:`light/dark switching <theming>` — ``app.toggle_theme()`` flips
 ``pulse-light`` ↔ ``pulse-dark``.
 
 Re-branding a built-in
@@ -45,7 +45,7 @@ To change just a color or two on an existing theme, derive from it with
    from ttkbootstrap.themes.builtin import BOOTSTRAP
 
    ttk.Theme.from_existing(BOOTSTRAP, name="brand", primary="#ff6600").register()
-   app.style.theme_use("brand-light")
+   app.theme_use("brand-light")
 
 The visual editor
 -----------------

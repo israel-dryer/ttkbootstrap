@@ -30,14 +30,13 @@ Pass ``theme=`` to the app. The default is ``bootstrap-light``:
 Switching at runtime
 --------------------
 
-Switch themes on a live app through the style engine — every mounted widget
-repaints:
+Switch themes on a live app — every mounted widget repaints:
 
 .. code-block:: python
 
-   app.style.theme_use("solarized-dark")   # switch
-   app.style.theme_use()                    # -> the current theme name
-   app.style.theme_names()                  # -> every registered theme name
+   app.theme_use("solarized-dark")   # switch
+   app.theme_use()                   # -> the current theme name
+   app.theme_names()                 # -> every registered theme name
 
 Light and dark
 --------------
@@ -49,8 +48,8 @@ counterpart:
 .. code-block:: python
 
    app.theme_mode          # "light" or "dark"
-   app.toggle_theme_mode() # light <-> dark within the family, returns the new mode
-   app.use_theme_mode("dark")
+   app.toggle_theme()      # flip light <-> dark within the family, returns the new mode
+   app.theme_mode = "dark" # or switch explicitly
 
 A toggle button is the common case:
 
@@ -61,7 +60,7 @@ A toggle button is the common case:
    app = ttk.App(theme="nord-light")
 
    ttk.Button(app, text="Toggle theme",
-              command=app.toggle_theme_mode, bootstyle="primary").pack()
+              command=app.toggle_theme, bootstyle="primary").pack()
 
    app.mainloop()
 
@@ -76,7 +75,7 @@ ttkbootstrap ships **15 theme families** — ``bootstrap``, ``pydata``, ``nord``
 ``solarized``, ``catppuccin``, ``gruvbox``, ``dracula``, ``tokyo-night``, ``one``,
 ``everforest``, ``vapor``, ``minty``, ``pulse``, ``united``, ``sandstone`` — each
 with a light and dark variant, for **30 built-in themes**. List them live with
-``app.style.theme_names()``.
+``app.theme_names()``.
 
 .. admonition:: Coming from 1.x
    :class: note

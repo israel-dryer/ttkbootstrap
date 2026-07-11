@@ -91,4 +91,4 @@ the ``icon=`` keyword instead of building the image yourself:
 
    Custom styles are registered against the **active** theme and are not rebuilt
    automatically when you switch themes. Re-apply them after a
-   ``theme_use``/``toggle_theme_mode`` if you need them to survive a switch.
+   ``theme_use``/``toggle_theme`` if you need them to survive a switch.
