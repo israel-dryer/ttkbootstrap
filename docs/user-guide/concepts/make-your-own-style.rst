@@ -26,6 +26,16 @@ its base class (``my.TButton`` → ``TButton``), so you only set what changes:
 Build a style from scratch
 --------------------------
 
+.. admonition:: Advanced
+   :class: caution
+
+   This is an advanced feature. It works directly with ttk's own element and
+   layout model — element trees, element options, and state specs — which this
+   guide does not teach. The toolkit below makes that model easier to drive, but
+   assumes you're comfortable with how ttk styling works. For the underlying
+   concepts, see the `tkinter.ttk styling
+   <https://docs.python.org/3/library/tkinter.ttk.html#ttk-styling>`__ reference.
+
 For a genuinely new look, compose one from **assets**, **elements**, a **state
 map**, and a **layout**. Each piece is a small toolkit call:
 
