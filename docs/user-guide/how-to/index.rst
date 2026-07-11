@@ -20,8 +20,8 @@ Building interfaces
 - **Wire events and variables** — ``bind``, ``command=``, and the tk variable
   classes (``StringVar``/``IntVar``/…).
 - **Menus and context menus** — a menu bar and a right-click popup.
-- **Images and icons** — ``PhotoImage``, and rendering themed glyphs with
-  ``apply_icon``.
+- :doc:`Working with images <working-with-images>` — ``PhotoImage`` and Pillow,
+  the keep-a-reference gotcha, and themed glyphs with ``apply_icon``.
 - **Scrollable content** — ``ScrolledFrame``/``ScrolledText`` for content that
   outgrows the window.
 
@@ -42,3 +42,8 @@ Presentation
   with ``PhotoImage``.
 - **Splash screen** — a borderless startup window with ``window_type``.
 - **Application icon** — set the window/taskbar icon.
+
+.. toctree::
+   :hidden:
+
+   working-with-images

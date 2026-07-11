@@ -3,6 +3,84 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
+_Last updated: 2026-07-11 (**Docs Workstream H — Foundations band + a NEW
+"tkinter essentials" reference/guide strand (events + images). OPEN as PR #1166
+against `2.0` (branch `docs/2.0-foundations-and-events`); docs-only, `-W` clean.**
+**What was authored this session (all `-W` clean, every code example verified
+headlessly against a live root):**
+**(1) Foundations band** (design §3, five-band IA) — three User Guide pages under
+`docs/user-guide/foundations/`: *Arranging widgets* (pack/grid/place + fluent
+geometry; per-section python.org links to `#tkinter.Pack`/`Grid`/`Place` — the
+geometry-manager mixin classes; caught 2 broken anchors I'd first guessed), *State
+& variables* (StringVar/IntVar/BooleanVar + textvariable binding + `trace_add`/
+`trace_remove` cleanup + `LocaleVar`; fixed a copy-paste crash — `LocaleVar`'s 1st
+positional is `master`, so `ttk.LocaleVar(app, "Hello")`), *Events & callbacks*
+(see below). Wired into `user-guide/index.rst` (cards + toctree).
+**(2) Event reference — a NEW Reference sub-area** `docs/reference/events/` (index +
+`event-types` + `modifiers-and-keys` + `event-object` + `event-generate-options` +
+`virtual-events`). This restates Tk's `bind`/`event` man-page material (which only
+exists in C-oriented Tk docs) in Python terms — the first slice of a broader
+**"tkinter essentials" strand** filling the modern-tkinter-docs gap (design §1).
+Added as a 3rd card in `reference/index.rst`. Content is ground-truthed:
+`event_info()` for the virtual-event catalog, `tk.Misc._substitute` for the exact
+Event-attribute↔Tk-field map (documented the fields tkinter OMITS — `%d`/user_data
+et al.), empirical checks for `event.type` (EventType enum), `'??'` placeholders,
+and `return "break"`.
+**(3) Events & callbacks guide** (`foundations/events-and-callbacks.rst`) — the
+USAGE, expanded well past the on-ramp: `command`/`bind`, **Binding scope**
+(instance/class/toplevel/all, `winfo_class`, **bindtags** with real output, and
+**`add="+"` vs replace** — the footgun, with `unbind`), **Stopping an event**
+(`return "break"`), Virtual events, and a prominent **Generating events** section
+(`event_generate` incl. your own virtual events + `event_add` key aliases). Every
+non-obvious claim was verified: `event_generate` does NOT broadcast (a child
+doesn't hear an app-level generate → bind consumers on the same widget/root or use
+`bind_all`), a 2nd `bind` replaces without `add="+"`, and `data=` is NOT readable
+on the Python event.
+**(4) Working with images How-To** `docs/user-guide/how-to/working-with-images.rst`
+— headline is the **GC "image vanishes" gotcha** (keep a ref: `label.image =
+photo`), which class to use (`ttk.PhotoImage` = GIF/PNG/base64 vs Pillow
+`ImageTk.PhotoImage` = all formats + resize), `compound=`, base64 embed, and a
+cross-ref to `apply_icon`/the glyph engine for themed icons. Wired into
+`how-to/index.rst`.
+**DECISIONS locked with the author this session:**
+- **Reference = the NAMES/catalog; Guide = the USAGE** (Diátaxis split, author
+  call). And the events USAGE lives in the **expanded Foundations page** (author
+  call via AskUserQuestion), not a separate How-To.
+- **`ttk.PhotoImage` STAYS `tkinter.PhotoImage`** — do NOT re-point it to
+  `ImageTk.PhotoImage`. Empirically it is NOT a drop-in: base64 `data=` raises
+  `UnidentifiedImageError`, it is not a subclass (breaks `isinstance`), it drops
+  ~18 methods (`put`/`get`/`zoom`/`subsample`/`copy`/`configure`/`cget`/…), and it
+  does NOT fix GC anyway (it wraps a `tk.PhotoImage` and its `__del__` frees it, so
+  the Python wrapper must still be held). So: keep the class, document GC, and
+  *recommend* Pillow in the docs. See [[image-photoimage-decision]].
+- **2.1 candidate (needs a design pass):** a bootstack-style **`Image` handle**
+  (`bootstack/images.py` model — a PIL-based handle that owns its `PhotoImage`;
+  blessed widgets keep the handle → GC-safe by construction). A NEW, distinctly
+  named export (NOT a reused `PhotoImage`); do NOT duplicate the existing font-glyph
+  `Icon`/`icon_element`/`apply_icon` engine. Brushes [[boundary-utilities-not-widgets]]
+  (auto-ref needs our widget classes to own `image=`), so a conscious call, not now.
+**NEXT (author-requested "document the rest so it's not lost") — the "tkinter
+essentials" roadmap** (each ttkbootstrap-flavored, link-out for exhaustive detail;
+Reference=names, Guide=usage), recorded in design doc §12 + [[project-tkinter-essentials-docs]]:
+  - **Widget & screen info (`winfo_*`)** → Reference (new table page). *Highest-value
+    next* — another "exists nowhere readable" table.
+  - **Cursors & feedback** — cursor-names table → Reference; `bell`/`busy` → guide.
+  - **Focus, modality & lifecycle** — `focus`/`grab`/`lift`/`lower`/`destroy`/
+    `WM_DELETE_WINDOW` → extend the Windows feature guide.
+  - **Clipboard & selection** (`clipboard_*`/`selection_*`) → How-To.
+  - **Error handling** (`report_callback_exception`, `TclError`) → How-To.
+  Recommended order: winfo → cursors → the usage guides.
+**Build/verify:** `sphinx -b html -W --keep-going` → **zero warnings** (~31 pages).
+All examples run headlessly (`PYTHONPATH=src`, `.update()`/`.destroy()` for the
+mainloop demos). **Committed + PR #1166** open against `2.0`
+(`docs/2.0-foundations-and-events`). **NEXT SESSION: start the `winfo_*` widget/
+screen-info Reference table** (design §12 roadmap — highest-value next), then
+cursors. **Env:** docsenv lives at scratchpad
+`dd055ae5-…/docsenv` (build with `PYTHONPATH=src <docsenv>/Scripts/python.exe -m
+sphinx …`); repo `.venv` exits 127 → suite via `PYTHONPATH=src python -m pytest`.
+User WIP `gallery/collapsing_frame.py` + the dialog WIP LEFT UNTOUCHED. Prior entry
+follows.**)_
+
 _Last updated: 2026-07-11 (**Docs Workstream H — Concepts band authored + a
 cluster of API refinements the docs surfaced. FIVE PRs MERGED into `2.0` this
 session (all clean, high-effort `/code-review` on the code PRs):**

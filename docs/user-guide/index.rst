@@ -39,6 +39,35 @@ Getting Started
 
       bootstyle strings, theme names, removed shims, and icons.
 
+Foundations
+-----------
+
+New to tkinter? These pages cover the mental models everything else builds on —
+how widgets are arranged, how they bind to your data, and how they respond to
+input.
+
+.. grid:: 1 2 2 2
+   :gutter: 3
+
+   .. grid-item-card:: Arranging widgets
+      :link: foundations/arranging-widgets
+      :link-type: doc
+
+      ``pack``, ``grid``, and ``place`` — the layout model and when to use each.
+
+   .. grid-item-card:: State & variables
+      :link: foundations/state-and-variables
+      :link-type: doc
+
+      Binding widgets to ``StringVar``/``IntVar``/``BooleanVar`` and reacting to
+      changes.
+
+   .. grid-item-card:: Events & callbacks
+      :link: foundations/events-and-callbacks
+      :link-type: doc
+
+      ``command``, ``bind`` and event objects, virtual events, and ``after``.
+
 Concepts
 --------
 
@@ -133,6 +162,14 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way. See the
    getting-started/quickstart
    getting-started/app-structures
    getting-started/migrating
+
+.. toctree::
+   :hidden:
+   :caption: Foundations
+
+   foundations/arranging-widgets
+   foundations/state-and-variables
+   foundations/events-and-callbacks
 
 .. toctree::
    :hidden:

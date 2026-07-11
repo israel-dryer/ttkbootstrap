@@ -1,8 +1,7 @@
 Reference
 =========
 
-The lookup layer. Two references sit here, mirroring the native/shipped split in
-the :doc:`Widgets catalog </widgets/index>`:
+The lookup layer:
 
 .. grid:: 1 2 2 2
    :gutter: 3
@@ -22,8 +21,16 @@ the :doc:`Widgets catalog </widgets/index>`:
       The complete public API ttkbootstrap authors — shipped widgets, dialogs,
       the style engine, and the toolkit.
 
+   .. grid-item-card:: Event reference
+      :link: events/index
+      :link-type: doc
+
+      tkinter's event system in Python terms — event types, modifiers, key
+      symbols, the event object, and the built-in virtual events.
+
 .. toctree::
    :hidden:
 
    style-reference/index
    api/index
+   events/index
