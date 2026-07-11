@@ -4,8 +4,8 @@
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
 _Last updated: 2026-07-11 (**Docs Workstream H — Foundations band + a NEW
-"tkinter essentials" reference/guide strand (events + images). OPEN as PR #1166
-against `2.0` (branch `docs/2.0-foundations-and-events`); docs-only, `-W` clean.**
+"tkinter essentials" reference/guide strand (events + images). MERGED into `2.0`
+as PR #1166; docs-only, `-W` clean.**
 **What was authored this session (all `-W` clean, every code example verified
 headlessly against a live root):**
 **(1) Foundations band** (design §3, five-band IA) — three User Guide pages under
@@ -72,8 +72,7 @@ Reference=names, Guide=usage), recorded in design doc §12 + [[project-tkinter-e
   Recommended order: winfo → cursors → the usage guides.
 **Build/verify:** `sphinx -b html -W --keep-going` → **zero warnings** (~31 pages).
 All examples run headlessly (`PYTHONPATH=src`, `.update()`/`.destroy()` for the
-mainloop demos). **Committed + PR #1166** open against `2.0`
-(`docs/2.0-foundations-and-events`). **NEXT SESSION: start the `winfo_*` widget/
+mainloop demos). **MERGED into `2.0` as PR #1166.** **NEXT SESSION: start the `winfo_*` widget/
 screen-info Reference table** (design §12 roadmap — highest-value next), then
 cursors. **Env:** docsenv lives at scratchpad
 `dd055ae5-…/docsenv` (build with `PYTHONPATH=src <docsenv>/Scripts/python.exe -m
