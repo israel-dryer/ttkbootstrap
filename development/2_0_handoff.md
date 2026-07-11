@@ -3,6 +3,45 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
+_Last updated: 2026-07-11 (**Docs Workstream H — the FUNDAMENTALS band + Concepts
+dissolution. PR #1167 OPEN against `2.0`** (branch
+`docs/2.0-fundamentals-and-ia-recompose`; 6 commits; docs-only; every example
+verified headlessly; full-site `sphinx -b html -W` clean). **Major IA reshape this
+session, all captured in `development/2_0_docs_design.md` (§3 charters + §14
+map):** governing principle **"teach tkinter in the ttkbootstrap dialect"** (docs
+are a self-sufficient tkinter learning source; teach-don't-defer — supersedes the
+old "on-ramp not tutorial" guardrail); **bands sort by DEPTH/altitude** (Getting
+Started · Fundamentals · Feature guides · How-To); **the "Concepts" band is
+DISSOLVED** — styling essentials (*Styling with bootstyle*, *How styling is
+delivered*) → Fundamentals; deep styling/theming (*theming*/*working-with-color*/
+*make-your-own-style*/*make-your-own-theme*) → Feature guides. **Variables & events
+are FEATURES** (author call): Foundations touches them at essential level, robust
+**Variables**/**Events** feature guides own the depth. **Content authored:** the
+Fundamentals band end-to-end, teach-BY-BUILDING (author was firm: *no option
+tours*) — *How a tkinter app runs*, *The widget model*, *Arranging widgets* (hub +
+grid-first *Layout with grid* + *Layout with pack* tutorials), trimmed *State &
+variables*/*Events & callbacks* on-ramps; + the tkinter-essentials strand
+(`winfo`/`cursors` reference, `feedback`/`multiple-windows` how-tos, `icons`
+guide). **Build-safe screenshot placeholders** (described admonitions, `:class:
+screenshot-placeholder`) added to the visual pages (layout tutorials + bootstyle/
+theming/widget-model/images/icons) — the real captures are a later slice (§7).
+**Coverage audit vs the real tkinter surface** (§14): supersession map (teach the
+ttkbootstrap version — Messagebox/Querybox/ColorChooserDialog/FontDialog/
+ScrolledText — vs the styled tk widget; only `filedialog` stays stdlib), gaps
+(`filedialog`, `Listbox`, tk-only Text/Canvas/Menu, keyboard-nav home). New memory:
+[[feedback_docs_teach_tkinter_ttkbootstrap_dialect]],
+[[project_arranging_widgets_docs_flesh_out]]. **NEXT (all content authoring, fresh
+branch off `2.0`):** the 3 feature-guide **stubs** (Typography/Localization/
+Validation, robust like Variables/Events); the **Dialogs** guide (incl.
+`filedialog`) + essentials How-Tos (clipboard, error handling); the **Build-your-
+first-app** tutorial; **Widgets-catalog** depth (usage-first per §5a — the button
+prototype is thin; model on bootstack). **Deferred recompose refinements** (§14,
+non-blocking): extract a short *How theming works* into Fundamentals; consolidate
+theming+color+custom-theme into one Theming guide; optional slug renames. **Env:**
+Sphinx 9.1 in `.venv-home` — `PYTHONPATH=src .venv-home/Scripts/python.exe -m
+sphinx -b html -W --keep-going docs <out>`. User WIP `gallery/collapsing_frame.py`
+LEFT UNTOUCHED. Prior entry follows.**)_
+
 _Last updated: 2026-07-11 (**Docs Workstream H — the `winfo_*` widget & screen
 info Reference page (the "tkinter essentials" strand, design §12 roadmap — the
 highest-value next item).** New single-page catalog `docs/reference/winfo.rst`
