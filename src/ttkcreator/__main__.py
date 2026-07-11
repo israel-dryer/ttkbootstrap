@@ -197,7 +197,7 @@ class ThemeCreator(ttk.Window):
         if not family.secondary:
             self.rows["secondary"].set_value(self.style.colors.secondary)
 
-    # ----- save / export -----------------------------------------------------
+    # ----- export ------------------------------------------------------------
 
     def _theme_key(self):
         return self.theme_name.get().lower().replace(" ", "")
