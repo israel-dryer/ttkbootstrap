@@ -288,8 +288,10 @@ src/ttkbootstrap/
   constants.py       # constants (PRIMARY, SUCCESS, ...) + the single bootstyle vocab source of
                      #   truth: BOOTSTYLE_* tuples, BootColor/BootType/BootBase, generated BootStyle
   colorutils.py      # color math (Colors helpers, make_transparent, contrast)
-  themes/standard.py # STANDARD_THEMES dict: every built-in theme's color definitions
-  themes/user.py     # user-defined themes
+  themes/standard.py # STANDARD_THEMES dict: pre-2.0 (Bootswatch) color defs, kept only for
+                     #   the legacy theme-name migration path (removed in 3.0)
+  themes/builtin.py  # CURATED_THEMES: the curated 2.0 semantic-anchor Theme families
+                     #   (custom themes live in user code via Theme(...).register(), not here)
   widgets/           # CANONICAL custom widgets: dateentry, meter, floodgauge, tableview,
                      #   scrolled, tooltip, toast, labeledscale
   dialogs/           # Messagebox, Querybox, colorchooser, datepicker, fontdialog, etc.

@@ -95,33 +95,34 @@ app = ttk.App(theme="acme-light")
 
 `python -m ttkcreator` is now a `Theme` editor: pick a base family, tune the
 accent anchors + neutral and the light/dark background/foreground, preview both
-modes live, then **Export theme definition** to get a ready-to-use
-`Theme(...).register()` Python file, or **Save** to persist it.
+modes live, then **Export theme (.py)** to get a ready-to-use
+`Theme(...).register()` Python file you drop into your app. It no longer writes
+themes into the installed package.
 
-### Persisting a custom theme (`USER_THEME_SPECS`)
+### Persisting a custom theme
 
-Saved themes are stored in `ttkbootstrap/themes/user.py` as anchor specs and
-loaded at startup:
+Themes live in your own code, not the library. Register one at startup with the
+`Theme` API (the shape ttkcreator's export produces):
 
 ```python
-from ttkbootstrap.themes.user import USER_THEME_SPECS
+import ttkbootstrap as ttk
 
-USER_THEME_SPECS["acme"] = {
-    "primary": "#2780e3", "success": "#3fb618", "info": "#9954bb",
-    "warning": "#ff7518", "danger": "#ff0039",
-    "secondary": None, "neutral": "#7e8081",
-    "light": {"background": "#ffffff", "foreground": "#373a3c"},
-    "dark":  {"background": "#222222",  "foreground": "#f8f9fa"},
-}
+ttk.Theme(
+    name="acme",
+    primary="#2780e3", success="#3fb618", info="#9954bb",
+    warning="#ff7518", danger="#ff0039",
+    neutral="#7e8081",
+    light=dict(background="#ffffff", foreground="#373a3c"),
+    dark=dict(background="#222222",  foreground="#f8f9fa"),
+).register()
 # -> themename "acme-light" / "acme-dark"
 ```
 
 ### Legacy 16-key dicts still work
 
-Existing `USER_THEMES` entries and `load_user_themes(json)` files in the old
-16-key shape are still loaded (adapted like the built-in legacy themes:
-authored accents/bg/fg kept, plumbing regenerated). No change required, but
-prefer `USER_THEME_SPECS` / the `Theme` API going forward.
+`load_user_themes(json_file)` and `install_legacy_themes()` still load the old
+16-key shape (adapted like the built-in legacy themes: authored accents/bg/fg
+kept, plumbing regenerated). Prefer the `Theme` API going forward.
 
 ## Colors: same attributes, plus ramp addressing
 

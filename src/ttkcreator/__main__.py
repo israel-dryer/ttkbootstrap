@@ -1,18 +1,14 @@
 """Standalone Tk app for authoring `Theme` definitions: edit accent/neutral
 colors and light/dark background/foreground, preview the result live, and
-export or save the theme.
+export a `Theme(...).register()` snippet you drop into your own app.
 """
 
 import sys
-import shutil
-import json
 from uuid import uuid4
-from pathlib import Path
 import ttkbootstrap as ttk
 from tkinter import Frame
 from tkinter.colorchooser import askcolor
-from tkinter.filedialog import askopenfilename, asksaveasfilename
-from ttkbootstrap.themes import user
+from tkinter.filedialog import asksaveasfilename
 from ttkbootstrap.themes.builtin import CURATED_THEMES
 from ttkbootstrap.style import Theme
 from ttkbootstrap.style.theme import _DEFAULT_NEUTRAL
@@ -46,7 +42,8 @@ class ThemeCreator(ttk.Window):
     """Author a semantic-anchor `Theme`: edit the accent anchors + neutral and
     the light/dark background/foreground blocks; the full palette (and both mode
     variants) is generated. Preview live, then export a `Theme(...).register()`
-    snippet or save it to your user theme store.
+    snippet you drop into your own app -- themes live in your code, not the
+    library.
     """
 
     def __init__(self):
@@ -67,11 +64,8 @@ class ThemeCreator(ttk.Window):
         # application menu
         self.menu = ttk.Menu()
         commands = [
-            ("Save", self.save_theme),
+            ("Export theme (.py)", self.export_theme_as_python_file),
             ("Reset", self.change_base_theme),
-            ("Import", self.import_user_themes),
-            ("Export all themes", self.export_user_themes),
-            ("Export theme definition", self.export_theme_as_python_file),
         ]
         if sys.platform == 'darwin':
             self.file_submenu = ttk.Menu(self.menu)
@@ -203,86 +197,10 @@ class ThemeCreator(ttk.Window):
         if not family.secondary:
             self.rows["secondary"].set_value(self.style.colors.secondary)
 
-    # ----- save / export -----------------------------------------------------
+    # ----- export ------------------------------------------------------------
 
     def _theme_key(self):
         return self.theme_name.get().lower().replace(" ", "")
-
-    def save_theme(self):
-        """Persist the current Theme spec to the user theme store (user.py) and
-        register it live as `<name>-light` / `<name>-dark`."""
-        name = self._theme_key()
-        if not name:
-            Messagebox.ok("Please enter a theme name.", "Save theme", parent=self)
-            return
-        if name in user.USER_THEME_SPECS:
-            result = Messagebox.okcancel(
-                title="Save Theme", alert=True,
-                message=f"Overwrite existing theme {name}?",
-            )
-            if result == "Cancel":
-                return
-
-        spec = self._spec()
-        user.USER_THEME_SPECS[name] = spec
-        self._write_user_file()
-
-        for definition in Theme(name=name, **spec).to_definitions():
-            self.style.register_theme(definition)
-        target = f"{name}-{self._mode()}"
-        if target in self.style.theme_names():
-            self.style.theme_use(target)
-        Messagebox.ok(f"The theme {name} has been saved.", "Save theme", parent=self)
-
-    def _write_user_file(self):
-        """Rewrite themes/user.py with the current spec + legacy dict stores."""
-        header = (
-            '"""User-defined custom theme storage for ttkbootstrap.\n\n'
-            'USER_THEME_SPECS holds 2.0 semantic-anchor Theme specs (managed by\n'
-            'ttkcreator); USER_THEMES holds legacy 16-key dicts. Both are loaded\n'
-            'at startup. You may also hand-edit this file.\n"""\n\n'
-        )
-        content = (
-            header
-            + "USER_THEME_SPECS = "
-            + json.dumps(user.USER_THEME_SPECS, indent=4)
-            + "\n\nUSER_THEMES = "
-            + json.dumps(user.USER_THEMES, indent=4)
-            + "\n"
-        )
-        with open(user.__file__, "w", encoding="utf-8") as f:
-            f.write(content)
-
-    def export_user_themes(self):
-        """Export the user theme store file (user.py)."""
-        inpath = Path(user.__file__)
-        outpath = asksaveasfilename(
-            initialdir="/", initialfile="user.py",
-            filetypes=[("python", "*.py")],
-        )
-        if outpath:
-            shutil.copyfile(inpath, outpath)
-            Messagebox.ok(
-                parent=self, title="Export",
-                message="User themes have been exported.",
-            )
-
-    def import_user_themes(self):
-        """Import a user theme store file over the current user.py."""
-        inpath = askopenfilename(
-            initialdir="/", initialfile="user.py",
-            filetypes=[("python", "*.py")],
-        )
-        confirm = Messagebox.okcancel(
-            title="Import",
-            message="This import will overwrite the existing user themes. Ok to import?",
-        )
-        if confirm == "OK" and inpath:
-            shutil.copyfile(inpath, Path(user.__file__))
-            Messagebox.ok(
-                parent=self, title="Import",
-                message="User themes have been imported. Restart to load them.",
-            )
 
     def theme_to_source(self, name):
         """Render the current spec as a `Theme(...).register()` Python snippet."""

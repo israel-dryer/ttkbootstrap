@@ -1,12 +1,11 @@
 """Theme definitions for ttkbootstrap.
 
-This package contains theme definitions including standard built-in themes
-and user-defined custom themes.
-
 Modules:
-    standard: Built-in Bootstrap-inspired theme definitions
-    user: User-defined custom theme storage
+    builtin: The curated 2.0 semantic-anchor `Theme` families.
+    standard: Pre-2.0 (Bootswatch) 16-key color dicts, kept only for the legacy
+        theme-name migration path.
+    legacy: Adapts the 16-key dicts into the 2.0 `Theme` model.
 
-The themes are defined as dictionaries containing color schemes and type
-information (light/dark) used by the Style class to create themed widgets.
+Custom themes live in your own code (`ttk.Theme(...).register()`), not in this
+package.
 """

@@ -17,17 +17,6 @@ from ttkbootstrap.style.theme import ThemeDefinition
 from ttkbootstrap.style.scaling import Scaling
 from ttkbootstrap.style.builders_ttk import StyleBuilderTTK
 
-try:
-    # prevent app from failing if user.py gets corrupted
-    from ttkbootstrap.themes.user import USER_THEMES
-except (ImportError, ModuleNotFoundError):
-    USER_THEMES = {}
-
-try:
-    from ttkbootstrap.themes.user import USER_THEME_SPECS
-except (ImportError, ModuleNotFoundError):
-    USER_THEME_SPECS = {}
-
 
 class Style(ttk.Style):
     """A singleton class for creating and managing the application
@@ -627,37 +616,25 @@ class Style(ttk.Style):
         super().element_create(elementname, etype, *args, **kw)
 
     def _load_themes(self, EXTERNAL_THEMES=None):
-        """Register the curated 2.0 theme catalog (and any user themes).
+        """Register the curated 2.0 theme catalog.
 
         The built-in catalog is the curated semantic-anchor `Theme` families
         (`themes/builtin.py`), each generating a `<name>-light`/`<name>-dark`
-        pair. User-authored 16-key dicts (`USER_THEMES`, `EXTERNAL_THEMES`) are
-        adapted through the legacy quarantine so they keep working and gain the
-        plumbing cleanup. The full pre-2.0 name catalog is opt-in via
-        `ttkbootstrap.install_legacy_themes()`.
+        pair. Legacy 16-key dicts passed as `EXTERNAL_THEMES` are adapted through
+        the compat quarantine so they keep working. The full pre-2.0 name catalog
+        is opt-in via `ttkbootstrap.install_legacy_themes()`.
         """
         from ttkbootstrap.themes.builtin import CURATED_THEMES
-        from ttkbootstrap.style.theme import Theme
 
         for theme in CURATED_THEMES:
             for definition in theme.to_definitions():
                 self.register_theme(definition)
 
-        # 2.0 user themes: semantic-anchor Theme specs generate light/dark pairs.
-        for name, spec in USER_THEME_SPECS.items():
-            for definition in Theme(name=name, **spec).to_definitions():
-                self.register_theme(definition)
-
-        # Legacy 16-key user/external dicts, cleaned through the compat adapter.
-        extra = {}
-        if USER_THEMES:
-            extra.update(USER_THEMES)
+        # Legacy 16-key dicts (caller-provided), cleaned through the compat adapter.
         if EXTERNAL_THEMES:
-            extra.update(EXTERNAL_THEMES)
-        if extra:
             from ttkbootstrap.themes.legacy import theme_from_legacy_dict
 
-            for name, spec in extra.items():
+            for name, spec in EXTERNAL_THEMES.items():
                 self.register_theme(theme_from_legacy_dict(name, spec))
 
     def _register_ttkstyle(self, ttkstyle):

@@ -14,6 +14,7 @@
 | Area | Kind | Where |
 |---|---|---|
 | Theme model, `Theme`, default theme, ramp addressing | API | `development/2_0_theme_migration.md` |
+| **User theme store removed; ttkcreator exports a `Theme(...).register()` snippet** | Removed | this doc, below |
 | **Legacy theme names auto-register on use (no hard-stop)** | Fix/Deprecated | this doc, below (Slice 1) |
 | **`App` (canonical) / `Window` alias; `theme` / `themename` alias** | New | this doc, below (Slice 2) |
 | **`utils/` package; `utility`/`colorutils` → warn-and-forward shims** | Deprecated | this doc, below (Slice 0) |
@@ -115,6 +116,26 @@ skipped — one bad callback never breaks theming. Rides the existing theme walk
 
 **Scope note.** A *utility* over the existing theme walk, not new widget
 behavior. Purely additive; no migration required.
+
+---
+
+## User theme store removed; ttkcreator exports a snippet  *(Removed)*
+
+**What.** The `ttkbootstrap/themes/user.py` store and its startup auto-load
+(`USER_THEME_SPECS` / `USER_THEMES`) are gone, and ttkcreator no longer writes
+themes into the installed package. The editor now only **exports a
+`Theme(...).register()` Python snippet** you drop into your own app.
+
+**Why.** "Save" wrote a `.py` file *inside site-packages* — which fails on a
+normal (read-only) install, is **wiped on every reinstall/upgrade**, and churns a
+git-tracked file in an editable install. A user's themes belong in the user's
+code, not the library. The snippet export already existed; it is now the only
+persistence path, matching the *Make your own theme* guide.
+
+**Migration.** Re-create the theme in ttkcreator and **Export theme (.py)**, or
+hand-write the equivalent `ttk.Theme(name=..., primary=..., light=dict(...),
+dark=dict(...)).register()` call at your app's startup. `install_legacy_themes()`
+and `Style.load_user_themes(file)` are unaffected.
 
 ---
 
