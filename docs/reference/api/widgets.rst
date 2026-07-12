@@ -15,3 +15,12 @@ complete lookup reference.
    Meter
    Floodgauge
    LabeledScale
+   DateEntry
+   ToastNotification
+   ToolTip
+
+.. note::
+
+   ``Tableview``'s API reference is pending a docstring cleanup (its source
+   docstrings use Markdown examples that need porting to reStructuredText). Until
+   then, see the :doc:`Tableview widget page </widgets/tableview>` for usage.

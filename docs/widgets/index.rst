@@ -139,6 +139,30 @@ and to the deep :doc:`Style Reference </reference/style-reference/index>`.
 
       A scale with a value label that tracks the handle.
 
+   .. grid-item-card:: DateEntry
+      :link: dateentry
+      :link-type: doc
+
+      A text field with a pop-up calendar for choosing a date.
+
+   .. grid-item-card:: Tableview
+      :link: tableview
+      :link-type: doc
+
+      A data table with sorting, search, and pagination.
+
+   .. grid-item-card:: Toast
+      :link: toast
+      :link-type: doc
+
+      A temporary notification that pops up and fades.
+
+   .. grid-item-card:: Tooltip
+      :link: tooltip
+      :link-type: doc
+
+      A help popup that appears on hover.
+
 .. toctree::
    :hidden:
 
@@ -163,3 +187,7 @@ and to the deep :doc:`Style Reference </reference/style-reference/index>`.
    meter
    floodgauge
    labeledscale
+   dateentry
+   tableview
+   toast
+   tooltip
