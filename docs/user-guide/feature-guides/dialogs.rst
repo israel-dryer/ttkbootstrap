@@ -311,7 +311,7 @@ accept them.
 
 .. seealso::
 
-   :doc:`Windows & high-DPI </user-guide/feature-guides/windows>` for the focus,
+   :doc:`Windows </user-guide/feature-guides/windows>` for the focus,
    modality, and lifecycle mechanics the dialogs are built on;
    :doc:`Input validation </user-guide/feature-guides/validation>` for validating
    fields in a form dialog; and the :doc:`Multiple windows how-to

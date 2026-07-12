@@ -104,7 +104,7 @@ to build or keep alive, and the glyph recolors with the theme and widget state:
    ttk.Button(app, text="Settings", icon="gear-fill")
 
 See the :doc:`Icons guide </user-guide/feature-guides/icons>` for the full icon
-API, and :doc:`Windows & high-DPI </user-guide/feature-guides/windows>`
+API, and :doc:`Windows </user-guide/feature-guides/windows>`
 for setting the *application* icon.
 
 A worked example
