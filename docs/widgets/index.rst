@@ -145,6 +145,12 @@ and to the deep :doc:`Style Reference </reference/style-reference/index>`.
 
       A text field with a pop-up calendar for choosing a date.
 
+   .. grid-item-card:: Treeview
+      :link: treeview
+      :link-type: doc
+
+      A tree, a multi-column table, or both — rows of items.
+
    .. grid-item-card:: Tableview
       :link: tableview
       :link-type: doc
@@ -188,6 +194,7 @@ and to the deep :doc:`Style Reference </reference/style-reference/index>`.
    floodgauge
    labeledscale
    dateentry
+   treeview
    tableview
    toast
    tooltip
