@@ -127,6 +127,18 @@ and to the deep :doc:`Style Reference </reference/style-reference/index>`.
 
       A radial progress meter and dial.
 
+   .. grid-item-card:: Floodgauge
+      :link: floodgauge
+      :link-type: doc
+
+      A progress bar that shows its value as text across the bar.
+
+   .. grid-item-card:: LabeledScale
+      :link: labeledscale
+      :link-type: doc
+
+      A scale with a value label that tracks the handle.
+
 .. toctree::
    :hidden:
 
@@ -149,3 +161,5 @@ and to the deep :doc:`Style Reference </reference/style-reference/index>`.
    separator
    sizegrip
    meter
+   floodgauge
+   labeledscale
