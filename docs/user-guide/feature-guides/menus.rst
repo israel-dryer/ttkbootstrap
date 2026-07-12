@@ -1,8 +1,8 @@
 Menus
 =====
 
-Menus are built from a single widget — :class:`~ttkbootstrap.Menu` (the blessed
-``tk.Menu``, re-exported as ``ttk.Menu``). The *same* widget plays three roles
+Menus are built from a single widget — :class:`~ttkbootstrap.Menu`, imported as
+``ttk.Menu``. The *same* widget plays three roles
 depending on how you attach it: a **menu bar** across the top of a window, a
 **cascade** that drops down from a bar entry, and a **popup** at the pointer for
 a right-click context menu. This guide builds each in turn, then covers the part
@@ -12,9 +12,8 @@ where the application menu follows its own rules.
 .. note::
 
    ``Menu`` is a classic ``tk`` widget, not a themed ``ttk`` one, so it takes no
-   ``bootstyle``. ttkbootstrap still colors it to the active theme through the
-   blessed ``ttk.Menu`` subclass — always use that (or top-level ``ttk.Menu``),
-   never a bare ``tkinter.Menu``, or the menu falls back to the raw OS look.
+   ``bootstyle`` — but ttkbootstrap colors it to match the active theme
+   automatically.
 
 The menu widget
 ---------------

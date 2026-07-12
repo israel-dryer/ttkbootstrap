@@ -99,7 +99,7 @@ respond to input, and how ttkbootstrap styles them.
       :link: foundations/delivery-model
       :link-type: doc
 
-      How the ``bootstyle`` API reaches your widgets — the blessed subclasses,
+      How the ``bootstyle`` API reaches your widgets — the widget subclasses,
       ``enable_global_api``, ``bootify``, and ``apply_bootstyle``.
 
 Feature guides
