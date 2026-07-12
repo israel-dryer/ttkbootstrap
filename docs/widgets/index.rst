@@ -37,6 +37,18 @@ and to the deep :doc:`Style Reference </reference/style-reference/index>`.
 
       An entry with up/down arrows for stepping a range or list.
 
+   .. grid-item-card:: Checkbutton
+      :link: checkbutton
+      :link-type: doc
+
+      An on/off control — checkbox, toggle switch, or toolbutton.
+
+   .. grid-item-card:: Radiobutton
+      :link: radiobutton
+      :link-type: doc
+
+      One option in a mutually exclusive group; segmented look too.
+
    .. grid-item-card:: Meter
       :link: meter
       :link-type: doc
@@ -50,4 +62,6 @@ and to the deep :doc:`Style Reference </reference/style-reference/index>`.
    entry
    combobox
    spinbox
+   checkbutton
+   radiobutton
    meter
