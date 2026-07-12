@@ -3,6 +3,46 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
+_Last updated: 2026-07-11 (**Menus feature guide + native macOS menu API + the
+last How-To recipes. PR #1174 MERGED into `2.0`** (merge `fd9841d6`; branch
+deleted; suite **648 passed**, `-W` clean). Began as "the last three How-Tos" and
+grew, via review feedback, into the whole **Menus** subsystem:
+**(1) two How-To recipes** — *Scroll long content* (`ScrolledFrame`/`ScrolledText`,
+`auto_hide`, `.text`, `see("end")`) and *Run background work* (`after` + the safe
+worker-thread→`queue`→`after`-poll pattern).
+**(2) Menus promoted to a FEATURE guide** (`feature-guides/menus.rst`) — it was
+too big for a How-To. Item-kind model, menu bar, accelerators with the
+Ctrl/Command split, `entryconfigure`/`postcommand`, right-click context menu, the
+cross-platform menu-bar model.
+**(3) NEW public API — native macOS application menu** (design pass
+`development/2_0_menu_api_design.md`, **Design 1 author-confirmed**). The mac app
+menu previously forced raw Tcl (`name="apple"/"window"/"help"` + `tk::mac::*` via
+`createcommand`) — the docs teaching Tcl was the tell of a **missing API
+footprint** (author's framing). Fix: `Menu` moved out of `__init__.py` into
+**`src/ttkbootstrap/menu.py`** and extended with `add_application_menu` /
+`add_window_menu` / `add_help_menu` + `on_preferences` / `on_quit`, **all no-op
+off macOS** (`add_*_menu` return `None`) so `if app_menu:` replaces `is_mac` and
+one code path works everywhere. Purely additive (no compat). `tests/test_menu_api.py`
+(+6: off-mac no-ops + forced-aqua special-menu Tk names + registered `tk::mac`
+commands).
+**(4) Consistency (review feedback):** How-To titles made **task-shaped + short so
+they don't wrap** (Copy and paste text · Beep and show busy · Open a second window
+· Scroll long content · Run background work · Show images and icons; inbound
+cross-refs repointed); dropped internal **"blessed"** jargon + the `ttk.Menu`
+subclass call-out (aligned the delivery-model card); replaced the guide's raw
+`tk.call("tk","windowingsystem")` with the existing public `ttk.windowing_system`.
+**Three new standing docs rules (memory-saved):** no "blessed"/impl call-outs
+(incl. no "under the hood" asides that re-expose what an API hides); `theme=` not
+`themename=` + curated theme names; no `\` line-continuations. Final polish pass:
+runnable `postcommand` example (real `TclError` guard, not an invented
+`clipboard_ready()`), screenshot placeholders at all three visual moments (menu
+bar/context menu/mac app menu). **NEXT (docs-H, fresh branch off `2.0`):**
+**Widgets-catalog depth** (usage-first per design §5a; the button prototype is
+thin) and the remaining planned How-Tos (*Lay out widgets*/*Wire events* — likely
+cross-refs given Foundations overlap; the *Presentation* cluster: *Animate a GIF*/
+*Splash screen*/*Application icon*). Screenshots remain a later slice. Prior entry
+follows.**)_
+
 _Last updated: 2026-07-11 (**Build-your-first-app tutorial authored. PR #1172
 MERGED into `2.0`** (merge `1c2b5a4e`; branch deleted; docs-only, `-W` clean).
 Authored the flagship **teach-by-building on-ramp** the docs design had been

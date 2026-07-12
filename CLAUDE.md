@@ -308,8 +308,22 @@ headlessly. Established three **standing docs-code rules** (memory-saved): **no
 `\` backslash line-continuations** (assign to a variable and reuse), **use
 `theme=` not `themename=`** on the `App` constructor, and **use curated 2.0 theme
 names** (`bootstrap-dark`, not legacy `darkly`); the same `theme=`/curated-name
-sweep was applied to Quickstart + the landing hero. Governing rule
-now:
+sweep was applied to Quickstart + the landing hero. **#1173 (merge `4fe63b50`)**
+folded **Custom themes** into the Theming & Colors guide (one theming home;
+`custom-themes.rst` deleted). **#1174 (merge `fd9841d6`)** authored the last How-To
+recipes (*Scroll long content*, *Run background work*), **promoted Menus to a
+feature guide** (`feature-guides/menus.rst`), and **added a new public API — the
+native macOS application menu** on `ttk.Menu` (moved into
+`src/ttkbootstrap/menu.py`): `add_application_menu`/`add_window_menu`/
+`add_help_menu` + `on_preferences`/`on_quit`, all no-op off macOS, closing the
+Tcl-reach-in gap the guide exposed (design `2_0_menu_api_design.md`, Design 1;
+`tests/test_menu_api.py`; suite `2.0` **648 passed**). Also made How-To titles
+**task-shaped + short so they don't wrap**, dropped internal **"blessed"** jargon +
+implementation call-outs from the docs, and used the existing public
+`ttk.windowing_system` over raw `tk.call` — **two more standing docs rules
+(memory-saved):** no jargon/impl-detail asides (incl. no "under the hood" notes
+that re-expose what an API hides), and task-shaped short How-To titles. Governing
+rule now:
 [[feedback_docs_teach_tkinter_ttkbootstrap_dialect]] — **the docs teach tkinter
 itself, in the ttkbootstrap dialect** (a self-sufficient learning source; teach,
 don't defer). **Bands sort by DEPTH:** Getting Started · **Fundamentals** ·
