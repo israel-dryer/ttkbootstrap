@@ -779,7 +779,7 @@ class Tableview(ttk.Frame):
         return record
 
     def insert_rows(self, index, rowdata):
-        """Insert row after index for each row in *row. If index does
+        """Insert row after index for each row in rowdata. If index does
         not exist then the records are appended to the end of the table.
         You can also use the string 'end' to append records at the end
         of the table.
