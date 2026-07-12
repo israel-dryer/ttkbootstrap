@@ -92,7 +92,14 @@ variable, not a state:
    radio.state(["disabled"])           # greyed out, not clickable
    radio.state(["!disabled"])          # re-enable
 
-   size.set("large")                   # select "large" programmatically
+   size.set("large")                   # select a button by its value
+   radio.invoke()                      # select this button programmatically
+
+.. note::
+
+   The shared ``variable=`` is what links a group — selecting one button clears
+   the others. Give every button in the group the same variable; without it they
+   are unrelated buttons, not a mutually exclusive set.
 
 API & reference
 ---------------

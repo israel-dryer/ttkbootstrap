@@ -90,16 +90,37 @@ Color
 States
 ------
 
-Toggle the ``disabled`` state to grey the control out and block interaction; the
-selected/unselected visual follows the bound variable, so you set it by changing
-the variable, not a state:
+Toggle ``disabled`` to grey the control out and block clicks:
 
 .. code-block:: python
 
-   check.state(["disabled"])           # greyed out, not clickable
-   check.state(["!disabled"])          # re-enable
+   check.state(["disabled"])
+   check.state(["!disabled"])
 
-   agree.set(True)                     # check it programmatically
+Read or change the value through the bound variable, or drive the widget directly
+with ``invoke`` (toggle) and ``instate`` (read):
+
+.. code-block:: python
+
+   agree.get()                     # -> True / False
+   agree.set(True)                 # check it
+
+   check.invoke()                  # toggle it programmatically
+   check.instate(["selected"])     # read the checked state directly
+
+The ``alternate`` state shows an indeterminate "mixed" mark — for a "select all"
+that is only partly on:
+
+.. code-block:: python
+
+   check.state(["alternate"])
+   check.state(["!alternate"])
+
+.. note::
+
+   A checkbutton created without ``variable=`` starts in the ``alternate`` state.
+   Bind a ``variable=``, or clear it with ``check.state(["!alternate"])``, to start
+   it unchecked.
 
 API & reference
 ---------------
