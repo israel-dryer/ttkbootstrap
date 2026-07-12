@@ -75,9 +75,14 @@ actually owns (e.g. `Canvas.bbox`, `Listbox.size`) and add them by hand.
 
 ## Build / environment
 
-- Python + Sphinx live in **`.venv-home`** (the repo `.venv` is broken on the
-  author's box). Run: `.venv-home/Scripts/python.exe` (Git-Bash path
+pi- **On the Windows box:** Python + Sphinx live in **`.venv-home`** (the repo
+  `.venv` is broken there). Run: `.venv-home/Scripts/python.exe` (Git-Bash path
   `/d/Development/ttkbootstrap/.venv-home/Scripts/python.exe`).
+- **On the macOS box:** the repo **`.venv`** works — `python` on PATH resolves to
+  it (Sphinx 9.1.0 + `sphinx-autobuild` installed). Live preview:
+  `sphinx-autobuild docs /tmp/ttkdocs-live --open-browser` (serves
+  http://127.0.0.1:8000, live-reloads on `.rst` save; restart it to pick up new
+  files/toctree/`conf.py` changes).
 - Build gate (must be exit 0): `python -m sphinx -b html -W -q docs <outdir>`.
   Use a throwaway outdir (e.g. `/tmp/ttkdocs-b`) and `-E` for a fresh
   (non-incremental) build when in doubt — incremental builds can hide autodoc
@@ -98,6 +103,18 @@ actually owns (e.g. `Canvas.bbox`, `Listbox.size`) and add them by hand.
   `menu.rst` — all complete (options tables + all widget-specific methods as
   `py:method`). Menu includes the ttkbootstrap macOS additions
   (`add_application_menu`/`window`/`help`, `on_preferences`/`on_quit`).
+- **Trivial tk containers (branch `docs/2.0-api-reference-tk-containers`, off
+  `2.0`):** `tk.rst`, `tkframe.rst`, `tklabel.rst`, `labelframe.rst` — all
+  complete + wired into `reference/api/index.rst` (cards + toctree); build gate
+  clean. All four are pure option surfaces (zero widget-specific methods), so
+  they are options-tables + "Shared capabilities" only. `tk.rst` keeps its
+  window-manager surface light (compact `wm`-method index table, not full
+  py:method specs) and defers to the Windows feature guide / `ttk.Window` per the
+  scope note. `labelframe.rst` documents the **blessed tk** `ttk.LabelFrame`
+  (capital F) and disambiguates it from the ttk `ttk.Labelframe`. Cross-links to
+  the ttk counterparts point at the **catalog** pages (`/widgets/frame`,
+  `/widgets/label`, `/widgets/labelframe`), which exist — NOT
+  `/reference/api/<w>` ttk pages, which don't yet (avoids `-W` breakage).
 - Reference band (`reference/index.rst`) now shows: Style Reference, API
   Reference, Capabilities, Cursors.
 - The interim monolithic `reference/api/shared-capabilities.rst` +
