@@ -25,29 +25,9 @@ The lookup layer:
       :link: capabilities/index
       :link-type: doc
 
-      The methods every widget inherits, grouped by area — focus, and (folding
-      in below) events, widget info, and more — each mirroring its Tcl/Tk page.
-
-   .. grid-item-card:: Event reference
-      :link: events/index
-      :link-type: doc
-
-      tkinter's event system in Python terms — event types, modifiers, key
-      symbols, the event object, and the built-in virtual events.
-
-   .. grid-item-card:: Widget & screen info
-      :link: winfo
-      :link-type: doc
-
-      The ``winfo_*`` methods every widget carries — class, size, position,
-      geometry manager, pointer location, and screen dimensions.
-
-   .. grid-item-card:: Cursors
-      :link: cursors
-      :link-type: doc
-
-      The mouse-pointer names the ``cursor`` option accepts — the common set,
-      the full portable list, and the platform-specific pointers.
+      The methods every widget inherits, grouped by area — configuration,
+      geometry, events, focus, grab, timers, clipboard, ``winfo``, and cursors —
+      each mirroring its Tcl/Tk manual page.
 
 .. toctree::
    :hidden:
@@ -55,6 +35,3 @@ The lookup layer:
    style-reference/index
    api/index
    capabilities/index
-   events/index
-   winfo
-   cursors

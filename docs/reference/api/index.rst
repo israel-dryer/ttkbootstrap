@@ -24,12 +24,6 @@ not at all). A widget's styling surface lives separately in the
       The widgets ttkbootstrap ships — ``Meter``, ``Floodgauge``,
       ``DateEntry``, ``Tableview``, and more.
 
-   .. grid-item-card:: Shared capabilities
-      :link: shared-capabilities
-      :link-type: doc
-
-      The methods every widget inherits — events, geometry, focus, ``winfo``.
-
    .. grid-item-card:: Text
       :link: text
       :link-type: doc
@@ -41,5 +35,4 @@ not at all). A widget's styling surface lives separately in the
    :maxdepth: 1
 
    widgets
-   shared-capabilities
    text

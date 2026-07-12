@@ -395,8 +395,8 @@ Shared capabilities
 -------------------
 
 ``Text`` also has the methods every widget inherits — configuration, placement,
-event binding, lifecycle, focus, and introspection. See
-:doc:`Shared capabilities <shared-capabilities>`.
+event binding, lifecycle, focus, and introspection. These are documented under
+:doc:`Capabilities </reference/capabilities/index>`.
 
 See also
 --------
