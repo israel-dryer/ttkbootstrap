@@ -50,7 +50,7 @@ apps stay organized as they grow.
            ttk.Label(self, text="Contact Book", font="-size 16 -weight bold").pack()
 
 
-   app = ttk.App(title="Contact Book", themename="bootstrap-light", size=(560, 520))
+   app = ttk.App(title="Contact Book", theme="bootstrap-light", size=(560, 520))
    ContactBook(app)
    app.mainloop()
 
@@ -281,8 +281,8 @@ We styled as we went, with ``bootstyle=`` — ``"success"`` for the Add button,
 ``"primary"`` for the table's accents, ``"secondary"``/``"danger"`` on the
 status label to signal calm vs. error. ``bootstyle`` describes *intent* (a
 color and, optionally, a variant), never a literal color, so the whole app
-re-themes when you change ``themename`` on the ``App``. Try
-``themename="darkly"`` — every widget follows.
+re-themes when you change ``theme`` on the ``App``. Try
+``theme="bootstrap-dark"`` — every widget follows.
 
 .. seealso::
 
@@ -365,7 +365,7 @@ The complete app
            self.email.set("")
 
 
-   app = ttk.App(title="Contact Book", themename="bootstrap-light", size=(560, 520))
+   app = ttk.App(title="Contact Book", theme="bootstrap-light", size=(560, 520))
    ContactBook(app)
    app.mainloop()
 
