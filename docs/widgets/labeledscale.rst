@@ -40,7 +40,7 @@ Where the label sits
 --------------------
 
 ``compound`` places the value label above (``"top"``, the default) or below
-(``"bottom"``) the scale:
+(``"bottom"``) the scale — those are the only two positions:
 
 .. code-block:: python
 
