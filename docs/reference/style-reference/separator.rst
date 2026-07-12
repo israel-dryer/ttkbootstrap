@@ -5,10 +5,10 @@ Separator
 
 A thin dividing rule.
 
-bootstyle → ttk style name
---------------------------
+Bootstyle mapping
+-----------------
 
-Any of the accent colors -- ``primary``, ``secondary``, ``success``, ``info``, ``warning``, ``danger``, ``light``, ``dark`` -- substitutes for ``primary`` above. ``neutral`` does not apply to this family.
+Any of the accent colors -- ``primary``, ``secondary``, ``success``, ``info``, ``warning``, ``danger``, ``light``, ``dark`` -- substitutes for ``primary`` below. ``neutral`` does not apply to this family.
 
 A vertical widget resolves to the ``Vertical.`` twin of each style name above.
 
@@ -25,14 +25,14 @@ A vertical widget resolves to the ``Vertical.`` twin of each style name above.
 Layout (elements)
 -----------------
 
-The element tree the widget is drawn from (introspected from the ``primary.Horizontal.TSeparator`` style):
+The widget is drawn from these nested parts. Each is an *element* you can target by name in a custom layout:
 
 .. code-block:: text
 
    primary.Horizontal.Separator.separator
 
-Configurable options
---------------------
+Configurable style options
+--------------------------
 
 Options you can set with ``style.configure(...)`` / ``style.map(...)``:
 

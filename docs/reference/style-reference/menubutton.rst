@@ -5,10 +5,10 @@ Menubutton
 
 A button that drops a menu.
 
-bootstyle → ttk style name
---------------------------
+Bootstyle mapping
+-----------------
 
-Any of the accent colors -- ``primary``, ``secondary``, ``success``, ``info``, ``warning``, ``danger``, ``light``, ``dark`` -- substitutes for ``primary`` above. ``neutral`` also applies here.
+Any of the accent colors -- ``primary``, ``secondary``, ``success``, ``info``, ``warning``, ``danger``, ``light``, ``dark`` -- substitutes for ``primary`` below. ``neutral`` also applies here.
 
 .. list-table::
    :header-rows: 1
@@ -24,7 +24,7 @@ Any of the accent colors -- ``primary``, ``secondary``, ``success``, ``info``, `
 Layout (elements)
 -----------------
 
-The element tree the widget is drawn from (introspected from the ``primary.TMenubutton`` style):
+The widget is drawn from these nested parts. Each is an *element* you can target by name in a custom layout:
 
 .. code-block:: text
 
@@ -34,8 +34,8 @@ The element tree the widget is drawn from (introspected from the ``primary.TMenu
          primary.TMenubutton.indicator
          Menubutton.label
 
-Configurable options
---------------------
+Configurable style options
+--------------------------
 
 Options you can set with ``style.configure(...)`` / ``style.map(...)``:
 
@@ -44,7 +44,7 @@ Options you can set with ``style.configure(...)`` / ``style.map(...)``:
 Supported states
 ----------------
 
-States the built style responds to (via ``style.map(...)``):
+The states you can target with ``style.map(...)`` to vary appearance by interaction:
 
 ``!disabled``, ``disabled``, ``hover``, ``pressed``
 
