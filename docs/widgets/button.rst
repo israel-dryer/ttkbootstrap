@@ -151,7 +151,10 @@ in every theme. The nine semantic colors:
 
    A swatch strip of the nine button colors in light and dark themes.
 
-A bare ``Button`` with no ``bootstyle`` uses the ``neutral`` default (as does
+The default color
+-----------------
+
+A bare ``Button`` with no ``bootstyle`` uses the ``neutral`` color (as does
 ``Menubutton``). To restore the pre-2.0 accented default, set it **before** the
 app is created — the setting is consumed when a button's style is first built:
 
