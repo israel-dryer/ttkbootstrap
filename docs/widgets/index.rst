@@ -85,6 +85,42 @@ and to the deep :doc:`Style Reference </reference/style-reference/index>`.
 
       Resizable panes split by a draggable sash.
 
+   .. grid-item-card:: Label
+      :link: label
+      :link-type: doc
+
+      Read-only text or an image — captions, headings, status lines.
+
+   .. grid-item-card:: Progressbar
+      :link: progressbar
+      :link-type: doc
+
+      Determinate or indeterminate progress; striped and vertical.
+
+   .. grid-item-card:: Scale
+      :link: scale
+      :link-type: doc
+
+      A slider for choosing a number from a range.
+
+   .. grid-item-card:: Scrollbar
+      :link: scrollbar
+      :link-type: doc
+
+      Scrolls a Text, Listbox, Treeview, or Canvas.
+
+   .. grid-item-card:: Separator
+      :link: separator
+      :link-type: doc
+
+      A thin line that divides content into groups.
+
+   .. grid-item-card:: Sizegrip
+      :link: sizegrip
+      :link-type: doc
+
+      The corner handle for resizing a window.
+
    .. grid-item-card:: Meter
       :link: meter
       :link-type: doc
@@ -106,4 +142,10 @@ and to the deep :doc:`Style Reference </reference/style-reference/index>`.
    labelframe
    notebook
    panedwindow
+   label
+   progressbar
+   scale
+   scrollbar
+   separator
+   sizegrip
    meter
