@@ -1,5 +1,5 @@
-Make your own theme
-===================
+Custom themes
+=============
 
 A theme is a handful of **semantic anchors** — the accent colors and a neutral
 gray — plus a light and/or dark surface. Declare those, and ttkbootstrap derives

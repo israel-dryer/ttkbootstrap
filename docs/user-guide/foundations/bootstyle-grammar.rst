@@ -161,7 +161,7 @@ Beyond the grammar
 
 When you need a look the grammar can't name — a bespoke color, a custom element
 layout — you register your own ttk style and apply it with ``style=``. See
-:doc:`Make your own style </user-guide/feature-guides/make-your-own-style>`.
+:doc:`Custom styles </user-guide/feature-guides/custom-styles>`.
 
 The rest of this page is the full vocabulary and every registered widget family,
 generated from the closed vocabulary and the builder registry.

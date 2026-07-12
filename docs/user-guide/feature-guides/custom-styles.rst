@@ -1,5 +1,5 @@
-Make your own style
-===================
+Custom styles
+=============
 
 ``bootstyle`` covers the looks the themes ship. When you need something it can't
 name — a bespoke shape, your own element tree, a one-off tweak — a public toolkit

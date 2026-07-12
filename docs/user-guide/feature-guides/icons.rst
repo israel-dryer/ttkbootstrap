@@ -136,8 +136,8 @@ variants read better at small sizes.
    To place a glyph inside a style *layout* you author yourself (a custom
    indicator, say), use ``icon_element``, which builds a ttk image element whose
    per-state image is a glyph. This works directly with ttk's element and layout
-   model; see :doc:`Make your own style
-   </user-guide/feature-guides/make-your-own-style>` for the style-construction
+   model; see :doc:`Custom styles
+   </user-guide/feature-guides/custom-styles>` for the style-construction
    toolkit, and the `tkinter.ttk styling
    <https://docs.python.org/3/library/tkinter.ttk.html#ttk-styling>`__ reference
    for the underlying concepts.

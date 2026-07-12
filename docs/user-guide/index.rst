@@ -156,26 +156,21 @@ Each subsystem, end to end — its concepts and its usage in one place.
       ``Messagebox`` and ``Querybox``, the date/font/color pickers, ``filedialog``,
       and what each returns.
 
-   .. grid-item-card:: Theming
+   .. grid-item-card:: Theming & Colors
       :link: feature-guides/theming
       :link-type: doc
 
-      Choosing and switching themes, light/dark, and the built-in catalog.
+      Choosing and switching themes, light/dark, the built-in catalog, and reading
+      the theme's colors (``style.colors``, ramps like ``c.primary[300]``).
 
-   .. grid-item-card:: Working with color
-      :link: feature-guides/working-with-color
-      :link-type: doc
-
-      ``style.colors`` and ramp addressing (``c.primary[300]``).
-
-   .. grid-item-card:: Make your own style
-      :link: feature-guides/make-your-own-style
+   .. grid-item-card:: Custom styles
+      :link: feature-guides/custom-styles
       :link-type: doc
 
       The custom style-construction toolkit — assets, layouts, and icons.
 
-   .. grid-item-card:: Make your own theme
-      :link: feature-guides/make-your-own-theme
+   .. grid-item-card:: Custom themes
+      :link: feature-guides/custom-themes
       :link-type: doc
 
       The ``Theme`` API and the ttkcreator editor.
@@ -222,9 +217,8 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way. See the
    feature-guides/windows
    feature-guides/dialogs
    feature-guides/theming
-   feature-guides/working-with-color
-   feature-guides/make-your-own-style
-   feature-guides/make-your-own-theme
+   feature-guides/custom-styles
+   feature-guides/custom-themes
 
 .. toctree::
    :hidden:
