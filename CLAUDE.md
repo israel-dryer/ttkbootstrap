@@ -283,8 +283,15 @@ feature-guide stubs authored (Typography/Localization/Validation) + a
 `ttk.Validation`; old `add_*` kept as warn-and-forward deprecated aliases removed
 in 3.0; `ColorChooser` migrated; logged in `2_0_breaking_changes.md`). With that,
 the three natural utility families are all namespaced (`Fonts`/`MessageCatalog`/
-`Validation`) — the surface survey found no further namespacing worth doing.
-Governing rule now:
+`Validation`) — the surface survey found no further namespacing worth doing. **#1169 (merge
+`624272d8`) the Dialogs feature guide + two essentials How-Tos (clipboard,
+error-handling) + file dialogs surfaced through `Querybox`** (new
+`Querybox.get_open_filename`/`get_open_filenames`/`get_save_filename`/
+`get_directory` wrappers over `tkinter.filedialog`, cancel normalized to `None`;
+`ttk.filedialog` re-exported; additive) **+ a teach-by-building robustness pass**
+over the feature guides authored this cycle (Typography/Localization/Validation/
+Dialogs reworked from option-tours into build-a-real-flow guides). Governing rule
+now:
 [[feedback_docs_teach_tkinter_ttkbootstrap_dialect]] — **the docs teach tkinter
 itself, in the ttkbootstrap dialect** (a self-sufficient learning source; teach,
 don't defer). **Bands sort by DEPTH:** Getting Started · **Fundamentals** ·
@@ -295,11 +302,14 @@ feature guides own the depth). Author was firm: **teach layout/mechanics
 BY BUILDING, never option-tours.** The full IA (charters, §14 curriculum map,
 tkinter-surface coverage audit + supersession map, screenshot-placeholder
 convention) lives in `development/2_0_docs_design.md`. **NEXT (content authoring,
-fresh branch off `2.0`):** the **Dialogs** guide (incl. stdlib `filedialog`) +
-essentials How-Tos (clipboard, error handling); the **Build-your-first-app**
-tutorial; **Widgets-catalog** depth (usage-first per design §5a). (The three
-feature-guide stubs — Typography/Localization/Validation — are now DONE, #1168.)
-Screenshots are a later slice (placeholders are in place). See
+fresh branch off `2.0`):** the **Build-your-first-app** tutorial (Getting Started;
+the flagship teach-by-building on-ramp); **Widgets-catalog** depth (usage-first
+per design §5a; the button prototype is thin); remaining How-Tos (*Menus*,
+*Scrollable*, *Threads*; *Validate a form* is now partly covered by the Validation
+guide). (DONE this cycle: the Typography/Localization/Validation stubs authored
+[#1168], the Dialogs guide + clipboard/error-handling How-Tos + the feature-guide
+robustness pass [#1169].) Screenshots are a later slice (placeholders are in
+place). See
 `development/2_0_handoff.md` top entry for the full current state.
 
 ## Repository layout

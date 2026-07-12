@@ -3,6 +3,51 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
+_Last updated: 2026-07-11 (**Dialogs guide + file-dialog `Querybox` methods +
+a teach-by-building robustness pass over the feature guides. PR #1169 MERGED into
+`2.0`** (merge `624272d8`; branch deleted). Three parts:
+**(1) Dialogs feature guide** (`feature-guides/dialogs.rst`, the ★ homeless
+subsystem) — teaches the shipped dialogs via the *show → read → act* shape:
+Messagebox (real quit-with-unsaved flow; families; keyword-only `parent=`; custom
+`"label:bootstyle"` buttons; returned-label localization gotcha), Querybox
+(*get → check None → use*, results applied live; full method set; empty-vs-cancel),
+the date/font/color pickers (`ColorChoice` rgb/hsl/hex), file dialogs (see 2), and
+a substantial **Driving the dialog classes** section (`MessageDialog`/`QueryDialog`,
+`default=`, `.show(position=)`, non-blocking `command=`, custom-`Toplevel` pattern).
+Plus two essentials How-Tos: **Clipboard & selection** and **Handle callback
+errors** (`report_callback_exception`/`TclError`). Authored against the
+2.0-normalized (PR A/#1102) signatures, harvested verbatim from source +
+`test_dialogs_api.py`.
+**(2) File dialogs surfaced** *(additive code)* — filedialog was the one standard
+dialog with no ttkbootstrap entry point (callers dropped to `from tkinter import
+filedialog`). Added **`Querybox.get_open_filename`/`get_open_filenames`/
+`get_save_filename`/`get_directory`** — static-method wrappers over
+`tkinter.filedialog` that normalize the stdlib `""`/`()`-on-cancel to `None` to
+match the `get_*` facade — plus **`ttk.filedialog`** re-exported top-level for the
+file-object variants (`askopenfile`). Not superseded (native OS chrome, can't
+restyle) but no reason to hide it. `tests/test_dialogs_api.py` +3 (surface /
+static shape / cancel-normalization via monkeypatch, no OS dialog opened). Logged
+in `2_0_breaking_changes.md`.
+**(3) Feature-guide robustness pass** — author's bar: feature guides must be ROBUST
+and **teach BY BUILDING, not a "drive-by options" tour** (catalog-of-methods reads
+as an options dump and fails the standard — see
+[[feedback_docs_teach_tkinter_ttkbootstrap_dialect]], updated). Reworked the four
+guides authored this cycle: **Typography** (method-list `Fonts` walkthrough → a
+task-driven "build a type system"), **Localization** (added a "putting it together"
+bilingual-app build; fixed a stale Windows→Dialogs xref), **Validation** (added
+"validating a form" — validate-all-then-submit, flag every bad field), **Dialogs**
+(the rewrite above). Screenshot placeholders at the visual moments (custom buttons,
+pickers, type scale, custom dialog).
+**Verification:** headless suite **641 passed** (only the known `nl.msg` env flake);
+every guide example's API verified headlessly (incl. the live locale-switch and the
+form-validation flagging); full-site `sphinx -b html -W` clean, exit 0.
+**NEXT (docs-H content authoring, fresh branch off `2.0`):** the **Build-your-
+first-app** tutorial (Getting Started; the flagship teach-by-building on-ramp);
+**Widgets-catalog** depth (usage-first per §5a; button prototype is thin);
+remaining How-Tos (*Validate a form* now partly covered by the Validation guide;
+*Menus*, *Scrollable*, *Threads*). Screenshots remain a later slice. User WIP
+`gallery/collapsing_frame.py` LEFT UNTOUCHED. Prior entry follows.**)_
+
 _Last updated: 2026-07-11 (**Feature-guide stubs authored + a `Validation`
 namespace API rename. PR #1168 MERGED into `2.0`** (merge `c3daa3f2`; branch
 deleted). Two related pieces:
