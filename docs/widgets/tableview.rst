@@ -105,9 +105,13 @@ API & reference
 
 ``Tableview`` ships a large API — ``TableColumn`` / ``TableRow`` objects, sorting,
 filtering, CSV export, and programmatic selection — beyond what this page covers.
-The full class reference on the :doc:`Widgets API page </reference/api/widgets>`
-is pending a docstring cleanup; until then, read the methods in the source
-(``ttkbootstrap.widgets.tableview``).
+For the complete list, see :class:`~ttkbootstrap.Tableview` on the
+:doc:`Widgets API page </reference/api/widgets>`:
+
+.. autosummary::
+   :nosignatures:
+
+   ~ttkbootstrap.Tableview
 
 .. seealso::
 

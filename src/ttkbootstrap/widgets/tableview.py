@@ -422,46 +422,7 @@ class Tableview(ttk.Frame):
     The object has a right-click menu on the header and the cells that
     allow you to configure various settings.
 
-    Examples:
-
-        Adding data with the constructor
-        ```python
-        import ttkbootstrap as ttk
-        from ttkbootstrap.constants import *
-
-        app = ttk.App()
-        colors = app.style.colors
-
-        coldata = [
-            {"text": "LicenseNumber", "stretch": False},
-            "CompanyName",
-            {"text": "UserCount", "stretch": False},
-        ]
-
-        rowdata = [
-            ('A123', 'IzzyCo', 12),
-            ('A136', 'Kimdee Inc.', 45),
-            ('A158', 'Farmadding Co.', 36)
-        ]
-
-        dt = ttk.Tableview(
-            master=app,
-            coldata=coldata,
-            rowdata=rowdata,
-            paginated=True,
-            searchable=True,
-            bootstyle=PRIMARY,
-            stripecolor=(colors.light, None),
-        )
-        dt.pack(fill=BOTH, expand=YES, padx=10, pady=10)
-
-        app.mainloop()
-        ```
-
-        Add data with methods
-        ```python
-        dt.insert_row('end', ['Marzale LLC', 26])
-        ```
+    See the :doc:`Tableview widget page </widgets/tableview>` for usage examples.
     """
 
     def __init__(
@@ -576,16 +537,6 @@ class Tableview(ttk.Frame):
                 The callback receives a list of selected TableRow objects as its argument.
                 When no rows are selected, the callback receives an empty list.
 
-                Example:
-                ```python
-                def handle_selection(selected_rows):
-                    print(f"Selected {len(selected_rows)} rows")
-                    for row in selected_rows:
-                        print(row.values)
-
-                tableview = Tableview(master, on_select=handle_selection, ...)
-                ```
-
             iid_field (Union[int, str, None]):
                 Optional column index or header name to use as the unique identifier (iid)
                 for each row. If specified as an integer, it represents the column index.
@@ -593,23 +544,6 @@ class Tableview(ttk.Frame):
                 the value from this field will be used as the row's iid instead of the
                 auto-generated iid. This is useful when you have a natural key field like
                 an ID or unique code that you want to use for row identification.
-
-                Example:
-                ```python
-                # Using column index
-                tableview = Tableview(
-                    coldata=["ID", "Name", "Age"],
-                    rowdata=[[1, "Alice", 25], [2, "Bob", 30]],
-                    iid_field=0  # Use first column (ID) as iid
-                )
-
-                # Using column name
-                tableview = Tableview(
-                    coldata=["ID", "Name", "Age"],
-                    rowdata=[[1, "Alice", 25], [2, "Bob", 30]],
-                    iid_field="ID"  # Use ID column as iid
-                )
-                ```
         """
         super().__init__(master)
         self._tablecols = []
@@ -864,12 +798,6 @@ class Tableview(ttk.Frame):
 
             rowdata (list[Any, list]):
                 A list of row values to be inserted into the table.
-
-        Examples:
-
-            ```python
-            Tableview.insert_rows('end', ['one', 1], ['two', 2])
-            ```
         """
         if len(rowdata) == 0:
             return
@@ -1522,20 +1450,6 @@ class Tableview(ttk.Frame):
                 the specified columns. Column names should match the headertext
                 of the desired columns. If no columns are specified, searches
                 all columns.
-
-        Examples:
-
-            Search all columns:
-            ```python
-            tableview.search_table_data("example")
-            tableview.search_table_data(12345)  # Search for numeric value
-            ```
-
-            Search specific columns:
-            ```python
-            tableview.search_table_data("example", "CompanyName")
-            tableview.search_table_data(100, "Price", "Quantity")
-            ```
         """
         if criteria is None or (isinstance(criteria, str) and not criteria):
             self.reset_row_filters()
