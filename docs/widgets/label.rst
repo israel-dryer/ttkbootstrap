@@ -53,6 +53,20 @@ against it:
 
    ttk.Label(app, text="Header", bootstyle="inverse-primary")
 
+.. note::
+
+   ``Label`` is one of the few ttk widgets that also accepts ``foreground``,
+   ``background``, and ``font`` **directly** as options — most ttk widgets take
+   their colors only from a style. A value set this way overrides the
+   ``bootstyle`` color, which is handy for a one-off:
+
+   .. code-block:: python
+
+      ttk.Label(app, text="Note", foreground="#b02a37", background="#fff3cd")
+
+   Prefer ``bootstyle`` for anything themed, though — a hard-coded color here does
+   not follow a theme switch.
+
 Wrapping long text
 ------------------
 
