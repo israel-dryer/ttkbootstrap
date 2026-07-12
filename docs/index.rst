@@ -43,7 +43,7 @@ Why ttkbootstrap
 
    .. grid-item-card:: :octicon:`paintbrush;1.5em;sd-mr-1` Semantic styling
 
-      One keyword does it: ``bootstyle="primary"``, ``bootstyle="success-outline"``.
+      One keyword does it: ``bootstyle="primary"``, ``bootstyle="success outline"``.
       Describe intent, not hex codes — the same code looks right across 30 light
       and dark themes and re-themes at runtime.
 
@@ -77,7 +77,7 @@ A themed window is a handful of lines — every widget takes ``bootstyle``:
    ttk.Label(app, text="Hello from ttkbootstrap!").pack(padx=16, pady=(16, 8))
    ttk.Button(app, text="Primary", bootstyle="primary").pack(padx=16, pady=4)
    ttk.Button(app, text="Success", bootstyle="success").pack(padx=16, pady=4)
-   ttk.Button(app, text="Danger Outline", bootstyle="danger-outline").pack(padx=16, pady=(4, 16))
+   ttk.Button(app, text="Danger Outline", bootstyle="danger outline").pack(padx=16, pady=(4, 16))
 
    app.mainloop()
 

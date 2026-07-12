@@ -98,7 +98,7 @@ For a **toolbar**, pack icon-only buttons side by side in a frame:
    toolbar.pack(fill=X)
 
    for name, action in [("save", save), ("printer", print_doc), ("trash", delete)]:
-       button = ttk.Button(toolbar, icon=name, icon_only=True, command=action, bootstyle="secondary-link")
+       button = ttk.Button(toolbar, icon=name, icon_only=True, command=action, bootstyle="secondary link")
        button.pack(side=LEFT)
 
 The default button
@@ -173,9 +173,9 @@ Combine a color with a variant to change visual weight — ``outline``, ``link``
 .. code-block:: python
 
    ttk.Button(app, text="Solid",   bootstyle="primary")
-   ttk.Button(app, text="Outline", bootstyle="primary-outline")
-   ttk.Button(app, text="Link",    bootstyle="primary-link")
-   ttk.Button(app, text="Ghost",   bootstyle="primary-ghost")
+   ttk.Button(app, text="Outline", bootstyle="primary outline")
+   ttk.Button(app, text="Link",    bootstyle="primary link")
+   ttk.Button(app, text="Ghost",   bootstyle="primary ghost")
 
 - **solid** (the default) — a filled button for the primary action.
 - **outline** — a bordered button for a secondary action next to a solid one.

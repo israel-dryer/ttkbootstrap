@@ -64,7 +64,7 @@ Color
 .. code-block:: python
 
    ttk.OptionMenu(app, size, "Medium", "Small", "Medium", "Large", bootstyle="success")
-   ttk.OptionMenu(app, size, "Medium", "Small", "Medium", "Large", bootstyle="info-outline")
+   ttk.OptionMenu(app, size, "Medium", "Small", "Medium", "Large", bootstyle="info outline")
 
 .. admonition:: Across platforms
    :class: note

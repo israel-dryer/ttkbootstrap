@@ -41,31 +41,42 @@ layouts — a header, a sidebar, a form — each managed independently:
 manager you use *inside* a frame is independent of the one used to place the frame
 itself — see :doc:`Arranging widgets </user-guide/foundations/arranging-widgets>`.
 
-Color
------
+Adding a border
+---------------
 
-By default a frame is invisible — it takes the window background. Give it a
-``bootstyle`` color to make it a visible band (a header, a footer, a colored
-section):
-
-.. code-block:: python
-
-   ttk.Frame(app, padding=10, bootstyle="secondary")
-
-Put ``inverse-<color>`` labels inside a colored frame so their text reads against
-the fill (as the header above does).
-
-Card and highlight variants
----------------------------
-
-Two variants give a frame a **hairline border** to set a region off from the
-background — a ``card`` for grouped content, and ``highlight`` which turns its
-border to the accent color when something inside has focus:
+By default a frame is invisible — it takes the window background. The most common
+reason to style one is to **set a region off with a border**. The ``card`` variant
+draws a hairline border around the frame's contents:
 
 .. code-block:: python
 
    ttk.Frame(app, padding=16, bootstyle="card")
-   ttk.Frame(app, padding=16, bootstyle="highlight")
+
+The ``highlight`` variant is the same hairline, but drawn in the **accent color
+while the frame is in the** ``focus`` **state**. A frame does not track its
+children's focus on its own, so you set that state yourself — for example, to make
+a card glow while an entry inside it is focused:
+
+.. code-block:: python
+
+   card = ttk.Frame(app, padding=16, bootstyle="highlight")
+   card.pack()
+   entry = ttk.Entry(card)
+   entry.pack()
+
+   entry.bind("<FocusIn>",  lambda event: card.state(["focus"]))
+   entry.bind("<FocusOut>", lambda event: card.state(["!focus"]))
+
+Colored background
+------------------
+
+Less often, give a frame a ``bootstyle`` color to make it a filled band — a
+colored header or footer. Put ``inverse-<color>`` labels inside so their text
+reads against the fill (as the header in `Usage`_ does):
+
+.. code-block:: python
+
+   ttk.Frame(app, padding=10, bootstyle="secondary")
 
 API & reference
 ---------------

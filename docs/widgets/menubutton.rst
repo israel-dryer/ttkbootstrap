@@ -72,7 +72,7 @@ Colors and variants
 .. code-block:: python
 
    ttk.Menubutton(app, text="Solid",   bootstyle="primary")
-   ttk.Menubutton(app, text="Outline", bootstyle="primary-outline")
+   ttk.Menubutton(app, text="Outline", bootstyle="primary outline")
 
 States
 ------

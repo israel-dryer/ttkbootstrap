@@ -25,7 +25,7 @@ they overflow:
    scroller.pack(fill="both", expand=True, padx=10, pady=10)
 
    for i in range(40):
-       option = ttk.Checkbutton(scroller, text=f"Option {i + 1}", bootstyle="round-toggle")
+       option = ttk.Checkbutton(scroller, text=f"Option {i + 1}", bootstyle="round toggle")
        option.pack(anchor="w", pady=2)
 
    app.mainloop()

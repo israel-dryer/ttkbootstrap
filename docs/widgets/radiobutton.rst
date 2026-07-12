@@ -78,7 +78,7 @@ Color
 .. code-block:: python
 
    ttk.Radiobutton(app, text="Info", variable=size, value="s", bootstyle="info")
-   ttk.Radiobutton(app, text="On", variable=view, value="x", bootstyle="success-toolbutton")
+   ttk.Radiobutton(app, text="On", variable=view, value="x", bootstyle="success toolbutton")
 
 States
 ------
