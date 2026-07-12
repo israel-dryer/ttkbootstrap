@@ -3,6 +3,35 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
+_Last updated: 2026-07-11 (**Build-your-first-app tutorial authored. PR #1172
+MERGED into `2.0`** (merge `1c2b5a4e`; branch deleted; docs-only, `-W` clean).
+Authored the flagship **teach-by-building on-ramp** the docs design had been
+missing (`getting-started/build-your-first-app.rst`; wired into the Getting
+Started card grid + toctree after Quickstart). It builds a small but *complete*
+**contact-book app** one runnable step at a time — (1) application shell
+(`App` + `Frame` subclass + `mainloop`), (2) a `grid` form (`Labelframe`,
+`columnconfigure` weight, `sticky`), (3) `StringVar` binding via `textvariable=`,
+(4) `Validation.regex` on the email entry, (5) a searchable `Tableview`, (6) a
+button `command=` callback wiring form→table — each step handing off to its
+deeper Foundations/feature-guide home via `seealso`, with the full listing
+closing the page and screenshot placeholders at the visual moments. **Every code
+block verified headlessly** against the 2.0-normalized API
+(`App`/`StringVar`/`Labelframe`/`Validation.regex`/`Tableview.insert_row`+
+`get_rows`/`-size 16 -weight bold` font spec; confirmed `insert_row` auto-reloads
+so no redundant `load_table_data`). **Three author-feedback rounds baked in
+(now standing rules, memory-saved):** (a) **no `\` backslash line-continuations**
+in example code — assign to a variable and reuse (matched the existing
+`email_entry` pattern); (b) **use `theme=`, not the `themename=` alias**, on the
+`App` constructor; (c) **use a curated 2.0 theme name** (swapped the re-theming
+example `darkly`→`bootstrap-dark`), never a legacy Bootswatch name. A follow-on
+sweep applied (b)/(c) to the **Quickstart page + landing-page hero** too (code +
+prose) so all Getting Started/landing examples read uniformly; the intentional
+`themename=`/`darkly` mentions that *document* the alias or legacy auto-register
+path (`windows.rst`/`theming.rst`) were left as-is. **NEXT (docs-H, fresh branch
+off `2.0`):** **Widgets-catalog depth** (usage-first per design §5a; the button
+prototype is thin) and the remaining How-Tos (*Menus*, *Scrollable*, *Threads*).
+Screenshots remain a later slice. Prior entry follows.**)_
+
 _Last updated: 2026-07-11 (**Windows guide finished + deepened + retitled. PR
 #1171 MERGED into `2.0`** (merge `45730422`; branch deleted; docs-only, `-W`
 clean). The Windows feature guide was a stub ("Still to come" outline); it is now

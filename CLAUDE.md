@@ -298,7 +298,17 @@ to reframe when finished). **#1171 (merge `45730422`) the Windows guide finished
 deepened, and retitled → "Windows"** (teach-the-geometry/state-model not an
 option-tour; a consolidated cross-platform behavior table + inline notes; a bonus
 fix for nested-inline-markup leaking literal double backticks, caught by a
-state-machine scanner over `docs/` since `-W` doesn't flag it). Governing rule
+state-machine scanner over `docs/` since `-W` doesn't flag it). **#1172 (merge
+`1c2b5a4e`) the flagship Build-your-first-app tutorial**
+(`getting-started/build-your-first-app.rst`, wired after Quickstart): a complete
+contact-book app built step by step (shell → `grid` form → `StringVar` binding →
+`Validation.regex` → searchable `Tableview` → button `command=` callback), each
+step handing off to its Foundations/feature-guide home; every code block verified
+headlessly. Established three **standing docs-code rules** (memory-saved): **no
+`\` backslash line-continuations** (assign to a variable and reuse), **use
+`theme=` not `themename=`** on the `App` constructor, and **use curated 2.0 theme
+names** (`bootstrap-dark`, not legacy `darkly`); the same `theme=`/curated-name
+sweep was applied to Quickstart + the landing hero. Governing rule
 now:
 [[feedback_docs_teach_tkinter_ttkbootstrap_dialect]] — **the docs teach tkinter
 itself, in the ttkbootstrap dialect** (a self-sufficient learning source; teach,
