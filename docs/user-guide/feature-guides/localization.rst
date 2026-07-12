@@ -19,7 +19,7 @@ itself if there is no entry (so an untranslated string still shows something
 sensible).
 
 ttkbootstrap already ships catalog entries for its own dialog text (the button
-labels in :doc:`Messagebox and Querybox </user-guide/feature-guides/windows>`,
+labels in :doc:`Messagebox and Querybox </user-guide/feature-guides/dialogs>`,
 and so on) in a range of locales. You add entries for your app's strings.
 
 Translating a string with ``L``
@@ -120,11 +120,41 @@ translation. Replace the source string (and any format args) with
 ``set_source(src, *args)``; call ``stop_tracking()`` to freeze one at its current
 text while keeping it alive.
 
+Putting it together
+-------------------
+
+The full loop is small: register the translations, use ``LocaleVar`` for text
+that must follow the locale live (and plain ``L`` where a one-time lookup is
+enough), then a control that calls ``set_locale``:
+
+.. code-block:: python
+
+   import ttkbootstrap as ttk
+   from ttkbootstrap.localization import MessageCatalog
+
+   MessageCatalog.set_many("es", "Welcome", "Bienvenido", "Language", "Idioma")
+
+   app = ttk.App()
+
+   greeting = ttk.LocaleVar(app, "Welcome")
+   ttk.Label(app, textvariable=greeting, font="TkHeadingFont").pack(padx=20, pady=10)
+
+   ttk.Label(app, text=ttk.L("Language")).pack()      # one-time; set before this runs
+   for code, label in [("en", "English"), ("es", "Español")]:
+       ttk.Button(app, text=label,
+                  command=lambda c=code: ttk.set_locale(c)).pack(pady=2)
+
+   app.mainloop()
+
+Pressing a language button re-translates every ``LocaleVar`` at once; the plain
+``L("Language")`` label, resolved when it was built, stays put — which is why
+anything that must switch live is bound to a ``LocaleVar``.
+
 .. admonition:: 📷 Screenshot (placeholder)
    :class: screenshot-placeholder
 
-   A small window with a label and buttons, shown once in English and once after
-   pressing a language button, the bound text switched live.
+   The window shown once in English and once after pressing *Español*, the bound
+   heading switched live while the layout is unchanged.
 
 .. seealso::
 

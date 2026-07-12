@@ -140,9 +140,55 @@ rule — the same mechanism the built-in ``Validation.range`` uses:
 
    Validation.add(entry, max_length, when="key", limit=10)
 
+Validating a form
+-----------------
+
+Rules flag fields as the user goes, but before you **accept** a form you want a
+final check — including on fields the user never touched. ``widget.validate()``
+runs a widget's rule on demand and returns ``True`` / ``False``. Validate every
+field first (so *all* bad ones light up, not just the first), then proceed only if
+they all pass:
+
+.. code-block:: python
+
+   import ttkbootstrap as ttk
+   from ttkbootstrap import Validation, Messagebox
+
+   app = ttk.App()
+
+   name = ttk.Entry(app)
+   age = ttk.Entry(app)
+   for field in (name, age):
+       field.pack(padx=20, pady=5)
+   Validation.text(name)
+   Validation.range(age, 0, 120)
+
+   def submit():
+       results = [field.validate() for field in (name, age)]   # check all, flag all
+       if all(results):
+           save(name.get(), age.get())
+       else:
+           Messagebox.show_warning("Please fix the highlighted fields.", parent=app)
+
+   ttk.Button(app, text="Submit", command=submit, bootstyle="success").pack(pady=10)
+
+   app.mainloop()
+
+Building the list *before* the ``all`` check matters: ``all(field.validate() …)``
+as a generator would short-circuit at the first failure and leave later invalid
+fields unflagged.
+
+.. note::
+
+   The ready-made rules pass on an **empty** field, so ``validate()`` returns
+   ``True`` for a required field the user left blank. Add your own emptiness check
+   in ``submit`` (``if not name.get(): …``) when a field is mandatory.
+
 .. seealso::
 
    :doc:`Variables </user-guide/feature-guides/variables>` for reacting to input
-   changes generally with traces, and
+   changes generally with traces,
    :doc:`Events </user-guide/feature-guides/events>` for the binding system these
-   validation callbacks are built on.
+   validation callbacks are built on, and
+   :doc:`Dialogs </user-guide/feature-guides/dialogs>` for the ``Messagebox`` used
+   above.
