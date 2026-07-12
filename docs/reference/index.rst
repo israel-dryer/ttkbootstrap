@@ -21,19 +21,13 @@ The lookup layer:
       The complete public API ttkbootstrap authors — shipped widgets, dialogs,
       the style engine, and the toolkit.
 
-   .. grid-item-card:: Event reference
-      :link: events/index
+   .. grid-item-card:: Capabilities
+      :link: capabilities/index
       :link-type: doc
 
-      tkinter's event system in Python terms — event types, modifiers, key
-      symbols, the event object, and the built-in virtual events.
-
-   .. grid-item-card:: Widget & screen info
-      :link: winfo
-      :link-type: doc
-
-      The ``winfo_*`` methods every widget carries — class, size, position,
-      geometry manager, pointer location, and screen dimensions.
+      The methods every widget inherits, grouped by area — configuration,
+      pack/grid/place, events, focus, grab, after, clipboard, and ``winfo`` —
+      each mirroring its Tcl/Tk manual page.
 
    .. grid-item-card:: Cursors
       :link: cursors
@@ -47,6 +41,5 @@ The lookup layer:
 
    style-reference/index
    api/index
-   events/index
-   winfo
+   capabilities/index
    cursors

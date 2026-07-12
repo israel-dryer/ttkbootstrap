@@ -354,6 +354,25 @@ robustness pass [#1169].) Screenshots are a later slice (placeholders are in
 place). See
 `development/2_0_handoff.md` top entry for the full current state.
 
+**Widgets-catalog progress (since):** catalog pages **Treeview** (#1184, PR open),
+**Text** (#1185, PR open), and the **Tableview** expansion (#1183, merged) landed;
+`ttk.Listbox` was newly **blessed** (#1186, PR open) so it can be documented. **A
+new, large sub-workstream then started: a self-authored WIDGET API REFERENCE** —
+because python.org documents the classic tk widgets (Text/Canvas/Listbox/Menu) not
+at all. Full handoff (goals, LOCKED scope, two-layer structure, format rules,
+grounding discipline, build cmd, done/remaining, PR-stack state, deferred ideas) is
+in **`development/2_0_docs_api_reference.md` — read it first to continue this
+work.** Headlines: a **Capabilities** section (`docs/reference/capabilities/`, one
+spec page per Tcl/Tk-manual area — configuration/pack/grid/place/stacking/focus/
+grab/after/lifecycle/clipboard/selection, with events+winfo folded in) plus
+**per-widget API pages** (`docs/reference/api/<w>.rst`, options tables +
+`py:method` specs). **Done:** the Capabilities section + the tk pages
+Text/Canvas/Listbox/Menu. **Remaining:** the trivial tk containers (Tk/TkFrame/
+TkLabel/LabelFrame) and the ~19 native ttk pages. Work is on branch
+`docs/2.0-api-reference-text-stacked`, **stacked on #1185** (retarget its PR to
+`2.0` once #1185 merges). Build gate: `.venv-home/Scripts/python.exe -m sphinx -b
+html -W -q docs <out>` must exit 0.
+
 ## Repository layout
 
 ```

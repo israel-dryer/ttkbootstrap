@@ -113,7 +113,7 @@ html_copy_source     = False
 # tools/ generators (e.g. the bootstyle reference table). They are folded into
 # real pages via `.. include::`, so they must not be treated as standalone
 # documents (that would raise a "not in any toctree" warning under -W).
-exclude_patterns = ["_build", "_generated", "Thumbs.db", ".DS_Store"]
+exclude_patterns = ["_build", "_generated", "shared", "Thumbs.db", ".DS_Store"]
 
 # ---------------------------------------------------------------------------
 # Autodoc mock imports (Pillow is the only runtime dep; keep as a backstop so a
