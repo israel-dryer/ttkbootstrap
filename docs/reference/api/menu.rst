@@ -19,50 +19,67 @@ for its own options and methods; the shared widget methods are under
 Options
 -------
 
-.. rubric:: ttkbootstrap
-
 .. list-table::
-   :widths: 26 74
+   :header-rows: 1
+   :widths: 22 16 62
 
+   * - Option
+     - Type
+     - Description
    * - ``autostyle``
+     - ``bool``
      - **Constructor only.** ``True`` (default) paints the menu with the active
        theme and repaints on a theme switch; ``False`` opts out.
-
-.. rubric:: Appearance
-
-.. list-table::
-   :widths: 26 74
-
    * - ``font``
+     - ``str | Font``
      - The font for entry labels.
-   * - ``foreground`` (``fg``) / ``background`` (``bg``)
-     - Text and menu-background colors.
-   * - ``activeforeground`` / ``activebackground`` / ``activeborderwidth``
-     - Appearance of the entry under the pointer.
+   * - ``foreground`` (``fg``)
+     - ``str``
+     - The text color of entries.
+   * - ``background`` (``bg``)
+     - ``str``
+     - The menu background color.
+   * - ``activeforeground``
+     - ``str``
+     - The text color of the entry under the pointer.
+   * - ``activebackground``
+     - ``str``
+     - The background color of the entry under the pointer.
+   * - ``activeborderwidth``
+     - ``int``
+     - The border width of the entry under the pointer, in pixels.
    * - ``disabledforeground``
-     - Text color of disabled entries.
+     - ``str``
+     - The text color of disabled entries.
    * - ``selectcolor``
+     - ``str``
      - The indicator color of checkbutton / radiobutton entries.
-   * - ``borderwidth`` (``bd``) / ``relief``
-     - 3-D border width and style.
-
-.. rubric:: Behavior
-
-.. list-table::
-   :widths: 26 74
-
+   * - ``borderwidth`` (``bd``)
+     - ``int``
+     - The 3-D border width in pixels.
+   * - ``relief``
+     - ``str``
+     - The border style: ``"flat"``, ``"raised"``, ``"sunken"``, ``"groove"``,
+       ``"ridge"``, or ``"solid"``.
    * - ``tearoff``
+     - ``bool``
      - ``True`` adds a dashed line that tears the menu into a floating window.
    * - ``tearoffcommand``
+     - ``callable``
      - A callback invoked when the menu is torn off.
    * - ``postcommand``
+     - ``callable``
      - A callback invoked just before the menu is posted — use it to update
        entries lazily.
    * - ``title``
+     - ``str``
      - The title shown on a torn-off menu.
-   * - ``cursor`` / ``takefocus``
-     - Mouse cursor over the menu (see :doc:`Cursors </reference/cursors>`);
-       focus participation.
+   * - ``cursor``
+     - ``str``
+     - The mouse cursor over the menu (see :doc:`Cursors </reference/cursors>`).
+   * - ``takefocus``
+     - ``bool``
+     - Whether the menu accepts keyboard focus during traversal.
 
 Methods
 -------
