@@ -21,6 +21,13 @@ The lookup layer:
       The complete public API ttkbootstrap authors — shipped widgets, dialogs,
       the style engine, and the toolkit.
 
+   .. grid-item-card:: Capabilities
+      :link: capabilities/index
+      :link-type: doc
+
+      The methods every widget inherits, grouped by area — focus, and (folding
+      in below) events, widget info, and more — each mirroring its Tcl/Tk page.
+
    .. grid-item-card:: Event reference
       :link: events/index
       :link-type: doc
@@ -47,6 +54,7 @@ The lookup layer:
 
    style-reference/index
    api/index
+   capabilities/index
    events/index
    winfo
    cursors
