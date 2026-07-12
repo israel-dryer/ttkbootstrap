@@ -2,12 +2,12 @@ Menus
 =====
 
 Menus are built from a single widget — :class:`~ttkbootstrap.Menu`, imported as
-``ttk.Menu``. The *same* widget plays three roles
-depending on how you attach it: a **menu bar** across the top of a window, a
-**cascade** that drops down from a bar entry, and a **popup** at the pointer for
-a right-click context menu. This guide builds each in turn, then covers the part
-that trips people up — how a menu bar differs across Windows, Linux, and macOS,
-where the application menu follows its own rules.
+``ttk.Menu``. The *same* widget plays three roles depending on how you attach it:
+a **menu bar** across the top of a window, a **cascade** that drops down from a
+bar entry, and a **popup** at the pointer for a right-click context menu. This
+guide builds each in turn, then covers the part that trips people up — how a menu
+bar differs across Windows, Linux, and macOS, where the application menu follows
+its own rules.
 
 .. note::
 
@@ -157,9 +157,14 @@ To decide an item's state *at the moment the menu opens*, give the menu a
 
 .. code-block:: python
 
+   from tkinter import TclError
+
    def refresh_edit():
-       has_text = bool(app.clipboard_get()) if clipboard_ready() else False
-       edit_menu.entryconfigure("Paste", state="normal" if has_text else "disabled")
+       try:
+           can_paste = bool(app.clipboard_get())
+       except TclError:                        # clipboard empty or not text
+           can_paste = False
+       edit_menu.entryconfigure("Paste", state="normal" if can_paste else "disabled")
 
    edit_menu.configure(postcommand=refresh_edit)
 
@@ -198,6 +203,12 @@ that calls :meth:`tk_popup` with the pointer's **screen** coordinates:
 - The ``try``/``finally`` with :meth:`grab_release` is the standard idiom — it
   releases the menu's input grab even if the user dismisses the popup without
   choosing anything.
+
+.. admonition:: 📷 Screenshot (placeholder)
+   :class: screenshot-placeholder
+
+   The labeled target with a Cut / Copy / Paste context menu popped up at the
+   pointer after a right-click.
 
 .. admonition:: Right-click across platforms
    :class: note
@@ -272,6 +283,12 @@ About/Preferences/Quit block; on Windows and Linux it is ``None``, so those item
 are simply skipped — put your Exit and Preferences where those platforms expect
 them (under *File* and *Edit*, say). ``add_help_menu`` returns an ordinary Help
 cascade off macOS, so a Help menu is present everywhere.
+
+.. admonition:: 📷 Screenshot (placeholder)
+   :class: screenshot-placeholder
+
+   The macOS screen-top menu bar with the bold **Editor** application menu open,
+   showing About Editor, Preferences… (⌘,), and Quit.
 
 .. seealso::
 
