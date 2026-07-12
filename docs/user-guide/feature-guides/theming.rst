@@ -6,8 +6,8 @@ theme is built from a small set of **semantic anchors** — the accent colors
 (``primary``, ``success``, ``info``, ``warning``, ``danger``) plus a neutral gray
 — resolved against a light or dark surface. Pick a theme and the whole interface,
 including your ``bootstyle`` widgets, recolors coherently. This guide covers
-choosing and switching themes, and reading the concrete colors a theme resolves
-to so your own drawing tracks it.
+choosing and switching themes, reading the concrete colors a theme resolves to so
+your own drawing tracks it, and building your own theme.
 
 Choosing a theme
 ----------------
@@ -171,10 +171,65 @@ To simulate a translucent fill over a known background, blend it with
    The color helpers moved to ``ttkbootstrap.utils`` (and the top level). The old
    ``ttkbootstrap.colorutils`` import still works but warns and is removed in 3.0.
 
-The Theme model
----------------
+Building your own theme
+-----------------------
 
 Each theme is a semantic-anchor :class:`~ttkbootstrap.Theme` — a family described
-by its accent anchors and its light/dark surfaces, from which ttkbootstrap
-derives the full color set for each mode. To build your own, see
-:doc:`Custom themes <custom-themes>`.
+by its accent anchors and its light/dark surfaces, from which ttkbootstrap derives
+the full color set (borders, inputs, selections, hovers) for each mode. Declare
+those anchors and register the theme to add your own.
+
+Defining a theme
+~~~~~~~~~~~~~~~~
+
+Build a :class:`~ttkbootstrap.Theme` from its anchors and register it. The five
+accents are the mid-tone of each color; ``light``/``dark`` each give a background
+and foreground. Registration needs a running app (a style must exist first):
+
+.. code-block:: python
+
+   import ttkbootstrap as ttk
+
+   app = ttk.App()
+
+   ttk.Theme(
+       name="pulse",
+       primary="#593196", success="#13b955", info="#009cdc",
+       warning="#efa31d", danger="#fc3939",
+       light=dict(background="#ffffff", foreground="#17141f"),
+       dark=dict(background="#17141f", foreground="#e9ecef"),
+   ).register()
+
+   app.theme_use("pulse-light")   # registered as pulse-light and pulse-dark
+   app.mainloop()
+
+Registering a theme generates a ``<name>-light`` and ``<name>-dark`` variant for
+whichever surfaces you declared, so it drops straight into the light/dark
+switching above — ``app.toggle_theme()`` flips ``pulse-light`` ↔ ``pulse-dark``.
+
+Re-branding a built-in
+~~~~~~~~~~~~~~~~~~~~~~~
+
+To change just a color or two on an existing theme, derive from it with
+``Theme.from_existing`` and override the anchors you care about:
+
+.. code-block:: python
+
+   from ttkbootstrap.themes.builtin import BOOTSTRAP
+
+   ttk.Theme.from_existing(BOOTSTRAP, name="brand", primary="#ff6600").register()
+   app.theme_use("brand-light")
+
+The visual editor
+~~~~~~~~~~~~~~~~~
+
+To design a theme interactively rather than by hand, run the bundled editor:
+
+.. code-block:: bash
+
+   python -m ttkcreator
+
+Edit the accent anchors and the light/dark surfaces, preview against live
+widgets, then **Export theme (.py)** -- you get a ``Theme(...).register()``
+snippet (the same shape as above) to drop into your app. The editor doesn't
+save into the library; your theme lives in your own code.
