@@ -10,8 +10,7 @@ full/semicircle shapes, the interactive dial, the striped look, then the
 .. admonition:: 📷 Screenshot (placeholder)
    :class: screenshot-placeholder
 
-   A semicircle meter reading 65% and a full-circle meter, in light and dark
-   themes.
+   A meter reading 65% with a "storage used" subtext, in light and dark themes.
 
 Usage
 -----
@@ -51,6 +50,11 @@ half-circle gauge):
 
    Meter(app, amount_used=65, meter_type="semi")
 
+.. admonition:: 📷 Screenshot (placeholder)
+   :class: screenshot-placeholder
+
+   The same value as a full-circle ring and a semicircle gauge, side by side.
+
 An interactive dial
 -------------------
 
@@ -64,6 +68,11 @@ meter becomes an input, not just a readout:
 
    dial.amount_used_var.get()           # read what the user set
 
+.. admonition:: 📷 Screenshot (placeholder)
+   :class: screenshot-placeholder
+
+   An interactive meter with the handle mid-arc, being dragged to a new value.
+
 Striped
 -------
 
@@ -74,6 +83,11 @@ progress look:
 
    Meter(app, amount_used=65, stripe_thickness=10, bootstyle="info")
 
+.. admonition:: 📷 Screenshot (placeholder)
+   :class: screenshot-placeholder
+
+   A meter whose indicator arc is broken into segments, beside a solid one.
+
 Color
 -----
 
@@ -82,6 +96,12 @@ Color
 .. code-block:: python
 
    Meter(app, amount_used=50, bootstyle="warning")
+
+.. admonition:: 📷 Screenshot (placeholder)
+   :class: screenshot-placeholder
+
+   A row of meters in primary, success, info, warning, and danger, in light and
+   dark themes.
 
 API & reference
 ---------------
