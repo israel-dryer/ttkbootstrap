@@ -294,7 +294,12 @@ Dialogs reworked from option-tours into build-a-real-flow guides). **#1170 (merg
 `294ef12f`) feature-guide retitles into the noun-phrase register** ("Make your own
 style/theme" → **Custom styles**/**Custom themes**; **"Working with color" folded
 into the Theming guide → "Theming & Colors"**; "Windows & high-DPI" left as a stub
-to reframe when finished). Governing rule now:
+to reframe when finished). **#1171 (merge `45730422`) the Windows guide finished,
+deepened, and retitled → "Windows"** (teach-the-geometry/state-model not an
+option-tour; a consolidated cross-platform behavior table + inline notes; a bonus
+fix for nested-inline-markup leaking literal double backticks, caught by a
+state-machine scanner over `docs/` since `-W` doesn't flag it). Governing rule
+now:
 [[feedback_docs_teach_tkinter_ttkbootstrap_dialect]] — **the docs teach tkinter
 itself, in the ttkbootstrap dialect** (a self-sufficient learning source; teach,
 don't defer). **Bands sort by DEPTH:** Getting Started · **Fundamentals** ·
@@ -305,9 +310,7 @@ feature guides own the depth). Author was firm: **teach layout/mechanics
 BY BUILDING, never option-tours.** The full IA (charters, §14 curriculum map,
 tkinter-surface coverage audit + supersession map, screenshot-placeholder
 convention) lives in `development/2_0_docs_design.md`. **NEXT (content authoring,
-fresh branch off `2.0`):** **finish the Windows guide** (author its "Still to come"
-surface — constructor/positioning/DPI/theme-mode/Toplevels/deferred-config — and
-reframe/retitle, likely → **"Windows"**); the **Build-your-first-app** tutorial
+fresh branch off `2.0`):** the **Build-your-first-app** tutorial
 (Getting Started; the flagship teach-by-building on-ramp); **Widgets-catalog**
 depth (usage-first per design §5a; the button prototype is thin); remaining How-Tos
 (*Menus*, *Scrollable*, *Threads*; *Validate a form* is now partly covered by the

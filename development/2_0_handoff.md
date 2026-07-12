@@ -3,6 +3,36 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
+_Last updated: 2026-07-11 (**Windows guide finished + deepened + retitled. PR
+#1171 MERGED into `2.0`** (merge `45730422`; branch deleted; docs-only, `-W`
+clean). The Windows feature guide was a stub ("Still to come" outline); it is now
+a full, robust guide and **retitled "Windows & high-DPI" → "Windows"** (high-DPI
+demoted to a section; card + 4 cross-refs repointed). **Teach-the-model, not an
+option-tour** (author flagged the first pass as drive-by-ish): the **geometry
+string** (`"WxH+X+Y"`) model + `geometry()`/`winfo_*` read-back (with the
+returns-1-until-mapped gotcha), a new **Window state** section (iconify/deiconify/
+withdraw/`state`, maximize & fullscreen), Toplevel WM options, kept focus/modality/
+lifecycle, application icon, brief light/dark (xref Theming & Colors), high-DPI,
+and the deferred-config seam sidebar. **CROSS-PLATFORM behavior** was the big gap
+(author: "truly an issue with windowing") — now woven in as ground-truthed notes
+**and a consolidated summary table** (Feature × Windows/macOS/Linux): `state
+("zoomed")` win vs `-zoomed` X11 vs native-fullscreen mac; `tool_window` win-only;
+`window_type` mac-native/X11-hint/win-noop; `override_redirect` mac no-op;
+transparency needs an X11 compositor; centering falls back to primary screen w/o
+`screeninfo`; high-DPI win-auto/mac-native/linux-manual. Windows-side facts
+ground-truthed live; mac/X11 from the source `winsys` branches. **Bonus fix (same
+PR):** a **nested-inline-markup bug leaking literal double backticks** —
+`` **``code``** `` (inline literal inside bold) is invalid RST and renders the
+backticks; a **state-machine scanner over `docs/`** found 19 across 4 files (the
+Windows guide + pre-existing layout-with-grid/layout-with-pack/event-object), all
+fixed. `-W` does NOT catch this (renders wrong silently) → keep the scanner as the
+guard when authoring. **NEXT (docs-H, fresh branch):** the **Build-your-first-app**
+tutorial (Getting Started; flagship teach-by-building on-ramp); **Widgets-catalog**
+depth (usage-first per §5a; button prototype thin); remaining How-Tos (*Menus*/
+*Scrollable*/*Threads*). **Process note:** the `gallery/collapsing_frame.py` "user
+WIP" is GONE (author confirmed "there is no wip") — stop the stash push/pop dance
+in the merge-sync flow. Prior entry follows.**)_
+
 _Last updated: 2026-07-11 (**Feature-guide retitles + Colors folded into Theming.
 PR #1170 MERGED into `2.0`** (merge `294ef12f`; branch deleted; docs-only,
 `-W` clean). Author flagged the imperative "Make your own …" titles as out of
