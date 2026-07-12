@@ -1,8 +1,8 @@
-Timers
-======
+After
+=====
 
 Tkinter is single-threaded: long work blocks the event loop and freezes the UI.
-The **timer** methods schedule callbacks to run later *on* the event loop, which
+The ``after`` methods schedule callbacks to run later *on* the event loop, which
 is how you defer work, poll, or animate without threads. To run genuinely
 blocking work off the main thread and marshal the result back, see
 :doc:`Run background work </user-guide/how-to/threads>`.

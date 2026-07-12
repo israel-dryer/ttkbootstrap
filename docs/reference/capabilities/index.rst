@@ -15,11 +15,35 @@ teach the same areas by building.
 
       Read and write a widget's options — ``configure``, ``cget``, ``keys``.
 
-   .. grid-item-card:: Geometry
-      :link: geometry
+   .. grid-item-card:: Pack
+      :link: pack
       :link-type: doc
 
-      Place a widget with ``pack``, ``grid``, or ``place``; stacking order.
+      Stack a widget against a side of its parent.
+
+   .. grid-item-card:: Grid
+      :link: grid
+      :link-type: doc
+
+      Place widgets in rows and columns, and shape the container.
+
+   .. grid-item-card:: Place
+      :link: place
+      :link-type: doc
+
+      Position a widget by absolute or relative coordinates.
+
+   .. grid-item-card:: Stacking order
+      :link: stacking
+      :link-type: doc
+
+      Raise and lower overlapping widgets — ``lift``, ``lower``.
+
+   .. grid-item-card:: Events (bind)
+      :link: /reference/events/index
+      :link-type: doc
+
+      Attach behavior to input — event types, modifiers, and the event object.
 
    .. grid-item-card:: Focus
       :link: focus
@@ -33,8 +57,8 @@ teach the same areas by building.
 
       Route input to one widget for a modal dialog.
 
-   .. grid-item-card:: Timers
-      :link: timers
+   .. grid-item-card:: After
+      :link: after
       :link-type: doc
 
       Schedule callbacks on the event loop — ``after``, ``after_idle``.
@@ -45,17 +69,17 @@ teach the same areas by building.
 
       Refresh, wait, and destroy — ``update``, ``wait_*``, ``destroy``.
 
-   .. grid-item-card:: Clipboard & selection
+   .. grid-item-card:: Clipboard
       :link: clipboard
       :link-type: doc
 
-      Read and write the system clipboard and the selection.
+      Read and write the system clipboard.
 
-   .. grid-item-card:: Events (bind)
-      :link: /reference/events/index
+   .. grid-item-card:: Selection
+      :link: selection
       :link-type: doc
 
-      Attach behavior to input — event types, modifiers, and the event object.
+      Read, clear, and own the current selection.
 
    .. grid-item-card:: Widget & screen info
       :link: /reference/winfo
@@ -63,22 +87,19 @@ teach the same areas by building.
 
       The ``winfo_*`` methods — class, size, position, and screen dimensions.
 
-   .. grid-item-card:: Cursors
-      :link: /reference/cursors
-      :link-type: doc
-
-      The mouse-pointer names the ``cursor`` option accepts.
-
 .. toctree::
    :hidden:
 
    configuration
-   geometry
+   pack
+   grid
+   place
+   stacking
    focus
    grab
-   timers
+   after
    lifecycle
    clipboard
+   selection
    /reference/events/index
    /reference/winfo
-   /reference/cursors

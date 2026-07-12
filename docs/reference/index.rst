@@ -26,8 +26,15 @@ The lookup layer:
       :link-type: doc
 
       The methods every widget inherits, grouped by area — configuration,
-      geometry, events, focus, grab, timers, clipboard, ``winfo``, and cursors —
+      pack/grid/place, events, focus, grab, after, clipboard, and ``winfo`` —
       each mirroring its Tcl/Tk manual page.
+
+   .. grid-item-card:: Cursors
+      :link: cursors
+      :link-type: doc
+
+      The mouse-pointer names the ``cursor`` option accepts — the common set,
+      the full portable list, and the platform-specific pointers.
 
 .. toctree::
    :hidden:
@@ -35,3 +42,4 @@ The lookup layer:
    style-reference/index
    api/index
    capabilities/index
+   cursors
