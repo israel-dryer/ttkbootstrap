@@ -61,6 +61,30 @@ and to the deep :doc:`Style Reference </reference/style-reference/index>`.
 
       A dropdown that picks one value from a fixed list.
 
+   .. grid-item-card:: Frame
+      :link: frame
+      :link-type: doc
+
+      A container that groups and lays out widgets; card variants.
+
+   .. grid-item-card:: Labelframe
+      :link: labelframe
+      :link-type: doc
+
+      A frame with a titled border for a section of a form.
+
+   .. grid-item-card:: Notebook
+      :link: notebook
+      :link-type: doc
+
+      A tabbed container — one page per tab.
+
+   .. grid-item-card:: Panedwindow
+      :link: panedwindow
+      :link-type: doc
+
+      Resizable panes split by a draggable sash.
+
    .. grid-item-card:: Meter
       :link: meter
       :link-type: doc
@@ -78,4 +102,8 @@ and to the deep :doc:`Style Reference </reference/style-reference/index>`.
    radiobutton
    menubutton
    optionmenu
+   frame
+   labelframe
+   notebook
+   panedwindow
    meter
