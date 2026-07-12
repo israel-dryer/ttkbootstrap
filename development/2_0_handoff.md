@@ -3,6 +3,36 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
+_Last updated: 2026-07-12 (**Widgets-catalog Phase 1 in progress — Inputs / Choice
+/ Command families MERGED into `2.0`** (PRs #1176/#1177/#1178). Cloning the Button
+template one PR per family; every snippet verified headlessly, `-W` clean.
+**#1176 Inputs** (Entry/Combobox/Spinbox) — usage-first: binding, the Entry
+character-position index model, password `show=`, validation (what fires/when/
+pass-fail), pick-only vs editable, `from_`/`to`/`increment`, `command=`. **Plus a
+real style fix surfaced while documenting:** colored Combobox/Spinbox forced their
+*base* border to the accent (leftover `border = focus_ring`), drawing a persistent
+colored border unlike Entry — removed in `builders/combobox.py`+`spinbox.py`, so
+**all inputs now show the accent on focus only** (neutral hairline at rest).
+1.x→2.0 visual change, logged in `2_0_breaking_changes.md`. **#1177 Choice**
+(Checkbutton/Radiobutton) — binding, switch looks (`round-`/`square-toggle`) +
+`toolbutton`, non-boolean `onvalue`/`offvalue`, the segmented radio group; States
+sections show variable `get`/`set`, `invoke()` to toggle/select,
+`instate(["selected"])` to read (the widget has **no `.get()`**), and the
+`alternate`/indeterminate state — incl. the **no-`variable=` → starts
+indeterminate** gotcha (it can still be read via `instate`; not "can't track", per
+author correction). **#1178 Command** (Menubutton/OptionMenu) — attach a `Menu` /
+`direction=`(incl. `flush`); OptionMenu builds its own menu from
+`(variable, default, *values)`, default not auto-added; both carry an **"Across
+platforms"** note (author steer): button themed everywhere, but the dropdown is a
+native menu → macOS pop-up anchored over the button vs. themed drop-down on
+Win/Linux (defers to the Menus guide). **Author-feedback rules reinforced this
+cycle:** teach the index model (don't assume); explain *what happens* when a state
+fires; no oversized admonitions; ground cross-platform claims. **NEXT: remaining
+families** — Containers (Frame/Labelframe/Notebook/Panedwindow) · Range & misc
+(Progressbar/Scale/Scrollbar/Separator/Sizegrip/Label) · Shipped (Floodgauge/
+DateEntry/Tableview/LabeledScale/Toast/Tooltip/Scrolled) · **Text** · **Canvas**;
+then the coverage sync test. Prior entry follows.**)_
+
 _Last updated: 2026-07-11 (**Widgets-catalog Phase 0 — plan + Button template. PR
 #1175 MERGED into `2.0`** (merge `2173f0f0`; branch deleted; docs-only, `-W`
 clean). The Widgets-catalog authoring plan is now LOCKED in

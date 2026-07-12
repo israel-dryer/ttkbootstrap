@@ -327,8 +327,12 @@ that re-expose what an API hides), and task-shaped short How-To titles. **#1175
 (`2_0_docs_design.md §5a-plan` — ~27 pages, Text/Canvas robust & in, Scrolled
 thin-stub, coverage sync-test no-gaps mechanism, one PR per family) and rewrote
 `docs/widgets/button.rst` as the **usage-first gold-standard template** (one
-concept per digestible section). **NEXT: Phase 1, one PR per widget family** —
-Inputs first (Entry/Combobox/Spinbox). Governing
+concept per digestible section). **Phase 1 (one PR per family) is in progress** —
+**Inputs #1176 / Choice #1177 / Command #1178 MERGED**. #1176 also carried a
+**style fix**: colored Combobox/Spinbox forced their base border to the accent, so
+all inputs now show the accent **on focus only** (1.x→2.0 visual change, in
+`2_0_breaking_changes.md`). Remaining families: Containers · Range & misc ·
+Shipped · **Text** · **Canvas**, then the coverage sync test. Governing
 rule now:
 [[feedback_docs_teach_tkinter_ttkbootstrap_dialect]] — **the docs teach tkinter
 itself, in the ttkbootstrap dialect** (a self-sufficient learning source; teach,
