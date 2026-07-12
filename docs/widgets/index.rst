@@ -91,6 +91,12 @@ and to the deep :doc:`Style Reference </reference/style-reference/index>`.
 
       Read-only text or an image — captions, headings, status lines.
 
+   .. grid-item-card:: Text
+      :link: text
+      :link-type: doc
+
+      A multi-line editor — tags, marks, search, and undo.
+
    .. grid-item-card:: Progressbar
       :link: progressbar
       :link-type: doc
@@ -179,6 +185,7 @@ and to the deep :doc:`Style Reference </reference/style-reference/index>`.
    notebook
    panedwindow
    label
+   text
    progressbar
    scale
    scrollbar
