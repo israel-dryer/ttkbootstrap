@@ -34,13 +34,16 @@ change the field:
 
    app.mainloop()
 
-You can also work with the text directly — ``insert`` adds at an index, ``delete``
-removes a range, and ``"end"`` marks the far end:
+You can also work with the text directly, by **character position**. An entry
+numbers positions from ``0`` — before the first character — and the string
+``"end"`` is the position past the last. ``insert(index, text)`` adds text at a
+position; ``delete(first, last)`` removes the characters between two:
 
 .. code-block:: python
 
-   entry.insert(0, "default")          # insert at the start
-   entry.delete(0, "end")              # clear the whole field
+   entry.insert(0, "default")          # insert before the first character
+   entry.insert("end", "!")            # append after the last
+   entry.delete(0, "end")              # remove everything from 0 to the end
 
 A password field
 ----------------
