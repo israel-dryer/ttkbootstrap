@@ -167,20 +167,14 @@ Each subsystem, end to end — its concepts and its usage in one place.
       :link: feature-guides/theming
       :link-type: doc
 
-      Choosing and switching themes, light/dark, the built-in catalog, and reading
-      the theme's colors (``style.colors``, ramps like ``c.primary[300]``).
+      Choosing and switching themes, light/dark, the built-in catalog, reading
+      the theme's colors (``style.colors``, ramps), and building your own theme.
 
    .. grid-item-card:: Custom styles
       :link: feature-guides/custom-styles
       :link-type: doc
 
       The custom style-construction toolkit — assets, layouts, and icons.
-
-   .. grid-item-card:: Custom themes
-      :link: feature-guides/custom-themes
-      :link-type: doc
-
-      The ``Theme`` API and the ttkcreator editor.
 
 How-To
 ------
@@ -226,7 +220,6 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way. See the
    feature-guides/dialogs
    feature-guides/theming
    feature-guides/custom-styles
-   feature-guides/custom-themes
 
 .. toctree::
    :hidden:
