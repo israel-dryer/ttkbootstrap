@@ -59,13 +59,8 @@ tip to the kind of control (``danger`` for a destructive action, say):
 API & reference
 ---------------
 
-For the complete option list, see :class:`~ttkbootstrap.ToolTip` on the
-:doc:`Widgets API page </reference/api/widgets>`:
-
-.. autosummary::
-   :nosignatures:
-
-   ~ttkbootstrap.ToolTip
+For the complete option list, see the
+:doc:`ToolTip API reference </reference/api/tooltip>`.
 
 .. seealso::
 

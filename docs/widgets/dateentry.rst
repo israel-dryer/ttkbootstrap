@@ -67,13 +67,8 @@ palette:
 API & reference
 ---------------
 
-For the complete option list and methods, see :class:`~ttkbootstrap.DateEntry` on
-the :doc:`Widgets API page </reference/api/widgets>`:
-
-.. autosummary::
-   :nosignatures:
-
-   ~ttkbootstrap.DateEntry
+For the complete option list and methods, see the
+:doc:`DateEntry API reference </reference/api/dateentry>`.
 
 .. seealso::
 

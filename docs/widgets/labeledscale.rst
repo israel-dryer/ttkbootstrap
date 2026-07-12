@@ -58,13 +58,8 @@ Color
 API & reference
 ---------------
 
-For the complete option list, see :class:`~ttkbootstrap.LabeledScale` on the
-:doc:`Widgets API page </reference/api/widgets>`:
-
-.. autosummary::
-   :nosignatures:
-
-   ~ttkbootstrap.LabeledScale
+For the complete option list, see the
+:doc:`LabeledScale API reference </reference/api/labeledscale>`.
 
 .. seealso::
 
