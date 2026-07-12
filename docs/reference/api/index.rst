@@ -36,6 +36,18 @@ not at all). A widget's styling surface lives separately in the
 
       The tk ``Canvas`` drawing surface — items, tags, and their methods.
 
+   .. grid-item-card:: Listbox
+      :link: listbox
+      :link-type: doc
+
+      The tk ``Listbox`` — a list of selectable lines.
+
+   .. grid-item-card:: Menu
+      :link: menu
+      :link-type: doc
+
+      The tk ``Menu`` — menu bars, submenus, and context menus.
+
 .. toctree::
    :hidden:
    :maxdepth: 1
@@ -43,3 +55,5 @@ not at all). A widget's styling surface lives separately in the
    widgets
    text
    canvas
+   listbox
+   menu
