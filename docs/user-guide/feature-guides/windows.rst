@@ -29,15 +29,15 @@ Everything else is a keyword you set once, up front:
 
    app.mainloop()
 
-- **``size=(width, height)``** and **``position=(x, y)``** are pixel tuples; set
+- ``size=(width, height)`` and ``position=(x, y)`` are pixel tuples; set
   either or both. ``position`` is signed and **edge-relative** — a negative
   coordinate measures from the opposite screen edge, so ``position=(-20, -20)``
   pins the window near the bottom-right corner.
-- **``minsize`` / ``maxsize=(width, height)``** clamp how far the user can resize;
-  **``resizable=(horizontal, vertical)``** takes two booleans to lock an axis
+- ``minsize`` / ``maxsize=(width, height)`` clamp how far the user can resize;
+  ``resizable=(horizontal, vertical)`` takes two booleans to lock an axis
   entirely (``resizable=(True, False)`` allows width but fixes height).
-- **``alpha``** sets window transparency from ``0.0`` to ``1.0`` (opaque).
-- **``iconphoto``** sets the titlebar icon from an image path; the default is
+- ``alpha`` sets window transparency from ``0.0`` to ``1.0`` (opaque).
+- ``iconphoto`` sets the titlebar icon from an image path; the default is
   ttkbootstrap's brand icon, and ``iconphoto=None`` leaves the platform default.
 
 .. note::
@@ -66,14 +66,14 @@ the app's theme and icon automatically.
 
 ``Toplevel`` adds a few window-manager options ``App`` doesn't need:
 
-- **``topmost=True``** keeps the window above all others.
-- **``tool_window=True``** gives it a thin tool-window frame and keeps it off the
+- ``topmost=True`` keeps the window above all others.
+- ``tool_window=True`` gives it a thin tool-window frame and keeps it off the
   taskbar (Windows).
-- **``window_type=...``** requests a window kind from the OS — ``"splash"``,
+- ``window_type=...`` requests a window kind from the OS — ``"splash"``,
   ``"utility"``, ``"tooltip"`` — used for borderless/auxiliary windows (mapped to
   native styles on macOS, an X11 hint on Linux).
-- **``iconify=True``** starts the window minimized.
-- **``transient=parent``** marks it a satellite of ``parent`` (next section).
+- ``iconify=True`` starts the window minimized.
+- ``transient=parent`` marks it a satellite of ``parent`` (next section).
 
 Focus, modality & lifecycle
 ---------------------------
@@ -188,11 +188,11 @@ On a high-resolution display, an unaware app renders tiny and blurry. ``App``
 turns on high-DPI awareness by **default** (``high_dpi=True``) on Windows, so most
 apps need nothing. Two utilities cover the rest:
 
-- **``enable_high_dpi_awareness(root=None, scaling=None)``** — the manual control.
+- ``enable_high_dpi_awareness(root=None, scaling=None)`` — the manual control.
   On Windows it must run *before* the root exists (``App`` already does this); on
   Linux, pass the root and a ``scaling`` factor (``1.6``–``2.0`` is typical) after
   creating it to scale the whole UI.
-- **``scale_size(widget, size)``** — convert a logical size to physical pixels for
+- ``scale_size(widget, size)`` — convert a logical size to physical pixels for
   the current display, for code that sets pixel geometry or builds image assets:
 
   .. code-block:: python
