@@ -187,7 +187,9 @@ To keep tkinter's default look and style the widget entirely yourself, pass
 Scrolling
 ---------
 
-A text widget doesn't scroll on its own. The quickest option is the ready-made
+A text widget already scrolls on its own — the mouse wheel, Page Up/Down, and
+the arrow keys move the view, and it follows the cursor as you type. What it
+doesn't show is a **scrollbar**. The quickest way to add one is the ready-made
 ``ScrolledText`` — a text widget with a scrollbar already wired in. It forwards
 the text methods (``insert``, ``get``, ``tag_*``, …) to the inner widget, so you
 use it just like a ``Text``:
