@@ -19,6 +19,24 @@ and to the deep :doc:`Style Reference </reference/style-reference/index>`.
 
       A clickable action trigger — solid, outline, link, and ghost variants.
 
+   .. grid-item-card:: Entry
+      :link: entry
+      :link-type: doc
+
+      A single-line text field — binding, masking, and validation.
+
+   .. grid-item-card:: Combobox
+      :link: combobox
+      :link-type: doc
+
+      A text field with a dropdown of choices — pick-only or editable.
+
+   .. grid-item-card:: Spinbox
+      :link: spinbox
+      :link-type: doc
+
+      An entry with up/down arrows for stepping a range or list.
+
    .. grid-item-card:: Meter
       :link: meter
       :link-type: doc
@@ -29,4 +47,7 @@ and to the deep :doc:`Style Reference </reference/style-reference/index>`.
    :hidden:
 
    button
+   entry
+   combobox
+   spinbox
    meter

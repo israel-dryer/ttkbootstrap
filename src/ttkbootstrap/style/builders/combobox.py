@@ -49,9 +49,6 @@ def build_combobox_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     builder.style.element_create(f"{element}.padding", "from", TTK_CLAM)
     builder.style.element_create(f"{element}.textarea", "from", TTK_CLAM)
 
-    if all([colorname, colorname != DEFAULT]):
-        border = focus_ring
-
     builder.configure(
         ttk_style,
         bordercolor=border,
