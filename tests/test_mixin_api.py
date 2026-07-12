@@ -33,6 +33,22 @@ def test_blessed_tk_widget_is_autostylemixin_subclass():
     assert issubclass(ttk.Canvas, tkinter.Canvas)
 
 
+def test_listbox_is_blessed_autostyle_widget(root):
+    """Listbox is a blessed tk widget: AutoStyleMixin subclass, themed by
+    default, honors autostyle=False, and re-exported at the top level."""
+    assert issubclass(ttk.Listbox, AutoStyleMixin)
+    assert issubclass(ttk.Listbox, tkinter.Listbox)
+    assert "Listbox" in ttk.__all__
+
+    themed = ttk.Listbox(root)
+    assert hasattr(themed, "_theme_version")          # painted by the theme
+
+    raw = ttk.Listbox(root, autostyle=False, background="#abcdef")
+    assert getattr(raw, "_tb_no_autostyle", False) is True
+    assert not hasattr(raw, "_theme_version")
+    assert raw.cget("background") == "#abcdef"
+
+
 def test_stock_tkinter_is_unpatched_by_default(root):
     """Importing ttkbootstrap must not mutate the stock tkinter classes.
 

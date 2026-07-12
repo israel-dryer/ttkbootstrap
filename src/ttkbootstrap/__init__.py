@@ -40,6 +40,7 @@ For more information, see: https://ttkbootstrap.readthedocs.io/
 from tkinter import (
     Menu as _tkMenu, Text as _tkText, Canvas as _tkCanvas, Tk as _tkTk,
     Frame as _tkFrame, LabelFrame as _tkLabelFrame, Label as _tkLabel,
+    Listbox as _tkListbox,
     Variable, StringVar, IntVar, BooleanVar, DoubleVar, PhotoImage
 )
 from tkinter.ttk import (
@@ -209,6 +210,10 @@ class Canvas(AutoStyleMixin, _tkCanvas):
     """tk Canvas with ttkbootstrap theming (accepts `autostyle=`)."""
 
 
+class Listbox(AutoStyleMixin, _tkListbox):
+    """tk Listbox with ttkbootstrap theming (accepts `autostyle=`)."""
+
+
 class TkFrame(AutoStyleMixin, _tkFrame):
     """tk Frame with ttkbootstrap theming (accepts `autostyle=`).
 
@@ -285,7 +290,7 @@ from tkinter import filedialog
 
 __all__ = [
     # Tk exports
-    "Tk", "Menu", "Text", "Canvas", "TkFrame", "TkLabel", "LabelFrame", "Variable", "StringVar", "IntVar", "BooleanVar",
+    "Tk", "Menu", "Text", "Canvas", "Listbox", "TkFrame", "TkLabel", "LabelFrame", "Variable", "StringVar", "IntVar", "BooleanVar",
     "DoubleVar", "PhotoImage",
 
     # TTk exports
