@@ -178,4 +178,4 @@ A small toolbar of icon-only buttons beside a labeled action:
    For the *application* (window/taskbar) icon, see
    :doc:`Windows </user-guide/feature-guides/windows>`. For
    raster images and Pillow, see
-   :doc:`Working with images </user-guide/how-to/working-with-images>`.
+   :doc:`Show images and icons </user-guide/how-to/working-with-images>`.

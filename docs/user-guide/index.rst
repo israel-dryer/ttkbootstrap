@@ -99,7 +99,7 @@ respond to input, and how ttkbootstrap styles them.
       :link: foundations/delivery-model
       :link-type: doc
 
-      How the ``bootstyle`` API reaches your widgets — the blessed subclasses,
+      How the ``bootstyle`` API reaches your widgets — the widget subclasses,
       ``enable_global_api``, ``bootify``, and ``apply_bootstyle``.
 
 Feature guides
@@ -155,6 +155,13 @@ Each subsystem, end to end — its concepts and its usage in one place.
 
       ``App``/``Toplevel`` setup, focus & modality, positioning, high-DPI, and the
       deferred-config seam.
+
+   .. grid-item-card:: Menus
+      :link: feature-guides/menus
+      :link-type: doc
+
+      Menu bars, submenus, stateful items, context menus, and the cross-platform
+      macOS application menu.
 
    .. grid-item-card:: Dialogs
       :link: feature-guides/dialogs
@@ -217,6 +224,7 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way. See the
    feature-guides/events
    feature-guides/icons
    feature-guides/windows
+   feature-guides/menus
    feature-guides/dialogs
    feature-guides/theming
    feature-guides/custom-styles
@@ -227,7 +235,9 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way. See the
 
    how-to/index
    how-to/working-with-images
+   how-to/scrollable
    how-to/feedback
    how-to/clipboard
    how-to/error-handling
    how-to/multiple-windows
+   how-to/threads

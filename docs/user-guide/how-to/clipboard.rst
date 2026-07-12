@@ -1,5 +1,5 @@
-Clipboard & selection
-=====================
+Copy and paste text
+===================
 
 Copy text to the system clipboard, read it back, and work with the current
 selection — all through methods every widget already has (they live on

@@ -1,5 +1,5 @@
-Working with images
-====================
+Show images and icons
+=====================
 
 To show a picture in tkinter you wrap it in an *image object* and hand that to a
 widget's ``image=`` option. There are two image classes, and one notorious

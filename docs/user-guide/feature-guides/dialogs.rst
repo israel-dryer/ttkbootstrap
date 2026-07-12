@@ -298,7 +298,7 @@ When you need your own widgets and layout, build the dialog from a ``Toplevel``:
 add your widgets, ``grab_set()`` to make it modal, ``wait_window()`` to block
 until it closes, and leave the result on an attribute for the caller to read.
 That is the same modal mechanism the facades use, applied to a window you own —
-the :doc:`Multiple windows how-to </user-guide/how-to/multiple-windows>` walks
+the :doc:`Open a second window </user-guide/how-to/multiple-windows>` recipe walks
 through a reusable version, and :doc:`Input validation
 </user-guide/feature-guides/validation>` covers checking the fields before you
 accept them.
@@ -314,5 +314,5 @@ accept them.
    :doc:`Windows </user-guide/feature-guides/windows>` for the focus,
    modality, and lifecycle mechanics the dialogs are built on;
    :doc:`Input validation </user-guide/feature-guides/validation>` for validating
-   fields in a form dialog; and the :doc:`Multiple windows how-to
+   fields in a form dialog; and :doc:`Open a second window
    </user-guide/how-to/multiple-windows>` for rolling your own.

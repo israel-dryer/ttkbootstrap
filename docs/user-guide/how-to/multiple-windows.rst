@@ -1,5 +1,5 @@
-Multiple windows & modal dialogs
-================================
+Open a second window
+====================
 
 Task recipes for working with more than one window. For the mechanics behind
 them — focus, modality, stacking, and lifecycle — see
