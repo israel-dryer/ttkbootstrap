@@ -9,6 +9,11 @@ afterward. Keep **one** ``App`` per program (the single-root rule — see
 :doc:`Structuring an app </user-guide/getting-started/app-structures>`); every
 other window is a ``Toplevel``.
 
+Windowing is also where the three platforms diverge most — DPI, transparency,
+maximize, and borderless windows all behave differently on Windows, macOS, and
+Linux. This guide flags those differences as it goes, and collects them in
+`Cross-platform behavior`_ at the end.
+
 Creating the main window
 ------------------------
 
@@ -29,23 +34,90 @@ Everything else is a keyword you set once, up front:
 
    app.mainloop()
 
-- ``size=(width, height)`` and ``position=(x, y)`` are pixel tuples; set
-  either or both. ``position`` is signed and **edge-relative** — a negative
-  coordinate measures from the opposite screen edge, so ``position=(-20, -20)``
-  pins the window near the bottom-right corner.
-- ``minsize`` / ``maxsize=(width, height)`` clamp how far the user can resize;
-  ``resizable=(horizontal, vertical)`` takes two booleans to lock an axis
-  entirely (``resizable=(True, False)`` allows width but fixes height).
-- ``alpha`` sets window transparency from ``0.0`` to ``1.0`` (opaque).
-- ``iconphoto`` sets the titlebar icon from an image path; the default is
-  ttkbootstrap's brand icon, and ``iconphoto=None`` leaves the platform default.
-
 .. note::
 
    ``theme=`` is the canonical name; ``themename=`` is a permanent alias (the
    pre-2.0 spelling). ``Window`` is likewise a permanent alias for ``App`` — use
    whichever reads better. For choosing and switching themes, see
    :doc:`Theming & Colors </user-guide/feature-guides/theming>`.
+
+Window geometry
+~~~~~~~~~~~~~~~
+
+A window's size and location are one value in tkinter — the **geometry string**,
+``"WIDTHxHEIGHT+X+Y"`` (e.g. ``"800x600+200+120"``). The ``size`` and ``position``
+constructor keywords build it for you from ``(width, height)`` and ``(x, y)``
+pixel tuples; you can also read or set it directly with ``geometry()``:
+
+.. code-block:: python
+
+   app.geometry()                 # -> "800x600+200+120"
+   app.geometry("640x480")        # resize, leave position alone
+   app.geometry("+100+100")       # move, leave size alone
+
+``x`` and ``y`` are screen pixels from the top-left, and they are **signed and
+edge-relative**: a negative value measures from the opposite edge, so
+``position=(-20, -20)`` pins the window near the bottom-right corner regardless of
+screen size.
+
+Read the current size and location back with the ``winfo_*`` accessors —
+``winfo_width()`` / ``winfo_height()`` / ``winfo_x()`` / ``winfo_y()``:
+
+.. warning::
+
+   ``winfo_width()`` / ``winfo_height()`` report ``1`` until the window has been
+   drawn. Call ``update_idletasks()`` first, or read ``winfo_reqwidth()`` /
+   ``winfo_reqheight()`` (the requested size, valid immediately). See
+   :doc:`Widget & screen info </reference/winfo>`.
+
+Size constraints
+~~~~~~~~~~~~~~~~
+
+``minsize`` and ``maxsize`` are ``(width, height)`` tuples that clamp how far the
+user can resize the window; ``resizable`` takes two booleans, one per axis, to
+lock resizing entirely:
+
+.. code-block:: python
+
+   app = ttk.App(minsize=(480, 360), resizable=(True, False))   # width flexes, height fixed
+
+``alpha`` sets whole-window transparency from ``0.0`` to ``1.0`` (opaque).
+
+.. note::
+
+   Window transparency is immediate on Windows and macOS. On Linux it needs a
+   **compositing** window manager to take effect, and ttkbootstrap applies it only
+   once the window is first shown.
+
+Window state
+------------
+
+A window is in one of a few states, read and set through ``state()``:
+``"normal"``, ``"iconic"`` (minimized), or ``"withdrawn"`` (hidden). The
+convenience methods are usually clearer — ``iconify()`` minimizes, ``deiconify()``
+restores, ``withdraw()`` hides without a taskbar entry:
+
+.. code-block:: python
+
+   app.iconify()          # minimize
+   app.deiconify()        # restore
+   app.state()            # -> "normal" / "iconic" / "withdrawn"
+
+**Maximize** and **fullscreen** are where platforms split:
+
+.. code-block:: python
+
+   app.state("zoomed")                     # maximize — Windows
+   app.attributes("-fullscreen", True)     # true fullscreen — Windows & Linux
+
+.. note::
+
+   ``state("zoomed")`` maximizes on **Windows**; on **Linux** use
+   ``attributes("-zoomed", True)`` (honored by most window managers); **macOS** has
+   no programmatic maximize — the green traffic-light button toggles native
+   fullscreen. ``attributes("-fullscreen", True)`` gives borderless fullscreen on
+   Windows and Linux, and drives native fullscreen on macOS. Provide an ``Escape``
+   binding to leave fullscreen — there is no titlebar to click.
 
 Second windows — ``Toplevel``
 -----------------------------
@@ -64,16 +136,51 @@ the app's theme and icon automatically.
 
       win = ttk.Toplevel(master=app, title="Details", size=(400, 300))
 
-``Toplevel`` adds a few window-manager options ``App`` doesn't need:
+``Toplevel`` adds a few window-manager options ``App`` doesn't need. Several are
+platform-specific — they are honored where they apply and ignored elsewhere, so
+they are safe to pass on any OS:
 
-- ``topmost=True`` keeps the window above all others.
-- ``tool_window=True`` gives it a thin tool-window frame and keeps it off the
-  taskbar (Windows).
-- ``window_type=...`` requests a window kind from the OS — ``"splash"``,
-  ``"utility"``, ``"tooltip"`` — used for borderless/auxiliary windows (mapped to
-  native styles on macOS, an X11 hint on Linux).
+- ``topmost=True`` keeps the window above all others (all platforms).
+- ``tool_window=True`` gives a thin tool-window frame and hides it from the
+  taskbar — **Windows only**.
+- ``window_type=...`` requests a window kind — ``"splash"``, ``"utility"``,
+  ``"tooltip"`` — for borderless/auxiliary windows. On **macOS** these map to
+  native window styles; on **Linux** it is a hint to the window manager; on
+  **Windows** it has no effect (use ``tool_window`` / ``override_redirect``).
 - ``iconify=True`` starts the window minimized.
-- ``transient=parent`` marks it a satellite of ``parent`` (next section).
+- ``transient=parent`` marks it a satellite of ``parent`` (see below).
+
+.. note::
+
+   ``override_redirect=True`` strips **all** window-manager decoration (no
+   titlebar, border, or controls) — the basis of a splash screen. It has **no
+   effect on macOS**, where enabling it breaks event handling, so ttkbootstrap
+   ignores it there; for borderless popups on macOS use ``window_type`` instead.
+
+Positioning
+-----------
+
+``place_window_center()`` centers a window on screen — on the monitor under the
+mouse cursor when the optional ``screeninfo`` package is installed, and clamped so
+the window stays fully visible either way. Call it *after* the window's size is
+known (the constructor ``size`` counts):
+
+.. code-block:: python
+
+   win = ttk.Toplevel(master=app, title="About", size=(360, 200))
+   win.place_window_center()
+
+.. note::
+
+   Without ``screeninfo`` installed, centering falls back to the primary screen,
+   so on a multi-monitor setup the window may land on the main display rather than
+   the active one. ``screeninfo`` is an optional dependency — ttkbootstrap's only
+   required one is Pillow.
+
+.. admonition:: 📷 Screenshot (placeholder)
+   :class: screenshot-placeholder
+
+   A small Toplevel centered over its parent window with ``place_window_center``.
 
 Focus, modality & lifecycle
 ---------------------------
@@ -133,10 +240,6 @@ modal dialogs built on the same mechanism.
 Lifecycle
 ~~~~~~~~~
 
-A window can be hidden and shown without being rebuilt: ``withdraw()`` removes it
-from view, ``deiconify()`` restores it, and ``iconify()`` minimizes it. Reuse an
-expensive window this way instead of recreating it.
-
 ``destroy()`` closes a window for good and tears down its child widgets. Cancel
 any ``after`` timers or variable traces first, or they fire against dead widgets.
 
@@ -153,23 +256,16 @@ window. Register a handler to confirm or veto the close instead:
 
    win.protocol("WM_DELETE_WINDOW", on_close)
 
-Positioning
------------
+Application icon
+----------------
 
-``place_window_center()`` centers a window on screen — on the monitor under the
-mouse cursor when the optional ``screeninfo`` package is installed, and clamped so
-the window stays fully visible either way. Call it *after* the window's size is
-known (the constructor ``size`` counts):
-
-.. code-block:: python
-
-   win = ttk.Toplevel(master=app, title="About", size=(360, 200))
-   win.place_window_center()
-
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
-
-   A small Toplevel centered over its parent window with ``place_window_center``.
+``iconphoto=`` sets the titlebar/taskbar icon from an image path; the default is
+ttkbootstrap's brand icon, and ``iconphoto=None`` leaves the platform default.
+The format that works best differs by platform — a ``.ico`` file on Windows, a
+PNG elsewhere — and ttkbootstrap picks the right mechanism for you. A ``Toplevel``
+inherits the application icon automatically. See the
+:doc:`images how-to </user-guide/how-to/working-with-images>` for building icons
+from your own art.
 
 Light & dark
 ------------
@@ -184,21 +280,70 @@ full.
 High-DPI displays
 -----------------
 
-On a high-resolution display, an unaware app renders tiny and blurry. ``App``
-turns on high-DPI awareness by **default** (``high_dpi=True``) on Windows, so most
-apps need nothing. Two utilities cover the rest:
+On a high-resolution display, a DPI-unaware app is scaled up by the OS and looks
+blurry, or renders everything tiny. Each platform handles this differently, and
+``App`` does the right thing by default:
 
-- ``enable_high_dpi_awareness(root=None, scaling=None)`` — the manual control.
-  On Windows it must run *before* the root exists (``App`` already does this); on
-  Linux, pass the root and a ``scaling`` factor (``1.6``–``2.0`` is typical) after
-  creating it to scale the whole UI.
-- ``scale_size(widget, size)`` — convert a logical size to physical pixels for
-  the current display, for code that sets pixel geometry or builds image assets:
+- **Windows** — ``App`` enables DPI awareness automatically (``high_dpi=True``),
+  so text and widgets stay crisp. It must happen before the root is created, which
+  the constructor handles; call ``enable_high_dpi_awareness()`` yourself only if
+  you are not using ``App``.
+- **macOS** — HiDPI ("Retina") is handled natively by the OS; nothing to do.
+- **Linux** — there is no automatic scaling. Pass a factor after creating the
+  root to scale the whole UI: ``enable_high_dpi_awareness(app, 1.75)`` (``1.6``–
+  ``2.0`` is typical for a 4K panel).
 
-  .. code-block:: python
+For code that sets pixel geometry or builds image assets, convert logical sizes to
+physical pixels for the current display with ``scale_size``:
 
-     ttk.scale_size(app, 24)          # 24 logical px -> physical px for this display
-     ttk.scale_size(app, [24, 24])    # a (width, height) pair -> scaled ints
+.. code-block:: python
+
+   ttk.scale_size(app, 24)          # 24 logical px -> physical px for this display
+   ttk.scale_size(app, [24, 24])    # a (width, height) pair -> scaled ints
+
+Cross-platform behavior
+-----------------------
+
+Windowing is the corner of tkinter where "write once, run anywhere" leaks the
+most. The differences below are handled or guarded by ``App``/``Toplevel`` where
+possible, but they affect what you can rely on:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 26 25 25 24
+
+   * - Feature
+     - Windows
+     - macOS
+     - Linux (X11)
+   * - High-DPI
+     - auto (``high_dpi=True``)
+     - native (Retina)
+     - manual ``scaling``
+   * - Transparency (``alpha``)
+     - immediate
+     - immediate
+     - needs a compositor
+   * - Maximize
+     - ``state("zoomed")``
+     - none (native fullscreen)
+     - ``attributes("-zoomed", …)``
+   * - ``tool_window``
+     - ✓
+     - —
+     - —
+   * - ``window_type`` (borderless)
+     - — (use ``override_redirect``)
+     - native styles
+     - WM hint
+   * - ``override_redirect``
+     - ✓
+     - ignored (breaks events)
+     - ✓
+   * - Taskbar grouping
+     - by app id (automatic)
+     - Dock (native)
+     - WM-dependent
 
 .. admonition:: Sidebar — the deferred-config seam
    :class: note
@@ -222,5 +367,7 @@ apps need nothing. Two utilities cover the rest:
 
    :doc:`Structuring an app </user-guide/getting-started/app-structures>` for the
    single-root rule, :doc:`Theming & Colors </user-guide/feature-guides/theming>`
-   for themes and light/dark, and the :doc:`Multiple windows how-to
-   </user-guide/how-to/multiple-windows>` for second-window recipes.
+   for themes and light/dark, :doc:`Widget & screen info </reference/winfo>` for
+   the ``winfo_*`` size/position accessors, and the
+   :doc:`Multiple windows how-to </user-guide/how-to/multiple-windows>` for
+   second-window recipes.
