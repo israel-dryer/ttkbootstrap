@@ -176,6 +176,6 @@ A small toolbar of icon-only buttons beside a labeled action:
 .. seealso::
 
    For the *application* (window/taskbar) icon, see
-   :doc:`Windows & high-DPI </user-guide/feature-guides/windows>`. For
+   :doc:`Windows </user-guide/feature-guides/windows>`. For
    raster images and Pillow, see
    :doc:`Working with images </user-guide/how-to/working-with-images>`.

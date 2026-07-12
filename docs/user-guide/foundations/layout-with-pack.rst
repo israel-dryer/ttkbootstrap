@@ -74,7 +74,7 @@ That's the distinction worth remembering:
 
 .. admonition:: ``fill`` vs ``expand``
 
-   **``fill``** stretches a widget within the space it already has. **``expand``**
+   ``fill`` stretches a widget within the space it already has. ``expand``
    grows that space to swallow whatever is left over. A region that should grow
    with the window — a content area, a text box — wants **both**: ``expand=True``
    to *receive* the space and ``fill="both"`` to *stretch into* it.

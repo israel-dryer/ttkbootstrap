@@ -86,8 +86,8 @@ they stretch to fill it. This pairing is the whole secret to a responsive grid:
 
 .. admonition:: The key idea
 
-   **``weight`` on the column so the cell grows; ``sticky`` on the widget so it
-   grows with the cell.** You almost always need both — one without the other
+   ``weight`` on the column so the cell grows; ``sticky`` on the widget so it
+   grows with the cell. You almost always need both — one without the other
    leaves either an empty gap or a stuck widget. A weight of ``0`` (the default)
    means "stay at content size"; larger weights split the spare space in
    proportion.

@@ -3,8 +3,8 @@ The event object
 
 A callback bound with ``bind`` receives one argument: an ``event`` object whose
 attributes describe what happened. tkinter fills these from the underlying Tk
-event; **an attribute that does not apply to the event type holds the string
-``"??"``** (or a meaningless value), so read only the ones relevant to the event
+event; **an attribute that does not apply to the event type holds the string**
+``"??"`` (or a meaningless value), so read only the ones relevant to the event
 you bound.
 
 .. list-table::

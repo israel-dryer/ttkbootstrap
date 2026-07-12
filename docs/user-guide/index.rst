@@ -142,12 +142,12 @@ Each subsystem, end to end — its concepts and its usage in one place.
       Theme-aware Bootstrap Icons glyphs — the ``icon=`` keyword, ``apply_icon``,
       and the standalone ``Icon`` image.
 
-   .. grid-item-card:: Windows & high-DPI
+   .. grid-item-card:: Windows
       :link: feature-guides/windows
       :link-type: doc
 
-      ``App``/``Toplevel``, focus & modality, positioning, application icons, and
-      DPI scaling.
+      ``App``/``Toplevel`` setup, focus & modality, positioning, high-DPI, and the
+      deferred-config seam.
 
    .. grid-item-card:: Dialogs
       :link: feature-guides/dialogs
