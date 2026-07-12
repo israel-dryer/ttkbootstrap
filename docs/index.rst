@@ -72,7 +72,7 @@ A themed window is a handful of lines — every widget takes ``bootstyle``:
 
    import ttkbootstrap as ttk
 
-   app = ttk.App(title="Hello", themename="bootstrap-light")
+   app = ttk.App(title="Hello", theme="bootstrap-light")
 
    ttk.Label(app, text="Hello from ttkbootstrap!").pack(padx=16, pady=(16, 8))
    ttk.Button(app, text="Primary", bootstyle="primary").pack(padx=16, pady=4)

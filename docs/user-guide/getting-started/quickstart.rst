@@ -10,7 +10,7 @@ Hello ttkbootstrap
 
    import ttkbootstrap as ttk
 
-   app = ttk.App(title="Hello", themename="bootstrap-light")
+   app = ttk.App(title="Hello", theme="bootstrap-light")
 
    ttk.Label(app, text="Hello from ttkbootstrap!").pack(padx=16, pady=(16, 8))
    ttk.Button(app, text="Primary", bootstyle="primary").pack(padx=16, pady=4)
@@ -22,7 +22,7 @@ Hello ttkbootstrap
 A few things to notice:
 
 - ``ttk.App`` creates the root window and installs a theme in one step. Pass
-  ``themename=`` to choose one; it defaults to ``bootstrap-light``.
+  ``theme=`` to choose one; it defaults to ``bootstrap-light``.
 - Every ttkbootstrap widget accepts ``bootstyle=``. The value describes intent
   — a color (``"primary"``), a variant (``"outline"``), or both
   (``"danger-outline"``) — not a literal color.
