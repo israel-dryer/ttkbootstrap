@@ -276,6 +276,12 @@ from ttkbootstrap.localization import L, LocaleVar, set_locale
 # package; `ttkbootstrap.validation` remains the canonical home / import path.
 from ttkbootstrap.validation import Validation, validator, ValidationEvent
 
+# Re-export the stdlib file dialog as `ttk.filedialog`. It is the one standard
+# dialog ttkbootstrap does not supersede (native OS chrome), so surfacing the
+# module here spares callers a bare `from tkinter import filedialog`; the themed
+# wrappers live on `Querybox.get_open_filename`/etc.
+from tkinter import filedialog
+
 __all__ = [
     # Tk exports
     "Tk", "Menu", "Text", "Canvas", "TkFrame", "TkLabel", "LabelFrame", "Variable", "StringVar", "IntVar", "BooleanVar",
@@ -340,6 +346,9 @@ __all__ = [
     "Validation",
     "validator",
     "ValidationEvent",
+
+    # Stdlib file dialog (native; not superseded)
+    "filedialog",
 
     # Application root + windows
     "App",

@@ -92,51 +92,62 @@ The monospace font (``TkFixedFont``) is left alone unless you ask for it with
    The same small window rendered with the default family and with a custom
    ``set_global_family`` family side by side, showing the whole UI restyled.
 
-The ``Fonts`` namespace
------------------------
+Building a type system
+----------------------
 
-For finer control against a **live** root, use the :class:`~ttkbootstrap.Fonts`
-namespace. Its methods operate on the running application, so call them once
-``App()`` exists — a pre-root call raises a clear "too early" error rather than
-spawning a stray root. (For the top-of-file case, use the module-level
-``set_global_family`` above.)
+Past the global family, most apps want a few deliberate **roles** — a larger
+heading, a smaller caption — and the named fonts are where you set them, once, at
+startup. Use the :class:`~ttkbootstrap.Fonts` namespace, whose methods operate on
+the live root, so call them after ``App()`` exists (a pre-root call raises a clear
+"too early" error rather than spawning a stray root — for the top-of-file case use
+the module-level ``set_global_family`` above).
 
-**Tweak one named font** with ``Fonts.configure`` — pass any font option
-(``family``, ``size``, ``weight``, ``slant``, ``underline``). Every widget
-reading that font updates live:
+**Adjust a built-in role.** ``Fonts.configure`` changes one named font in place —
+``family``, ``size``, ``weight``, ``slant``, ``underline`` — and every widget
+that reads it updates live. Bump the base size a point and make headings larger
+and bold:
 
 .. code-block:: python
 
    ttk.Fonts.configure("TkDefaultFont", size=11)
-   ttk.Fonts.configure("TkHeadingFont", weight="bold", size=13)
+   ttk.Fonts.configure("TkHeadingFont", size=14, weight="bold")
 
-``Fonts.set_global_family`` is the live sibling of the module-level function —
-retint every proportional font now, against the existing root:
+   ttk.Label(app, text="Quarterly report", font="TkHeadingFont").pack()
 
-.. code-block:: python
+Because widgets already read these names, that is a working type scale without
+touching a single widget's ``font=``. (To retint the whole family live against an
+existing root, ``Fonts.set_global_family(...)`` is the sibling of the
+module-level call.)
 
-   ttk.Fonts.set_global_family("Segoe UI", mono_family="Consolas")
-
-**Register your own named font** with ``Fonts.create_alias``. Define it once and
-refer to it by name everywhere — the same mechanism the ``Tk*Font`` names use.
-It returns the ``font.Font`` wrapper for further tweaking, and re-registering a
-name reconfigures it instead of erroring:
-
-.. code-block:: python
-
-   ttk.Fonts.create_alias("Body", family="Georgia", size=12)
-
-   ttk.Label(app, text="Chapter one", font="Body").pack()
-
-**Introspect** with ``Fonts.names`` (the managed named fonts) and
-``Fonts.describe`` (their resolved family/size/weight/…):
+**Define your own role.** When no built-in name maps to a role you need, register
+one with ``Fonts.create_alias`` and refer to it by name everywhere — the same
+mechanism the ``Tk*Font`` names use. Re-registering a name reconfigures it rather
+than erroring, so it is safe to call at startup:
 
 .. code-block:: python
 
-   ttk.Fonts.names()               # ('TkDefaultFont', 'TkTextFont', …)
+   ttk.Fonts.create_alias("Caption", family="Georgia", size=9, slant="italic")
+
+   ttk.Label(app, text="figure 1 — quarterly revenue", font="Caption").pack()
+
+Define your fonts once and the rest of the code just names the role; restyle a
+role later — a bigger caption, a different heading family — in that one place and
+the whole app follows.
+
+.. admonition:: 📷 Screenshot (placeholder)
+   :class: screenshot-placeholder
+
+   A small card using three roles — bold ``TkHeadingFont`` title, default body
+   text, and the italic ``Caption`` alias — showing the type scale in one view.
+
+**Seeing what the fonts are.** ``Fonts.names()`` lists the managed named fonts and
+``Fonts.describe(name)`` returns a font's resolved family/size/weight (omit the
+name for the whole mapping) — useful when a value isn't what you expect:
+
+.. code-block:: python
+
    ttk.Fonts.describe("TkDefaultFont")
-   # {'family': 'Segoe UI', 'size': 9, 'weight': 'normal', …}
-   ttk.Fonts.describe()            # every managed font, as a mapping
+   # {'family': 'Segoe UI', 'size': 11, 'weight': 'normal', …}
 
 ``Fonts.reset`` drops ttkbootstrap's cached font wrappers; it runs automatically
 when the app is destroyed, so you rarely call it yourself.

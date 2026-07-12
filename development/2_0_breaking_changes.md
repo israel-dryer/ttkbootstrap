@@ -36,6 +36,7 @@
 | **Button-family visual restyle (flat + hairline border)** | Visual | this doc, below |
 | **Bare buttons default to `neutral`** | Visual/API | this doc, below |
 | **Dialog API normalization (Messagebox/Querybox)** | API | `development/2_0_shipped_widget_api_design.md` (PR A) |
+| **File dialogs surfaced: `Querybox.get_open_filename`/… + `ttk.filedialog`** | New | this doc, below |
 | **Meter: snake_case options, DoubleVar, `value`** | Breaking/additive | this doc, below (PR 2 / #1110) |
 | **DateEntry: snake_case (cross-layer), live-text read, string `state`** | Breaking/additive | this doc, below (PR 3 / #1111) |
 | **Floodgauge: DoubleVar value, `start(interval)`, live mode/orient** | Breaking/additive | this doc, below (PR 4) |
@@ -1526,3 +1527,32 @@ trip the warning. `when=` semantics are identical; only the call name changes.
 **Scope.** `validation.py` (new `Validation` namespace + deprecated aliases),
 `__init__.py` (top-level `Validation`/`validator`/`ValidationEvent` re-export),
 `dialogs/colorchooser.py` (4 call sites migrated).
+
+## File dialogs surfaced through `Querybox` + `ttk.filedialog`  *(New — additive)*
+
+The native file dialog was the one standard dialog with **no** ttkbootstrap
+entry point — callers had to drop to `from tkinter import filedialog` while every
+other dialog was `ttk.Messagebox` / `ttk.Querybox`. That inconsistency is closed:
+
+- **`Querybox.get_open_filename` / `get_open_filenames` / `get_save_filename` /
+  `get_directory`** — thin static-method wrappers over `tkinter.filedialog`
+  (`askopenfilename` / `askopenfilenames` / `asksaveasfilename` / `askdirectory`),
+  so a file path is fetched through the same `Querybox.get_*` facade as every
+  other value. They **normalize the stdlib `""`/`()`-on-cancel to `None`** to
+  match the rest of the facade's contract; all other keyword args (`title`,
+  `filetypes`, `initialdir`, `defaultextension`, …) forward to the underlying
+  function.
+- **`ttk.filedialog`** — the stdlib `tkinter.filedialog` module, re-exported at
+  the top level for the variants the four wrappers don't cover (e.g.
+  `askopenfile`, which returns an open file object).
+
+**Why.** filedialog is *not superseded* (the OS draws the native picker, so
+ttkbootstrap can't restyle it) — but "not restyled" is no reason to make it the
+one dialog you can't reach through the library. This surfaces it for API
+consistency without pretending to theme it. Consistent with the static-method
+facade the rest of `Querybox`/`Messagebox` already use (not new free functions).
+This is additive — no existing call changes; `tkinter.filedialog` still works.
+
+**Scope.** `dialogs/query.py` (four `Querybox` methods + `filedialog` import),
+`__init__.py` (`ttk.filedialog` re-export), `tests/test_dialogs_api.py` (+3), the
+Dialogs feature guide.
