@@ -215,20 +215,11 @@ positions (``index``, ``see``, ``bbox``), tags (``tag_add``, ``tag_configure``,
 ``mark_unset``), search (``search``), and the undo stack (``edit_undo``,
 ``edit_redo``, ``edit_separator``, ``edit_modified``).
 
-The standard library reference doesn't document the text widget in full, so the
-authoritative sources are the Tk manuals:
-
-- `Tk text manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/text.htm>`__ —
-  the canonical, complete reference. It's written in Tcl, so a subcommand like
-  ``tag configure`` is the Python method ``tag_configure`` (spaces become
-  underscores).
-- The tkinter-oriented walkthroughs by John Shipman are easier to read from
-  Python: `the text widget <https://tkdocs.com/shipman/text.html>`__,
-  `indices <https://tkdocs.com/shipman/text-index.html>`__,
-  `marks <https://tkdocs.com/shipman/text-mark.html>`__,
-  `tags <https://tkdocs.com/shipman/text-tag.html>`__,
-  `the undo stack <https://tkdocs.com/shipman/text-undo-stack.html>`__, and
-  `methods <https://tkdocs.com/shipman/text-methods.html>`__.
+The standard library reference doesn't document the text widget in full. The
+canonical, complete reference is the
+`Tk text manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/text.htm>`__ —
+it's written in Tcl, so a subcommand like ``tag configure`` is the Python method
+``tag_configure`` (spaces become underscores).
 
 .. seealso::
 
