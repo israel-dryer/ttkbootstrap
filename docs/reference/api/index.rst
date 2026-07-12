@@ -30,9 +30,16 @@ not at all). A widget's styling surface lives separately in the
 
       The tk ``Text`` widget — its full options and methods.
 
+   .. grid-item-card:: Canvas
+      :link: canvas
+      :link-type: doc
+
+      The tk ``Canvas`` drawing surface — items, tags, and their methods.
+
 .. toctree::
    :hidden:
    :maxdepth: 1
 
    widgets
    text
+   canvas
