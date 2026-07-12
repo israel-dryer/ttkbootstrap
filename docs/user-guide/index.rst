@@ -27,6 +27,13 @@ Getting Started
 
       Your first themed window; ``App`` vs ``Tk``; choosing a theme.
 
+   .. grid-item-card:: Build your first app
+      :link: getting-started/build-your-first-app
+      :link-type: doc
+
+      A guided, end-to-end tutorial: a contact book with a form, validation,
+      and a data table.
+
    .. grid-item-card:: Structuring an app
       :link: getting-started/app-structures
       :link-type: doc
@@ -187,6 +194,7 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way. See the
 
    getting-started/installation
    getting-started/quickstart
+   getting-started/build-your-first-app
    getting-started/app-structures
    getting-started/migrating
 
