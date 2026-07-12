@@ -92,8 +92,8 @@ Put this in a new method and call it from ``__init__``:
        ttk.Entry(form).grid(row=1, column=1, sticky=EW, pady=4)
 
        ttk.Label(form, text="Category").grid(row=2, column=0, sticky=W, padx=(0, 8), pady=4)
-       ttk.Combobox(form, values=["Friend", "Family", "Work"], state="readonly") \
-           .grid(row=2, column=1, sticky=EW, pady=4)
+       category = ttk.Combobox(form, values=["Friend", "Family", "Work"], state="readonly")
+       category.grid(row=2, column=1, sticky=EW, pady=4)
 
 The two pieces that make a grid form behave:
 
@@ -142,9 +142,9 @@ Create the variables in ``__init__`` (before building the form) and attach them:
    ...
    ttk.Entry(form, textvariable=self.email).grid(row=1, column=1, sticky=EW, pady=4)
    ...
-   ttk.Combobox(form, textvariable=self.category,
-                values=["Friend", "Family", "Work"], state="readonly") \
-       .grid(row=2, column=1, sticky=EW, pady=4)
+   category = ttk.Combobox(form, textvariable=self.category,
+                           values=["Friend", "Family", "Work"], state="readonly")
+   category.grid(row=2, column=1, sticky=EW, pady=4)
 
 ``ttk.StringVar()`` (also plain :class:`tkinter.StringVar`) is re-exported on
 the package for convenience. Giving ``category`` an initial ``value`` preselects
@@ -236,9 +236,9 @@ Add the button to the form, and the method it calls:
 .. code-block:: python
 
    # at the end of _build_form:
-   ttk.Button(form, text="Add contact", bootstyle="success",
-              command=self.add_contact) \
-       .grid(row=3, column=1, sticky=E, pady=(8, 0))
+   add_button = ttk.Button(form, text="Add contact", bootstyle="success",
+                           command=self.add_contact)
+   add_button.grid(row=3, column=1, sticky=E, pady=(8, 0))
 
 .. code-block:: python
 
@@ -329,13 +329,13 @@ The complete app
            Validation.regex(email_entry, r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
            ttk.Label(form, text="Category").grid(row=2, column=0, sticky=W, padx=(0, 8), pady=4)
-           ttk.Combobox(form, textvariable=self.category,
-                        values=["Friend", "Family", "Work"], state="readonly") \
-               .grid(row=2, column=1, sticky=EW, pady=4)
+           category = ttk.Combobox(form, textvariable=self.category,
+                                   values=["Friend", "Family", "Work"], state="readonly")
+           category.grid(row=2, column=1, sticky=EW, pady=4)
 
-           ttk.Button(form, text="Add contact", bootstyle="success",
-                      command=self.add_contact) \
-               .grid(row=3, column=1, sticky=E, pady=(8, 0))
+           add_button = ttk.Button(form, text="Add contact", bootstyle="success",
+                                   command=self.add_contact)
+           add_button.grid(row=3, column=1, sticky=E, pady=(8, 0))
 
        def _build_table(self):
            self.table = Tableview(
