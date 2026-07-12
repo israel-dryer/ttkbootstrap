@@ -59,8 +59,7 @@ The variable still holds the real text — only the display is masked.
 Validating input
 ----------------
 
-Attach a validation rule and a value that fails it flags the entry with a
-``danger`` border until it becomes valid again:
+Attach a validation rule with the :class:`~ttkbootstrap.Validation` helpers:
 
 .. code-block:: python
 
@@ -70,7 +69,13 @@ Attach a validation rule and a value that fails it flags the entry with a
    email.pack(padx=10, pady=10)
    Validation.regex(email, r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
-The rule set, custom rules, and when they fire are covered in the
+By default the rule runs when the entry **loses focus**. If the value passes,
+nothing changes; if it fails, the entry takes on a ``danger``-colored border that
+stays until the value becomes valid again — so the field flags itself only after
+the user leaves it, not on every keystroke. Pass ``when=`` to validate at a
+different time (for example ``when="key"`` to check as they type).
+
+The full rule set, custom rules, and the ``when=`` options are covered in the
 :doc:`Input validation guide </user-guide/feature-guides/validation>`.
 
 Color
