@@ -45,13 +45,13 @@ Switch and toolbutton looks
 ---------------------------
 
 The same control renders three ways — combine the look with a color. A
-``round-toggle`` or ``square-toggle`` draws it as a **switch**, which reads better
+``round toggle`` or ``square toggle`` draws it as a **switch**, which reads better
 than a checkbox for a settings on/off:
 
 .. code-block:: python
 
-   ttk.Checkbutton(app, text="Wi-Fi", variable=agree, bootstyle="round-toggle")
-   ttk.Checkbutton(app, text="Wi-Fi", variable=agree, bootstyle="square-toggle")
+   ttk.Checkbutton(app, text="Wi-Fi", variable=agree, bootstyle="round toggle")
+   ttk.Checkbutton(app, text="Wi-Fi", variable=agree, bootstyle="square toggle")
 
 ``toolbutton`` draws it as a button that stays pressed while checked — for a
 toolbar or a filter chip:
@@ -85,7 +85,7 @@ Color
 .. code-block:: python
 
    ttk.Checkbutton(app, text="Success", variable=agree, bootstyle="success")
-   ttk.Checkbutton(app, text="Danger",  variable=agree, bootstyle="danger-round-toggle")
+   ttk.Checkbutton(app, text="Danger",  variable=agree, bootstyle="danger round toggle")
 
 States
 ------

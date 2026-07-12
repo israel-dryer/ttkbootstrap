@@ -35,8 +35,13 @@ matching button and clears the rest:
    app.mainloop()
 
 Giving the variable an initial ``value`` (``"medium"`` above) preselects that
-button. To react the moment the selection changes, pass ``command=`` — it fires on
-the button that becomes selected:
+button.
+
+Reacting to a choice
+--------------------
+
+To run code the moment the selection changes, pass ``command=`` — it fires on the
+button that becomes selected:
 
 .. code-block:: python
 
@@ -78,7 +83,7 @@ Color
 .. code-block:: python
 
    ttk.Radiobutton(app, text="Info", variable=size, value="s", bootstyle="info")
-   ttk.Radiobutton(app, text="On", variable=view, value="x", bootstyle="success-toolbutton")
+   ttk.Radiobutton(app, text="On", variable=view, value="x", bootstyle="success toolbutton")
 
 States
 ------

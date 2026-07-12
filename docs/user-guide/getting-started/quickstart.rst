@@ -15,7 +15,7 @@ Hello ttkbootstrap
    ttk.Label(app, text="Hello from ttkbootstrap!").pack(padx=16, pady=(16, 8))
    ttk.Button(app, text="Primary", bootstyle="primary").pack(padx=16, pady=4)
    ttk.Button(app, text="Success", bootstyle="success").pack(padx=16, pady=4)
-   ttk.Button(app, text="Danger Outline", bootstyle="danger-outline").pack(padx=16, pady=(4, 16))
+   ttk.Button(app, text="Danger Outline", bootstyle="danger outline").pack(padx=16, pady=(4, 16))
 
    app.mainloop()
 
@@ -25,7 +25,7 @@ A few things to notice:
   ``theme=`` to choose one; it defaults to ``bootstrap-light``.
 - Every ttkbootstrap widget accepts ``bootstyle=``. The value describes intent
   — a color (``"primary"``), a variant (``"outline"``), or both
-  (``"danger-outline"``) — not a literal color.
+  (``"danger outline"``) — not a literal color.
 - ``pack`` (and ``grid``/``place``) **return the widget**, so you can construct
   and place in one expression — no separate variable needed unless you keep a
   reference.

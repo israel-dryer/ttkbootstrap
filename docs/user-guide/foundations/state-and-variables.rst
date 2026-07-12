@@ -75,7 +75,7 @@ the box is checked:
    agree.trace_add("write", refresh)
 
    ttk.Checkbutton(app, text="I accept the terms", variable=agree,
-                   bootstyle="round-toggle").pack(padx=20, pady=(20, 10))
+                   bootstyle="round toggle").pack(padx=20, pady=(20, 10))
    submit.pack(padx=20, pady=(0, 20))
 
    app.mainloop()
