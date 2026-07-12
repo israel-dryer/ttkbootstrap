@@ -273,15 +273,6 @@ are simply skipped — put your Exit and Preferences where those platforms expec
 them (under *File* and *Edit*, say). ``add_help_menu`` returns an ordinary Help
 cascade off macOS, so a Help menu is present everywhere.
 
-.. admonition:: Under the hood
-   :class: note
-
-   These helpers wrap the native Tk integration — the specially-named
-   ``apple``/``window``/``help`` menus and the ``tk::mac::ShowPreferences`` /
-   ``tk::mac::Quit`` / ``tk::mac::ShowHelp`` commands — so you don't reach into
-   Tcl yourself. On Windows and Linux those hooks don't exist, which is why the
-   helpers no-op.
-
 .. seealso::
 
    :doc:`Windows </user-guide/feature-guides/windows>` for the cross-platform
