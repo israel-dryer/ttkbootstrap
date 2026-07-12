@@ -19,11 +19,11 @@ Building interfaces
   each (uses the fluent geometry helpers).
 - **Wire events and variables** — ``bind``, ``command=``, and the tk variable
   classes (``StringVar``/``IntVar``/…).
-- **Menus and context menus** — a menu bar and a right-click popup.
+- :doc:`Menus and context menus <menus>` — a menu bar and a right-click popup.
 - :doc:`Working with images <working-with-images>` — ``PhotoImage`` and Pillow,
   the keep-a-reference gotcha, and themed glyphs with ``apply_icon``.
-- **Scrollable content** — ``ScrolledFrame``/``ScrolledText`` for content that
-  outgrows the window.
+- :doc:`Scrollable content <scrollable>` — ``ScrolledFrame``/``ScrolledText`` for
+  content that outgrows the window.
 
 Interaction and data
 ---------------------
@@ -33,8 +33,8 @@ Interaction and data
 - **Validate a form** — attach validation rules and read the result.
 - :doc:`Multiple windows & modal dialogs <multiple-windows>` — a second
   ``Toplevel``, a modal dialog that returns a value, and the close button.
-- **Background work without freezing the UI** — ``after`` and worker threads,
-  updating widgets safely from the main loop.
+- :doc:`Background work without freezing the UI <threads>` — ``after`` and worker
+  threads, updating widgets safely from the main loop.
 - :doc:`Clipboard & selection <clipboard>` — copy and paste text, and read the
   current selection.
 - :doc:`Handle callback errors <error-handling>` — take over
