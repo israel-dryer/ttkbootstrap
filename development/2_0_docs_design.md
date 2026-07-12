@@ -393,6 +393,50 @@ tasks* (determinate/indeterminate `mode`, `mask`/`text`, `.start()/.stop()/
 .step()`, bind `variable`), cross-links to **API Reference › Floodgauge**. Style
 Reference is N/A (Canvas).
 
+### 5a-plan. Widgets-catalog authoring plan (LOCKED 2026-07-11)
+
+Coverage decided from a full inventory (19 native `BootMixin` + 8 shipped
+widgets). **~27 pages; 2 done (Button — to rewrite, Meter), ~25 to author.**
+
+- **Native (19):** Button, Checkbutton (folds in `toggle`), Radiobutton, Entry,
+  Combobox, Spinbox, Menubutton (folds in `toolbutton`), OptionMenu, Label,
+  Frame, Labelframe, Notebook, Panedwindow, Progressbar, Scale, Scrollbar,
+  Separator, Sizegrip, Treeview. Depth → **Style Reference**; API → `tkinter.ttk`.
+- **Shipped (8):** Meter, Floodgauge, DateEntry, Tableview, Scrolled, Toast,
+  Tooltip, LabeledScale. Depth → **API Reference**.
+- **Text & Canvas — IN, and robust (author call 2026-07-11):** these are the most
+  *expansive* widgets and get very robust, example-heavy pages (Text: indices/
+  tags/marks/search/undo/editing; Canvas: items/coords/tags/scrolling/events).
+  They are `AutoStyleMixin` (no `bootstyle`), so the skeleton **flexes** —
+  usage dominates, the Variants/Colors sections shrink to "themed automatically."
+- **Scrolled** — thin catalog stub that cross-links the *Scroll long content*
+  How-To (which owns the usage), to avoid duplication.
+- **Covered elsewhere, NOT in the catalog:** `Menu` (Menus feature guide);
+  `Tk`/`TkFrame`/`TkLabel`/`LabelFrame` (infra).
+
+**Depth is calibrated, not padded:** Treeview/Notebook/Tableview/Combobox/Text/
+Canvas are rich; Separator/Sizegrip/Frame/Panedwindow are short honest pages.
+Uniform *shape* (the §5a skeleton), not uniform *length*.
+
+**Usage-first (author bar):** every page leads with *using* the widget (real
+patterns driven by its actual API — `command=`, `textvariable=`, `icon=`/
+`icon_only=`, selection, …), each snippet **verified headlessly**, *then* the
+bootstyle/variants/colors/states surface. Screenshots are placeholders (later
+slice).
+
+**No-gaps mechanism:** a coverage **sync test** — assert every widget in
+`ttk.__all__` (BootMixin + shipped) has a `docs/widgets/<name>.rst` page **or** an
+explicit `COVERED_ELSEWHERE` allowlist entry (e.g. `Menu → Menus guide`). Adding a
+widget later without a page fails CI.
+
+**Sequence:** Phase 0 = rewrite `button.rst` as the gold-standard template (sign
+-off gate). Phase 1 = **one PR per family**: Inputs (Entry/Combobox/Spinbox) ·
+Choice (Checkbutton/Radiobutton) · Command (Menubutton/OptionMenu) · Containers
+(Frame/Labelframe/Notebook/Panedwindow) · Range & misc (Progressbar/Scale/
+Scrollbar/Separator/Sizegrip/Label) · Shipped (Floodgauge/DateEntry/Tableview/
+LabeledScale/Toast/Tooltip/Scrolled) · **Text** · **Canvas** (each its own PR,
+given their size).
+
 ### 5b. Style Reference (generated) — for native widgets & any widget with a ttk style surface
 
 Reimagines today's thin "Style guide" into an *exhaustive, generated* reference
