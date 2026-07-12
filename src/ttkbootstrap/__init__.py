@@ -196,8 +196,9 @@ class Tk(AutoStyleMixin, _tkTk):
     """tk root window with ttkbootstrap theming (accepts `autostyle=`)."""
 
 
-class Menu(AutoStyleMixin, _tkMenu):
-    """tk Menu with ttkbootstrap theming (accepts `autostyle=`)."""
+# Menu is defined in its own module (it carries the macOS application-menu
+# helpers, more than a one-line subclass); re-exported here as `ttk.Menu`.
+from ttkbootstrap.menu import Menu
 
 
 class Text(AutoStyleMixin, _tkText):

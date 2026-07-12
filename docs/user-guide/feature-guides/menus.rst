@@ -234,58 +234,53 @@ macOS: the application menu
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 On macOS the leftmost menu is the **application menu** (bold, your app's name),
-and users expect *About*, *Preferences*, and *Quit* to live there — not under
-*File*. Tk routes to these native slots by the menu's **Tk name**, not its label.
-Create submenus named ``apple``, ``window``, and ``help`` and Tk treats them as
-the standard macOS menus:
+and users expect *About*, *Preferences…*, and *Quit* to live there — not under
+*File*. ``Menu`` builds these native slots for you: :meth:`add_application_menu`,
+:meth:`add_window_menu`, and :meth:`add_help_menu` create the standard macOS
+menus, and :meth:`on_preferences` / :meth:`on_quit` wire the standard commands.
+Every one of them is a **no-op on Windows and Linux** — the ``add_*_menu``
+helpers return ``None`` there — so a single code path builds a native-feeling bar
+on every platform:
 
 .. code-block:: python
 
    import ttkbootstrap as ttk
 
    app = ttk.App(title="Editor")
-   is_mac = ttk.windowing_system(app) == "aqua"
 
    menubar = ttk.Menu(app)
 
-   if is_mac:
-       # name="apple" -> the bold application menu; its items append to the
-       # standard About/Services/Quit block macOS already provides.
-       app_menu = ttk.Menu(menubar, name="apple")
-       menubar.add_cascade(menu=app_menu)
+   app_menu = menubar.add_application_menu()     # None off macOS
+   if app_menu:
        app_menu.add_command(label="About Editor", command=show_about)
+       app_menu.on_preferences(open_preferences)  # enables the Preferences… item (⌘,)
+       app_menu.on_quit(save_and_quit)            # runs on Quit / ⌘Q
+       menubar.add_window_menu()
 
    file_menu = ttk.Menu(menubar, tearoff=False)
    file_menu.add_command(label="New", command=new_file)
    menubar.add_cascade(label="File", menu=file_menu)
 
-   if is_mac:
-       # name="window" and name="help" fill the standard Window and Help menus.
-       menubar.add_cascade(menu=ttk.Menu(menubar, name="window"), label="Window")
-       menubar.add_cascade(menu=ttk.Menu(menubar, name="help"), label="Help")
+   menubar.add_help_menu(command=open_help)       # standard Help menu; ⌘? search on macOS
 
    app.configure(menu=menubar)
    app.mainloop()
 
-macOS also exposes a handful of **standard commands** — the Preferences item, the
-Quit item, the Help menu search — through special Tcl procedures. Register a
-Python callback for one with ``createcommand``:
+The ``if app_menu:`` guard reads as *"if this platform has an application
+menu."* On macOS ``app_menu`` is the real menu and its items land in the native
+About/Preferences/Quit block; on Windows and Linux it is ``None``, so those items
+are simply skipped — put your Exit and Preferences where those platforms expect
+them (under *File* and *Edit*, say). ``add_help_menu`` returns an ordinary Help
+cascade off macOS, so a Help menu is present everywhere.
 
-.. code-block:: python
+.. admonition:: Under the hood
+   :class: note
 
-   if is_mac:
-       app.createcommand("tk::mac::ShowPreferences", open_preferences)
-       app.createcommand("tk::mac::Quit", on_quit)
-       app.createcommand("tk::mac::ShowHelp", open_help)
-
-- ``tk::mac::ShowPreferences`` enables the **Preferences…** item (⌘,) in the
-  application menu and calls your function when chosen.
-- ``tk::mac::Quit`` runs when the user picks **Quit** or presses ⌘Q — the place to
-  hook "save before exit".
-- ``tk::mac::ShowHelp`` handles the Help menu.
-
-On Windows and Linux these names do nothing, so guarding with ``is_mac`` keeps one
-code path building a native-feeling bar on every platform.
+   These helpers wrap the native Tk integration — the specially-named
+   ``apple``/``window``/``help`` menus and the ``tk::mac::ShowPreferences`` /
+   ``tk::mac::Quit`` / ``tk::mac::ShowHelp`` commands — so you don't reach into
+   Tcl yourself. On Windows and Linux those hooks don't exist, which is why the
+   helpers no-op.
 
 .. seealso::
 

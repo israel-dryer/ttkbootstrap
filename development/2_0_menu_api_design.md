@@ -7,7 +7,11 @@
 > `2_0_shipped_widget_api_design.md` (the window/mac-chrome precedent), and the
 > docs design `2_0_docs_design.md`.
 >
-> **Status: DRAFT — awaiting author sign-off.** The open forks are in §9.
+> **Status: CONFIRMED (author sign-off 2026-07-11) — IMPLEMENTED.** Fork A =
+> **Design 1** (thin/honest, mac-native slots only); B/C/D/E = the recommended
+> defaults (§9). Shipped on the menus docs branch: `src/ttkbootstrap/menu.py`
+> (`Menu` moved out of `__init__.py`) + `tests/test_menu_api.py` + the guide's
+> macOS-section rewrite.
 
 ## 1. Why this, why now
 
