@@ -322,7 +322,13 @@ Tcl-reach-in gap the guide exposed (design `2_0_menu_api_design.md`, Design 1;
 implementation call-outs from the docs, and used the existing public
 `ttk.windowing_system` over raw `tk.call` — **two more standing docs rules
 (memory-saved):** no jargon/impl-detail asides (incl. no "under the hood" notes
-that re-expose what an API hides), and task-shaped short How-To titles. Governing
+that re-expose what an API hides), and task-shaped short How-To titles. **#1175
+(merge `2173f0f0`)** started the **Widgets catalog**: locked the authoring plan
+(`2_0_docs_design.md §5a-plan` — ~27 pages, Text/Canvas robust & in, Scrolled
+thin-stub, coverage sync-test no-gaps mechanism, one PR per family) and rewrote
+`docs/widgets/button.rst` as the **usage-first gold-standard template** (one
+concept per digestible section). **NEXT: Phase 1, one PR per widget family** —
+Inputs first (Entry/Combobox/Spinbox). Governing
 rule now:
 [[feedback_docs_teach_tkinter_ttkbootstrap_dialect]] — **the docs teach tkinter
 itself, in the ttkbootstrap dialect** (a self-sufficient learning source; teach,

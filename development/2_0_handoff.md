@@ -3,6 +3,31 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
+_Last updated: 2026-07-11 (**Widgets-catalog Phase 0 — plan + Button template. PR
+#1175 MERGED into `2.0`** (merge `2173f0f0`; branch deleted; docs-only, `-W`
+clean). The Widgets-catalog authoring plan is now LOCKED in
+`2_0_docs_design.md §5a-plan`: **~27 pages** (19 native `BootMixin` + 8 shipped;
+2 done). **Text & Canvas are IN and get robust example-heavy pages** (author call
+— most expansive widgets; `AutoStyleMixin`/no-`bootstyle`, so the §5a skeleton
+flexes to usage-dominant). **Scrolled** = thin stub → the *Scroll long content*
+How-To; **Menu** covered by its guide (not in catalog). **No-gaps mechanism:** a
+coverage **sync test** (every `ttk.__all__` widget ⇒ a `docs/widgets/<name>.rst`
+page or a `COVERED_ELSEWHERE` allowlist entry), landed with the batches.
+**Sequence = one PR per family.** `button.rst` was **rewritten** from the thin
+bootstyle-catalog into the **usage-first gold-standard template** (Usage
+`command=` → Icons `icon=`/`compound`/`icon_only` → a uniform-`width` row +
+toolbar → the default button [focus + `Return` bind] → enable/disable
+`state`/`instate` → Colors → **The default color** [`default_button=`] → Variants
+→ States → API + Style-Reference links; every snippet verified headlessly).
+Review note baked in: **one concept per digestible section, no kitchen-sink
+paragraphs** (split "The default color" out of Colors). **NEXT: Phase 1, one PR
+per family** — start with **Inputs (Entry/Combobox/Spinbox)**, then Choice
+(Checkbutton/Radiobutton) · Command (Menubutton/OptionMenu) · Containers
+(Frame/Labelframe/Notebook/Panedwindow) · Range & misc (Progressbar/Scale/
+Scrollbar/Separator/Sizegrip/Label) · Shipped (Floodgauge/DateEntry/Tableview/
+LabeledScale/Toast/Tooltip/Scrolled) · **Text** · **Canvas** (each its own PR);
+add the coverage sync test with the batches. Prior entry follows.**)_
+
 _Last updated: 2026-07-11 (**Menus feature guide + native macOS menu API + the
 last How-To recipes. PR #1174 MERGED into `2.0`** (merge `fd9841d6`; branch
 deleted; suite **648 passed**, `-W` clean). Began as "the last three How-Tos" and
