@@ -110,7 +110,7 @@ has focus.
       import ttkbootstrap as ttk
 
       app = ttk.App()
-      is_mac = app.tk.call("tk", "windowingsystem") == "aqua"
+      is_mac = ttk.windowing_system(app) == "aqua"
       accel = "Cmd+S" if is_mac else "Ctrl+S"
       seq = "<Command-s>" if is_mac else "<Control-s>"
 
@@ -244,7 +244,7 @@ the standard macOS menus:
    import ttkbootstrap as ttk
 
    app = ttk.App(title="Editor")
-   is_mac = app.tk.call("tk", "windowingsystem") == "aqua"
+   is_mac = ttk.windowing_system(app) == "aqua"
 
    menubar = ttk.Menu(app)
 
