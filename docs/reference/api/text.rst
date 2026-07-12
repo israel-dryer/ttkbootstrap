@@ -157,26 +157,84 @@ Set at construction or with ``configure(...)``; read with ``cget("name")``.
 Methods
 -------
 
-.. rubric:: Content and editing
+Content and editing
+~~~~~~~~~~~~~~~~~~~~
 
-.. list-table::
-   :widths: 34 66
+.. py:method:: insert(index, chars, *args)
+   :noindex:
 
-   * - ``insert(index, text, tags=None)``
-     - Insert ``text`` at ``index``, optionally applying one or more tags.
-   * - ``delete(index1, index2=None)``
-     - Delete from ``index1`` up to (not including) ``index2`` — one character
-       if ``index2`` is omitted.
-   * - ``replace(index1, index2, text, tags=None)``
-     - Delete the range and insert ``text`` in its place.
-   * - ``get(index1, index2=None)``
-     - Return the text in the range (one character if ``index2`` is omitted).
-   * - ``count(index1, index2, *options)``
-     - Count units (``"chars"``, ``"lines"``, ``"displaylines"``, …) between two
-       indices.
-   * - ``dump(index1, index2=None, **what)``
-     - Return the content of a range broken into its text, tags, marks, and
-       embedded items.
+   Insert text at a position. Any trailing ``args`` alternate a tag (or tuple of
+   tags) with more text, so text can be tagged as it is inserted.
+
+   :param index: where to insert — any index expression (e.g. ``"insert"``,
+      ``"end"``, ``"1.0"``).
+   :param str chars: the text to insert.
+   :param args: optional alternating *tag* / *text* values applied to the
+      inserted runs.
+   :returns: ``None``.
+
+.. py:method:: delete(index1, index2=None)
+   :noindex:
+
+   Delete a character or a range of text.
+
+   :param index1: start of the range.
+   :param index2: end of the range, **exclusive**. If omitted, only the single
+      character at ``index1`` is deleted.
+   :returns: ``None``.
+
+.. py:method:: replace(index1, index2, chars, *args)
+   :noindex:
+
+   Delete the text between two indices and insert ``chars`` in its place — a
+   ``delete`` followed by an ``insert`` at ``index1``.
+
+   :param index1: start of the range to replace.
+   :param index2: end of the range, exclusive.
+   :param str chars: the replacement text.
+   :param args: optional alternating *tag* / *text* values, as for ``insert``.
+   :returns: ``None``.
+
+.. py:method:: get(index1, index2=None)
+   :noindex:
+
+   Return text from the widget.
+
+   :param index1: start of the range.
+   :param index2: end of the range, exclusive. If omitted, returns the single
+      character at ``index1``.
+   :returns: the text in the range.
+   :rtype: str
+
+.. py:method:: count(index1, index2, *options, return_ints=False)
+   :noindex:
+
+   Count text units between two indices.
+
+   :param index1: start of the range.
+   :param index2: end of the range.
+   :param options: one or more units to count, each a string —
+      ``"chars"``, ``"indices"``, ``"lines"``, ``"displaylines"``,
+      ``"xpixels"``, ``"ypixels"``, and so on.
+   :param bool return_ints: return a bare ``int`` when a single unit is
+      requested, instead of a one-tuple.
+   :returns: the counts, in the order the options were given.
+   :rtype: tuple[int, ...] | int
+
+.. py:method:: dump(index1, index2=None, command=None, **kinds)
+   :noindex:
+
+   Return the contents of a range broken into its pieces — text, tags, marks,
+   and embedded images/windows — as ``(key, value, index)`` triples.
+
+   :param index1: start of the range.
+   :param index2: end of the range; if omitted, dumps at ``index1``.
+   :param command: a callback invoked once per piece instead of returning them.
+   :param kinds: booleans selecting which piece types to include —
+      ``text``, ``tag``, ``mark``, ``image``, ``window``, or ``all``.
+   :returns: a list of ``(key, value, index)`` triples (``None`` if ``command``
+      is given).
+   :rtype: list[tuple[str, str, str]]
 
 .. rubric:: Positions and display
 
