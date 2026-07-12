@@ -156,6 +156,13 @@ Each subsystem, end to end — its concepts and its usage in one place.
       ``App``/``Toplevel`` setup, focus & modality, positioning, high-DPI, and the
       deferred-config seam.
 
+   .. grid-item-card:: Menus
+      :link: feature-guides/menus
+      :link-type: doc
+
+      Menu bars, submenus, stateful items, context menus, and the cross-platform
+      macOS application menu.
+
    .. grid-item-card:: Dialogs
       :link: feature-guides/dialogs
       :link-type: doc
@@ -217,6 +224,7 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way. See the
    feature-guides/events
    feature-guides/icons
    feature-guides/windows
+   feature-guides/menus
    feature-guides/dialogs
    feature-guides/theming
    feature-guides/custom-styles
@@ -226,7 +234,6 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way. See the
    :caption: How-To
 
    how-to/index
-   how-to/menus
    how-to/working-with-images
    how-to/scrollable
    how-to/feedback

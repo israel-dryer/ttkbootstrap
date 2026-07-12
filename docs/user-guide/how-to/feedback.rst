@@ -1,5 +1,5 @@
-Feedback: bell & busy
-=====================
+Beep and show busy
+==================
 
 Two small built-in ways to tell the user something happened: a beep for
 attention, and a busy state that blocks a window while it works.

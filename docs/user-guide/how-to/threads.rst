@@ -1,5 +1,5 @@
-Background work without freezing the UI
-=======================================
+Run background work
+===================
 
 A tkinter app runs your callbacks on **one thread** — the same thread that draws
 the window and processes clicks. While a callback runs, nothing repaints. A

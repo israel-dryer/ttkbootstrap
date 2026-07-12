@@ -232,7 +232,7 @@ Two calls make it so:
 
 Because ``wait_window`` returns only *after* the window closes, the window can
 leave a result behind for the caller to read — that is how a dialog "returns a
-value." The :doc:`Multiple windows how-to </user-guide/how-to/multiple-windows>`
+value." The :doc:`Open a second window </user-guide/how-to/multiple-windows>` recipe
 puts these together into a reusable modal dialog, and the
 :doc:`Dialogs guide </user-guide/feature-guides/dialogs>` covers the shipped
 modal dialogs built on the same mechanism.
@@ -263,9 +263,9 @@ Application icon
 ttkbootstrap's brand icon, and ``iconphoto=None`` leaves the platform default.
 The format that works best differs by platform — a ``.ico`` file on Windows, a
 PNG elsewhere — and ttkbootstrap picks the right mechanism for you. A ``Toplevel``
-inherits the application icon automatically. See the
-:doc:`images how-to </user-guide/how-to/working-with-images>` for building icons
-from your own art.
+inherits the application icon automatically. See
+:doc:`Show images and icons </user-guide/how-to/working-with-images>` for building
+icons from your own art.
 
 Light & dark
 ------------
@@ -368,6 +368,6 @@ possible, but they affect what you can rely on:
    :doc:`Structuring an app </user-guide/getting-started/app-structures>` for the
    single-root rule, :doc:`Theming & Colors </user-guide/feature-guides/theming>`
    for themes and light/dark, :doc:`Widget & screen info </reference/winfo>` for
-   the ``winfo_*`` size/position accessors, and the
-   :doc:`Multiple windows how-to </user-guide/how-to/multiple-windows>` for
-   second-window recipes.
+   the ``winfo_*`` size/position accessors, and
+   :doc:`Open a second window </user-guide/how-to/multiple-windows>` for the
+   second-window recipe.

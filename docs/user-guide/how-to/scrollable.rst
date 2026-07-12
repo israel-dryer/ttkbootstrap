@@ -1,5 +1,5 @@
-Scrollable content
-==================
+Scroll long content
+===================
 
 When content outgrows its window — a long form, a wall of log text — you need a
 scrollable region. Plain tkinter makes you pair a ``Canvas`` (or ``Text``) with
@@ -90,5 +90,5 @@ for the standard Text API (``insert``, ``get``, ``delete``, tags):
 .. seealso::
 
    :doc:`Arranging widgets </user-guide/foundations/arranging-widgets>` for
-   packing and gridding content, and :doc:`Background work <threads>` for
+   packing and gridding content, and :doc:`Run background work <threads>` for
    streaming output into a ``ScrolledText`` without freezing the UI.
