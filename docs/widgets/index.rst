@@ -49,6 +49,18 @@ and to the deep :doc:`Style Reference </reference/style-reference/index>`.
 
       One option in a mutually exclusive group; segmented look too.
 
+   .. grid-item-card:: Menubutton
+      :link: menubutton
+      :link-type: doc
+
+      A button that opens a dropdown menu.
+
+   .. grid-item-card:: OptionMenu
+      :link: optionmenu
+      :link-type: doc
+
+      A dropdown that picks one value from a fixed list.
+
    .. grid-item-card:: Meter
       :link: meter
       :link-type: doc
@@ -64,4 +76,6 @@ and to the deep :doc:`Style Reference </reference/style-reference/index>`.
    spinbox
    checkbutton
    radiobutton
+   menubutton
+   optionmenu
    meter
