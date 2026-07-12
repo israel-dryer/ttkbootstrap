@@ -49,6 +49,9 @@ The user clicks a tab to switch; ``select`` switches programmatically, and
    notebook.select(0)                       # or by index
    current = notebook.index(notebook.select())   # -> the selected tab's index
 
+Reacting to a tab change
+------------------------
+
 To run code when the page changes — lazy-load its contents, say — bind the
 ``<<NotebookTabChanged>>`` virtual event:
 
@@ -56,18 +59,24 @@ To run code when the page changes — lazy-load its contents, say — bind the
 
    notebook.bind("<<NotebookTabChanged>>", lambda event: print("now on", notebook.index("current")))
 
-Disabling and hiding tabs
--------------------------
+Disabling and removing tabs
+---------------------------
 
-``tab(page, state=...)`` sets a tab's state — ``"disabled"`` greys it out and
-blocks selection, ``"hidden"`` removes it from the bar (``add`` it again to
-restore). ``hide`` / ``forget`` also remove a page (``forget`` permanently):
+Disable a tab to grey it out and block selection while leaving it in place; set it
+back to ``"normal"`` to re-enable:
 
 .. code-block:: python
 
    notebook.tab(advanced, state="disabled")   # visible but not selectable
    notebook.tab(advanced, state="normal")     # re-enable
-   notebook.hide(advanced)                     # remove from the bar (add() to restore)
+
+To take a tab off the bar, ``hide`` it — the page is kept, and ``add``-ing it again
+restores it — or ``forget`` it to remove it for good:
+
+.. code-block:: python
+
+   notebook.hide(advanced)                     # remove from the bar; add() restores it
+   notebook.forget(advanced)                   # remove permanently
 
 Color
 -----

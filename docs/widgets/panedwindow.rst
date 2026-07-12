@@ -45,14 +45,14 @@ Sharing space
 
 ``weight`` sets how the panes divide **extra** space when the window resizes — a
 pane with ``weight=4`` grows four times as fast as one with ``weight=1``, so the
-content pane above stays dominant while the sidebar stays slim. Set the sash
-position explicitly with ``sashpos`` (after the window is laid out):
+content pane above stays dominant while the sidebar stays slim.
+
+For the starting split, set a sash position explicitly with ``sashpos`` (after the
+window is laid out). The user can always drag the sash to override it:
 
 .. code-block:: python
 
    paned.sashpos(0, 200)                    # put the first sash 200px from the start
-
-The user can always drag the sash to override these.
 
 Color
 -----

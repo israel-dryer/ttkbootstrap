@@ -3,8 +3,8 @@ Frame
 
 A **frame** is a rectangular container that groups and lays out other widgets.
 ``Frame`` is the native ``ttk.Frame``, styled with ``bootstyle=``. This page covers
-using it to structure a layout, padding its contents, then the ``bootstyle`` color
-and the bordered card variants.
+using it to structure a layout, padding its contents, then adding a border and a
+colored background.
 
 .. admonition:: 📷 Screenshot (placeholder)
    :class: screenshot-placeholder
