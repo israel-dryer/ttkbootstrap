@@ -3,6 +3,28 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
+_Last updated: 2026-07-11 (**Feature-guide retitles + Colors folded into Theming.
+PR #1170 MERGED into `2.0`** (merge `294ef12f`; branch deleted; docs-only,
+`-W` clean). Author flagged the imperative "Make your own …" titles as out of
+register with the noun-phrase set (Typography/Dialogs/Events/…). Renames:
+**"Make your own style" → "Custom styles"** (slug `custom-styles`), **"Make your
+own theme" → "Custom themes"** (slug `custom-themes`), and **"Working with color"
+FOLDED INTO the Theming guide → "Theming & Colors"** (the `style.colors`/ramps/
+deriving-colors material became sections there; `working-with-color.rst` removed —
+the common one-theming-home UI-library pattern). All cards, the feature-guides
+toctree, and the four prose cross-refs (`events`/`icons`/`bootstyle-grammar`/
+`theming`) repointed; no lingering old refs. Slugs changed freely (docs not
+published yet → no URL-stability cost). **"Windows & high-DPI" deliberately LEFT
+AS-IS** — it's still a **stub** (its "Still to come" outline is the constructor/
+positioning/DPI/theme-mode grab-bag that reads as kitchen-sink); its framing/title
+is settled when that guide is **finished** (author lean: retitle to **"Windows"**,
+demote high-DPI to a section; "Windowing" the alt). **NEXT (docs-H, fresh branch):**
+**finish the Windows guide** (author the "Still to come" surface + reframe/retitle);
+the **Build-your-first-app** tutorial; **Widgets-catalog** depth; remaining How-Tos
+(*Menus*/*Scrollable*/*Threads*). Deferred IA refinement still open (design §14b):
+optionally also fold `custom-themes` into the Theming guide — kept separate for now.
+User WIP `gallery/collapsing_frame.py` LEFT UNTOUCHED. Prior entry follows.**)_
+
 _Last updated: 2026-07-11 (**Dialogs guide + file-dialog `Querybox` methods +
 a teach-by-building robustness pass over the feature guides. PR #1169 MERGED into
 `2.0`** (merge `624272d8`; branch deleted). Three parts:

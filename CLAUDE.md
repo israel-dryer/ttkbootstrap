@@ -290,8 +290,11 @@ error-handling) + file dialogs surfaced through `Querybox`** (new
 `get_directory` wrappers over `tkinter.filedialog`, cancel normalized to `None`;
 `ttk.filedialog` re-exported; additive) **+ a teach-by-building robustness pass**
 over the feature guides authored this cycle (Typography/Localization/Validation/
-Dialogs reworked from option-tours into build-a-real-flow guides). Governing rule
-now:
+Dialogs reworked from option-tours into build-a-real-flow guides). **#1170 (merge
+`294ef12f`) feature-guide retitles into the noun-phrase register** ("Make your own
+style/theme" → **Custom styles**/**Custom themes**; **"Working with color" folded
+into the Theming guide → "Theming & Colors"**; "Windows & high-DPI" left as a stub
+to reframe when finished). Governing rule now:
 [[feedback_docs_teach_tkinter_ttkbootstrap_dialect]] — **the docs teach tkinter
 itself, in the ttkbootstrap dialect** (a self-sufficient learning source; teach,
 don't defer). **Bands sort by DEPTH:** Getting Started · **Fundamentals** ·
@@ -302,11 +305,13 @@ feature guides own the depth). Author was firm: **teach layout/mechanics
 BY BUILDING, never option-tours.** The full IA (charters, §14 curriculum map,
 tkinter-surface coverage audit + supersession map, screenshot-placeholder
 convention) lives in `development/2_0_docs_design.md`. **NEXT (content authoring,
-fresh branch off `2.0`):** the **Build-your-first-app** tutorial (Getting Started;
-the flagship teach-by-building on-ramp); **Widgets-catalog** depth (usage-first
-per design §5a; the button prototype is thin); remaining How-Tos (*Menus*,
-*Scrollable*, *Threads*; *Validate a form* is now partly covered by the Validation
-guide). (DONE this cycle: the Typography/Localization/Validation stubs authored
+fresh branch off `2.0`):** **finish the Windows guide** (author its "Still to come"
+surface — constructor/positioning/DPI/theme-mode/Toplevels/deferred-config — and
+reframe/retitle, likely → **"Windows"**); the **Build-your-first-app** tutorial
+(Getting Started; the flagship teach-by-building on-ramp); **Widgets-catalog**
+depth (usage-first per design §5a; the button prototype is thin); remaining How-Tos
+(*Menus*, *Scrollable*, *Threads*; *Validate a form* is now partly covered by the
+Validation guide). (DONE this cycle: the Typography/Localization/Validation stubs authored
 [#1168], the Dialogs guide + clipboard/error-handling How-Tos + the feature-guide
 robustness pass [#1169].) Screenshots are a later slice (placeholders are in
 place). See
