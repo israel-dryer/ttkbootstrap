@@ -236,160 +236,450 @@ Content and editing
       is given).
    :rtype: list[tuple[str, str, str]]
 
-.. rubric:: Positions and display
+Positions and display
+~~~~~~~~~~~~~~~~~~~~~~
 
-.. list-table::
-   :widths: 34 66
+.. py:method:: index(index)
+   :noindex:
 
-   * - ``index(index)``
-     - Resolve any index expression to a concrete ``"line.column"`` string.
-   * - ``compare(index1, op, index2)``
-     - Compare two indices (``op`` is ``"<"``, ``"<="``, ``"=="``, …); returns a
-       bool.
-   * - ``see(index)``
-     - Scroll so that ``index`` is visible.
-   * - ``dlineinfo(index)``
-     - Bounding box ``(x, y, width, height, baseline)`` of the display line
-       holding ``index`` (``None`` if not visible).
-   * - ``bbox(index)``
-     - Bounding box of the character at ``index``.
-   * - ``scan_mark(x, y)`` / ``scan_dragto(x, y)``
-     - Anchor and then fast-drag-scroll the view (used for click-drag panning).
+   Resolve any index expression to a concrete position.
 
-.. rubric:: Tags
+   :param index: an index expression (``"insert"``, ``"end-1c"``, ``"1.0"``, …).
+   :returns: the position as ``"line.column"``.
+   :rtype: str
 
-.. list-table::
-   :widths: 34 66
+.. py:method:: compare(index1, op, index2)
+   :noindex:
 
-   * - ``tag_add(tag, index1, index2=None, *more)``
-     - Apply ``tag`` to one or more ranges.
-   * - ``tag_remove(tag, index1, index2=None, *more)``
-     - Remove ``tag`` from a range (the tag still exists).
-   * - ``tag_delete(*tags)``
-     - Delete tags entirely, removing them everywhere.
-   * - ``tag_configure(tag, **options)``
-     - Set a tag's appearance (``foreground``, ``background``, ``font``,
-       ``underline``, ``justify``, spacing, …). Alias: ``tag_config``.
-   * - ``tag_cget(tag, option)``
-     - Read one option of a tag.
-   * - ``tag_bind(tag, sequence, func, add=None)``
-     - Bind an event to every range wearing ``tag`` (this is how text becomes
-       clickable).
-   * - ``tag_unbind(tag, sequence, funcid=None)``
-     - Remove a tag binding.
-   * - ``tag_names(index=None)``
-     - The tags defined (or the tags covering ``index``).
-   * - ``tag_ranges(tag)``
-     - The list of index pairs a tag covers.
-   * - | ``tag_nextrange(tag, index1, index2=None)``
-       | ``tag_prevrange(tag, index1, index2=None)``
-     - The next / previous range of ``tag`` from a starting index.
-   * - | ``tag_raise(tag, above=None)``
-       | ``tag_lower(tag, below=None)``
-     - Reorder tags in the priority stack (later-priority tags win on
-       conflicting options).
+   Compare two positions.
 
-.. rubric:: Marks
+   :param index1: the first index.
+   :param str op: a comparison operator — ``"<"``, ``"<="``, ``"=="``, ``"!="``,
+      ``">="``, ``">"``.
+   :param index2: the second index.
+   :returns: the result of the comparison.
+   :rtype: bool
 
-.. list-table::
-   :widths: 34 66
+.. py:method:: see(index)
+   :noindex:
 
-   * - ``mark_set(name, index)``
-     - Create or move a mark (a floating named position) to ``index``.
-   * - ``mark_unset(*names)``
-     - Delete marks.
-   * - ``mark_gravity(name, direction=None)``
-     - Get or set which side (``"left"``/``"right"``) a mark sticks to when text
-       is inserted at it.
-   * - ``mark_names()``
-     - All mark names (including the built-in ``"insert"`` and ``"current"``).
-   * - | ``mark_next(index)``
-       | ``mark_previous(index)``
-     - The next / previous mark from an index.
+   Scroll the view so that ``index`` is visible.
 
-.. rubric:: Search
+   :param index: the position to reveal.
+   :returns: ``None``.
 
-.. list-table::
-   :widths: 34 66
+.. py:method:: dlineinfo(index)
+   :noindex:
 
-   * - ``search(pattern, index, stopindex=None, ...)``
-     - Return the index of the next match of ``pattern`` (a string or, with
-       ``regexp=True``, a regular expression). Options: ``backwards``,
-       ``forwards``, ``nocase``, ``count`` (an ``IntVar`` that receives the match
-       length), ``elide``. Returns ``""`` if nothing matches.
+   Return the bounding box of the display line containing ``index``.
 
-.. rubric:: Undo stack
+   :param index: a position on the line.
+   :returns: ``(x, y, width, height, baseline)`` in pixels, or ``None`` if the
+      line is not visible.
+   :rtype: tuple | None
 
-.. list-table::
-   :widths: 34 66
+.. py:method:: bbox(index)
+   :noindex:
 
-   * - | ``edit_undo()``
-       | ``edit_redo()``
-     - Undo / redo one step (raises if there's nothing to do). Requires
-       ``undo=True``.
-   * - ``edit_separator()``
-     - Insert an undo boundary manually.
-   * - ``edit_reset()``
-     - Clear the undo and redo stacks.
-   * - ``edit_modified(value=None)``
-     - Get, or set, the "modified since last saved" flag.
-   * - ``edit(*args)``
-     - The generic edit subcommand the helpers above wrap.
+   Return the bounding box of the character at ``index``.
 
-.. rubric:: Embedded images
+   :param index: the character's position.
+   :returns: ``(x, y, width, height)`` in pixels, or ``None`` if not visible.
+   :rtype: tuple | None
 
-.. list-table::
-   :widths: 34 66
+.. py:method:: scan_mark(x, y)
+   :noindex:
 
-   * - ``image_create(index, **options)``
-     - Embed an image at ``index`` (``image=``, ``align=``, ``padx=``, ``pady=``).
-   * - | ``image_cget(index, option)``
-       | ``image_configure(index, **options)``
-     - Read / change an embedded image's options.
-   * - ``image_names()``
-     - The names of all embedded images.
+   Record a starting point for a fast drag-scroll (paired with ``scan_dragto``).
 
-.. rubric:: Embedded windows
+   :param int x: pointer x, in pixels.
+   :param int y: pointer y, in pixels.
+   :returns: ``None``.
 
-.. list-table::
-   :widths: 34 66
+.. py:method:: scan_dragto(x, y)
+   :noindex:
 
-   * - ``window_create(index, **options)``
-     - Embed a child widget at ``index`` (``window=`` an existing widget, or
-       ``create=`` a factory).
-   * - | ``window_cget(index, option)``
-       | ``window_configure(index, **options)``
-     - Read / change an embedded window's options.
-   * - ``window_names()``
-     - The child widgets currently embedded.
+   Scroll the view relative to the ``scan_mark`` point, accelerated for
+   click-drag panning.
 
-.. rubric:: Scrolling (view)
+   :param int x: current pointer x, in pixels.
+   :param int y: current pointer y, in pixels.
+   :returns: ``None``.
 
-.. list-table::
-   :widths: 34 66
+Tags
+~~~~
 
-   * - | ``yview(*args)``
-       | ``xview(*args)``
-     - Query or set the vertical / horizontal view. Usually connected to a
-       scrollbar via ``yscrollcommand`` rather than called directly.
-   * - | ``yview_moveto(fraction)``
-       | ``xview_moveto(fraction)``
-     - Scroll so a fraction (0.0–1.0) of the content is off the top / left.
-   * - | ``yview_scroll(number, what)``
-       | ``xview_scroll(number, what)``
-     - Scroll by ``number`` of ``"units"`` or ``"pages"``.
-   * - ``yview_pickplace(index)``
-     - Scroll the view to make ``index`` visible (older spelling of ``see``).
+.. py:method:: tag_add(tagName, index1, *args)
+   :noindex:
 
-.. rubric:: Peer widgets
+   Apply a tag to one or more ranges.
 
-.. list-table::
-   :widths: 34 66
+   :param str tagName: the tag to apply.
+   :param index1: start of the first range.
+   :param args: an end index, then optional further start/end index pairs.
+   :returns: ``None``.
 
-   * - ``peer_create(newname, **options)``
-     - Create a second text widget sharing this one's content store.
-   * - ``peer_names()``
-     - The peers sharing this widget's store.
+.. py:method:: tag_remove(tagName, index1, index2=None)
+   :noindex:
+
+   Remove a tag from a range. The tag itself still exists and keeps its config.
+
+   :param str tagName: the tag to remove.
+   :param index1: start of the range.
+   :param index2: end of the range, exclusive; one character if omitted.
+   :returns: ``None``.
+
+.. py:method:: tag_delete(*tagNames)
+   :noindex:
+
+   Delete tags entirely, removing them from all text and discarding their config.
+
+   :param tagNames: the tag names to delete.
+   :returns: ``None``.
+
+.. py:method:: tag_configure(tagName, **options)
+   :noindex:
+
+   Set (or query) a tag's appearance. Alias: ``tag_config``.
+
+   :param str tagName: the tag to configure.
+   :param options: appearance options — ``foreground``, ``background``, ``font``,
+      ``underline``, ``overstrike``, ``justify``, ``lmargin1``/``lmargin2``,
+      ``rmargin``, ``spacing1``/``2``/``3``, ``tabs``, ``elide``.
+   :returns: the option spec when queried with a single option name, else
+      ``None``.
+
+.. py:method:: tag_cget(tagName, option)
+   :noindex:
+
+   Return one option of a tag.
+
+   :param str tagName: the tag.
+   :param str option: the option name.
+   :returns: the option's value.
+
+.. py:method:: tag_bind(tagName, sequence, func, add=None)
+   :noindex:
+
+   Bind an event to every range wearing a tag — the way to make text clickable.
+
+   :param str tagName: the tag.
+   :param str sequence: an event sequence, e.g. ``"<Button-1>"``.
+   :param func: the callback, receiving the event object.
+   :param add: ``"+"`` to add a handler rather than replace.
+   :returns: a binding id (for ``tag_unbind``).
+   :rtype: str
+
+.. py:method:: tag_unbind(tagName, sequence, funcid=None)
+   :noindex:
+
+   Remove a tag binding.
+
+   :param str tagName: the tag.
+   :param str sequence: the bound sequence.
+   :param funcid: the id returned by ``tag_bind``, to remove one handler.
+   :returns: ``None``.
+
+.. py:method:: tag_names(index=None)
+   :noindex:
+
+   Return tag names.
+
+   :param index: if given, only the tags covering that position.
+   :returns: the tag names, in priority order (lowest first).
+   :rtype: tuple[str, ...]
+
+.. py:method:: tag_ranges(tagName)
+   :noindex:
+
+   Return the ranges a tag covers.
+
+   :param str tagName: the tag.
+   :returns: a flat sequence of alternating start/end indices.
+   :rtype: tuple
+
+.. py:method:: tag_nextrange(tagName, index1, index2=None)
+   :noindex:
+
+   Find the next range of a tag at or after a position.
+
+   :param str tagName: the tag.
+   :param index1: where to start searching.
+   :param index2: where to stop; optional.
+   :returns: ``(start, end)`` of the next range, or an empty tuple if none.
+   :rtype: tuple
+
+.. py:method:: tag_prevrange(tagName, index1, index2=None)
+   :noindex:
+
+   Find the previous range of a tag before a position (counterpart of
+   :py:meth:`tag_nextrange`).
+
+   :returns: ``(start, end)`` of the previous range, or an empty tuple.
+   :rtype: tuple
+
+.. py:method:: tag_raise(tagName, aboveThis=None)
+   :noindex:
+
+   Raise a tag's priority. When tags overlap, the higher-priority tag wins on any
+   conflicting option.
+
+   :param str tagName: the tag to raise.
+   :param aboveThis: raise just above this tag; if omitted, raise to the top.
+   :returns: ``None``.
+
+.. py:method:: tag_lower(tagName, belowThis=None)
+   :noindex:
+
+   Lower a tag's priority (counterpart of :py:meth:`tag_raise`).
+
+   :param str tagName: the tag to lower.
+   :param belowThis: lower just below this tag; if omitted, lower to the bottom.
+   :returns: ``None``.
+
+Marks
+~~~~~
+
+.. py:method:: mark_set(markName, index)
+   :noindex:
+
+   Create a mark, or move an existing one, to a position. A mark is a named
+   position that floats with the text as it changes.
+
+   :param str markName: the mark name (``"insert"`` is the cursor).
+   :param index: where to place the mark.
+   :returns: ``None``.
+
+.. py:method:: mark_unset(*markNames)
+   :noindex:
+
+   Delete marks.
+
+   :param markNames: the marks to remove.
+   :returns: ``None``.
+
+.. py:method:: mark_gravity(markName, direction=None)
+   :noindex:
+
+   Get or set a mark's gravity — which side it sticks to when text is inserted
+   exactly at it.
+
+   :param str markName: the mark.
+   :param direction: ``"left"`` or ``"right"``; omit to query.
+   :returns: the current gravity when queried, else ``None``.
+   :rtype: str | None
+
+.. py:method:: mark_names()
+   :noindex:
+
+   Return all mark names, including the built-in ``"insert"`` and ``"current"``.
+
+   :rtype: tuple[str, ...]
+
+.. py:method:: mark_next(index)
+   :noindex:
+
+   Return the name of the next mark at or after a position.
+
+   :param index: where to start.
+   :returns: the mark name, or ``""`` if none.
+   :rtype: str
+
+.. py:method:: mark_previous(index)
+   :noindex:
+
+   Return the name of the previous mark before a position (counterpart of
+   :py:meth:`mark_next`).
+
+   :rtype: str
+
+Search
+~~~~~~
+
+.. py:method:: search(pattern, index, stopindex=None, *, forwards=None, \
+                      backwards=None, exact=None, regexp=None, nocase=None, \
+                      count=None, elide=None)
+   :noindex:
+
+   Search the text for ``pattern``.
+
+   :param str pattern: the text to find, or a Tcl regular expression when
+      ``regexp=True``.
+   :param index: where to start searching.
+   :param stopindex: where to stop; wraps around the whole widget if omitted.
+   :param bool forwards: search forward (the default).
+   :param bool backwards: search backward instead.
+   :param bool exact: match ``pattern`` literally (the default unless
+      ``regexp``).
+   :param bool regexp: treat ``pattern`` as a regular expression.
+   :param bool nocase: case-insensitive match.
+   :param count: an ``IntVar`` that receives the match length in characters.
+   :param bool elide: also search elided (hidden) text.
+   :returns: the index of the first match, or ``""`` if none.
+   :rtype: str
+
+Undo stack
+~~~~~~~~~~
+
+.. py:method:: edit_undo()
+   :noindex:
+
+   Undo the changes back to the last separator. Requires ``undo=True``.
+
+   :returns: ``None``.
+   :raises tkinter.TclError: if there is nothing to undo.
+
+.. py:method:: edit_redo()
+   :noindex:
+
+   Redo the changes undone by the last :py:meth:`edit_undo`.
+
+   :returns: ``None``.
+   :raises tkinter.TclError: if there is nothing to redo.
+
+.. py:method:: edit_separator()
+   :noindex:
+
+   Insert a separator (an undo boundary) onto the undo stack.
+
+   :returns: ``None``.
+
+.. py:method:: edit_reset()
+   :noindex:
+
+   Clear the undo and redo stacks.
+
+   :returns: ``None``.
+
+.. py:method:: edit_modified(arg=None)
+   :noindex:
+
+   Get or set the widget's "modified" flag.
+
+   :param bool arg: the new flag value; omit to query.
+   :returns: the current flag when queried, else ``None``.
+   :rtype: bool | None
+
+Embedded images
+~~~~~~~~~~~~~~~
+
+.. py:method:: image_create(index, **options)
+   :noindex:
+
+   Embed an image in the text at a position.
+
+   :param index: where to insert the image.
+   :param options: ``image=`` a ``PhotoImage``, ``align=``
+      (``"baseline"``/``"top"``/``"center"``/``"bottom"``), ``padx=``, ``pady=``,
+      ``name=``.
+   :returns: the name of the embedded image.
+   :rtype: str
+
+.. py:method:: image_cget(index, option)
+   :noindex:
+
+   Return one option of the embedded image at ``index``.
+
+   :rtype: str
+
+.. py:method:: image_configure(index, **options)
+   :noindex:
+
+   Set (or query) the options of the embedded image at ``index``.
+
+.. py:method:: image_names()
+   :noindex:
+
+   Return the names of all embedded images.
+
+   :rtype: tuple[str, ...]
+
+Embedded windows
+~~~~~~~~~~~~~~~~
+
+.. py:method:: window_create(index, **options)
+   :noindex:
+
+   Embed a child widget in the text at a position.
+
+   :param index: where to insert the widget.
+   :param options: ``window=`` an existing widget, or ``create=`` a factory
+      called to build it lazily; plus ``align=``, ``padx=``, ``pady=``,
+      ``stretch=``.
+   :returns: ``None``.
+
+.. py:method:: window_cget(index, option)
+   :noindex:
+
+   Return one option of the embedded window at ``index``.
+
+.. py:method:: window_configure(index, **options)
+   :noindex:
+
+   Set (or query) the options of the embedded window at ``index``.
+
+.. py:method:: window_names()
+   :noindex:
+
+   Return the embedded child widgets.
+
+   :rtype: tuple
+
+Scrolling (view)
+~~~~~~~~~~~~~~~~
+
+.. py:method:: yview(*args)
+   :noindex:
+
+   Query or set the vertical view. Usually connected to a scrollbar via the
+   ``yscrollcommand`` option rather than called directly.
+
+   :returns: with no args, the visible fraction ``(first, last)``; otherwise
+      ``None``.
+   :rtype: tuple | None
+
+.. py:method:: yview_moveto(fraction)
+   :noindex:
+
+   Scroll vertically so that ``fraction`` of the content is above the top edge.
+
+   :param float fraction: a value from 0.0 to 1.0.
+   :returns: ``None``.
+
+.. py:method:: yview_scroll(number, what)
+   :noindex:
+
+   Scroll vertically by a number of units or pages.
+
+   :param int number: how far, positive or negative.
+   :param str what: ``"units"`` (lines) or ``"pages"``.
+   :returns: ``None``.
+
+.. py:method:: xview(*args)
+   :noindex:
+
+   Horizontal counterpart of :py:meth:`yview`; ``xview_moveto`` and
+   ``xview_scroll`` mirror the vertical versions.
+
+Peer widgets
+~~~~~~~~~~~~
+
+.. py:method:: peer_create(newPathName, **options)
+   :noindex:
+
+   Create a second text widget that shares this one's underlying content — edits
+   to either show in both.
+
+   :param str newPathName: the Tk path name for the new peer.
+   :param options: any ``Text`` options for the peer.
+   :returns: ``None``.
+
+.. py:method:: peer_names()
+   :noindex:
+
+   Return the peers sharing this widget's content store.
+
+   :rtype: tuple
 
 Shared capabilities
 -------------------
