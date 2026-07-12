@@ -22,6 +22,17 @@ Options
 
 Set at construction or with ``configure(...)``; read with ``cget("name")``.
 
+.. rubric:: ttkbootstrap
+
+.. list-table::
+   :widths: 26 74
+
+   * - ``autostyle``
+     - **Constructor only.** ``True`` (the default) paints the widget with the
+       active theme and repaints it on a theme switch; ``False`` opts out,
+       leaving tkinter's default appearance for you to style yourself. This is
+       ttkbootstrap's one addition to the widget — everything below is native tk.
+
 .. rubric:: Text and wrapping
 
 .. list-table::
@@ -72,7 +83,8 @@ Set at construction or with ``configure(...)``; read with ``cget("name")``.
      - Width of the insert cursor, in pixels.
    * - ``insertborderwidth``
      - 3-D border width drawn around the insert cursor.
-   * - ``insertontime`` / ``insertofftime``
+   * - | ``insertontime``
+       | ``insertofftime``
      - Milliseconds the cursor is shown / hidden per blink (``insertofftime=0``
        disables blinking).
    * - ``insertunfocussed``
@@ -87,9 +99,11 @@ Set at construction or with ``configure(...)``; read with ``cget("name")``.
 .. list-table::
    :widths: 26 74
 
-   * - ``width`` / ``height``
+   * - | ``width``
+       | ``height``
      - The requested size in **characters** and **lines** (not pixels).
-   * - ``padx`` / ``pady``
+   * - | ``padx``
+       | ``pady``
      - Internal padding between the text and the widget border, in pixels.
    * - ``relief``
      - Border style: ``"flat"``, ``"raised"``, ``"sunken"``, ``"groove"``,
@@ -100,7 +114,8 @@ Set at construction or with ``configure(...)``; read with ``cget("name")``.
      - Border width drawn around selected text.
    * - ``highlightthickness``
      - Width of the focus highlight drawn around the widget.
-   * - ``highlightcolor`` / ``highlightbackground``
+   * - | ``highlightcolor``
+       | ``highlightbackground``
      - Focus-highlight color when the widget has / doesn't have focus.
 
 .. rubric:: Undo
@@ -124,17 +139,19 @@ Set at construction or with ``configure(...)``; read with ``cget("name")``.
      - ``"normal"`` (editable) or ``"disabled"`` (read-only; the widget also
        ignores ``insert``/``delete`` while disabled).
    * - ``cursor``
-     - Mouse cursor shown over the widget.
+     - Mouse cursor shown over the widget (see :doc:`Cursors </reference/cursors>`).
    * - ``takefocus``
      - Whether the widget accepts focus during keyboard traversal.
    * - ``exportselection``
      - Whether a selection is exported to the X selection / clipboard.
    * - ``setgrid``
      - ``True`` makes the containing window resize in whole character cells.
-   * - ``startline`` / ``endline``
+   * - | ``startline``
+       | ``endline``
      - Restrict the widget to a range of the underlying store's lines (used by
        peer widgets; ``None`` for the full range).
-   * - ``xscrollcommand`` / ``yscrollcommand``
+   * - | ``xscrollcommand``
+       | ``yscrollcommand``
      - Callbacks that connect the widget to a horizontal / vertical scrollbar.
 
 Methods
@@ -206,9 +223,11 @@ Methods
      - The tags defined (or the tags covering ``index``).
    * - ``tag_ranges(tag)``
      - The list of index pairs a tag covers.
-   * - ``tag_nextrange(tag, index1, index2=None)`` / ``tag_prevrange(...)``
+   * - | ``tag_nextrange(tag, index1, index2=None)``
+       | ``tag_prevrange(tag, index1, index2=None)``
      - The next / previous range of ``tag`` from a starting index.
-   * - ``tag_raise(tag, above=None)`` / ``tag_lower(tag, below=None)``
+   * - | ``tag_raise(tag, above=None)``
+       | ``tag_lower(tag, below=None)``
      - Reorder tags in the priority stack (later-priority tags win on
        conflicting options).
 
@@ -226,7 +245,8 @@ Methods
        is inserted at it.
    * - ``mark_names()``
      - All mark names (including the built-in ``"insert"`` and ``"current"``).
-   * - ``mark_next(index)`` / ``mark_previous(index)``
+   * - | ``mark_next(index)``
+       | ``mark_previous(index)``
      - The next / previous mark from an index.
 
 .. rubric:: Search
@@ -245,7 +265,8 @@ Methods
 .. list-table::
    :widths: 34 66
 
-   * - ``edit_undo()`` / ``edit_redo()``
+   * - | ``edit_undo()``
+       | ``edit_redo()``
      - Undo / redo one step (raises if there's nothing to do). Requires
        ``undo=True``.
    * - ``edit_separator()``
@@ -264,7 +285,8 @@ Methods
 
    * - ``image_create(index, **options)``
      - Embed an image at ``index`` (``image=``, ``align=``, ``padx=``, ``pady=``).
-   * - ``image_cget(index, option)`` / ``image_configure(index, **options)``
+   * - | ``image_cget(index, option)``
+       | ``image_configure(index, **options)``
      - Read / change an embedded image's options.
    * - ``image_names()``
      - The names of all embedded images.
@@ -277,7 +299,8 @@ Methods
    * - ``window_create(index, **options)``
      - Embed a child widget at ``index`` (``window=`` an existing widget, or
        ``create=`` a factory).
-   * - ``window_cget(index, option)`` / ``window_configure(index, **options)``
+   * - | ``window_cget(index, option)``
+       | ``window_configure(index, **options)``
      - Read / change an embedded window's options.
    * - ``window_names()``
      - The child widgets currently embedded.
@@ -287,12 +310,15 @@ Methods
 .. list-table::
    :widths: 34 66
 
-   * - ``yview(*args)`` / ``xview(*args)``
+   * - | ``yview(*args)``
+       | ``xview(*args)``
      - Query or set the vertical / horizontal view. Usually connected to a
        scrollbar via ``yscrollcommand`` rather than called directly.
-   * - ``yview_moveto(fraction)`` / ``xview_moveto(fraction)``
+   * - | ``yview_moveto(fraction)``
+       | ``xview_moveto(fraction)``
      - Scroll so a fraction (0.0–1.0) of the content is off the top / left.
-   * - ``yview_scroll(number, what)`` / ``xview_scroll(number, what)``
+   * - | ``yview_scroll(number, what)``
+       | ``xview_scroll(number, what)``
      - Scroll by ``number`` of ``"units"`` or ``"pages"``.
    * - ``yview_pickplace(index)``
      - Scroll the view to make ``index`` visible (older spelling of ``see``).
@@ -310,7 +336,9 @@ Methods
 Shared capabilities
 -------------------
 
-.. include:: ../../shared/common-widget-methods.rst
+``Text`` also has the methods every widget inherits — configuration, placement,
+event binding, lifecycle, focus, and introspection. See
+:doc:`Shared capabilities <shared-capabilities>`.
 
 See also
 --------
