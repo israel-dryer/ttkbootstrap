@@ -15,3 +15,7 @@ complete lookup reference.
    Meter
    Floodgauge
    LabeledScale
+   DateEntry
+   Tableview
+   ToastNotification
+   ToolTip
