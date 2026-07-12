@@ -68,8 +68,10 @@ editable combobox, useful for a "recent / or type your own" field.
 Color
 -----
 
-``bootstyle`` sets the combobox's **accent** — the border, the focus ring, and the
-dropdown arrow — from the semantic colors:
+Like the other inputs, ``bootstyle`` sets the combobox's **focus color**: the
+border is a neutral hairline at rest and shows the accent color when the field has
+focus (and ``danger`` when a validation rule fails). The dropdown arrow keeps a
+constant color across styles.
 
 .. code-block:: python
 

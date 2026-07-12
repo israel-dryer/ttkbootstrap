@@ -65,8 +65,10 @@ trace the variable (see :doc:`State & variables
 Color
 -----
 
-``bootstyle`` sets the spinbox's **accent** — the border, the focus ring, and the
-arrows — from the semantic colors:
+Like the other inputs, ``bootstyle`` sets the spinbox's **focus color**: the
+border is a neutral hairline at rest and shows the accent color when the field has
+focus (and ``danger`` when a validation rule fails). The stepper arrows keep a
+constant color across styles.
 
 .. code-block:: python
 

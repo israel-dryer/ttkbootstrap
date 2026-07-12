@@ -33,9 +33,6 @@ def build_spinbox_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         ttk_style = f"{colorname}.{ttk_class}"
         focus_color = builder.colors.get(colorname)
 
-    if all([colorname, colorname != DEFAULT]):
-        border_color = focus_color
-
     element = ttk_style.replace(".TS", ".S")
     # The carets keep one fixed color in every state (no focus/hover/pressed/
     # disabled recolor) so they read as steady glyphs rather than reacting to

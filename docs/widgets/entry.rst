@@ -81,17 +81,17 @@ The full rule set, custom rules, and the ``when=`` options are covered in the
 Color
 -----
 
-``bootstyle`` sets the entry's **accent** — the border and the focus ring — from
-the semantic colors. Use it to tie an entry to a section's color, or to signal
-state (``success``/``danger``) yourself:
+On an entry, ``bootstyle`` sets the **focus color**. At rest the border is a
+neutral hairline; when the field takes focus, the border shows the accent color
+you chose. (A failed validation rule overrides it with a ``danger`` border — see
+`Validating input`_.)
 
 .. code-block:: python
 
-   ttk.Entry(app, bootstyle="success")
-   ttk.Entry(app, bootstyle="danger")
+   ttk.Entry(app, bootstyle="primary")     # border turns primary on focus
 
-An entry has no solid/outline variants — it is always a bordered field; the color
-is the accent, shown most visibly when the field has focus.
+An entry has no solid/outline variants — it is always a bordered field, and the
+color is the focus accent, not a persistent fill.
 
 States
 ------

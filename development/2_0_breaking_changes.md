@@ -1218,6 +1218,19 @@ signal *where keyboard input goes*, not where the pointer happens to be. Reservi
 it for the real `focus` state matches conventional input behavior and removes a
 distracting hover flicker when the pointer sweeps across a form.
 
+**Follow-up (2026-07-11): `Combobox`/`Spinbox` base border was still tinted.** The
+above dropped the *hover* map, but colored `Combobox`/`Spinbox` styles still forced
+their **base** `bordercolor` to the accent (a leftover `border = focus_ring`
+override in `builders/combobox.py` and `builders/spinbox.py`), so a
+`bootstyle`-colored combobox/spinbox drew a **persistent colored border** at rest —
+unlike `Entry`, whose base border is the neutral `colors.border` and which shows
+the accent only on `focus`. That override is now removed, so **all three inputs
+match: a neutral hairline at rest, the accent on `focus` (and `danger` on
+`invalid`)**. This is a **1.x → 2.0 visual change** — in 1.x a colored input carried
+a persistent colored border; in 2.0 the `bootstyle` color on an input is the
+**focus color**, not a resting fill. (Widgets-catalog Inputs pages document the
+focus-color model.)
+
 ## `card` / `highlight` frames: single hairline border (`RAISED`, bevel suppressed)  *(Visual)*
 
 **What.** The `card` and `highlight` frame variants now draw their border with
