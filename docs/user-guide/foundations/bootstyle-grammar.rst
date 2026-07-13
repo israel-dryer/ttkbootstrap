@@ -125,7 +125,8 @@ tokens map onto the dotted name ttk actually uses:
 Because of that, ``bootstyle="primary outline"`` and the raw
 ``style="primary.Outline.TButton"`` are interchangeable — ``bootstyle`` just
 saves you from spelling the base-type, orientation, and casing. The full mapping
-per widget is in the :doc:`Style Reference </reference/style-reference/index>`.
+for each widget is in the **Bootstyle mapping** table of its
+:doc:`API reference page </reference/api/index>`.
 
 Tokens are **order-free** and **separator-flexible**: ``"outline primary"`` and
 ``"primary-outline"`` resolve the same as ``"primary outline"``. Spaces are the

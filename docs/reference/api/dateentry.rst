@@ -104,6 +104,17 @@ Methods
 
    Whether the date picker is currently enabled (read-only property).
 
+.. _dateentry-styling:
+
+Styling options
+---------------
+
+A ``DateEntry`` is an :doc:`Entry </reference/api/entry>` beside a button, so its
+field and button follow the Entry and Button styles. The drop-down calendar has
+its own style family:
+
+.. include:: /reference/api/_style/calendar.rst
+
 Shared capabilities
 -------------------
 

@@ -94,6 +94,11 @@ apply it with ``Checkbutton(style=...)``.
 
 .. include:: /reference/api/_style/checkbutton.rst
 
+**Switch (toggle) variant.** Rendered as a switch, a checkbutton uses these
+``Toggle`` style names instead:
+
+.. include:: /reference/api/_style/toggle.rst
+
 Shared capabilities
 -------------------
 

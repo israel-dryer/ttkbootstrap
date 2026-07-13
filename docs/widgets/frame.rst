@@ -94,6 +94,6 @@ reference.
    split containers. For laying widgets out inside a frame, see
    :doc:`Arranging widgets </user-guide/foundations/arranging-widgets>`. Want to
    restyle the frame yourself? The
-   :doc:`Style Reference › Frame </reference/style-reference/frame>` and its
+   :ref:`Frame's styling options <frame-styling>` and its
    companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide
    document the hand-styling surface.

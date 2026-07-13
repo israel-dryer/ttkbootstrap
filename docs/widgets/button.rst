@@ -188,7 +188,7 @@ States
 Buttons respond to ``hover``, ``pressed``, ``focus``, and ``disabled``
 automatically — the theme handles the visuals. You set ``disabled`` yourself (see
 `Enabling and disabling`_); the rest follow the pointer and keyboard. To style a
-state differently, see the Style Reference below.
+state differently, see :ref:`the button's styling options <button-styling>`.
 
 API & reference
 ---------------
@@ -202,7 +202,7 @@ reference.
 .. seealso::
 
    Want to restyle the button yourself? The
-   :doc:`Style Reference › Button </reference/style-reference/button>` documents
-   the hand-styling surface — the ``bootstyle`` → ttk style-name mapping, element
-   layout, configurable options, and supported states — and its companion
+   :ref:`button's styling options <button-styling>` cover the hand-styling
+   surface — the ``bootstyle`` → ttk style-name mapping, element layout,
+   configurable options, and supported states — alongside the
    :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide.

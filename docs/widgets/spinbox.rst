@@ -100,6 +100,6 @@ reference.
 
    :doc:`Entry <entry>` for a plain text field and :doc:`Combobox <combobox>` for
    a dropdown of choices. Want to restyle the spinbox yourself? The
-   :doc:`Style Reference › Spinbox </reference/style-reference/spinbox>` and its
+   :ref:`Spinbox's styling options <spinbox-styling>` and its
    companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>`
    guide document the hand-styling surface.

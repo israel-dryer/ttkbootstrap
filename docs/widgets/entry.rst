@@ -119,6 +119,6 @@ reference.
 
    :doc:`Combobox <combobox>` and :doc:`Spinbox <spinbox>` for entries with a
    dropdown or numeric stepper. Want to restyle the entry yourself? The
-   :doc:`Style Reference › Entry </reference/style-reference/entry>` and its
+   :ref:`Entry's styling options <entry-styling>` and its
    companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>`
    guide document the hand-styling surface.

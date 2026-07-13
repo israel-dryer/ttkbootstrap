@@ -89,6 +89,17 @@ Methods
    The current progress value (property; equivalent to ``cget("value")``). Set
    it with ``configure(value=...)``.
 
+.. _floodgauge-styling:
+
+Styling options
+---------------
+
+This section is for changing how the floodgauge *looks*. Define a style with
+``style.configure(...)`` (and ``style.map(...)`` for per-state colors), then
+apply it with ``Floodgauge(bootstyle=...)`` or a custom ``style``.
+
+.. include:: /reference/api/_style/floodgauge.rst
+
 Shared capabilities
 -------------------
 

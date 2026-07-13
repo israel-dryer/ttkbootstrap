@@ -97,6 +97,13 @@ accepts, and the states they respond to.
 
 .. include:: /reference/api/_style/button.rst
 
+**Toolbutton variant.** Styled for a toolbar — and used for segmented
+:doc:`Checkbutton </reference/api/checkbutton>` / :doc:`Radiobutton
+</reference/api/radiobutton>` groups — a button uses these ``Toolbutton`` style
+names instead:
+
+.. include:: /reference/api/_style/toolbutton.rst
+
 Shared capabilities
 -------------------
 

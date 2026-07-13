@@ -184,6 +184,6 @@ reference.
 
    :doc:`Tableview <tableview>` for a ready-made data table built on the
    treeview. Want to restyle it yourself? The
-   :doc:`Style Reference › Treeview </reference/style-reference/treeview>` and the
+   :ref:`Treeview's styling options <treeview-styling>` and the
    :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide document
    the hand-styling surface.

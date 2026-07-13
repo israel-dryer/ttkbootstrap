@@ -85,6 +85,6 @@ reference.
    the ``LabeledScale`` widget for a scale with a value label that tracks the
    handle, and :doc:`Spinbox <spinbox>` for a stepped numeric entry. Want to
    restyle the scale yourself? The
-   :doc:`Style Reference › Scale </reference/style-reference/scale>` and its
+   :ref:`Scale's styling options <scale-styling>` and its
    companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide
    document the hand-styling surface.

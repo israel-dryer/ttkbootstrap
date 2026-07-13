@@ -6,20 +6,12 @@ The lookup layer:
 .. grid:: 1 2 2 2
    :gutter: 3
 
-   .. grid-item-card:: Style Reference
-      :link: style-reference/index
-      :link-type: doc
-
-      The hand-styling surface for native ttk widgets — ``bootstyle`` → ttk
-      style name, element layout, configurable options, and states. Generated
-      from ttk introspection.
-
    .. grid-item-card:: API Reference
       :link: api/index
       :link-type: doc
 
-      The complete public API ttkbootstrap authors — shipped widgets, dialogs,
-      the style engine, and the toolkit.
+      The per-widget reference — every widget's options, methods, and
+      hand-styling surface — plus dialogs, the style engine, and the toolkit.
 
    .. grid-item-card:: Capabilities
       :link: capabilities/index
@@ -39,7 +31,6 @@ The lookup layer:
 .. toctree::
    :hidden:
 
-   style-reference/index
    api/index
    capabilities/index
    cursors

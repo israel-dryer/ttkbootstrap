@@ -55,6 +55,6 @@ reference.
 .. seealso::
 
    Want to restyle the separator yourself? The
-   :doc:`Style Reference › Separator </reference/style-reference/separator>` and
+   :ref:`Separator's styling options <separator-styling>` and
    its companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>`
    guide document the hand-styling surface.

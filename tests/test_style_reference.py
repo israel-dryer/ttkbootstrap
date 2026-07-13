@@ -1,23 +1,29 @@
-"""Structural sync test for the generated Style Reference (docs Workstream H).
+"""Structural sync test for the generated styling partials (docs Workstream H).
 
-Unlike the bootstyle reference (pure-Python-derived, so byte-compared), the
-Style Reference *pages* carry live ttk introspection (element options, layout,
-states) that varies by Tcl/Tk version and OS -- byte-comparing them would make
-CI flake on a Tk point-release. So this test is deliberately **structural**:
+Each ttk-styled family has an includable rST *partial*
+(`docs/reference/api/_style/<family>.rst`) that a widget's API reference page
+folds into its **Styling options** section. The partials carry live ttk
+introspection (element options, layout, states) that varies by Tcl/Tk version
+and OS -- byte-comparing them would make CI flake on a Tk point-release. So this
+test is deliberately **structural**:
 
-- the index page is registry-derived (no introspection), so it *is* byte-checked
-  -- adding a builder family without regenerating fails here;
-- every family the registry produces must have a committed page.
+- every family the registry produces must have a committed partial;
+- every committed partial must be ``.. include::``d by some API page, so a new
+  family can't be generated and then left orphaned (unreachable) in the docs.
 
 Content freshness is the author's documented offline regen step
 (`python tools/generate_style_reference.py`).
 """
 import importlib.util
 import pathlib
+import re
 
 
 _REPO = pathlib.Path(__file__).resolve().parents[1]
-_STYLE_REF_DIR = _REPO / "docs" / "reference" / "style-reference"
+_PARTIAL_DIR = _REPO / "docs" / "reference" / "api" / "_style"
+_API_DIR = _REPO / "docs" / "reference" / "api"
+
+_INCLUDE_RE = re.compile(r"\.\. include:: /reference/api/_style/([\w-]+)\.rst")
 
 
 def _load_generator():
@@ -28,30 +34,39 @@ def _load_generator():
     return module
 
 
+def _included_families():
+    families = set()
+    for rst in _API_DIR.glob("*.rst"):
+        families.update(_INCLUDE_RE.findall(rst.read_text(encoding="utf-8")))
+    return families
+
+
 def test_style_reference_families_nonempty():
     gen = _load_generator()
     families = gen.style_reference_families()
     assert families, "the builder registry should yield styled families"
-    # every family classifies into exactly one index group (render raises otherwise)
-    gen.render_index_page()
+    # registry and the `_FAMILIES` metadata must agree (raises otherwise)
+    gen._check_families()
 
 
-def test_every_family_has_a_committed_page():
+def test_every_family_has_a_committed_partial():
     gen = _load_generator()
     for family in gen.style_reference_families():
-        page = _STYLE_REF_DIR / f"{family}.rst"
-        assert page.exists(), (
-            f"missing Style Reference page {page.name}; regenerate with "
+        partial = _PARTIAL_DIR / f"{family}.rst"
+        assert partial.exists(), (
+            f"missing styling partial {partial.name}; regenerate with "
             "`python tools/generate_style_reference.py`"
         )
 
 
-def test_style_reference_index_is_current():
-    # The index is purely registry-derived (families, blurbs, grouping, toctrees)
-    # with no introspected content, so a byte-compare is deterministic and CI-safe.
+def test_every_partial_is_included_by_an_api_page():
+    # No orphan styling partials: each family's partial must be folded into some
+    # widget's API reference page, or its hand-styling surface is unreachable.
     gen = _load_generator()
-    current = (_STYLE_REF_DIR / "index.rst").read_text(encoding="utf-8")
-    assert current == gen.render_index_page(), (
-        "docs/reference/style-reference/index.rst is stale; regenerate with "
-        "`python tools/generate_style_reference.py`"
-    )
+    included = _included_families()
+    for family in gen.style_reference_families():
+        assert family in included, (
+            f"styling partial '{family}' is not `.. include::`d by any "
+            "docs/reference/api/*.rst page; fold it into the relevant widget's "
+            "Styling options section."
+        )
