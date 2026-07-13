@@ -157,7 +157,7 @@ class MessageCatalog:
 
     @staticmethod
     def set_many(locale: str, *args: str) -> int:
-        """Sets the translation for multiple source strings in *args in
+        """Sets the translation for multiple source strings in ``args`` in
         the specified locale and the current namespace. Must be an even
         number of args.
 

@@ -40,10 +40,10 @@ def _dispatch_locale_change(event: Optional[tkinter.Event] = None) -> None:
 def set_locale(locale: str) -> None:
     """Set the application locale.
 
-    Called **before** `App()` exists, the locale is queued and applied when the
+    Called **before** ``App()`` exists, the locale is queued and applied when the
     root is created (the intended top-of-file use). If a root already exists it
-    applies immediately, emitting `<<LocaleChanged>>` so live `LocaleVar`s
-    re-translate.
+    applies immediately, emitting ``<<LocaleChanged>>`` so live ``LocaleVar``
+    variables re-translate.
     """
     # local import breaks the localization <- utils.config <- style cycle; the
     # seam applies now if a root exists, else queues under "locale".

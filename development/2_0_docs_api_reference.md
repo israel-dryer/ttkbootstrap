@@ -136,19 +136,38 @@ work is on **`docs/2.0-widget-api-reference`** off `2.0`:
 
 ## REMAINING (the non-widget reference sections — next big batch)
 
-Author's order: **PR the widget-reference work first (this branch → `2.0`), then
-start Windows on a fresh branch (clean break).** Then:
+DONE so far: **Windows** (#1189), **Dialogs & overlays** (#1190), and the first
+**autodoc** slice — **Validation**, **Fonts**, **Localization** (in progress on
+`docs/2.0-reference-autodoc`).
 
-1. **Move Toast/ToolTip** out of the Widgets index into **Dialogs & overlays**.
-2. **Windows** (hand-write): `Window`, `Toplevel`.
-3. **Dialogs & overlays** (hand-write): `Messagebox`, `Querybox`, `MessageDialog`,
-   `QueryDialog`, `DatePickerDialog`, `FontDialog`, `ColorChooserDialog`,
-   `ColorDropperDialog`, `Dialog` + `Toast`, `ToolTip`.
-4. **Imaging**: `PhotoImage` (hand) + `Icon`/`apply_icon`/`icon_element` (autodoc).
-5. **Autodoc sections** — strip `Examples:` from the module docstrings FIRST, then
-   add the autodoc page + author examples in rST: **Styling**, **Theming**,
-   **Localization**, **Fonts**, **Validation**, **Utilities**.
-6. Add each new section's card + toctree to `docs/reference/index.rst`.
+Still to author:
+
+1. **Imaging**: `PhotoImage` (hand) + `Icon`/`apply_icon`/`icon_element` (autodoc).
+2. **Autodoc sections**: **Styling**, **Theming**, **Utilities** — Styling
+   (`style/layout.py` ×6, `engine.py` ×1) and Theming (`theme.py` ×3) still need
+   the `Examples:` strip first; the others have none.
+3. Add each new section's card + toctree to `docs/reference/index.rst`.
+
+### Notes carried from the autodoc slice (READ before continuing autodoc)
+
+- **Docstring inline-rST issue (systemic).** ttkbootstrap docstrings are
+  Markdown-authored (single backticks, occasional `*args`/trailing-letter
+  markup). autodoc renders them as rST, so single-backtick spans become
+  title-refs (wrong, not fatal) and *unclosed* markup (`` `LocaleVar`s ``,
+  `*args` in prose) is a hard `-W` error. The `conf.py` fence shim only handles
+  ```` ```python ```` blocks, not inline. **Decision still needed** before the
+  Styling/Theming/Utilities autodoc pages: set `default_role = "code"` (fixes
+  rendering of valid single backticks globally) and fix unclosed cases as found,
+  vs a docstring sweep. For the Localization slice only the two unclosed cases
+  were fixed in source (`localization/api.py`, `msgcat.py`).
+- **`Examples:` in docstrings** must be stripped for Styling/Theming (the
+  `feedback_no_examples_in_docstrings` rule) — examples belong in the guides.
+- **Fonts re-export (done this slice):** `Font`, `font_families`, `font_names`,
+  `nametofont` are now re-exported at top level (`ttk.Font`, …) so the Fonts page
+  documents the full font surface (the ttkbootstrap `Fonts` manager + the tk
+  `Font` object's `measure`/`metrics`/`actual` + family listing). **FOLLOW-UP:**
+  expand the **Typography usage guide** with examples for these where
+  appropriate (`measure`, `font_families`, building a `Font`).
 
 ## Deferred ideas (later review)
 
