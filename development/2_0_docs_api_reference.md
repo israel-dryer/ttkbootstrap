@@ -134,21 +134,76 @@ work is on **`docs/2.0-widget-api-reference`** off `2.0`:
   grab/after/lifecycle/clipboard/selection (+ folded winfo). Events is now
   top-level (not folded here). Cursors top-level.
 
-## REMAINING (the non-widget reference sections — next big batch)
+## REMAINING (next session starts here)
 
-Author's order: **PR the widget-reference work first (this branch → `2.0`), then
-start Windows on a fresh branch (clean break).** Then:
+DONE: **Windows** (#1189, merged), **Dialogs & overlays** (#1190, merged), and
+**autodoc slice 1** — Validation, Fonts, Localization — as **PR #1191 (OPEN** on
+`docs/2.0-reference-autodoc`). **First: confirm #1191 merged, then branch off the
+updated `2.0`.**
 
-1. **Move Toast/ToolTip** out of the Widgets index into **Dialogs & overlays**.
-2. **Windows** (hand-write): `Window`, `Toplevel`.
-3. **Dialogs & overlays** (hand-write): `Messagebox`, `Querybox`, `MessageDialog`,
-   `QueryDialog`, `DatePickerDialog`, `FontDialog`, `ColorChooserDialog`,
-   `ColorDropperDialog`, `Dialog` + `Toast`, `ToolTip`.
-4. **Imaging**: `PhotoImage` (hand) + `Icon`/`apply_icon`/`icon_element` (autodoc).
-5. **Autodoc sections** — strip `Examples:` from the module docstrings FIRST, then
-   add the autodoc page + author examples in rST: **Styling**, **Theming**,
-   **Localization**, **Fonts**, **Validation**, **Utilities**.
-6. Add each new section's card + toctree to `docs/reference/index.rst`.
+Reference-landing IA now: **Widgets · Windows · Dialogs & overlays · Localization
+· Fonts · Validation · Capabilities · Events · Cursors**. Target full order:
+Widgets · Windows · Dialogs & overlays · **Styling · Theming · Imaging** ·
+Localization · Fonts · Validation · **Utilities** · Capabilities · Events ·
+Cursors — insert the new cards accordingly.
+
+Still to author:
+
+1. **Styling** (autodoc): `Style`, `Bootstyle`, toolkit (`Assets`/`El`/`layout`/
+   `StyleName`/`register_style`/`statespec`/`state_map`/`image_element`). Strip
+   `Examples:` from `style/layout.py` (×6) + `engine.py` (×1) first.
+2. **Theming** (autodoc): `Theme`, `ThemeDefinition`, `Colors`,
+   `install_legacy_themes`. Strip `Examples:` from `theme.py` (×3).
+3. **Imaging**: `PhotoImage` (hand-write — tk primitive, thin upstream) + `Icon`/
+   `apply_icon`/`icon_element` (autodoc). Consider re-exporting + documenting
+   `BitmapImage` (PhotoImage's sibling) here for image-surface completeness.
+4. **Utilities** (autodoc): `ttkbootstrap.utils` / `colorutils` — a grab-bag
+   (color fns `HEX`/`HSL`/`RGB`/`color_to_*`/`contrast_color`/
+   `conform_color_model`, `enable_high_dpi_awareness`, `on_theme_change`/
+   `remove_theme_change_callback`, `config`); curate the genuinely-public surface,
+   skip internals.
+5. Card + toctree into `docs/reference/index.rst` for each.
+
+### Autodoc page pattern (ESTABLISHED — replicate)
+
+One page per area at `docs/reference/<area>.rst`: a short intro (what the surface
+is + a `:doc:` to its feature guide), the autodoc directives, then a `See also`
+linking the guide. Example:
+
+    .. autoclass:: ttkbootstrap.Validation
+       :members:
+    .. autofunction:: ttkbootstrap.validator
+
+- `add_module_names = False` (conf.py) makes autodoc render **bare** names
+  (`class Validation`, not `class ttkbootstrap.Validation`), matching the
+  hand-written pages — do NOT namespace.
+- Where a surface includes a **tk primitive python.org documents thinly** (e.g.
+  the `Font` object on the Fonts page), hand-write it as `py:class`/`py:method`
+  specs alongside the autodoc, same as the tk widget pages.
+- Autodoc imports ttkbootstrap headlessly (safe; no root is created on import).
+
+### Notes carried from the autodoc slice (READ before continuing autodoc)
+
+- **Docstring inline-rST issue (systemic).** ttkbootstrap docstrings are
+  Markdown-authored (single backticks, occasional `*args`/trailing-letter
+  markup). autodoc renders them as rST, so single-backtick spans become
+  title-refs (wrong, not fatal) and *unclosed* markup (`` `LocaleVar`s ``,
+  `*args` in prose) is a hard `-W` error. The `conf.py` fence shim only handles
+  ```` ```python ```` blocks, not inline. **Decision still needed** before the
+  Styling/Theming/Utilities autodoc pages: set `default_role = "code"` (fixes
+  rendering of valid single backticks globally) and fix unclosed cases as found,
+  vs a docstring sweep. For the Localization slice only the two unclosed cases
+  were fixed in source (`localization/api.py`, `msgcat.py`).
+- **`Examples:` in docstrings** must be stripped for Styling/Theming (the
+  `feedback_no_examples_in_docstrings` rule) — examples belong in the guides.
+- **Fonts re-export (done this slice):** `Font`, `font_families`, `nametofont`
+  are re-exported at top level (`ttk.Font`, …) so the Fonts page documents the
+  full font surface (the `Fonts` manager + the tk `Font` object's
+  `measure`/`metrics`/`actual` + family listing). `font_names` was dropped — it
+  overlapped confusingly with `Fonts.names()`, which returns the curated managed
+  set, not every named font. **FOLLOW-UP:** expand the **Typography usage guide**
+  with examples for these where appropriate (`measure`, `font_families`, building
+  a `Font`).
 
 ## Deferred ideas (later review)
 

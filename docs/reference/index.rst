@@ -28,6 +28,26 @@ The lookup layer:
       Message, input, and picker dialogs — ``Messagebox``, ``Querybox``, and the
       dialog classes — plus toasts and tooltips.
 
+   .. grid-item-card:: Localization
+      :link: localization
+      :link-type: doc
+
+      Translate built-in strings and switch locales — ``L``, ``set_locale``,
+      ``LocaleVar``, ``MessageCatalog``.
+
+   .. grid-item-card:: Fonts
+      :link: fonts
+      :link-type: doc
+
+      Manage the application's named fonts and the global family.
+
+   .. grid-item-card:: Validation
+      :link: validation
+      :link-type: doc
+
+      Attach input validation to entries — ready-made checks plus custom
+      validators.
+
    .. grid-item-card:: Capabilities
       :link: capabilities/index
       :link-type: doc
@@ -56,6 +76,9 @@ The lookup layer:
    api/index
    windows/index
    dialogs/index
+   localization
+   fonts
+   validation
    capabilities/index
    events/index
    cursors

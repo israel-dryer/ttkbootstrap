@@ -174,3 +174,12 @@ def test_module_set_global_family_queues_before_root(restore_fonts, monkeypatch)
     assert font.nametofont("TkDefaultFont", root=root).actual("family") == "Georgia"
     assert font.nametofont("TkFixedFont", root=root).actual("family") == "Courier New"
     assert "global_family" not in config._pending
+
+
+def test_font_tools_reexported():
+    """`Font` and the font module helpers are re-exported at top level."""
+    assert ttk.Font is font.Font
+    assert ttk.font_families is font.families
+    assert ttk.nametofont is font.nametofont
+    for name in ("Font", "font_families", "nametofont"):
+        assert name in ttk.__all__

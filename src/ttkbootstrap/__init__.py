@@ -43,6 +43,9 @@ from tkinter import (
     Listbox as _tkListbox,
     Variable, StringVar, IntVar, BooleanVar, DoubleVar, PhotoImage
 )
+from tkinter.font import (
+    Font, families as font_families, nametofont,
+)
 from tkinter.ttk import (
     Button as _ttkButton, Checkbutton as _ttkCheckbutton,
     Combobox as _ttkCombobox, Entry as _ttkEntry, Frame as _ttkFrame,
@@ -292,6 +295,7 @@ __all__ = [
     # Tk exports
     "Tk", "Menu", "Text", "Canvas", "Listbox", "TkFrame", "TkLabel", "LabelFrame", "Variable", "StringVar", "IntVar", "BooleanVar",
     "DoubleVar", "PhotoImage",
+    "Font", "font_families", "nametofont",
 
     # TTk exports
     "Button", "Checkbutton", "Combobox", "Entry", "Frame", "Labelframe",
