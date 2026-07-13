@@ -61,6 +61,20 @@ _PARTIAL_OUT = _ROOT / "docs" / "reference" / "api" / "_style"
 # documents the horizontal form (a note points at the vertical twin).
 _ORIENT_FAMILIES = {"scale", "progressbar", "separator", "panedwindow", "floodgauge"}
 
+# Families ttkbootstrap draws from pre-rendered image elements (keyed to the
+# bootstyle color) rather than clam's drawing primitives. For these, most
+# `style.configure` color/relief options are inert on the image parts, so the
+# Configurable-options section carries a caveat. Value = (image-part phrase,
+# has-a-text-label).
+_IMAGE_FAMILIES = {
+    "checkbutton": ("check indicator", True),
+    "radiobutton": ("radio indicator", True),
+    "toggle": ("toggle", True),
+    "scale": ("trough and slider", False),
+    "scrollbar": ("trough and thumb", False),
+    "progressbar": ("bar", False),
+}
+
 # ttk widgets that accept a `-text` option, so the hand-styling example can add
 # `text="Custom"` (the rest -- Scale, Frame, Treeview, ... -- reject it and would
 # raise `unknown option "-text"` if the snippet were copied verbatim).
@@ -348,6 +362,29 @@ def _style_body_parts(style, family, uc):
         )
         states_body = ""
 
+    # For image-drawn families, warn that `style.configure` does not reach the
+    # image parts, and point at the custom-image-layout path for real changes.
+    config_note = []
+    if family in _IMAGE_FAMILIES:
+        part, has_label = _IMAGE_FAMILIES[family]
+        plural = " and " in part
+        verb = "are" if plural else "is"
+        obj = "them" if plural else "it"
+        poss = "their" if plural else "its"
+        non_image = "the focus ring and text label" if has_label else "the focus ring"
+        config_note = [
+            ".. note::",
+            "",
+            f"   The {part} {verb} drawn from a pre-rendered image keyed to the "
+            f"``bootstyle`` color; ``style.configure(...)`` does not reach {obj}. "
+            f"The options listed here style only the widget's non-image parts "
+            f"(such as {non_image}). To recolor the {part}, choose a "
+            f"``bootstyle`` color; to change {poss} shape or artwork, build a "
+            f"custom image-based layout -- see "
+            f":doc:`Custom styles </user-guide/feature-guides/custom-styles>`.",
+            "",
+        ]
+
     return [
         _rule("Bootstyle mapping", uc),
         "",
@@ -366,6 +403,7 @@ def _style_body_parts(style, family, uc):
         "",
         _rule("Configurable style options", uc),
         "",
+        *config_note,
         "Options you can set with ``style.configure(...)`` / ``style.map(...)``:",
         "",
         _inline_list(options),

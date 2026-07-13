@@ -30,6 +30,10 @@ The widget is drawn from these nested parts. Each is an *element* you can target
 Configurable style options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. note::
+
+   The radio indicator is drawn from a pre-rendered image keyed to the ``bootstyle`` color; ``style.configure(...)`` does not reach it. The options listed here style only the widget's non-image parts (such as the focus ring and text label). To recolor the radio indicator, choose a ``bootstyle`` color; to change its shape or artwork, build a custom image-based layout -- see :doc:`Custom styles </user-guide/feature-guides/custom-styles>`.
+
 Options you can set with ``style.configure(...)`` / ``style.map(...)``:
 
 ``anchor``, ``background``, ``compound``, ``embossed``, ``focuscolor``, ``focussolid``, ``focusthickness``, ``font``, ``foreground``, ``image``, ``justify``, ``padding``, ``relief``, ``shiftrelief``, ``space``, ``stipple``, ``text``, ``underline``, ``width``, ``wraplength``

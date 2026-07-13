@@ -34,6 +34,10 @@ The widget is drawn from these nested parts. Each is an *element* you can target
 Configurable style options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. note::
+
+   The bar is drawn from a pre-rendered image keyed to the ``bootstyle`` color; ``style.configure(...)`` does not reach it. The options listed here style only the widget's non-image parts (such as the focus ring). To recolor the bar, choose a ``bootstyle`` color; to change its shape or artwork, build a custom image-based layout -- see :doc:`Custom styles </user-guide/feature-guides/custom-styles>`.
+
 Options you can set with ``style.configure(...)`` / ``style.map(...)``:
 
 *(none)*
