@@ -7,76 +7,99 @@ index ``"end"`` / ``"active"``. This page is the complete reference for its own
 options and methods; the shared widget methods are under
 :doc:`Capabilities </reference/capabilities/index>`.
 
-.. note::
-
-   Python's standard library doesn't document ``tk.Listbox`` in full. This
-   reference is maintained by ttkbootstrap. The canonical upstream source is the
-   `Tk listbox manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/listbox.htm>`__
-   (Tcl 8.6).
-
 Options
 -------
 
-.. rubric:: ttkbootstrap
-
 .. list-table::
-   :widths: 26 74
+   :header-rows: 1
+   :widths: 22 16 62
 
+   * - Option
+     - Type
+     - Description
    * - ``autostyle``
+     - ``bool``
      - **Constructor only.** ``True`` (default) paints the listbox with the
        active theme and repaints on a theme switch; ``False`` opts out.
-
-.. rubric:: Content and selection
-
-.. list-table::
-   :widths: 26 74
-
    * - ``listvariable``
+     - ``Variable``
      - A ``StringVar`` holding the list items as a Tcl list — keeps the widget
        and the variable in sync.
    * - ``selectmode``
+     - ``str``
      - ``"browse"`` (single, default), ``"single"``, ``"multiple"``, or
        ``"extended"`` (click-drag / Shift / Ctrl ranges).
-   * - ``selectbackground`` / ``selectforeground`` / ``selectborderwidth``
-     - Appearance of selected lines.
+   * - ``selectbackground``
+     - ``str``
+     - The background color of selected lines.
+   * - ``selectforeground``
+     - ``str``
+     - The text color of selected lines.
+   * - ``selectborderwidth``
+     - ``int``
+     - The border width of selected lines, in pixels.
    * - ``activestyle``
+     - ``str``
      - How the active line is marked: ``"underline"``, ``"dotbox"``, or
        ``"none"``.
    * - ``exportselection``
+     - ``bool``
      - Whether the selection is exported to the X selection / clipboard.
-
-.. rubric:: Text and size
-
-.. list-table::
-   :widths: 26 74
-
    * - ``font``
+     - ``str | Font``
      - The font for the lines.
-   * - ``foreground`` (``fg``) / ``background`` (``bg``)
-     - Text and surface colors.
+   * - ``foreground`` (``fg``)
+     - ``str``
+     - The text color.
+   * - ``background`` (``bg``)
+     - ``str``
+     - The surface color.
    * - ``disabledforeground``
-     - Text color when the widget's ``state`` is ``"disabled"``.
+     - ``str``
+     - The text color when ``state`` is ``"disabled"``.
    * - ``justify``
-     - Line alignment: ``"left"``, ``"center"``, ``"right"``.
-   * - ``width`` / ``height``
-     - Requested size in **characters** and **lines** (``0`` fits the content).
-
-.. rubric:: Border and behavior
-
-.. list-table::
-   :widths: 26 74
-
-   * - ``borderwidth`` (``bd``) / ``relief``
-     - 3-D border width and style.
-   * - ``highlightthickness`` / ``highlightcolor`` / ``highlightbackground``
-     - The focus highlight around the widget.
+     - ``str``
+     - Line alignment: ``"left"``, ``"center"``, or ``"right"``.
+   * - ``width``
+     - ``int``
+     - The requested width in characters (``0`` fits the content).
+   * - ``height``
+     - ``int``
+     - The requested height in lines (``0`` fits the content).
+   * - ``borderwidth`` (``bd``)
+     - ``int``
+     - The 3-D border width in pixels.
+   * - ``relief``
+     - ``str``
+     - The border style: ``"flat"``, ``"raised"``, ``"sunken"``, ``"groove"``,
+       ``"ridge"``, or ``"solid"``.
+   * - ``highlightthickness``
+     - ``int``
+     - The width of the focus highlight around the widget.
+   * - ``highlightcolor``
+     - ``str``
+     - The focus-highlight color when the widget has focus.
+   * - ``highlightbackground``
+     - ``str``
+     - The focus-highlight color when the widget does not have focus.
    * - ``state``
+     - ``str``
      - ``"normal"`` or ``"disabled"``.
-   * - ``cursor`` / ``takefocus`` / ``setgrid``
-     - Mouse cursor (see :doc:`Cursors </reference/cursors>`); focus
-       participation; whether the window resizes in whole lines.
-   * - ``xscrollcommand`` / ``yscrollcommand``
-     - Callbacks connecting the listbox to scrollbars.
+   * - ``cursor``
+     - ``str``
+     - The mouse cursor (see :doc:`Cursors </reference/cursors>`).
+   * - ``takefocus``
+     - ``bool``
+     - Whether the listbox accepts keyboard focus during traversal.
+   * - ``setgrid``
+     - ``bool``
+     - Whether the window resizes in whole lines/characters.
+   * - ``xscrollcommand``
+     - ``callable``
+     - A callback connecting the listbox to a horizontal scrollbar.
+   * - ``yscrollcommand``
+     - ``callable``
+     - A callback connecting the listbox to a vertical scrollbar.
 
 Methods
 -------

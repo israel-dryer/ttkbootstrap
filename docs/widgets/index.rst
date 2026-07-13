@@ -7,8 +7,8 @@ is a native ttk widget ttkbootstrap themes or one ttkbootstrap ships, so they
 live in one list. Every page follows the same shape — a one-liner, screenshots
 in both themes, semantic styling, then variants, colors, and states — and ends
 by linking to the widget's API (python.org's ``tkinter.ttk`` for a native
-widget, the :doc:`API Reference </reference/api/index>` for a ttkbootstrap one)
-and to the deep :doc:`Style Reference </reference/style-reference/index>`.
+widget, the :doc:`widget reference </reference/api/index>` for a ttkbootstrap one),
+where each page also documents the widget's hand-styling surface.
 
 .. grid:: 1 2 2 2
    :gutter: 3

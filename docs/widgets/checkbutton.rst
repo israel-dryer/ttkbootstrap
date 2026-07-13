@@ -135,7 +135,7 @@ reference.
 
    :doc:`Radiobutton <radiobutton>` for a mutually exclusive group of choices.
    Want to restyle the checkbutton yourself? The
-   :doc:`Style Reference › Checkbutton </reference/style-reference/checkbutton>`
-   (and :doc:`Toggle </reference/style-reference/toggle>` for the switch look) and
-   its companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>`
-   guide document the hand-styling surface.
+   :ref:`checkbutton's styling options <checkbutton-styling>` (which also cover
+   the switch/toggle look) and its companion
+   :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide document
+   the hand-styling surface.

@@ -100,5 +100,5 @@ reference.
    separators, submenus) rather than a list of values, :doc:`Combobox <combobox>`
    for a version the user can also type into, and :doc:`Radiobutton <radiobutton>`
    for a visible group. An option menu renders as a menubutton, so its
-   customization surface is
-   :doc:`Style Reference › Menubutton </reference/style-reference/menubutton>`.
+   customization surface is the
+   :ref:`menubutton styling options <optionmenu-styling>`.

@@ -7,13 +7,6 @@ restyle, and delete by id or tag. It is themed by ttkbootstrap. This page is the
 complete reference for its own options and methods; the shared widget methods are
 under :doc:`Capabilities </reference/capabilities/index>`.
 
-.. note::
-
-   Python's standard library doesn't document ``tk.Canvas`` in full. This
-   reference is maintained by ttkbootstrap. The canonical upstream source is the
-   `Tk canvas manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/canvas.htm>`__
-   (Tcl 8.6).
-
 Items, ids, and tags
 --------------------
 
@@ -26,73 +19,101 @@ addresses the whole canvas. Coordinates are in canvas space, which the
 Options
 -------
 
-.. rubric:: ttkbootstrap
-
 .. list-table::
-   :widths: 26 74
+   :header-rows: 1
+   :widths: 22 16 62
 
+   * - Option
+     - Type
+     - Description
    * - ``autostyle``
+     - ``bool``
      - **Constructor only.** ``True`` (default) paints the canvas with the active
-       theme and repaints on a theme switch; ``False`` opts out. ttkbootstrap's
-       one addition — everything below is native tk.
-
-.. rubric:: Scroll region
-
-.. list-table::
-   :widths: 26 74
-
+       theme and repaints on a theme switch; ``False`` opts out. This is
+       ttkbootstrap's one addition — everything below is native tk.
+   * - ``background`` (``bg``)
+     - ``str``
+     - The surface color.
+   * - ``width``
+     - ``int``
+     - The requested width in pixels.
+   * - ``height``
+     - ``int``
+     - The requested height in pixels.
+   * - ``borderwidth`` (``bd``)
+     - ``int``
+     - The 3-D border width in pixels.
+   * - ``relief``
+     - ``str``
+     - The border style: ``"flat"``, ``"raised"``, ``"sunken"``, ``"groove"``,
+       ``"ridge"``, or ``"solid"``.
+   * - ``highlightthickness``
+     - ``int``
+     - The width of the focus highlight around the widget.
+   * - ``highlightcolor``
+     - ``str``
+     - The focus-highlight color when the widget has focus.
+   * - ``highlightbackground``
+     - ``str``
+     - The focus-highlight color when the widget does not have focus.
    * - ``scrollregion``
+     - ``tuple``
      - The scrollable area as ``(left, top, right, bottom)`` in canvas
        coordinates.
    * - ``confine``
-     - ``True`` keeps the view inside ``scrollregion``.
-   * - ``xscrollcommand`` / ``yscrollcommand``
-     - Callbacks that connect the canvas to a horizontal / vertical scrollbar.
-   * - ``xscrollincrement`` / ``yscrollincrement``
-     - Step size for scrolling by "units", in pixels.
-
-.. rubric:: Size and border
-
-.. list-table::
-   :widths: 26 74
-
-   * - ``width`` / ``height``
-     - The requested size in pixels.
-   * - ``background`` (``bg``)
-     - The surface color.
-   * - ``borderwidth`` (``bd``) / ``relief``
-     - 3-D border width and style.
-   * - ``highlightthickness``
-     - Width of the focus highlight around the widget.
-   * - ``highlightcolor`` / ``highlightbackground``
-     - Focus-highlight color when the widget has / doesn't have focus.
-
-.. rubric:: Selection and cursor
-
-.. list-table::
-   :widths: 26 74
-
-   * - ``selectbackground`` / ``selectforeground`` / ``selectborderwidth``
-     - Appearance of selected text within an editable text item.
-   * - ``insertbackground`` / ``insertwidth`` / ``insertborderwidth``
-     - Color, width, and border of the text insert cursor.
-   * - ``insertontime`` / ``insertofftime``
-     - Cursor blink on/off milliseconds.
-
-.. rubric:: Behavior
-
-.. list-table::
-   :widths: 26 74
-
+     - ``bool``
+     - Whether to keep the view inside ``scrollregion``.
+   * - ``xscrollcommand``
+     - ``callable``
+     - A callback connecting the canvas to a horizontal scrollbar.
+   * - ``yscrollcommand``
+     - ``callable``
+     - A callback connecting the canvas to a vertical scrollbar.
+   * - ``xscrollincrement``
+     - ``int``
+     - The step size for horizontal "unit" scrolling, in pixels.
+   * - ``yscrollincrement``
+     - ``int``
+     - The step size for vertical "unit" scrolling, in pixels.
+   * - ``selectbackground``
+     - ``str``
+     - The background of selected text within an editable text item.
+   * - ``selectforeground``
+     - ``str``
+     - The foreground of selected text within an editable text item.
+   * - ``selectborderwidth``
+     - ``int``
+     - The border width of the selection, in pixels.
+   * - ``insertbackground``
+     - ``str``
+     - The color of the text insert cursor.
+   * - ``insertwidth``
+     - ``int``
+     - The width of the insert cursor, in pixels.
+   * - ``insertborderwidth``
+     - ``int``
+     - The border width of the insert cursor, in pixels.
+   * - ``insertontime``
+     - ``int``
+     - The insert-cursor blink on-time, in milliseconds.
+   * - ``insertofftime``
+     - ``int``
+     - The insert-cursor blink off-time, in milliseconds.
    * - ``state``
-     - Default item state: ``"normal"``, ``"disabled"``, or ``"hidden"``.
+     - ``str``
+     - The default item state: ``"normal"``, ``"disabled"``, or ``"hidden"``.
    * - ``closeenough``
-     - How near (pixels) the pointer must be to count as "over" an item.
+     - ``float``
+     - How near (in pixels) the pointer must be to count as "over" an item.
    * - ``offset``
+     - ``str``
      - The origin for tiled stipple/fill patterns.
-   * - ``cursor`` / ``takefocus``
-     - Mouse cursor over the canvas (see :doc:`Cursors </reference/cursors>`);
-       whether the canvas accepts focus.
+   * - ``cursor``
+     - ``str``
+     - The mouse cursor over the canvas (see :doc:`Cursors </reference/cursors>`).
+   * - ``takefocus``
+     - ``bool``
+     - Whether the canvas accepts keyboard focus.
 
 Methods
 -------

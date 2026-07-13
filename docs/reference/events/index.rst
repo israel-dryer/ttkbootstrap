@@ -1,5 +1,5 @@
-Event reference
-===============
+Events
+======
 
 The catalog of tkinter's event system: every event **type**, **modifier**, and
 **key symbol** you can name in a pattern, every attribute of the event object a

@@ -109,7 +109,7 @@ Start here
       :link: reference/index
       :link-type: doc
 
-      The generated Style Reference and the public API.
+      The per-widget API and styling reference, capabilities, and cursors.
 
 Install
 -------

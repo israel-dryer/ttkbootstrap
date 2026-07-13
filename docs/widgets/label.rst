@@ -108,6 +108,6 @@ reference.
    The :doc:`Typography guide </user-guide/feature-guides/typography>` for fonts,
    and :doc:`Show images and icons </user-guide/how-to/working-with-images>` for
    the image side. Want to restyle the label yourself? The
-   :doc:`Style Reference › Label </reference/style-reference/label>` and its
+   :ref:`Label's styling options <label-styling>` and its
    companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide
    document the hand-styling surface.

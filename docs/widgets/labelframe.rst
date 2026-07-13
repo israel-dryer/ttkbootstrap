@@ -61,6 +61,6 @@ reference.
    :doc:`Frame <frame>` for a plain container, and
    :doc:`Arranging widgets </user-guide/foundations/arranging-widgets>` for laying
    out the widgets inside. Want to restyle the labelframe yourself? The
-   :doc:`Style Reference › Labelframe </reference/style-reference/labelframe>` and
+   :ref:`Labelframe's styling options <labelframe-styling>` and
    its companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>`
    guide document the hand-styling surface.

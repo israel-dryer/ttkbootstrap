@@ -39,11 +39,11 @@ teach the same areas by building.
 
       Raise and lower overlapping widgets — ``lift``, ``lower``.
 
-   .. grid-item-card:: Events (bind)
-      :link: /reference/events/index
+   .. grid-item-card:: Bind
+      :link: bind
       :link-type: doc
 
-      Attach behavior to input — event types, modifiers, and the event object.
+      Attach callbacks to events — ``bind``, ``bind_all``, ``bindtags``.
 
    .. grid-item-card:: Focus
       :link: focus
@@ -95,11 +95,11 @@ teach the same areas by building.
    grid
    place
    stacking
+   bind
    focus
    grab
    after
    lifecycle
    clipboard
    selection
-   /reference/events/index
    /reference/winfo

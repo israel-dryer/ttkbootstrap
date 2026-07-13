@@ -201,13 +201,8 @@ API & reference
 
 ``Tableview`` has a large API beyond this page — ``TableColumn`` / ``TableRow``
 objects, per-column show/hide, row and column moves, and more filtering and
-export variants. For the complete list, see :class:`~ttkbootstrap.Tableview` on
-the :doc:`Widgets API page </reference/api/widgets>`:
-
-.. autosummary::
-   :nosignatures:
-
-   ~ttkbootstrap.Tableview
+export variants. For the complete list, see the
+:doc:`Tableview API reference </reference/api/tableview>`.
 
 .. seealso::
 

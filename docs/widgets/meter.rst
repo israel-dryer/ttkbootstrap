@@ -106,13 +106,8 @@ Color
 API & reference
 ---------------
 
-For the complete option list and methods, see :class:`~ttkbootstrap.Meter` on the
-:doc:`Widgets API page </reference/api/widgets>`:
-
-.. autosummary::
-   :nosignatures:
-
-   ~ttkbootstrap.Meter
+For the complete option list and methods, see the
+:doc:`Meter API reference </reference/api/meter>`.
 
 .. seealso::
 

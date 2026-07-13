@@ -86,6 +86,6 @@ reference.
    the ``Floodgauge`` widget for a progress indicator that also shows a
    value/label, and :doc:`Meter <meter>` for a radial one. Want to restyle the
    progressbar yourself? The
-   :doc:`Style Reference › Progressbar </reference/style-reference/progressbar>`
+   :ref:`Progressbar's styling options <progressbar-styling>`
    and its companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>`
    guide document the hand-styling surface.

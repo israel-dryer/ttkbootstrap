@@ -9,150 +9,158 @@ focus, introspection) are listed at the bottom.
 For a task-oriented walkthrough — indices, tags, marks, search, undo — see the
 :doc:`Text widget guide </widgets/text>`.
 
-.. note::
-
-   Python's standard library doesn't document ``tk.Text`` in full. This reference
-   is maintained by ttkbootstrap. The canonical upstream source is the
-   `Tk text manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/text.htm>`__
-   (Tcl 8.6, the version Python ships) — where a Tcl subcommand like
-   ``tag configure`` is the Python method ``tag_configure``.
-
 Options
 -------
 
 Set at construction or with ``configure(...)``; read with ``cget("name")``.
 
-.. rubric:: ttkbootstrap
-
 .. list-table::
-   :widths: 26 74
+   :header-rows: 1
+   :widths: 22 16 62
 
+   * - Option
+     - Type
+     - Description
    * - ``autostyle``
+     - ``bool``
      - **Constructor only.** ``True`` (the default) paints the widget with the
        active theme and repaints it on a theme switch; ``False`` opts out,
        leaving tkinter's default appearance for you to style yourself. This is
        ttkbootstrap's one addition to the widget — everything below is native tk.
-
-.. rubric:: Text and wrapping
-
-.. list-table::
-   :widths: 26 74
-
    * - ``font``
-     - The default font for the text (a family/size tuple or a named font).
+     - ``str | Font``
+     - The default font for the text.
    * - ``wrap``
+     - ``str``
      - How lines that exceed the width wrap: ``"char"``, ``"word"``, or
        ``"none"`` (no wrap — scroll horizontally instead).
    * - ``tabs``
+     - ``str``
      - Tab stops, as a list of distances (optionally each followed by
        ``"left"``/``"right"``/``"center"``/``"numeric"``).
    * - ``tabstyle``
-     - How tabs interact with the ``tabs`` list: ``"tabular"`` or ``"wordprocessor"``.
+     - ``str``
+     - How tabs interact with the ``tabs`` list: ``"tabular"`` or
+       ``"wordprocessor"``.
    * - ``spacing1``
+     - ``int``
      - Extra vertical space above the first display line of each text line.
    * - ``spacing2``
+     - ``int``
      - Extra vertical space between the display lines of a single wrapped line.
    * - ``spacing3``
+     - ``int``
      - Extra vertical space below the last display line of each text line.
-
-.. rubric:: Colors
-
-.. list-table::
-   :widths: 26 74
-
    * - ``foreground`` (``fg``)
+     - ``str``
      - The text color.
    * - ``background`` (``bg``)
+     - ``str``
      - The page (background) color.
    * - ``selectforeground``
-     - Text color within the selection.
+     - ``str``
+     - The text color within the selection.
    * - ``selectbackground``
-     - Background color of the selection.
+     - ``str``
+     - The background color of the selection.
    * - ``inactiveselectbackground``
-     - Selection background when the widget doesn't have focus (empty string
-       hides the selection when unfocused).
-
-.. rubric:: Insert cursor
-
-.. list-table::
-   :widths: 26 74
-
+     - ``str``
+     - The selection background when the widget doesn't have focus (an empty
+       string hides the selection when unfocused).
    * - ``insertbackground``
-     - Color of the blinking insert cursor.
+     - ``str``
+     - The color of the blinking insert cursor.
    * - ``insertwidth``
-     - Width of the insert cursor, in pixels.
+     - ``int``
+     - The width of the insert cursor, in pixels.
    * - ``insertborderwidth``
-     - 3-D border width drawn around the insert cursor.
-   * - | ``insertontime``
-       | ``insertofftime``
-     - Milliseconds the cursor is shown / hidden per blink (``insertofftime=0``
-       disables blinking).
+     - ``int``
+     - The 3-D border width drawn around the insert cursor.
+   * - ``insertontime``
+     - ``int``
+     - Milliseconds the cursor is shown per blink.
+   * - ``insertofftime``
+     - ``int``
+     - Milliseconds the cursor is hidden per blink (``0`` disables blinking).
    * - ``insertunfocussed``
+     - ``str``
      - How the cursor is drawn when the widget lacks focus: ``"none"``,
        ``"hollow"``, or ``"solid"``.
    * - ``blockcursor``
-     - ``True`` draws the insert cursor as a block over the next character
-       rather than a thin bar.
-
-.. rubric:: Size and border
-
-.. list-table::
-   :widths: 26 74
-
-   * - | ``width``
-       | ``height``
-     - The requested size in **characters** and **lines** (not pixels).
-   * - | ``padx``
-       | ``pady``
-     - Internal padding between the text and the widget border, in pixels.
+     - ``bool``
+     - ``True`` draws the insert cursor as a block over the next character rather
+       than a thin bar.
+   * - ``width``
+     - ``int``
+     - The requested width in characters (not pixels).
+   * - ``height``
+     - ``int``
+     - The requested height in lines (not pixels).
+   * - ``padx``
+     - ``int``
+     - Internal horizontal padding between the text and the border, in pixels.
+   * - ``pady``
+     - ``int``
+     - Internal vertical padding between the text and the border, in pixels.
    * - ``relief``
-     - Border style: ``"flat"``, ``"raised"``, ``"sunken"``, ``"groove"``,
-       ``"ridge"``, ``"solid"``.
+     - ``str``
+     - The border style: ``"flat"``, ``"raised"``, ``"sunken"``, ``"groove"``,
+       ``"ridge"``, or ``"solid"``.
    * - ``borderwidth`` (``bd``)
-     - Width of the 3-D border, in pixels.
+     - ``int``
+     - The width of the 3-D border, in pixels.
    * - ``selectborderwidth``
-     - Border width drawn around selected text.
+     - ``int``
+     - The border width drawn around selected text.
    * - ``highlightthickness``
-     - Width of the focus highlight drawn around the widget.
-   * - | ``highlightcolor``
-       | ``highlightbackground``
-     - Focus-highlight color when the widget has / doesn't have focus.
-
-.. rubric:: Undo
-
-.. list-table::
-   :widths: 26 74
-
+     - ``int``
+     - The width of the focus highlight drawn around the widget.
+   * - ``highlightcolor``
+     - ``str``
+     - The focus-highlight color when the widget has focus.
+   * - ``highlightbackground``
+     - ``str``
+     - The focus-highlight color when the widget does not have focus.
    * - ``undo``
+     - ``bool``
      - ``True`` enables the built-in undo/redo stack.
    * - ``autoseparators``
+     - ``bool``
      - ``True`` auto-inserts undo boundaries as the user types.
    * - ``maxundo``
-     - Maximum number of undo steps to keep (``-1`` for unlimited).
-
-.. rubric:: Behavior
-
-.. list-table::
-   :widths: 26 74
-
+     - ``int``
+     - The maximum number of undo steps to keep (``-1`` for unlimited).
    * - ``state``
+     - ``str``
      - ``"normal"`` (editable) or ``"disabled"`` (read-only; the widget also
        ignores ``insert``/``delete`` while disabled).
    * - ``cursor``
-     - Mouse cursor shown over the widget (see :doc:`Cursors </reference/cursors>`).
+     - ``str``
+     - The mouse cursor shown over the widget (see
+       :doc:`Cursors </reference/cursors>`).
    * - ``takefocus``
+     - ``bool``
      - Whether the widget accepts focus during keyboard traversal.
    * - ``exportselection``
+     - ``bool``
      - Whether a selection is exported to the X selection / clipboard.
    * - ``setgrid``
+     - ``bool``
      - ``True`` makes the containing window resize in whole character cells.
-   * - | ``startline``
-       | ``endline``
-     - Restrict the widget to a range of the underlying store's lines (used by
+   * - ``startline``
+     - ``int``
+     - Restrict the widget to start at this line of the underlying store (used by
        peer widgets; ``None`` for the full range).
-   * - | ``xscrollcommand``
-       | ``yscrollcommand``
-     - Callbacks that connect the widget to a horizontal / vertical scrollbar.
+   * - ``endline``
+     - ``int``
+     - Restrict the widget to end at this line of the underlying store (used by
+       peer widgets; ``None`` for the full range).
+   * - ``xscrollcommand``
+     - ``callable``
+     - A callback connecting the widget to a horizontal scrollbar.
+   * - ``yscrollcommand``
+     - ``callable``
+     - A callback connecting the widget to a vertical scrollbar.
 
 Methods
 -------

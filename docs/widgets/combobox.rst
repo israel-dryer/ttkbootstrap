@@ -103,6 +103,6 @@ reference.
 
    :doc:`Entry <entry>` for a plain text field and :doc:`Spinbox <spinbox>` for a
    stepper over an ordered range. Want to restyle the combobox yourself? The
-   :doc:`Style Reference › Combobox </reference/style-reference/combobox>` and its
+   :ref:`Combobox's styling options <combobox-styling>` and its
    companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>`
    guide document the hand-styling surface.

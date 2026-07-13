@@ -120,8 +120,7 @@ reference.
    :doc:`Checkbutton <checkbutton>` for an independent on/off toggle, and
    :doc:`Combobox <combobox>` when a dropdown fits better than a visible group.
    Want to restyle the radiobutton yourself? The
-   :doc:`Style Reference › Radiobutton </reference/style-reference/radiobutton>`
-   (and :doc:`Toolbutton </reference/style-reference/toolbutton>` for the
-   segmented look) and its companion
-   :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide document
-   the hand-styling surface.
+   :ref:`radiobutton's styling options <radiobutton-styling>` (and the
+   :ref:`toolbutton style <button-styling>` for the segmented look) and its
+   companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>`
+   guide document the hand-styling surface.

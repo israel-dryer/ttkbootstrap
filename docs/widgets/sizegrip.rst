@@ -54,6 +54,6 @@ reference.
 
    :doc:`Windows </user-guide/feature-guides/windows>` for window geometry and
    resizing. Want to restyle the sizegrip yourself? The
-   :doc:`Style Reference › Sizegrip </reference/style-reference/sizegrip>` and its
+   :ref:`Sizegrip's styling options <sizegrip-styling>` and its
    companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide
    document the hand-styling surface.

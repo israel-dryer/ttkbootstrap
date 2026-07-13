@@ -73,13 +73,8 @@ Color
 API & reference
 ---------------
 
-For the complete option list and methods, see :class:`~ttkbootstrap.Floodgauge` on
-the :doc:`Widgets API page </reference/api/widgets>`:
-
-.. autosummary::
-   :nosignatures:
-
-   ~ttkbootstrap.Floodgauge
+For the complete option list and methods, see the
+:doc:`Floodgauge API reference </reference/api/floodgauge>`.
 
 .. seealso::
 

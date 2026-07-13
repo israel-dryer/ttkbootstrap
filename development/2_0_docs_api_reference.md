@@ -1,31 +1,56 @@
-# 2.0 Docs — Widget API Reference workstream (handoff)
+# 2.0 Docs — API Reference workstream (handoff)
 
 Self-contained handoff so this work can continue on any machine (the author's
 `~/.claude` memory is machine-local and does NOT transfer; this repo doc does).
-Part of Workstream H (docs). Created 2026-07-12.
+Part of Workstream H (docs). Created 2026-07-12; expanded 2026-07-12 (widget
+reference done → whole-public-API reference).
 
 ## Goal
 
-Ship **our own** widget API reference instead of depending on python.org, which
+Ship **our own** API reference instead of depending on python.org, which
 documents the classic tk widgets (`Text`/`Canvas`/`Listbox`/`Menu`) not at all
-and is thin elsewhere. Cross-link python.org / Tcl-Tk **as supplementary** where
-they exist, never instead of our own. Maintenance is expected to be low (tkinter
-rarely changes).
+and is thin elsewhere, and which never covers the ttkbootstrap-authored API.
+Cross-link python.org / Tcl-Tk **as supplementary** where they exist, never
+instead of our own. Maintenance is expected to be low (tkinter rarely changes).
 
-## Scope (LOCKED with author)
+## Reference IA & scope (LOCKED with author, 2026-07-12)
 
-Two buckets, nothing else:
+The scope widened from "just widgets" to **the whole public API**. The Reference
+layer (`docs/reference/`) is a **FLAT** set of top-level sections — author's rule:
+*only group what needs grouping; no invented buckets* (`feedback_dont_overgroup_ia`):
 
-1. **Blessed tk widgets:** `Text`, `Canvas`, `Listbox`, `Menu`, plus the trivial
-   containers `Tk`, `TkFrame`, `TkLabel`, `LabelFrame`. (Listbox was newly
-   blessed — see PR #1186.)
-2. **Native ttk widgets:** Button, Entry, Combobox, Spinbox, Checkbutton,
-   Radiobutton, Menubutton, OptionMenu, Frame, Labelframe, Notebook, Panedwindow,
-   Label, Progressbar, Scale, Scrollbar, Separator, Sizegrip, Treeview.
+    Widgets · Windows · Dialogs & overlays · Styling · Theming · Imaging ·
+    Localization · Fonts · Validation · Utilities · Capabilities · Events · Cursors
 
-NOT in scope: the **shipped** ttkbootstrap widgets (Meter/Floodgauge/DateEntry/
-Tableview/…) — they already get **autodoc** pages from their docstrings
-(`reference/api/widgets.rst`). Not any tkinter widget we don't touch.
+Locked decisions:
+
+- **"Widgets"** names BOTH the usage catalog (`docs/widgets/`, top-level band) and
+  the reference section (`docs/reference/api/`). They coexist — different routes —
+  as on bootstack.org. The reference "Widgets" index groups pages **by function**
+  (Buttons & menus / Text & entry / Selection & toggles / Range & progress /
+  Data views / Layout & containers / Display & drawing / Overlays), NOT by origin.
+- **Hand-write** (like the tk widget pages — see Format rules): Widgets ✅,
+  **Windows** (`Window`, `Toplevel`), **Dialogs & overlays** (the dialogs +
+  `Toast`/`ToolTip` moved out of Widgets), and the `PhotoImage` part of **Imaging**.
+- **Autodoc** (napoleon, from docstrings): **Styling** (`Style`, `Bootstyle`,
+  toolkit `Assets`/`El`/`layout`/`StyleName`/`register_style`/`statespec`/
+  `state_map`/`image_element`), **Theming** (`Theme`, `ThemeDefinition`, `Colors`,
+  `install_legacy_themes`), **Localization** (`MessageCatalog`/`L`/`LocaleVar`/
+  `set_locale`), **Fonts** (`Fonts`), **Validation** (`Validation`/`validator`/
+  `ValidationEvent`), **Utilities** (`ttkbootstrap.utils` / `colorutils`), and the
+  icon part of **Imaging**.
+- **Imaging** = `PhotoImage` (hand) + `Icon`/`apply_icon`/`icon_element` (autodoc):
+  the author placed `Icon` with **imaging** (an image you show on a widget), NOT
+  with Styling. Styling & theming are **separate** sections (distinct concerns).
+  Styling cross-links to `icon_element` for custom layouts.
+- **No examples in docstrings** (author rule, `feedback_no_examples_in_docstrings`):
+  examples live in the rST pages. Autodoc sections require a
+  **strip-`Examples:`-from-docstrings sweep FIRST**, then author examples in the page.
+- **Capabilities**: a **Bind** page (`bind`/`bind_all`/`bind_class`/`unbind`/
+  `bindtags`) was added. `event_generate` stays in **Events** (its option
+  vocabulary lives there), cross-linked from Bind.
+- **Cursors** stays a flat top-level Reference entry; **Events** was promoted out
+  of Capabilities to a flat top-level entry and retitled "Events".
 
 ## Structure (two layers)
 
@@ -36,107 +61,100 @@ capability page is a **spec** (signatures/params/returns) — NOT a guide; the
 Foundations guides teach the same areas by building, and the two cross-link.
 
 **Tier 2 — per-widget API pages** (`docs/reference/api/<widget>.rst`): the
-widget's OWN options (as value tables) + its widget-specific methods (as full
-specs). Each page ends with a "Shared capabilities" section linking to the
-Capabilities index. Options section opens with a `ttkbootstrap` rubric
-documenting the added constructor keyword — **`autostyle`** for tk widgets,
-**`bootstyle`** for ttk widgets (construction-only; does NOT appear in
-`configure()`, so a naive option dump misses it — always add it by hand).
+widget's OWN options (as flat typed tables) + its widget-specific methods (as full
+`py:method` specs) + a "Styling options" section (ttk widgets) that `.. include::`s
+a generated partial + a "Shared capabilities" section linking to the Capabilities
+index. Options include the ttkbootstrap constructor keywords by hand —
+**`autostyle`** (tk widgets), **`bootstyle`**/`icon`/`icon_size`/`icon_only` (ttk) —
+which are construction-only and do NOT appear in `configure()`.
 
 ## Format rules (approved)
 
-- **Methods = `.. py:method::` directives** with `:noindex:`, an authored
-  signature, and `:param:` / `:returns:` / `:rtype:` / `:raises:`. Grouped under
-  `~~~~` subsection headings. See `docs/reference/api/text.rst` and
-  `docs/reference/capabilities/focus.rst` as the canonical templates.
-- **Options = two-column `.. list-table::`** (name | description), grouped under
-  `.. rubric::` headings. Fold aliases into one row (`borderwidth` (`bd`)).
-- **Left-column multi-method cells:** stack with rST line blocks (`| a` / `| b`),
-  never slash-separated (hard to read when wrapped). (Mostly obsolete now that
-  methods are individual `py:method` entries.)
-- **`:noindex:`** avoids cross-ref-target collisions (every widget has `insert`).
-  If we later want summary tables to link into the specs, wrap each widget's
-  methods in `.. py:class:: tkinter.<Widget>` so targets qualify
-  (`tkinter.Text.insert`) and don't collide. Not done yet — not needed so far.
-- **No meta/rationale prose in the docs** ("documented once here rather than
-  repeated…"): state the user-facing fact, cross-reference, move on.
-- **Don't tag rubric headings with the method prefix** — "Introspection", not
-  "Introspection (winfo)".
-- Reference the **Tcl/Tk 8.6** man pages (`tcl8.6/TkCmd/…`, the version Python
-  ships) as the canonical upstream; do NOT link Shipman (tkdocs.com/shipman).
+- **Flat typed option tables:** `.. list-table::` with `Option | Type |
+  Description`, **one row per option**, plain Python types (`int`/`float`/`str`/
+  `bool`/`callable`/`Variable`/`PhotoImage`/`Menu`/`Widget`/`list`/`tuple`/
+  `str | Font`/`int | tuple`/`any`), `bootstyle` first, true aliases folded
+  (`borderwidth` (`bd`)). Tkinter is the Python wrapper on Tcl/Tk — use Python
+  types, not an invented color/font/callback vocabulary.
+- **Methods = `.. py:method::`** with `:noindex:`, an authored signature, and
+  `:param:`/`:returns:`/`:rtype:`/`:raises:`, grouped under `~~~~` subsections.
+  Templates: `docs/reference/api/text.rst`, `docs/reference/capabilities/focus.rst`,
+  `docs/reference/capabilities/bind.rst`.
+- Shared ttk `state`/`instate`/`identify` and universal methods go to
+  **Capabilities**, not per-page (each page's "Shared capabilities" links there).
+- **No meta/rationale prose, no jargon, no impl-detail asides** — state the
+  user-facing fact, cross-reference, move on. Intro paragraphs must NOT re-link the
+  catalog/usage page (it's already in "See also").
+- Reference the **Tcl/Tk 8.6** man pages (`tcl8.6/TkCmd/…`) as canonical upstream;
+  do NOT link Shipman (tkdocs.com/shipman).
 
 ## Grounding discipline (non-negotiable)
 
 Every option/method is verified against the LIVE widget before writing —
-`configure().keys()` for options, filtered `dir()` for widget-specific methods
-(subtract `Widget|Misc|Pack|Grid|Place`), `inspect.signature(...)` for each.
-Never invent an entry. Note methods filtered out as "universal" that a widget
-actually owns (e.g. `Canvas.bbox`, `Listbox.size`) and add them by hand.
+`configure().keys()` for options (then ADD the construction-only `bootstyle`/`icon*`
+by hand), filtered `dir()` for widget-specific methods (subtract
+`Widget|Misc|Pack|Grid|Place`), `inspect.signature(...)` for each. Never invent an
+entry. Note methods filtered as "universal" that a widget actually owns
+(`Canvas.bbox`, `Listbox.size`) and add them by hand.
 
 ## Build / environment
 
-- Python + Sphinx live in **`.venv-home`** (the repo `.venv` is broken on the
-  author's box). Run: `.venv-home/Scripts/python.exe` (Git-Bash path
-  `/d/Development/ttkbootstrap/.venv-home/Scripts/python.exe`).
-- Build gate (must be exit 0): `python -m sphinx -b html -W -q docs <outdir>`.
-  Use a throwaway outdir (e.g. `/tmp/ttkdocs-b`) and `-E` for a fresh
-  (non-incremental) build when in doubt — incremental builds can hide autodoc
-  warnings.
-- `docs/reference/capabilities/` pages that are folded-in (events/winfo) are
-  linked from `capabilities/index.rst`'s toctree via absolute paths
-  (`/reference/events/index`), leaving the files physically where they are.
+- **macOS box (current):** repo **`.venv`** works — `.venv/bin/python`; Sphinx
+  9.1.0 + `sphinx-autobuild`. Live preview:
+  `.venv/bin/sphinx-autobuild docs /tmp/ttkdocs-live --open-browser`.
+- **Windows box:** Python + Sphinx live in **`.venv-home`** (the repo `.venv` is
+  broken there): `.venv-home/Scripts/python.exe`.
+- Build gate (must be exit 0): `python -m sphinx -b html -W -q -E docs <outdir>`
+  (`-W` warnings-as-errors; `-E` forces a fresh non-incremental build so autodoc
+  warnings can't hide). Use a throwaway outdir (e.g. `/tmp/ttkdocs-b`).
 
-## DONE (branch `docs/2.0-api-reference-text-stacked`, stacked on #1185)
+## DONE
 
-- **Capabilities section** complete: `configuration`, `pack`, `grid`, `place`,
-  `stacking`, `focus`, `grab`, `after`, `lifecycle`, `clipboard`, `selection`
-  (+ `capabilities/index.rst`). Existing **Events** (`reference/events/`) and
-  **Widget & screen info** (`reference/winfo`) are folded in via the index
-  toctree. **Cursors** is NOT a capability — it stays a standalone Reference-band
-  card (`reference/cursors`).
-- **Per-widget API pages (tk set):** `text.rst`, `canvas.rst`, `listbox.rst`,
-  `menu.rst` — all complete (options tables + all widget-specific methods as
-  `py:method`). Menu includes the ttkbootstrap macOS additions
-  (`add_application_menu`/`window`/`help`, `on_preferences`/`on_quit`).
-- Reference band (`reference/index.rst`) now shows: Style Reference, API
-  Reference, Capabilities, Cursors.
-- The interim monolithic `reference/api/shared-capabilities.rst` +
-  `docs/shared/` partial were created then **retired** (replaced by the
-  Capabilities section). `conf.py` still lists `shared` in `exclude_patterns` —
-  harmless (dir is gone); can be removed on cleanup.
+The earlier api-reference stack (`docs/2.0-api-reference-text-stacked`) and its
+bases are **MERGED** into `2.0` as **#1184/#1185/#1186/#1187**. This session's
+work is on **`docs/2.0-widget-api-reference`** off `2.0`:
 
-## REMAINING
+- **All ~34 widget reference pages** complete (`docs/reference/api/*.rst`): the tk
+  set (Text/Canvas/Listbox/Menu + Tk/TkFrame/TkLabel/tklabelframe), the 19 native
+  ttk pages, AND the 7 shipped widgets **hand-authored** (Meter/Floodgauge/
+  LabeledScale/DateEntry/Tableview/ToastNotification/ToolTip) — the original
+  "shipped = autodoc" plan was **reversed** so every widget page shares one flat
+  typed-table + `py:method`-spec shape.
+- **Styling folded into the widget pages**: each ttk page has a "Styling options"
+  section that `.. include::`s a generated partial (`docs/reference/api/_style/
+  <family>.rst`). The **standalone Style Reference section was retired**;
+  `tools/generate_style_reference.py` now emits only the partials; the sync test
+  `tests/test_style_reference.py` enforces that every family has a partial AND
+  every partial is included by an API page. Orphan families folded in:
+  toggle→Checkbutton, toolbutton→Button, calendar→DateEntry, floodgauge→Floodgauge.
+- **Reference IA reshaped** (commit `4a7bc57f`): api index "API Reference"→
+  **"Widgets"** + regrouped **by function**; **Events** promoted to top-level +
+  retitled; **Bind** capability page added.
+- **Capabilities** complete: configuration/pack/grid/place/stacking/**bind**/focus/
+  grab/after/lifecycle/clipboard/selection (+ folded winfo). Events is now
+  top-level (not folded here). Cursors top-level.
 
-1. **Trivial tk containers:** `Tk` (root — the `wm_*`/window-manager surface;
-   note `Window`/`Toplevel` already wrap most of this), `TkFrame`, `TkLabel`,
-   `LabelFrame`. Small.
-2. **The ~19 native ttk pages** — the large mechanical batch. Same Tier-2 shape;
-   their `bootstyle` row replaces the tk `autostyle` row; they CAN also link
-   python.org `tkinter.ttk` as supplementary (it exists for ttk). Consider
-   whether each needs a full method spec or can lean on the shared/`ttk`-specific
-   methods (`state`/`instate`) — a `ttk` capability partial for `state`/`instate`
-   was noted but not yet authored.
-3. Wire each new API page's catalog counterpart to cross-link it (as
-   `text.rst`/`widgets/text` do), once those catalog pages exist.
+## REMAINING (the non-widget reference sections — next big batch)
 
-## PR / merge state (IMPORTANT for continuation)
+Author's order: **PR the widget-reference work first (this branch → `2.0`), then
+start Windows on a fresh branch (clean break).** Then:
 
-- This work is on **`docs/2.0-api-reference-text-stacked`**, which is **stacked on
-  `docs/2.0-widgets-text` (PR #1185, the Text *catalog* page)** — that base is
-  NOT yet in `2.0`. The API-reference PR is therefore targeted at
-  `docs/2.0-widgets-text` so its diff is only the API-reference work.
-- **Pending stack to merge (in order):** **#1184** (Treeview catalog),
-  **#1185** (Text catalog — this branch's base), **#1186** (bless `ttk.Listbox`,
-  needed for the Listbox page's widget to be real). After #1185 merges to `2.0`,
-  **retarget this PR to `2.0`** (it will rebase clean).
+1. **Move Toast/ToolTip** out of the Widgets index into **Dialogs & overlays**.
+2. **Windows** (hand-write): `Window`, `Toplevel`.
+3. **Dialogs & overlays** (hand-write): `Messagebox`, `Querybox`, `MessageDialog`,
+   `QueryDialog`, `DatePickerDialog`, `FontDialog`, `ColorChooserDialog`,
+   `ColorDropperDialog`, `Dialog` + `Toast`, `ToolTip`.
+4. **Imaging**: `PhotoImage` (hand) + `Icon`/`apply_icon`/`icon_element` (autodoc).
+5. **Autodoc sections** — strip `Examples:` from the module docstrings FIRST, then
+   add the autodoc page + author examples in rST: **Styling**, **Theming**,
+   **Localization**, **Fonts**, **Validation**, **Utilities**.
+6. Add each new section's card + toctree to `docs/reference/index.rst`.
 
 ## Deferred ideas (later review)
 
-- Mine the Tcl/Tk man pages for **conceptual** sections (e.g. Pack.htm's
-  "Expansion" and "Geometry Propagation") to enrich the **Foundations/feature
-  guides** (not the spec pages).
-- Optional: qualify method targets via `.. py:class::` if summary-table→spec
-  links are ever wanted.
-- The broader Widgets **catalog** track (separate from this API-reference track)
-  still has Canvas/Listbox/Scrolled catalog pages + the coverage sync test
-  outstanding — see the main docs design doc.
+- Mine the Tcl/Tk man pages for **conceptual** sections (Pack.htm "Expansion" /
+  "Geometry Propagation") to enrich the **Foundations/feature guides** (not specs).
+- Optional: qualify method targets via `.. py:class::` if summary-table→spec links
+  are ever wanted (currently `:noindex:` to avoid `insert`-style target collisions).
+- `conf.py` still lists a stale `shared` in `exclude_patterns` (the dir is gone) —
+  harmless; remove on cleanup.

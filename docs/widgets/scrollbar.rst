@@ -70,6 +70,6 @@ reference.
 
    :doc:`Scroll long content </user-guide/how-to/scrollable>` for the ready-made
    ``ScrolledText`` / ``ScrolledFrame``. Want to restyle the scrollbar yourself?
-   The :doc:`Style Reference › Scrollbar </reference/style-reference/scrollbar>`
+   The :ref:`Scrollbar's styling options <scrollbar-styling>`
    and its companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>`
    guide document the hand-styling surface.

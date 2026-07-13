@@ -99,6 +99,6 @@ reference.
    :doc:`OptionMenu <optionmenu>` when the menu is just a list of values to pick
    one from, and the :doc:`Menus guide </user-guide/feature-guides/menus>` for
    building the menu itself. Want to restyle the menubutton yourself? The
-   :doc:`Style Reference › Menubutton </reference/style-reference/menubutton>` and
+   :ref:`Menubutton's styling options <menubutton-styling>` and
    its companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>`
    guide document the hand-styling surface.

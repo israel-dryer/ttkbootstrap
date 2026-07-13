@@ -103,6 +103,6 @@ reference.
    :doc:`Frame <frame>` for the page containers, and
    :doc:`Panedwindow <panedwindow>` for a split rather than tabbed layout. Want to
    restyle the notebook yourself? The
-   :doc:`Style Reference › Notebook </reference/style-reference/notebook>` and its
+   :ref:`Notebook's styling options <notebook-styling>` and its
    companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide
    document the hand-styling surface.

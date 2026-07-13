@@ -69,13 +69,8 @@ Set ``alert=True`` to also ring the system bell when the toast appears.
 API & reference
 ---------------
 
-For the complete option list, see :class:`~ttkbootstrap.ToastNotification` on the
-:doc:`Widgets API page </reference/api/widgets>`:
-
-.. autosummary::
-   :nosignatures:
-
-   ~ttkbootstrap.ToastNotification
+For the complete option list, see the
+:doc:`ToastNotification API reference </reference/api/toastnotification>`.
 
 .. seealso::
 

@@ -1,9 +1,11 @@
 #!/usr/bin/env python
-"""Generate the Style Reference: one rST page per ttk-styled widget family.
+"""Generate the styling partials: one includable rST partial per ttk-styled family.
 
-The Style Reference is the deep, hand-styling surface the Widgets catalog links
-to for native ttk widgets. Rather than hand-write it (and drift), this tool
-derives it from the live ttk style engine:
+Each widget's API reference page (`docs/reference/api/<widget>.rst`) carries a
+**Styling options** section that ``.. include::``s the matching partial, so the
+hand-styling surface lives beside the widget it belongs to. Rather than
+hand-write those partials (and drift), this tool derives them from the live ttk
+style engine:
 
 - the **bootstyle -> ttk style name** mapping comes from the builder registry
   (`ttkbootstrap.style.builders.registry`) + the name assembler in
@@ -15,18 +17,17 @@ derives it from the live ttk style engine:
 
 Because the introspected values vary by Tcl/Tk version and OS, this is an
 **offline** step (it needs a Tk display) that emits *committed* rST; RTD builds
-the docs from the committed pages, never running this tool. The sync test
-(`tests/test_bootstyle_grammar.py`) is deliberately *structural* -- it checks the
-family set and the index, not the byte content -- so a Tk point-release can never
-break CI.
+the docs from the committed partials, never running this tool. The sync test
+(`tests/test_style_reference.py`) is deliberately *structural* -- it checks that
+every family has a committed partial and that each partial is included by an API
+page, not the byte content -- so a Tk point-release can never break CI.
 
 Run it after changing the vocabulary, adding/removing a builder, or a recipe's
 layout:
 
     python tools/generate_style_reference.py
 
-It rewrites `docs/reference/style-reference/index.rst` and one
-`docs/reference/style-reference/<family>.rst` per family.
+It rewrites one `docs/reference/api/_style/<family>.rst` partial per family.
 """
 from __future__ import annotations
 
@@ -52,11 +53,27 @@ from ttkbootstrap.style.builders.registry import (  # noqa: E402
     DEFAULT_VARIANT,
 )
 
-_OUT = _ROOT / "docs" / "reference" / "style-reference"
+# Includable per-widget styling partials, pulled into each widget's API page
+# under its "Styling options" section via ``.. include::``.
+_PARTIAL_OUT = _ROOT / "docs" / "reference" / "api" / "_style"
 
 # Families whose ttk style name carries an orientation segment; the reference
 # documents the horizontal form (a note points at the vertical twin).
 _ORIENT_FAMILIES = {"scale", "progressbar", "separator", "panedwindow", "floodgauge"}
+
+# Families ttkbootstrap draws from pre-rendered image elements (keyed to the
+# bootstyle color) rather than clam's drawing primitives. For these, most
+# `style.configure` color/relief options are inert on the image parts, so the
+# Configurable-options section carries a caveat. Value = (image-part phrase,
+# has-a-text-label).
+_IMAGE_FAMILIES = {
+    "checkbutton": ("check indicator", True),
+    "radiobutton": ("radio indicator", True),
+    "toggle": ("toggle", True),
+    "scale": ("trough and slider", False),
+    "scrollbar": ("trough and thumb", False),
+    "progressbar": ("bar", False),
+}
 
 # ttk widgets that accept a `-text` option, so the hand-styling example can add
 # `text="Custom"` (the rest -- Scale, Frame, Treeview, ... -- reject it and would
@@ -96,24 +113,6 @@ _FAMILIES = {
     "calendar": ("The date-picker calendar styling (used by DateEntry).", "variant", None),
     "floodgauge": ("The ttk progressbar style behind the legacy Floodgauge.", "variant", None),
 }
-
-_INDEX_INTRO = """\
-Style Reference
-===============
-
-The deep hand-styling surface for the native ttk widgets ttkbootstrap themes.
-For each widget family it documents the exact ``bootstyle`` -> ttk style-name
-mapping, the element layout the widget is drawn from, the configurable options,
-and the supported states -- everything you need to hand-tune a style with
-``style.configure(...)`` and apply it with ``Widget(style=...)``.
-
-.. note::
-
-   These pages are **generated** from live ttk introspection by an offline
-   ``tools/generate_style_reference.py`` step and committed as rST. Regenerate
-   them after changing a widget recipe. This is the deep reference the
-   :doc:`Widgets catalog </widgets/index>` links to for native widgets.
-"""
 
 
 # --------------------------------------------------------------------------- #
@@ -239,11 +238,6 @@ def _introspect(style, name):
 # --------------------------------------------------------------------------- #
 # rST rendering
 # --------------------------------------------------------------------------- #
-def _title(family):
-    # match the ttk convention: `Treeview`, not `TTreeview`; title-case otherwise
-    return family[:1].upper() + family[1:]
-
-
 def _rule(text, char):
     return f"{text}\n{char * len(text)}"
 
@@ -304,9 +298,12 @@ def _example_rst(family):
     return "\n".join(lines)
 
 
-def render_family_page(style, family):
-    """Return the full rST page for one widget family."""
-    blurb = _FAMILIES[family][0]
+def _style_body_parts(style, family, uc):
+    """Return the styling subsections for one family, ruled with underline `uc`.
+
+    Shared by the standalone Style Reference page (``uc="-"``) and the includable
+    per-widget partial (``uc="~"``) so their wording can never drift.
+    """
     _bootstyle, rep_name = _bootstyle_and_name("primary", DEFAULT_VARIANT, family)
     _build_representative(style, family)
     layout_rows, options, states = _introspect(style, rep_name)
@@ -330,7 +327,10 @@ def render_family_page(style, family):
     # ...) whose state art lives in image element specs, not `style.map` -- say
     # that rather than a bare "(none)" that reads as "no interactive states".
     if states:
-        states_line = "States the built style responds to (via ``style.map(...)``):"
+        states_line = (
+            "The states you can target with ``style.map(...)`` to vary appearance "
+            "by interaction:"
+        )
         states_body = _inline_list(states)
     else:
         states_line = (
@@ -339,65 +339,72 @@ def render_family_page(style, family):
         )
         states_body = ""
 
-    parts = [
-        ".. Generated by tools/generate_style_reference.py -- do not edit by hand.",
-        "",
-        _rule(_title(family), "="),
-        "",
-        blurb,
-        "",
-        _rule("bootstyle → ttk style name", "-"),
+    # For image-drawn families, warn that `style.configure` does not reach the
+    # image parts, and point at the custom-image-layout path for real changes.
+    config_note = []
+    if family in _IMAGE_FAMILIES:
+        part, has_label = _IMAGE_FAMILIES[family]
+        plural = " and " in part
+        verb = "are" if plural else "is"
+        obj = "them" if plural else "it"
+        poss = "their" if plural else "its"
+        non_image = "the focus ring and text label" if has_label else "the focus ring"
+        config_note = [
+            ".. note::",
+            "",
+            f"   The {part} {verb} drawn from a pre-rendered image keyed to the "
+            f"``bootstyle`` color; ``style.configure(...)`` does not reach {obj}. "
+            f"The options listed here style only the widget's non-image parts "
+            f"(such as {non_image}). To recolor the {part}, choose a "
+            f"``bootstyle`` color; to change {poss} shape or artwork, build a "
+            f"custom image-based layout -- see "
+            f":doc:`Custom styles </user-guide/feature-guides/custom-styles>`.",
+            "",
+        ]
+
+    return [
+        _rule("Bootstyle mapping", uc),
         "",
         f"Any of the accent colors -- {colors} -- substitutes for "
-        f"``primary`` above.{neutral_note}"
+        f"``primary`` below.{neutral_note}"
         + orient_note,
         "",
         _bootstyle_table_rst(family),
         "",
-        _rule("Layout (elements)", "-"),
+        _rule("Layout (elements)", uc),
         "",
-        "The element tree the widget is drawn from (introspected from the "
-        f"``{rep_name}`` style):",
+        "The widget is drawn from these nested parts. Each is an *element* you "
+        "can target by name in a custom layout:",
         "",
         _layout_rst(layout_rows),
         "",
-        _rule("Configurable options", "-"),
+        _rule("Configurable style options", uc),
         "",
+        *config_note,
         "Options you can set with ``style.configure(...)`` / ``style.map(...)``:",
         "",
         _inline_list(options),
         "",
-        _rule("Supported states", "-"),
+        _rule("Supported states", uc),
         "",
         states_line,
         "",
         states_body,
         "",
-        _rule("Hand-styling example", "-"),
+        _rule("Hand-styling example", uc),
         "",
         _example_rst(family),
         "",
     ]
+
+
+def render_style_partial(style, family):
+    """Return the includable styling partial (subsections only) for one family."""
+    parts = [
+        ".. Generated by tools/generate_style_reference.py -- do not edit by hand.",
+        "",
+    ] + _style_body_parts(style, family, "~")
     return "\n".join(parts)
-
-
-def _index_grid(families):
-    lines = [".. grid:: 1 2 2 2", "   :gutter: 3", ""]
-    for family in families:
-        blurb = _FAMILIES[family][0]
-        lines.append(f"   .. grid-item-card:: {_title(family)}")
-        lines.append(f"      :link: {family}")
-        lines.append("      :link-type: doc")
-        lines.append("")
-        lines.append(f"      {blurb}")
-        lines.append("")
-    return "\n".join(lines).rstrip()
-
-
-def _toctree(caption, families):
-    lines = [".. toctree::", "   :hidden:", f"   :caption: {caption}", ""]
-    lines += [f"   {family}" for family in families]
-    return "\n".join(lines)
 
 
 def _check_families():
@@ -423,31 +430,6 @@ def _check_families():
         )
 
 
-def render_index_page():
-    """Return the Style Reference index (intro + card grids + hidden toctrees)."""
-    _check_families()
-    families = style_reference_families()
-    native = [f for f in families if _FAMILIES[f][1] == "native"]
-    other = [f for f in families if _FAMILIES[f][1] == "variant"]
-    return "\n".join([
-        ".. Generated by tools/generate_style_reference.py -- do not edit by hand.",
-        "",
-        _INDEX_INTRO,
-        _rule("Styling ttk widgets", "-"),
-        "",
-        _index_grid(native),
-        "",
-        _rule("Variant & shipped styles", "-"),
-        "",
-        _index_grid(other),
-        "",
-        _toctree("Styling ttk widgets", native),
-        "",
-        _toctree("Variant & shipped styles", other),
-        "",
-    ])
-
-
 def main():
     import tkinter as tk
 
@@ -459,16 +441,14 @@ def main():
     root.withdraw()
     style = Style(theme="bootstrap-light")
 
-    _OUT.mkdir(parents=True, exist_ok=True)
     families = style_reference_families()
 
-    (_OUT / "index.rst").write_text(render_index_page(), encoding="utf-8")
-    print(f"wrote {_OUT / 'index.rst'}")
+    _PARTIAL_OUT.mkdir(parents=True, exist_ok=True)
     for family in families:
-        page = render_family_page(style, family)
-        path = _OUT / f"{family}.rst"
-        path.write_text(page, encoding="utf-8")
-        print(f"wrote {path}")
+        partial = render_style_partial(style, family)
+        ppath = _PARTIAL_OUT / f"{family}.rst"
+        ppath.write_text(partial, encoding="utf-8")
+        print(f"wrote {ppath}")
 
     root.destroy()
 

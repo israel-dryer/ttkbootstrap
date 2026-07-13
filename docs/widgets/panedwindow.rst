@@ -77,6 +77,6 @@ reference.
    :doc:`Notebook <notebook>` for a tabbed rather than split layout, and
    :doc:`Frame <frame>` for the pane containers. Want to restyle the panedwindow
    yourself? The
-   :doc:`Style Reference › Panedwindow </reference/style-reference/panedwindow>`
+   :ref:`Panedwindow's styling options <panedwindow-styling>`
    and its companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>`
    guide document the hand-styling surface.
