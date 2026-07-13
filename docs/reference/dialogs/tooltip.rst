@@ -5,8 +5,7 @@ ToolTip
 semi-transparent popup that shows text while the pointer hovers over a target
 widget, and hides on leave or click. It is **not a widget**: you attach one to a
 target by passing that widget to the constructor, and it manages its own hover
-events thereafter. This page is the complete lookup
-reference.
+events thereafter.
 
 Options
 -------

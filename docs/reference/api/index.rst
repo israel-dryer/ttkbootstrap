@@ -256,26 +256,6 @@ Show text, images, and custom graphics.
 
       The classic ``tk.Canvas`` drawing surface — items, tags, and their methods.
 
-Overlays
---------
-
-Transient popups layered over the UI.
-
-.. grid:: 1 2 2 2
-   :gutter: 3
-
-   .. grid-item-card:: ToastNotification
-      :link: toastnotification
-      :link-type: doc
-
-      A temporary popup alert.
-
-   .. grid-item-card:: ToolTip
-      :link: tooltip
-      :link-type: doc
-
-      A hover popup attached to a widget.
-
 .. toctree::
    :hidden:
    :maxdepth: 1
@@ -312,5 +292,3 @@ Transient popups layered over the UI.
    label
    tklabel
    canvas
-   toastnotification
-   tooltip

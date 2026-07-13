@@ -60,7 +60,7 @@ API & reference
 ---------------
 
 For the complete option list, see the
-:doc:`ToolTip API reference </reference/api/tooltip>`.
+:doc:`ToolTip API reference </reference/dialogs/tooltip>`.
 
 .. seealso::
 

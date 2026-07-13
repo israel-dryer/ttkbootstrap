@@ -21,6 +21,13 @@ The lookup layer:
       The application window classes — ``App`` (the root) and ``Toplevel`` — and
       their constructor, theme, and window-management surface.
 
+   .. grid-item-card:: Dialogs & overlays
+      :link: dialogs/index
+      :link-type: doc
+
+      Message, input, and picker dialogs — ``Messagebox``, ``Querybox``, and the
+      dialog classes — plus toasts and tooltips.
+
    .. grid-item-card:: Capabilities
       :link: capabilities/index
       :link-type: doc
@@ -48,6 +55,7 @@ The lookup layer:
 
    api/index
    windows/index
+   dialogs/index
    capabilities/index
    events/index
    cursors
