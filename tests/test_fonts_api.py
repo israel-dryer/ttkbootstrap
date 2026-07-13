@@ -180,7 +180,6 @@ def test_font_tools_reexported():
     """`Font` and the font module helpers are re-exported at top level."""
     assert ttk.Font is font.Font
     assert ttk.font_families is font.families
-    assert ttk.font_names is font.names
     assert ttk.nametofont is font.nametofont
-    for name in ("Font", "font_families", "font_names", "nametofont"):
+    for name in ("Font", "font_families", "nametofont"):
         assert name in ttk.__all__

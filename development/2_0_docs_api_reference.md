@@ -162,12 +162,14 @@ Still to author:
   were fixed in source (`localization/api.py`, `msgcat.py`).
 - **`Examples:` in docstrings** must be stripped for Styling/Theming (the
   `feedback_no_examples_in_docstrings` rule) — examples belong in the guides.
-- **Fonts re-export (done this slice):** `Font`, `font_families`, `font_names`,
-  `nametofont` are now re-exported at top level (`ttk.Font`, …) so the Fonts page
-  documents the full font surface (the ttkbootstrap `Fonts` manager + the tk
-  `Font` object's `measure`/`metrics`/`actual` + family listing). **FOLLOW-UP:**
-  expand the **Typography usage guide** with examples for these where
-  appropriate (`measure`, `font_families`, building a `Font`).
+- **Fonts re-export (done this slice):** `Font`, `font_families`, `nametofont`
+  are re-exported at top level (`ttk.Font`, …) so the Fonts page documents the
+  full font surface (the `Fonts` manager + the tk `Font` object's
+  `measure`/`metrics`/`actual` + family listing). `font_names` was dropped — it
+  overlapped confusingly with `Fonts.names()`, which returns the curated managed
+  set, not every named font. **FOLLOW-UP:** expand the **Typography usage guide**
+  with examples for these where appropriate (`measure`, `font_families`, building
+  a `Font`).
 
 ## Deferred ideas (later review)
 

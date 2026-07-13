@@ -44,7 +44,7 @@ from tkinter import (
     Variable, StringVar, IntVar, BooleanVar, DoubleVar, PhotoImage
 )
 from tkinter.font import (
-    Font, families as font_families, names as font_names, nametofont,
+    Font, families as font_families, nametofont,
 )
 from tkinter.ttk import (
     Button as _ttkButton, Checkbutton as _ttkCheckbutton,
@@ -295,7 +295,7 @@ __all__ = [
     # Tk exports
     "Tk", "Menu", "Text", "Canvas", "Listbox", "TkFrame", "TkLabel", "LabelFrame", "Variable", "StringVar", "IntVar", "BooleanVar",
     "DoubleVar", "PhotoImage",
-    "Font", "font_families", "font_names", "nametofont",
+    "Font", "font_families", "nametofont",
 
     # TTk exports
     "Button", "Checkbutton", "Combobox", "Entry", "Frame", "Labelframe",

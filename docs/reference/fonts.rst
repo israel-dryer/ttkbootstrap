@@ -25,14 +25,6 @@ Font families and named fonts
 
    :returns: a tuple of family names.
 
-.. py:function:: font_names(root=None)
-   :noindex:
-
-   List the application's named fonts — the shared fonts (``"TkDefaultFont"``, …,
-   plus any you create) that :py:meth:`Fonts.names` also returns.
-
-   :returns: a tuple of named-font names.
-
 .. py:function:: nametofont(name, root=None)
    :noindex:
 
