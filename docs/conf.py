@@ -120,6 +120,11 @@ exclude_patterns = [
     # Include-only styling partials pulled into each widget's API page; not
     # standalone documents.
     "reference/api/_style",
+    # Include-only window-method partials shared by the App/Toplevel/Tk pages.
+    "reference/windows/_wm-1.rst",
+    "reference/windows/_wm-2.rst",
+    "reference/windows/_theme.rst",
+    "reference/windows/_positioning.rst",
     "Thumbs.db",
     ".DS_Store",
 ]

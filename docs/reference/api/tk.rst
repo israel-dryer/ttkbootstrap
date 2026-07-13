@@ -5,15 +5,15 @@ Tk
 re-exported as ``ttk.Tk``. It is the main window of an application and the top of
 the widget tree; creating it also starts the Tcl/Tk interpreter.
 
-.. admonition:: Prefer ``ttk.Window``
+.. admonition:: Prefer ``App``
    :class: tip
 
-   For applications, use :doc:`ttk.Window </user-guide/feature-guides/windows>`
-   (also exported as ``App``) instead of ``ttk.Tk``. ``Window`` folds size,
-   position, icon, and constraints into one constructor call and applies a theme
-   for you, so you rarely call the raw window-manager methods below. Keep **one**
-   root per program (the single-root rule); every other window is a
-   :doc:`Toplevel </user-guide/feature-guides/windows>`.
+   For applications, use :doc:`App </reference/windows/app>` (also exported as
+   ``Window``) instead of ``ttk.Tk``. ``App`` folds size, position, icon, and
+   constraints into one constructor call and applies a theme for you, so you
+   rarely call the raw window-manager methods below. Keep **one** root per program
+   (the single-root rule); every other window is a
+   :doc:`Toplevel </reference/windows/toplevel>`.
 
 Options
 -------
@@ -85,75 +85,14 @@ The root window takes the same surface options as a
 Window management
 -----------------
 
-The root window carries the full window-manager (``wm``) protocol — the same
-methods a :doc:`Toplevel </user-guide/feature-guides/windows>` has. The
-:doc:`Windows guide </user-guide/feature-guides/windows>` teaches these by
-building; the table below is the index.
+As the application's root window, ``Tk`` carries the full window-manager
+(``wm``) protocol below -- the same surface a :doc:`Toplevel
+</reference/windows/toplevel>` has. The :doc:`Windows guide
+</user-guide/feature-guides/windows>` teaches these by building.
 
-.. rubric:: Title, icon, and menu
+.. include:: /reference/windows/_wm-1.rst
 
-.. list-table::
-   :widths: 30 70
-
-   * - ``title(string=None)``
-     - Get or set the window title.
-   * - ``iconphoto(default, *images)``
-     - Set the window/taskbar icon from one or more ``PhotoImage`` objects.
-   * - ``iconbitmap(bitmap=None, default=None)``
-     - Set the window icon from a bitmap file.
-   * - ``iconname(newName=None)``
-     - Get or set the icon-window name.
-
-.. rubric:: Size and position
-
-.. list-table::
-   :widths: 30 70
-
-   * - ``geometry(newGeometry=None)``
-     - Get or set the window geometry as ``"WxH+X+Y"``.
-   * - ``minsize(width=None, height=None)``
-     - Get or set the minimum size.
-   * - ``maxsize(width=None, height=None)``
-     - Get or set the maximum size.
-   * - ``resizable(width=None, height=None)``
-     - Whether the user can resize the window horizontally / vertically.
-   * - ``aspect(...)``
-     - Constrain the window's width-to-height ratio.
-   * - ``grid(...)``
-     - Constrain the window to size in grid units.
-
-.. rubric:: State
-
-.. list-table::
-   :widths: 30 70
-
-   * - ``deiconify()``
-     - Show the window (restore from minimized/withdrawn).
-   * - ``iconify()``
-     - Minimize the window to an icon.
-   * - ``withdraw()``
-     - Remove the window from the screen without destroying it.
-   * - ``state(newstate=None)``
-     - Get or set the window state (``"normal"``, ``"iconic"``, ``"withdrawn"``,
-       ``"zoomed"``).
-   * - ``attributes(*args)``
-     - Get or set platform window attributes (``-alpha``, ``-topmost``,
-       ``-fullscreen``, …).
-   * - ``overrideredirect(boolean=None)``
-     - Remove the window's border and title bar (a bare window).
-
-.. rubric:: Relationships and protocols
-
-.. list-table::
-   :widths: 30 70
-
-   * - ``protocol(name=None, func=None)``
-     - Register a handler for a window-manager protocol, most often
-       ``"WM_DELETE_WINDOW"`` (the close button).
-   * - ``transient(master=None)``
-     - Mark the window as a transient (a dialog) of another.
-   * - ``group(pathName=None)``
-     - Assign the window to a window group.
+.. include:: /reference/windows/_wm-2.rst
 
 Shared capabilities
 -------------------
@@ -165,8 +104,6 @@ binding, lifecycle, focus, and introspection. These are documented under
 See also
 --------
 
-- :doc:`Windows </user-guide/feature-guides/windows>` — how to build and manage
-  windows with ``ttk.Window`` / ``ttk.Toplevel`` (the recommended API).
-- `Tk toplevel <https://www.tcl-lang.org/man/tcl8.6/TkCmd/toplevel.htm>`__ and
-  `wm <https://www.tcl-lang.org/man/tcl8.6/TkCmd/wm.htm>`__ manual pages — the
-  canonical upstream reference (Tcl 8.6).
+- :doc:`App </reference/windows/app>` / :doc:`Toplevel </reference/windows/toplevel>`
+  — the ttkbootstrap window classes (the recommended API), and
+  :doc:`Windows </user-guide/feature-guides/windows>` for how to use them.
