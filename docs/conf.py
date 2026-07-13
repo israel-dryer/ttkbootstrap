@@ -36,6 +36,11 @@ extensions = [
 # convention diverges from bootstack's, which documents params on the class.)
 autoclass_content = "both"
 
+# Render autodoc objects with bare names (``class Validation``, not
+# ``class ttkbootstrap.Validation``) to match the hand-written reference pages,
+# which use unqualified names throughout.
+add_module_names = False
+
 autodoc_member_order        = "groupwise"
 autodoc_typehints           = "description"
 autodoc_typehints_format    = "short"
