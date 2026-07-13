@@ -6,7 +6,7 @@ grasp the core styling concepts (the ``bootstyle`` grammar and how styling is
 delivered), reach for a feature guide when you need a whole subsystem — fonts,
 localization, validation, windowing — or grab a how-to when you have a specific
 task in mind. For the complete lookup of every public name see the
-:doc:`API Reference </reference/api/index>`; for the visual widget catalog see
+:doc:`Reference </reference/index>`; for the visual widget catalog see
 :doc:`Widgets </widgets/index>`.
 
 Getting Started

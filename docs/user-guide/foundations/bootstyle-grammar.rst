@@ -126,7 +126,7 @@ Because of that, ``bootstyle="primary outline"`` and the raw
 ``style="primary.Outline.TButton"`` are interchangeable — ``bootstyle`` just
 saves you from spelling the base-type, orientation, and casing. The full mapping
 for each widget is in the **Bootstyle mapping** table of its
-:doc:`API reference page </reference/api/index>`.
+:doc:`widget reference page </reference/api/index>`.
 
 Tokens are **order-free** and **separator-flexible**: ``"outline primary"`` and
 ``"primary-outline"`` resolve the same as ``"primary outline"``. Spaces are the
