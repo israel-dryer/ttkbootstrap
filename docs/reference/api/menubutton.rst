@@ -1,0 +1,91 @@
+Menubutton
+==========
+
+``Menubutton`` is the native ttk button that pops up an attached menu
+(``ttk.Menubutton``), themed by ttkbootstrap. For usage and examples, see the
+:doc:`Menubutton catalog page </widgets/menubutton>`; this page is the
+complete reference for its options, methods, and styling.
+
+.. note::
+
+   Python's standard library documents ``ttk.Menubutton`` only briefly. The
+   canonical upstream source is the
+   `Tk ttk::menubutton manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/ttk_menubutton.htm>`__
+   (Tcl 8.6).
+
+Options
+-------
+
+Each option can be set in the constructor and changed later with ``configure()``.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 16 62
+
+   * - Option
+     - Type
+     - Description
+   * - ``bootstyle``
+     - ``str``
+     - **Constructor keyword.** An accent color, optionally with a variant. See
+       :ref:`Styling options <menubutton-styling>` for the available styles.
+   * - ``text``
+     - ``str``
+     - The label shown on the button.
+   * - ``textvariable``
+     - ``Variable``
+     - A ``StringVar`` whose value is shown as the label and tracked live.
+   * - ``menu``
+     - ``Menu``
+     - The ``Menu`` widget shown when the button is pressed.
+   * - ``direction``
+     - ``str``
+     - Where the menu pops up relative to the button: ``"above"``,
+       ``"below"``, ``"left"``, ``"right"``, or ``"flush"``.
+   * - ``image``
+     - ``PhotoImage``
+     - An image to display in place of, or beside, the text.
+   * - ``compound``
+     - ``str``
+     - How text and image are combined: ``"none"``, ``"left"``, ``"right"``,
+       ``"top"``, ``"bottom"``, or ``"center"``.
+   * - ``underline``
+     - ``int``
+     - The character index to underline (for a keyboard mnemonic), or ``-1``.
+   * - ``width``
+     - ``int``
+     - The requested width in characters (negative sets a minimum).
+   * - ``padding``
+     - ``int | tuple``
+     - Extra space around the label, in pixels (a single value, or per-side).
+   * - ``state``
+     - ``str``
+     - ``"normal"`` or ``"disabled"``. For finer control use the ``state`` method
+       (see :doc:`Capabilities </reference/capabilities/index>`).
+
+.. _menubutton-styling:
+
+Styling options
+---------------
+
+This section is for changing how the menubutton *looks*. Define a style with
+``style.configure(...)`` (and ``style.map(...)`` for per-state colors), then
+apply it with ``Menubutton(style=...)``.
+
+.. include:: /reference/api/_style/menubutton.rst
+
+Shared capabilities
+-------------------
+
+``Menubutton`` also has the methods every widget inherits — configuration,
+placement, event binding, lifecycle, focus, and introspection — plus the ttk
+state methods ``state`` / ``instate`` / ``identify``. These are documented under
+:doc:`Capabilities </reference/capabilities/index>`.
+
+See also
+--------
+
+- :doc:`Menubutton catalog page </widgets/menubutton>` — usage, screenshots,
+  and examples.
+- `Tk ttk::menubutton manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/ttk_menubutton.htm>`__
+  — the canonical upstream reference (Tcl 8.6).

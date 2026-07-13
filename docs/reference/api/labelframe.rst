@@ -1,24 +1,25 @@
-LabelFrame
+Labelframe
 ==========
 
-``LabelFrame`` is tkinter's classic ``tk.LabelFrame`` — a :doc:`frame </reference/api/tkframe>`
-with a caption drawn into its border — themed by ttkbootstrap and re-exported as
-``ttk.LabelFrame``. Prefer the ttk :doc:`Labelframe </widgets/labelframe>` for
-themed layout; reach for ``LabelFrame`` only when you need a classic-tk option
-the ttk version doesn't expose (a per-widget ``background``/``foreground``, a
-custom label ``font``).
+``Labelframe`` is the native ttk :doc:`frame </reference/api/frame>` with a
+caption drawn into its border (``ttk.Labelframe``), themed by ttkbootstrap. For
+usage and examples, see the :doc:`Labelframe catalog page </widgets/labelframe>`;
+this page is the complete reference for its options, methods, and styling.
 
 .. note::
 
-   ``ttk.LabelFrame`` (capital **F**) is this classic tk widget; ``ttk.Labelframe``
-   (lowercase **f**) is the themed ttk widget. Python's standard library
-   documents ``tk.LabelFrame`` only briefly. This reference is maintained by
-   ttkbootstrap. The canonical upstream source is the
-   `Tk labelframe manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/labelframe.htm>`__
+   ``ttk.Labelframe`` (lowercase **f**) is this themed ttk widget;
+   ``ttk.LabelFrame`` (capital **F**) is the classic
+   :doc:`tk widget </reference/api/tklabelframe>`. Python's standard library
+   documents ``ttk.Labelframe`` only briefly. The canonical upstream source is
+   the
+   `Tk ttk::labelframe manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/ttk_labelframe.htm>`__
    (Tcl 8.6).
 
 Options
 -------
+
+Each option can be set in the constructor and changed later with ``configure()``.
 
 .. list-table::
    :header-rows: 1
@@ -27,91 +28,73 @@ Options
    * - Option
      - Type
      - Description
-   * - ``autostyle``
-     - ``bool``
-     - **Constructor only.** ``True`` (default) paints the frame with the active
-       theme and repaints on a theme switch; ``False`` opts out.
+   * - ``bootstyle``
+     - ``str``
+     - **Constructor keyword.** An accent color, optionally with a variant. See
+       :ref:`Styling options <labelframe-styling>` for the available styles.
    * - ``text``
      - ``str``
      - The caption drawn into the border.
    * - ``labelwidget``
      - ``Widget``
-     - A widget to use as the label in place of ``text`` (it must be a child of
-       the labelframe or a sibling).
+     - A widget to use as the label in place of ``text``.
    * - ``labelanchor``
      - ``str``
-     - Where the label sits on the border: ``"nw"``, ``"n"``, ``"ne"``,
-       ``"en"``, ``"e"``, and so on. Default ``"nw"``.
-   * - ``font``
-     - ``str | Font``
-     - The font of the ``text`` label.
-   * - ``foreground`` (``fg``)
-     - ``str``
-     - The color of the ``text`` label.
-   * - ``background`` (``bg``)
-     - ``str``
-     - The fill color of the frame.
-   * - ``borderwidth`` (``bd``)
+     - Where the caption sits on the border: ``"nw"``, ``"n"``, ``"ne"``,
+       ``"en"``, ``"e"``, and so on.
+   * - ``underline``
      - ``int``
-     - The 3-D border width in pixels.
+     - The character index in ``text`` to underline (for a mnemonic), or ``-1``.
+   * - ``padding``
+     - ``int | tuple``
+     - Extra space inside the frame's border, in pixels (a single value, or
+       per-side).
+   * - ``borderwidth``
+     - ``int``
+     - The width of the frame's border, in pixels.
    * - ``relief``
      - ``str``
-     - The border style. Default ``"groove"``.
-   * - ``highlightthickness``
-     - ``int``
-     - The width of the focus highlight drawn around the widget.
-   * - ``highlightcolor``
-     - ``str``
-     - The focus-highlight color when the widget has focus.
-   * - ``highlightbackground``
-     - ``str``
-     - The focus-highlight color when the widget does not have focus.
+     - The border decoration: ``"flat"``, ``"raised"``, ``"sunken"``,
+       ``"solid"``, ``"ridge"``, or ``"groove"``.
    * - ``width``
      - ``int``
      - The requested width in pixels. Ignored unless geometry propagation is
-       turned off (``pack_propagate(False)`` / ``grid_propagate(False)``).
+       turned off.
    * - ``height``
      - ``int``
      - The requested height in pixels. Ignored unless geometry propagation is
        turned off.
-   * - ``padx``
-     - ``int``
-     - Internal horizontal padding between the border and the content, in pixels.
-   * - ``pady``
-     - ``int``
-     - Internal vertical padding between the border and the content, in pixels.
    * - ``cursor``
      - ``str``
      - The mouse cursor over the frame (see :doc:`Cursors </reference/cursors>`).
    * - ``takefocus``
      - ``bool``
      - Whether the frame accepts keyboard focus during traversal.
-   * - ``class``
-     - ``str``
-     - **Constructor only.** The widget class used for option-database lookups
-       and bindtags.
-   * - ``container``
-     - ``bool``
-     - **Constructor only.** ``True`` makes the frame an embed target for a
-       foreign application window.
-   * - ``visual``
-     - ``str``
-     - **Constructor only.** The X visual. Rarely needed.
-   * - ``colormap``
-     - ``str``
-     - **Constructor only.** The X colormap. Rarely needed.
+
+.. _labelframe-styling:
+
+Styling options
+---------------
+
+This section is for changing how the labelframe *looks*. Define a style with
+``style.configure(...)`` (and ``style.map(...)`` for per-state colors), then
+apply it with ``Labelframe(style=...)``.
+
+.. include:: /reference/api/_style/labelframe.rst
 
 Shared capabilities
 -------------------
 
-``LabelFrame`` also has the methods every widget inherits — configuration,
-placement, event binding, lifecycle, focus, and introspection. These are
-documented under :doc:`Capabilities </reference/capabilities/index>`.
+``Labelframe`` also has the methods every widget inherits — configuration,
+placement, event binding, lifecycle, focus, and introspection — plus the ttk
+state methods ``state`` / ``instate`` / ``identify``. These are documented under
+:doc:`Capabilities </reference/capabilities/index>`.
 
 See also
 --------
 
-- :doc:`Labelframe </widgets/labelframe>` — the themed ttk version (preferred).
-- :doc:`TkFrame </reference/api/tkframe>` — the classic frame without a caption.
-- `Tk labelframe manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/labelframe.htm>`__
+- :doc:`Labelframe catalog page </widgets/labelframe>` — usage, screenshots, and
+  examples.
+- :doc:`LabelFrame </reference/api/tklabelframe>` — the classic ``tk.LabelFrame``.
+- `Tk ttk::labelframe manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/ttk_labelframe.htm>`__
   — the canonical upstream reference (Tcl 8.6).
