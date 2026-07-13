@@ -2,8 +2,7 @@ Entry
 =====
 
 ``Entry`` is the native ttk single-line text field (``ttk.Entry``), themed by
-ttkbootstrap. For usage and examples, see the
-:doc:`Entry catalog page </widgets/entry>`; this page is the complete reference
+ttkbootstrap. This page is the complete reference
 for its options, methods, and styling.
 
 .. note::

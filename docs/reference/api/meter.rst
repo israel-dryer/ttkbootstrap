@@ -4,9 +4,7 @@ Meter
 ``Meter`` is a radial progress/dial widget that ttkbootstrap ships
 (``ttk.Meter``). It shows a value as an arc — a full circle or a semicircle —
 with a formatted center label, optional side and sub labels, and an optional
-interactive mode that lets the user drag the value like a dial. For screenshots
-and worked examples, see the :doc:`Meter catalog page </widgets/meter>`; this
-page is the complete lookup reference.
+interactive mode that lets the user drag the value like a dial. This page is the complete lookup reference.
 
 Every option below can be set in the constructor and changed at runtime with
 ``configure()`` (and read back with ``cget()``).

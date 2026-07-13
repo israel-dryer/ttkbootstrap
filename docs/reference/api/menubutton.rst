@@ -2,8 +2,7 @@ Menubutton
 ==========
 
 ``Menubutton`` is the native ttk button that pops up an attached menu
-(``ttk.Menubutton``), themed by ttkbootstrap. For usage and examples, see the
-:doc:`Menubutton catalog page </widgets/menubutton>`; this page is the
+(``ttk.Menubutton``), themed by ttkbootstrap. This page is the
 complete reference for its options, methods, and styling.
 
 Options

@@ -2,8 +2,7 @@ Scale
 =====
 
 ``Scale`` is the native ttk slider for choosing a numeric value from a range
-(``ttk.Scale``), themed by ttkbootstrap. For usage and examples, see the
-:doc:`Scale catalog page </widgets/scale>`; this page is the complete
+(``ttk.Scale``), themed by ttkbootstrap. This page is the complete
 reference for its options, methods, and styling.
 
 Options

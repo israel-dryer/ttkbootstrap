@@ -3,8 +3,7 @@ Label
 
 ``Label`` is the native ttk widget that displays a line or block of
 read-only text, an image, or both (``ttk.Label``), themed by ttkbootstrap.
-For usage and examples, see the :doc:`Label catalog page </widgets/label>`;
-this page is the complete reference for its options, methods, and styling.
+This page is the complete reference for its options, methods, and styling.
 
 Options
 -------

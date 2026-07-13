@@ -2,8 +2,7 @@ Sizegrip
 ========
 
 ``Sizegrip`` is the native ttk resize handle for the bottom-right corner of a
-window (``ttk.Sizegrip``), themed by ttkbootstrap. For usage and examples, see
-the :doc:`Sizegrip catalog page </widgets/sizegrip>`; this page is the
+window (``ttk.Sizegrip``), themed by ttkbootstrap. This page is the
 complete reference for its options, methods, and styling.
 
 Options

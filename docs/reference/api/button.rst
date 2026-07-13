@@ -2,8 +2,7 @@ Button
 ======
 
 ``Button`` is the native ttk push button (``ttk.Button``), themed by
-ttkbootstrap — a clickable trigger that runs its ``command`` when pressed. For
-usage and examples, see the :doc:`Button catalog page </widgets/button>`; this
+ttkbootstrap — a clickable trigger that runs its ``command`` when pressed. This
 page is the complete reference for its options, methods, and styling.
 
 Options

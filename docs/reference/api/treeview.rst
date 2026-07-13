@@ -2,8 +2,7 @@ Treeview
 ========
 
 ``Treeview`` is the native ttk multi-column tree/table of items
-(``ttk.Treeview``), themed by ttkbootstrap. For usage and examples, see the
-:doc:`Treeview catalog page </widgets/treeview>`; this page is the complete
+(``ttk.Treeview``), themed by ttkbootstrap. This page is the complete
 reference for its options, methods, and styling.
 
 Options

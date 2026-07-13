@@ -3,8 +3,7 @@ Panedwindow
 
 ``Panedwindow`` is the native ttk container that divides its space between
 children with draggable sashes (``ttk.Panedwindow``), themed by ttkbootstrap.
-For usage and examples, see the
-:doc:`Panedwindow catalog page </widgets/panedwindow>`; this page is the
+This page is the
 complete reference for its options, methods, and styling.
 
 Options

@@ -2,8 +2,7 @@ Separator
 =========
 
 ``Separator`` is the native ttk thin horizontal or vertical dividing line
-(``ttk.Separator``), themed by ttkbootstrap. For usage and examples, see the
-:doc:`Separator catalog page </widgets/separator>`; this page is the complete
+(``ttk.Separator``), themed by ttkbootstrap. This page is the complete
 reference for its options, methods, and styling.
 
 Options

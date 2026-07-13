@@ -2,9 +2,7 @@ Progressbar
 ===========
 
 ``Progressbar`` is the native ttk horizontal or vertical bar that shows
-progress (``ttk.Progressbar``), themed by ttkbootstrap. For usage and
-examples, see the
-:doc:`Progressbar catalog page </widgets/progressbar>`; this page is the
+progress (``ttk.Progressbar``), themed by ttkbootstrap. This page is the
 complete reference for its options, methods, and styling.
 
 Options

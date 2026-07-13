@@ -2,8 +2,7 @@ Frame
 =====
 
 ``Frame`` is the native ttk rectangular container for grouping and laying out
-other widgets (``ttk.Frame``), themed by ttkbootstrap. For usage and examples,
-see the :doc:`Frame catalog page </widgets/frame>`; this page is the complete
+other widgets (``ttk.Frame``), themed by ttkbootstrap. This page is the complete
 reference for its options, methods, and styling.
 
 Options

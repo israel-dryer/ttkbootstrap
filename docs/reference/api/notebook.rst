@@ -2,8 +2,7 @@ Notebook
 ========
 
 ``Notebook`` is the native ttk tabbed container that shows one child pane at
-a time (``ttk.Notebook``), themed by ttkbootstrap. For usage and examples, see
-the :doc:`Notebook catalog page </widgets/notebook>`; this page is the
+a time (``ttk.Notebook``), themed by ttkbootstrap. This page is the
 complete reference for its options, methods, and styling.
 
 Options

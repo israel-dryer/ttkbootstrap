@@ -5,8 +5,7 @@ LabeledScale
 (``ttk.LabeledScale``) — a ttk :doc:`Scale </widgets/scale>` paired with a
 :doc:`Label </widgets/label>` that automatically shows the scale's current
 value. The scale and label are reachable as the ``scale`` and ``label``
-attributes. For screenshots and worked examples, see the
-:doc:`LabeledScale catalog page </widgets/labeledscale>`; this page is the
+attributes. This page is the
 complete lookup reference.
 
 Options

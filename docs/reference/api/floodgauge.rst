@@ -4,9 +4,7 @@ Floodgauge
 ``Floodgauge`` is a progress-bar variant that ttkbootstrap ships
 (``ttk.Floodgauge``) — a filling bar with text drawn over it, useful for
 showing progress with an inline label or percentage. It supports the same
-``determinate`` and ``indeterminate`` modes as a progress bar. For screenshots
-and worked examples, see the :doc:`Floodgauge catalog page </widgets/floodgauge>`;
-this page is the complete lookup reference.
+``determinate`` and ``indeterminate`` modes as a progress bar. This page is the complete lookup reference.
 
 Each option can be passed to the constructor and changed later with
 ``configure()``.

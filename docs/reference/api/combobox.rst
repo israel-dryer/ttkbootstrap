@@ -2,8 +2,7 @@ Combobox
 ========
 
 ``Combobox`` is the native ttk drop-down list combined with an editable text
-field (``ttk.Combobox``), themed by ttkbootstrap. For usage and examples, see
-the :doc:`Combobox catalog page </widgets/combobox>`; this page is the
+field (``ttk.Combobox``), themed by ttkbootstrap. This page is the
 complete reference for its options, methods, and styling.
 
 Options

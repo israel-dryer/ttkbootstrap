@@ -6,8 +6,7 @@ ToastNotification
 alerts. It is **not a widget**: you construct it, then call
 :py:meth:`show_toast` to display it. A toast either closes itself after
 ``duration`` milliseconds or waits to be clicked. Concurrent toasts anchored to
-the same corner stack without overlapping. For screenshots and worked examples,
-see the :doc:`ToastNotification catalog page </widgets/toast>`; this page is the
+the same corner stack without overlapping. This page is the
 complete lookup reference.
 
 Options

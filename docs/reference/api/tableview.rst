@@ -3,9 +3,7 @@ Tableview
 
 ``Tableview`` is a data-table widget that ttkbootstrap ships (``ttk.Tableview``)
 — a themed :doc:`Treeview </widgets/treeview>` wrapped with sorting, filtering,
-search, pagination, and CSV export, driven from column and row data. For
-screenshots and worked examples, see the
-:doc:`Tableview catalog page </widgets/tableview>`; this page is the complete
+search, pagination, and CSV export, driven from column and row data. This page is the complete
 lookup reference.
 
 Rows and columns are represented by ``TableRow`` and ``TableColumn`` objects,

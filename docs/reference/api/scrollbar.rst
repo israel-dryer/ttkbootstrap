@@ -2,8 +2,7 @@ Scrollbar
 =========
 
 ``Scrollbar`` is the native ttk scrollbar that drives another widget's view
-(``ttk.Scrollbar``), themed by ttkbootstrap. For usage and examples, see the
-:doc:`Scrollbar catalog page </widgets/scrollbar>`; this page is the complete
+(``ttk.Scrollbar``), themed by ttkbootstrap. This page is the complete
 reference for its options, methods, and styling.
 
 Options

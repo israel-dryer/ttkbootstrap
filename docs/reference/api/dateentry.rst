@@ -4,8 +4,7 @@ DateEntry
 ``DateEntry`` is a composite widget that ttkbootstrap ships (``ttk.DateEntry``)
 — an :doc:`Entry </widgets/entry>` paired with a button that opens a calendar
 popup for picking a date. The chosen date is written back into the entry, and a
-``<<DateEntrySelected>>`` virtual event fires. For screenshots and worked
-examples, see the :doc:`DateEntry catalog page </widgets/dateentry>`; this page
+``<<DateEntrySelected>>`` virtual event fires. This page
 is the complete lookup reference.
 
 Each option can be passed to the constructor and changed later with

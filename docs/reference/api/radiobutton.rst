@@ -2,9 +2,8 @@ Radiobutton
 ===========
 
 ``Radiobutton`` is the native ttk one-of-many selector that shares a variable
-with its siblings (``ttk.Radiobutton``), themed by ttkbootstrap. For usage and
-examples, see the :doc:`Radiobutton catalog page </widgets/radiobutton>`; this
-page is the complete reference for its options, methods, and styling.
+with its siblings (``ttk.Radiobutton``), themed by ttkbootstrap. This page is
+the complete reference for its options, methods, and styling.
 
 Options
 -------

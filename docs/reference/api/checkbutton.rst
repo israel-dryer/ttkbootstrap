@@ -2,8 +2,7 @@ Checkbutton
 ===========
 
 ``Checkbutton`` is the native ttk labeled on/off toggle (``ttk.Checkbutton``),
-themed by ttkbootstrap. For usage and examples, see the
-:doc:`Checkbutton catalog page </widgets/checkbutton>`; this page is the
+themed by ttkbootstrap. This page is the
 complete reference for its options, methods, and styling.
 
 Options

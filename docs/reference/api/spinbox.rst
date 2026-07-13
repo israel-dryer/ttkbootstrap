@@ -3,8 +3,7 @@ Spinbox
 
 ``Spinbox`` is the native ttk text field with up/down arrows for stepping
 through numeric or listed values (``ttk.Spinbox``), themed by ttkbootstrap.
-For usage and examples, see the :doc:`Spinbox catalog page </widgets/spinbox>`;
-this page is the complete reference for its options, methods, and styling.
+This page is the complete reference for its options, methods, and styling.
 
 Options
 -------

@@ -3,8 +3,7 @@ OptionMenu
 
 ``OptionMenu`` is the native ttk menubutton preconfigured with a menu of
 options that tracks the chosen one in a variable (``ttk.OptionMenu``), themed
-by ttkbootstrap. For usage and examples, see the
-:doc:`OptionMenu catalog page </widgets/optionmenu>`; this page is the
+by ttkbootstrap. This page is the
 complete reference for its options, methods, and styling. It is a
 convenience subclass of :doc:`Menubutton </reference/api/menubutton>` built
 for you from a variable and a list of values; construct it as
