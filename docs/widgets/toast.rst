@@ -70,7 +70,7 @@ API & reference
 ---------------
 
 For the complete option list, see the
-:doc:`ToastNotification API reference </reference/api/toastnotification>`.
+:doc:`ToastNotification API reference </reference/dialogs/toast>`.
 
 .. seealso::
 
