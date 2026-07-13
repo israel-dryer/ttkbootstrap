@@ -6,13 +6,6 @@ other widgets (``ttk.Frame``), themed by ttkbootstrap. For usage and examples,
 see the :doc:`Frame catalog page </widgets/frame>`; this page is the complete
 reference for its options, methods, and styling.
 
-.. note::
-
-   Python's standard library documents ``ttk.Frame`` only briefly. The
-   canonical upstream source is the
-   `Tk ttk::frame manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/ttk_frame.htm>`__
-   (Tcl 8.6).
-
 Options
 -------
 

@@ -15,14 +15,6 @@ the widget tree; creating it also starts the Tcl/Tk interpreter.
    root per program (the single-root rule); every other window is a
    :doc:`Toplevel </user-guide/feature-guides/windows>`.
 
-.. note::
-
-   Python's standard library documents ``tk.Tk`` only briefly. This reference is
-   maintained by ttkbootstrap. The canonical upstream sources are the
-   `Tk toplevel <https://www.tcl-lang.org/man/tcl8.6/TkCmd/toplevel.htm>`__ and
-   `wm <https://www.tcl-lang.org/man/tcl8.6/TkCmd/wm.htm>`__ manual pages
-   (Tcl 8.6).
-
 Options
 -------
 

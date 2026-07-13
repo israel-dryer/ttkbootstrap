@@ -10,13 +10,6 @@ convenience subclass of :doc:`Menubutton </reference/api/menubutton>` built
 for you from a variable and a list of values; construct it as
 ``ttk.OptionMenu(master, variable, default, *values, command=None)``.
 
-.. note::
-
-   Python's standard library documents ``ttk.OptionMenu`` only briefly. ttk
-   has no separate manual page for it — the canonical upstream source is the
-   `Tk ttk::menubutton manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/ttk_menubutton.htm>`__
-   (Tcl 8.6).
-
 Options
 -------
 
@@ -33,6 +26,19 @@ Each option can be set in the constructor and changed later with ``configure()``
      - ``str``
      - **Constructor keyword.** An accent color, optionally with a variant. See
        :ref:`Styling options <optionmenu-styling>` for the available styles.
+   * - ``icon``
+     - ``str``
+     - **Constructor keyword.** A Bootstrap Icons glyph name (e.g.
+       ``"gear-fill"``) shown on the widget; theme-aware — it follows the
+       foreground color and states. See the
+       :doc:`Icons guide </user-guide/feature-guides/icons>`.
+   * - ``icon_size``
+     - ``int``
+     - **Constructor keyword.** The glyph size in pixels (scaled for high-DPI).
+   * - ``icon_only``
+     - ``bool``
+     - **Constructor keyword.** Show only the glyph (hide the text) and pad the
+       widget into a square. Default ``False``.
    * - ``text``
      - ``str``
      - The label shown on the button.

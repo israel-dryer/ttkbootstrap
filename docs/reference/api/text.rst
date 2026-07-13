@@ -9,14 +9,6 @@ focus, introspection) are listed at the bottom.
 For a task-oriented walkthrough — indices, tags, marks, search, undo — see the
 :doc:`Text widget guide </widgets/text>`.
 
-.. note::
-
-   Python's standard library doesn't document ``tk.Text`` in full. This reference
-   is maintained by ttkbootstrap. The canonical upstream source is the
-   `Tk text manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/text.htm>`__
-   (Tcl 8.6, the version Python ships) — where a Tcl subcommand like
-   ``tag configure`` is the Python method ``tag_configure``.
-
 Options
 -------
 

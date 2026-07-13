@@ -7,13 +7,6 @@ restyle, and delete by id or tag. It is themed by ttkbootstrap. This page is the
 complete reference for its own options and methods; the shared widget methods are
 under :doc:`Capabilities </reference/capabilities/index>`.
 
-.. note::
-
-   Python's standard library doesn't document ``tk.Canvas`` in full. This
-   reference is maintained by ttkbootstrap. The canonical upstream source is the
-   `Tk canvas manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/canvas.htm>`__
-   (Tcl 8.6).
-
 Items, ids, and tags
 --------------------
 

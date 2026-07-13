@@ -8,13 +8,6 @@ for themed layout; reach for ``TkFrame`` only when you need a classic-tk option
 the ttk frame doesn't expose (``background``, ``highlightthickness``,
 per-widget ``relief``/``borderwidth``, an off-screen ``container``).
 
-.. note::
-
-   Python's standard library documents ``tk.Frame`` only briefly. This
-   reference is maintained by ttkbootstrap. The canonical upstream source is the
-   `Tk frame manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/frame.htm>`__
-   (Tcl 8.6).
-
 Options
 -------
 

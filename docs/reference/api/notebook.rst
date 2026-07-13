@@ -6,13 +6,6 @@ a time (``ttk.Notebook``), themed by ttkbootstrap. For usage and examples, see
 the :doc:`Notebook catalog page </widgets/notebook>`; this page is the
 complete reference for its options, methods, and styling.
 
-.. note::
-
-   Python's standard library documents ``ttk.Notebook`` only briefly. The
-   canonical upstream source is the
-   `Tk ttk::notebook manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/ttk_notebook.htm>`__
-   (Tcl 8.6).
-
 Options
 -------
 

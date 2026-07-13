@@ -7,13 +7,6 @@ index ``"end"`` / ``"active"``. This page is the complete reference for its own
 options and methods; the shared widget methods are under
 :doc:`Capabilities </reference/capabilities/index>`.
 
-.. note::
-
-   Python's standard library doesn't document ``tk.Listbox`` in full. This
-   reference is maintained by ttkbootstrap. The canonical upstream source is the
-   `Tk listbox manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/listbox.htm>`__
-   (Tcl 8.6).
-
 Options
 -------
 

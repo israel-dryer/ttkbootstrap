@@ -6,13 +6,6 @@ ttkbootstrap — a clickable trigger that runs its ``command`` when pressed. For
 usage and examples, see the :doc:`Button catalog page </widgets/button>`; this
 page is the complete reference for its options, methods, and styling.
 
-.. note::
-
-   Python's standard library documents ``ttk.Button`` only briefly. The
-   canonical upstream source is the
-   `Tk ttk::button manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/ttk_button.htm>`__
-   (Tcl 8.6).
-
 Options
 -------
 
@@ -30,6 +23,19 @@ Each option can be set in the constructor and changed later with ``configure()``
      - **Constructor keyword.** The style — an accent color (``primary``, …,
        ``dark``, ``neutral``) optionally with a variant (``outline``, ``link``,
        ``ghost``). See :ref:`Styling options <button-styling>`.
+   * - ``icon``
+     - ``str``
+     - **Constructor keyword.** A Bootstrap Icons glyph name (e.g.
+       ``"gear-fill"``) shown on the button; theme-aware — it follows the
+       foreground color and states. See the
+       :doc:`Icons guide </user-guide/feature-guides/icons>`.
+   * - ``icon_size``
+     - ``int``
+     - **Constructor keyword.** The glyph size in pixels (scaled for high-DPI).
+   * - ``icon_only``
+     - ``bool``
+     - **Constructor keyword.** Show only the glyph (hide the text) and pad the
+       button into a square. Default ``False``.
    * - ``text``
      - ``str``
      - The label shown on the button.

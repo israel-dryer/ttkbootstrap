@@ -8,13 +8,6 @@ reach for ``TkLabel`` only when you need a classic-tk option the ttk label
 doesn't expose (a per-widget ``background``/``foreground``, ``bitmap``,
 ``activeforeground``, ``disabledforeground``).
 
-.. note::
-
-   Python's standard library documents ``tk.Label`` only briefly. This
-   reference is maintained by ttkbootstrap. The canonical upstream source is the
-   `Tk label manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/label.htm>`__
-   (Tcl 8.6).
-
 Options
 -------
 

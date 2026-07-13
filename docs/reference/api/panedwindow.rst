@@ -7,13 +7,6 @@ For usage and examples, see the
 :doc:`Panedwindow catalog page </widgets/panedwindow>`; this page is the
 complete reference for its options, methods, and styling.
 
-.. note::
-
-   Python's standard library documents ``ttk.Panedwindow`` only briefly. The
-   canonical upstream source is the
-   `Tk ttk::panedwindow manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/ttk_panedwindow.htm>`__
-   (Tcl 8.6).
-
 Options
 -------
 

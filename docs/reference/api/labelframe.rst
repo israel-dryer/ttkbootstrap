@@ -4,17 +4,10 @@ Labelframe
 ``Labelframe`` is the native ttk :doc:`frame </reference/api/frame>` with a
 caption drawn into its border (``ttk.Labelframe``), themed by ttkbootstrap. For
 usage and examples, see the :doc:`Labelframe catalog page </widgets/labelframe>`;
-this page is the complete reference for its options, methods, and styling.
-
-.. note::
-
-   ``ttk.Labelframe`` (lowercase **f**) is this themed ttk widget;
-   ``ttk.LabelFrame`` (capital **F**) is the classic
-   :doc:`tk widget </reference/api/tklabelframe>`. Python's standard library
-   documents ``ttk.Labelframe`` only briefly. The canonical upstream source is
-   the
-   `Tk ttk::labelframe manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/ttk_labelframe.htm>`__
-   (Tcl 8.6).
+this page is the complete reference for its options, methods, and styling. Mind
+the capitalization: ``ttk.Labelframe`` (lowercase **f**) is this themed ttk
+widget, while ``ttk.LabelFrame`` (capital **F**) is the classic
+:doc:`tk widget </reference/api/tklabelframe>`.
 
 Options
 -------

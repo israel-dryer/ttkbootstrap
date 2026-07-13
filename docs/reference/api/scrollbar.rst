@@ -6,13 +6,6 @@ Scrollbar
 :doc:`Scrollbar catalog page </widgets/scrollbar>`; this page is the complete
 reference for its options, methods, and styling.
 
-.. note::
-
-   Python's standard library documents ``ttk.Scrollbar`` only briefly. The
-   canonical upstream source is the
-   `Tk ttk::scrollbar manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/ttk_scrollbar.htm>`__
-   (Tcl 8.6).
-
 Options
 -------
 

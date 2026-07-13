@@ -6,16 +6,9 @@ with a caption drawn into its border — themed by ttkbootstrap and re-exported 
 ``ttk.LabelFrame``. Prefer the ttk :doc:`Labelframe </widgets/labelframe>` for
 themed layout; reach for ``LabelFrame`` only when you need a classic-tk option
 the ttk version doesn't expose (a per-widget ``background``/``foreground``, a
-custom label ``font``).
-
-.. note::
-
-   ``ttk.LabelFrame`` (capital **F**) is this classic tk widget; ``ttk.Labelframe``
-   (lowercase **f**) is the themed ttk widget. Python's standard library
-   documents ``tk.LabelFrame`` only briefly. This reference is maintained by
-   ttkbootstrap. The canonical upstream source is the
-   `Tk labelframe manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/labelframe.htm>`__
-   (Tcl 8.6).
+custom label ``font``). Mind the capitalization: ``ttk.LabelFrame`` (capital
+**F**) is this classic tk widget, while ``ttk.Labelframe`` (lowercase **f**) is
+the :doc:`themed ttk widget </reference/api/labelframe>`.
 
 Options
 -------

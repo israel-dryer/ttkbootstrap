@@ -6,13 +6,6 @@ Scale
 :doc:`Scale catalog page </widgets/scale>`; this page is the complete
 reference for its options, methods, and styling.
 
-.. note::
-
-   Python's standard library documents ``ttk.Scale`` only briefly. The
-   canonical upstream source is the
-   `Tk ttk::scale manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/ttk_scale.htm>`__
-   (Tcl 8.6).
-
 Options
 -------
 

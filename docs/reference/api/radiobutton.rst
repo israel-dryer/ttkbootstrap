@@ -6,13 +6,6 @@ with its siblings (``ttk.Radiobutton``), themed by ttkbootstrap. For usage and
 examples, see the :doc:`Radiobutton catalog page </widgets/radiobutton>`; this
 page is the complete reference for its options, methods, and styling.
 
-.. note::
-
-   Python's standard library documents ``ttk.Radiobutton`` only briefly. The
-   canonical upstream source is the
-   `Tk ttk::radiobutton manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/ttk_radiobutton.htm>`__
-   (Tcl 8.6).
-
 Options
 -------
 
@@ -29,6 +22,19 @@ Each option can be set in the constructor and changed later with ``configure()``
      - ``str``
      - **Constructor keyword.** An accent color, optionally with a variant. See
        :ref:`Styling options <radiobutton-styling>` for the available styles.
+   * - ``icon``
+     - ``str``
+     - **Constructor keyword.** A Bootstrap Icons glyph name (e.g.
+       ``"gear-fill"``) shown on the widget; theme-aware — it follows the
+       foreground color and states. See the
+       :doc:`Icons guide </user-guide/feature-guides/icons>`.
+   * - ``icon_size``
+     - ``int``
+     - **Constructor keyword.** The glyph size in pixels (scaled for high-DPI).
+   * - ``icon_only``
+     - ``bool``
+     - **Constructor keyword.** Show only the glyph (hide the text) and pad the
+       widget into a square. Default ``False``.
    * - ``text``
      - ``str``
      - The label shown beside the button.

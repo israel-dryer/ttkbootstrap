@@ -6,13 +6,6 @@ Separator
 :doc:`Separator catalog page </widgets/separator>`; this page is the complete
 reference for its options, methods, and styling.
 
-.. note::
-
-   Python's standard library documents ``ttk.Separator`` only briefly. The
-   canonical upstream source is the
-   `Tk ttk::separator manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/ttk_separator.htm>`__
-   (Tcl 8.6).
-
 Options
 -------
 
