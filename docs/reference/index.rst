@@ -14,6 +14,13 @@ The lookup layer:
       native ttk widgets, the ones ttkbootstrap ships, and the classic tk
       widgets, grouped by what they do.
 
+   .. grid-item-card:: Windows
+      :link: windows/index
+      :link-type: doc
+
+      The application window classes — ``App`` (the root) and ``Toplevel`` — and
+      their constructor, theme, and window-management surface.
+
    .. grid-item-card:: Capabilities
       :link: capabilities/index
       :link-type: doc
@@ -40,6 +47,7 @@ The lookup layer:
    :hidden:
 
    api/index
+   windows/index
    capabilities/index
    events/index
    cursors
