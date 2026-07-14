@@ -1,24 +1,26 @@
 # ファイルバックアップユーティリティ
-この例は、ファイルバックアップユーティリティアプリケーションのUI構築に様々なスタイルを活用する方法を示しています。
-カスタム`CollapsingFrame`クラスは、左側の情報パネルと右下の出力領域を保持します。
-これらはヘッダー右側にインジケーターボタンを備え、マウスクリック操作で`Frame`の折りたたみ/展開を行います。
+この例では、さまざまなスタイルを使用して、
+ファイルバックアップユーティリティアプリケーションのUIを構築する方法を示します。カスタムクラス `CollapsingFrame` には、
+左側の情報パネルと右下の出力領域が含まれています。これらには、
+ヘッダーの右側にインジケーターボタンがあり、
+マウスクリック操作で `Frame` を折りたたんだり展開したりできます。 
 
-![ファイルバックアップユーティリティの例](../assets/gallery/back_me_up.png)
+![ファイル検索画像の例](../assets/gallery/back_me_up.png)
 
-## スタイル概要
-この例で使用されるテーマは **litera**.
+## スタイルの概要
+この例で使用されているテーマは **litera** です。
 
 | 項目                              | クラス             | Bootstyle |
 | ---                               | ---               | ---|
-| Top button bar                    | `Button`          | primary |
-| Collapsible frames                | `CollapsingFrame` | secondary |
-| Separators                        | `Separator`       | secondary |
-| Progressbar                       | `Progressbar`     | success |
-| Properties, stop, add to backup   | `Button`          | link |
-| File Open                         | `Button`          | secondary-link |
+| 上部ボタンバー                    | `Button`          | primary |
+| 折りたたみ可能なフレーム                | `CollapsingFrame` | secondary |
+| セパレータ                        | `Separator`       | secondary |
+| プログレスバー                      | `Progressbar`     | success |
+| プロパティ、停止、バックアップに追加  | `Button`          | link |
+| ファイルを開く                        | `Button`          | secondary-link |
 
 ## サンプルコード
-[このコードをライブで実行](https://replit.com/@israel-dryer/file-backup-utility#main.py) on repl.it
+[このコードをrepl.itで実行](https://replit.com/@israel-dryer/file-backup-utility#main.py)
 
 ```python
 from datetime import datetime
@@ -62,110 +64,110 @@ class BackMeUp(ttk.Frame):
             _path = imgpath / val
             self.photoimages.append(ttk.PhotoImage(name=key, file=_path))
 
-        # buttonbar
+        # ボタンバー
         buttonbar = ttk.Frame(self, style='primary.TFrame')
         buttonbar.pack(fill=X, pady=1, side=TOP)
 
-        ## new backup
-        _func = lambda: Messagebox.ok(message='Adding new backup')
+        ## 新規バックアップ
+        _func = lambda: Messagebox.ok(message='新規バックアップを追加中')
         btn = ttk.Button(
-            master=buttonbar, text='New backup set',
+            master=buttonbar, text='新しいバックアップセット',
             image='add-to-backup-light', 
             compound=LEFT, 
             command=_func
         )
         btn.pack(side=LEFT, ipadx=5, ipady=5, padx=(1, 0), pady=1)
 
-        ## backup
-        _func = lambda: Messagebox.ok(message='Backing up...')
+        ## バックアップ
+        _func = lambda: Messagebox.ok(message='バックアップ中...')
         btn = ttk.Button(
             master=buttonbar, 
-            text='Backup', 
+            text='バックアップ', 
             image='play', 
             compound=LEFT, 
             command=_func
         )
         btn.pack(side=LEFT, ipadx=5, ipady=5, padx=0, pady=1)
 
-        ## refresh
-        _func = lambda: Messagebox.ok(message='Refreshing...')
+        ## 更新
+        _func = lambda: Messagebox.ok(message='更新中...')
         btn = ttk.Button(
             master=buttonbar, 
-            text='Refresh', 
+            text='更新', 
             image='refresh',
             compound=LEFT, 
             command=_func
         )
         btn.pack(side=LEFT, ipadx=5, ipady=5, padx=0, pady=1)
 
-        ## stop
-        _func = lambda: Messagebox.ok(message='Stopping backup.')
+        ## 停止
+        _func = lambda: Messagebox.ok(message='バックアップを停止します。')
         btn = ttk.Button(
             master=buttonbar, 
-            text='Stop', 
+            text='停止', 
             image='stop-light',
             compound=LEFT, 
             command=_func
         )
         btn.pack(side=LEFT, ipadx=5, ipady=5, padx=0, pady=1)
 
-        ## settings
-        _func = lambda: Messagebox.ok(message='Changing settings')
+        ## 設定
+        _func = lambda: Messagebox.ok(message='設定を変更しています')
         btn = ttk.Button(
             master=buttonbar, 
-            text='Settings', 
+            text='設定', 
             image='properties-light',
             compound=LEFT, 
             command=_func
         )
         btn.pack(side=LEFT, ipadx=5, ipady=5, padx=0, pady=1)
 
-        # left panel
+        # 左パネル
         left_panel = ttk.Frame(self, style='bg.TFrame')
         left_panel.pack(side=LEFT, fill=Y)
 
-        ## backup summary (collapsible)
+        ## バックアップ概要 (折りたたみ可能)
         bus_cf = CollapsingFrame(left_panel)
         bus_cf.pack(fill=X, pady=1)
 
-        ## container
+        ## コンテナ
         bus_frm = ttk.Frame(bus_cf, padding=5)
         bus_frm.columnconfigure(1, weight=1)
         bus_cf.add(
             child=bus_frm, 
-            title='Backup Summary', 
+            title='バックアップ概要', 
             bootstyle=SECONDARY)
 
-        ## destination
-        lbl = ttk.Label(bus_frm, text='Destination:')
+        ## 宛先
+        lbl = ttk.Label(bus_frm, text='宛先:')
         lbl.grid(row=0, column=0, sticky=W, pady=2)
         lbl = ttk.Label(bus_frm, textvariable='destination')
         lbl.grid(row=0, column=1, sticky=EW, padx=5, pady=2)
         self.setvar('destination', 'd:/test/')
 
-        ## last run
-        lbl = ttk.Label(bus_frm, text='Last Run:')
+        ## 最終実行
+        lbl = ttk.Label(bus_frm, text='最終実行:')
         lbl.grid(row=1, column=0, sticky=W, pady=2)
         lbl = ttk.Label(bus_frm, textvariable='lastrun')
         lbl.grid(row=1, column=1, sticky=EW, padx=5, pady=2)
-        self.setvar('lastrun', '14.06.2021 19:34:43')
+        self.setvar('lastrun', '2021年6月14日 19:34:43')
 
-        ## files Identical
-        lbl = ttk.Label(bus_frm, text='Files Identical:')
+        ## ファイルが同一
+        lbl = ttk.Label(bus_frm, text='ファイルが同一:')
         lbl.grid(row=2, column=0, sticky=W, pady=2)
         lbl = ttk.Label(bus_frm, textvariable='filesidentical')
         lbl.grid(row=2, column=1, sticky=EW, padx=5, pady=2)
         self.setvar('filesidentical', '15%')
 
-        ## section separator
+        ## セクションセパレータ
         sep = ttk.Separator(bus_frm, bootstyle=SECONDARY)
         sep.grid(row=3, column=0, columnspan=2, pady=10, sticky=EW)
 
-        ## properties button
-        _func = lambda: Messagebox.ok(message='Changing properties')
+        ## プロパティボタン
+        _func = lambda: Messagebox.ok(message='プロパティを変更しています')
         bus_prop_btn = ttk.Button(
             master=bus_frm, 
-            text='Properties', 
+            text='プロパティ', 
             image='properties-dark', 
             compound=LEFT,
             command=_func, 
@@ -173,11 +175,11 @@ class BackMeUp(ttk.Frame):
         )
         bus_prop_btn.grid(row=4, column=0, columnspan=2, sticky=W)
 
-        ## add to backup button
-        _func = lambda: Messagebox.ok(message='Adding to backup')
+        ## バックアップに追加ボタン
+        _func = lambda: Messagebox.ok(message='バックアップに追加中')
         add_btn = ttk.Button(
             master=bus_frm, 
-            text='Add to backup', 
+            text='バックアップに追加', 
             image='add-to-backup-dark', 
             compound=LEFT,
             command=_func, 
@@ -185,28 +187,28 @@ class BackMeUp(ttk.Frame):
         )
         add_btn.grid(row=5, column=0, columnspan=2, sticky=W)
 
-        # backup status (collapsible)
+        # バックアップステータス (折りたたみ可能)
         status_cf = CollapsingFrame(left_panel)
-        status_cf.pack(fill=BOTH, pady=1)
+        status_cf.pack(fill=BOTH, padding=1)
 
-        ## container
+        ## コンテナ
         status_frm = ttk.Frame(status_cf, padding=10)
         status_frm.columnconfigure(1, weight=1)
         status_cf.add(
             child=status_frm, 
-            title='Backup Status', 
+            title='バックアップステータス', 
             bootstyle=SECONDARY
         )
-        ## progress message
+        ## 進行状況メッセージ
         lbl = ttk.Label(
             master=status_frm, 
             textvariable='prog-message', 
             font='Helvetica 10 bold'
         )
         lbl.grid(row=0, column=0, columnspan=2, sticky=W)
-        self.setvar('prog-message', 'Backing up...')
+        self.setvar('prog-message', 'バックアップ中...')
 
-        ## progress bar
+        ## 進行状況バー
         pb = ttk.Progressbar(
             master=status_frm, 
             variable='prog-value', 
@@ -215,30 +217,30 @@ class BackMeUp(ttk.Frame):
         pb.grid(row=1, column=0, columnspan=2, sticky=EW, pady=(10, 5))
         self.setvar('prog-value', 71)
 
-        ## time started
+        ## 開始時刻
         lbl = ttk.Label(status_frm, textvariable='prog-time-started')
         lbl.grid(row=2, column=0, columnspan=2, sticky=EW, pady=2)
-        self.setvar('prog-time-started', 'Started at: 14.06.2021 19:34:56')
+        self.setvar('prog-time-started', '開始日時: 2021年6月14日 19:34:56')
 
-        ## time elapsed
+        ## 経過時間
         lbl = ttk.Label(status_frm, textvariable='prog-time-elapsed')
         lbl.grid(row=3, column=0, columnspan=2, sticky=EW, pady=2)
-        self.setvar('prog-time-elapsed', 'Elapsed: 1 sec')
+        self.setvar('prog-time-elapsed', '経過時間: 1 秒')
 
-        ## time remaining
+        ## 残り時間
         lbl = ttk.Label(status_frm, textvariable='prog-time-left')
         lbl.grid(row=4, column=0, columnspan=2, sticky=EW, pady=2)
-        self.setvar('prog-time-left', 'Left: 0 sec')
+        self.setvar('prog-time-left', '残り: 0 秒')
 
-        ## section separator
+        ## セクション区切り
         sep = ttk.Separator(status_frm, bootstyle=SECONDARY)
         sep.grid(row=5, column=0, columnspan=2, pady=10, sticky=EW)
 
-        ## stop button
-        _func = lambda: Messagebox.ok(message='Stopping backup')
+        ## 停止ボタン
+        _func = lambda: Messagebox.ok(message='バックアップを停止します')
         btn = ttk.Button(
             master=status_frm, 
-            text='Stop', 
+            text='停止', 
             image='stop-backup-dark', 
             compound=LEFT, 
             command=_func, 
@@ -246,24 +248,24 @@ class BackMeUp(ttk.Frame):
         )
         btn.grid(row=6, column=0, columnspan=2, sticky=W)
 
-        ## section separator
+        ## セクションセパレータ
         sep = ttk.Separator(status_frm, bootstyle=SECONDARY)
         sep.grid(row=7, column=0, columnspan=2, pady=10, sticky=EW)
 
-        # current file message
+        # 現在のファイルメッセージ
         lbl = ttk.Label(status_frm, textvariable='current-file-msg')
         lbl.grid(row=8, column=0, columnspan=2, pady=2, sticky=EW)
-        self.setvar('current-file-msg', 'Uploading: d:/test/settings.txt')
+        self.setvar('current-file-msg', 'アップロード中: d:/test/settings.txt')
 
-        # logo
+        # ロゴ
         lbl = ttk.Label(left_panel, image='logo', style='bg.TLabel')
         lbl.pack(side='bottom')
 
-        # right panel
+        # 右パネル
         right_panel = ttk.Frame(self, padding=(2, 1))
         right_panel.pack(side=RIGHT, fill=BOTH, expand=YES)
 
-        ## file input
+        ## ファイル入力
         browse_frm = ttk.Frame(right_panel)
         browse_frm.pack(side=TOP, fill=X, padx=2, pady=1)
         
@@ -278,7 +280,7 @@ class BackMeUp(ttk.Frame):
         )
         btn.pack(side=RIGHT)
 
-        ## Treeview
+        ## ツリービュー
         tv = ttk.Treeview(right_panel, show='headings', height=5)
         tv.configure(columns=(
             'name', 'state', 'last-modified', 
@@ -294,27 +296,27 @@ class BackMeUp(ttk.Frame):
         
         tv.pack(fill=X, pady=1)
 
-        ## scrolling text output
+        ## スクロールテキスト出力
         scroll_cf = CollapsingFrame(right_panel)
         scroll_cf.pack(fill=BOTH, expand=YES)
         
         output_container = ttk.Frame(scroll_cf, padding=1)
-        _value = 'Log: Backing up... [Uploading file: D:/sample_file_35.txt]'
+        _value = 'Log: バックアップ中... [ファイルのアップロード中: D:/sample_file_35.txt]'
         self.setvar('scroll-message', _value)
         st = ScrolledText(output_container)
         st.pack(fill=BOTH, expand=YES)
         scroll_cf.add(output_container, textvariable='scroll-message')
 
-        # seed with some sample data
+        # サンプルデータを初期化
 
-        ## starting sample directory
+        ## サンプルディレクトリの開始
         file_entry.insert(END, 'D:/text/myfiles/top-secret/samples/')
 
-        ## treeview and backup logs
+        ## ツリービューとバックアップログ
         for x in range(20, 35):
             result = choices(['Backup Up', 'Missed in Destination'])[0]
             st.insert(END, f'19:34:{x}\t\t Uploading: D:/file_{x}.txt\n')
-            st.insert(END, f'19:34:{x}\t\t Upload {result}.\n')
+            st.insert(END, f'19:34:{x}\t\t {result} をアップロード中\n')
             timestamp = datetime.now().strftime('%d.%m.%Y %H:%M:%S')
             tv.insert('', END, x, 
                       values=(f'sample_file_{x}.txt', 
@@ -324,7 +326,7 @@ class BackMeUp(ttk.Frame):
         tv.selection_set(20)
 
     def get_directory(self):
-        """Open dialogue to get directory and update variable"""
+        """ディレクトリを取得するためのダイアログを開き、変数を更新する"""
         self.update_idletasks()
         d = askdirectory()
         if d:
@@ -332,35 +334,35 @@ class BackMeUp(ttk.Frame):
 
 
 class CollapsingFrame(ttk.Frame):
-    """A collapsible frame widget that opens and closes with a click."""
+    """クリックで展開・折り畳みができるフレームウィジェットです。"""
 
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.columnconfigure(0, weight=1)
         self.cumulative_rows = 0
 
-        # widget images
+        # ウィジェットの画像
         self.images = [
             ttk.PhotoImage(file=PATH/'icons8_double_up_24px.png'),
             ttk.PhotoImage(file=PATH/'icons8_double_right_24px.png')
         ]
 
     def add(self, child, title="", bootstyle=PRIMARY, **kwargs):
-        """Add a child to the collapsible frame
+        """折りたたみ可能なフレームに子要素を追加する
 
-        Parameters:
+        パラメータ:
 
             child (Frame):
-                The child frame to add to the widget.
+                ウィジェットに追加する子フレーム。
 
             title (str):
-                The title appearing on the collapsible section header.
+                折りたたみ可能なセクションのヘッダーに表示されるタイトル。
 
             bootstyle (str):
-                The style to apply to the collapsible section header.
+                折りたたみセクションのヘッダーに適用するスタイル。
 
             **kwargs (Dict):
-                Other optional keyword arguments.
+                その他のオプションのキーワード引数。
         """
         if child.winfo_class() != 'TFrame':
             return
@@ -369,7 +371,7 @@ class CollapsingFrame(ttk.Frame):
         frm = ttk.Frame(self, bootstyle=style_color)
         frm.grid(row=self.cumulative_rows, column=0, sticky=EW)
 
-        # header title
+        # ヘッダーのタイトル
         header = ttk.Label(
             master=frm,
             text=title,
@@ -379,7 +381,7 @@ class CollapsingFrame(ttk.Frame):
             header.configure(textvariable=kwargs.get('textvariable'))
         header.pack(side=LEFT, fill=BOTH, padx=10)
 
-        # header toggle button
+        # ヘッダーのトグルボタン
         def _func(c=child): return self._toggle_open_close(c)
         btn = ttk.Button(
             master=frm,
@@ -389,21 +391,21 @@ class CollapsingFrame(ttk.Frame):
         )
         btn.pack(side=RIGHT)
 
-        # assign toggle button to child so that it can be toggled
+        # トグル操作が可能になるよう、トグルボタンを子ウィンドウに割り当てる
         child.btn = btn
         child.grid(row=self.cumulative_rows + 1, column=0, sticky=NSEW)
 
-        # increment the row assignment
+        # 行の割り当てをインクリメント
         self.cumulative_rows += 2
 
     def _toggle_open_close(self, child):
-        """Open or close the section and change the toggle button 
-        image accordingly.
+        """セクションを開閉し、トグルボタンの
+        画像をそれに応じて変更します。
 
-        Parameters:
+        パラメータ:
             
             child (Frame):
-                The child element to add or remove from grid manager.
+                グリッドマネージャーに追加または削除する子要素。
         """
         if child.winfo_viewable():
             child.grid_remove()
