@@ -69,6 +69,13 @@ The lookup layer:
       Attach input validation to entries — ready-made checks plus custom
       validators.
 
+   .. grid-item-card:: Geometry
+      :link: geometry/index
+      :link-type: doc
+
+      The geometry managers that size and place widgets — pack, grid, place, and
+      stacking order.
+
    .. grid-item-card:: Utilities
       :link: utilities
       :link-type: doc
@@ -80,9 +87,9 @@ The lookup layer:
       :link: capabilities/index
       :link-type: doc
 
-      The methods every widget inherits, grouped by area — configuration,
-      pack/grid/place, focus, grab, after, clipboard, and ``winfo`` — each
-      mirroring its Tcl/Tk manual page.
+      The methods every widget inherits, grouped by area — configuration, focus,
+      grab, after, clipboard, and ``winfo`` — each mirroring its Tcl/Tk manual
+      page.
 
    .. grid-item-card:: Events
       :link: events/index
@@ -110,6 +117,7 @@ The lookup layer:
    localization
    fonts
    validation
+   geometry/index
    utilities
    capabilities/index
    events/index

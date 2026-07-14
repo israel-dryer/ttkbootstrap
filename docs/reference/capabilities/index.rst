@@ -4,7 +4,9 @@ Capabilities
 The methods every widget inherits, grouped by area — each mirroring the
 corresponding Tcl/Tk manual page so the two references line up. A capability page
 is a **spec** (signatures, parameters, return types); the Foundations guides
-teach the same areas by building.
+teach the same areas by building. The geometry managers that size and place a
+widget (pack, grid, place, stacking order) have their own
+:doc:`Geometry </reference/geometry/index>` section.
 
 .. grid:: 1 2 2 2
    :gutter: 3
@@ -14,30 +16,6 @@ teach the same areas by building.
       :link-type: doc
 
       Read and write a widget's options — ``configure``, ``cget``, ``keys``.
-
-   .. grid-item-card:: Pack
-      :link: pack
-      :link-type: doc
-
-      Stack a widget against a side of its parent.
-
-   .. grid-item-card:: Grid
-      :link: grid
-      :link-type: doc
-
-      Place widgets in rows and columns, and shape the container.
-
-   .. grid-item-card:: Place
-      :link: place
-      :link-type: doc
-
-      Position a widget by absolute or relative coordinates.
-
-   .. grid-item-card:: Stacking order
-      :link: stacking
-      :link-type: doc
-
-      Raise and lower overlapping widgets — ``lift``, ``lower``.
 
    .. grid-item-card:: Bind
       :link: bind
@@ -91,10 +69,6 @@ teach the same areas by building.
    :hidden:
 
    configuration
-   pack
-   grid
-   place
-   stacking
    bind
    focus
    grab
