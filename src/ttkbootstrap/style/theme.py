@@ -15,6 +15,7 @@ from PIL import ImageColor
 
 from ttkbootstrap import utils
 from ttkbootstrap.constants import *
+from ttkbootstrap.style._compat import warn_deprecated
 
 
 _TINT_WEIGHTS = {
@@ -665,7 +666,7 @@ class ThemeDefinition:
     styles and images for the active theme.
     """
 
-    def __init__(self, name, colors, themetype=LIGHT):
+    def __init__(self, name, colors, mode=LIGHT, **kwargs):
         """
         Parameters:
 
@@ -675,18 +676,33 @@ class ThemeDefinition:
             colors (Colors or dict):
                 A Colors instance or a dict of color values.
 
-            themetype (str):
+            mode (str):
                 Specifies whether the theme is **light** or **dark**.
         """
+        themetype = kwargs.pop("themetype", None)
+        if themetype is not None:
+            warn_deprecated("the 'themetype' ThemeDefinition argument", "'mode'")
+            mode = themetype
+        if kwargs:
+            raise TypeError(
+                "ThemeDefinition() got unexpected keyword argument(s): "
+                f"{', '.join(map(repr, sorted(kwargs)))}"
+            )
         self.name = name
         self.colors = colors if isinstance(colors, Colors) else Colors(**colors)
-        self.type = themetype
+        self.mode = mode
+
+    @property
+    def type(self):
+        """Deprecated alias for `mode` (removed in 3.0)."""
+        warn_deprecated("the 'ThemeDefinition.type' attribute", "'mode'")
+        return self.mode
 
     def __repr__(self):
         return " ".join(
             [
                 f"name={self.name},",
-                f"type={self.type},",
+                f"mode={self.mode},",
                 f"colors={self.colors}",
             ]
         )
@@ -846,7 +862,7 @@ class Theme:
             mode, anchors, self.neutral,
             block["background"], block["foreground"], self.secondary,
         )
-        return ThemeDefinition(name=f"{self.name}-{mode}", colors=colors, themetype=mode)
+        return ThemeDefinition(name=f"{self.name}-{mode}", colors=colors, mode=mode)
 
     def to_definitions(self):
         """Return the generated per-mode `ThemeDefinition` objects (light, then dark).

@@ -13,6 +13,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap.style.theme import (
     Colors,
     Theme,
+    ThemeDefinition,
     _accent_on_color,
     _color_ramp,
     _color_to_hsl,
@@ -39,7 +40,7 @@ def sample_theme():
 def test_theme_generates_light_and_dark_definitions():
     defs = sample_theme().to_definitions()
     assert [d.name for d in defs] == ["sample-light", "sample-dark"]
-    assert [d.type for d in defs] == ["light", "dark"]
+    assert [d.mode for d in defs] == ["light", "dark"]
     assert all(isinstance(d.colors, Colors) for d in defs)
 
 
@@ -166,7 +167,7 @@ def test_legacy_adapter_preserves_identity_regenerates_plumbing():
     # buggy plumbing regenerated off bg
     assert c.inputbg != legacy["inputbg"]
     assert c.border != legacy["border"]
-    assert d.type == "dark"
+    assert d.mode == "dark"
 
 
 def test_user_theme_spec_builds_and_registers(root):
@@ -205,6 +206,26 @@ def test_from_existing_overrides_and_rejects_unknown_tokens():
     assert derived.success == BOOTSTRAP.success  # inherited
     with pytest.raises(ValueError, match="Unknown Theme token"):
         Theme.from_existing(BOOTSTRAP, name="acme", bogus="x")
+
+
+def test_theme_definition_mode_is_canonical():
+    colors = sample_theme().to_definitions()[0].colors
+    definition = ThemeDefinition("x", colors, mode="dark")
+    assert definition.mode == "dark"
+
+
+def test_theme_definition_themetype_kwarg_is_deprecated_alias():
+    colors = sample_theme().to_definitions()[0].colors
+    with pytest.warns(DeprecationWarning, match="themetype"):
+        definition = ThemeDefinition("x", colors, themetype="dark")
+    assert definition.mode == "dark"
+
+
+def test_theme_definition_type_attribute_is_deprecated_alias():
+    colors = sample_theme().to_definitions()[0].colors
+    definition = ThemeDefinition("x", colors, mode="dark")
+    with pytest.warns(DeprecationWarning, match="type"):
+        assert definition.type == "dark"
 
 
 def test_legacy_theme_use_lazy_registers_then_bulk_opt_in(root):
