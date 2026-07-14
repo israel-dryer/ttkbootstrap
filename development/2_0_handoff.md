@@ -3,6 +3,38 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
+_Last updated: 2026-07-14 (**Docs REFERENCE-STRUCTURE + CROSS-REFERENCE CLEANUP —
+all MERGED into `2.0`.** Sparked by the observation that catalog pages linked
+python.org instead of our own (later-authored) API reference, and that "See also"
+blocks were run-on paragraphs. Five PRs: **#1207** standardized the bottom of every
+catalog page — "API & reference" → **Reference** (a short lead + a bulleted list:
+our `docs/reference/api/<widget>` page, then the `:ref:`<widget>-styling`` options +
+Custom styles guide) and the "See also" paragraph → a **described bullet list**
+(`link — short description`, matching the grid cards). All 19 native pages now point
+at **our** reference, not python.org; tk pages (Canvas/Text) keep the Tcl/Tk manual
+as a supplementary bullet (Text previously linked *only* the Tcl manual). **#1208**
+promoted **Geometry** to a top-level Reference section (`docs/reference/geometry/`),
+moving Pack/Grid/Place/Stacking out of Capabilities. **#1209** authored a new
+top-level **Variables** reference (`docs/reference/variables.rst`) — `Variable` /
+`StringVar` / `IntVar` / `DoubleVar` / `BooleanVar` (+ defaults, one constructor),
+`get`/`set`/`trace_*`, `LocaleVar`, and the `IntVar/DoubleVar.get()` `TclError`
+gotcha — closing the gap that made guides defer to python.org. Reference IA is now
+**… Validation · Variables · Geometry · Utilities · Capabilities · Events ·
+Cursors**. **#1210** retargeted the guide python.org links to our own reference
+(grid/pack/place → Geometry, `tkinter.ttk` → Widgets ref, Text → Text ref, Menu →
+Menu ref, `tkinter.font` → Fonts ref, Variable classes → Variables ref);
+**deliberately kept** as legitimate upstream: `threads` (stdlib `queue`/`threading`)
+and `custom-styles`/`icons` (ttk's raw element/layout model, which those guides
+don't teach). **#1211** listified the multi-link "See also" paragraphs across 19
+guide pages (single-link ones left as prose). Standing conventions now: **catalog +
+guide Reference/See-also are bulleted `link — description` lists; native-widget
+pages link OUR api reference; python.org is kept only for genuinely-stdlib surfaces
+we don't document.** #1207 needed a rebase (it predated the invalid-state #1204 +
+dependent-dropdown #1205 merges) — resolved by keeping both. Build gate all green
+(`sphinx -W -q -E`, exit 0); catalog coverage test green. **NEXT docs-H thread:**
+the deferred **screenshot slice** (placeholders in place across the whole catalog +
+guides). Prior entry follows.**)_
+
 _Last updated: 2026-07-13 (**Widgets-catalog USAGE-GUIDE ENRICHMENT PASS — COMPLETE
 and MERGED into `2.0`.** After the catalog was declared "done," the author flagged
 that the earlier pages were written "lite," *before* the standing rule to mine the
