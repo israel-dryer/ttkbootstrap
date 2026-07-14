@@ -1,19 +1,19 @@
 # テキストリーダー
-このアプリケーションはテキストファイルを開き、データをスクロール可能な `Text` ウィジェットに配置します。 
-ウィジェットです。 
+このアプリケーションはテキストファイルを開き、そのデータをスクロール可能な `Text` 
+ウィジェットに表示します。 
 
-![テキストリーダーの例](../assets/gallery/text_reader.png)  
+![ファイル検索の画像例](../assets/gallery/text_reader.png)  
 
 ## スタイル概要
 適用されているテーマは **sandstone** です。
 
-| 項目          | クラス     | Bootstyle |
+| 項目          | クラス     | ブートスタイル |
 | ---           | ---       | --- |
-| ファイル入力    | `Entry`   | default |
-| 参照ボタン  | `Button`  | default |
+| ファイル入力    | `Entry`   | デフォルト |
+| 参照ボタン  | `Button`  | デフォルト |
 
 ## サンプルコード
-[このコードをライブで実行](https://replit.com/@israel-dryer/text-reader#main.py) repl.it 上で
+repl.itで[このコードを実行](https://replit.com/@israel-dryer/text-reader#main.py)
 
 ```python
 import ttkbootstrap as ttk
@@ -31,7 +31,7 @@ class TextReader(ttk.Frame):
         self.create_widget_elements()
 
     def create_widget_elements(self):
-        """Create and add the widget elements"""
+        """ウィジェット要素を作成して追加する"""
         style = ttk.Style()
         self.textbox = ScrolledText(
             master=self,
@@ -40,7 +40,7 @@ class TextReader(ttk.Frame):
             highlightthickness=1
         )
         self.textbox.pack(fill=BOTH)
-        default_txt = "Click the browse button to open a new text file."
+        default_txt = "[参照]ボタンをクリックして新しいテキストファイルを開いてください。"
         self.textbox.insert(END, default_txt)
 
         file_entry = ttk.Entry(self, textvariable=self.filename)
