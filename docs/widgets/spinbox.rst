@@ -35,6 +35,13 @@ arrow click), and bind the value to a variable:
 and ``increment`` do not. Read the value with the bound variable's ``.get()`` or
 the spinbox's own ``.get()`` (which returns a string).
 
+When the range steps by a fraction, set ``format=`` so the field shows a clean
+number instead of float noise like ``0.30000000000000004``:
+
+.. code-block:: python
+
+   ttk.Spinbox(app, from_=0, to=1, increment=0.1, format="%.2f")
+
 Stepping through a list
 -----------------------
 
@@ -44,6 +51,10 @@ Pass ``values=`` instead of a range to step through a fixed list. Add
 .. code-block:: python
 
    ttk.Spinbox(app, values=["Small", "Medium", "Large"], wrap=True)
+
+``values=`` overrides ``from_`` / ``to`` / ``increment`` — use one mode or the
+other, not both. ``wrap=True`` works for a numeric range too, cycling ``to`` back
+around to ``from_``.
 
 Reacting to the arrows
 ----------------------
@@ -60,7 +71,12 @@ something as the value steps:
 
 ``command`` fires only for the arrows, not for typing; to react to typed edits too,
 trace the variable (see :doc:`State & variables
-</user-guide/foundations/state-and-variables>`).
+</user-guide/foundations/state-and-variables>`). The arrows also respond to the
+``<Up>`` / ``<Down>`` keys, and the widget emits ``<<Increment>>`` /
+``<<Decrement>>`` virtual events on a step — a binding point distinct from
+``command``. Spinbox has ``.set(value)`` to set the field directly but, unlike
+:doc:`Combobox <combobox>`, no ``current()`` method — select by value with
+``.set()`` or the variable.
 
 Color
 -----
