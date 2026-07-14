@@ -47,12 +47,35 @@ Sharing space
 pane with ``weight=4`` grows four times as fast as one with ``weight=1``, so the
 content pane above stays dominant while the sidebar stays slim.
 
-For the starting split, set a sash position explicitly with ``sashpos`` (after the
-window is laid out). The user can always drag the sash to override it:
+For the starting split, set a sash position explicitly with ``sashpos``. The user
+can always drag the sash to override it:
 
 .. code-block:: python
 
    paned.sashpos(0, 200)                    # put the first sash 200px from the start
+
+``sashpos`` only works once the panedwindow has been laid out, so call it after an
+``update_idletasks()`` (or from an idle callback) — right after ``add`` it is a
+no-op. With three or more panes, sash *N* sits between panes *N* and *N+1* and the
+positions stay ordered, so moving one sash can nudge its neighbours.
+
+Adding and removing panes
+-------------------------
+
+Panes aren't fixed at construction — manage them at runtime. ``insert`` adds a
+pane at a position, ``forget`` removes one (the widget itself survives), and
+``pane`` re-reads or changes a pane's settings, so you can freeze a pane by giving
+it ``weight=0``:
+
+.. code-block:: python
+
+   paned.insert(0, sidebar, weight=1)       # add a pane at the front
+   paned.pane(sidebar, weight=0)            # freeze it: no share of extra space
+   paned.forget(sidebar)                    # remove it again
+
+``panes()`` returns the managed pane widgets in order. Unlike the classic
+``tk.PanedWindow``, there is no per-pane ``minsize`` — a pane's minimum is driven
+by its children's requested size.
 
 Color
 -----
