@@ -1,33 +1,33 @@
-# Scale
+# スケール
 
-This widget style features a thin gray trough with a round slider handle that is 
-**primary** color by default or the [selected color](index.md#colors). The 
-slider handle lightens on _hover_ and darkens when _pressed_. 
+このウィジェットスタイルは、細い灰色の溝と丸いスライダーハンドルが特徴で、
+スライダーハンドルはデフォルトで**プライマリ**カラー、または[選択した色](index.md#colors)になります。
+スライダーハンドルは_ホバー_時に明るくなり、_押下_時に暗くなります。 
 
-This widget supports a special style for 
-[disabled state](#other-scale-styles).
+このウィジェットは、
+[無効状態](#other-scale-styles)用の特別なスタイルをサポートしています。
 
 ![scale](../assets/widget-styles/scale.gif)
 
 ```python
-# default Scale style
+# デフォルトのスケールスタイル
 Scale()
 
-# info colored label style
+# 情報色のラベルスタイル
 Scale(bootstyle="info")
 ```
 
-## Other scale styles
+## その他のスケールスタイル
 
-#### Disabled scale
-This style _cannot be applied via keywords_; it is configured through widget 
-settings.
+#### 無効状態のスケール
+このスタイルは _キーワードでは適用できません_。ウィジェットの
+設定を通じて設定します。
 
 ```python
-# create the scale in a disabled state
+# 無効な状態でスケールを作成する
 Scale(state="disabled")
 
-# disable a scale after creation
+# 作成後にスケールを無効にする
 scale = Scale()
 scale.configure(state="disabled")
 ```
