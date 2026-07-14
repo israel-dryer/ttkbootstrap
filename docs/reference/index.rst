@@ -69,6 +69,13 @@ The lookup layer:
       Attach input validation to entries — ready-made checks plus custom
       validators.
 
+   .. grid-item-card:: Variables
+      :link: variables
+      :link-type: doc
+
+      The typed value holders that bind to widgets — ``StringVar``, ``IntVar``,
+      ``DoubleVar``, ``BooleanVar``, and ``LocaleVar``.
+
    .. grid-item-card:: Geometry
       :link: geometry/index
       :link-type: doc
@@ -117,6 +124,7 @@ The lookup layer:
    localization
    fonts
    validation
+   variables
    geometry/index
    utilities
    capabilities/index
