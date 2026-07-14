@@ -51,6 +51,26 @@ virtual event:
 
    combo.bind("<<ComboboxSelected>>", on_pick)
 
+``<<ComboboxSelected>>`` fires only when the user **picks** from the list — not
+when they type into an editable combobox. To catch typed values too, also trace
+the variable. ``combo.current()`` with no argument returns the index of the
+selected value, or ``-1`` if the current text isn't one of ``values`` — the clean
+way to tell a picked value from a typed-in one.
+
+Keeping the list fresh
+----------------------
+
+Pass ``postcommand=`` to refresh ``values`` just before the dropdown opens — for a
+recent-items or live list — and ``height=`` to cap how many rows show before the
+list scrolls:
+
+.. code-block:: python
+
+   def refresh():
+       combo.configure(values=["Red", "Green", "Blue"])
+
+   combo = ttk.Combobox(app, textvariable=color, postcommand=refresh, height=8)
+
 Pick-only vs. editable
 ----------------------
 
@@ -76,6 +96,11 @@ constant color across styles.
 .. code-block:: python
 
    ttk.Combobox(app, values=["Red", "Green", "Blue"], bootstyle="success")
+
+The open dropdown is a classic ``tk`` listbox, not a ttk widget. ttkbootstrap
+colors it to match the current theme, but it does **not** take the combobox's
+``bootstyle`` accent — so a colored field shows a neutral dropdown, which is
+expected.
 
 States
 ------

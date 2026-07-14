@@ -45,6 +45,18 @@ position; ``delete(first, last)`` removes the characters between two:
    entry.insert("end", "!")            # append after the last
    entry.delete(0, "end")              # remove everything from 0 to the end
 
+Positions beyond ``0`` and ``"end"`` let you work relative to the cursor and the
+selection: ``"insert"`` is the cursor, ``"sel.first"`` / ``"sel.last"`` bound the
+current selection, and ``"@x"`` is the character under pixel *x*. Out-of-range
+indices round to the nearest legal position, so bounds checks are rarely needed:
+
+.. code-block:: python
+
+   entry.icursor("end")                # move the cursor to the end
+   entry.selection_range(0, "end")     # select all the text
+   if entry.selection_present():       # is anything selected?
+       entry.delete("sel.first", "sel.last")
+
 A password field
 ----------------
 
@@ -54,7 +66,8 @@ A password field
 
    ttk.Entry(app, show="•", bootstyle="primary")
 
-The variable still holds the real text — only the display is masked.
+The variable still holds the real text — only the display is masked. (Text the
+user *copies* out of a masked field is the mask characters, not the real value.)
 
 Validating input
 ----------------
@@ -75,8 +88,12 @@ stays until the value becomes valid again — so the field flags itself only aft
 the user leaves it, not on every keystroke. Pass ``when=`` to validate at a
 different time (for example ``when="key"`` to check as they type).
 
-The full rule set, custom rules, and the ``when=`` options are covered in the
-:doc:`Input validation guide </user-guide/feature-guides/validation>`.
+Two things worth knowing: a failed check puts the entry in the ``invalid`` state —
+the state the ``danger`` border maps to, readable with
+``entry.instate(["invalid"])`` — and validation does **not** re-run when you change
+the value through the bound ``textvariable`` from code (only user edits and focus
+trigger it). The full rule set, custom rules, and the ``when=`` options are covered
+in the :doc:`Input validation guide </user-guide/feature-guides/validation>`.
 
 Color
 -----
