@@ -114,6 +114,10 @@ pick-only control:
    combo.state(["readonly"])           # pick-only, not typeable
    combo.state(["!disabled"])          # re-enable
 
+With validation attached, a failed check also puts the field in the **invalid**
+state — what the ``danger`` border maps to. Validation sets and clears it for you;
+read it with ``combo.instate(["invalid"])``.
+
 API & reference
 ---------------
 

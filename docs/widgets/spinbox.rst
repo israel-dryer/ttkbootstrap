@@ -102,6 +102,10 @@ the value but blocks typing:
    spin.state(["readonly"])            # arrows work, not typeable
    spin.state(["!disabled", "!readonly"])   # back to normal
 
+With validation attached, a failed check also puts the field in the **invalid**
+state — what the ``danger`` border maps to. Validation sets and clears it for you;
+read it with ``spin.instate(["invalid"])``.
+
 API & reference
 ---------------
 
