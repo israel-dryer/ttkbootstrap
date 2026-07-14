@@ -393,7 +393,13 @@ tasks* (determinate/indeterminate `mode`, `mask`/`text`, `.start()/.stop()/
 .step()`, bind `variable`), cross-links to **API Reference › Floodgauge**. Style
 Reference is N/A (Canvas).
 
-### 5a-plan. Widgets-catalog authoring plan (LOCKED 2026-07-11)
+### 5a-plan. Widgets-catalog authoring plan (LOCKED 2026-07-11 — COMPLETE 2026-07-13)
+
+**STATUS: COMPLETE.** Every page authored across the family PRs; the final page
+(Canvas, robust) + the Scrolled thin stub + the no-gaps coverage sync test
+(`tests/test_widget_catalog_coverage.py`) landed 2026-07-13. Every `ttk.__all__`
+widget now has a catalog page or a justified allowlist entry.
+
 
 Coverage decided from a full inventory (19 native `BootMixin` + 8 shipped
 widgets). **~27 pages; 2 done (Button — to rewrite, Meter), ~25 to author.**

@@ -3,6 +3,41 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
+_Last updated: 2026-07-13 (**The WIDGETS CATALOG (docs Workstream H, `docs/widgets/`)
+is now COMPLETE.** The prior handoff's "remaining families" were stale — Containers
+(#1203878a), Range & misc (#27de4df6), Shipped indicators + interactive (#08425bbf/
+#091a50a0), and Text (#36adaeff) were **already merged into `2.0`**. This session
+authored the last two pages + the no-gaps mechanism on branch
+`docs/2.0-widgets-canvas`: **(1) `docs/widgets/canvas.rst`** — a robust, non-lite
+Canvas page (author steer: the earlier catalog pages ran "lite"; **mine the
+Tcl/Tk manual for concepts/caveats**, which the API-reference-first ordering
+enabled). Beyond basic drawing it teaches the coordinate system (float coords +
+`c`/`i`/`m`/`p` unit suffixes + normalised `coords`), ids vs. tags (the built-in
+`all`/`current` tags), the **display-list stacking model** (`tag_raise`/
+`tag_lower`; embedded windows always on top), **state-driven styling** (the
+`active*`/`disabled*` option triples give free hover styling — a gem lite pages
+miss), interactivity (`tag_bind`; *items are not widgets*; drag via
+`canvasx`/`canvasy`), per-item-type distinctive options (line `arrow`/`smooth`/
+`capstyle`, arc `start`/`extent`/`style`, polygon fill/hit-testing, text
+`width`-wrap/`angle`), embedding (`create_text`/`create_image` [live-ref caveat]/
+`create_window` [clipped by parent]), and scrolling (`scrollregion` =
+`bbox("all")`, `scan_mark`/`scan_dragto` pan, `confine`). Every snippet verified
+headlessly. **(2) `docs/widgets/scrolled.rst`** — the planned thin stub for
+`ScrolledFrame`/`ScrolledText` that cross-links the *Scroll long content* How-To
+(which owns the usage). **(3) `tests/test_widget_catalog_coverage.py`** — the
+no-gaps sync test: every public `tkinter.Widget` subclass in `ttk.__all__` (+ the
+non-tk shipped helpers `ToastNotification`/`ToolTip`) must have a
+`docs/widgets/<page>.rst` page or a justified `COVERED_ELSEWHERE` entry (Menu→guide,
+Tk*/LabelFrame→infra, ColorChooser→dialogs, Listbox→API ref, FloodgaugeLegacy→
+deprecated); a second test guards the allowlist from rot. Index cards + toctree
+updated (Canvas by Text, Scrolled among shipped). Build gate green
+(`sphinx -b html -W -q -E`, exit 0); suite **652 passed** (added 2; the 3
+`test_menu_api` "off_mac" failures are the known pristine-`2.0` macOS flakes).
+**With this, the Widgets catalog is DONE — every `ttk.__all__` widget is
+documented.** **NEXT docs-H threads:** the deferred **screenshot slice**
+(placeholders are in place across the catalog + guides) and any remaining
+Typography-guide follow-ups. Prior entry follows.**)_
+
 _Last updated: 2026-07-13 (**The self-authored API-REFERENCE layer is now COMPLETE
 — every planned Reference section authored and MERGED into `2.0`.** This was a
 large parallel sub-workstream tracked in its own doc,

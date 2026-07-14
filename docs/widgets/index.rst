@@ -97,6 +97,12 @@ where each page also documents the widget's hand-styling surface.
 
       A multi-line editor — tags, marks, search, and undo.
 
+   .. grid-item-card:: Canvas
+      :link: canvas
+      :link-type: doc
+
+      A drawing surface — shapes, text, images, and embedded widgets.
+
    .. grid-item-card:: Progressbar
       :link: progressbar
       :link-type: doc
@@ -175,6 +181,12 @@ where each page also documents the widget's hand-styling surface.
 
       A help popup that appears on hover.
 
+   .. grid-item-card:: Scrolled
+      :link: scrolled
+      :link-type: doc
+
+      Frame and text widgets with a scrollbar already wired in.
+
 .. toctree::
    :hidden:
 
@@ -192,6 +204,7 @@ where each page also documents the widget's hand-styling surface.
    panedwindow
    label
    text
+   canvas
    progressbar
    scale
    scrollbar
@@ -205,3 +218,4 @@ where each page also documents the widget's hand-styling surface.
    tableview
    toast
    tooltip
+   scrolled
