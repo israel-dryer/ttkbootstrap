@@ -1,22 +1,22 @@
 # メディアプレーヤー
-この例では、メディアプレーヤーのGUIを構築する方法を示します。ボタンは
-シンプルなUnicode文字です。
+この例では、メディアプレーヤーのGUIを作成する方法を示します。ボタンは
+単純なUnicode文字で構成されています。 
 
-![メディアプレーヤーの例](../assets/gallery/media_player.png)
+![ファイル検索画像の例](../assets/gallery/media_player.png)
 
-## スタイル概要
+## スタイルの概要
 この例で使用されているテーマは **yeti** です。
 
-| 項目                  | クラス     | Bootstyle |
+| 項目                  | クラス     | ブートスタイル |
 | ---                   | ---       | --- |
-| Header                | `Label`   | light-inverse |
-| Media Controls        | `Button`  | primary |
-| File Open             | `Button`  | secondary |
-| Time Elapsed Slider   | `Scale`   | secondary |
+| ヘッダー                | `Label`   | light-inverse |
+| メディアコントロール        | `Button`  | primary |
+| ファイルオープン             | `Button`  | secondary |
+| 経過時間スライダー   | `Scale`   | secondary |
 
 
-## コード例
-[このコードをオンラインで実行](https://replit.com/@israel-dryer/media-player#main.py) repl.itで
+## サンプルコード
+repl.itでこのコードを実行する[(https://replit.com/@israel-dryer/media-player#main.py)](https://replit.com/@israel-dryer/media-player#main.py)
 
 ```python
 from pathlib import Path
@@ -40,8 +40,8 @@ class MediaPlayer(ttk.Frame):
         self.create_buttonbox()
     
     def create_header(self):
-        """The application header to display user messages"""
-        self.hdr_var.set("Open a file to begin playback")
+        """ユーザーメッセージを表示するためのアプリケーションヘッダー"""
+        self.hdr_var.set("ファイルをオープンして再生を開始してください")
         lbl = ttk.Label(
             master=self, 
             textvariable=self.hdr_var, 
@@ -51,16 +51,16 @@ class MediaPlayer(ttk.Frame):
         lbl.pack(fill=X, expand=YES)
 
     def create_media_window(self):
-        """Create frame to contain media"""
+        """メディアを格納するフレームを作成する"""
         img_path = Path(__file__).parent / 'assets/mp_background.png'
         self.demo_media = ttk.PhotoImage(file=img_path)
         self.media = ttk.Label(self, image=self.demo_media)
         self.media.pack(fill=BOTH, expand=YES)
 
     def create_progress_meter(self):
-        """Create frame with progress meter with lables"""
+        """ラベル付きの進行状況メーターを含むフレームを作成する"""
         container = ttk.Frame(self)
-        container.pack(fill=X, expand=YES, pady=10)
+        container.pack(fill=X, expand=YES, padding=10)
         
         self.elapse = ttk.Label(container, text='00:00')
         self.elapse.pack(side=LEFT, padx=10)
@@ -76,7 +76,7 @@ class MediaPlayer(ttk.Frame):
         self.remain.pack(side=LEFT, fill=X, padx=10)
 
     def create_buttonbox(self):
-        """Create buttonbox with media controls"""
+        """メディアコントロール付きのボタンボックスを作成する"""
         container = ttk.Frame(self)
         container.pack(fill=X, expand=YES)
         ttk.Style().configure('TButton', font="-size 14")
@@ -111,14 +111,14 @@ class MediaPlayer(ttk.Frame):
 
         stop_btn = ttk.Button(
             master=container,
-            text=Emoji.get('black square for stop'),
+            text=Emoji.get('黒い四角（停止）'),
             padding=10,
         )
         stop_btn.pack(side=LEFT, fill=X, expand=YES)          
 
         stop_btn = ttk.Button(
             master=container,
-            text=Emoji.get('open file folder'),
+            text=Emoji.get('フォルダを開く'),
             bootstyle=SECONDARY,
             padding=10
         )
@@ -126,7 +126,7 @@ class MediaPlayer(ttk.Frame):
 
 
     def on_progress(self, val: float):
-        """Update progress labels when the scale is updated."""
+        """スケールが更新された際に、進行状況ラベルを更新します。"""
         elapsed = self.elapsed_var.get()
         remaining = self.remain_var.get()
         total = int(elapsed + remaining)
@@ -150,6 +150,6 @@ if __name__ == '__main__':
 
     app = ttk.Window("Media Player", "yeti")
     mp = MediaPlayer(app)
-    mp.scale.set(0.35)  # set default
+    mp.scale.set(0.35)  # デフォルト値を設定
     app.mainloop()
 ```
