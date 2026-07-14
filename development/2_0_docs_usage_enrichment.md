@@ -146,5 +146,12 @@ default flag" (false — `default=` exists), labeledscale "shows whole numbers"
 
 ---
 
-**Status:** audit COMPLETE 2026-07-13. PRs pending — execute in order, each its own
-branch off `2.0`, snippets verified headlessly, `-W` green, suite green.
+**Status:** COMPLETE 2026-07-13 — all six family PRs authored, verified headlessly,
+`-W` green, and **MERGED** into `2.0`: PR 1 Containers (#1196), PR 2 Range & misc
+(#1197), PR 3 Inputs (#1198), PR 4 Choice + Command (#1199), PR 5 Button + Treeview
+(#1200), PR 6 Shipped (#1201). The optional PR 7 (Text `image_create`/
+`window_create`) was **dropped** — Text is already robust and the API reference is
+its depth home. Five factual errors were fixed along the way (radiobutton
+shared-global note, button `default=` claim, labeledscale `:g`, toast
+anchors/default-position, tooltip `delay`). Merged `2.0` builds clean (`-W`, exit 0)
+and the catalog coverage test stays green.
