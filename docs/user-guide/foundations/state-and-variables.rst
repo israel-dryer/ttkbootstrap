@@ -82,6 +82,7 @@ the box is checked:
 
 .. seealso::
 
-   The :doc:`Variables guide </user-guide/feature-guides/variables>` for the full
-   picture, and :doc:`Localization </user-guide/feature-guides/localization>` for
-   ``LocaleVar``, a variable that re-translates itself when the locale changes.
+   - :doc:`Variables guide </user-guide/feature-guides/variables>` — the full
+     picture.
+   - :doc:`Localization </user-guide/feature-guides/localization>` — ``LocaleVar``,
+     a variable that re-translates itself when the locale changes.

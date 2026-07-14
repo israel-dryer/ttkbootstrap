@@ -89,6 +89,7 @@ for the standard Text API (``insert``, ``get``, ``delete``, tags):
 
 .. seealso::
 
-   :doc:`Arranging widgets </user-guide/foundations/arranging-widgets>` for
-   packing and gridding content, and :doc:`Run background work <threads>` for
-   streaming output into a ``ScrolledText`` without freezing the UI.
+   - :doc:`Arranging widgets </user-guide/foundations/arranging-widgets>` — packing
+     and gridding content.
+   - :doc:`Run background work <threads>` — streaming output into a
+     ``ScrolledText`` without freezing the UI.

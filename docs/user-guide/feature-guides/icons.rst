@@ -175,7 +175,7 @@ A small toolbar of icon-only buttons beside a labeled action:
 
 .. seealso::
 
-   For the *application* (window/taskbar) icon, see
-   :doc:`Windows </user-guide/feature-guides/windows>`. For
-   raster images and Pillow, see
-   :doc:`Show images and icons </user-guide/how-to/working-with-images>`.
+   - :doc:`Windows </user-guide/feature-guides/windows>` — the *application*
+     (window/taskbar) icon.
+   - :doc:`Show images and icons </user-guide/how-to/working-with-images>` — raster
+     images and Pillow.

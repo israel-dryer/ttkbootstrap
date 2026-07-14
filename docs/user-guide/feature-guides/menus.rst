@@ -292,8 +292,8 @@ cascade off macOS, so a Help menu is present everywhere.
 
 .. seealso::
 
-   :doc:`Windows </user-guide/feature-guides/windows>` for the cross-platform
-   windowing model this builds on, the :doc:`Events guide
-   </user-guide/feature-guides/events>` for the event object and binding
-   conventions, and the :doc:`Menu reference </reference/api/menu>` for the full
-   option set.
+   - :doc:`Windows </user-guide/feature-guides/windows>` — the cross-platform
+     windowing model this builds on.
+   - :doc:`Events guide </user-guide/feature-guides/events>` — the event object and
+     binding conventions.
+   - :doc:`Menu reference </reference/api/menu>` — the full option set.

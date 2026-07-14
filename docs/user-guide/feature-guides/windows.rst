@@ -365,9 +365,11 @@ possible, but they affect what you can rely on:
 
 .. seealso::
 
-   :doc:`Structuring an app </user-guide/getting-started/app-structures>` for the
-   single-root rule, :doc:`Theming & Colors </user-guide/feature-guides/theming>`
-   for themes and light/dark, :doc:`Widget & screen info </reference/winfo>` for
-   the ``winfo_*`` size/position accessors, and
-   :doc:`Open a second window </user-guide/how-to/multiple-windows>` for the
-   second-window recipe.
+   - :doc:`Structuring an app </user-guide/getting-started/app-structures>` — the
+     single-root rule.
+   - :doc:`Theming & Colors </user-guide/feature-guides/theming>` — themes and
+     light/dark.
+   - :doc:`Widget & screen info </reference/winfo>` — the ``winfo_*`` size/position
+     accessors.
+   - :doc:`Open a second window </user-guide/how-to/multiple-windows>` — the
+     second-window recipe.

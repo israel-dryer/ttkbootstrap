@@ -186,9 +186,9 @@ fields unflagged.
 
 .. seealso::
 
-   :doc:`Variables </user-guide/feature-guides/variables>` for reacting to input
-   changes generally with traces,
-   :doc:`Events </user-guide/feature-guides/events>` for the binding system these
-   validation callbacks are built on, and
-   :doc:`Dialogs </user-guide/feature-guides/dialogs>` for the ``Messagebox`` used
-   above.
+   - :doc:`Variables </user-guide/feature-guides/variables>` — reacting to input
+     changes generally, with traces.
+   - :doc:`Events </user-guide/feature-guides/events>` — the binding system these
+     validation callbacks are built on.
+   - :doc:`Dialogs </user-guide/feature-guides/dialogs>` — the ``Messagebox`` used
+     above.
