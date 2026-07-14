@@ -38,6 +38,11 @@ variable to drive it as work advances:
 
 For a fixed caption instead of the value, pass ``text`` instead of ``mask``.
 
+``mask`` formats the value as an **integer** (``int(value)``), so a fractional
+value shows truncated in the label even while the fill stays exact. Size the gauge
+with ``length`` (the long axis, default 200) and ``thickness`` (the short axis,
+default 50), and set the label's ``font`` if you want.
+
 Indeterminate mode
 ------------------
 

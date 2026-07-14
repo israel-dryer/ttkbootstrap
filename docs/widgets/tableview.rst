@@ -61,6 +61,10 @@ the columns that need one. The common keys are ``text`` (the heading),
 
    Tableview(app, coldata=coldata, rowdata=rows)
 
+At the table level, ``height`` sets how many rows are visible at once (distinct
+from ``pagesize``, which is the page length), and ``autofit=True`` sizes the
+columns to their content.
+
 Search and pagination
 ---------------------
 
@@ -109,6 +113,7 @@ column equals a value:
 .. code-block:: python
 
    table.search_table_data("Engineer")               # match anywhere
+   table.search_table_data("Ada", 0)                 # or limit to given columns
    table.filter_column_to_value(cid=1, value="Admiral")   # match one column
 
    filtered = table.get_rows(filtered=True)          # the rows now showing
@@ -130,14 +135,19 @@ just the selected rows:
 
    selected = table.get_rows(selected=True)
 
-``insert_row`` adds a row and ``delete_row`` removes one by ``iid``. Both change
-the underlying data; call ``load_table_data()`` afterward to redraw:
+``insert_row`` adds a row and ``delete_row`` removes one by ``iid``:
 
 .. code-block:: python
 
    table.insert_row("end", ["Katherine Johnson", "Mathematician", 101])
    table.delete_row(iid="I001")
    table.load_table_data()
+
+``insert_row`` redraws by default (``reload=True``); pass ``reload=False`` when
+adding many rows, then call ``load_table_data()`` once at the end. Row ids are
+generated unless you set ``iid_field=`` (a column index or heading) at
+construction — that keys each row to your own id, for a stable
+``delete_row(iid=…)`` / ``get_row(iid=…)``.
 
 To replace the whole dataset at once, call
 ``build_table_data(coldata, rowdata)`` — it rebuilds the columns and rows from

@@ -37,8 +37,26 @@ dial), or with ``configure``; ``step`` nudges it by an amount:
 .. code-block:: python
 
    meter.amount_used_var.get()          # -> the current value
+   meter.value                           # -> the same, via the read/write property
    meter.configure(amount_used=80)      # set it
-   meter.step(5)                        # advance by 5
+   meter.step(5)                        # advance by 5 (bounces at the ends)
+
+``step`` **bounces** back when it reaches the minimum or maximum, reversing
+direction rather than clamping — it's for a looping animation, not a plain
+increment.
+
+The center label
+----------------
+
+The big number is formatted by ``amount_format`` (a ``str.format`` template,
+default ``"{:.0f}"``), and ``text_left`` / ``text_right`` flank it with a unit — a
+``$`` prefix or a ``%`` suffix. ``amount_min`` shifts where the range starts, for a
+dial that runs from something other than zero:
+
+.. code-block:: python
+
+   Meter(app, amount_used=42, amount_format="{:.1f}", text_right="%",
+         amount_min=0, subtext="CPU")
 
 Full or semicircle
 ------------------
@@ -82,6 +100,9 @@ progress look:
 .. code-block:: python
 
    Meter(app, amount_used=65, stripe_thickness=10, bootstyle="info")
+
+``wedge_size`` instead draws the indicator as a moving wedge over the base ring,
+rather than a filled arc — a pointer look for a live reading.
 
 .. admonition:: 📷 Screenshot (placeholder)
    :class: screenshot-placeholder
