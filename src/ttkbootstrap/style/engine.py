@@ -26,23 +26,6 @@ class Style(ttk.Style):
     inherits all of it's methods and properties. However, in
     ttkbootstrap, this class is implemented as a singleton. Subclassing
     is not recommended and may have unintended consequences.
-
-    Examples:
-
-        ```python
-        # instantiate the style with default theme
-        style = Style()
-
-        # instantiate the style with another theme
-        style = Style(theme='bootstrap-dark')
-
-        # check all available themes
-        for theme in style.theme_names():
-            print(theme)
-        ```
-
-    See the [Python documentation](https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Style)
-    on this class for more details.
     """
 
     instance = None

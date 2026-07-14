@@ -30,12 +30,6 @@ def statespec(spec):
 
     Tokens are space-separated; each may be negated with a leading `!`
     ("!selected"). An unknown token raises `ValueError`.
-
-    Examples:
-        ```python
-        statespec("disabled selected")  # -> ("disabled", "selected")
-        statespec("!selected")          # -> ("!selected",)
-        ```
     """
     tokens = tuple(spec.split())
     for token in tokens:
@@ -49,20 +43,12 @@ def statespec(spec):
 
 
 class El:
-    """A ttk layout element: a name, layout options, and child `El`s.
+    """A ttk layout element: a name, layout options, and child elements.
 
     `layout()` lowers an `El` tree to ttk's nested `(name, {opts, "children":
     [...]})` form. Mirrors bootstack's `Element.spec()`, but takes children as a
     constructor `children=[...]` kwarg (unambiguous; reads as the tree it builds)
     rather than fluent positional parenting.
-
-    Examples:
-        ```python
-        El("Radiobutton.padding", sticky=NSEW, children=[
-            El(f"{ttk_style}.indicator", side=LEFT),
-            El("Radiobutton.focus", side=LEFT, children=[
-                El("Radiobutton.label", sticky=NSEW)])])
-        ```
     """
 
     __slots__ = ("name", "options", "children")
@@ -100,12 +86,6 @@ def register_style(style, ttk_style):
     `map`) does not register it on its own; call this (or `layout()`, which calls
     it for you) so `style="<ttk_style>"` resolves to what you built.
 
-    Examples:
-        ```python
-        state_map(style, "My.TButton", background={"pressed": "#333"})
-        register_style(style, "My.TButton")   # now style="My.TButton" resolves
-        ```
-
     Registration is per *active* theme (it mirrors the built-in builders). A
     hand-built style is not auto-rebuilt on a theme switch, so re-build + re
     -register it if you change themes -- engine-managed theme-follow for custom
@@ -138,14 +118,6 @@ def image_element(style, name, *, default, states=None, **options):
     explicit. Each state string is validated by `statespec` (a typo raises
     instead of silently never matching). `options` (width, border, sticky, ...)
     pass through to `element_create`.
-
-    Examples:
-        ```python
-        image_element(style, f"{ttk_style}.indicator", default=on,
-            states={"disabled selected": on_disabled, "disabled": disabled,
-                    "!selected": off},
-            width=20, border=4, sticky=W)
-        ```
     """
     args = [default]
     if states:
@@ -161,11 +133,6 @@ def state_map(style, ttk_style, **options):
     dict `{state_string: value}` (or an iterable of `(state_string, value)`
     pairs). State strings are validated by `statespec`. Replaces bare
     `foreground=[("disabled", fg)]` lists.
-
-    Examples:
-        ```python
-        state_map(style, ttk_style, foreground={"disabled": disabled_fg})
-        ```
     """
     mapping = {}
     for option, spec in options.items():
@@ -189,14 +156,6 @@ class StyleName:
       .element    the element-name prefix with the class token's leading "T"
                   dropped ("info.Horizontal.TScale" -> "info.Horizontal.Scale"),
                   matching the old `h_ttkstyle.replace(".TS", ".S")` dance.
-
-    Examples:
-        ```python
-        sn = StyleName("TScale", colorname, orient="Horizontal")
-        sn.colorname    # PRIMARY when colorname was DEFAULT/"", else as given
-        sn.ttk_style     # "Horizontal.TScale" or "primary.Horizontal.TScale"
-        sn.element      # "Horizontal.Scale"
-        ```
     """
 
     __slots__ = ("colorname", "ttk_style", "element")
