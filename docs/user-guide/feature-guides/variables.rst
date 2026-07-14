@@ -149,6 +149,5 @@ localization subsystem.
 .. seealso::
 
    :doc:`State & variables </user-guide/foundations/state-and-variables>` for the
-   binding basics. The variable classes are standard tkinter; for the base API see
-   `Variable classes <https://docs.python.org/3/library/tkinter.html#coupling-widget-variables>`__
-   on python.org.
+   binding basics, and the :doc:`Variables reference </reference/variables>` for
+   the ``StringVar`` / ``IntVar`` / … API and the numeric-coercion gotcha.

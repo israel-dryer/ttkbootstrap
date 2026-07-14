@@ -295,5 +295,5 @@ cascade off macOS, so a Help menu is present everywhere.
    :doc:`Windows </user-guide/feature-guides/windows>` for the cross-platform
    windowing model this builds on, the :doc:`Events guide
    </user-guide/feature-guides/events>` for the event object and binding
-   conventions, and the `tkinter menu reference
-   <https://docs.python.org/3/library/tkinter.html>`_ for the full option set.
+   conventions, and the :doc:`Menu reference </reference/api/menu>` for the full
+   option set.

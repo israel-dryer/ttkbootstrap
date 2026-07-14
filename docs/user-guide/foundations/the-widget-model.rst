@@ -50,8 +50,7 @@ and read or change them afterward:
 ``configure()`` with no arguments returns *every* option the widget supports —
 a quick way to discover what you can set. For the full, per-widget option list,
 each widget's page in the :doc:`Widgets catalog </widgets/index>` and the
-`tkinter.ttk <https://docs.python.org/3/library/tkinter.ttk.html>`__ reference
-are the place to look.
+:doc:`Widgets reference </reference/api/index>` are the place to look.
 
 .. note::
 

@@ -8,9 +8,8 @@ How-To
 
 Short, task-focused recipes for common jobs — the everyday tkinter tasks a
 newcomer arrives needing, written the ttkbootstrap way (ttkbootstrap widgets and
-idioms throughout, with links out to the `tkinter reference
-<https://docs.python.org/3/library/tkinter.html>`_ for the raw API). This band
-absorbs the recipes from the old cookbook.
+idioms throughout, with links to the :doc:`Reference </reference/index>` for the
+full API). This band absorbs the recipes from the old cookbook.
 
 Building interfaces
 -------------------

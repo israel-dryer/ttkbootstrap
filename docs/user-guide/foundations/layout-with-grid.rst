@@ -147,8 +147,7 @@ Recap
   grow.
 - ``columnspan`` / ``rowspan`` let a widget cover several cells.
 
-For every option, see the
-`Grid reference <https://docs.python.org/3/library/tkinter.html#tkinter.Grid>`__.
+For every option, see the :doc:`Grid reference </reference/geometry/grid>`.
 
 .. seealso::
 
