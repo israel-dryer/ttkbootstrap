@@ -1,6 +1,7 @@
 # 定義
 
-以下の標準テーマは `ttkbootstrap.themes.standard` モジュールで定義されています。
+以下の標準テーマは、
+`ttkbootstrap.themes.standard` モジュールで定義されています。
 
 ```json
 {
