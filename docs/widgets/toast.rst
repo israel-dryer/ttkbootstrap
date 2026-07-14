@@ -40,18 +40,25 @@ Unlike most widgets you don't ``pack`` a toast — you build it with a ``title``
    app.mainloop()
 
 ``duration`` is in milliseconds; **omit it** and the toast stays until it is
-clicked. ``hide_toast()`` dismisses one early.
+clicked. ``show_toast()`` returns the toast, so keep the reference to dismiss it
+early with ``.hide()`` (in the example above the toast is a local, so hold onto it
+if you need to close it yourself).
 
 Where it appears
 ----------------
 
 ``position`` is an ``(x, y, anchor)`` tuple — the ``x``/``y`` offset from the
-corner named by ``anchor`` (``"ne"``, ``"se"``, ``"sw"``, ``"nw"``). The default is
-the bottom-right:
+corner or edge named by ``anchor``, which accepts any of the eight compass points
+(``"n"``, ``"e"``, ``"s"``, ``"w"``, ``"nw"``, ``"ne"``, ``"sw"``, ``"se"``). The
+default is **platform-specific** — bottom-right (``"se"``) on Windows and Linux,
+top-right (``"ne"``) on macOS:
 
 .. code-block:: python
 
    ToastNotification(title="Done", message="Export finished.", position=(10, 60, "ne"))
+
+Toasts anchored to the same corner **stack** automatically instead of overlapping,
+and reflow when one is dismissed.
 
 Color and icon
 --------------

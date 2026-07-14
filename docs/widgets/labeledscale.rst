@@ -33,8 +33,20 @@ variable's value and follows the handle as it moves:
 
    app.mainloop()
 
-Read the chosen value from the bound variable's ``.get()``. The label shows whole
-numbers, so bind an ``IntVar`` for a clean readout.
+Read the chosen value from the bound variable's ``.get()``. The label renders the
+value cleanly — it drops a trailing ``.0`` (so ``4.0`` shows as ``4``) but keeps a
+real fraction (``3.7`` shows as ``3.7``).
+
+The widget exposes its parts as ``ls.scale`` and ``ls.label`` for fine-tuning, and
+its ``value`` property reads or sets the current number directly. A
+``LabeledScale`` is horizontal only — there is no ``orient``:
+
+.. code-block:: python
+
+   ls = LabeledScale(app, variable=level, from_=0, to=100)
+   ls.pack(fill="x")
+   ls.scale.configure(length=240)       # reach the underlying Scale
+   print(ls.value)                       # read the current number directly
 
 Where the label sits
 --------------------

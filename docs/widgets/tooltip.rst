@@ -39,12 +39,23 @@ Delay and wrapping
 ------------------
 
 ``delay`` is how long (in milliseconds) the pointer must rest before the tip shows
-(default 500); ``wraplength`` (in pixels) wraps a long tip onto multiple lines:
+(default 250); ``wraplength`` (in pixels) wraps a long tip onto multiple lines:
 
 .. code-block:: python
 
    ToolTip(save, text="A longer explanation that should wrap onto a few lines.",
-           delay=250, wraplength=200)
+           delay=400, wraplength=200)
+
+By default the tip **follows the pointer**. Pass ``position=`` to anchor it to the
+widget instead — ``"top"``, ``"bottom"``, ``"left"``, ``"right"``, ``"center"``,
+or a pair like ``"top left"``:
+
+.. code-block:: python
+
+   ToolTip(save, text="Save the file", position="top")
+
+A ``ToolTip`` isn't fire-and-forget — ``configure()`` changes its ``text``,
+``bootstyle``, and other options later, and a visible tip updates in place.
 
 Color
 -----

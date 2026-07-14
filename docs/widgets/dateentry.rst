@@ -41,7 +41,19 @@ Create a ``DateEntry`` and read the chosen date with ``get_date()`` — it retur
 
 The widget exposes its parts as ``picker.entry`` (the text field) and
 ``picker.button`` (the calendar button), and ``enable()`` / ``disable()`` toggle
-interaction.
+interaction. The ``value`` property is a shorthand for get/set.
+
+``get_date()`` parses the **live entry text**, so typed keyboard edits are honored,
+and an unparseable entry is flagged ``invalid`` when the field loses focus. If the
+text is empty or can't be parsed it falls back to the last date set — it does
+**not** return ``None`` here, unlike the ``Querybox.get_date`` *dialog*, which
+returns ``None`` on cancel.
+
+To run code when the user picks from the calendar, bind ``<<DateEntrySelected>>``:
+
+.. code-block:: python
+
+   picker.bind("<<DateEntrySelected>>", lambda event: print(picker.get_date()))
 
 Format and calendar
 -------------------
@@ -53,6 +65,9 @@ sets the leftmost column (``0`` = Monday … ``6`` = Sunday):
 .. code-block:: python
 
    DateEntry(app, date_format="%Y-%m-%d", start_date=datetime(2025, 1, 1), first_weekday=6)
+
+``show_outside_days=False`` hides the adjacent-month days the calendar uses to pad
+the first and last weeks.
 
 Color
 -----
