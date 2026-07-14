@@ -37,6 +37,24 @@ tab ``text``. Build a frame per page, fill it, and add it:
 
    app.mainloop()
 
+Tab labels and keyboard traversal
+---------------------------------
+
+``add`` (and ``tab``) take more than ``text``. ``image=`` with ``compound=`` puts
+an icon on the tab, ``underline=`` marks a mnemonic character, and ``sticky=``
+controls how the page fills its tab area. Call ``enable_traversal()`` once to turn
+on keyboard navigation — Control-Tab and Control-Shift-Tab cycle the tabs, and
+Alt+mnemonic jumps straight to one:
+
+.. code-block:: python
+
+   notebook.add(advanced, text="Advanced", underline=0)   # Alt+A jumps here
+   notebook.enable_traversal()
+
+Traversal only reaches pages that are **direct children** of the notebook. To show
+an icon, pass a ``PhotoImage`` as ``image=`` (see
+:doc:`Show images and icons </user-guide/how-to/working-with-images>`).
+
 Switching tabs
 --------------
 
@@ -49,6 +67,11 @@ The user clicks a tab to switch; ``select`` switches programmatically, and
    notebook.select(0)                       # or by index
    current = notebook.index(notebook.select())   # -> the selected tab's index
 
+Methods that address a tab — ``select``, ``tab``, ``hide``, ``forget``, ``index``
+— accept the same tab-id forms: the page widget, an integer index, ``"current"``,
+or ``"@x,y"`` (the tab at a point). ``tabs()`` returns every page widget in tab
+order, handy for iterating.
+
 Reacting to a tab change
 ------------------------
 
@@ -58,6 +81,10 @@ To run code when the page changes — lazy-load its contents, say — bind the
 .. code-block:: python
 
    notebook.bind("<<NotebookTabChanged>>", lambda event: print("now on", notebook.index("current")))
+
+This also fires once when the notebook first appears and selects its initial tab —
+so a handler that lazy-loads a page's contents runs for the starting tab too,
+which is usually what you want.
 
 Disabling and removing tabs
 ---------------------------
@@ -92,9 +119,11 @@ API & reference
 ---------------
 
 ``Notebook`` is the native ``ttk.Notebook`` — ttkbootstrap adds ``bootstyle=`` but
-no other Python API. For its constructor and the tab-management methods
-(``add``, ``insert``, ``select``, ``tab``, ``hide``, ``forget``, ``index``,
-``tabs``) see the
+no other Python API. Its own methods manage tabs: ``add`` / ``insert(pos, …)`` to
+append or insert a page, ``select`` / ``tab`` / ``index`` / ``tabs`` to query and
+switch, ``hide`` / ``forget`` to remove, ``enable_traversal`` for keyboard
+navigation, and ``identify(x, y)`` to hit-test the tab bar. For the full signatures
+see the
 `tkinter.ttk.Notebook <https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Notebook>`__
 reference.
 

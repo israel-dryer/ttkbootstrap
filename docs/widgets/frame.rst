@@ -67,6 +67,10 @@ a card glow while an entry inside it is focused:
    entry.bind("<FocusIn>",  lambda event: card.state(["focus"]))
    entry.bind("<FocusOut>", lambda event: card.state(["!focus"]))
 
+Prefer ``card`` and ``highlight`` over a raw ``relief=``/``borderwidth=`` border:
+plain ttk relief is theme-dependent and needs a non-zero ``borderwidth`` to show
+at all, while the ``card`` hairline matches the rest of the theme.
+
 Colored background
 ------------------
 
@@ -77,6 +81,22 @@ reads against the fill (as the header in `Usage`_ does):
 .. code-block:: python
 
    ttk.Frame(app, padding=10, bootstyle="secondary")
+
+Fixing a frame's size
+---------------------
+
+A frame sizes itself to fit its children, so ``width=`` and ``height=`` are
+**ignored** the moment you pack or grid anything into it. To make a frame hold a
+fixed size regardless of its contents, turn **geometry propagation** off:
+
+.. code-block:: python
+
+   panel = ttk.Frame(app, width=200, height=120)
+   panel.pack()
+   panel.pack_propagate(False)      # keep 200x120 even after adding children
+
+Use ``grid_propagate(False)`` instead when the frame's children are gridded. This
+is the usual answer to "why won't my frame stay the size I set?"
 
 API & reference
 ---------------
