@@ -1,6 +1,6 @@
 # クックブック
 
-ttkbootstrapで特定の操作を行う方法を示すレシピのコレクションです。
+ttkbootstrapでの特定の操作方法を解説したレシピのコレクションです。
 <br><br> 
 
-![レシピ集](../assets/cookbook/code-cooking.jfif)
+![recipes](../assets/cookbook/code-cooking.jfif)
