@@ -100,11 +100,18 @@ variable, not a state:
    size.set("large")                   # select a button by its value
    radio.invoke()                      # select this button programmatically
 
+A radiobutton created without an explicit ``variable=`` starts in the
+indeterminate ``alternate`` state — its default variable is unset, so it looks
+unselected, the same mixed state a :doc:`Checkbutton <checkbutton>` shows. Bind a
+variable and set it to a button's ``value`` to select that button and clear the
+rest.
+
 .. note::
 
    The shared ``variable=`` is what links a group — selecting one button clears
-   the others. Give every button in the group the same variable; without it they
-   are unrelated buttons, not a mutually exclusive set.
+   the others. Give **each group its own variable**. Radiobuttons created *without*
+   an explicit ``variable=`` don't become independent: they all fall back to the
+   same built-in default variable and interfere as one accidental group.
 
 API & reference
 ---------------

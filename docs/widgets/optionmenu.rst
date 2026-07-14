@@ -55,6 +55,17 @@ value as its argument:
 
    ttk.OptionMenu(app, size, "Medium", "Small", "Medium", "Large", command=on_choice)
 
+Rebuilding the choices
+----------------------
+
+The choices are fixed at construction, but ``set_menu(default, *values)`` rebuilds
+the list later — repopulate it when your data changes:
+
+.. code-block:: python
+
+   menu = ttk.OptionMenu(app, size, "Medium", "Small", "Medium", "Large")
+   menu.set_menu("Large", "Large", "X-Large")   # new default + new choices
+
 Color
 -----
 
@@ -89,8 +100,8 @@ API & reference
 
 ``OptionMenu`` is the native ``ttk.OptionMenu`` — ttkbootstrap adds ``bootstyle=``
 but no other Python API. Its constructor is
-``OptionMenu(master, variable, default, *values, command=None, direction="below")``;
-see the
+``OptionMenu(master, variable, default, *values, command=None, direction="below")``,
+and ``set_menu(default, *values)`` rebuilds the choices; see the
 `tkinter.ttk.OptionMenu <https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.OptionMenu>`__
 reference.
 
