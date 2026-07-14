@@ -39,6 +39,26 @@ Like a :doc:`Spinbox <spinbox>`, ``from_`` has a trailing underscore because
    A scale's value is a **float**, even over an integer-looking range. Round it
    (``round(volume.get())``) or bind an ``IntVar`` if you need a whole number.
 
+Setting the value from code
+---------------------------
+
+``scale.set(value)`` moves the handle and **clips** to the ``from_``/``to`` range.
+Setting the bound variable directly does **not** clip — the handle can then show a
+value past the ends — so prefer ``.set()`` (or clamp the value yourself) when the
+source might be out of bounds:
+
+.. code-block:: python
+
+   scale.set(150)          # clipped to `to` (100)
+   volume.set(150)         # NOT clipped — the handle overshoots the track
+
+Unlike ``tk.Scale``, ``ttk.Scale`` has no ``resolution``, ``tickinterval``,
+``showvalue``, or ``label`` options — use ``round()`` / an ``IntVar`` for stepping
+and the ``LabeledScale`` widget for a value readout. ``scale.coords(value)``
+returns the pixel position of a value along the trough (and ``scale.get(x, y)``
+maps a pixel back to a value) — how ``LabeledScale`` parks its label over the
+handle.
+
 Reacting as it moves
 --------------------
 

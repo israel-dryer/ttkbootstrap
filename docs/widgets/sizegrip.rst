@@ -33,6 +33,15 @@ A sizegrip is a visual affordance — the window is resizable from its edges
 regardless — so add one when a corner handle makes the resize obvious, typically
 beside a status bar.
 
+A sizegrip only resizes from the **south-east**, which is why it belongs at the
+bottom-right with ``anchor=SE``. Two caveats:
+
+- It **won't resize a window whose position was set relative to the right or
+  bottom edge** — a ``geometry("WxH-x-y")`` with minus signs. Windows placed with
+  ``+x+y`` work normally.
+- On macOS the window already draws its own resize corner, so a ``Sizegrip`` there
+  is redundant (harmless, but the native grip sits on top).
+
 Color
 -----
 
