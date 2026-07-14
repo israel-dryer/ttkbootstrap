@@ -1,20 +1,19 @@
 # PCクリーナー
-この例では、さまざまなスタイルを使用してPC用のUIを構築する方法を示します。
-このクリーナーアプリケーションは、次の画像を参考にしています：
-[ここ](https://images.idgesg.net/images/article/2018/08/cw_win10_utilities_ss_02-100769136-orig.jpg).
+この例では、さまざまなスタイルを使用してPCクリーナーアプリケーションのUIを構築する方法を示します。
+これは、[こちら](https://images.idgesg.net/images/article/2018/08/cw_win10_utilities_ss_02-100769136-orig.jpg)にある画像を基に作成したものです。
 
-![PCクリーナーの例](../assets/gallery/pc_cleaner.png)
+![ファイル検索画像の例](../assets/gallery/pc_cleaner.png)
 
-## スタイル概要
-この例で使用されているテーマは **pulse** です。
+## スタイルの概要
+この例で使用しているテーマは **pulse** です。
 
-| 項目                  | クラス         | Bootstyle |
+| 項目                  | クラス         | ブートスタイル |
 | ---                   | ---           | --- |
-| Action buttons        | `Button`      | info |
-| Progressbar           | `Progressbar` | success-striped |
+| アクションボタン        | `Button`      | info |
+| プログレスバー          | `Progressbar` | success-striped |
 
-## コード例
-[このコードをオンラインで実行](https://replit.com/@israel-dryer/pc-cleaner#main.py) repl.itで
+## サンプルコード
+repl.itで[このコードを実行](https://replit.com/@israel-dryer/pc-cleaner#main.py)
 
 ```python
 from pathlib import Path
@@ -30,7 +29,7 @@ class Cleaner(ttk.Frame):
         super().__init__(master, **kwargs)
         self.pack(fill=BOTH, expand=YES)
 
-        # application images
+        # アプリケーション画像
         self.images = [
             ttk.PhotoImage(
                 name='logo',
@@ -58,7 +57,7 @@ class Cleaner(ttk.Frame):
                 file=PATH / 'icons8_protect_40px.png')
         ]
 
-        # header
+        # ヘッダー
         hdr_frame = ttk.Frame(self, padding=20, bootstyle=SECONDARY)
         hdr_frame.grid(row=0, column=0, columnspan=3, sticky=EW)
 
@@ -77,7 +76,7 @@ class Cleaner(ttk.Frame):
         )
         logo_text.pack(side=LEFT, padx=10)
 
-        # action buttons
+        # アクションボタン
         action_frame = ttk.Frame(self)
         action_frame.grid(row=1, column=0, sticky=NSEW)
 
@@ -117,11 +116,11 @@ class Cleaner(ttk.Frame):
         )
         options_btn.pack(side=TOP, fill=BOTH, ipadx=10, ipady=10)
 
-        # option notebook
+        # オプションノートブック
         notebook = ttk.Notebook(self)
         notebook.grid(row=1, column=1, sticky=NSEW, pady=(25, 0))
 
-        # windows tab
+        # ウィンドウタブ
         windows_tab = ttk.Frame(notebook, padding=10)
         wt_scrollbar = ttk.Scrollbar(windows_tab)
         wt_scrollbar.pack(side=RIGHT, fill=Y)
@@ -137,7 +136,7 @@ class Cleaner(ttk.Frame):
         )
         wt_canvas.pack(side=LEFT, fill=BOTH)
 
-        # adjust the scrollregion when the size of the canvas changes
+        # キャンバスのサイズが変更された際にスクロール領域を調整する
         wt_canvas.bind(
             sequence='<Configure>',
             func=lambda e: wt_canvas.configure(
@@ -148,10 +147,10 @@ class Cleaner(ttk.Frame):
         wt_canvas.create_window((0, 0), window=scroll_frame, anchor=NW)
 
         radio_options = [
-            'Internet Cache', 'Internet History', 'Cookies',
-            'Download History', 'Last Download Location',
-            'Session', 'Set Aside Tabs', 'Recently Typed URLs',
-            'Saved Form Information', 'Saved Password'
+            'インターネットキャッシュ', 'インターネット履歴', 'Cookie',
+            'ダウンロード履歴', '最後のダウンロード場所',
+            'セッション', 'タブの保存', '最近入力したURL',
+            '保存されたフォーム情報', '保存されたパスワード'
         ]
 
         edge = ttk.Labelframe(
@@ -168,7 +167,7 @@ class Cleaner(ttk.Frame):
         )
         explorer.pack(fill=BOTH, padx=20, pady=10, expand=YES)
 
-        # add radio buttons to each label frame section
+        # 各ラベルフレームセクションにラジオボタンを追加
         for section in [edge, explorer]:
             for opt in radio_options:
                 cb = ttk.Checkbutton(section, text=opt, state=NORMAL)
@@ -176,14 +175,14 @@ class Cleaner(ttk.Frame):
                 cb.pack(side=TOP, pady=2, fill=X)
         notebook.add(windows_tab, text='windows')
 
-        # empty tab for looks
+        # 見た目のための空のタブ
         notebook.add(ttk.Frame(notebook), text='applications')
 
-        # results frame
+        # 結果用フレーム
         results_frame = ttk.Frame(self)
         results_frame.grid(row=1, column=2, sticky=NSEW)
 
-        # progressbar with text indicator
+        # テキストインジケーター付きプログレスバー
         pb_frame = ttk.Frame(results_frame, padding=(0, 10, 10, 10))
         pb_frame.pack(side=TOP, fill=X, expand=YES)
 
@@ -198,7 +197,7 @@ class Cleaner(ttk.Frame):
         ttk.Label(pb_frame, textvariable='progress').pack(side=RIGHT)
         self.setvar('progress', 78)
 
-        # result cards
+        # 結果カード
         cards_frame = ttk.Frame(
             master=results_frame,
             name='cards-frame',
@@ -206,7 +205,7 @@ class Cleaner(ttk.Frame):
         )
         cards_frame.pack(fill=BOTH, expand=YES)
 
-        # privacy card
+        # プライバシーカード
         priv_card = ttk.Frame(
             master=cards_frame, 
             padding=1, 
@@ -233,9 +232,9 @@ class Cleaner(ttk.Frame):
             textvariable='priv_lbl',
             bootstyle=PRIMARY
         ).pack(pady=(0, 20))
-        self.setvar('priv_lbl', '6025 tracking file(s) removed')
+        self.setvar('priv_lbl', '6025件のトラッキングファイルが削除されました')
 
-        # junk card
+        # ジャンクカード
         junk_card = ttk.Frame(
             master=cards_frame,
             padding=1,
@@ -260,9 +259,9 @@ class Cleaner(ttk.Frame):
             bootstyle=PRIMARY, 
             justify=CENTER
         ).pack(pady=(0, 20))
-        self.setvar('junk_lbl', '1,150 MB of unneccesary file(s)\nremoved')
+        self.setvar('junk_lbl', '1,150 MB の不要なファイルが削除されました')
 
-        # user notification
+        # ユーザーへの通知
         note_frame = ttk.Frame(
             master=results_frame, 
             bootstyle=SECONDARY, 
@@ -272,7 +271,7 @@ class Cleaner(ttk.Frame):
         
         note_msg = ttk.Label(
             master=note_frame, 
-            text='We recommend that you better protect your data', 
+            text='データの保護を強化することをお勧めします', 
             anchor=CENTER,
             font=('Helvetica', 12, 'italic'),
             bootstyle=(INVERSE, SECONDARY)

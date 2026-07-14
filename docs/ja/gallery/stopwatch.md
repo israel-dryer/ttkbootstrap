@@ -1,24 +1,24 @@
 # ストップウォッチ
-このストップウォッチアプリケーションには、標準的な開始、停止、リセット機能があります。
-**Start** と **Pause** ボタンには、状態に応じて異なるスタイルが適用されます。
+このストップウォッチアプリには、標準的な開始、停止、リセットの
+機能があります。**開始**ボタンと
+**一時停止**ボタンには、ボタンの状態に応じて異なるスタイルが適用されます。 
 
+![ファイル検索画像の例](../assets/gallery/timer_widget_started.png)  
 
-![ストップウォッチの例](../assets/gallery/timer_widget_started.png)  
-
-![ストップウォッチの例](../assets/gallery/timer_widget_paused.png)  
+![ファイル検索画像例](../assets/gallery/timer_widget_paused.png)  
 
 ## スタイル概要
 適用されているテーマは **cosmo** です。
 
-| 項目      | クラス     | Bootstyle |
+| 項目      | クラス     | ブートスタイル |
 | ---       | ---       | --- |
-| Start     | `Button`  | info |
-| Pause     | `Button`  | info-outline |
-| Reset     | `Button`  | success |
-| Quit      | `Button`  | danger |
+| 開始     | `Button`  | info |
+| 一時停止 | `Button`  | info-outline |
+| リセット | `Button`  | success |
+| 終了     | `Button`  | danger |
 
-## コード例
-[このコードをオンラインで実行](https://replit.com/@israel-dryer/stopwatch#main.py) repl.itで
+## サンプルコード
+repl.itでこのコードを実行する[(https://replit.com/@israel-dryer/stopwatch#main.py)](https://replit.com/@israel-dryer/stopwatch#main.py)
 
 ```python
 import ttkbootstrap as ttk
@@ -38,7 +38,7 @@ class Stopwatch(ttk.Frame):
         self.create_stopwatch_controls()
 
     def create_stopwatch_label(self):
-        """Create the stopwatch number display"""
+        """ストップウォッチの数字表示を作成する"""
         lbl = ttk.Label(
             master=self,
             font="-size 32",
@@ -48,7 +48,7 @@ class Stopwatch(ttk.Frame):
         lbl.pack(side=TOP, fill=X, padx=60, pady=20)
 
     def create_stopwatch_controls(self):
-        """Create the control frame with buttons"""
+        """ボタン付きのコントロールフレームを作成する"""
         container = ttk.Frame(self, padding=10)
         container.pack(fill=X)
         self.buttons = []
@@ -64,7 +64,7 @@ class Stopwatch(ttk.Frame):
         self.buttons.append(
             ttk.Button(
                 master=container,
-                text="Reset",
+                text="リセット",
                 width=10,
                 bootstyle=SUCCESS,
                 command=self.on_reset,
@@ -73,7 +73,7 @@ class Stopwatch(ttk.Frame):
         self.buttons.append(
             ttk.Button(
                 master=container,
-                text="Quit",
+                text="終了",
                 width=10,
                 bootstyle=DANGER,
                 command=self.on_quit,
@@ -83,7 +83,7 @@ class Stopwatch(ttk.Frame):
             button.pack(side=LEFT, fill=X, expand=YES, pady=10, padx=5)
 
     def on_toggle(self):
-        """Toggle the start and pause button."""
+        """開始ボタンと一時停止ボタンを切り替えます。"""
         button = self.buttons[0]
         if self.running.get():
             self.pause()
@@ -95,25 +95,25 @@ class Stopwatch(ttk.Frame):
             button.configure(bootstyle=(INFO, OUTLINE), text="Pause")
 
     def on_quit(self):
-        """Quit the application."""
+        """アプリケーションを終了します。"""
         self.quit()
 
     def on_reset(self):
-        """Reset the stopwatch number display."""
+        """ストップウォッチの表示をリセットします。"""
         self.elapsed.set(0)
         self.stopwatch_text.set("00:00:00")
 
     def start(self):
-        """Start the stopwatch and update the display."""
+        """ストップウォッチを開始し、表示を更新する。"""
         self.afterid.set(self.after(1, self.increment))
 
     def pause(self):
-        """Pause the stopwatch"""
+        """ストップウォッチを一時停止する"""
         self.after_cancel(self.afterid.get())
 
     def increment(self):
-        """Increment the stopwatch value. This method continues to
-        schedule itself every 1 second until stopped or paused."""
+        """ストップウォッチの値をインクリメントする。このメソッドは、
+        停止または一時停止されるまで、1秒ごとに自身をスケジュールし続ける。"""
         current = self.elapsed.get() + 1
         self.elapsed.set(current)
         formatted = "{:02d}:{:02d}:{:02d}".format(
@@ -126,7 +126,7 @@ class Stopwatch(ttk.Frame):
 if __name__ == "__main__":
 
     app = ttk.Window(
-        title="Stopwatch", 
+        title="ストップウォッチ", 
         themename="cosmo", 
         resizable=(False, False)
     )

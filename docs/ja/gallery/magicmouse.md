@@ -1,20 +1,20 @@
-# マジックマウス
-このアプリケーションは、多くのオプションと複数のラベルフレームを備えた複雑なデザインを示しています。
-すべての画像付きボタンには **link** ボタンスタイルが使用されています。
+# Magic Mouse
+このアプリケーションは、多数のオプションと
+いくつかのラベルフレームを備えた複雑なデザインを実演しています。画像を使用するすべてのボタンには、
+**リンク**ボタンスタイルが適用されています。
 
+![ファイル検索画像の例](../assets/gallery/magic_mouse.png)
 
-![マジックマウスの例](../assets/gallery/magic_mouse.png)
+## スタイルの概要
+使用されているテーマは**lumen**です。
 
-## スタイル概要
-使用されているテーマは **lumen** です。
-
-| 項目              | クラス        | Bootstyle  |
+| 項目              | クラス        | ブートスタイル  |
 | ---               | ---          | ---        |
-| Image buttons     | `Button`     | link       |
-| License number    | `Label`      | primary    |
+| 画像ボタン        | `Button`     | link       |
+| ライセンス番号    | `Label`      | primary    |
 
-## コード例
-[このコードをオンラインで実行](https://replit.com/@israel-dryer/magic-mouse#main.py) repl.itで
+## サンプルコード
+repl.itで[このコードを実行](https://replit.com/@israel-dryer/magic-mouse#main.py)
 
 ```python
 from pathlib import Path
@@ -64,15 +64,15 @@ class MouseUtilities(ttk.Frame):
             self.columnconfigure(i, weight=1)
         self.rowconfigure(0, weight=1)
 
-        # column 1
+        # 列 1
         col1 = ttk.Frame(self, padding=10)
         col1.grid(row=0, column=0, sticky=NSEW)
 
-        # device info
+        # デバイス情報
         dev_info = ttk.Labelframe(col1, text='Device Info', padding=10)
         dev_info.pack(side=TOP, fill=BOTH, expand=YES)
 
-        # header
+        # ヘッダー
         dev_info_header = ttk.Frame(dev_info, padding=5)
         dev_info_header.pack(fill=X)
 
@@ -95,16 +95,16 @@ class MouseUtilities(ttk.Frame):
         )
         btn.pack(side=LEFT)
 
-        # image
+        # 画像
         ttk.Label(dev_info, image='mouse').pack(fill=X)
 
-        # progressbar
+        # プログレスバー
         pb = ttk.Progressbar(dev_info, value=66)
         pb.pack(fill=X, pady=5, padx=5)
         ttk.Label(pb, text='66%', bootstyle=(PRIMARY, INVERSE)).pack()
 
-        # progress message
-        self.setvar('progress', 'Battery is discharging.')
+        # 進行状況メッセージ
+        self.setvar('progress', 'バッテリーが放電中です。')
         lbl = ttk.Label(
             master=dev_info,
             textvariable='progress',
@@ -113,22 +113,22 @@ class MouseUtilities(ttk.Frame):
         )
         lbl.pack(fill=X)
 
-        # licence info
-        lic_info = ttk.Labelframe(col1, text='License Info', padding=20)
+        # ライセンス情報
+        lic_info = ttk.Labelframe(col1, text='ライセンス情報', padding=20)
         lic_info.pack(side=TOP, fill=BOTH, expand=YES, pady=(10, 0))
         lic_info.rowconfigure(0, weight=1)
         lic_info.columnconfigure(0, weight=2)
 
         lic_title = ttk.Label(
             master=lic_info,
-            text='Trial Version, 28 days left',
+            text='試用版、残り28日',
             anchor=CENTER
         )
         lic_title.pack(fill=X, pady=(0, 20))
 
         lbl = ttk.Label(
             master=lic_info,
-            text='Mouse serial number:',
+            text='マウスのシリアル番号:',
             anchor=CENTER,
             font='Helvetica 8'
         )
@@ -152,21 +152,21 @@ class MouseUtilities(ttk.Frame):
         )
         buy_now.pack(padx=10, fill=X)
 
-        # Column 2
+        # 2列目
         col2 = ttk.Frame(self, padding=10)
         col2.grid(row=0, column=1, sticky=NSEW)
 
-        # scrolling
+        # スクロール
         scrolling = ttk.Labelframe(col2, text='Scrolling', padding=(15, 10))
         scrolling.pack(side=TOP, fill=BOTH, expand=YES)
 
-        op1 = ttk.Checkbutton(scrolling, text='Scrolling', variable='op1')
-        op1.pack(fill=X, pady=5)
+        op1 = ttk.Checkbutton(scrolling, text='スクロール', variable='op1')
+        op1.pack(fill=X, padding=5)
 
-        # no horizontal scrolling
+        # 水平スクロールなし
         op2 = ttk.Checkbutton(
             master=scrolling,
-            text='No horizontal scrolling',
+            text='水平スクロールなし',
             variable='op2'
         )
         op2.pack(fill=X, padx=(20, 0), pady=5)
@@ -179,10 +179,10 @@ class MouseUtilities(ttk.Frame):
         )
         btn.pack(side=RIGHT)
 
-        # inverse
+        # 反転
         op3 = ttk.Checkbutton(
             master=scrolling,
-            text='Inverse scroll directcion vertically',
+            text='スクロール方向を垂直方向に反転',
             variable='op3'
         )
         op3.pack(fill=X, padx=(20, 0), pady=5)
@@ -195,19 +195,19 @@ class MouseUtilities(ttk.Frame):
         )
         btn.pack(side=RIGHT)
 
-        # Scroll only vertical or horizontal
+        # 垂直または水平方向のみスクロール
         op4 = ttk.Checkbutton(
             master=scrolling,
-            text='Scroll only vertical or horizontal',
+            text='垂直または水平方向のみスクロール',
             state=DISABLED
         )
         op4.configure(variable='op4')
         op4.pack(fill=X, padx=(20, 0), pady=5)
 
-        # smooth scrolling
+        # スムーズスクロール
         op5 = ttk.Checkbutton(
             master=scrolling,
-            text='Smooth scrolling',
+            text='スムーズスクロール',
             variable='op5'
         )
         op5.pack(fill=X, padx=(20, 0), pady=5)
@@ -220,7 +220,7 @@ class MouseUtilities(ttk.Frame):
         )
         btn.pack(side=RIGHT)
 
-        # scroll speed
+        # スクロール速度
         scroll_speed_frame = ttk.Frame(scrolling)
         scroll_speed_frame.pack(fill=X, padx=(20, 0), pady=5)
 
@@ -238,7 +238,7 @@ class MouseUtilities(ttk.Frame):
         )
         scroll_speed_btn.pack(side=LEFT)
 
-        # scroll sense
+        # スクロール方向
         scroll_sense_frame = ttk.Frame(scrolling)
         scroll_sense_frame.pack(fill=X, padx=(20, 0), pady=(5, 0))
 
@@ -255,10 +255,10 @@ class MouseUtilities(ttk.Frame):
         )
         scroll_sense_btn.pack(side=LEFT)
 
-        # 1 finger gestures
+        # 1本指のジェスチャー
         finger_gest = ttk.Labelframe(
             master=col2,
-            text='1 Finger Gestures',
+            text='1本指のジェスチャー',
             padding=(15, 10)
         )
         finger_gest.pack(
@@ -269,19 +269,19 @@ class MouseUtilities(ttk.Frame):
         )
         op6 = ttk.Checkbutton(
             master=finger_gest,
-            text='Fast swipe left/right',
+            text='高速左右スワイプ',
             variable='op6'
         )
         op6.pack(fill=X, pady=5)
 
         cb = ttk.Checkbutton(
             master=finger_gest,
-            text='Swap swipe direction',
+            text='スワイプ方向を切り替える',
             variable='op7'
         )
         cb.pack(fill=X, padx=(20, 0), pady=5)
 
-        # gest sense
+        # ジェスチャーの方向
         gest_sense_frame = ttk.Frame(finger_gest)
         gest_sense_frame.pack(fill=X, padx=(20, 0), pady=(5, 0))
 
@@ -298,7 +298,7 @@ class MouseUtilities(ttk.Frame):
         )
         btn.pack(side=LEFT)
 
-        # middle click
+        # ミドルクリック
         middle_click = ttk.Labelframe(
             master=col2,
             text='Middle Click',
@@ -312,38 +312,38 @@ class MouseUtilities(ttk.Frame):
         )
         cbo = ttk.Combobox(
             master=middle_click,
-            values=['Any 2 finger', 'Other 1', 'Other 2']
+            values=['2本指（任意）', 'その他1本指', 'その他2本指']
         )
         cbo.current(0)
         cbo.pack(fill=X)
 
-        # Column 3
+        # 3列目
         col3 = ttk.Frame(self, padding=10)
         col3.grid(row=0, column=2, sticky=NSEW)
 
-        # two finger gestures
+        # 2本指のジェスチャー
         two_finger_gest = ttk.Labelframe(
             master=col3,
-            text='2 Finger Gestures',
+            text='2本指のジェスチャー',
             padding=10
         )
         two_finger_gest.pack(side=TOP, fill=BOTH)
 
         op7 = ttk.Checkbutton(
             master=two_finger_gest,
-            text='Fast swipe left/right',
+            text='高速左右スワイプ',
             variable='op7'
         )
-        op7.pack(fill=X, pady=5)
+        op7.pack(fill=X, padding=5)
 
         op8 = ttk.Checkbutton(
             master=two_finger_gest,
-            text='Swap swipe direction',
+            text='スワイプ方向の切り替え',
             variable='op8'
         )
         op8.pack(fill=X, padx=(20, 0), pady=5)
 
-        # gest sense
+        # ジェスチャーの方向
         gest_sense_frame = ttk.Frame(two_finger_gest)
         gest_sense_frame.pack(fill=X, padx=(20, 0), pady=(5, 0))
 
@@ -360,35 +360,35 @@ class MouseUtilities(ttk.Frame):
         )
         btn.pack(side=LEFT)
 
-        # fast two finger swipe down
+        # 高速な2本指スワイプ（下方向）
         lbl = ttk.Label(
             master=two_finger_gest,
-            text='On fast 2 finger up/down swipe:'
+            text='高速な2本指スワイプ（上/下方向）時:'
         )
         lbl.pack(fill=X, pady=(10, 5))
 
         op9 = ttk.Checkbutton(
             master=two_finger_gest,
-            text='Swap swipe direction',
+            text='スワイプ方向を切り替える',
             variable='op9'
         )
         op9.pack(fill=X, padx=(20, 0), pady=5)
 
         op10 = ttk.Checkbutton(
             master=two_finger_gest,
-            text='Swap swipe direction',
+            text='スワイプ方向を入れ替える',
             variable='op10'
         )
         op10.pack(fill=X, padx=(20, 0), pady=5)
 
         two_finger_cbo = ttk.Combobox(
             master=two_finger_gest,
-            values=['Cycle Task View | Normal | Desktop View']
+            values=['タスクビューの切り替え | 通常 | デスクトップビュー']
         )
         two_finger_cbo.current(0)
         two_finger_cbo.pack(fill=X, padx=(20, 0), pady=5)
 
-        # two finger sense
+        # 2本指ジェスチャー
         two_finger_sense_frame = ttk.Frame(two_finger_gest)
         two_finger_sense_frame.pack(fill=X, padx=(20, 0), pady=(5, 0))
 
@@ -405,7 +405,7 @@ class MouseUtilities(ttk.Frame):
         two_finger_sense_btn.configure(command=self.callback)
         two_finger_sense_btn.pack(side=LEFT)
 
-        # mouse options
+        # マウスオプション
         mouse_options = ttk.Labelframe(
             master=col3,
             text='2 Finger Gestures',
@@ -420,30 +420,30 @@ class MouseUtilities(ttk.Frame):
 
         op11 = ttk.Checkbutton(
             master=mouse_options,
-            text='Ignore input if mouse if lifted',
+            text='マウスが離された場合の入力を無視する',
             variable='op11'
         )
         op11.pack(fill=X, pady=5)
 
         op12 = ttk.Checkbutton(
             master=mouse_options,
-            text='Ignore input if mouse if lifted',
+            text='マウスが離された場合の入力を無視する',
             variable='op12'
         )
         op12.pack(fill=X, pady=5)
 
         op13 = ttk.Checkbutton(
             master=mouse_options,
-            text='Ignore input if mouse if lifted',
+            text='マウスが離された場合、入力を無視する',
             variable='op13'
         )
         op13.pack(fill=X, pady=5)
 
-        # base speed
+        # 基本速度
         base_speed_sense_frame = ttk.Frame(mouse_options)
         base_speed_sense_frame.pack(fill=X, padx=(20, 0), pady=(5, 0))
 
-        lbl = ttk.Label(base_speed_sense_frame, text='Base speed:')
+        lbl = ttk.Label(base_speed_sense_frame, text='基本速度:')
         lbl.pack(side=LEFT)
 
         scale = ttk.Scale(base_speed_sense_frame, value=50, from_=1, to=100)
@@ -457,19 +457,19 @@ class MouseUtilities(ttk.Frame):
         base_speed_sense_btn.configure(command=self.callback)
         base_speed_sense_btn.pack(side=LEFT)
 
-        # turn on all checkbuttons
+        # すべてのチェックボタンをオンにする
         for i in range(1, 14):
             self.setvar(f'op{i}', 1)
 
-        # turn off select buttons
+        # 選択ボタンをオフにする
         for j in [2, 9, 12, 13]:
             self.setvar(f'op{j}', 0)
 
     def callback(self):
-        """Demo callback"""
+        """デモ用コールバック"""
         Messagebox.ok(
             title='Button callback', 
-            message="You pressed a button."
+            message="ボタンを押しました。"
         )
 
 

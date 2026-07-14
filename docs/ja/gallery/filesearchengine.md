@@ -1,22 +1,24 @@
 # ファイル検索エンジン
-このアプリケーションは、GUIのインタラクティブ性を維持するため、スレッドとキューを使用してI/Oタスクを管理するローカルファイル検索エンジンです。
-`Treeview`は結果をリアルタイムで更新し、結果`Treeview`内で最も最近挿入された結果にフォーカスとビューを設定します。
+このアプリケーションは、GUIの応答性を維持するために、スレッドとキューを使用して
+I/Oタスクを管理するローカルファイル検索エンジンです。`Treeview`は
+検索結果をリアルタイムで更新し、検索結果の`Treeview`内で
+最も新しく追加された結果にフォーカスと表示を合わせます。 
 
-![ファイル検索エンジンの例](../assets/gallery/file_search_engine.png)
+![ファイル検索の画像例](../assets/gallery/file_search_engine.png)
 
-## スタイル概要
-この例で使用されるテーマは **journal**.
+## スタイルの概要
+この例で使用されているテーマは **journal** です。
 
-| 項目          | クラス         | Bootstyle         |
+| 項目          | クラス         | ブートスタイル         |
 | ---           | ---           | ---               |
-| User Input    | `Entry`       | default           |
-| 参照        | `Button`      | primary           |
-| 検索        | `Button`      | primary-outline   |
+| ユーザー入力    | `Entry`       | default           |
+| 参照            | `Button`      | primary           |
+| 検索            | `Button`      | primary-outline   |
 | Treeview      | `Treeview`    | info              |
-| Progressbar   | `Progressbar` | success           |
+| プログレスバー  | `Progressbar` | success           |
 
 ## サンプルコード
-[このコードをライブで実行](https://replit.com/@israel-dryer/file-search-engine#main.py) on repl.it
+[このコードを repl.it で実行](https://replit.com/@israel-dryer/file-search-engine#main.py)
 
 ```python
 import datetime
@@ -38,14 +40,14 @@ class FileSearchEngine(ttk.Frame):
         super().__init__(master, padding=15)
         self.pack(fill=BOTH, expand=YES)
         
-        # application variables
+        # アプリケーション変数
         _path = pathlib.Path().absolute().as_posix()
         self.path_var = ttk.StringVar(value=_path)
         self.term_var = ttk.StringVar(value='md')
         self.type_var = ttk.StringVar(value='endswidth')
 
-        # header and labelframe option container
-        option_text = "Complete the form to begin your search"
+        # ヘッダーおよびラベルフレームのオプションコンテナ
+        option_text = "検索を開始するには、フォームに入力してください"
         self.option_lf = ttk.Labelframe(self, text=option_text, padding=15)
         self.option_lf.pack(fill=X, expand=YES, anchor=N)
 
@@ -62,7 +64,7 @@ class FileSearchEngine(ttk.Frame):
         self.progressbar.pack(fill=X, expand=YES)
 
     def create_path_row(self):
-        """Add path row to labelframe"""
+        """ラベルフレームにパス行を追加する"""
         path_row = ttk.Frame(self.option_lf)
         path_row.pack(fill=X, expand=YES)
         path_lbl = ttk.Label(path_row, text="Path", width=8)
@@ -78,7 +80,7 @@ class FileSearchEngine(ttk.Frame):
         browse_btn.pack(side=LEFT, padx=5)
 
     def create_term_row(self):
-        """Add term row to labelframe"""
+        """ラベルフレームに用語行を追加する"""
         term_row = ttk.Frame(self.option_lf)
         term_row.pack(fill=X, expand=YES, pady=15)
         term_lbl = ttk.Label(term_row, text="Term", width=8)
@@ -87,7 +89,7 @@ class FileSearchEngine(ttk.Frame):
         term_ent.pack(side=LEFT, fill=X, expand=YES, padx=5)
         search_btn = ttk.Button(
             master=term_row, 
-            text="Search", 
+            text="検索", 
             command=self.on_search, 
             bootstyle=OUTLINE, 
             width=8
@@ -95,7 +97,7 @@ class FileSearchEngine(ttk.Frame):
         search_btn.pack(side=LEFT, padx=5)
 
     def create_type_row(self):
-        """Add type row to labelframe"""
+        """ラベルフレームにタイプ行を追加する"""
         type_row = ttk.Frame(self.option_lf)
         type_row.pack(fill=X, expand=YES)
         type_lbl = ttk.Label(type_row, text="Type", width=8)
@@ -127,7 +129,7 @@ class FileSearchEngine(ttk.Frame):
         endswith_opt.invoke()
 
     def create_results_view(self):
-        """Add result treeview to labelframe"""
+        """結果ツリービューをラベルフレームに追加する"""
         self.resultview = ttk.Treeview(
             master=self, 
             bootstyle=INFO, 
@@ -136,7 +138,7 @@ class FileSearchEngine(ttk.Frame):
         )
         self.resultview.pack(fill=BOTH, expand=YES, pady=10)
 
-        # setup columns and use `scale_size` to adjust for resolution
+        # 列の設定と、`scale_size` を使用して解像度に合わせて調整
         self.resultview.heading(0, text='Name', anchor=W)
         self.resultview.heading(1, text='Modified', anchor=W)
         self.resultview.heading(2, text='Type', anchor=E)
@@ -173,13 +175,13 @@ class FileSearchEngine(ttk.Frame):
         )
 
     def on_browse(self):
-        """Callback for directory browse"""
-        path = askdirectory(title="Browse directory")
+        """ディレクトリ閲覧時のコールバック"""
+        path = askdirectory(title="ディレクトリを閲覧")
         if path:
             self.path_var.set(path)
 
     def on_search(self):
-        """Search for a term based on the search type"""
+        """検索タイプに基づいて用語を検索する"""
         search_term = self.term_var.get()
         search_path = self.path_var.get()
         search_type = self.type_var.get()
@@ -187,7 +189,7 @@ class FileSearchEngine(ttk.Frame):
         if search_term == '':
             return
         
-        # start search in another thread to prevent UI from locking
+        # UIのロックを防ぐため、別のスレッドで検索を開始
         Thread(
             target=FileSearchEngine.file_search, 
             args=(search_term, search_path, search_type), 
@@ -203,7 +205,7 @@ class FileSearchEngine(ttk.Frame):
         self.after(100, lambda: self.check_queue(iid))
 
     def check_queue(self, iid):
-        """Check file queue and print results if not empty"""
+        """ファイルキューを確認し、空でない場合は結果を出力する"""
         if all([
             FileSearchEngine.searching, 
             not FileSearchEngine.queue.empty()
@@ -213,10 +215,10 @@ class FileSearchEngine(ttk.Frame):
             self.update_idletasks()
             self.after(100, lambda: self.check_queue(iid))
         elif all([
-            not FileSearchEngine.searching,
-            not FileSearchEngine.queue.empty()
+            FileSearchEngine.searching ではない,
+            FileSearchEngine.queue.empty() ではない
         ]):
-            while not FileSearchEngine.queue.empty():
+            while FileSearchEngine.queue.empty() ではない:
                 filename = FileSearchEngine.queue.get()
                 self.insert_row(filename, iid)
             self.update_idletasks()
@@ -230,7 +232,7 @@ class FileSearchEngine(ttk.Frame):
             self.progressbar.stop()
 
     def insert_row(self, file, iid):
-        """Insert new row in tree search results"""
+        """ツリー検索結果に新しい行を挿入する"""
         try:
             _stats = file.stat()
             _name = file.stem
@@ -251,7 +253,7 @@ class FileSearchEngine(ttk.Frame):
 
     @staticmethod
     def file_search(term, search_path, search_type):
-        """Recursively search directory for matching files"""
+        """ディレクトリ内を再帰的に検索し、一致するファイルを探す"""
         FileSearchEngine.set_searching(1)
         if search_type == 'contains':
             FileSearchEngine.find_contains(term, search_path)
@@ -262,7 +264,7 @@ class FileSearchEngine(ttk.Frame):
 
     @staticmethod
     def find_contains(term, search_path):
-        """Find all files that contain the search term"""
+        """検索語を含むすべてのファイルを検索する"""
         for path, _, files in pathlib.os.walk(search_path):
             if files:
                 for file in files:
@@ -273,7 +275,7 @@ class FileSearchEngine(ttk.Frame):
 
     @staticmethod
     def find_startswith(term, search_path):
-        """Find all files that start with the search term"""
+        """検索語で始まるすべてのファイルを検索する"""
         for path, _, files in pathlib.os.walk(search_path):
             if files:
                 for file in files:
@@ -284,7 +286,7 @@ class FileSearchEngine(ttk.Frame):
 
     @staticmethod
     def find_endswith(term, search_path):
-        """Find all files that end with the search term"""
+        """検索語で終わるすべてのファイルを検索する"""
         for path, _, files in pathlib.os.walk(search_path):
             if files:
                 for file in files:
@@ -295,12 +297,12 @@ class FileSearchEngine(ttk.Frame):
 
     @staticmethod
     def set_searching(state=False):
-        """Set searching status"""
+        """検索ステータスを設定する"""
         FileSearchEngine.searching = state
 
     @staticmethod
     def convert_size(size):
-        """Convert bytes to mb or kb depending on scale"""
+        """スケールに応じてバイトをMBまたはKBに変換する"""
         kb = size // 1000
         mb = round(kb / 1000, 1)
         if kb > 1000:

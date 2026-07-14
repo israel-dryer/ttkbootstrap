@@ -1,32 +1,34 @@
 # イコライザー
+この例では、スタイルを使用してスケール関数を区別する方法を示しています。
+ここでコードについて少し解説します。スケール値をスケール下のラベルに反映させたかったため、
+`Scale`の実装上のいくつかの奇妙な点により、このアプリケーションは本来必要以上に
+複雑になっています。 `Scale`ウィジェットはdouble型を出力します。つまり、
+見栄えの良い丸めた整数を表示するためには、更新時にその数値を変換する必要があります。
+幸いなことに、スケールウィジェットにはコールバックを設定するためのコマンドパラメータがあります。
+コールバックはスケール値を受け取り、それを
+見栄えの良い整形式に変換することができます。 
 
-この例では、スタイルを使用してスケール機能を区別する方法を示します。
-コードに関するコメントとして、スケール値をスケールの下にあるラベルに反映させたいので、
-このアプリケーションは `Scale` 実装の特異性により、必要以上に複雑になっています。
-`Scale` ウィジェットは double 型を出力するため、整数に丸めて表示するには値を変換する必要があります。
-幸い、スケールウィジェットにはコマンドパラメータがあり、コールバックを設定できます。
-コールバックはスケール値を取得し、それをきれいな形式に変換できます。
+![ファイル検索画像の例](../assets/gallery/equalizer.png)
 
-![イコライザーの例](../assets/gallery/equalizer.png)
+## スタイルの概要
+使用しているテーマは **litera** です。
 
-## スタイル概要
-この例で使用されているテーマは **litera** です。
-
-| 項目           | クラス    | Bootstyle |
-| ---            | ---       | ---       |
-| ボリュームスケール | `Scale`  | success   |
-| ゲインスケール    | `Scale`  | success   |
-| その他のスケール   | `Scale`  | info      |
+| 項目          | クラス     | ブートスタイル |
+| ---           | ---       | ---       |
+| ボリューム・スケール | `Scale`   | success   |
+| ゲイン・スケール    | `Scale`   | success   |
+| その他のスケール  | `Scale`   | info      |
 
 !!! 注意
-垂直方向の場合、`from_` パラメータはウィジェットの上部に対応し、`to` は下部に対応します。
-したがって、スケール範囲の最小値と最大値を設定する際に考慮する必要があります。
+    縦方向の場合、`from_`パラメータはウィジェットの上端に、
+    `to`パラメータは下端に対応するため、
+    スケール範囲の最小値と最大値を設定する際は、
+    この点を考慮する必要があります。
 
 ## サンプルコード
-[このコードをReplitで実行](https://replit.com/@israel-dryer/equalizer#main.py)
+[このコードを repl.it で実行](https://replit.com/@israel-dryer/equalizer#main.py)
 
 ```python
-
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from random import randint
@@ -45,18 +47,18 @@ class Equalizer(ttk.Frame):
             self.create_band(self, control)
 
     def create_band(self, master, text):
-        """Create and pack an equalizer band"""
+        """イコライザーバンドを作成して配置する"""
         value = randint(1, 99)
         self.setvar(text, value)
 
         container = ttk.Frame(master)
         container.pack(side=LEFT, fill=Y, padx=10)
 
-        # header label
+        # ヘッダーラベル
         hdr = ttk.Label(container, text=text, anchor=CENTER)
         hdr.pack(side=TOP, fill=X, pady=10)
 
-        # volume scale
+        # 音量スライダー
         if text in ["VOL", "GAIN"]:
             bootstyle = SUCCESS
         else:
@@ -73,7 +75,7 @@ class Equalizer(ttk.Frame):
         )
         scale.pack(fill=Y)
 
-        # value label
+        # 値のラベル
         val = ttk.Label(master=container, textvariable=text)
         val.pack(pady=10)
 

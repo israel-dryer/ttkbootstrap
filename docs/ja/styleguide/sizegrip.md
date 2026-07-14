@@ -1,14 +1,14 @@
 # Sizegrip
 
-This widget style features a pattern of squares in a default muted color
-by default, or the [selected color](index.md#colors).
+このウィジェットスタイルは、デフォルトでは落ち着いた色合いの正方形のパターンが特徴で、
+[選択した色](index.md#colors)も使用可能です。
 
 ![sizegrip](../assets/widget-styles/sizegrip.gif)
 
 ```python
-# default sizegrip style
+# デフォルトの Sizegrip スタイル
 Sizegrip()
 
-# info colored sizegrip style - handle color
+# 情報色の Sizegrip スタイル - ハンドル色
 Sizegrip(bootstyle="info")
 ```

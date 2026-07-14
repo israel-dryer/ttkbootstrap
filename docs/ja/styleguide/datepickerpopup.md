@@ -1,20 +1,18 @@
 # DatePickerDialog
 
-このウィジェットスタイルは、ボタンとラベルウィジェットの集合を包含します。
+このウィジェットスタイルは、ボタンおよびラベルウィジェットのコレクションで構成されています。
 _ヘッダー_と_アクティブな日付_は、**プライマリ**カラー（デフォルト）または
-[選択された色](index.md#colors)で表示されます。
-_曜日ヘッダー_と_現在の日付_は、
+[選択された色](index.md#colors)で表示されます。_曜日ヘッダー_と_現在の日付_は、
 `セカンダリ`カラーを使用します。
 
-このウィジェットの使用方法の詳細については、
-[APIドキュメント](../api/dialogs/datepickerdialog.md) を参照してください。
+このウィジェットの使用方法に関する詳細は、[APIドキュメント](../api/dialogs/datepickerdialog.md)をご確認ください。
 
-![date picker](../assets/widget-styles/date-picker-popup.gif)
+![日付ピッカー](../assets/widget-styles/date-picker-popup.gif)
 
 ```python
-# デフォルトポップアップ
+# デフォルトのポップアップ
 DatePickerDialog()
 
-# 警告色ポップアップ
+# 警告色のポップアップ
 DatePickerDialog(bootstyle="warning")
 ```

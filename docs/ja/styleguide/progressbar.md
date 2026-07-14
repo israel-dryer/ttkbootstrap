@@ -1,36 +1,36 @@
-# Progressbar
+# プログレスバー
 
-This widget features a few style types that have **primary** colored indicator
-bars by default, but can by styled using any of the 
-[available colors](index.md#colors).
+このウィジェットには、デフォルトで**プライマリ**カラーのインジケーター
+バーを持つスタイルタイプがいくつか用意されていますが、
+[利用可能な色](index.md#colors)のいずれかを使用してスタイルを変更することも可能です。
 
-## Solid (default)
+## 単色（デフォルト）
 
-The default widget style features a solid color indicator bar.
+デフォルトのウィジェットスタイルでは、単色のインジケーターバーが表示されます。
 
-![solid progressbar](../assets/widget-styles/solid-progressbar.gif)
+![ソリッドプログレスバー](../assets/widget-styles/solid-progressbar.gif)
 
 ```python
-# default solid progressbar style
+# デフォルトのソリッド・プログレスバー・スタイル
 Progressbar()
 
-# success colored solid progressbar style
+# 成功色の一色塗りプログレスバースタイル
 Progressbar(bootstyle="success")
 ```
 
 
-## Striped
+## ストライプ
 
-This widget style features a striped indicator bar that uses the default or 
-[selected color](index.md#colors) for the main color, and a desaturated version 
-of this color for the alternating stripe.
+このウィジェットスタイルは、メインカラーにデフォルト色または 
+[選択した色](index.md#colors) を使用し、交互のストライプには 
+その色の彩度を下げたバージョンを使用したストライプ状のインジケーターバーが特徴です。
 
-![striped progressbar](../assets/widget-styles/striped-progressbar.gif)
+![ストライプ型プログレスバー](../assets/widget-styles/striped-progressbar.gif)
 
 ```python
-# default striped progressbar style
+# デフォルトのストライプ型プログレスバースタイル
 Progressbar(bootstyle="striped")
 
-# danger colored striped progressbar style
+# 警告色のストライプ型プログレスバースタイル
 Progressbar(bootstyle="danger-striped")
 ```

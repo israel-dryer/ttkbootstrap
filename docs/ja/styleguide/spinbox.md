@@ -1,59 +1,58 @@
-# Spinbox
+# スピンボックス
 
-This widget style features a input box with a styled border and arrows. The 
-border color is muted by default and changes to **primary** or the 
-[selected color](index.md#colors) on _hover_. The border increases in thickness on 
-_focus_. The arrow color changes to the default or [selected color](index.md#colors) 
-on _hover_ or on _focus_.
+このウィジェットスタイルは、装飾された枠線と矢印を備えた入力ボックスが特徴です。 境界線の色はデフォルトでは控えめな色ですが、_hover_時に**プライマリ**または
+[選択した色](index.md#colors)に変わります。_focus_時には境界線の太さが増します。
+矢印の色は、_hover_時または_focus_時にデフォルト色または[選択した色](index.md#colors)に
+変わります。
 
-This widget also supports special styles for [disabled state](#disabled-spinbox), 
-[readonly state](#readonly-spinbox), and [invalid state](#invalid-spinbox).
+また、このウィジェットは [無効状態](#disabled-spinbox)、
+[読み取り専用状態](#readonly-spinbox)、および [無効な状態](#invalid-spinbox) に対する特別なスタイルもサポートしています。
 
 ![spinbox](../assets/widget-styles/spinbox.gif)
 
 ```python
-# default spinbox style
+# デフォルトのスピンボックススタイル
 Spinbox()
 
-# danger colored spinbox style
+# 危険色を使用したスピンボックスのスタイル
 Spinbox(bootstyle="danger")
 ```
 
-## Other styles
+## その他のスタイル
 
-#### Disabled spinbox
+#### 無効状態のスピンボックス
 
-This widget supports a style reserved for the **disabled** state, which you 
-can see in the exhibit above. This style _cannot be applied via keywords_. To 
-apply the disabled style:
+このウィジェットは、**無効**状態専用のスタイルをサポートしており、
+上の図で確認できます。このスタイルは_キーワードでは適用できません_。
+無効スタイルを適用するには：
 
 ```python
-# create the widget in a disabled state
+# 無効状態のウィジェットを作成する
 Spinbox(state="disabled")
 
-# disable the widget after creation
+# 作成後にウィジェットを無効化する
 e = Spinbox()
 e.configure(state="disabled")
 ```
 
-#### Readonly spinbox
+#### 読み取り専用スピンボックス
 
-This widget supports a style reserved for the **readonly** state, which you 
-can see in the exhibit above. This style _cannot be applied via keywords_.  To 
-apply the readonly style:
+このウィジェットは、**readonly** 状態専用のスタイルをサポートしており、
+上の図で確認できます。このスタイルは _キーワードでは適用できません_。
+readonly スタイルを適用するには：
 
 ```python
-# create the widget in a readonly state
+# ウィジェットを読み取り専用状態で作成する
 Spinbox(state="readonly")
 
-# set the widget readonly state after creation
+# 作成後にウィジェットを読み取り専用状態に設定
 e = Spinbox()
 e.configure(state="readonly")
 ```
 
-#### Invalid spinbox
+#### 無効なスピンボックス
 
-This style _cannot be applied via keywords_, but rather is the result of a 
-validation process implemented on the widget. In the **Cookbook** you will find 
-an example of [how to apply validation](../cookbook/validate-user-input.md) to an 
-`Entry` based widget.
+このスタイルは_キーワードでは適用できません_。これは、
+ウィジェットに実装された検証プロセスの結果として適用されるものです。**Cookbook**には、
+`Entry`ベースのウィジェットに[検証を適用する方法](../cookbook/validate-user-input.md)の
+例が掲載されています。

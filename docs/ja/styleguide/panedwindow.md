@@ -1,15 +1,15 @@
-# ペインウィンドウ
+# ペイン付きウィンドウ
 
-このウィジェットスタイルは、テーマで定義された背景色を持つコンテナを特徴とし、
-デフォルトでは灰色がかった、または
-[選択した色](index.md#colors)の装飾された帯で区切られています。
+このウィジェットスタイルは、テーマで定義された背景色を持つコンテナを、
+デフォルトでは灰色がかった、あるいは
+[選択した色](index.md#colors)のスタイリングが施されたサッシュで区切ったものです。
 
-![paned widow](../assets/widget-styles/panedwindow.gif)
+![paned window](../assets/widget-styles/panedwindow.gif)
 
 ```python
-# デフォルトの panedwindow スタイル
+# デフォルトのパネードウィンドウスタイル
 Panedwindow()
 
-# 情報色付きパネドウィンドウスタイル
+# 情報色のパネードウィンドウスタイル
 Panedwindow(bootstyle="info")
 ```

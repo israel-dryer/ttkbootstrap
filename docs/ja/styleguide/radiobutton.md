@@ -1,70 +1,70 @@
-# Radiobutton
+# ラジオボタン
 
-This widget features a variety of radiobutton style types that are **primary**
-colored by default or the [selected color](index.md#colors).
+このウィジェットには、デフォルトで**プライマリ**
+カラー、または[選択した色](index.md#colors)が適用された、さまざまなスタイルのラジオボタンが用意されています。
 
-This widget supports a special style for 
-[disabled state](#other-radiobutton-styles).
+このウィジェットは、
+[無効状態](#other-radiobutton-styles)用の特別なスタイルをサポートしています。
 
-## Radio (default)
+## ラジオボタン（デフォルト）
 
-The default widget style features the traditional **radiobutton** which has a
-round indicator. The indicator is filled with the default or selected color 
-when in a _selected state_.
+デフォルトのウィジェットスタイルは、
+丸いインジケーターを持つ従来の**ラジオボタン**を採用しています。インジケーターは、_選択状態_のときに
+デフォルト色または選択された色で塗りつぶされます。
 
 ![radiobutton](../assets/widget-styles/radiobuttons.png)
 
 ```python
-# default radiobutton style
+# デフォルトのラジオボタンスタイル
 Radiobutton()
 
-# secondary colored radiobutton style
+# セカンダリカラーのラジオボタンスタイル
 Radiobutton(bootstyle="secondary")
 ```
 
-## Solid toolbutton
+## ソリッド・ツールボタン
 
-This style features a solid rectangular button that has a muted gray background
-when _not selected_ and a default or [selected color](index.md#colors) when _selected_
-or _active_.
+このスタイルは、_選択されていない_ときは落ち着いたグレーの背景を持ち、
+_選択されている_または_アクティブ_なときはデフォルト色または[選択色](index.md#colors)で塗りつぶされる、
+実線の長方形のボタンが特徴です。
 
 ![toolbutton](../assets/widget-styles/radio-toolbutton.gif)
 
 ```python
-# default toolbutton style
+# デフォルトのツールボタンスタイル
 Radiobutton(bootstyle="toolbutton")
 
-# danger colored radio toolbutton style
+# 警告色のラジオツールボタンスタイル
 Radiobutton(bootstyle="danger-toolbutton")
 ```
 
-## Outline toolbutton
+## アウトライン・ツールボタン
 
-This style features a rectangular button that has an **outline** 
-when _not selected_ and a **solid** background when _selected_ or 
-_active_.
+このスタイルは、_選択されていない_ときは**アウトライン**があり、
+_選択されている_または
+_アクティブ_のときは**塗りつぶし**の背景を持つ長方形のボタンが特徴です。
 
-![outline toolbutton](../assets/widget-styles/outline-radio-toolbutton.gif)
+![アウトライン・ツールボタン](../assets/widget-styles/outline-radio-toolbutton.gif)
 
 ```python
-# default outline radio toolbutton style
+# デフォルトのアウトライン・ラジオツールボタンスタイル
 Radiobutton(bootstyle="outline-toolbutton")
 
-# info colored outline radio toolbutton style
+# 情報色のアウトライン付きラジオツールボタンスタイル
 Radiobutton(bootstyle="info-outline-toolbutton")
 ```
 
-## Other radiobutton styles
+## その他のラジオボタンのスタイル
 
-#### Disabled radiobutton
-This style _cannot be applied via keywords_; it is configured through widget 
-settings.
+#### 無効状態のラジオボタン
+このスタイルは_キーワードでは適用できません_。ウィジェットの
+設定を通じて構成されます。
 
 ```python
-# create the radiobutton in a disabled state
+# 無効状態のラジオボタンを作成する
 Radiobutton(state="disabled")
 
-# disable a radiobutton after creation
+# 作成後にラジオボタンを無効にする
 rb = Radiobutton()
 rb.configure(state="disabled")
 ```

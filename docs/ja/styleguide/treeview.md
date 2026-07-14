@@ -1,20 +1,18 @@
-## Treeview
+## ツリービュー
 
-This widget style features a solid background header that is the default theme
-background by default or the [selected color](index.md#colors). 
+このウィジェットスタイルは、デフォルトではデフォルトテーマの
+背景色、または [選択した色](index.md#colors) が適用された、単色の背景を持つヘッダーが特徴です。 
 
-The border color is muted by default and changes to **primary** or the 
-[selected color](index.md#colors) on _hover_. The border increases in thickness on 
-_focus_. 
+境界線の色はデフォルトでは控えめな色ですが、_hover_時には**プライマリ**色または
+[選択した色](index.md#colors)に変わります。_focus_時には境界線の太さが増します。
+_focus_時には境界線の太さが増します。 
 
 ![treeview](../assets/widget-styles/treeview.gif)
 
 ```python
-# default Treeview style
+# デフォルトのTreeviewスタイル
 Treeview()
 
-# info colored treeview style
+# 情報色のTreeviewスタイル
 Treeview(bootstyle='info')
 ```
-
-

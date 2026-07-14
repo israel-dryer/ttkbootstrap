@@ -1,33 +1,33 @@
-# Scrollbar
+# スクロールバー
 
-This widget style features a light gray trough with a styled thumb and arrow 
-buttons. The thumb and arrows lighten on _hover_ and darken on _press_. The
-thumb and arrows can be styled with any of the [available colors](index.md#colors). 
+このウィジェットスタイルは、薄い灰色の溝と、デザインが施されたサムおよび矢印
+ボタンが特徴です。サムと矢印は、_hover_時に色が薄くなり、_press_時に色が濃くなります。
+サムと矢印は、[利用可能な色](index.md#colors)のいずれかでスタイルを設定できます。 
 
-## Square (default)
+## 正方形（デフォルト）
 
-The default style features a thumb with squared edges.
+デフォルトのスタイルでは、角が四角いスライダーが採用されています。
 
 ![scrollbar](../assets/widget-styles/square-scrollbars.png)
 
 ```python
-# default scrollbar style
+# デフォルトのスクロールバースタイル
 Scrollbar()
 
-# success colored default scrollbar style
+# 成功色を使用したデフォルトのスクロールバースタイル
 Scrollbar(bootstyle="success")
 ```
 
-## Round
+## 丸型
 
-The **round** style features a thumb with rounded edges.
+**丸型**スタイルは、角が丸いスクロールバーを特徴としています。
 
-![round scrollbar](../assets/widget-styles/round-scrollbars.png)
+![丸型スクロールバー](../assets/widget-styles/round-scrollbars.png)
 
 ```python
-# default round scrollbar style
+# デフォルトのラウンドスクロールバースタイル
 Scrollbar(bootstyle="round")
 
-# danger colored round scrollbar style
+# 危険色（danger）のラウンドスクロールバースタイル
 Scrollbar(bootstyle="danger-round")
 ```

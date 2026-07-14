@@ -1,25 +1,23 @@
-# シンプルなデータ入力
+# 簡単なデータ入力
+このシンプルなデータ入力フォームは、ユーザーからの入力を受け付け、送信されると画面に表示します。 
 
-このシンプルなデータ入力フォームは、ユーザー入力を受け取り、送信時に画面に表示します。
+![ファイル検索画像の例](../assets/gallery/simple_data_entry_light.png)
 
-![データ入力フォーム（ライトテーマ）](../assets/gallery/simple_data_entry_light.png)
+![ファイル検索画像の例](../assets/gallery/simple_data_entry_dark.png)
 
-![データ入力フォーム（ダークテーマ）](../assets/gallery/simple_data_entry_dark.png)
+## スタイルの概要
+上記の2つの例では、**litera**と**superhero**というテーマを使用しています。
 
-## スタイル概要
-上記の2つの例では、テーマ **litera** と **superhero** が使用されています。
-
-| 項目           | クラス     | Bootstyle |
-| ---            | ---       | ---       |
-| 送信ボタン       | `Button`  | success   |
-| キャンセルボタン   | `Button`  | danger    |
-| 入力欄          | `Entry`   | default   |
+| 項目          | クラス     | ブートスタイル |
+| ---           | ---       | ---|
+| 送信ボタン | `Button`  | success |
+| キャンセルボタン | `Button`  | danger |
+| 入力フィールド | `Entry`   | default |
 
 ## サンプルコード
-[このコードをReplitで実行](https://replit.com/@israel-dryer/data-entry#main.py)
+[repl.itでこのコードを実行](https://replit.com/@israel-dryer/data-entry#main.py)
 
 ```python
-
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
@@ -30,24 +28,24 @@ class DataEntryForm(ttk.Frame):
         super().__init__(master, padding=(20, 10))
         self.pack(fill=BOTH, expand=YES)
 
-        # form variables
+        # フォーム変数
         self.name = ttk.StringVar(value="")
         self.address = ttk.StringVar(value="")
         self.phone = ttk.StringVar(value="")
 
-        # form header
-        hdr_txt = "Please enter your contact information" 
+        # フォームヘッダー
+        hdr_txt = "連絡先情報を入力してください" 
         hdr = ttk.Label(master=self, text=hdr_txt, width=50)
-        hdr.pack(fill=X, pady=10)
+        hdr.pack(fill=X, padding=10)
 
-        # form entries
+        # フォーム項目
         self.create_form_entry("name", self.name)
         self.create_form_entry("address", self.address)
         self.create_form_entry("phone", self.phone)
         self.create_buttonbox()
 
     def create_form_entry(self, label, variable):
-        """Create a single form entry"""
+        """単一のフォーム入力項目を作成する"""
         container = ttk.Frame(self)
         container.pack(fill=X, expand=YES, pady=5)
 
@@ -58,7 +56,7 @@ class DataEntryForm(ttk.Frame):
         ent.pack(side=LEFT, padx=5, fill=X, expand=YES)
 
     def create_buttonbox(self):
-        """Create the application buttonbox"""
+        """アプリケーションのボタンボックスを作成する"""
         container = ttk.Frame(self)
         container.pack(fill=X, expand=YES, pady=(15, 10))
 
@@ -82,14 +80,14 @@ class DataEntryForm(ttk.Frame):
         cnl_btn.pack(side=RIGHT, padx=5)
 
     def on_submit(self):
-        """Print the contents to console and return the values."""
-        print("Name:", self.name.get())
-        print("Address:", self.address.get())
-        print("Phone:", self.phone.get())
+        """内容をコンソールに出力し、値を返す。"""
+        print("名前:", self.name.get())
+        print("住所:", self.address.get())
+        print("電話番号:", self.phone.get())
         return self.name.get(), self.address.get(), self.phone.get()
 
     def on_cancel(self):
-        """Cancel and close the application."""
+        """キャンセルしてアプリケーションを終了する。"""
         self.quit()
 
 

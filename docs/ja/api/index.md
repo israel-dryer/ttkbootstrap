@@ -1,5 +1,107 @@
 # APIドキュメント
 
+ttkbootstrap は tkinter のラッパーです。このライブラリで特に定義されていないウィジェットや関数は、
+[その他のリファレンス](#other-references) でご確認いただけます。
+
+## 🌈 [colorutils モジュール](colorutils.md)
+このモジュールには、色を操作するための様々なヘルパーメソッドが含まれています。
+
+## 💬 dialogs モジュール
+このモジュールには、エンドユーザー向けのカスタムダイアログを作成するために使用できる、
+さまざまなダイアログの基底クラス（"Dialog" で終わるもの）が含まれています。これらの基底クラスは、
+多くの事前定義されたメッセージおよびクエリダイアログの設定を含む、
+`Messagebox` および `Querybox` コンテナクラス内の事前定義された静的ヘルパーメソッドの
+基礎となります。
+
+❯ [ColorChooserDialog](dialogs/colorchooser.md)  
+❯ [ColorDropperDialog](dialogs/colordropper.md)  
+❯ [Dialog](dialogs/dialog.md)  
+❯ [FontDialog](dialogs/fontdialog.md)  
+❯ [MessageBox](dialogs/messagebox.md)  
+❯ [MessageDialog](dialogs/messagedialog.md)  
+❯ [QueryBox](dialogs/querybox.md)  
+❯ [QueryDialog](dialogs/querydialog.md)  
+
+## 😉 アイコンモジュール
+このモジュールには、アプリケーション向けに絵文字や画像アイコンを提供するクラスが含まれています。
+これらは、テキスト内で `Emoji` として、または 
+`PhotoImage` クラス内で `Icon` として使用できます。
+
+❯ [Emoji](icons/emoji.md)  
+❯ [Icon](icons/icon.md)  
+
+## 🈚 ローカライズモジュール
+このモジュールには、GUIウィジェット内のテキストをローカライズするための
+メソッドやクラスが含まれています。テキストの翻訳に使用されるmsgファイルへの
+追加には、[皆様のご協力が必要です](https://github.com/israel-dryer/ttkbootstrap/blob/master/src/ttkbootstrap/localization/msgs/README.md)！
+
+## 📜 スクロールモジュール
+このモジュールには、`ScrolledText` や
+`ScrolledFrame` などの様々なスクロールウィジェットが含まれています。
+
+❯ [ScrolledFrame](scrolled/scrolledframe.md)  
+❯ [ScrolledText](scrolled/scrolledtext.md)  
+
+## 🎨 style モジュール
+このモジュールには、ttkbootstrap のテーマおよび
+スタイルエンジンを構成するクラスが含まれています。ttkbootstrap の使用方法によっては、
+これらのクラスを直接使用する必要が全くない場合もありますが、逆に必要になる場合もあるため、
+参考としてドキュメントを用意しています。  
+
+❯ [Style](style/style.md)  
+❯ [Colors](style/colors.md)  
+❯ [ThemeDefinition](style/themedefinition.md)  
+❯ [StyleBuilderTk](style/stylebuildertk.md)  
+❯ [StyleBuilderTTK](style/stylebuilderttk.md)  
+❯ [Bootstyle](style/bootstyle.md)  
+
+## 🪟 [tableview モジュール](tableview/tableview.md)
+❯ [Tableview](tableview/tableview.md)  
+❯ [TableColumn](tableview/tablecolumn.md)  
+❯ [TableRow](tableview/tablerow.md)
+
+## 🛎️ [toast モジュール](toast.md)
+このモジュールには `ToastNotification` というクラスがあり、
+一時的なアラートやメッセージを表示するための半透明のポップアップウィンドウを提供します。
+
+## 📝 [tooltip モジュール](tooltip.md)
+このモジュールには同名のクラスが含まれており、
+ウィジェットにマウスをホバーさせるとテキストを表示し、
+マウスがウィジェットから離れたときに閉じる、
+半透明のツールチップポップアップウィンドウを提供します。
+
+## ☑️ widgets モジュール
+このモジュールには、以下にリンクされているカスタム ttkbootstrap ウィジェットが含まれています。  
+
+❯ [DateEntry](widgets/dateentry.md)  
+❯ [Floodgauge](widgets/floodgauge.md)  
+❯ [Meter](widgets/meter.md)  
+
+## 🗔 window モジュール
+このモジュールには、`tkinter.Tk` 
+および [Style](style/style.md) クラスをラップし、アプリケーションの初期起動時に
+より便利な API を提供する同名のクラスが含まれています。これは
+`Toplevel` クラスにも適用されます。  
+
+❯ [Window](window/window.md)  
+❯ [Toplevel](window/toplevel.md)   
+
+
+## ⚙️ [ユーティリティモジュール](utility.md)
+このモジュールには、エンドユーザーにとって有用な場合もあればそうでない場合もある
+様々なユーティリティ関数が含まれています。詳細についてはヘッダーをクリックしてください。
+
+## ❓その他のリファレンス
+このAPIリファレンスには、**tkinter**から継承されたクラス、メソッド、および関数は
+含まれていません。tkinterの使用方法について詳しく知りたい場合は、
+以下のリソースを参照してください：
+
+❯ [docs.python.org](https://docs.python.org/3/library/tkinter.html)  
+❯ [tkdocs](https://tkdocs.com/)  
+❯ [pythontutorial.net](https://www.pythontutorial.net/tkinter/)  
+❯ [anzeljg](https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/)  
+❯ [tcl/tk](https://www.tcl.tk/man/tcl8.6/TkCmd/contents.html)  # APIドキュメント
+
 ttkbootstrap は tkinter のラッパーです。
 このライブラリで特に定義されていないウィジェットや関数は、[その他のリファレンス](#other-references) で確認できます。
 
