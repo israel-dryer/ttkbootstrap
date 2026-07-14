@@ -55,6 +55,7 @@ style engine:
 
 .. seealso::
 
-   :doc:`Styling with bootstyle </user-guide/foundations/bootstyle-grammar>` for the
-   full styling vocabulary, and :doc:`Theming </user-guide/feature-guides/theming>`
-   for the color model behind the themes.
+   - :doc:`Styling with bootstyle </user-guide/foundations/bootstyle-grammar>` —
+     the full styling vocabulary.
+   - :doc:`Theming </user-guide/feature-guides/theming>` — the color model behind
+     the themes.

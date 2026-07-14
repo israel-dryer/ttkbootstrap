@@ -139,6 +139,7 @@ blocking it:
 
 .. seealso::
 
-   :doc:`Events & callbacks </user-guide/foundations/events-and-callbacks>` for
-   binding handlers, and :doc:`Widget & screen info </reference/winfo>` for why
-   sizes aren't known until the loop runs.
+   - :doc:`Events & callbacks </user-guide/foundations/events-and-callbacks>` —
+     binding handlers.
+   - :doc:`Widget & screen info </reference/winfo>` — why sizes aren't known until
+     the loop runs.

@@ -116,6 +116,7 @@ A small tree, configured, with a state toggled:
 
 .. seealso::
 
-   :doc:`How a tkinter app runs </user-guide/foundations/how-a-tkinter-app-runs>`
-   for the loop that drives callbacks, and :doc:`Cursors </reference/cursors>` for
-   the platform-dependent ``cursor`` option.
+   - :doc:`How a tkinter app runs </user-guide/foundations/how-a-tkinter-app-runs>`
+     — the loop that drives callbacks.
+   - :doc:`Cursors </reference/cursors>` — the platform-dependent ``cursor``
+     option.

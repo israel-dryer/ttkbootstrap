@@ -77,6 +77,7 @@ through the same call instead:
 
 .. seealso::
 
-   The :doc:`Events guide </user-guide/feature-guides/events>` for binding the
-   copy/paste shortcuts, and the ``<<Copy>>`` / ``<<Paste>>`` / ``<<Cut>>``
-   virtual events that Entry and Text already handle for you.
+   - :doc:`Events guide </user-guide/feature-guides/events>` — binding the
+     copy/paste shortcuts.
+   - The ``<<Copy>>`` / ``<<Paste>>`` / ``<<Cut>>`` virtual events that Entry and
+     Text already handle for you.

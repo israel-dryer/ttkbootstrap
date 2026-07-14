@@ -92,6 +92,7 @@ Hide an expensive window and bring it back rather than recreating it:
 
 .. seealso::
 
-   :doc:`Focus, modality & lifecycle </user-guide/feature-guides/windows>` for
-   the concepts, and :doc:`Structuring an app
-   </user-guide/getting-started/app-structures>` for the single-root rule.
+   - :doc:`Focus, modality & lifecycle </user-guide/feature-guides/windows>` — the
+     concepts.
+   - :doc:`Structuring an app </user-guide/getting-started/app-structures>` — the
+     single-root rule.

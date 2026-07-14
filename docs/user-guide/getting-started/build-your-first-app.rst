@@ -64,9 +64,9 @@ apps stay organized as they grow.
 
 .. seealso::
 
-   :doc:`How a tkinter app runs </user-guide/foundations/how-a-tkinter-app-runs>`
-   for the event loop and why ``mainloop()`` comes last, and
-   :doc:`Structuring an app <app-structures>` for the root and single-root rule.
+   - :doc:`How a tkinter app runs </user-guide/foundations/how-a-tkinter-app-runs>`
+     — the event loop and why ``mainloop()`` comes last.
+   - :doc:`Structuring an app <app-structures>` — the root and single-root rule.
 
 Step 2 — a form with ``grid``
 -----------------------------

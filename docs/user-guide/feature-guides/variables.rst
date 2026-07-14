@@ -148,6 +148,7 @@ localization subsystem.
 
 .. seealso::
 
-   :doc:`State & variables </user-guide/foundations/state-and-variables>` for the
-   binding basics, and the :doc:`Variables reference </reference/variables>` for
-   the ``StringVar`` / ``IntVar`` / … API and the numeric-coercion gotcha.
+   - :doc:`State & variables </user-guide/foundations/state-and-variables>` — the
+     binding basics.
+   - :doc:`Variables reference </reference/variables>` — the ``StringVar`` /
+     ``IntVar`` / … API and the numeric-coercion gotcha.

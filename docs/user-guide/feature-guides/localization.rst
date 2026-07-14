@@ -158,7 +158,7 @@ anything that must switch live is bound to a ``LocaleVar``.
 
 .. seealso::
 
-   :doc:`Variables </user-guide/feature-guides/variables>` for how variable
-   objects bind to widgets — ``LocaleVar`` is a specialized ``StringVar`` — and
-   :doc:`Events </user-guide/feature-guides/events>` for the ``<<LocaleChanged>>``
-   virtual event that drives it.
+   - :doc:`Variables </user-guide/feature-guides/variables>` — how variable objects
+     bind to widgets (``LocaleVar`` is a specialized ``StringVar``).
+   - :doc:`Events </user-guide/feature-guides/events>` — the ``<<LocaleChanged>>``
+     virtual event that drives it.

@@ -311,8 +311,9 @@ accept them.
 
 .. seealso::
 
-   :doc:`Windows </user-guide/feature-guides/windows>` for the focus,
-   modality, and lifecycle mechanics the dialogs are built on;
-   :doc:`Input validation </user-guide/feature-guides/validation>` for validating
-   fields in a form dialog; and :doc:`Open a second window
-   </user-guide/how-to/multiple-windows>` for rolling your own.
+   - :doc:`Windows </user-guide/feature-guides/windows>` — the focus, modality,
+     and lifecycle mechanics the dialogs are built on.
+   - :doc:`Input validation </user-guide/feature-guides/validation>` — validating
+     fields in a form dialog.
+   - :doc:`Open a second window </user-guide/how-to/multiple-windows>` — rolling
+     your own.

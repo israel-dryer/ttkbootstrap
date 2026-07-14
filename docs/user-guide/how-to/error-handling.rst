@@ -65,7 +65,7 @@ or validate the field instead — see
 
 .. seealso::
 
-   The :doc:`Variables guide </user-guide/feature-guides/variables>` for the
-   numeric-variable coercion gotcha, and
-   :doc:`How a tkinter app runs </user-guide/foundations/how-a-tkinter-app-runs>`
-   for the event loop that these callbacks run inside.
+   - :doc:`Variables guide </user-guide/feature-guides/variables>` — the
+     numeric-variable coercion gotcha.
+   - :doc:`How a tkinter app runs </user-guide/foundations/how-a-tkinter-app-runs>`
+     — the event loop that these callbacks run inside.

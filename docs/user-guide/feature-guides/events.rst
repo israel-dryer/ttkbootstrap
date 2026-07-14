@@ -168,7 +168,7 @@ sequences with ``event_add``:
 
 .. seealso::
 
-   :doc:`Events & callbacks </user-guide/foundations/events-and-callbacks>` for
-   the basics, and the :doc:`Event reference </reference/events/index>` for the
-   complete catalog — every event type, modifier, key symbol, and event
-   attribute.
+   - :doc:`Events & callbacks </user-guide/foundations/events-and-callbacks>` —
+     the basics.
+   - :doc:`Event reference </reference/events/index>` — the complete catalog:
+     every event type, modifier, key symbol, and event attribute.

@@ -77,6 +77,6 @@ and marshal results back with ``after``, so the UI stays responsive.
 
 .. seealso::
 
-   :doc:`Cursors </reference/cursors>` for the pointer names, and the
-   :doc:`Windows guide </user-guide/feature-guides/windows>` for window-level
-   behavior.
+   - :doc:`Cursors </reference/cursors>` — the pointer names.
+   - :doc:`Windows guide </user-guide/feature-guides/windows>` — window-level
+     behavior.

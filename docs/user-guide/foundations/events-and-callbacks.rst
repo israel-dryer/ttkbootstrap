@@ -111,6 +111,6 @@ label — no blocking, the window stays responsive throughout:
 
 .. seealso::
 
-   The :doc:`Events guide </user-guide/feature-guides/events>` for binding scope,
-   stopping events, and dispatching your own; the
-   :doc:`Event reference </reference/events/index>` for the complete catalog.
+   - :doc:`Events guide </user-guide/feature-guides/events>` — binding scope,
+     stopping events, and dispatching your own.
+   - :doc:`Event reference </reference/events/index>` — the complete catalog.
