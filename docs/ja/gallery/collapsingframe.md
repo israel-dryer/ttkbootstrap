@@ -1,25 +1,23 @@
-# 折りたたみフレーム
+# 折りたたみ可能なフレーム
+この例では、折りたたみ可能なフレームウィジェットの作成方法を示します。ウィジェットに追加された各 `Frame` 
+には、タイトルやスタイルを割り当てることができます。各オプショングループには、
+さまざまなブートスタイルが適用されます。 
 
-この例では、折りたたみ可能なフレームウィジェットの構築方法を示します。
-ウィジェットに追加された各`Frame`にはタイトルとスタイルを割り当てることができます。
-各オプショングループにはさまざまなbootstyleが適用されます。
-
-![折りたたみフレームの例](../assets/gallery/collapsing_frame.png)
-
+![ファイル検索画像の例](../assets/gallery/collapsing_frame.png)
+ 
 ## スタイル概要
-使用されているテーマは **litera** です。
+使用しているテーマは **litera** です。
 
-| 項目              | クラス             | Bootstyle |
+| 項目              | クラス             | ブートスタイル |
 | ---               | ---               | --- |
-| オプショングループ1 | `CollapsingFrame` | primary |
-| オプショングループ2 | `CollapsingFrame` | danger |
-| オプショングループ3 | `CollapsingFrame` | success |
+| オプショングループ 1 | `CollapsingFrame` | primary |
+| オプショングループ 2 | `CollapsingFrame` | danger |
+| オプショングループ 3 | `CollapsingFrame` | success |
 
 ## サンプルコード
-[このコードをReplitで実行](https://replit.com/@israel-dryer/collapsing-frame#main.py)
+repl.itでこのコードを実行する[(https://replit.com/@israel-dryer/collapsing-frame#main.py)]
 
 ```python
-
 from pathlib import Path
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
@@ -30,35 +28,35 @@ IMG_PATH = Path(__file__).parent / 'assets'
 
 
 class CollapsingFrame(ttk.Frame):
-    """A collapsible frame widget that opens and closes with a click."""
+    """クリックで展開・折りたたみが可能なフレームウィジェットです。"""
 
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.columnconfigure(0, weight=1)
         self.cumulative_rows = 0
 
-        # widget images
+        # ウィジェットの画像
         self.images = [
             ttk.PhotoImage(file=IMG_PATH/'icons8_double_up_24px.png'),
             ttk.PhotoImage(file=IMG_PATH/'icons8_double_right_24px.png')
         ]
 
     def add(self, child, title="", bootstyle=PRIMARY, **kwargs):
-        """Add a child to the collapsible frame
+        """折りたたみ可能なフレームに子要素を追加する
 
-        Parameters:
+        パラメータ:
 
             child (Frame):
-                The child frame to add to the widget.
+                ウィジェットに追加する子フレーム。
 
             title (str):
-                The title appearing on the collapsible section header.
+                折りたたみ可能なセクションのヘッダーに表示されるタイトル。
 
             bootstyle (str):
-                The style to apply to the collapsible section header.
+                折りたたみセクションのヘッダーに適用するスタイル。
 
             **kwargs (Dict):
-                Other optional keyword arguments.
+                その他のオプションのキーワード引数。
         """
         if child.winfo_class() != 'TFrame':
             return
@@ -67,7 +65,7 @@ class CollapsingFrame(ttk.Frame):
         frm = ttk.Frame(self, bootstyle=style_color)
         frm.grid(row=self.cumulative_rows, column=0, sticky=EW)
 
-        # header title
+        # ヘッダーのタイトル
         header = ttk.Label(
             master=frm,
             text=title,
@@ -77,7 +75,7 @@ class CollapsingFrame(ttk.Frame):
             header.configure(textvariable=kwargs.get('textvariable'))
         header.pack(side=LEFT, fill=BOTH, padx=10)
 
-        # header toggle button
+        # ヘッダーのトグルボタン
         def _func(c=child): return self._toggle_open_close(c)
         btn = ttk.Button(
             master=frm,
@@ -87,21 +85,21 @@ class CollapsingFrame(ttk.Frame):
         )
         btn.pack(side=RIGHT)
 
-        # assign toggle button to child so that it can be toggled
+        # トグル操作が可能になるよう、トグルボタンを子ウィンドウに割り当てる
         child.btn = btn
         child.grid(row=self.cumulative_rows + 1, column=0, sticky=NSEW)
 
-        # increment the row assignment
+        # 行の割り当てをインクリメント
         self.cumulative_rows += 2
 
     def _toggle_open_close(self, child):
-        """Open or close the section and change the toggle button 
-        image accordingly.
+        """セクションを開閉し、それに応じてトグルボタンの
+        画像を変更します。
 
-        Parameters:
+        パラメータ:
             
             child (Frame):
-                The child element to add or remove from grid manager.
+                グリッドマネージャーに追加または削除する子要素。
         """
         if child.winfo_viewable():
             child.grid_remove()
@@ -118,19 +116,19 @@ if __name__ == '__main__':
     cf = CollapsingFrame(app)
     cf.pack(fill=BOTH)
 
-    # option group 1
+    # オプショングループ 1
     group1 = ttk.Frame(cf, padding=10)
     for x in range(5):
         ttk.Checkbutton(group1, text=f'Option {x + 1}').pack(fill=X)
     cf.add(child=group1, title='Option Group 1')
 
-    # option group 2
+    # オプショングループ 2
     group2 = ttk.Frame(cf, padding=10)
     for x in range(5):
         ttk.Checkbutton(group2, text=f'Option {x + 1}').pack(fill=X)
     cf.add(group2, title='Option Group 2', bootstyle=DANGER)
 
-    # option group 3
+    # オプショングループ 3
     group3 = ttk.Frame(cf, padding=10)
     for x in range(5):
         ttk.Checkbutton(group3, text=f'Option {x + 1}').pack(fill=X)
