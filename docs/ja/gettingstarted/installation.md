@@ -1,15 +1,15 @@
 # インストール
 
-とても簡単です。
+超簡単。
 
-!!! note "PyPIでのインストール"
-```bash
-python -m pip install ttkbootstrap
-```
+!!! 注：「PyPIからのインストール」
+    ```bash
+    python -m pip install ttkbootstrap
+    ```
 
-楽々インストール。
+超簡単。
 
-!!! note "GitHubからのインストール"
-```bash
-python -m pip install git+https://github.com/israel-dryer/ttkbootstrap
-```
+!!! 注：「GitHubからのインストール」
+    ```bash
+    python -m pip install git+https://github.com/israel-dryer/ttkbootstrap
+    ```
