@@ -71,6 +71,20 @@ list scrolls:
 
    combo = ttk.Combobox(app, textvariable=color, postcommand=refresh, height=8)
 
+Because ``postcommand`` runs each time the list is about to open, it can build the
+choices from the *current* state — including another widget's selection. That's how
+you make a **dependent (cascading) dropdown**, e.g. a city list filtered by the
+selected country:
+
+.. code-block:: python
+
+   cities = {"France": ["Paris", "Lyon"], "Japan": ["Tokyo", "Osaka"]}
+
+   def city_choices():
+       city_combo.configure(values=cities.get(country.get(), []))
+
+   city_combo = ttk.Combobox(app, textvariable=city, postcommand=city_choices)
+
 Pick-only vs. editable
 ----------------------
 
