@@ -108,6 +108,9 @@ with ``invoke`` (toggle) and ``instate`` (read):
    check.invoke()                  # toggle it programmatically
    check.instate(["selected"])     # read the checked state directly
 
+The widget keeps the ``selected`` state in sync with the variable (set whenever the
+variable equals ``onvalue``), so ``instate`` mirrors what ``.get()`` reports.
+
 The ``alternate`` state shows an indeterminate "mixed" mark — for a "select all"
 that is only partly on:
 
