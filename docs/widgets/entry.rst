@@ -123,6 +123,10 @@ it:
    entry.state(["readonly"])           # selectable, not editable
    entry.state(["!disabled", "!readonly"])   # back to normal
 
+When you attach validation, a failed check adds a third state: **invalid**.
+Validation sets and clears it for you, and it is what the ``danger`` border maps
+to — read it with ``entry.instate(["invalid"])`` (see `Validating input`_).
+
 API & reference
 ---------------
 
