@@ -1,23 +1,22 @@
 # 電卓
+この基本的な電卓のUIは、異なる色を使って
+ボタンの機能を区別する方法を示しています。 
 
-この基本的な電卓UIは、異なる色を使用してボタンの機能を区別する方法を示しています。
+![ファイル検索画像の例](../assets/gallery/calculator.png)
 
-![電卓の例](../assets/gallery/calculator.png)
-
-## スタイル概要
+## スタイルの概要
 この例で使用されているテーマは **flatly** です。
 
-| 項目      | クラス     | Bootstyle |
+| 項目      | クラス     | ブートスタイル |
 | ---       | ---       |---        |
 | 数字      | `Button`  | primary   |
 | 演算子    | `Button`  | secondary |
-| イコール  | `Button`  | success   |
+| 等号     | `Button`  | success   |
 
 ## サンプルコード
-[このコードをReplitで実行](https://replit.com/@israel-dryer/calculator#main.py)
+repl.itで[このコードを実行](https://replit.com/@israel-dryer/calculator#main.py)
 
 ```python
-
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
@@ -41,7 +40,7 @@ class Calculator(ttk.Frame):
 
     def create_num_display(self):
         container = ttk.Frame(master=self, padding=2, bootstyle=self.bootstyle)
-        container.pack(fill=X, pady=20)
+        container.pack(fill=X, padding=20)
         digits = ttk.Label(
             master=container,
             font="TkFixedFont 14",
@@ -89,10 +88,10 @@ class Calculator(ttk.Frame):
         self.operator.set("+")
 
     def on_button_pressed(self, txt):
-        """Handles and routes all button press events."""
+        """すべてのボタン押下イベントを処理し、ルーティングします。"""
         display = self.digitsvar.get()
 
-        # remove operator from screen after button is pressed
+        # ボタンが押された後、画面から演算子を削除する
         if len(display) > 0:
             if display[0] in ["/", "*", "-", "+"]:
                 display = display[1:]
@@ -102,7 +101,7 @@ class Calculator(ttk.Frame):
             self.reset_variables()
         elif isinstance(txt, int):
             self.press_number(display, txt)
-        elif txt == "." and "." not in display:
+        elif txt == "." かつ "." が display に含まれない場合:
             self.digitsvar.set(f"{display}{txt}")
         elif txt == "±":
             self.press_inverse(display)
@@ -112,14 +111,14 @@ class Calculator(ttk.Frame):
             self.press_equals(display)
 
     def press_number(self, display, txt):
-        """A digit button is pressed"""
+        """数字ボタンが押された"""
         if display == "0":
             self.digitsvar.set(txt)
         else:
             self.digitsvar.set(f"{display}{txt}")
 
     def press_inverse(self, display):
-        """The inverse number button is pressed"""
+        """逆数ボタンが押された"""
         if display.startswith("-"):
             if len(display) > 1:
                 self.digitsvar.set(display[1:])
@@ -129,7 +128,7 @@ class Calculator(ttk.Frame):
             self.digitsvar.set(f"-{display}")
 
     def press_operator(self, txt):
-        """An operator button is pressed"""
+        """演算子ボタンが押された"""
         self.operator.set(txt)
         display = float(self.digitsvar.get())
         if self.xnum.get() != 0:
@@ -139,7 +138,7 @@ class Calculator(ttk.Frame):
         self.digitsvar.set(txt)
 
     def press_equals(self, display):
-        """The equals button is pressed."""
+        """イコールボタンが押された"""
         if self.xnum.get() != 0:
             self.ynum.set(display)
         else:
