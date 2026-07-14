@@ -3,6 +3,35 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
+_Last updated: 2026-07-13 (**The self-authored API-REFERENCE layer is now COMPLETE
+— every planned Reference section authored and MERGED into `2.0`.** This was a
+large parallel sub-workstream tracked in its own doc,
+**`development/2_0_docs_api_reference.md` (read it for the full detail)**: the
+per-widget pages + Capabilities/Events/Cursors landed earlier (#1184–#1187); then
+**Windows** (#1189), **Dialogs & overlays** (#1190), autodoc **slice 1**
+(Validation · Fonts · Localization, #1191), and autodoc **slice 2** (**Styling ·
+Theming · Imaging · Utilities**, #1192) merged this stretch, with a handoff-doc
+refresh (#1193). Reference IA is now the full target order: **Widgets · Windows ·
+Dialogs & overlays · Styling · Theming · Imaging · Localization · Fonts ·
+Validation · Utilities · Capabilities · Events · Cursors.** Slice 2 carried a
+small follow-on refactor surfaced while documenting `ThemeDefinition`: the
+**`themetype` → `mode` rename** — constructor kwarg + `.type`→`.mode` attribute,
+old spellings kept as warn-and-normalize deprecated aliases (via `**kwargs` /
+read-only property, removed in 3.0), `load_user_theme` JSON accepts either
+`"mode"`/`"type"` key; the 5 first-party call sites + the custom-themes example
+migrated, logged in `2_0_breaking_changes.md`. Reference authoring rules
+(memory-worthy, in the api-reference doc): strip `Examples:` before autodoc, fix
+Markdown-ism inline-rST under `-W`, hand-write tk primitives (`PhotoImage`) but
+autodoc ttkbootstrap surfaces, and **don't** surface internal machinery
+(`Bootstyle` resolver class, near-obsolete `BitmapImage` deliberately left out).
+Build gate all green (`sphinx -b html -W -q -E`, exit 0); suite ~650 excl. the
+known env flakes (`nl.msg`, the `test_menu_api` "off_mac" trio that fail on real
+macOS). **NEXT — back to the Widgets-catalog (docs Workstream H, per the entry
+below):** Phase 1 continues one PR per family — remaining families **Containers ·
+Range & misc · Shipped · Text · Canvas**, then the coverage sync test — followed
+by the deferred **screenshot slice** (placeholders are in place). Prior entry
+follows.**)_
+
 _Last updated: 2026-07-12 (**Widgets-catalog Phase 1 in progress — Inputs / Choice
 / Command families MERGED into `2.0`** (PRs #1176/#1177/#1178). Cloning the Button
 template one PR per family; every snippet verified headlessly, `-W` clean.
