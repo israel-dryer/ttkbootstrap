@@ -8,7 +8,7 @@
 ![](https://img.shields.io/github/forks/israel-dryer/ttkbootstrap.svg)
 
 # ttkbootstrap
-英語 | [日本語](README_ja.md) | [中国語](README_zh.md)
+日本語 | [English](README.md) | [中国語](README_zh.md)
 
 ttkbootstrap は、Bootstrap にインスパイアされたモダンでフラットなスタイルのテーマを提供することで、tkinter を強化する Python ライブラリです。組み込みのテーマや事前定義されたウィジェットスタイルなどを活用して、スタイリッシュな GUI アプリケーションを簡単に作成できます。
 
