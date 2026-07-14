@@ -81,8 +81,8 @@ That's the distinction worth remembering:
 
 The other options: ``anchor`` positions a widget within its space when it isn't
 filling (``anchor="w"`` left-aligns), ``padx``/``pady`` add space outside it, and
-``ipadx``/``ipady`` inside it. See the
-`Pack reference <https://docs.python.org/3/library/tkinter.html#tkinter.Pack>`__.
+``ipadx``/``ipady`` inside it. See the :doc:`Pack reference
+</reference/geometry/pack>`.
 
 Step 4 — combine managers by nesting frames
 -------------------------------------------
@@ -147,8 +147,7 @@ pinned to a corner, where neither ``pack`` nor ``grid`` fits:
 
    badge.place(relx=1.0, rely=0.0, anchor="ne")   # pin to the top-right corner
 
-See the
-`Place reference <https://docs.python.org/3/library/tkinter.html#tkinter.Place>`__.
+See the :doc:`Place reference </reference/geometry/place>`.
 
 Recap
 -----

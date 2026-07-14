@@ -70,8 +70,8 @@ for the standard Text API (``insert``, ``get``, ``delete``, tags):
 
    app.mainloop()
 
-- ``.text`` is the real ``Text`` widget — anything the `tkinter Text reference
-  <https://docs.python.org/3/library/tkinter.html>`_ documents works on it.
+- ``.text`` is the real ``Text`` widget — anything the :doc:`Text reference
+  </reference/api/text>` documents works on it.
 - Pass ``hbar=True`` for a horizontal scrollbar too (off by default); ``vbar`` is
   on by default.
 - ``see("end")`` keeps the newest content in view — the usual move for a log.

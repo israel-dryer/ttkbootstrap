@@ -154,7 +154,5 @@ when the app is destroyed, so you rarely call it yourself.
 
 .. seealso::
 
-   The named-font families are the standard tkinter fonts; for the underlying
-   options and the ``font.Font`` object, see
-   `tkinter.font <https://docs.python.org/3/library/tkinter.font.html>`__ on
-   python.org.
+   The named-font families are the standard tkinter fonts; for the ``Font``
+   object and the full options, see the :doc:`Fonts reference </reference/fonts>`.
