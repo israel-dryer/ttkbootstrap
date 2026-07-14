@@ -3,6 +3,76 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
+---
+
+## NEXT SESSION — START HERE
+
+**Docs Workstream H is content-complete.** The Widgets catalog (all ~29 pages), the
+self-authored API-reference layer, the Geometry + Variables reference sections, the
+usage-guide enrichment pass, and the reference/See-also cross-reference cleanup are
+all **merged into `2.0`**. Full build is green (`.venv/bin/python -m sphinx -b html
+-W -q -E docs <out>`, exit 0, 0 warnings); the catalog coverage test passes.
+
+**The one remaining docs-H thread is the SCREENSHOT SLICE** (design: `2_0_docs_design.md`
+§7). Everything is staged for it:
+
+- **45 screenshot placeholders** are in place across `docs/` — 28 in `widgets/`, 8
+  feature-guides, 4 foundations, 4 how-to, 1 getting-started. Each is a build-safe
+  admonition whose one-line body **IS the capture spec**:
+  `.. admonition:: 📷 Screenshot (placeholder)` / `:class: screenshot-placeholder`.
+  Find them all with `grep -rl screenshot-placeholder docs --include=*.rst`.
+- **Deliverable:** every catalog widget page + the theme gallery need **light+dark
+  pairs**. The gate (icon-drop PR, so glyphs/arrows/date/dialog icons are final) is
+  already satisfied.
+- **Approach (design §7):** borrow bootstack's capture mechanism —
+  `bootstack/docs/screenshots/` + `docs/scripts/` (sibling repo, `D:/Development/
+  bootstack` on the Windows box). Lift/adapt the scripts to render ttkbootstrap
+  widgets, generate the light+dark images, drop them under `docs/` (e.g.
+  `docs/_static/` or a `docs/screenshots/`), then replace each placeholder
+  admonition with an `.. image::`/`.. figure::` (keep `-W` green — no broken links).
+- **Cross-platform decision needed:** the capture tooling likely runs on the
+  **Windows** box (bootstack lives there); macOS renders aqua chrome differently.
+  Decide which OS's shots are canonical (or ship both).
+- **Optional quick win (no tooling needed):** `screenshot-placeholder` isn't styled
+  in `docs/_static/custom.css` yet — a dashed-box rule would make the placeholders
+  visibly obvious in the meantime.
+
+The dated running log below has the full history. Latest entry first.
+
+---
+
+_Last updated: 2026-07-14 (**Docs REFERENCE-STRUCTURE + CROSS-REFERENCE CLEANUP —
+all MERGED into `2.0`.** Sparked by the observation that catalog pages linked
+python.org instead of our own (later-authored) API reference, and that "See also"
+blocks were run-on paragraphs. Five PRs: **#1207** standardized the bottom of every
+catalog page — "API & reference" → **Reference** (a short lead + a bulleted list:
+our `docs/reference/api/<widget>` page, then the `:ref:`<widget>-styling`` options +
+Custom styles guide) and the "See also" paragraph → a **described bullet list**
+(`link — short description`, matching the grid cards). All 19 native pages now point
+at **our** reference, not python.org; tk pages (Canvas/Text) keep the Tcl/Tk manual
+as a supplementary bullet (Text previously linked *only* the Tcl manual). **#1208**
+promoted **Geometry** to a top-level Reference section (`docs/reference/geometry/`),
+moving Pack/Grid/Place/Stacking out of Capabilities. **#1209** authored a new
+top-level **Variables** reference (`docs/reference/variables.rst`) — `Variable` /
+`StringVar` / `IntVar` / `DoubleVar` / `BooleanVar` (+ defaults, one constructor),
+`get`/`set`/`trace_*`, `LocaleVar`, and the `IntVar/DoubleVar.get()` `TclError`
+gotcha — closing the gap that made guides defer to python.org. Reference IA is now
+**… Validation · Variables · Geometry · Utilities · Capabilities · Events ·
+Cursors**. **#1210** retargeted the guide python.org links to our own reference
+(grid/pack/place → Geometry, `tkinter.ttk` → Widgets ref, Text → Text ref, Menu →
+Menu ref, `tkinter.font` → Fonts ref, Variable classes → Variables ref);
+**deliberately kept** as legitimate upstream: `threads` (stdlib `queue`/`threading`)
+and `custom-styles`/`icons` (ttk's raw element/layout model, which those guides
+don't teach). **#1211** listified the multi-link "See also" paragraphs across 19
+guide pages (single-link ones left as prose). Standing conventions now: **catalog +
+guide Reference/See-also are bulleted `link — description` lists; native-widget
+pages link OUR api reference; python.org is kept only for genuinely-stdlib surfaces
+we don't document.** #1207 needed a rebase (it predated the invalid-state #1204 +
+dependent-dropdown #1205 merges) — resolved by keeping both. Build gate all green
+(`sphinx -W -q -E`, exit 0); catalog coverage test green. **NEXT docs-H thread:**
+the deferred **screenshot slice** (placeholders in place across the whole catalog +
+guides). Prior entry follows.**)_
+
 _Last updated: 2026-07-13 (**Widgets-catalog USAGE-GUIDE ENRICHMENT PASS — COMPLETE
 and MERGED into `2.0`.** After the catalog was declared "done," the author flagged
 that the earlier pages were written "lite," *before* the standing rule to mine the
