@@ -1,10 +1,10 @@
 # GIFアニメーション
 
-この例では、画像リストからラベル画像の更新をスケジュールすることで、
-ウィンドウのユーザー入力に対する応答性を維持しながら、
-ウィンドウ内でGIFをアニメーション表示する方法を示します。
+この例では、画像のリストからラベル画像の更新をスケジュールすることで、
+ウィンドウがユーザー入力に反応し続けるようにしつつ、
+ウィンドウ内でGIFアニメーションを表示する方法を示します。
 
-![gif animation](../assets/cookbook/animated-gif.gif)
+![GIFアニメーション](../assets/cookbook/animated-gif.gif)
 
 ```python
 # https://dribbble.com/shots/1237618--Gif-Spinner
@@ -19,10 +19,10 @@ class AnimatedGif(ttk.Frame):
     def __init__(self, master):
         super().__init__(master, width=400, height=300)
 
-        # GIFを開き、サイクルイテレータを作成
+        # GIFを開き、サイクルイテレータを作成する
         file_path = Path(__file__).parent / "assets/spinners.gif"
         with Image.open(file_path) as im:
-            # シーケンスを作成
+            # シーケンスを作成する
             sequence = ImageSequence.Iterator(im)
             images = [ImageTk.PhotoImage(s) for s in sequence]
             self.image_cycle = cycle(images)
@@ -35,7 +35,7 @@ class AnimatedGif(ttk.Frame):
         self.after(self.framerate, self.next_frame)
 
     def next_frame(self):
-        """各フレームの画像を更新"""
+        """各フレームの画像を更新する"""
         self.img_container.configure(image=next(self.image_cycle))
         self.after(self.framerate, self.next_frame)
 
