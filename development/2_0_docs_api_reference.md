@@ -136,33 +136,42 @@ work is on **`docs/2.0-widget-api-reference`** off `2.0`:
 
 ## REMAINING (next session starts here)
 
-DONE: **Windows** (#1189, merged), **Dialogs & overlays** (#1190, merged), and
-**autodoc slice 1** — Validation, Fonts, Localization — as **PR #1191 (OPEN** on
-`docs/2.0-reference-autodoc`). **First: confirm #1191 merged, then branch off the
-updated `2.0`.**
+DONE: **Windows** (#1189, merged), **Dialogs & overlays** (#1190, merged),
+**autodoc slice 1** — Validation, Fonts, Localization (#1191, merged), and
+**autodoc slice 2** — **Styling · Theming · Imaging · Utilities** — on
+`docs/2.0-reference-styling-theming` (branched off `2.0`, PR pending). With slice
+2 **every planned Reference section is authored.**
 
-Reference-landing IA now: **Widgets · Windows · Dialogs & overlays · Localization
-· Fonts · Validation · Capabilities · Events · Cursors**. Target full order:
-Widgets · Windows · Dialogs & overlays · **Styling · Theming · Imaging** ·
-Localization · Fonts · Validation · **Utilities** · Capabilities · Events ·
-Cursors — insert the new cards accordingly.
+Reference-landing IA is now the full target order: **Widgets · Windows · Dialogs &
+overlays · Styling · Theming · Imaging · Localization · Fonts · Validation ·
+Utilities · Capabilities · Events · Cursors.**
 
-Still to author:
+### Slice 2 — what landed + two scope decisions (READ before a follow-up)
 
-1. **Styling** (autodoc): `Style`, `Bootstyle`, toolkit (`Assets`/`El`/`layout`/
-   `StyleName`/`register_style`/`statespec`/`state_map`/`image_element`). Strip
-   `Examples:` from `style/layout.py` (×6) + `engine.py` (×1) first.
-2. **Theming** (autodoc): `Theme`, `ThemeDefinition`, `Colors`,
-   `install_legacy_themes`. Strip `Examples:` from `theme.py` (×3).
-3. **Imaging**: `PhotoImage` (hand-write — tk primitive, thin upstream) + `Icon`/
-   `apply_icon`/`icon_element` (autodoc). Consider re-exporting + documenting
-   `BitmapImage` (PhotoImage's sibling) here for image-surface completeness.
-4. **Utilities** (autodoc): `ttkbootstrap.utils` / `colorutils` — a grab-bag
-   (color fns `HEX`/`HSL`/`RGB`/`color_to_*`/`contrast_color`/
-   `conform_color_model`, `enable_high_dpi_awareness`, `on_theme_change`/
-   `remove_theme_change_callback`, `config`); curate the genuinely-public surface,
-   skip internals.
-5. Card + toctree into `docs/reference/index.rst` for each.
+Pages: `docs/reference/{styling,theming,imaging,utilities}.rst`, cards + toctree
+in `docs/reference/index.rst`. `Examples:` stripped from `style/layout.py` (×6),
+`engine.py` (×1), `theme.py` (×3); a handful of Markdown-ism `-W` errors fixed in
+the newly-autodoc'd members (`` `El`s ``/`` `ThemeDefinition`s `` unclosed spans;
+`_delta_`-style italics in `Colors.update_hsv`). Build gate green (exit 0, `-W`),
+suite 647 passed (the 3 `test_menu_api` "off_mac" failures are **pre-existing on
+pristine `2.0`** — they fail on real macOS, unrelated).
+
+- **`Bootstyle` class was NOT autodoc'd** (handoff had listed it). Its own
+  docstring says "typical end users will not call these methods directly" and its
+  members are internal resolver plumbing (`override_*`, `patch_geometry_managers`,
+  …); it also references deprecated tuple syntax. Instead the Styling page
+  documents the genuinely-public delivery surface — **`bootify` / `apply_bootstyle`
+  / `enable_global_api`** — under "Applying styles to any widget." Revisit if the
+  author wants the class itself surfaced.
+- **`BitmapImage` was skipped** (the optional "consider" item). It's a
+  near-obsolete XBM primitive with no methods of its own; adding a top-level
+  re-export for it wasn't judged worth the surface. Imaging documents `PhotoImage`
+  (hand-written, PNG/GIF) + the `Icon`/`apply_icon`/`icon_element` glyph engine.
+
+Note: inline ```` ```python ```` fences in `bootify`/`apply_bootstyle`/`Icon`/
+`icon_element` docstrings were **left in place** (the fence shim renders them; the
+strip rule as operationalized only targets `Examples:` blocks, matching the prior
+slices). A future strict-no-examples sweep could remove them.
 
 ### Autodoc page pattern (ESTABLISHED — replicate)
 

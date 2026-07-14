@@ -28,6 +28,27 @@ The lookup layer:
       Message, input, and picker dialogs — ``Messagebox``, ``Querybox``, and the
       dialog classes — plus toasts and tooltips.
 
+   .. grid-item-card:: Styling
+      :link: styling
+      :link-type: doc
+
+      The style engine and the tools to build your own styles — ``Style``,
+      the ``bootstyle`` delivery helpers, and the custom-style toolkit.
+
+   .. grid-item-card:: Theming
+      :link: theming
+      :link-type: doc
+
+      Declare and consume color themes — ``Theme``, ``ThemeDefinition``,
+      ``Colors``, and the legacy-theme bridge.
+
+   .. grid-item-card:: Imaging
+      :link: imaging
+      :link-type: doc
+
+      Images on widgets — the ``PhotoImage`` primitive and the Bootstrap Icons
+      glyph engine (``Icon``, ``apply_icon``, ``icon_element``).
+
    .. grid-item-card:: Localization
       :link: localization
       :link-type: doc
@@ -47,6 +68,13 @@ The lookup layer:
 
       Attach input validation to entries — ready-made checks plus custom
       validators.
+
+   .. grid-item-card:: Utilities
+      :link: utilities
+      :link-type: doc
+
+      Standalone helpers — color conversion and contrast, high-DPI awareness
+      and scaling, and theme-change hooks.
 
    .. grid-item-card:: Capabilities
       :link: capabilities/index
@@ -76,9 +104,13 @@ The lookup layer:
    api/index
    windows/index
    dialogs/index
+   styling
+   theming
+   imaging
    localization
    fonts
    validation
+   utilities
    capabilities/index
    events/index
    cursors

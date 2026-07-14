@@ -26,23 +26,6 @@ class Style(ttk.Style):
     inherits all of it's methods and properties. However, in
     ttkbootstrap, this class is implemented as a singleton. Subclassing
     is not recommended and may have unintended consequences.
-
-    Examples:
-
-        ```python
-        # instantiate the style with default theme
-        style = Style()
-
-        # instantiate the style with another theme
-        style = Style(theme='bootstrap-dark')
-
-        # check all available themes
-        for theme in style.theme_names():
-            print(theme)
-        ```
-
-    See the [Python documentation](https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Style)
-    on this class for more details.
     """
 
     instance = None
@@ -319,10 +302,10 @@ class Style(ttk.Style):
             style.theme_mode           # -> "light"
             style.theme_mode = "dark"  # switch
 
-        Reads the active theme's type; `None` before a theme is applied.
+        Reads the active theme's mode; `None` before a theme is applied.
         """
         theme = getattr(self, "theme", None)
-        return theme.type if theme is not None else None
+        return theme.mode if theme is not None else None
 
     @theme_mode.setter
     def theme_mode(self, mode: str) -> None:
@@ -352,9 +335,9 @@ class Style(ttk.Style):
             if name not in self._theme_names:
                 raise ValueError(f"{name!r} is not a registered theme name.")
             definition = self._theme_definitions.get(name)
-            if definition is not None and definition.type != mode:
+            if definition is not None and definition.mode != mode:
                 warnings.warn(
-                    f"designating {name!r} (a {definition.type} theme) as the "
+                    f"designating {name!r} (a {definition.mode} theme) as the "
                     f"{mode} theme; toggling will not change appearance the way "
                     "a matching-type theme would.",
                     UserWarning,
@@ -504,7 +487,7 @@ class Style(ttk.Style):
             copied_def = ThemeDefinition(
                 name=themename,
                 colors=parent_def.colors,
-                themetype=parent_def.type
+                mode=parent_def.mode
             )
             self._theme_definitions[themename] = copied_def
             self._theme_names.add(themename)
@@ -763,7 +746,7 @@ class Style(ttk.Style):
                 self.register_theme(
                     ThemeDefinition(
                         name=name,
-                        themetype=definition["type"],
+                        mode=definition.get("mode") or definition["type"],
                         colors=definition["colors"],
                     )
                 )

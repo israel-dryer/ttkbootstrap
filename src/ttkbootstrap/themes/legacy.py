@@ -70,7 +70,7 @@ def theme_from_legacy_dict(name, spec) -> ThemeDefinition:
         inputbg=inputbg,
         active=active,
     )
-    return ThemeDefinition(name=name, colors=colors, themetype=mode)
+    return ThemeDefinition(name=name, colors=colors, mode=mode)
 
 
 def install_legacy_themes(style=None) -> None:

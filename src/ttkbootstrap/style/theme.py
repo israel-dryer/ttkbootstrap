@@ -15,6 +15,7 @@ from PIL import ImageColor
 
 from ttkbootstrap import utils
 from ttkbootstrap.constants import *
+from ttkbootstrap.style._compat import warn_deprecated
 
 
 _TINT_WEIGHTS = {
@@ -240,46 +241,9 @@ class Colors:
     be accessed through the `Style.colors` property for the
     current theme.
 
-    Examples:
-
-        ```python
-        style = Style()
-
-        # dot-notation
-        style.colors.primary
-
-        # get method
-        style.colors.get('primary')
-        ```
-
-        This class is an iterator, so you can iterate over the main
-        style color labels (primary, secondary, success, info, warning,
-        danger, light, dark):
-
-        ```python
-        for color_label in style.colors:
-            color = style.colors.get(color_label)
-            print(color_label, color)
-        ```
-
-        If, for some reason, you need to iterate over all theme color
-        labels, then you can use the `Colors.label_iter` method. This
-        will include all theme colors.
-
-        ```python
-        for color_label in style.colors.label_iter():
-            color = style.colors.get(color_label)
-            print(color_label, color)
-        ```
-
-        If you want to adjust the hsv values of an existing color by a
-        specific percentage (delta), you can use the `Colors.update_hsv`
-        method, which is static. In the example below, the "value delta"
-        or `vd` is increased by 15%, which will lighten the color:
-
-        ```python
-        Colors.update_hsv("#9954bb", vd=0.15)
-        ```
+    This class is an iterator over the main style color labels (primary,
+    secondary, success, info, warning, danger, light, dark); `label_iter`
+    iterates over every theme color label.
     """
 
     def __init__(
@@ -640,7 +604,7 @@ class Colors:
     @staticmethod
     def update_hsv(color, hd=0, sd=0, vd=0):
         """Modify the hue, saturation, and/or value of a given hex
-        color value by specifying the _delta_.
+        color value by specifying the delta.
 
         Parameters:
 
@@ -648,13 +612,13 @@ class Colors:
                 A hexadecimal color value to adjust.
 
             hd (float):
-                % change in hue, _hue delta_.
+                % change in hue, the hue delta.
 
             sd (float):
-                % change in saturation, _saturation delta_.
+                % change in saturation, the saturation delta.
 
             vd (float):
-                % change in value, _value delta_.
+                % change in value, the value delta.
 
         Returns:
 
@@ -702,7 +666,7 @@ class ThemeDefinition:
     styles and images for the active theme.
     """
 
-    def __init__(self, name, colors, themetype=LIGHT):
+    def __init__(self, name, colors, mode=LIGHT, **kwargs):
         """
         Parameters:
 
@@ -712,18 +676,33 @@ class ThemeDefinition:
             colors (Colors or dict):
                 A Colors instance or a dict of color values.
 
-            themetype (str):
+            mode (str):
                 Specifies whether the theme is **light** or **dark**.
         """
+        themetype = kwargs.pop("themetype", None)
+        if themetype is not None:
+            warn_deprecated("the 'themetype' ThemeDefinition argument", "'mode'")
+            mode = themetype
+        if kwargs:
+            raise TypeError(
+                "ThemeDefinition() got unexpected keyword argument(s): "
+                f"{', '.join(map(repr, sorted(kwargs)))}"
+            )
         self.name = name
         self.colors = colors if isinstance(colors, Colors) else Colors(**colors)
-        self.type = themetype
+        self.mode = mode
+
+    @property
+    def type(self):
+        """Deprecated alias for `mode` (removed in 3.0)."""
+        warn_deprecated("the 'ThemeDefinition.type' attribute", "'mode'")
+        return self.mode
 
     def __repr__(self):
         return " ".join(
             [
                 f"name={self.name},",
-                f"type={self.type},",
+                f"mode={self.mode},",
                 f"colors={self.colors}",
             ]
         )
@@ -835,18 +814,6 @@ class Theme:
     `<name>-dark`). The per-mode ramp step for solids, borders, and inputs is
     chosen automatically -- there is no per-mode shade boilerplate.
 
-    Examples:
-
-        ```python
-        Theme(
-            name="pulse",
-            primary="#593196", success="#13b955", info="#009cdc",
-            warning="#efa31d", danger="#fc3939",
-            light=dict(background="#ffffff", foreground="#17141f"),
-            dark=dict(background="#17141f", foreground="#e9ecef"),
-        ).register()   # registers pulse-light + pulse-dark on the live Style
-        ```
-
     Parameters:
 
         name (str):
@@ -895,10 +862,10 @@ class Theme:
             mode, anchors, self.neutral,
             block["background"], block["foreground"], self.secondary,
         )
-        return ThemeDefinition(name=f"{self.name}-{mode}", colors=colors, themetype=mode)
+        return ThemeDefinition(name=f"{self.name}-{mode}", colors=colors, mode=mode)
 
     def to_definitions(self):
-        """Return the generated per-mode `ThemeDefinition`s (light, then dark).
+        """Return the generated per-mode `ThemeDefinition` objects (light, then dark).
 
         A family that declares only one block yields a single definition.
         """
@@ -934,12 +901,6 @@ class Theme:
 
         Every token not overridden is inherited from `base`, so a built-in can
         be re-branded by changing just its `primary` (and anything else).
-
-        Examples:
-
-            ```python
-            Theme.from_existing(BOOTSTRAP, name="acme", primary="#ff5722")
-            ```
         """
         unknown = set(overrides) - {f.name for f in fields(cls)}
         if unknown:

@@ -68,7 +68,7 @@ class StyleBuilderTTK:
     @property
     def is_light_theme(self) -> bool:
         """Whether the current theme is light."""
-        return self.style.theme.type == LIGHT
+        return self.style.theme.mode == LIGHT
 
     @property
     def assets(self) -> Assets:

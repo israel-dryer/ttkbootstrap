@@ -6,7 +6,7 @@ root = Window()
 # create custom theme
 theme = ThemeDefinition(
     name="custom",
-    themetype="dark",
+    mode="dark",
     colors={
         "primary": "#4bb731",
         "secondary": "#444444",

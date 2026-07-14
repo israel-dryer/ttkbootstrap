@@ -24,6 +24,7 @@
 | **Validation rules grouped under a `Validation` namespace** | API | this doc, below |
 | **Light/dark theme mode (settable `theme_mode`/`toggle_theme()`)** | New | this doc, below |
 | **Theme-aware custom styles (`on_theme_change` / `@theme_aware`)** | New | this doc, below |
+| **`ThemeDefinition`: `themetype`→`mode` (kwarg + `.type`→`.mode`)** | Deprecated | this doc, below |
 | Canonical `bootstyle` grammar (closed vocab, strict mode) | API | `development/2_0_bootstyle_grammar_design.md` |
 | Character-based icons removed (`ttkbootstrap.icons`) | API | `development/2_0_icon_drop_design.md` (PR #1094) |
 | Delivery API (mixins, no import-time monkey-patch) | API | handoff / PR #1075 |
@@ -118,6 +119,35 @@ skipped — one bad callback never breaks theming. Rides the existing theme walk
 
 **Scope note.** A *utility* over the existing theme walk, not new widget
 behavior. Purely additive; no migration required.
+
+---
+
+## `ThemeDefinition`: `themetype` → `mode`  *(Deprecated — no break)*
+
+**What.** `ThemeDefinition`'s light/dark selector is now spelled **`mode`**,
+both as the constructor argument and the stored attribute:
+
+- `ThemeDefinition(name, colors, mode="dark")` — the third positional arg is
+  unchanged (`ThemeDefinition(name, colors, "dark")` still works); only the
+  keyword spelling changed.
+- `definition.mode` replaces `definition.type`.
+
+The old spellings still work through 2.x with a one-time `DeprecationWarning`
+(removed in 3.0): passing `themetype=` normalizes to `mode`, and reading
+`.type` returns `.mode`. `load_user_theme(s)` JSON accepts either a `"mode"` or
+a legacy `"type"` key, so existing saved-theme files keep loading.
+
+**Why.** The value only ever holds `"light"`/`"dark"` — i.e. the theme *mode*,
+which is exactly what the rest of the 2.0 theme surface already calls it
+(`Style.theme_mode`, `toggle_theme()`, the `light_theme`/`dark_theme` kwargs,
+the `<name>-light`/`<name>-dark` naming). `themetype`/`.type` was the last
+pre-2.0 holdout, and the class was already internally inconsistent (the kwarg
+was `themetype` but it was stored as `.type`). `ThemeDefinition.mode` now lines
+up with `Style.theme_mode`.
+
+**Migration.** `ThemeDefinition(..., themetype=X)` → `ThemeDefinition(..., mode=X)`;
+`definition.type` → `definition.mode`. In 2.0 most custom themes go through
+`Theme(...).register()` rather than constructing `ThemeDefinition` directly.
 
 ---
 

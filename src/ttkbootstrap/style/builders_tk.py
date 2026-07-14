@@ -42,7 +42,7 @@ class StyleBuilderTK:
     @property
     def is_light_theme(self) -> bool:
         """Returns `True` if the theme is _light_, otherwise `False`."""
-        return self.style.theme.type == LIGHT
+        return self.style.theme.mode == LIGHT
 
     def update_tk_style(self, widget: tk.Tk):
         """Update the window style.

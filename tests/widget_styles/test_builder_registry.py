@@ -183,7 +183,7 @@ def test_new_theme_keeps_nondefault_recipes_lazy(root):
         ThemeDefinition(
             name=name,
             colors=style.theme.colors,
-            themetype=style.theme.type,
+            mode=style.theme.mode,
         )
     )
     style.theme_use(name)
