@@ -51,18 +51,17 @@ Color
 
    ttk.Sizegrip(app, bootstyle="secondary")
 
-API & reference
----------------
+Reference
+---------
 
-``Sizegrip`` is the native ``ttk.Sizegrip`` — ttkbootstrap adds ``bootstyle=`` but
-no other Python API. For its constructor see the
-`tkinter.ttk.Sizegrip <https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Sizegrip>`__
-reference.
+``Sizegrip`` is the native ``ttk.Sizegrip``; ttkbootstrap adds only the
+``bootstyle`` keyword.
+
+- :doc:`Sizegrip API reference </reference/api/sizegrip>` — every option and
+  method.
+- :ref:`Sizegrip styling options <sizegrip-styling>` — restyle it yourself, with
+  the :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide.
 
 .. seealso::
 
-   :doc:`Windows </user-guide/feature-guides/windows>` for window geometry and
-   resizing. Want to restyle the sizegrip yourself? The
-   :ref:`Sizegrip's styling options <sizegrip-styling>` and its
-   companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide
-   document the hand-styling surface.
+   - :doc:`Windows </user-guide/feature-guides/windows>` — window geometry and resizing.

@@ -127,19 +127,17 @@ When you attach validation, a failed check adds a third state: **invalid**.
 Validation sets and clears it for you, and it is what the ``danger`` border maps
 to — read it with ``entry.instate(["invalid"])`` (see `Validating input`_).
 
-API & reference
----------------
+Reference
+---------
 
-``Entry`` is the native ``ttk.Entry`` — ttkbootstrap adds ``bootstyle=`` but no
-other Python API. For its constructor and options (``textvariable``, ``show``,
-``width``, ``justify``, ``state``, …) see the
-`tkinter.ttk.Entry <https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Entry>`__
-reference.
+``Entry`` is the native ``ttk.Entry``; ttkbootstrap adds only the ``bootstyle``
+keyword.
+
+- :doc:`Entry API reference </reference/api/entry>` — every option and method.
+- :ref:`Entry styling options <entry-styling>` — restyle it yourself, with the
+  :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide.
 
 .. seealso::
 
-   :doc:`Combobox <combobox>` and :doc:`Spinbox <spinbox>` for entries with a
-   dropdown or numeric stepper. Want to restyle the entry yourself? The
-   :ref:`Entry's styling options <entry-styling>` and its
-   companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>`
-   guide document the hand-styling surface.
+   - :doc:`Combobox <combobox>` — an entry with a dropdown of choices.
+   - :doc:`Spinbox <spinbox>` — an entry with a numeric stepper.

@@ -132,20 +132,18 @@ With validation attached, a failed check also puts the field in the **invalid**
 state — what the ``danger`` border maps to. Validation sets and clears it for you;
 read it with ``combo.instate(["invalid"])``.
 
-API & reference
----------------
+Reference
+---------
 
-``Combobox`` is the native ``ttk.Combobox`` — ttkbootstrap adds ``bootstyle=`` but
-no other Python API. For its constructor and options (``values``,
-``textvariable``, ``state``, ``height``, ``postcommand``, …) and the ``get`` /
-``set`` / ``current`` methods, see the
-`tkinter.ttk.Combobox <https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Combobox>`__
-reference.
+``Combobox`` is the native ``ttk.Combobox``; ttkbootstrap adds only the
+``bootstyle`` keyword.
+
+- :doc:`Combobox API reference </reference/api/combobox>` — every option and
+  method.
+- :ref:`Combobox styling options <combobox-styling>` — restyle it yourself, with
+  the :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide.
 
 .. seealso::
 
-   :doc:`Entry <entry>` for a plain text field and :doc:`Spinbox <spinbox>` for a
-   stepper over an ordered range. Want to restyle the combobox yourself? The
-   :ref:`Combobox's styling options <combobox-styling>` and its
-   companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>`
-   guide document the hand-styling surface.
+   - :doc:`Entry <entry>` — a plain single-line text field.
+   - :doc:`Spinbox <spinbox>` — a stepper over an ordered range.

@@ -205,24 +205,20 @@ use it just like a ``Text``:
 wire a plain :doc:`Scrollbar <scrollbar>` to a bare ``Text`` yourself, see
 :doc:`Scroll long content </user-guide/how-to/scrollable>`.
 
-API & reference
----------------
+Reference
+---------
 
-``Text`` is tkinter's ``tk.Text`` — ttkbootstrap themes it but adds no Python
-API. Its methods cover editing (``insert``, ``delete``, ``replace``, ``get``),
-positions (``index``, ``see``, ``bbox``), tags (``tag_add``, ``tag_configure``,
-``tag_bind``, ``tag_remove``, ``tag_names``), marks (``mark_set``, ``mark_gravity``,
-``mark_unset``), search (``search``), and the undo stack (``edit_undo``,
-``edit_redo``, ``edit_separator``, ``edit_modified``).
+``Text`` is tkinter's ``tk.Text``; ttkbootstrap themes it but adds no Python API.
+The standard library doesn't document it in full.
 
-The standard library reference doesn't document the text widget in full. The
-canonical, complete reference is the
-`Tk text manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/text.htm>`__ —
-it's written in Tcl, so a subcommand like ``tag configure`` is the Python method
-``tag_configure`` (spaces become underscores).
+- :doc:`Text reference </reference/api/text>` — its options and methods (editing,
+  indices, tags, marks, search, undo).
+- `Tk text manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/text.htm>`__ —
+  the canonical upstream reference (Tcl 8.6; a subcommand like ``tag configure`` is
+  the Python method ``tag_configure``).
 
 .. seealso::
 
-   :doc:`Entry <entry>` for a single-line field, and
-   :doc:`Scroll long content </user-guide/how-to/scrollable>` for adding a
-   scrollbar.
+   - :doc:`Entry <entry>` — a single-line text field.
+   - :doc:`Scroll long content </user-guide/how-to/scrollable>` — adding a
+     scrollbar.

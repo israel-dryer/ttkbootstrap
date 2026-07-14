@@ -86,20 +86,18 @@ Color
 
    ttk.Panedwindow(app, orient=VERTICAL, bootstyle="secondary")
 
-API & reference
----------------
+Reference
+---------
 
-``Panedwindow`` is the native ``ttk.Panedwindow`` — ttkbootstrap adds ``bootstyle=``
-but no other Python API. For its constructor and pane methods (``add``,
-``insert``, ``forget``, ``sashpos``, ``pane``) see the
-`tkinter.ttk.Panedwindow <https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Panedwindow>`__
-reference.
+``Panedwindow`` is the native ``ttk.Panedwindow``; ttkbootstrap adds only the
+``bootstyle`` keyword.
+
+- :doc:`Panedwindow API reference </reference/api/panedwindow>` — every option and
+  method.
+- :ref:`Panedwindow styling options <panedwindow-styling>` — restyle it yourself,
+  with the :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide.
 
 .. seealso::
 
-   :doc:`Notebook <notebook>` for a tabbed rather than split layout, and
-   :doc:`Frame <frame>` for the pane containers. Want to restyle the panedwindow
-   yourself? The
-   :ref:`Panedwindow's styling options <panedwindow-styling>`
-   and its companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>`
-   guide document the hand-styling surface.
+   - :doc:`Notebook <notebook>` — a tabbed rather than split layout.
+   - :doc:`Frame <frame>` — the pane containers.

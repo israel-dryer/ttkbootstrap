@@ -67,12 +67,12 @@ Color
 
    LabeledScale(app, variable=level, from_=0, to=100, bootstyle="success")
 
-API & reference
----------------
+Reference
+---------
 
-For the complete option list, see the
-:doc:`LabeledScale API reference </reference/api/labeledscale>`.
+- :doc:`LabeledScale API reference </reference/api/labeledscale>` — every option
+  and method.
 
 .. seealso::
 
-   :doc:`Scale <scale>` for the plain slider it builds on.
+   - :doc:`Scale <scale>` — the plain slider it builds on.

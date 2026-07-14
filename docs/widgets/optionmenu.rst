@@ -95,21 +95,22 @@ Toggle the ``disabled`` state to grey the control out and block it from opening:
    option.state(["disabled"])          # greyed out, won't open
    option.state(["!disabled"])         # re-enable
 
-API & reference
----------------
+Reference
+---------
 
-``OptionMenu`` is the native ``ttk.OptionMenu`` — ttkbootstrap adds ``bootstyle=``
-but no other Python API. Its constructor is
+``OptionMenu`` is the native ``ttk.OptionMenu``; ttkbootstrap adds only the
+``bootstyle`` keyword. Its constructor is
 ``OptionMenu(master, variable, default, *values, command=None, direction="below")``,
-and ``set_menu(default, *values)`` rebuilds the choices; see the
-`tkinter.ttk.OptionMenu <https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.OptionMenu>`__
-reference.
+and ``set_menu(default, *values)`` rebuilds the choices.
+
+- :doc:`OptionMenu API reference </reference/api/optionmenu>` — every option and
+  method.
+- :ref:`OptionMenu styling options <optionmenu-styling>` — an option menu renders
+  as a menubutton, so it shares that customization surface, with the
+  :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide.
 
 .. seealso::
 
-   :doc:`Menubutton <menubutton>` when you need a full menu (commands,
-   separators, submenus) rather than a list of values, :doc:`Combobox <combobox>`
-   for a version the user can also type into, and :doc:`Radiobutton <radiobutton>`
-   for a visible group. An option menu renders as a menubutton, so its
-   customization surface is the
-   :ref:`menubutton styling options <optionmenu-styling>`.
+   - :doc:`Menubutton <menubutton>` — for a full menu (commands, separators, submenus).
+   - :doc:`Combobox <combobox>` — a version the user can also type into.
+   - :doc:`Radiobutton <radiobutton>` — the same choice as a visible group.

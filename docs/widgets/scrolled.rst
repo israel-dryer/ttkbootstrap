@@ -32,7 +32,7 @@ streaming output — lives in the How-To, which owns the usage:
 
 .. seealso::
 
-   :doc:`Scroll long content </user-guide/how-to/scrollable>` — the complete
-   guide to ``ScrolledFrame`` and ``ScrolledText``. For scrolling a drawing or a
-   single widget yourself, see :doc:`Canvas <canvas>` and :doc:`Scrollbar
-   <scrollbar>`.
+   - :doc:`Scroll long content </user-guide/how-to/scrollable>` — the complete
+     guide to ``ScrolledFrame`` and ``ScrolledText``.
+   - :doc:`Canvas <canvas>` / :doc:`Scrollbar <scrollbar>` — scrolling a drawing or
+     a single widget yourself.

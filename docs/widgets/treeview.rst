@@ -215,21 +215,18 @@ States
    tree.state(["disabled"])            # greyed out
    tree.state(["!disabled"])           # re-enable
 
-API & reference
----------------
+Reference
+---------
 
-``Treeview`` is the native ``ttk.Treeview`` — ttkbootstrap adds ``bootstyle=`` but
-no other Python API. For the full set of methods (``insert``, ``item``, ``set``,
-``move``, ``detach`` / ``reattach``, ``delete``, ``heading``, ``column``,
-``selection`` / ``selection_add`` / ``selection_remove``, ``identify_row`` /
-``identify_region``, ``see``, ``bbox``, …) and options, see the
-`tkinter.ttk.Treeview <https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Treeview>`__
-reference.
+``Treeview`` is the native ``ttk.Treeview``; ttkbootstrap adds only the
+``bootstyle`` keyword.
+
+- :doc:`Treeview API reference </reference/api/treeview>` — every option and
+  method (``insert`` / ``item`` / ``set`` / ``selection`` / ``detach`` /
+  ``identify_row`` …).
+- :ref:`Treeview styling options <treeview-styling>` — restyle it yourself, with
+  the :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide.
 
 .. seealso::
 
-   :doc:`Tableview <tableview>` for a ready-made data table built on the
-   treeview. Want to restyle it yourself? The
-   :ref:`Treeview's styling options <treeview-styling>` and the
-   :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide document
-   the hand-styling surface.
+   - :doc:`Tableview <tableview>` — a ready-made data table built on the treeview.

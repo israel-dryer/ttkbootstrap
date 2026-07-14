@@ -71,20 +71,18 @@ use it to tie a section to a color, or to signal an important or dangerous group
 
    ttk.Labelframe(app, text="Danger zone", padding=12, bootstyle="danger")
 
-API & reference
----------------
+Reference
+---------
 
-``Labelframe`` is the native ``ttk.Labelframe`` — ttkbootstrap adds ``bootstyle=``
-but no other Python API. For its constructor and options (``text``, ``padding``,
-``labelanchor``, ``labelwidget``, ``width``, ``height``, …) see the
-`tkinter.ttk.Labelframe <https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Labelframe>`__
-reference.
+``Labelframe`` is the native ``ttk.Labelframe``; ttkbootstrap adds only the
+``bootstyle`` keyword.
+
+- :doc:`Labelframe API reference </reference/api/labelframe>` — every option and
+  method.
+- :ref:`Labelframe styling options <labelframe-styling>` — restyle it yourself,
+  with the :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide.
 
 .. seealso::
 
-   :doc:`Frame <frame>` for a plain container, and
-   :doc:`Arranging widgets </user-guide/foundations/arranging-widgets>` for laying
-   out the widgets inside. Want to restyle the labelframe yourself? The
-   :ref:`Labelframe's styling options <labelframe-styling>` and
-   its companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>`
-   guide document the hand-styling surface.
+   - :doc:`Frame <frame>` — a plain container.
+   - :doc:`Arranging widgets </user-guide/foundations/arranging-widgets>` — laying out the contents.

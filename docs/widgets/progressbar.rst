@@ -74,21 +74,18 @@ Color
 
    ttk.Progressbar(app, value=50, bootstyle="warning")
 
-API & reference
----------------
+Reference
+---------
 
-``Progressbar`` is the native ``ttk.Progressbar`` — ttkbootstrap adds ``bootstyle=``
-but no other Python API. For its constructor and options (``mode``, ``maximum``,
-``value``, ``variable``, ``orient``, ``length``) and the ``start`` / ``stop`` /
-``step`` methods, see the
-`tkinter.ttk.Progressbar <https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Progressbar>`__
-reference.
+``Progressbar`` is the native ``ttk.Progressbar``; ttkbootstrap adds only the
+``bootstyle`` keyword.
+
+- :doc:`Progressbar API reference </reference/api/progressbar>` — every option and
+  method.
+- :ref:`Progressbar styling options <progressbar-styling>` — restyle it yourself,
+  with the :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide.
 
 .. seealso::
 
-   the ``Floodgauge`` widget for a progress indicator that also shows a
-   value/label, and :doc:`Meter <meter>` for a radial one. Want to restyle the
-   progressbar yourself? The
-   :ref:`Progressbar's styling options <progressbar-styling>`
-   and its companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>`
-   guide document the hand-styling surface.
+   - :doc:`Floodgauge <floodgauge>` — a progress bar that shows its value as text.
+   - :doc:`Meter <meter>` — a radial progress indicator.

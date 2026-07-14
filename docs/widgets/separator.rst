@@ -46,17 +46,13 @@ border tone that suits most dividers:
 
    ttk.Separator(app, orient=HORIZONTAL, bootstyle="primary")
 
-API & reference
----------------
+Reference
+---------
 
-``Separator`` is the native ``ttk.Separator`` — ttkbootstrap adds ``bootstyle=``
-but no other Python API. For its constructor see the
-`tkinter.ttk.Separator <https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Separator>`__
-reference.
+``Separator`` is the native ``ttk.Separator``; ttkbootstrap adds only the
+``bootstyle`` keyword.
 
-.. seealso::
-
-   Want to restyle the separator yourself? The
-   :ref:`Separator's styling options <separator-styling>` and
-   its companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>`
-   guide document the hand-styling surface.
+- :doc:`Separator API reference </reference/api/separator>` — every option and
+  method.
+- :ref:`Separator styling options <separator-styling>` — restyle it yourself, with
+  the :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide.

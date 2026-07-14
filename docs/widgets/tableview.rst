@@ -206,16 +206,18 @@ alternating row tint (pass ``None`` for a part you don't want to change):
    Tableview(app, coldata=cols, rowdata=rows,
              bootstyle="info", stripecolor=("#f2f2f2", None))
 
-API & reference
----------------
+Reference
+---------
 
 ``Tableview`` has a large API beyond this page — ``TableColumn`` / ``TableRow``
 objects, per-column show/hide, row and column moves, and more filtering and
-export variants. For the complete list, see the
-:doc:`Tableview API reference </reference/api/tableview>`.
+export variants.
+
+- :doc:`Tableview API reference </reference/api/tableview>` — the complete option
+  and method list.
 
 .. seealso::
 
-   :doc:`Build your first app </user-guide/getting-started/build-your-first-app>`
-   builds a form that feeds a ``Tableview``, and the ``Treeview`` widget for the
-   native tree/table it is built on.
+   - :doc:`Build your first app </user-guide/getting-started/build-your-first-app>`
+     — builds a form that feeds a ``Tableview``.
+   - :doc:`Treeview <treeview>` — the native tree/table it's built on.

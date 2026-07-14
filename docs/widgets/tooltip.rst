@@ -67,13 +67,13 @@ tip to the kind of control (``danger`` for a destructive action, say):
 
    ToolTip(delete_button, text="This cannot be undone", bootstyle="danger")
 
-API & reference
----------------
+Reference
+---------
 
-For the complete option list, see the
-:doc:`ToolTip API reference </reference/dialogs/tooltip>`.
+- :doc:`ToolTip API reference </reference/dialogs/tooltip>` — every option and
+  method.
 
 .. seealso::
 
-   :doc:`Toast <toast>` for a temporary notification that appears on its own
-   rather than on hover.
+   - :doc:`Toast <toast>` — a temporary notification that appears on its own, not
+     on hover.
