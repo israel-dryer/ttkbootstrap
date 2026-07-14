@@ -1,14 +1,13 @@
-# Separator
+# 区切り線
 
-This widget style features a thin horizontal _or_ vertical line drawn in the 
-default color (typically gray) or the [selected color](index.md#colors).
+このウィジェットスタイルは、デフォルトの色（通常は灰色）または[選択した色](index.md#colors)で描かれた、細い水平線または垂直線が特徴です。
 
 ![separator](../assets/widget-styles/separator.png)
 
 ```python
-# default separator style
+# デフォルトのセパレータスタイル
 Separator()
 
-# info colored separator style - handle color
+# 情報色のセパレータスタイル - ハンドルの色
 Separator(bootstyle="info")
 ```
