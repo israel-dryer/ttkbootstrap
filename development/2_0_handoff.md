@@ -3,6 +3,44 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
+---
+
+## NEXT SESSION — START HERE
+
+**Docs Workstream H is content-complete.** The Widgets catalog (all ~29 pages), the
+self-authored API-reference layer, the Geometry + Variables reference sections, the
+usage-guide enrichment pass, and the reference/See-also cross-reference cleanup are
+all **merged into `2.0`**. Full build is green (`.venv/bin/python -m sphinx -b html
+-W -q -E docs <out>`, exit 0, 0 warnings); the catalog coverage test passes.
+
+**The one remaining docs-H thread is the SCREENSHOT SLICE** (design: `2_0_docs_design.md`
+§7). Everything is staged for it:
+
+- **45 screenshot placeholders** are in place across `docs/` — 28 in `widgets/`, 8
+  feature-guides, 4 foundations, 4 how-to, 1 getting-started. Each is a build-safe
+  admonition whose one-line body **IS the capture spec**:
+  `.. admonition:: 📷 Screenshot (placeholder)` / `:class: screenshot-placeholder`.
+  Find them all with `grep -rl screenshot-placeholder docs --include=*.rst`.
+- **Deliverable:** every catalog widget page + the theme gallery need **light+dark
+  pairs**. The gate (icon-drop PR, so glyphs/arrows/date/dialog icons are final) is
+  already satisfied.
+- **Approach (design §7):** borrow bootstack's capture mechanism —
+  `bootstack/docs/screenshots/` + `docs/scripts/` (sibling repo, `D:/Development/
+  bootstack` on the Windows box). Lift/adapt the scripts to render ttkbootstrap
+  widgets, generate the light+dark images, drop them under `docs/` (e.g.
+  `docs/_static/` or a `docs/screenshots/`), then replace each placeholder
+  admonition with an `.. image::`/`.. figure::` (keep `-W` green — no broken links).
+- **Cross-platform decision needed:** the capture tooling likely runs on the
+  **Windows** box (bootstack lives there); macOS renders aqua chrome differently.
+  Decide which OS's shots are canonical (or ship both).
+- **Optional quick win (no tooling needed):** `screenshot-placeholder` isn't styled
+  in `docs/_static/custom.css` yet — a dashed-box rule would make the placeholders
+  visibly obvious in the meantime.
+
+The dated running log below has the full history. Latest entry first.
+
+---
+
 _Last updated: 2026-07-14 (**Docs REFERENCE-STRUCTURE + CROSS-REFERENCE CLEANUP —
 all MERGED into `2.0`.** Sparked by the observation that catalog pages linked
 python.org instead of our own (later-authored) API reference, and that "See also"
