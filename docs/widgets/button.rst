@@ -104,19 +104,23 @@ For a **toolbar**, pack icon-only buttons side by side in a frame:
 The default button
 ------------------
 
-A dialog usually has a **default** action that fires on :kbd:`Return`. There is no
-"default" flag on ``ttk.Button``; make one by giving it focus and binding the key:
+A dialog usually has a **default** action that fires on :kbd:`Return`. Mark the
+button as the default with ``default="active"`` — on platforms that draw a default
+ring (macOS, for one) it gets the highlight. That flag only *marks* the button,
+though; it does not wire the key, so also bind :kbd:`Return`, calling ``invoke()``
+so the button shows its pressed feedback as it fires:
 
 .. code-block:: python
 
-   submit = ttk.Button(app, text="Submit", command=on_submit, bootstyle="primary")
+   submit = ttk.Button(app, text="Submit", command=on_submit, bootstyle="primary", default="active")
    submit.pack(pady=10)
    submit.focus_set()                         # start focused
-   app.bind("<Return>", lambda event: on_submit())
+   app.bind("<Return>", lambda event: submit.invoke())
 
 Now :kbd:`Return` triggers the action from anywhere in the window, and the button
-already has the focus ring. (For the shipped dialogs, ``default=`` does this for
-you — see the :doc:`Dialogs guide </user-guide/feature-guides/dialogs>`.)
+already has the focus ring. (The shipped dialogs wire up their default button — the
+ring plus the :kbd:`Return` binding — for you; see the
+:doc:`Dialogs guide </user-guide/feature-guides/dialogs>`.)
 
 Enabling and disabling
 ----------------------
@@ -195,7 +199,8 @@ API & reference
 
 ``Button`` is the native ``ttk.Button`` — ttkbootstrap adds the ``bootstyle=`` and
 ``icon=`` keywords but no other Python API. For its constructor and options
-(``text``, ``command``, ``width``, ``compound``, ``state``, …) see the
+(``text``, ``command``, ``width``, ``compound``, ``default``, ``state``, …) and the
+``invoke()`` method that fires the command from code, see the
 `tkinter.ttk.Button <https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Button>`__
 reference.
 

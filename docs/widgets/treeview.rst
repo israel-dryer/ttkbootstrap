@@ -64,7 +64,10 @@ data beside it, and ``show=`` chooses which parts are visible:
 
 Name the columns yourself in ``columns=`` and refer to each by that name in
 ``heading`` / ``column`` / ``values``. ``values`` fills the data columns in order;
-``text`` fills the ``"#0"`` tree column.
+``text`` fills the ``"#0"`` tree column. ``displaycolumns=`` reorders or hides the
+data columns for display without changing ``columns=``, and ``column(name,
+stretch=False)`` pins a column's width when the widget is resized (columns stretch
+to share extra space by default).
 
 Reading and changing items
 --------------------------
@@ -90,6 +93,15 @@ it, and ``delete(id)`` removes it (along with its children):
    tree.move(item_id, new_parent, 0)
    tree.delete(item_id)
 
+To hide a row temporarily without losing it — filtering, say — ``detach(id)``
+unlinks it from the tree (keeping its data), and ``reattach(id, parent, index)``
+puts it back:
+
+.. code-block:: python
+
+   tree.detach(item_id)                    # remove from view, keep the item
+   tree.reattach(item_id, "", "end")       # restore it at the top level
+
 Reacting to a selection
 -----------------------
 
@@ -105,7 +117,38 @@ changes; ``selection()`` returns the selected item ids:
    tree.bind("<<TreeviewSelect>>", on_select)
 
 ``selection_set(id)`` selects an item from code, and ``focus(id)`` moves the
-keyboard focus to it.
+keyboard focus to it. ``selectmode=`` sets how many rows the user can select —
+``"extended"`` (the default: multi-select with Shift/Ctrl), ``"browse"`` (one at a
+time), or ``"none"``. Adjust a multi-selection from code with ``selection_add`` /
+``selection_remove`` / ``selection_toggle`` (``selection_set`` replaces it).
+**Focus and selection are separate**: ``focus(id)`` sets the single active row the
+keyboard drives, which needn't be part of the selection.
+
+Bind ``<<TreeviewOpen>>`` / ``<<TreeviewClose>>`` to react when a parent is
+expanded or collapsed — the hook for **lazy-loading** a node's children the first
+time it opens (``tree.focus()`` is the row being opened):
+
+.. code-block:: python
+
+   tree.bind("<<TreeviewOpen>>", lambda event: load_children(tree.focus()))
+
+Finding what was clicked
+------------------------
+
+To turn a click into a target — for a right-click context menu, say — map the
+pointer to a row and region. ``identify_row(y)`` returns the item id under a pixel,
+and ``identify_region(x, y)`` says which part was hit (``"heading"``, ``"cell"``,
+``"tree"``, or ``"separator"``):
+
+.. code-block:: python
+
+   def on_right_click(event):
+       row = tree.identify_row(event.y)
+       if row:
+           tree.selection_set(row)         # select the row under the pointer
+       # ...then pop your context menu
+
+   tree.bind("<Button-3>", on_right_click)  # <Button-2> on macOS
 
 Sorting on a heading
 --------------------
@@ -147,8 +190,10 @@ to color, highlight, or re-font every row that carries it:
 
    tree.insert("", "end", values=("Invoice #12", "past due"), tags=("overdue",))
 
-Tags are the way to give rows conditional appearance — flagged rows, groups,
-alternating stripes — without touching the widget's base style.
+A tag can set ``foreground`` and ``font`` too, not only ``background``. When a row
+carries two tags with conflicting styles, the one **configured first** takes
+priority. Tags are the way to give rows conditional appearance — flagged rows,
+groups, alternating stripes — without touching the widget's base style.
 
 Color
 -----
@@ -175,8 +220,9 @@ API & reference
 
 ``Treeview`` is the native ``ttk.Treeview`` — ttkbootstrap adds ``bootstyle=`` but
 no other Python API. For the full set of methods (``insert``, ``item``, ``set``,
-``move``, ``delete``, ``heading``, ``column``, ``selection``, ``tag_configure``,
-``see``, ``bbox``, …) and options, see the
+``move``, ``detach`` / ``reattach``, ``delete``, ``heading``, ``column``,
+``selection`` / ``selection_add`` / ``selection_remove``, ``identify_row`` /
+``identify_region``, ``see``, ``bbox``, …) and options, see the
 `tkinter.ttk.Treeview <https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Treeview>`__
 reference.
 
