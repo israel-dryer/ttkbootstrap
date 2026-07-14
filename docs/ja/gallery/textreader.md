@@ -19,7 +19,7 @@ repl.itで[このコードを実行](https://replit.com/@israel-dryer/text-reade
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from tkinter.filedialog import askopenfilename
-from ttkbootstrap.scrolled import ScrolledText
+from ttkbootstrap.widgets.scrolled import ScrolledText
 
 
 class TextReader(ttk.Frame):
