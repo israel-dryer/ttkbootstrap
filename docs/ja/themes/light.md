@@ -1,42 +1,42 @@
-# ライトテーマ
+# 明るいテーマ
 
-以下のライトテーマは、主に[https://bootswatch.com/](https://bootswatch.com/)からインスピレーションを得ています。
+以下のライトテーマは、主に [https://bootswatch.com/](https://bootswatch.com/) から着想を得ています
 
-![cosmoテーマ](../assets/themes/cosmo.png)
-参照: [インスピレーション元](https://bootswatch.com/cosmo/)
+![cosmo テーマ](../assets/themes/cosmo.png)
+[インスピレーションの源](https://bootswatch.com/cosmo/)
 
-![flatlyテーマ](../assets/themes/flatly.png)
-参照: [インスピレーション元](https://bootswatch.com/flatly/)
+![flatly テーマ](../assets/themes/flatly.png)
+[インスピレーションの源](https://bootswatch.com/flatly/)
 
-![journalテーマ](../assets/themes/journal.png)
-参照: [インスピレーション元](https://bootswatch.com/journal/)
+![journal テーマ](../assets/themes/journal.png)
+[インスピレーションの源](https://bootswatch.com/journal/)
 
-![literaテーマ](../assets/themes/litera.png)
-参照: [インスピレーション元](https://bootswatch.com/litera/)
+![litera テーマ](../assets/themes/litera.png)
+[インスピレーションの源](https://bootswatch.com/litera/)
 
-![lumenテーマ](../assets/themes/lumen.png)
-参照: [インスピレーション元](https://bootswatch.com/lumen/)
+![lumen テーマ](../assets/themes/lumen.png)
+[インスピレーションの源](https://bootswatch.com/lumen/)
 
-![mintyテーマ](../assets/themes/minty.png)
-参照: [インスピレーション元](https://bootswatch.com/minty/)
+![minty テーマ](../assets/themes/minty.png)
+[インスピレーションの源](https://bootswatch.com/minty/)
 
-![pulseテーマ](../assets/themes/pulse.png)
-参照: [インスピレーション元](https://bootswatch.com/pulse/)
+![pulse テーマ](../assets/themes/pulse.png)
+[インスピレーションの源](https://bootswatch.com/pulse/)
 
-![sandstoneテーマ](../assets/themes/sandstone.png)
-参照: [インスピレーション元](https://bootswatch.com/sandstone/)
+![sandstone theme](../assets/themes/sandstone.png)
+[インスピレーションの源](https://bootswatch.com/sandstone/)
 
-![unitedテーマ](../assets/themes/united.png)
-参照: [インスピレーション元](https://bootswatch.com/united/)
+![united テーマ](../assets/themes/united.png)
+[インスピレーションの源](https://bootswatch.com/united/)
 
-![yetiテーマ](../assets/themes/yeti.png)
-参照: [インスピレーション元](https://bootswatch.com/yeti/)
+![yeti テーマ](../assets/themes/yeti.png)
+[インスピレーションの源](https://bootswatch.com/yeti/)
 
-![morphテーマ](../assets/themes/morph.png)
-参照: [インスピレーション元](https://bootswatch.com/morph/)
+![morph テーマ](../assets/themes/morph.png)
+[インスピレーションの源](https://bootswatch.com/morph/)
 
-![simplexテーマ](../assets/themes/simplex.png)
-参照: [インスピレーション元](https://bootswatch.com/simplex/)
+![simplex テーマ](../assets/themes/simplex.png)
+[インスピレーションの源](https://bootswatch.com/simplex/)
 
-![ceruleanテーマ](../assets/themes/cerculean.png)
-参照: [インスピレーション元](https://bootswatch.com/cerulean/)
+![cerculean テーマ](../assets/themes/cerculean.png)
+[インスピレーションの源](https://bootswatch.com/cerulean/)
