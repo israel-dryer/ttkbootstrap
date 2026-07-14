@@ -32,8 +32,9 @@ progress; bind ``variable=`` to drive it from your code as the work advances:
 
    app.mainloop()
 
-``bar.step(amount)`` advances the value by ``amount`` (default 1) without a
-variable — handy in a loop that processes items.
+``bar.step(amount)`` advances the value by ``amount`` (default ``1.0``) without a
+variable — handy in a loop that processes items. If you set both ``variable=`` and
+``value=``, the variable wins and ``value`` is ignored.
 
 Indeterminate: work is happening
 --------------------------------
@@ -49,7 +50,9 @@ back and forth. ``start()`` begins the animation and ``stop()`` ends it:
    spinner.start()                   # animate while a task runs…
    spinner.stop()                    # …then stop
 
-``start()`` takes an optional interval in milliseconds between steps.
+``start(interval)`` steps every ``interval`` milliseconds (default 50). In
+indeterminate mode the value wraps around ``maximum``, so ``maximum`` sets the
+length of one bounce cycle — raise it to slow the sweep.
 
 Striped and vertical
 --------------------

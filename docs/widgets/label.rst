@@ -78,6 +78,23 @@ wrapped lines:
 
    ttk.Label(app, text="A long paragraph that should wrap…", wraplength=200, justify="left")
 
+Aligning and sizing
+-------------------
+
+Two options are easy to confuse. ``justify=`` (above) aligns **multiple wrapped
+lines** against each other; ``anchor=`` positions the whole text/image block
+**within the label's own area** (``"w"`` left, ``"center"``, ``"e"`` right, plus
+the corners) — visible only when the label is bigger than its content. Give a
+label a fixed ``width=`` (in characters) so a column of field-name labels lines up
+its values:
+
+.. code-block:: python
+
+   ttk.Label(app, text="Name", width=12, anchor="e").pack()
+
+A ``relief=`` (``"solid"``, ``"groove"``, …) with some ``padding=`` turns a label
+into a bordered chip or badge — pair it with ``inverse-<color>`` for a filled tag.
+
 Fonts and images
 ----------------
 
@@ -89,7 +106,9 @@ Set ``font=`` to change the type — a Tk font spec, a named font, or a
    ttk.Label(app, text="Heading", font="-size 18 -weight bold")
 
 A label can also show an image (with or without text) via ``image=`` and
-``compound=``. Building and keeping a reference to images is covered in
+``compound=``, which places the image relative to the text (``"left"``, ``"top"``,
+``"center"``, or ``"image"`` / ``"text"`` to show just one). Building and keeping a
+reference to images is covered in
 :doc:`Show images and icons </user-guide/how-to/working-with-images>`; type styling
 in the :doc:`Typography guide </user-guide/feature-guides/typography>`.
 

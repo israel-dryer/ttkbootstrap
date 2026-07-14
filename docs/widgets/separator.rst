@@ -32,7 +32,9 @@ its space:
    app.mainloop()
 
 A horizontal separator needs ``fill=X`` (a vertical one ``fill=Y``) to stretch —
-otherwise it collapses to nothing.
+otherwise it collapses to nothing. ``orient=`` defaults to ``horizontal``, and a
+separator is purely decorative — it takes no focus and has no methods beyond
+styling.
 
 Color
 -----

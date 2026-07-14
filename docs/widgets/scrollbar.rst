@@ -46,6 +46,20 @@ is so the thumb tracks (``set``). Wire both:
    wiring for you — reach for a bare ``Scrollbar`` when you attach one to a
    ``Listbox``, ``Canvas``, or ``Treeview`` yourself.
 
+How it talks to the widget
+--------------------------
+
+The two sides speak in **fractions** from ``0.0`` (top / left of the content) to
+``1.0`` (the end). The widget calls ``set(first, last)`` with the visible slice,
+and ``scroll.get()`` reads that ``(first, last)`` pair back. When the whole
+content fits, the widget sends ``set(0.0, 1.0)`` and the scrollbar **disables
+itself** — the thumb fills the track and greys out. That's expected, not a dead
+scrollbar; it re-enables once there's something to scroll.
+
+Wiring a scrollbar to a view Tk doesn't scroll for you (a ``Canvas`` or a custom
+widget) means handling the ``command`` calls yourself — they arrive as
+``("moveto", fraction)`` or ``("scroll", number, "units" | "pages")``.
+
 Color and variants
 ------------------
 
