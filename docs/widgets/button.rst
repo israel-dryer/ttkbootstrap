@@ -98,7 +98,7 @@ For a **toolbar**, pack icon-only buttons side by side in a frame:
    toolbar.pack(fill=X)
 
    for name, action in [("save", save), ("printer", print_doc), ("trash", delete)]:
-       button = ttk.Button(toolbar, icon=name, icon_only=True, command=action, bootstyle="secondary link")
+       button = ttk.Button(toolbar, icon=name, icon_only=True, command=action, bootstyle="secondary ghost")
        button.pack(side=LEFT)
 
 The default button

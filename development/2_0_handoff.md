@@ -3,6 +3,35 @@
 > Living handoff for the 2.0 cleanup. Update at the end of each working session.
 > Pair with `development/2_0_plan.md` (the durable worklist) and `CLAUDE.md`.
 
+_Last updated: 2026-07-13 (**Widgets-catalog USAGE-GUIDE ENRICHMENT PASS — COMPLETE
+and MERGED into `2.0`.** After the catalog was declared "done," the author flagged
+that the earlier pages were written "lite," *before* the standing rule to mine the
+Tcl/Tk manuals for concepts/caveats ([[feedback_mine_tcltk_manuals_for_usage]]). So
+this pass re-evaluated every existing `docs/widgets/*.rst` page and enriched the thin
+ones. Method: **6 parallel audit agents**, one per family, each read the full page +
+fetched the `ttk_*`/`tk` manual (shipped widgets audited against their source) and
+returned a grounded gap report. Then **one PR per family**, every added snippet
+verified headlessly, `-W` green — all merged: **Containers #1196** (frame
+propagation gotcha, labelframe `labelwidget`, notebook traversal/tab-id/initial-fire,
+panedwindow runtime panes + sash timing), **Range & misc #1197** (label
+anchor-vs-justify, scale set-vs-variable clipping, scrollbar auto-disable + fraction
+model, sizegrip negative-geometry caveat), **Inputs #1198** (entry index/selection
+model + validation gotchas, combobox `current()` getter + popdown caveat, spinbox
+`format=` + increment events), **Choice + Command #1199**, **Button + Treeview
+#1200**, **Shipped #1201**. **Five factual errors fixed** (each verified against the
+live widget first): radiobutton "unrelated buttons" note (backwards — shared
+`::selectedButton`), button "no default flag" (false — `default=` exists),
+labeledscale "shows whole numbers" (`:g` keeps `3.7`), toast default-position +
+4-anchor list (OS-specific; 8 anchors), tooltip `delay` (250 not 500). **Grounding
+discipline paid off** where the raw Tk manual and ttkbootstrap behavior diverged: the
+combobox popdown *is* themed by ttkbootstrap (just not by the `bootstyle` accent —
+grounded in `update_combobox_popdown_style`), and the radiobutton `alternate` state
+appears only when the variable is genuinely unset, not merely non-matching (tkinter
+vars are always set). Full audit + per-page plan: `development/2_0_docs_usage_enrichment.md`.
+Merged `2.0` builds clean (`-W`, exit 0); catalog coverage test green. **NEXT docs-H
+thread:** the deferred **screenshot slice** (placeholders are in place across the
+whole catalog + guides). Prior entry follows.**)_
+
 _Last updated: 2026-07-13 (**The WIDGETS CATALOG (docs Workstream H, `docs/widgets/`)
 is now COMPLETE.** The prior handoff's "remaining families" were stale — Containers
 (#1203878a), Range & misc (#27de4df6), Shipped indicators + interactive (#08425bbf/
