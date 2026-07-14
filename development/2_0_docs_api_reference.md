@@ -134,17 +134,23 @@ work is on **`docs/2.0-widget-api-reference`** off `2.0`:
   grab/after/lifecycle/clipboard/selection (+ folded winfo). Events is now
   top-level (not folded here). Cursors top-level.
 
-## REMAINING (next session starts here)
+## STATUS — the Reference layer is COMPLETE
 
-DONE: **Windows** (#1189, merged), **Dialogs & overlays** (#1190, merged),
-**autodoc slice 1** — Validation, Fonts, Localization (#1191, merged), and
-**autodoc slice 2** — **Styling · Theming · Imaging · Utilities** — on
-`docs/2.0-reference-styling-theming` (branched off `2.0`, PR pending). With slice
-2 **every planned Reference section is authored.**
+DONE: **Windows** (#1189), **Dialogs & overlays** (#1190), **autodoc slice 1** —
+Validation, Fonts, Localization (#1191), and **autodoc slice 2** — **Styling ·
+Theming · Imaging · Utilities** (#1192) — all **merged** into `2.0`. With slice 2,
+**every planned Reference section is authored.** Slice 2 also carried a small
+follow-on refactor surfaced while documenting `ThemeDefinition`: the
+**`themetype` → `mode` rename** (kwarg + `.type`→`.mode`, deprecated aliases;
+logged in `2_0_breaking_changes.md`).
 
 Reference-landing IA is now the full target order: **Widgets · Windows · Dialogs &
 overlays · Styling · Theming · Imaging · Localization · Fonts · Validation ·
 Utilities · Capabilities · Events · Cursors.**
+
+**No Reference sections remain.** The open docs-H threads are elsewhere: the
+Widgets-catalog depth pages and the screenshot slice (see
+`development/2_0_handoff.md`).
 
 ### Slice 2 — what landed + two scope decisions (READ before a follow-up)
 
