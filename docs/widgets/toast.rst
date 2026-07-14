@@ -73,14 +73,13 @@ glyph shown beside the text (a Bootstrap Icons name):
 
 Set ``alert=True`` to also ring the system bell when the toast appears.
 
-API & reference
----------------
+Reference
+---------
 
-For the complete option list, see the
-:doc:`ToastNotification API reference </reference/dialogs/toast>`.
+- :doc:`ToastNotification API reference </reference/dialogs/toast>` — every option
+  and method.
 
 .. seealso::
 
-   The :doc:`Dialogs guide </user-guide/feature-guides/dialogs>` for a
-   ``Messagebox`` when you need the user to acknowledge or answer, rather than a
-   toast that fades on its own.
+   - :doc:`Dialogs guide </user-guide/feature-guides/dialogs>` — a ``Messagebox``
+     when you need the user to acknowledge or answer, not a toast that fades.

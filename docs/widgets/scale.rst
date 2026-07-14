@@ -91,20 +91,17 @@ palette:
 
    ttk.Scale(app, from_=0, to=100, variable=volume, bootstyle="info")
 
-API & reference
----------------
+Reference
+---------
 
-``Scale`` is the native ``ttk.Scale`` — ttkbootstrap adds ``bootstyle=`` but no
-other Python API. For its constructor and options (``from_``, ``to``,
-``variable``, ``command``, ``orient``, ``length``, ``value``) see the
-`tkinter.ttk.Scale <https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Scale>`__
-reference.
+``Scale`` is the native ``ttk.Scale``; ttkbootstrap adds only the ``bootstyle``
+keyword.
+
+- :doc:`Scale API reference </reference/api/scale>` — every option and method.
+- :ref:`Scale styling options <scale-styling>` — restyle it yourself, with the
+  :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide.
 
 .. seealso::
 
-   the ``LabeledScale`` widget for a scale with a value label that tracks the
-   handle, and :doc:`Spinbox <spinbox>` for a stepped numeric entry. Want to
-   restyle the scale yourself? The
-   :ref:`Scale's styling options <scale-styling>` and its
-   companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide
-   document the hand-styling surface.
+   - :doc:`LabeledScale <labeledscale>` — a scale with a value label on the handle.
+   - :doc:`Spinbox <spinbox>` — a stepped numeric entry.

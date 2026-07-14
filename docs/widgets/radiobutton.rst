@@ -113,21 +113,20 @@ rest.
    an explicit ``variable=`` don't become independent: they all fall back to the
    same built-in default variable and interfere as one accidental group.
 
-API & reference
----------------
+Reference
+---------
 
-``Radiobutton`` is the native ``ttk.Radiobutton`` — ttkbootstrap adds ``bootstyle=``
-but no other Python API. For its constructor and options (``variable``, ``value``,
-``text``, ``command``, ``state``, …) see the
-`tkinter.ttk.Radiobutton <https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Radiobutton>`__
-reference.
+``Radiobutton`` is the native ``ttk.Radiobutton``; ttkbootstrap adds only the
+``bootstyle`` keyword.
+
+- :doc:`Radiobutton API reference </reference/api/radiobutton>` — every option and
+  method.
+- :ref:`Radiobutton styling options <radiobutton-styling>` (and the
+  :ref:`toolbutton style <button-styling>` for the segmented look) — restyle it
+  yourself, with the :doc:`Custom styles </user-guide/feature-guides/custom-styles>`
+  guide.
 
 .. seealso::
 
-   :doc:`Checkbutton <checkbutton>` for an independent on/off toggle, and
-   :doc:`Combobox <combobox>` when a dropdown fits better than a visible group.
-   Want to restyle the radiobutton yourself? The
-   :ref:`radiobutton's styling options <radiobutton-styling>` (and the
-   :ref:`toolbutton style <button-styling>` for the segmented look) and its
-   companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>`
-   guide document the hand-styling surface.
+   - :doc:`Checkbutton <checkbutton>` — an independent on/off toggle.
+   - :doc:`Combobox <combobox>` — a dropdown when a visible group is too big.

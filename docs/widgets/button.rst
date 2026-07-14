@@ -194,20 +194,12 @@ automatically — the theme handles the visuals. You set ``disabled`` yourself (
 `Enabling and disabling`_); the rest follow the pointer and keyboard. To style a
 state differently, see :ref:`the button's styling options <button-styling>`.
 
-API & reference
----------------
+Reference
+---------
 
-``Button`` is the native ``ttk.Button`` — ttkbootstrap adds the ``bootstyle=`` and
-``icon=`` keywords but no other Python API. For its constructor and options
-(``text``, ``command``, ``width``, ``compound``, ``default``, ``state``, …) and the
-``invoke()`` method that fires the command from code, see the
-`tkinter.ttk.Button <https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Button>`__
-reference.
+``Button`` is the native ``ttk.Button``; ttkbootstrap adds the ``bootstyle`` and
+``icon=`` keywords.
 
-.. seealso::
-
-   Want to restyle the button yourself? The
-   :ref:`button's styling options <button-styling>` cover the hand-styling
-   surface — the ``bootstyle`` → ttk style-name mapping, element layout,
-   configurable options, and supported states — alongside the
-   :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide.
+- :doc:`Button API reference </reference/api/button>` — every option and method.
+- :ref:`Button styling options <button-styling>` — restyle it yourself, with the
+  :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide.

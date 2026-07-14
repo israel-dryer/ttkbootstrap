@@ -124,13 +124,12 @@ Color
    A row of meters in primary, success, info, warning, and danger, in light and
    dark themes.
 
-API & reference
----------------
+Reference
+---------
 
-For the complete option list and methods, see the
-:doc:`Meter API reference </reference/api/meter>`.
+- :doc:`Meter API reference </reference/api/meter>` — every option and method.
 
 .. seealso::
 
-   :doc:`Floodgauge <floodgauge>` for a linear progress indicator with a value,
-   and :doc:`Progressbar <progressbar>` for a plain bar.
+   - :doc:`Floodgauge <floodgauge>` — a linear progress indicator with a value.
+   - :doc:`Progressbar <progressbar>` — a plain progress bar.

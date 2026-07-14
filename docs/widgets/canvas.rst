@@ -313,29 +313,20 @@ To keep tkinter's default look and take over styling entirely, pass
 
    ttk.Canvas(app, autostyle=False, background="white")
 
-API & reference
----------------
+Reference
+---------
 
-``Canvas`` is tkinter's ``tk.Canvas`` — ttkbootstrap themes it but adds no Python
-API beyond ``autostyle``. Its surface is large: item constructors
-(``create_line``/``create_rectangle``/``create_oval``/``create_arc``/
-``create_polygon``/``create_text``/``create_image``/``create_window``), geometry
-(``coords``, ``move``, ``moveto``, ``scale``, ``bbox``), configuration
-(``itemconfigure``, ``itemcget``, ``type``), finding items (``find_all``,
-``find_withtag``, ``find_closest``, ``find_overlapping``), tagging
-(``gettags``, ``addtag_withtag``, ``dtag``), stacking (``tag_raise``,
-``tag_lower``), item events (``tag_bind``), and scrolling
-(``xview``/``yview``, ``canvasx``/``canvasy``, ``scan_mark``/``scan_dragto``).
+``Canvas`` is tkinter's ``tk.Canvas``; ttkbootstrap themes it but adds no Python
+API beyond ``autostyle``. The standard library doesn't document it in full.
 
-The standard library reference doesn't document the canvas in full. The
-:doc:`Canvas reference </reference/api/canvas>` documents its options and methods,
-and the canonical, complete upstream reference is the
-`Tk canvas manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/canvas.htm>`__ —
-written in Tcl, so a subcommand like ``itemconfigure`` maps directly to the
-Python method of the same name.
+- :doc:`Canvas reference </reference/api/canvas>` — its options and methods (item
+  constructors, geometry, tagging, stacking, scrolling).
+- `Tk canvas manual page <https://www.tcl-lang.org/man/tcl8.6/TkCmd/canvas.htm>`__
+  — the canonical upstream reference (Tcl 8.6; a subcommand like ``itemconfigure``
+  maps to the Python method of the same name).
 
 .. seealso::
 
-   :doc:`Text <text>` for the other big tk-native widget, and
-   :doc:`Scroll long content </user-guide/how-to/scrollable>` for scrollable
-   regions built from ordinary widgets.
+   - :doc:`Text <text>` — the other big tk-native widget.
+   - :doc:`Scroll long content </user-guide/how-to/scrollable>` — scrollable
+     regions built from ordinary widgets.

@@ -106,20 +106,17 @@ With validation attached, a failed check also puts the field in the **invalid**
 state — what the ``danger`` border maps to. Validation sets and clears it for you;
 read it with ``spin.instate(["invalid"])``.
 
-API & reference
----------------
+Reference
+---------
 
-``Spinbox`` is the native ``ttk.Spinbox`` — ttkbootstrap adds ``bootstyle=`` but
-no other Python API. For its constructor and options (``from_``, ``to``,
-``increment``, ``values``, ``wrap``, ``textvariable``, ``command``, ``format``,
-…) see the
-`tkinter.ttk.Spinbox <https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Spinbox>`__
-reference.
+``Spinbox`` is the native ``ttk.Spinbox``; ttkbootstrap adds only the ``bootstyle``
+keyword.
+
+- :doc:`Spinbox API reference </reference/api/spinbox>` — every option and method.
+- :ref:`Spinbox styling options <spinbox-styling>` — restyle it yourself, with the
+  :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide.
 
 .. seealso::
 
-   :doc:`Entry <entry>` for a plain text field and :doc:`Combobox <combobox>` for
-   a dropdown of choices. Want to restyle the spinbox yourself? The
-   :ref:`Spinbox's styling options <spinbox-styling>` and its
-   companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>`
-   guide document the hand-styling surface.
+   - :doc:`Entry <entry>` — a plain single-line text field.
+   - :doc:`Combobox <combobox>` — a dropdown of choices.

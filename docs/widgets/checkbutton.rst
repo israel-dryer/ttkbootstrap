@@ -125,20 +125,18 @@ that is only partly on:
    Bind a ``variable=``, or clear it with ``check.state(["!alternate"])``, to start
    it unchecked.
 
-API & reference
----------------
+Reference
+---------
 
-``Checkbutton`` is the native ``ttk.Checkbutton`` — ttkbootstrap adds ``bootstyle=``
-but no other Python API. For its constructor and options (``variable``, ``text``,
-``command``, ``onvalue``, ``offvalue``, ``state``, …) see the
-`tkinter.ttk.Checkbutton <https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Checkbutton>`__
-reference.
+``Checkbutton`` is the native ``ttk.Checkbutton``; ttkbootstrap adds only the
+``bootstyle`` keyword.
+
+- :doc:`Checkbutton API reference </reference/api/checkbutton>` — every option and
+  method.
+- :ref:`Checkbutton styling options <checkbutton-styling>` — restyle it yourself
+  (these cover the switch/toggle look too), with the
+  :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide.
 
 .. seealso::
 
-   :doc:`Radiobutton <radiobutton>` for a mutually exclusive group of choices.
-   Want to restyle the checkbutton yourself? The
-   :ref:`checkbutton's styling options <checkbutton-styling>` (which also cover
-   the switch/toggle look) and its companion
-   :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide document
-   the hand-styling surface.
+   - :doc:`Radiobutton <radiobutton>` — a mutually exclusive group of choices.

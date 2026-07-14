@@ -75,13 +75,13 @@ Color
 
    Floodgauge(app, value=50, maximum=100, mask="{}%", bootstyle="success")
 
-API & reference
----------------
+Reference
+---------
 
-For the complete option list and methods, see the
-:doc:`Floodgauge API reference </reference/api/floodgauge>`.
+- :doc:`Floodgauge API reference </reference/api/floodgauge>` — every option and
+  method.
 
 .. seealso::
 
-   :doc:`Progressbar <progressbar>` for a plain bar without the value label, and
-   :doc:`Meter <meter>` for a radial indicator.
+   - :doc:`Progressbar <progressbar>` — a plain bar without the value label.
+   - :doc:`Meter <meter>` — a radial progress indicator.

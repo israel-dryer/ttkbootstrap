@@ -98,22 +98,19 @@ fixed size regardless of its contents, turn **geometry propagation** off:
 Use ``grid_propagate(False)`` instead when the frame's children are gridded. This
 is the usual answer to "why won't my frame stay the size I set?"
 
-API & reference
----------------
+Reference
+---------
 
-``Frame`` is the native ``ttk.Frame`` — ttkbootstrap adds ``bootstyle=`` but no
-other Python API. For its constructor and options (``padding``, ``width``,
-``height``, ``borderwidth``, ``relief``, …) see the
-`tkinter.ttk.Frame <https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Frame>`__
-reference.
+``Frame`` is the native ``ttk.Frame``; ttkbootstrap adds only the ``bootstyle``
+keyword.
+
+- :doc:`Frame API reference </reference/api/frame>` — every option and method.
+- :ref:`Frame styling options <frame-styling>` — restyle it yourself, with the
+  :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide.
 
 .. seealso::
 
-   :doc:`Labelframe <labelframe>` for a frame with a titled border, and
-   :doc:`Notebook <notebook>` / :doc:`Panedwindow <panedwindow>` for tabbed and
-   split containers. For laying widgets out inside a frame, see
-   :doc:`Arranging widgets </user-guide/foundations/arranging-widgets>`. Want to
-   restyle the frame yourself? The
-   :ref:`Frame's styling options <frame-styling>` and its
-   companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide
-   document the hand-styling surface.
+   - :doc:`Labelframe <labelframe>` — a frame with a titled border.
+   - :doc:`Notebook <notebook>` — a tabbed container.
+   - :doc:`Panedwindow <panedwindow>` — a split, resizable container.
+   - :doc:`Arranging widgets </user-guide/foundations/arranging-widgets>` — laying out the contents.

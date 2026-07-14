@@ -79,14 +79,14 @@ palette:
 
    DateEntry(app, bootstyle="success")
 
-API & reference
----------------
+Reference
+---------
 
-For the complete option list and methods, see the
-:doc:`DateEntry API reference </reference/api/dateentry>`.
+- :doc:`DateEntry API reference </reference/api/dateentry>` — every option and
+  method.
 
 .. seealso::
 
-   The date **picker dialog** (``Querybox.get_date``) in the
-   :doc:`Dialogs guide </user-guide/feature-guides/dialogs>` for asking a date
-   without a permanent field, and :doc:`Entry <entry>` for a plain text field.
+   - :doc:`Dialogs guide </user-guide/feature-guides/dialogs>` — the date picker
+     dialog (``Querybox.get_date``) for asking a date without a permanent field.
+   - :doc:`Entry <entry>` — a plain single-line text field.

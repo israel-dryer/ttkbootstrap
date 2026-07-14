@@ -71,19 +71,17 @@ gives it rounded ends, and ``thin`` makes it a slim track for dense UIs:
    ttk.Scrollbar(app, orient=VERTICAL, command=text.yview, bootstyle="primary round")
    ttk.Scrollbar(app, orient=VERTICAL, command=text.yview, bootstyle="secondary thin")
 
-API & reference
----------------
+Reference
+---------
 
-``Scrollbar`` is the native ``ttk.Scrollbar`` — ttkbootstrap adds ``bootstyle=``
-but no other Python API. For its constructor and options (``orient``, ``command``)
-and the ``set`` method, see the
-`tkinter.ttk.Scrollbar <https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Scrollbar>`__
-reference.
+``Scrollbar`` is the native ``ttk.Scrollbar``; ttkbootstrap adds only the
+``bootstyle`` keyword.
+
+- :doc:`Scrollbar API reference </reference/api/scrollbar>` — every option and
+  method.
+- :ref:`Scrollbar styling options <scrollbar-styling>` — restyle it yourself, with
+  the :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide.
 
 .. seealso::
 
-   :doc:`Scroll long content </user-guide/how-to/scrollable>` for the ready-made
-   ``ScrolledText`` / ``ScrolledFrame``. Want to restyle the scrollbar yourself?
-   The :ref:`Scrollbar's styling options <scrollbar-styling>`
-   and its companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>`
-   guide document the hand-styling surface.
+   - :doc:`Scroll long content </user-guide/how-to/scrollable>` — the ready-made ``ScrolledText`` / ``ScrolledFrame``.

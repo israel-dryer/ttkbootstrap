@@ -85,20 +85,18 @@ menu:
    menubutton.state(["disabled"])      # greyed out, won't open
    menubutton.state(["!disabled"])     # re-enable
 
-API & reference
----------------
+Reference
+---------
 
-``Menubutton`` is the native ``ttk.Menubutton`` — ttkbootstrap adds ``bootstyle=``
-but no other Python API. For its constructor and options (``text``, ``menu``,
-``direction``, ``state``, ``image``, ``compound``, …) see the
-`tkinter.ttk.Menubutton <https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Menubutton>`__
-reference.
+``Menubutton`` is the native ``ttk.Menubutton``; ttkbootstrap adds only the
+``bootstyle`` keyword.
+
+- :doc:`Menubutton API reference </reference/api/menubutton>` — every option and
+  method.
+- :ref:`Menubutton styling options <menubutton-styling>` — restyle it yourself,
+  with the :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide.
 
 .. seealso::
 
-   :doc:`OptionMenu <optionmenu>` when the menu is just a list of values to pick
-   one from, and the :doc:`Menus guide </user-guide/feature-guides/menus>` for
-   building the menu itself. Want to restyle the menubutton yourself? The
-   :ref:`Menubutton's styling options <menubutton-styling>` and
-   its companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>`
-   guide document the hand-styling surface.
+   - :doc:`OptionMenu <optionmenu>` — when the menu is just a list of values.
+   - :doc:`Menus guide </user-guide/feature-guides/menus>` — building the menu itself.

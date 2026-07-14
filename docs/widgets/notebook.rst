@@ -115,23 +115,19 @@ palette:
 
    ttk.Notebook(app, bootstyle="primary")
 
-API & reference
----------------
+Reference
+---------
 
-``Notebook`` is the native ``ttk.Notebook`` — ttkbootstrap adds ``bootstyle=`` but
-no other Python API. Its own methods manage tabs: ``add`` / ``insert(pos, …)`` to
-append or insert a page, ``select`` / ``tab`` / ``index`` / ``tabs`` to query and
-switch, ``hide`` / ``forget`` to remove, ``enable_traversal`` for keyboard
-navigation, and ``identify(x, y)`` to hit-test the tab bar. For the full signatures
-see the
-`tkinter.ttk.Notebook <https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Notebook>`__
-reference.
+``Notebook`` is the native ``ttk.Notebook``; ttkbootstrap adds only the
+``bootstyle`` keyword.
+
+- :doc:`Notebook API reference </reference/api/notebook>` — every option and
+  method (``add`` / ``insert`` / ``select`` / ``tab`` / ``hide`` /
+  ``enable_traversal`` …).
+- :ref:`Notebook styling options <notebook-styling>` — restyle it yourself, with
+  the :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide.
 
 .. seealso::
 
-   :doc:`Frame <frame>` for the page containers, and
-   :doc:`Panedwindow <panedwindow>` for a split rather than tabbed layout. Want to
-   restyle the notebook yourself? The
-   :ref:`Notebook's styling options <notebook-styling>` and its
-   companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide
-   document the hand-styling surface.
+   - :doc:`Frame <frame>` — the page containers.
+   - :doc:`Panedwindow <panedwindow>` — a split rather than tabbed layout.

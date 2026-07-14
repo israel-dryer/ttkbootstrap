@@ -112,21 +112,17 @@ reference to images is covered in
 :doc:`Show images and icons </user-guide/how-to/working-with-images>`; type styling
 in the :doc:`Typography guide </user-guide/feature-guides/typography>`.
 
-API & reference
----------------
+Reference
+---------
 
-``Label`` is the native ``ttk.Label`` — ttkbootstrap adds ``bootstyle=`` but no
-other Python API. For its constructor and options (``text``, ``textvariable``,
-``font``, ``image``, ``compound``, ``wraplength``, ``justify``, ``anchor``,
-``width``, …) see the
-`tkinter.ttk.Label <https://docs.python.org/3/library/tkinter.ttk.html#tkinter.ttk.Label>`__
-reference.
+``Label`` is the native ``ttk.Label``; ttkbootstrap adds only the ``bootstyle``
+keyword.
+
+- :doc:`Label API reference </reference/api/label>` — every option and method.
+- :ref:`Label styling options <label-styling>` — restyle it yourself, with the
+  :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide.
 
 .. seealso::
 
-   The :doc:`Typography guide </user-guide/feature-guides/typography>` for fonts,
-   and :doc:`Show images and icons </user-guide/how-to/working-with-images>` for
-   the image side. Want to restyle the label yourself? The
-   :ref:`Label's styling options <label-styling>` and its
-   companion :doc:`Custom styles </user-guide/feature-guides/custom-styles>` guide
-   document the hand-styling surface.
+   - :doc:`Typography guide </user-guide/feature-guides/typography>` — fonts and type.
+   - :doc:`Show images and icons </user-guide/how-to/working-with-images>` — the image side.
