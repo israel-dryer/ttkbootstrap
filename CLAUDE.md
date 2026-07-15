@@ -373,6 +373,40 @@ TkLabel/LabelFrame) and the ~19 native ttk pages. Work is on branch
 `2.0` once #1185 merges). Build gate: `.venv-home/Scripts/python.exe -m sphinx -b
 html -W -q docs <out>` must exit 0.
 
+**Docs H — the widget API reference + whole Reference layer are COMPLETE and
+merged** (#1184–#1187, #1189–#1192; catalog + capabilities + all autodoc sections;
+full handoff in `development/2_0_docs_api_reference.md`). **Session through
+2026-07-14 (all MERGED into `2.0`):** #1215 the **Migrating to 2.0** guide +
+backfilled the early engine/delivery breaks into `2_0_breaking_changes.md` (the log
+had started mid-initiative) + styled the screenshot placeholders; #1216 a
+**cross-platform Installation** guide (per-OS tkinter/venv, `screeninfo` is a plain
+`pip install`, not an extra); #1217 a **new public `App`/`Toplevel.on_close`
+handler** (`_BaseWindow` method + `on_close=` kwarg; runs the zero-arg callback then
+auto-destroys, `return False` to veto, `WM_DELETE_WINDOW`-only so macOS ⌘Q stays
+with `Menu.on_quit`) + the getting-started finishes (**Structuring an app**
+authored; Quickstart theme section moved onto the `App` theming delegates
+`theme_use`/`theme_mode`/`toggle_theme`; build-first-app link/aside fixes); #1218
+deepened **the widget model** (a **Lifecycle** section — create≠display, destroy
+cascade, `<Destroy>` cleanup — + the `state=`-option-vs-flags / `cget("state")`
+-not-authoritative clarification) and **refocused the variables pages on
+reactivity** (retitled "State & variables"→**"Variables & reactivity"**; added a
+**Named variables** section with the GC-lifetime + `getvar`/`setvar` type-bypass
+footguns); #1219 **typography** — a "Setting a font on a widget" section teaching
+every `font=` form (tuple, points-vs-pixels, `-option` string, named font, `Font`
+object); #1220 **corrected the Text Appearance section** (colors/`padx`/`pady` are
+theme-managed → `autostyle=False` to own them; the old example silently lost
+`padx=8`) and **surfaced direct color-setting on Label** (promoted out of a buried
+note; raw hex + `style.colors` palette/ramp + `contrast_color` helper; a direct
+color is a fixed snapshot that survives but doesn't adapt). Standing color/appearance
+fact (probed): on a themed **tk.Text** a direct color is overridden unless
+`autostyle=False`; on a **ttk.Label** an instance `foreground`/`background`
+overrides the style and survives theme switches (no `autostyle` — ttk widgets reject
+it). **NEXT docs-H thread:** the deferred **screenshot slice** (placeholders in
+place across catalog + guides; capture tooling is Windows-canonical, so postponed on
+macOS), plus optional Track B odds/ends (Linux/x11, DPI matrix). Every docs change
+this session verified headlessly + built green (`.venv/bin/python -m sphinx -b html
+-W -q -E docs <out>`, exit 0).
+
 ## Repository layout
 
 ```
