@@ -8,18 +8,13 @@ gotcha to know before anything else.
 Which image class
 -----------------
 
-- ``ttk.PhotoImage`` — tkinter's built-in image, re-exported for convenience. It
-  reads **GIF, PNG, PGM, and PPM** files (and base64-encoded GIF/PNG data), and
-  needs no extra library.
+- ``ttk.PhotoImage`` — tkinter's built-in image. It reads **GIF, PNG, PGM, and
+  PPM** files (and base64-encoded GIF/PNG data), and needs no extra library.
 - Pillow's ``ImageTk.PhotoImage`` — reads **every common format** (JPEG, BMP,
   TIFF, WebP, …) and lets you resize, crop, and filter first. Pillow is already a
   dependency of ttkbootstrap, so it is always available.
 
-Reach for Pillow for anything beyond a simple GIF/PNG — which is most real work:
-
-.. code-block:: python
-
-   from PIL import Image, ImageTk
+Reach for Pillow for anything beyond a simple GIF/PNG — which is most real work.
 
 .. _images-keep-a-reference:
 
@@ -60,8 +55,10 @@ say where the image sits relative to the label:
 
    ttk.Button(app, text="Open", image=photo, compound="left")
 
-``compound`` takes ``"left"``, ``"right"``, ``"top"``, ``"bottom"``, ``"center"``
-(text over image), or ``"none"`` (image only).
+``compound`` takes ``"left"``, ``"right"``, ``"top"``, ``"bottom"`` (the image on
+that side of the text), ``"center"`` (text over image), ``"image"`` (image only),
+``"text"`` (text only), or ``"none"`` (the image if there is one, otherwise the
+text).
 
 Loading and resizing with Pillow
 --------------------------------
@@ -136,5 +133,14 @@ stays on screen:
 
 .. seealso::
 
-   For the raster-image formats and manipulation, see the `Pillow
-   <https://pillow.readthedocs.io/>`__ documentation.
+   - :doc:`Animate a GIF <animate-gif>` — swapping frames on a timer.
+   - :doc:`Set the app icon <application-icon>` — the titlebar and taskbar icon.
+   - :doc:`Icons guide </user-guide/feature-guides/icons>` — glyph names, sizing,
+     and per-state icons.
+   - The `Pillow <https://pillow.readthedocs.io/>`__ documentation — raster
+     formats and image manipulation.
+
+Reference
+---------
+
+- :doc:`Imaging </reference/imaging>` — the full ``PhotoImage`` API.
