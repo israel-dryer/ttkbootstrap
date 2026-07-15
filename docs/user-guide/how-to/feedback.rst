@@ -62,17 +62,13 @@ keep a slow action from being started twice:
 
 .. warning::
 
-   Two limits to know before you rely on this:
+   **The busy overlay does nothing on macOS.** Tk's busy command has no effect
+   under Aqua. The calls succeed and ``busy_status()`` still reports ``True``,
+   but no overlay is drawn and no input is blocked — it fails silently rather
+   than raising.
 
-   - **It does nothing on macOS.** Tk's busy command has no effect under Aqua.
-     The calls succeed and ``busy_status()`` still reports ``True``, but no
-     overlay is drawn and no input is blocked — it fails silently rather than
-     raising.
-   - **It needs Python 3.13.** The busy methods were added to tkinter in 3.13,
-     so on 3.10–3.12 they don't exist at all.
-
-   Where either applies, get the same effect by disabling the controls that start
-   the work and setting the cursor yourself:
+   On macOS, get the same effect by disabling the controls that start the work
+   and setting the cursor yourself:
 
    .. code-block:: python
 
@@ -81,8 +77,23 @@ keep a slow action from being started twice:
           run.configure(state="disabled" if is_busy else "normal")
 
    A cursor set on the window covers everything inside it — a child with no
-   cursor of its own inherits its parent's. This works on every platform and
-   every supported Python.
+   cursor of its own inherits its parent's. This works on every platform.
+
+.. note::
+
+   The busy overlay itself is a Tk 8.6 feature, so it is there on every Python
+   we support — but tkinter only grew the ``busy()`` / ``tk_busy_*`` methods in
+   **3.13**. To use it on Python 3.10–3.12, call Tk directly; it is the same
+   command underneath:
+
+   .. code-block:: python
+
+      app.tk.call("tk", "busy", "hold", app, "-cursor", "watch")
+      app.update()
+      try:
+          do_slow_work()
+      finally:
+          app.tk.call("tk", "busy", "forget", app)
 
 .. note::
 
