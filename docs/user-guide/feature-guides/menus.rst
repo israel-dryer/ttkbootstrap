@@ -249,9 +249,10 @@ and users expect *About*, *Preferences…*, and *Quit* to live there — not und
 *File*. ``Menu`` builds these native slots for you: :meth:`add_application_menu`,
 :meth:`add_window_menu`, and :meth:`add_help_menu` create the standard macOS
 menus, and :meth:`on_preferences` / :meth:`on_quit` wire the standard commands.
-Every one of them is a **no-op on Windows and Linux** — the ``add_*_menu``
-helpers return ``None`` there — so a single code path builds a native-feeling bar
-on every platform:
+``add_application_menu`` and ``add_window_menu`` return ``None`` off macOS (there
+is no application menu there), and ``on_preferences`` / ``on_quit`` are no-ops;
+``add_help_menu`` builds an ordinary Help cascade on every platform. So a single
+code path builds a native-feeling bar everywhere:
 
 .. code-block:: python
 

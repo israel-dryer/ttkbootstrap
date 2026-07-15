@@ -180,9 +180,11 @@ fields unflagged.
 
 .. note::
 
-   The ready-made rules pass on an **empty** field, so ``validate()`` returns
-   ``True`` for a required field the user left blank. Add your own emptiness check
-   in ``submit`` (``if not name.get(): …``) when a field is mandatory.
+   The ``text``, ``numeric``, and ``range`` rules pass on an **empty** field, so
+   ``validate()`` returns ``True`` for such a field left blank — add your own
+   emptiness check in ``submit`` (``if not name.get(): …``) when a field is
+   mandatory. (``regex``, ``options``, and ``phonenumber`` instead *fail* an empty
+   field.)
 
 .. seealso::
 

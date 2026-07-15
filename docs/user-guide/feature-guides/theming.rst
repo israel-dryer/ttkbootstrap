@@ -26,8 +26,7 @@ Pass ``theme=`` to the app. The default is ``bootstrap-light``:
 
 .. note::
 
-   ``themename=`` is an accepted alias for ``theme=`` (the pre-2.0 spelling); use
-   whichever you prefer.
+   ``themename=`` also works as an alias for ``theme=`` (the pre-2.0 spelling).
 
 Switching at runtime
 --------------------
@@ -122,9 +121,12 @@ hard-coding hex.
 
 Each value is an ordinary hex string, so it drops into any tkinter color option.
 ``c.get(name)`` looks a color up by name and returns ``None`` if it isn't one —
-handy when the name is dynamic. Redraw on ``<<ThemeChanged>>`` (see
-:doc:`Events </user-guide/feature-guides/events>`) so custom drawing follows a
-theme switch.
+handy when the name is dynamic. These are snapshots of the *current* theme, so
+keep custom drawing on-theme by re-reading them after a switch: register a
+callback with :func:`~ttkbootstrap.on_theme_change` (or the ``@theme_aware``
+decorator), or bind the raw ``<<ThemeChanged>>`` event — see
+:doc:`Custom styles </user-guide/feature-guides/custom-styles>` and
+:doc:`Events </user-guide/feature-guides/events>`.
 
 Color ramps
 -----------
@@ -193,19 +195,19 @@ and foreground. Registration needs a running app (a style must exist first):
    app = ttk.App()
 
    ttk.Theme(
-       name="pulse",
+       name="brand",
        primary="#593196", success="#13b955", info="#009cdc",
        warning="#efa31d", danger="#fc3939",
        light=dict(background="#ffffff", foreground="#17141f"),
        dark=dict(background="#17141f", foreground="#e9ecef"),
    ).register()
 
-   app.theme_use("pulse-light")   # registered as pulse-light and pulse-dark
+   app.theme_use("brand-light")   # registered as brand-light and brand-dark
    app.mainloop()
 
 Registering a theme generates a ``<name>-light`` and ``<name>-dark`` variant for
 whichever surfaces you declared, so it drops straight into the light/dark
-switching above — ``app.toggle_theme()`` flips ``pulse-light`` ↔ ``pulse-dark``.
+switching above — ``app.toggle_theme()`` flips ``brand-light`` ↔ ``brand-dark``.
 
 Re-branding a built-in
 ~~~~~~~~~~~~~~~~~~~~~~~

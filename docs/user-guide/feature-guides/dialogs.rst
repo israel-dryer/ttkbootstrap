@@ -9,15 +9,15 @@ user answers) and hands its result straight back from the call — there are no
 callbacks to wire up.
 
 ttkbootstrap ships themed dialogs that replace tkinter's plain stdlib ones,
-reached through two facades:
+reached through **Messagebox** and **Querybox**:
 
 - **Messagebox** — *tell* the user something, or *ask* a question with fixed
   buttons (OK, yes/no, retry/cancel).
 - **Querybox** — *get a value* back: a string, a number, a date, a font, a color,
   or a file path.
 
-Both are re-exported at the top level, so ``ttk.Messagebox`` and
-``from ttkbootstrap import Messagebox`` both work.
+Reach both as ``ttk.Messagebox`` / ``ttk.Querybox``, or import them directly
+(``from ttkbootstrap import Messagebox``).
 
 Asking a question — Messagebox
 ------------------------------
@@ -57,8 +57,8 @@ Pick the method for the buttons your question needs:
    * - Method
      - Buttons / use
    * - ``show_info`` / ``show_warning`` / ``show_error`` / ``show_question``
-     - A message with the matching icon and a single **OK** button — a
-       notification, not a real question.
+     - A message with the matching icon and a single **OK** button by default
+       (any of them also accepts a custom ``buttons=`` list).
    * - ``ok`` / ``okcancel``
      - Confirm an action (returns ``"OK"`` / ``"Cancel"``).
    * - ``yesno`` / ``yesnocancel``
@@ -214,8 +214,8 @@ File dialogs
 Opening and saving files use the **native OS** dialog — the one standard dialog
 ttkbootstrap deliberately does *not* restyle, because the OS draws it and users
 expect their platform's file picker. They're still reached through ``Querybox``,
-so a path is fetched like any other value, and — like the rest of the facade —
-they return ``None`` on cancel:
+so a path is fetched like any other value, and — like the other ``Querybox``
+methods — they return ``None`` on cancel:
 
 .. code-block:: python
 
@@ -232,13 +232,13 @@ they return ``None`` on cancel:
    many    = Querybox.get_open_filenames(parent=app)   # a tuple of paths
 
 Each forwards its keyword arguments (``title``, ``filetypes``, ``initialdir``,
-``defaultextension``, …) to the underlying ``tkinter.filedialog`` function. That
-module is also re-exported as ``ttk.filedialog`` for a variant these four don't
+``defaultextension``, …) to the underlying ``tkinter.filedialog`` function. The
+full module is available as ``ttk.filedialog`` for a variant these four don't
 cover — for example ``askopenfile``, which returns an open file object:
 
 .. code-block:: python
 
-   ttk.filedialog.askopenfile(parent=app)     # the stdlib module, surfaced
+   ttk.filedialog.askopenfile(parent=app)     # returns an open file object, not a path
 
 .. note::
 
@@ -250,9 +250,9 @@ cover — for example ``askopenfile``, which returns an open file object:
 Driving the dialog classes directly
 -----------------------------------
 
-The facades are thin conveniences over two classes — ``MessageDialog`` and
-``QueryDialog`` — that you can use directly when you need more than a one-line
-call: to set a **default button**, **place** the dialog yourself, or run it
+``Messagebox`` and ``Querybox`` are thin conveniences over two classes —
+``MessageDialog`` and ``QueryDialog`` — that you can use directly when you need
+more than a one-line call: to set a **default button**, **place** the dialog yourself, or run it
 **without blocking**. The three-step shape becomes explicit: construct, ``show``,
 read ``.result``.
 

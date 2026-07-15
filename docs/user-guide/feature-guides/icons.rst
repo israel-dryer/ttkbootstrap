@@ -175,6 +175,8 @@ A small toolbar of icon-only buttons beside a labeled action:
 
 .. seealso::
 
+   - :doc:`Imaging </reference/imaging>` — the ``Icon`` / ``apply_icon`` /
+     ``icon_element`` reference.
    - :doc:`Windows </user-guide/feature-guides/windows>` — the *application*
      (window/taskbar) icon.
    - :doc:`Show images and icons </user-guide/how-to/working-with-images>` — raster
