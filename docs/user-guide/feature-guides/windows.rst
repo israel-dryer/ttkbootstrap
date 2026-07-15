@@ -244,17 +244,23 @@ Lifecycle
 any ``after`` timers or variable traces first, or they fire against dead widgets.
 
 Clicking the window's close button (**✕**) does not call ``destroy()`` directly —
-it fires the ``WM_DELETE_WINDOW`` protocol, which *defaults* to destroying the
-window. Register a handler to confirm or veto the close instead:
+it asks the window to close. Handle that with ``on_close`` (on ``App`` and every
+``Toplevel``): your callback runs, then the window is destroyed for you. Return
+``False`` to cancel the close and keep the window open:
 
 .. code-block:: python
 
-   def on_close():
-       if user_confirms():
-           win.destroy()      # closing happens only if you call it
-       # returning without destroy() cancels the close
+   def confirm_close():
+       if not user_confirms():
+           return False       # stay open
+       # otherwise the window closes — no destroy() call needed
 
-   win.protocol("WM_DELETE_WINDOW", on_close)
+   win.on_close(confirm_close)
+
+Pass the same callable as ``App(on_close=...)`` / ``Toplevel(on_close=...)`` to set
+it at construction. ``on_close`` handles the close button on Windows, macOS, and
+Linux; on macOS, the application menu's **Quit** (``⌘Q``) is a separate, app-wide
+action — wire it with :meth:`ttkbootstrap.Menu.on_quit`.
 
 Application icon
 ----------------

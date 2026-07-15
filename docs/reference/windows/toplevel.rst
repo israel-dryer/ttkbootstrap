@@ -80,6 +80,11 @@ re-themes them all.
 
 .. include:: /reference/windows/_theme.rst
 
+Lifecycle
+---------
+
+.. include:: /reference/windows/_lifecycle.rst
+
 Window management
 -----------------
 

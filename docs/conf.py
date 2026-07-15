@@ -129,6 +129,7 @@ exclude_patterns = [
     "reference/windows/_wm-1.rst",
     "reference/windows/_wm-2.rst",
     "reference/windows/_theme.rst",
+    "reference/windows/_lifecycle.rst",
     "reference/windows/_positioning.rst",
     "Thumbs.db",
     ".DS_Store",

@@ -369,3 +369,91 @@ def test_window_kwargs_are_warning_free_for_new_names():
     # theme is the second positional; themename is keyword-only.
     assert params["theme"].kind is inspect.Parameter.POSITIONAL_OR_KEYWORD
     assert params["themename"].kind is inspect.Parameter.KEYWORD_ONLY
+
+
+# --------------------------------------------------------------------------
+# on_close lifecycle handler
+# --------------------------------------------------------------------------
+
+def _fire_close(win):
+    """Invoke the WM_DELETE_WINDOW handler the way the window manager would."""
+    cmd = win.tk.call("wm", "protocol", win._w, "WM_DELETE_WINDOW")
+    win.tk.call(cmd)
+
+
+def test_on_close_runs_callback_then_destroys(root):
+    top = ttk.Toplevel(title="closes")
+    calls = []
+    top.on_close(lambda: calls.append(1))
+    _fire_close(top)
+    assert calls == [1]
+    assert not top.winfo_exists()  # auto-destroyed, no manual destroy() needed
+
+
+def test_on_close_returns_callback_for_decorator_use(root):
+    top = ttk.Toplevel(title="deco")
+    cb = lambda: None
+    assert top.on_close(cb) is cb
+    top.destroy()
+
+
+def test_on_close_veto_keeps_window_open(root):
+    top = ttk.Toplevel(title="veto")
+    calls = []
+
+    def veto():
+        calls.append(1)
+        return False
+
+    top.on_close(veto)
+    _fire_close(top)
+    assert calls == [1]
+    assert top.winfo_exists()  # returning False cancels the close
+    top.destroy()
+
+
+def test_on_close_constructor_kwarg(root):
+    calls = []
+    top = ttk.Toplevel(title="kw", on_close=lambda: calls.append(1))
+    _fire_close(top)
+    assert calls == [1]
+    assert not top.winfo_exists()
+
+
+def test_on_close_tolerates_callback_self_destroy(root):
+    top = ttk.Toplevel(title="selfdestruct")
+    top.on_close(lambda: top.destroy())
+    _fire_close(top)  # the auto-destroy must not raise on an already-dead window
+    assert not top.winfo_exists()
+
+
+def test_on_close_replaces_previous_handler(root):
+    top = ttk.Toplevel(title="replace")
+    order = []
+
+    def first():
+        order.append("first")
+        return False  # veto so the window survives for the second handler
+
+    top.on_close(first)
+    _fire_close(top)
+    assert order == ["first"] and top.winfo_exists()
+
+    top.on_close(lambda: order.append("second"))
+    _fire_close(top)
+    assert order == ["first", "second"] and not top.winfo_exists()
+
+
+def test_on_close_on_app_root_veto(root):
+    # `root` is the shared App fixture, so only exercise the veto path (which
+    # keeps it alive); this covers on_close on App as well as Toplevel.
+    calls = []
+
+    def veto():
+        calls.append(1)
+        return False
+
+    root.on_close(veto)
+    _fire_close(root)
+    assert calls == [1] and root.winfo_exists()
+    root.protocol("WM_DELETE_WINDOW", "")  # reset so the shared root is untouched
