@@ -78,9 +78,8 @@ every file matching the user's preferred locales and returns how many it loaded:
 Switching the locale
 --------------------
 
-:func:`~ttkbootstrap.set_locale` sets the active locale. Like the typography
-helpers it rides the **deferred-config seam**: call it at the top of a file
-before the root exists and it is queued until ``App()`` comes up; call it
+:func:`~ttkbootstrap.set_locale` sets the active locale. Call it at the top of a
+file before the root exists and it is queued until ``App()`` comes up; call it
 against a live root and it applies immediately, firing a ``<<LocaleChanged>>``
 event:
 
@@ -114,9 +113,9 @@ widget follows the language live — no rebuild:
    ttk.Button(app, text="Español",
               command=lambda: ttk.set_locale("es")).pack()   # label switches instantly
 
-Under the hood it is the observer pattern: every ``LocaleVar`` listens for the
-``<<LocaleChanged>>`` event that ``set_locale`` fires and re-runs its own
-translation. Replace the source string (and any format args) with
+Every ``LocaleVar`` listens for the ``<<LocaleChanged>>`` event that
+``set_locale`` fires and re-runs its own translation. Replace the source string
+(and any format args) with
 ``set_source(src, *args)``; call ``stop_tracking()`` to freeze one at its current
 text while keeping it alive.
 

@@ -98,8 +98,30 @@ widget* — the ``icon=`` keyword, the imperative ``apply_icon``, or the standal
 What belongs *here* is placing a glyph inside a style **layout** you build
 yourself: ``icon_element`` creates a ttk image element whose per-state image is a
 glyph, so a custom indicator (a checkbox, a toggle) can be drawn from the font
-instead of a raster asset. Use it the same way as the ``image_element`` shown
-above, swapping in the glyph name.
+instead of a raster asset. Unlike ``image_element`` it takes glyph *names* (not
+pre-rendered images), a required ``size=``, and an element name of the form
+``<ttkstyle>.<element>`` — the glyph color follows that style's foreground. Give a
+``default`` glyph plus a ``states`` map of state → glyph:
+
+.. code-block:: python
+
+   from ttkbootstrap import icon_element, layout, El
+
+   icon_element(
+       style,
+       "Star.TCheckbutton.indicator",
+       size=18,
+       default={"name": "star", "color": "warning"},
+       states={"selected": "star-fill"},
+       sticky="w",
+   )
+
+   layout(style, "Star.TCheckbutton",
+       El("Star.TCheckbutton.indicator", side="left", children=[
+           El("Checkbutton.label", side="left", expand=True)])
+   )
+
+   ttk.Checkbutton(app, text="Favorite", style="Star.TCheckbutton").pack()
 
 Creating theme-aware styles
 ---------------------------
@@ -111,7 +133,7 @@ against the new theme's ``style.colors``:
 
 .. code-block:: python
 
-   from ttkbootstrap import theme_aware
+   from ttkbootstrap import theme_aware, Assets, El, layout, image_element
 
    @theme_aware        # runs once now, and again after every theme change
    def build_pill(style):
@@ -135,3 +157,12 @@ Now ``ttk.Button(app, style="Pill.TButton")`` stays correct through
 level, before the app exists — the build is queued and runs when the app is
 created. Use ``on_theme_change(fn)`` for the plain-function form, and
 ``remove_theme_change_callback(fn)`` to unregister.
+
+.. seealso::
+
+   - :doc:`Styling reference </reference/styling>` — the ``Assets`` / ``El`` /
+     ``layout`` / ``image_element`` / ``register_style`` API.
+   - :doc:`Theming & Colors </user-guide/feature-guides/theming>` — the
+     ``style.colors`` palette custom styles draw from.
+   - :doc:`Icons </user-guide/feature-guides/icons>` — putting a glyph *on* a
+     widget, rather than inside a style layout.

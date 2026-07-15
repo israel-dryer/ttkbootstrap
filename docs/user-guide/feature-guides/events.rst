@@ -148,8 +148,9 @@ moment you bind and generate it.
    the previous one.
 
 ``event_generate`` also synthesizes **physical** events, though it's less common
-— a bare ``<KeyRelease>`` needs the widget focused and the relevant fields
-supplied (``keysym``, ``x``/``y``) to behave like real input.
+— a bare ``<KeyRelease>`` needs the widget focused and the relevant fields for
+that event type supplied (``keysym`` for keys, ``x``/``y`` for pointer events) to
+behave like real input.
 
 To make a virtual event fire from the keyboard too, alias it to physical key
 sequences with ``event_add``:
