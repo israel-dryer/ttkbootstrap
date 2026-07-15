@@ -58,27 +58,27 @@ the :doc:`Variables guide </user-guide/feature-guides/variables>`.
 A worked example
 ----------------
 
-A checkbutton drives a boolean, and a trace enables the submit button only when
-the box is checked:
+Reactivity in one screen: an entry feeds a variable, a trace recomputes a second
+variable from it, and a label bound to that one updates live as you type — no
+widget is read or refreshed by hand.
 
 .. code-block:: python
 
    import ttkbootstrap as ttk
 
-   app = ttk.App(title="Terms")
+   app = ttk.App(title="Reactivity")
 
-   agree = ttk.BooleanVar()
-   submit = ttk.Button(app, text="Continue", bootstyle="primary")
-   submit.state(["disabled"])                 # ttk state flags — see The widget model
+   name = ttk.StringVar()
+   greeting = ttk.StringVar(value="Hello there!")
 
-   def refresh(*_):
-       submit.state(["!disabled" if agree.get() else "disabled"])
+   def greet(*_):
+       who = name.get().strip()
+       greeting.set(f"Hello, {who}!" if who else "Hello there!")
 
-   agree.trace_add("write", refresh)
+   name.trace_add("write", greet)            # recompute whenever name changes
 
-   ttk.Checkbutton(app, text="I accept the terms", variable=agree,
-                   bootstyle="round toggle").pack(padx=20, pady=(20, 10))
-   submit.pack(padx=20, pady=(0, 20))
+   ttk.Entry(app, textvariable=name).pack(padx=20, pady=(20, 8))
+   ttk.Label(app, textvariable=greeting, bootstyle="primary").pack(padx=20, pady=(0, 20))
 
    app.mainloop()
 
