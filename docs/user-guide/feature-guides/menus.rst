@@ -136,7 +136,7 @@ name. :meth:`add_checkbutton` toggles a ``BooleanVar``; a group of
 
 The menu keeps the variable in sync as the user toggles items — read
 ``wrap.get()`` / ``theme.get()`` in your callbacks, or trace the variable to react
-immediately (see :doc:`State & variables
+immediately (see :doc:`Variables & reactivity
 </user-guide/foundations/state-and-variables>`).
 
 Enabling, disabling, and rebuilding

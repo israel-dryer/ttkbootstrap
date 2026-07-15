@@ -75,7 +75,7 @@ respond to input, and how ttkbootstrap styles them.
       The three geometry managers and when to use each — start here, then the
       grid and pack tutorials.
 
-   .. grid-item-card:: State & variables
+   .. grid-item-card:: Variables & reactivity
       :link: foundations/state-and-variables
       :link-type: doc
 

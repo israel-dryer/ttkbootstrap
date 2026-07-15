@@ -70,7 +70,7 @@ something as the value steps:
    ttk.Spinbox(app, from_=0, to=100, increment=5, textvariable=quantity, command=on_step)
 
 ``command`` fires only for the arrows, not for typing; to react to typed edits too,
-trace the variable (see :doc:`State & variables
+trace the variable (see :doc:`Variables & reactivity
 </user-guide/foundations/state-and-variables>`). The arrows also respond to the
 ``<Up>`` / ``<Down>`` keys, and the widget emits ``<<Increment>>`` /
 ``<<Decrement>>`` virtual events on a step — a binding point distinct from

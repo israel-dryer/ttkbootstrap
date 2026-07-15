@@ -1,11 +1,13 @@
-State & variables
-=================
+Variables & reactivity
+======================
 
 Widgets that hold a value — entries, checkbuttons, radiobuttons, scales — can be
 bound to a **variable object** instead of you reading and writing the widget
 directly. A variable is the single source of truth for that value: set the
 variable and the widget updates; the user edits the widget and the variable
-updates. This two-way link is how tkinter keeps your data and your UI in sync.
+updates. That two-way link — plus running code when a value changes — is
+**reactivity**: your interface follows your data instead of you wiring every
+update by hand.
 
 .. note::
 
@@ -30,9 +32,9 @@ selection controls (Checkbutton, Radiobutton, Scale). Read and write with
 
    name.set("Grace")                          # entry and label both update
 
-The variable classes are re-exported from ttkbootstrap — ``ttk.StringVar``,
-``ttk.IntVar``, ``ttk.BooleanVar``, ``ttk.DoubleVar`` — and the class you pick
-determines what ``.get()`` returns:
+ttkbootstrap provides four variable classes — ``ttk.StringVar``, ``ttk.IntVar``,
+``ttk.BooleanVar``, ``ttk.DoubleVar`` — and the class you pick determines what
+``.get()`` returns:
 
 - ``StringVar`` — text (entries, labels).
 - ``IntVar`` — whole numbers; a Checkbutton's on/off value; a Radiobutton choice.
@@ -56,27 +58,27 @@ the :doc:`Variables guide </user-guide/feature-guides/variables>`.
 A worked example
 ----------------
 
-A checkbutton drives a boolean, and a trace enables the submit button only when
-the box is checked:
+Reactivity in one screen: an entry feeds a variable, a trace recomputes a second
+variable from it, and a label bound to that one updates live as you type — no
+widget is read or refreshed by hand.
 
 .. code-block:: python
 
    import ttkbootstrap as ttk
 
-   app = ttk.App(title="Terms")
+   app = ttk.App(title="Reactivity")
 
-   agree = ttk.BooleanVar()
-   submit = ttk.Button(app, text="Continue", bootstyle="primary")
-   submit.state(["disabled"])                 # ttk state flags — see The widget model
+   name = ttk.StringVar()
+   greeting = ttk.StringVar(value="Hello there!")
 
-   def refresh(*_):
-       submit.state(["!disabled" if agree.get() else "disabled"])
+   def greet(*_):
+       who = name.get().strip()
+       greeting.set(f"Hello, {who}!" if who else "Hello there!")
 
-   agree.trace_add("write", refresh)
+   name.trace_add("write", greet)            # recompute whenever name changes
 
-   ttk.Checkbutton(app, text="I accept the terms", variable=agree,
-                   bootstyle="round toggle").pack(padx=20, pady=(20, 10))
-   submit.pack(padx=20, pady=(0, 20))
+   ttk.Entry(app, textvariable=name).pack(padx=20, pady=(20, 8))
+   ttk.Label(app, textvariable=greeting, bootstyle="primary").pack(padx=20, pady=(0, 20))
 
    app.mainloop()
 

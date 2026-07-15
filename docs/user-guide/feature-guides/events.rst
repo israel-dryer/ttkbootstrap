@@ -108,7 +108,7 @@ ttkbootstrap emits two you will use:
 
 - ``<<LocaleChanged>>`` — fires when the app's locale changes; this is what
   drives :class:`~ttkbootstrap.LocaleVar` (see
-  :doc:`State & variables </user-guide/foundations/state-and-variables>`).
+  :doc:`Variables & reactivity </user-guide/foundations/state-and-variables>`).
 
 .. admonition:: Prefer the callback helpers for theme changes
 

@@ -150,7 +150,7 @@ Giving ``category`` an initial ``value`` preselects "Friend" in the combobox.
 
 .. seealso::
 
-   :doc:`State & variables </user-guide/foundations/state-and-variables>`
+   :doc:`Variables & reactivity </user-guide/foundations/state-and-variables>`
    and the :doc:`Variables </user-guide/feature-guides/variables>` feature guide
    for tracing changes and the other variable types.
 
