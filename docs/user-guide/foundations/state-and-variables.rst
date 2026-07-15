@@ -9,10 +9,6 @@ updates. That two-way link — plus running code when a value changes — is
 **reactivity**: your interface follows your data instead of you wiring every
 update by hand.
 
-This is your application's *data* — the values your widgets show. It is separate
-from a widget's ttk **state** flags (``disabled``, ``focus``, ``selected``, …),
-which the :doc:`widget model </user-guide/foundations/the-widget-model>` covers.
-
 .. note::
 
    This page covers the essentials. For the variable types in depth, traces (read
