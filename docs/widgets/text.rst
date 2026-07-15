@@ -163,26 +163,34 @@ was last saved — handy for a "you have unsaved changes" prompt.
 Appearance
 ----------
 
-The text widget picks up the theme's colors automatically and re-themes when you
-switch themes — you don't style it with ``bootstyle``. To customize, pass the
-usual tk options directly: ``font`` for the editor font, ``foreground`` /
-``background`` for the text and page colors, ``insertbackground`` for the cursor,
-``padx`` / ``pady`` for an inner margin, and ``wrap`` (``"word"``, ``"char"``, or
-``"none"``) for line wrapping:
+The text widget picks up the theme's colors automatically and re-themes on a theme
+switch — you don't style it with ``bootstyle``.
+
+Options the theme doesn't manage you set directly, and they stick — the editor
+``font``, ``wrap`` (``"word"``, ``"char"``, or ``"none"``), the ``width`` /
+``height``, and line spacing:
 
 .. code-block:: python
 
-   ttk.Text(app, font=("Consolas", 11), wrap="word", padx=8, pady=8)
+   ttk.Text(app, font=("Consolas", 11), wrap="word")
+
+The **colors and inner margin are theme-managed**, though — ``foreground`` /
+``background``, ``insertbackground`` (the cursor), ``selectbackground`` /
+``selectforeground``, and ``padx`` / ``pady``. Colors you pass are overridden by
+the theme, and any you set later are undone on the next theme switch. To own them,
+pass ``autostyle=False`` — it opts the widget out of theming so your values persist:
+
+.. code-block:: python
+
+   ttk.Text(app, autostyle=False, background="white", foreground="black",
+            padx=8, pady=8)
+
+``autostyle`` is specific to the tk-based widgets ttkbootstrap themes (``Text``,
+``Canvas``, and the like); ttk widgets such as :doc:`Label <label>` take
+``foreground`` / ``background`` directly instead.
 
 For color that varies *within* the text — a highlighted span, a colored keyword —
 use tags, as above.
-
-To keep tkinter's default look and style the widget entirely yourself, pass
-``autostyle=False`` — it opts out of the automatic theming:
-
-.. code-block:: python
-
-   ttk.Text(app, autostyle=False, background="white", foreground="black")
 
 Scrolling
 ---------
