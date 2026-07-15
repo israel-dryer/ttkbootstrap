@@ -27,7 +27,11 @@
 | **`ThemeDefinition`: `themetype`→`mode` (kwarg + `.type`→`.mode`)** | Deprecated | this doc, below |
 | Canonical `bootstyle` grammar (closed vocab, strict mode) | API | `development/2_0_bootstyle_grammar_design.md` |
 | Character-based icons removed (`ttkbootstrap.icons`) | API | `development/2_0_icon_drop_design.md` (PR #1094) |
-| Delivery API (mixins, no import-time monkey-patch) | API | handoff / PR #1075 |
+| **Delivery API: no import-time monkey-patch; `bootstyle`/`autostyle` via `ttk.*` classes or `enable_global_api()`** | API | this doc, below (backfill) |
+| **Single application root enforced (`RuntimeError` on a second `Window`)** | API | this doc, below (backfill) |
+| **`Publisher` no longer fires on theme change (use `<<ThemeChanged>>`)** | API | this doc, below (backfill) |
+| **Removed shim modules (`ttkbootstrap.scrolled`/`tableview`/`toast`/`tooltip`, `dialogs/dialogs.py`)** | Removed | this doc, below (backfill) |
+| **`FloodgaugeLegacy` warns on use; `publisher`/`utility` helpers moved to `internal/`** | Deprecated | this doc, below (backfill) |
 | **Fluent geometry (`pack`/`grid`/`place` return the widget)** | New | this doc, below |
 | **`TkLabel` blessed tk.Label + ColorChooser default-mode fix** | New/Fix | this doc, below |
 | **`neutral` color** | New | this doc, below |
@@ -52,6 +56,122 @@
 | **Inputs: focus color on focus only (not hover)** | Visual | this doc, below |
 | **`card` / `highlight` frames: hairline border (`RAISED`, no bevel)** | Visual | this doc, below |
 | **Control-height parity + check/radio/menubutton focus rings** | Visual | this doc, below |
+
+---
+
+# Engine & delivery foundations (early 2.0 PRs — backfilled)
+
+> This log began mid-initiative, so the foundational engine/delivery breaks from
+> the first wave of 2.0 PRs (#1068–#1077) were not captured inline. They are the
+> changes an upgrader is *most* likely to hit, so they are backfilled here from a
+> grounded diff review.
+
+## Delivery API — no import-time monkey-patch  *(API — the headline 2.0 change)*
+
+**What.** Importing `ttkbootstrap` no longer monkey-patches stock `tkinter` /
+`tkinter.ttk` at import time (the old `Bootstyle.setup_ttkbootstrap_api()`
+import-time call is gone). The `bootstyle=` / `autostyle=` keywords are now
+carried by the **concrete widget subclasses** re-exported from the package
+(`class Button(BootMixin, ttk.Button)`, `class Tk(AutoStyleMixin, tk.Tk)`, …),
+not injected into tkinter's own classes.
+
+- **Unaffected (the common case):** code written as
+  `import ttkbootstrap as ttk; ttk.Button(root, bootstyle="success")` resolves to
+  the blessed subclass and works exactly as before.
+- **Breaks:** after `import ttkbootstrap`, a **vanilla** `tkinter.ttk.Button(root,
+  bootstyle="success")` or `tkinter.Frame(root, autostyle=False)` no longer
+  accepts those keywords — Tk raises `unknown option "-bootstyle"`.
+
+**Migration.** Prefer the `ttkbootstrap.*` widget classes (recommended). To keep
+using raw `tkinter`/`ttk` widget classes with the styling keywords, call the new
+opt-in **`enable_global_api()`** once at startup — it restores the global patch
+(and also makes `pack`/`grid`/`place` return the widget on stock/native/third-party
+widgets). For a one-off foreign class, **`bootify(cls)`** returns a styled subclass
+and **`apply_bootstyle(widget, bootstyle)`** styles an existing instance.
+
+**Also:** the `BootMixin` / `AutoStyleMixin` classes and the `bootify` /
+`apply_bootstyle` / `enable_global_api` helpers are re-exported from
+`ttkbootstrap` and `ttkbootstrap.style`. The blessed tk set is `Tk`, `Menu`,
+`Text`, `Canvas`, `TkFrame` (tk `Frame`), `TkLabel`, and `LabelFrame`. The
+~54 KB `__init__.pyi` type stub was deleted (typing now lives on the concrete
+classes) — affects only tooling that imported the stub directly, not runtime.
+
+**Why.** The import-time monkey-patch mutated tkinter's own classes for the whole
+process — surprising, order-dependent, and hostile to apps mixing themed and
+un-themed widgets. Concrete subclasses make the styled widgets ordinary classes
+with an explicit, opt-in global escape hatch (PR #1075).
+
+---
+
+## Single application root enforced  *(API — behavioral break)*
+
+**What.** `Window.__init__` now enforces one application root per process
+(the `Style` engine is a singleton bound to the first root). Creating a **second,
+concurrent** `ttk.Window` while another live root exists raises
+`RuntimeError("ttkbootstrap supports a single application root window…")`.
+
+- **Sequential roots are fine** — `Window.destroy()` clears the singleton, so
+  create-an-app-after-another still works.
+- **Only `Window` triggers the check**; a plain `ttk.Toplevel` does not (it is not
+  a root). Secondary windows should be `Toplevel`.
+
+**Migration.** Use **one** `Window` per process and add extra windows as
+`Toplevel`; or destroy the first root before creating another. In 1.x a second
+root silently mis-bound the `Style` singleton and left theming broken with no
+error — this converts that silent failure into a loud one (PR #1073).
+
+---
+
+## `Publisher` no longer fires on theme change  *(API — behavioral break)*
+
+**What.** The old `Publisher` / `Channel` subscribe-on-theme-change mechanism is
+no longer used by the engine. Theme switching is now a version-stamped theme walk
+and **does not publish to `Channel.STD`**. `ttkbootstrap.internal.publisher`
+still exists and `Publisher.subscribe(...)` still registers a callback, but the
+engine **never fires it on `theme_use()` anymore**, so any code that subscribed to
+be notified on a theme change silently stops receiving callbacks.
+
+**Migration.** Bind the standard Tk **`<<ThemeChanged>>`** virtual event instead
+(or, for custom styles, register `ttk.on_theme_change(...)` / `@theme_aware`).
+`ttkbootstrap.publisher` is also now a deprecation shim (see below) (PR #1073/#1069).
+
+---
+
+## Removed shim modules  *(Removed — import paths)*
+
+**What.** Five legacy top-level import paths were deleted outright (they had been
+deprecation shims):
+
+- `ttkbootstrap.scrolled`, `ttkbootstrap.tableview`, `ttkbootstrap.toast`,
+  `ttkbootstrap.tooltip` → import from **`ttkbootstrap.widgets`** (e.g.
+  `from ttkbootstrap.widgets.tooltip import ToolTip`, or `ttk.ToolTip`).
+- `ttkbootstrap.dialogs.dialogs` → import from **`ttkbootstrap.dialogs`** (e.g.
+  `from ttkbootstrap.dialogs import Messagebox, Querybox`, or `ttk.Messagebox`).
+
+**Migration.** Update the import path. All the classes themselves are unchanged
+and are additionally re-exported at the top level (`ttk.ToolTip`, `ttk.Tableview`,
+`ttk.ToastNotification`, `ttk.Messagebox`, …) (PR #1068).
+
+---
+
+## `FloodgaugeLegacy` warns; `publisher` / `utility` helpers moved  *(Deprecated — still work)*
+
+**What.** Deprecations that keep working through 2.x (removed in 3.0):
+
+- **`FloodgaugeLegacy(...)`** now emits a `DeprecationWarning` on every
+  instantiation. Migrate to the canvas-based `ttk.Floodgauge` (PR #1071).
+- **`ttkbootstrap.publisher`** is a warn-and-reexport shim to
+  `ttkbootstrap.internal.publisher` (`Channel`/`Subscriber`/`Publisher`) — still
+  importable, warns once (PR #1069). (And per the entry above, the engine no
+  longer fires it on theme change.)
+- **`ttkbootstrap.utility.get_image_name` / `center_on_parent`** moved to
+  `ttkbootstrap.internal.utility`; reaching them via the old path still works via
+  a module `__getattr__` forwarder but warns. Public `enable_high_dpi_awareness`
+  / `scale_size` are unchanged (PR #1069).
+
+**Why.** The 2.0 `internal/` convention: implementation-detail plumbing moves under
+`ttkbootstrap.internal.*` (no back-compat guarantee), with warn-and-forward shims
+at the old public paths, removed in 3.0.
 
 ---
 

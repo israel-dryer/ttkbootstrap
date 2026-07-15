@@ -111,6 +111,35 @@ html[data-theme="dark"] .tb-dialog-screenshot {
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
 }
 
+/* Screenshot placeholders. Until the real light/dark captures land (Windows is
+   the canonical capture box), each `:class: screenshot-placeholder` admonition
+   renders as a clearly-provisional dashed box so unfinished pages are obvious. */
+.admonition.screenshot-placeholder,
+div.admonition.screenshot-placeholder {
+    border: 2px dashed var(--pst-color-border);
+    border-left: 2px dashed var(--pst-color-border);
+    border-radius: 6px;
+    background: repeating-linear-gradient(
+        45deg,
+        var(--pst-color-surface),
+        var(--pst-color-surface) 12px,
+        var(--pst-color-on-background) 12px,
+        var(--pst-color-on-background) 24px);
+    box-shadow: none;
+    color: var(--pst-color-text-muted);
+}
+.admonition.screenshot-placeholder > .admonition-title {
+    background: transparent;
+    color: var(--pst-color-text-muted);
+    font-weight: 600;
+}
+.admonition.screenshot-placeholder > .admonition-title::after {
+    display: none;  /* drop the pydata note/icon glyph */
+}
+.admonition.screenshot-placeholder p {
+    font-style: italic;
+}
+
 /* Promo home page: a prominent lead line and a row of hero call-to-action
    buttons (the sphinx-design button directives are block-level, so wrap them in
    a flex container to sit side by side). */
