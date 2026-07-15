@@ -43,15 +43,23 @@ whichever root exists. Prefer ``ttk.App`` for new code.
 Choosing a theme
 ----------------
 
-ttkbootstrap ships 30 themes as light/dark pairs. Switch at runtime through the
-style engine:
+ttkbootstrap ships 30 themes as 15 light/dark pairs. You picked one with ``theme=``
+above; you can also switch at runtime straight from the app:
 
 .. code-block:: python
 
-   from ttkbootstrap import Style
+   app.theme_use("bootstrap-dark")   # switch to any theme by name
 
-   style = Style.get_instance()
-   style.theme_use("bootstrap-dark")
+Because every family comes as a light/dark pair, ``App`` gives you a shortcut for
+the common case — flipping between the two:
+
+.. code-block:: python
+
+   app.theme_mode = "dark"   # set the mode directly ("light" or "dark")
+   app.toggle_theme()        # or flip to the other mode
+
+Read ``app.theme_names()`` for the full list, and ``app.theme_mode`` to see the
+active mode.
 
 .. seealso::
 

@@ -11,7 +11,7 @@ import sys
 import tkinter
 import warnings
 from pathlib import Path
-from typing import Any, Optional, Tuple, Union
+from typing import Any, Callable, Optional, Tuple, Union
 
 from ttkbootstrap import utils
 from ttkbootstrap.constants import *
@@ -230,6 +230,38 @@ class _BaseWindow:
         """Toggle between the light and dark theme; returns the new mode."""
         return self.style.toggle_theme()
 
+    # -- lifecycle ---------------------------------------------------------
+
+    def on_close(self, callback: Callable[[], Any]) -> Callable[[], Any]:
+        """Run `callback` when the user closes this window, then destroy it.
+
+        `callback` takes no arguments. The window is destroyed for you after it
+        runs -- there is no need to call `destroy()` yourself. Return `False`
+        from `callback` to cancel the close and keep the window open (for
+        example, after a "discard unsaved changes?" prompt); return `None`, or
+        anything else, to let it close.
+
+        This registers the `WM_DELETE_WINDOW` protocol, so it fires for the
+        title-bar close button on Windows, macOS, and Linux (and `Alt+F4`).
+        Calling it again replaces the previous handler. The returned `callback`
+        makes it usable as a decorator.
+
+        Note:
+            On macOS the application-menu **Quit** (`Cmd+Q`), the Dock's Quit,
+            and closing from the app menu are an application-wide gesture that
+            does *not* trigger this per-window handler. Wire that separately
+            with `Menu.on_quit` on the native application menu.
+        """
+        def _handler() -> None:
+            if callback() is False:
+                return  # vetoed -- leave the window open
+            try:
+                self.destroy()
+            except tkinter.TclError:
+                pass  # already destroyed by the callback itself
+        self.protocol("WM_DELETE_WINDOW", _handler)
+        return callback
+
     # -- setup helpers -----------------------------------------------------
 
     def _setup_icon(self, iconphoto: Optional[str], default_data: Optional[str] = None) -> None:
@@ -428,6 +460,7 @@ class App(_BaseWindow, tkinter.Tk):
             transient: Optional[tkinter.Misc] = None,
             override_redirect: bool = False,
             alpha: float = 1.0,
+            on_close: Optional[Callable[[], Any]] = None,
             **kwargs: Any,
     ) -> None:
         """
@@ -513,6 +546,11 @@ class App(_BaseWindow, tkinter.Tk):
                 except on X11 where it is deferred until the window becomes
                 visible.
 
+            on_close (Callable):
+                A zero-argument callback run when the user closes the window;
+                the window is then destroyed automatically. Return `False` from
+                it to cancel the close. Sugar for `App.on_close`.
+
             **kwargs:
                 Any other keyword arguments that are passed through to tkinter.Tk() constructor
                 List of available keywords available at: https://docs.python.org/3/library/tkinter.html#tkinter.Tk
@@ -566,6 +604,9 @@ class App(_BaseWindow, tkinter.Tk):
             theme, default_button=default_button,
             light_theme=light_theme, dark_theme=dark_theme,
         )
+
+        if on_close is not None:
+            self.on_close(on_close)
 
     @staticmethod
     def _set_app_user_model_id() -> None:
@@ -624,6 +665,7 @@ class Toplevel(_BaseWindow, tkinter.Toplevel):
             tool_window: bool = False,
             iconify: bool = False,
             alpha: float = 1.0,
+            on_close: Optional[Callable[[], Any]] = None,
             **kwargs: Any,
     ) -> None:
         """
@@ -711,6 +753,11 @@ class Toplevel(_BaseWindow, tkinter.Toplevel):
                 except on X11 where it is deferred until the window becomes
                 visible.
 
+            on_close (Callable):
+                A zero-argument callback run when the user closes the window;
+                the window is then destroyed automatically. Return `False` from
+                it to cancel the close. Sugar for `Toplevel.on_close`.
+
             **kwargs (Dict):
                 Other optional keyword arguments.
         """
@@ -763,6 +810,9 @@ class Toplevel(_BaseWindow, tkinter.Toplevel):
             self.attributes("-toolwindow", 1)
 
         self._setup_alpha(alpha)
+
+        if on_close is not None:
+            self.on_close(on_close)
 
 
 #: Permanent, fully-supported alias for `App`. `App` is the canonical name (one

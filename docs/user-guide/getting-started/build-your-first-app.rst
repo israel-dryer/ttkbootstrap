@@ -146,9 +146,7 @@ Create the variables in ``__init__`` (before building the form) and attach them:
                            values=["Friend", "Family", "Work"], state="readonly")
    category.grid(row=2, column=1, sticky=EW, pady=4)
 
-``ttk.StringVar()`` (also plain :class:`tkinter.StringVar`) is re-exported on
-the package for convenience. Giving ``category`` an initial ``value`` preselects
-"Friend" in the combobox.
+Giving ``category`` an initial ``value`` preselects "Friend" in the combobox.
 
 .. seealso::
 
@@ -221,7 +219,7 @@ and column controls built in. We give it column headings and start it empty:
 
 .. seealso::
 
-   The :doc:`Tableview widget page </widgets/index>` for its full API —
+   The :doc:`Tableview widget page </widgets/tableview>` for its full API —
    pagination, column configuration, exporting, and programmatic selection.
 
 Step 6 — wire the button to a callback

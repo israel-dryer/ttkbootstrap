@@ -102,6 +102,8 @@ Lifecycle
 
    :returns: ``None``.
 
+.. include:: /reference/windows/_lifecycle.rst
+
 Window management
 -----------------
 

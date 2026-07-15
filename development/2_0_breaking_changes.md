@@ -17,6 +17,7 @@
 | **User theme store removed; ttkcreator exports a `Theme(...).register()` snippet** | Removed | this doc, below |
 | **Legacy theme names auto-register on use (no hard-stop)** | Fix/Deprecated | this doc, below (Slice 1) |
 | **`App` (canonical) / `Window` alias; `theme` / `themename` alias** | New | this doc, below (Slice 2) |
+| **`on_close` window close handler (`App`/`Toplevel` method + kwarg)** | New | this doc, below |
 | **`utils/` package; `utility`/`colorutils` → warn-and-forward shims** | Deprecated | this doc, below (Slice 0) |
 | **Deferred-config seam + `ttk.set_default_button()` pre-root setter** | New | this doc, below (Slice 5) |
 | **Localization: msgcat bug fixes + `L()` / `LocaleVar` / `set_locale`** | Fix/New | this doc, below (Slice 3) |
@@ -1719,3 +1720,46 @@ This is additive — no existing call changes; `tkinter.filedialog` still works.
 **Scope.** `dialogs/query.py` (four `Querybox` methods + `filedialog` import),
 `__init__.py` (`ttk.filedialog` re-export), `tests/test_dialogs_api.py` (+3), the
 Dialogs feature guide.
+
+## `on_close` — a window close handler on `App`/`Toplevel`  *(New)*
+
+**What.** A first-class way to run code when the user closes a window, replacing
+the raw `protocol("WM_DELETE_WINDOW", ...)` idiom. Available as a method on the
+shared `_BaseWindow` (so both `App`/`Window` and `Toplevel` have it) and as an
+`on_close=` constructor keyword:
+
+```python
+def save_and_exit():
+    ...                     # persist state, stop threads, close connections
+
+app = ttk.App(on_close=save_and_exit)   # or app.on_close(save_and_exit)
+```
+
+- The callback is a **plain zero-argument callable** (same shape as
+  `MessageDialog.command`). After it runs, the window is **destroyed
+  automatically** — no `destroy()` call needed.
+- **Return `False` to veto** the close and keep the window open (e.g. after an
+  unsaved-changes prompt); returning `None`/anything else lets it close.
+- The auto-destroy is wrapped in `try/except tkinter.TclError`, so a callback
+  that calls `destroy()` itself doesn't double-fire.
+- Registering again replaces the previous handler; the callback is returned, so
+  `on_close` also works as a decorator.
+
+**Cross-platform.** Rides `WM_DELETE_WINDOW`, so it fires for the title-bar close
+button on Windows, macOS, and Linux (and `Alt+F4`). On macOS the application-menu
+**Quit** (`⌘Q`) / Dock quit is a separate, app-wide gesture that does *not* go
+through this per-window handler — that path is `tk::mac::Quit`, already surfaced as
+`Menu.on_quit`. `on_close` deliberately does **not** wire `tk::mac::Quit` (it is
+app-global and would behave differently on a `Toplevel`, and would collide with
+`Menu.on_quit`); the docs cross-reference the two.
+
+**Why.** Intercepting the close is one of the few common uses of `protocol`, and
+the raw form has two footguns the wrapper removes: forgetting to call `destroy()`
+(so the window won't close) and double-destroy errors. A per-window, portable
+`on_close` with an explicit veto path covers the real cases (including the
+unsaved-changes confirmation) cleanly.
+
+**Scope.** `window.py` (`_BaseWindow.on_close` + `on_close=` on both constructors);
+`tests/test_window_api.py` (+7); docs: the *Structuring an app* "Shut down cleanly"
+section, the Windows guide "Lifecycle" section, and the `App`/`Toplevel` reference
+pages (shared `_lifecycle.rst` include). Additive — no existing signature changed.
