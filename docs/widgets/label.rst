@@ -46,26 +46,45 @@ status (``success``, ``danger``, ``secondary`` for muted):
    ttk.Label(app, text="Failed", bootstyle="danger")
 
 To put a label on a **colored fill** (inside a colored :doc:`Frame <frame>`, say),
-use ``inverse-<color>`` — it paints the background the color and the text to read
-against it:
+use ``inverse-<color>`` — it paints the background a palette color and the text to
+read against it:
 
 .. code-block:: python
 
    ttk.Label(app, text="Header", bootstyle="inverse-primary")
 
-.. note::
+Setting colors directly
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-   ``Label`` is one of the few ttk widgets that also accepts ``foreground``,
-   ``background``, and ``font`` **directly** as options — most ttk widgets take
-   their colors only from a style. A value set this way overrides the
-   ``bootstyle`` color, which is handy for a one-off:
+``bootstyle`` and ``inverse-`` both draw from the theme palette. For any **other**
+color, ``Label`` is one of the few ttk widgets that accept ``foreground`` and
+``background`` directly (most take their colors only from a style); a value set this
+way overrides the ``bootstyle`` color. Pass a raw color, or read one from the active
+theme through ``style.colors`` — an accent, an interface role, or a ramp step:
 
-   .. code-block:: python
+.. code-block:: python
 
-      ttk.Label(app, text="Note", foreground="#b02a37", background="#fff3cd")
+   colors = app.style.colors
 
-   Prefer ``bootstyle`` for anything themed, though — a hard-coded color here does
-   not follow a theme switch.
+   ttk.Label(app, text="Note",    foreground="#b02a37", background="#fff3cd")
+   ttk.Label(app, text="Balance", foreground=colors.success)
+   ttk.Label(app, text="Tag",     foreground=colors.primary, background=colors.primary[100])
+
+A :doc:`color helper </reference/utilities>` can compute one — ``contrast_color``
+picks black or white to read against a background:
+
+.. code-block:: python
+
+   from ttkbootstrap import contrast_color
+
+   bg = colors.info
+   ttk.Label(app, text="Info", background=bg, foreground=contrast_color(bg, "hex"))
+
+A direct color — raw or read from ``style.colors`` — is a **fixed snapshot**: it
+stays as you set it across theme switches but does not adapt to the new theme. Use
+``bootstyle`` / ``inverse-`` for theme-following colors; see
+:doc:`Theming & Colors </user-guide/feature-guides/theming>` for the palette and
+rebuilding on a theme change.
 
 Wrapping long text
 ------------------
