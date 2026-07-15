@@ -4,16 +4,17 @@ Variables
 A **variable object** is tkinter's link between your data and your widgets: bind
 a widget to a variable and the two stay in sync — set the variable and the widget
 updates, edit the widget and the variable updates. The
-:doc:`State & variables </user-guide/foundations/state-and-variables>` foundations
-page covers binding and reading; this guide goes deeper into the variable types,
+:doc:`Variables & reactivity </user-guide/foundations/state-and-variables>`
+foundations page covers binding and reading; this guide goes deeper into the
+variable types,
 **traces** (reacting to changes), and the patterns they enable.
 
 The variable classes
 --------------------
 
-Four classes cover the value types, re-exported from ttkbootstrap (they are the
-tkinter classes — import from ``tkinter`` if you prefer). The class you choose
-decides what ``.get()`` returns:
+Four classes cover the value types — the standard tkinter classes, available as
+``ttk.StringVar`` and friends (or import them from ``tkinter`` directly). The class
+you choose decides what ``.get()`` returns:
 
 .. list-table::
    :header-rows: 1
@@ -129,6 +130,45 @@ Submit button that enables only when a box is checked:
 dedicated helpers rather than hand-rolled traces — see
 :doc:`Input validation </user-guide/feature-guides/validation>`.
 
+Named variables
+---------------
+
+Every variable object wraps a **named Tcl variable**. Normally that name is
+auto-generated (``PY_VAR0``, …) and you never see it — you hold the object and call
+``.get()`` / ``.set()``. But you can give a variable an explicit name and then
+address that value *by name*, which is occasionally handy for loosely-coupled parts
+of an app that read or write a shared value without holding the object.
+
+Give the variable a ``name=`` and **keep the object alive** (store it on your app or
+another long-lived place). Then bind widgets with the **name string**, and read or
+write it by name with a widget's ``getvar`` / ``setvar``:
+
+.. code-block:: python
+
+   username = ttk.StringVar(name="username", value="Ada")   # keep this reference
+
+   ttk.Entry(app, textvariable="username")   # bind by name, not by object
+   app.setvar("username", "Grace")           # write by name; bound widgets update
+   app.getvar("username")                    # -> "Grace"
+
+.. warning::
+
+   Two rules make named variables sharp-edged:
+
+   - **Keep exactly one owning reference.** The Variable object *owns* its Tcl
+     variable — when the object is garbage-collected, the Tcl variable is unset and
+     reads by name fail. A ``ttk.StringVar(name="x")`` whose result you don't store
+     vanishes immediately, and a second same-named object is **not** a safe alias
+     (collecting either one unsets the shared variable). Hold one object and share
+     its *name*.
+   - **Name access skips type conversion.** ``getvar`` / ``setvar`` read and write
+     raw Tcl values, so ``app.setvar("count", "oops")`` on an ``IntVar`` succeeds and
+     the next ``count.get()`` raises ``TclError``. Prefer the object's ``.get()`` /
+     ``.set()`` for typed, validated access.
+
+   Reach for name access only when you genuinely need to address state by name;
+   otherwise pass the variable object.
+
 ``LocaleVar`` — a variable that re-translates
 ---------------------------------------------
 
@@ -148,7 +188,7 @@ localization subsystem.
 
 .. seealso::
 
-   - :doc:`State & variables </user-guide/foundations/state-and-variables>` — the
-     binding basics.
+   - :doc:`Variables & reactivity </user-guide/foundations/state-and-variables>` —
+     the binding basics.
    - :doc:`Variables reference </reference/variables>` — the ``StringVar`` /
      ``IntVar`` / … API and the numeric-coercion gotcha.

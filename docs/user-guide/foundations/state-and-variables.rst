@@ -1,11 +1,17 @@
-State & variables
-=================
+Variables & reactivity
+======================
 
 Widgets that hold a value — entries, checkbuttons, radiobuttons, scales — can be
 bound to a **variable object** instead of you reading and writing the widget
 directly. A variable is the single source of truth for that value: set the
 variable and the widget updates; the user edits the widget and the variable
-updates. This two-way link is how tkinter keeps your data and your UI in sync.
+updates. That two-way link — plus running code when a value changes — is
+**reactivity**: your interface follows your data instead of you wiring every
+update by hand.
+
+This is your application's *data* — the values your widgets show. It is separate
+from a widget's ttk **state** flags (``disabled``, ``focus``, ``selected``, …),
+which the :doc:`widget model </user-guide/foundations/the-widget-model>` covers.
 
 .. note::
 
@@ -30,9 +36,9 @@ selection controls (Checkbutton, Radiobutton, Scale). Read and write with
 
    name.set("Grace")                          # entry and label both update
 
-The variable classes are re-exported from ttkbootstrap — ``ttk.StringVar``,
-``ttk.IntVar``, ``ttk.BooleanVar``, ``ttk.DoubleVar`` — and the class you pick
-determines what ``.get()`` returns:
+ttkbootstrap provides four variable classes — ``ttk.StringVar``, ``ttk.IntVar``,
+``ttk.BooleanVar``, ``ttk.DoubleVar`` — and the class you pick determines what
+``.get()`` returns:
 
 - ``StringVar`` — text (entries, labels).
 - ``IntVar`` — whole numbers; a Checkbutton's on/off value; a Radiobutton choice.
