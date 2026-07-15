@@ -5,8 +5,62 @@ Text in a tkinter app is styled through the **standard Tk named fonts** — a
 handful of fonts (``TkDefaultFont``, ``TkTextFont``, ``TkFixedFont``, …) that
 every interpreter ships and every widget reads by default. There is no separate
 ttkbootstrap font vocabulary: change a named font and every widget that uses it
-restyles at once. This guide covers the one-liner for the whole app, per-font
-tweaks, and registering your own named fonts.
+restyles at once. This guide covers setting a font on a single widget, the
+one-liner that restyles the whole app, per-font tweaks, and registering your own
+named fonts.
+
+Setting a font on a widget
+--------------------------
+
+Any widget that shows text takes a ``font=`` option, and tkinter accepts the value
+in several forms. Reach for a direct ``font=`` for a **one-off** — a single
+heading, one label in a particular size; for typography that stays consistent
+across the app, prefer the named fonts (the rest of this guide).
+
+**A (family, size, style) tuple** is the clearest form. The order is fixed —
+family, then size, then an optional style:
+
+.. code-block:: python
+
+   ttk.Label(app, text="Title",   font=("Helvetica", 16, "bold"))
+   ttk.Label(app, text="Caption", font=("Helvetica", 10, "italic"))
+   ttk.Label(app, text="Both",    font=("Helvetica", 12, "bold italic"))
+
+The style is optional and may combine ``bold``, ``italic``, ``underline``, and
+``overstrike``. Because the family is its own element, a multi-word name such as
+``"Segoe UI"`` needs no special handling.
+
+The **size is in points** — so it scales with the display — unless you make it
+negative, which means device pixels:
+
+.. code-block:: python
+
+   ("Helvetica", 12)     # 12 points (scales with the display's DPI)
+   ("Helvetica", -16)    # 16 pixels (fixed)
+
+**String forms** say the same thing and turn up throughout existing tkinter code.
+The ``-option value`` form is explicit, and you can set only the fields you want —
+the rest come from the default font:
+
+.. code-block:: python
+
+   ttk.Label(app, text="Heading", font="-size 16 -weight bold")   # default family
+   ttk.Label(app, text="Heading", font="-family Georgia -size 16 -weight bold")
+
+There is also a bare ``"family size style"`` string — ``"Helvetica 16 bold"`` —
+but it cannot express a multi-word family: ``"Segoe UI 16"`` fails, because Tk
+reads ``UI`` as the size. Use the tuple or ``-family`` when the family name has a
+space.
+
+Two more values work anywhere ``font=`` is accepted: a **named font** string
+(``"TkHeadingFont"``, or an alias you registered — the form to use when you want
+the value to follow the app's typography rather than stay fixed), and a
+:class:`~ttkbootstrap.Font` **object** (``ttk.Font(family="Helvetica", size=16,
+weight="bold")``), a live handle you can reconfigure later — see the
+:doc:`Fonts reference </reference/fonts>`.
+
+Each of these pins a font onto one widget. To restyle text everywhere from a single
+place, use the named fonts described next.
 
 The named fonts
 ---------------
