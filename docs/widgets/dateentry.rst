@@ -59,12 +59,16 @@ Format and calendar
 -------------------
 
 ``date_format`` is a ``strftime`` pattern for how the date reads in the field;
-``start_date`` sets which date (and month) the calendar opens on; ``first_weekday``
-sets the leftmost column (``0`` = Monday … ``6`` = Sunday):
+``start_date`` is the date the widget starts on; ``first_weekday`` sets the
+leftmost column (``0`` = Monday … ``6`` = Sunday):
 
 .. code-block:: python
 
    DateEntry(app, date_format="%Y-%m-%d", start_date=datetime(2025, 1, 1), first_weekday=6)
+
+``start_date`` fills the field at construction and is the date ``get_date()``
+falls back to when the field is empty; the displayed date after construction is
+``value`` / ``set_date()``.
 
 ``show_outside_days=False`` hides the adjacent-month days the calendar uses to pad
 the first and last weeks.

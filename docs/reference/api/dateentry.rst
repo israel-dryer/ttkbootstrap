@@ -35,7 +35,10 @@ Options
        Default ``6``.
    * - ``start_date``
      - ``datetime | date``
-     - The date focused when the popup first opens. Default ``None`` (today).
+     - The date the widget starts on — fills the field at construction and is
+       the ``get_date()`` fallback when the field is empty. The displayed date
+       after construction is ``value`` / ``set_date()``. Default ``None``
+       (today).
    * - ``button_icon``
      - ``str``
      - The Bootstrap-Icons glyph shown on the button. Default
