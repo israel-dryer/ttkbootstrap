@@ -39,3 +39,37 @@ options that widget accepts; the methods here are how you read and write them.
 
    :returns: the option names.
    :rtype: list[str]
+
+A value read back is Tk's, so its type is Tk's too. To convert one — especially a
+Tk boolean, where ``"no"`` and ``"0"`` are truthy strings to Python — use
+``getboolean``/``getint``/``getdouble`` from
+:doc:`Interpreter </reference/capabilities/interpreter>`.
+
+The option database
+-------------------
+
+Tk has a second, older way to set option values: an **option database** of
+patterns matched against widget names and classes, which supplies a default for
+any option a widget wasn't given explicitly. The methods are ``option_add``,
+``option_get``, ``option_clear`` and ``option_readfile``.
+
+It is standard Tk, not ttk, so it does not reach a ttk widget at all — a ttk
+Button has no ``background`` option to default; appearance there comes from the
+theme and ``bootstyle``. It applies only to the classic tk widgets
+(:doc:`Text </reference/api/text>`, :doc:`Canvas </reference/api/canvas>`,
+:doc:`Listbox </reference/api/listbox>`, :doc:`Menu </reference/api/menu>`) — and
+even there ttkbootstrap paints them with the active theme when they are created,
+which overrides the database. To let it through, opt that widget out of theming:
+
+.. code-block:: python
+
+   app.option_add("*Text.background", "#fdf6e3")
+
+   ttk.Text(app)                    # '#ffffff'  -- the theme wins
+   ttk.Text(app, autostyle=False)   # '#fdf6e3'  -- the database wins
+
+So it is rarely the right tool here: setting the option on the widget is clearer,
+and theming already covers the job it was invented for. It is documented because
+the tk widgets make it reachable, and you will meet it in older tkinter code. The
+`Tk option manual <https://www.tcl-lang.org/man/tcl8.6/TkCmd/option.htm>`__ has
+the pattern syntax and precedence rules.

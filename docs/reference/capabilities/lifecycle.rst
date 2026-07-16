@@ -13,6 +13,20 @@ happen, or destroy a widget.
 
    :returns: ``None``.
 
+.. py:method:: quit()
+   :noindex:
+
+   Stop the ``mainloop`` that is running, without destroying anything. Execution
+   resumes after the ``mainloop()`` call; the widgets still exist, so the loop can
+   be entered again.
+
+   To close an application you almost always want ``destroy`` on the root, which
+   tears the widgets down and ends the loop with them. Reach for ``quit`` only
+   when you deliberately want to leave the loop and keep the widget tree — for
+   instance to hand control back to an embedding program.
+
+   :returns: ``None``.
+
 .. py:method:: update_idletasks()
    :noindex:
 
