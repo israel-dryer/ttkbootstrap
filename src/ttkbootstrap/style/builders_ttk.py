@@ -292,11 +292,13 @@ class StyleBuilderTTK:
             focuscolor="",
         )
 
-        # Native dialog buttons need the base TButton even when an application
-        # only instantiates styled variants.
-        self.build_style(
-            DEFAULT_VARIANT, "button", DEFAULT, required=True
-        )
+        # Native dialogs (file/directory choosers, message boxes) are built
+        # from base ttk styles the app itself may never instantiate. Unbuilt,
+        # those styles inherit the theme foreground from `.` but keep clam's
+        # light field/fill -- near-white text on a white entry in dark mode
+        # (#1224). Build the dialog set eagerly.
+        for family in ("button", "entry", "combobox", "menubutton", "scrollbar"):
+            self.build_style(DEFAULT_VARIANT, family, DEFAULT, required=True)
 
         # General styles used by Tableview and Tooltip internals.
         self.build_style("link", "button", DEFAULT, required=True)
