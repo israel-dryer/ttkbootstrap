@@ -165,12 +165,10 @@ Keep a reference to the email entry so we can attach a rule to it:
 
 .. code-block:: python
 
-   from ttkbootstrap import Validation
-
    # in _build_form, replace the plain email Entry line:
    email_entry = ttk.Entry(form, textvariable=self.email)
    email_entry.grid(row=1, column=1, sticky=EW, pady=4)
-   Validation.regex(email_entry, r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+   ttk.Validation.regex(email_entry, r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 :meth:`~ttkbootstrap.Validation.regex` passes when the contents match the
 pattern (here: *something* ``@`` *something* ``.`` *something*). By default the
@@ -197,10 +195,8 @@ and column controls built in. We give it column headings and start it empty:
 
 .. code-block:: python
 
-   from ttkbootstrap.widgets import Tableview
-
    def _build_table(self):
-       self.table = Tableview(
+       self.table = ttk.Tableview(
            self,
            coldata=["Name", "Email", "Category"],
            rowdata=[],
@@ -295,9 +291,7 @@ The complete app
 .. code-block:: python
 
    import ttkbootstrap as ttk
-   from ttkbootstrap import Validation
    from ttkbootstrap.constants import *
-   from ttkbootstrap.widgets import Tableview
 
 
    class ContactBook(ttk.Frame):
@@ -324,7 +318,7 @@ The complete app
            ttk.Label(form, text="Email").grid(row=1, column=0, sticky=W, padx=(0, 8), pady=4)
            email_entry = ttk.Entry(form, textvariable=self.email)
            email_entry.grid(row=1, column=1, sticky=EW, pady=4)
-           Validation.regex(email_entry, r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+           ttk.Validation.regex(email_entry, r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
            ttk.Label(form, text="Category").grid(row=2, column=0, sticky=W, padx=(0, 8), pady=4)
            category = ttk.Combobox(form, textvariable=self.category,
@@ -336,7 +330,7 @@ The complete app
            add_button.grid(row=3, column=1, sticky=E, pady=(8, 0))
 
        def _build_table(self):
-           self.table = Tableview(
+           self.table = ttk.Tableview(
                self,
                coldata=["Name", "Email", "Category"],
                rowdata=[],
