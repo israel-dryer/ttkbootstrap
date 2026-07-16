@@ -312,6 +312,11 @@ Tracked enhancements deliberately held out of the feature-frozen 2.0:
   silently drop the surface token today (known gap, logged in
   `2_0_breaking_changes.md` under the check/radio surface fix). Extend per
   demand.
+- **In-house themed file dialog** — Tk's X11 dialog hardcodes its file-list
+  canvas white in `iconlist.tcl`, unreachable by styling (#1224's residual
+  gap). X11 default / native elsewhere / routed through the `Querybox.get_*`
+  wrappers; prior art in `development/filedialogs/`. Tracked as **#1242** on
+  the **2.1 milestone**; design pass before implementation.
 
 ---
 
