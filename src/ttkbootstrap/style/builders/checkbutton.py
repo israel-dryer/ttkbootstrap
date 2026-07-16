@@ -34,7 +34,7 @@ def build_checkbutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     # in the layout below), matching the button family so focus is visible here
     # too. It hugs the label and does not change the indicator-driven height.
     builder.configure(
-        sn.ttk_style, foreground=fg,
+        sn.ttk_style, foreground=fg, background=surface,
         focuscolor=fg, focusthickness=builder.scale_size(1),
     )
     state_map(

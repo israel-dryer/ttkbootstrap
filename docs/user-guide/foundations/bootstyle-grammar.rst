@@ -77,19 +77,28 @@ Add a **variant** to change visual weight. The color still leads:
    The same primary color as solid, outline, link, and ghost buttons in a row —
    showing the four visual weights at a glance.
 
-You can drop the color as well — a bare ``outline`` button uses ``primary``:
+You can drop the color as well — with no color token, every button-family
+variant keeps the quiet ``neutral`` look:
 
 .. code-block:: python
 
-   ttk.Button(app, text="Outline", bootstyle="outline")   # primary outline
+   ttk.Button(app, text="Outline", bootstyle="outline")   # neutral outline
 
-Point a control at a **surface** with an ``@`` token so it blends on a card or an
-accent bar instead of the window background:
+Point a control at a **surface** with an ``@`` token so it blends with what it
+sits on:
 
 .. code-block:: python
 
    card = ttk.Frame(app, bootstyle="card", padding=12)
    ttk.Button(card, text="More", bootstyle="@card primary ghost")
+
+The token exists because tkinter has no transparency. Where a control seems to
+let the surface show through — the fill of a ghost, outline, or link button, the
+label background of a checkbutton or radiobutton — the widget is really painted
+a solid color, and by default that color is the window background. Sitting on a
+card or an accent bar, that shows up as a wrong-colored box around the control.
+``@card`` (a neutral raised panel) or an accent (``@primary`` …) names the
+surface instead, and the theme paints the control to match it.
 
 Chameleon base-types
 --------------------

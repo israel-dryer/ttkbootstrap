@@ -90,13 +90,14 @@ def build_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     builder.register_ttkstyle(ttk_style)
 
 
-def _build_neutral_outline_button_style(builder: StyleBuilderTTK, ttk_class):
+def _build_neutral_outline_button_style(builder: StyleBuilderTTK, ttk_style):
     """Outline `neutral` button: flush with the surface, a derived neutral border.
 
     fill = the surface itself; border = `border(bg)`; text = normal `fg`. Hover
     fills with a subtle elevate of the surface (`active`), staying unaccented.
+    Registered under whatever `ttk_style` the caller computed — the neutral name
+    or the bare (unprefixed) one, which renders identically.
     """
-    ttk_style = builder.surface_prefix(f"{NEUTRAL}.{ttk_class}")
     surface = builder.resolve_surface(builder._surface)
     # On a non-default surface the text must read against it, not the app bg.
     fg = builder.on_surface_fg()
@@ -156,15 +157,17 @@ def build_outline_button_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     """
     ttk_class = "Outline.TButton"
 
+    # A bare `outline` renders neutral, like every bare button variant (2.0).
     if colorname == NEUTRAL:
-        _build_neutral_outline_button_style(builder, ttk_class)
+        _build_neutral_outline_button_style(
+            builder, builder.surface_prefix(f"{NEUTRAL}.{ttk_class}"))
+        return
+    if any([colorname == DEFAULT, colorname == ""]):
+        _build_neutral_outline_button_style(
+            builder, builder.surface_prefix(ttk_class))
         return
 
-    if any([colorname == DEFAULT, colorname == ""]):
-        ttk_style = builder.surface_prefix(ttk_class)
-        colorname = PRIMARY
-    else:
-        ttk_style = builder.surface_prefix(f"{colorname}.{ttk_class}")
+    ttk_style = builder.surface_prefix(f"{colorname}.{ttk_class}")
 
     # The surface the button sits on (2.0 surface-color); the flat rest fill and
     # the clam dark/light regions track it so the outline stays flush.

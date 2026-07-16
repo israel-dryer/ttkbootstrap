@@ -91,13 +91,14 @@ def build_toolbutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     builder.register_ttkstyle(ttk_style)
 
 
-def _build_neutral_outline_toolbutton(builder: StyleBuilderTTK, ttk_class):
+def _build_neutral_outline_toolbutton(builder: StyleBuilderTTK, ttk_style):
     """Neutral outline toolbutton: OFF is the flat surface, ON a raised surface.
 
     The no-accent analog of the outline toolbutton -- with no accent to latch to,
     "on" is shown by a subtle surface raise (`neutral_fill`) rather than a color.
+    Registered under whatever `ttk_style` the caller computed — the neutral name
+    or the bare (unprefixed) one, which renders identically.
     """
-    ttk_style = f"{NEUTRAL}.{ttk_class}"
     unselected = builder.colors.bg
     selected = neutral_fill(builder, 1)
     on_unselected = builder.mute(builder.colors.fg, unselected)
@@ -161,15 +162,15 @@ def build_outline_toolbutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     """
     ttk_class = "Outline.Toolbutton"
 
+    # A bare `outline` renders neutral, like every bare button-family variant (2.0).
     if colorname == NEUTRAL:
+        _build_neutral_outline_toolbutton(builder, f"{NEUTRAL}.{ttk_class}")
+        return
+    if any([colorname == DEFAULT, colorname == ""]):
         _build_neutral_outline_toolbutton(builder, ttk_class)
         return
 
-    if any([colorname == DEFAULT, colorname == ""]):
-        ttk_style = ttk_class
-        colorname = PRIMARY
-    else:
-        ttk_style = f"{colorname}.{ttk_class}"
+    ttk_style = f"{colorname}.{ttk_class}"
 
     accent = builder.colors.get(colorname)
     selected = accent

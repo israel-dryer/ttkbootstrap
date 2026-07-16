@@ -58,9 +58,11 @@ an attribute, not a method, and the names are Tk's unless you chose them:
 .. note::
 
    Every widget also has a **path name** — ``".!frame.!button"`` — that spells out
-   its position in the tree, and that's what ``str(widget)`` gives you. This
-   matters because ``winfo_parent()`` returns the parent's *path*, a string,
-   while ``master`` returns the *widget*:
+   its position in the tree, and that's what ``str(widget)`` gives you. The path is
+   how **Tk** — the toolkit tkinter is built on — identifies the widget;
+   :doc:`What tkinter wraps </user-guide/foundations/what-tkinter-wraps>` tells
+   that story. It matters here because ``winfo_parent()`` returns the parent's
+   *path*, a string, while ``master`` returns the *widget*:
 
    .. code-block:: python
 
@@ -165,6 +167,10 @@ spelling you use:
 
    btn.cget("nope")     # TclError: unknown option "-nope"
 
+The message is Tk's, in Tk's own spelling — hence the leading dash on an option
+you wrote without one. :doc:`What tkinter wraps
+</user-guide/foundations/what-tkinter-wraps>` explains the seam.
+
 .. _widget-model-what-comes-back:
 
 What comes back
@@ -189,7 +195,9 @@ uses internally rather than the thing you handed over:
 
 So don't use ``cget`` to get a callback or a variable back out. Keep your own
 reference to anything you need later — read the *value* through the variable
-itself (``size.get()``), not through the widget.
+itself (``size.get()``), not through the widget. Why Tk keeps a *name* rather
+than your object is part of the seam :doc:`What tkinter wraps
+</user-guide/foundations/what-tkinter-wraps>` describes.
 
 Finding out what a widget accepts
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -210,6 +218,11 @@ option's *default* alongside its current value:
 
    btn.configure("text")     # ('text', 'text', 'Text', '', 'Saved')
    #                            name    dbName  dbClass default current
+
+The parts you will actually read are the first and last two — the option's name,
+its default, and its current value. ``dbName`` and ``dbClass`` are the option's
+names in Tk's *option database*, an older configuration mechanism covered in the
+:doc:`Configuration reference </reference/capabilities/configuration>`.
 
 For the authoritative per-widget option list, each widget's page in the
 :doc:`Widgets catalog </widgets/index>` and the
@@ -340,6 +353,9 @@ A small tree, configured, with a state toggled:
 
    - :doc:`How a tkinter app runs </user-guide/foundations/how-a-tkinter-app-runs>`
      — the loop that drives callbacks.
+   - :doc:`What tkinter wraps </user-guide/foundations/what-tkinter-wraps>` — why
+     widgets have path names, options carry a dash, and errors arrive as
+     ``TclError``.
    - :doc:`Events & callbacks </user-guide/feature-guides/events>` — ``after``
      timers, variable traces, and the ``<Destroy>`` event.
    - :doc:`Cursors </reference/cursors>` — the platform-dependent ``cursor``

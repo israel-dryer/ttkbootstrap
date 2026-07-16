@@ -117,15 +117,15 @@ def _build_menubutton_arrow(builder: StyleBuilderTTK, ttk_style, normal, disable
                     El("Menubutton.label", side=LEFT, sticky="")])])]))
 
 
-def _build_neutral_outline_menubutton(builder: StyleBuilderTTK, ttk_class, disabled_fg):
+def _build_neutral_outline_menubutton(builder: StyleBuilderTTK, ttk_style, disabled_fg):
     """Neutral outline menubutton: surface fill, derived border, normal fg.
 
     The no-accent analog of the outline menubutton -- it does not fill with an
     accent on hover (that would break the "unaccented" intent); it stays on the
     surface with a subtle elevate on interaction, matching the neutral outline
-    button.
+    button. Registered under whatever `ttk_style` the caller computed — the
+    neutral name or the bare (unprefixed) one, which renders identically.
     """
-    ttk_style = f"{NEUTRAL}.{ttk_class}"
     surface = builder.colors.bg
     fg = builder.colors.fg
     hover = builder.active(surface)
@@ -180,15 +180,16 @@ def build_outline_menubutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
 
     disabled_fg = builder.disabled("text")
 
+    # A bare `outline` renders neutral, like every bare button-family variant (2.0).
     if colorname == NEUTRAL:
+        _build_neutral_outline_menubutton(
+            builder, f"{NEUTRAL}.{ttk_class}", disabled_fg)
+        return
+    if any([colorname == DEFAULT, colorname == ""]):
         _build_neutral_outline_menubutton(builder, ttk_class, disabled_fg)
         return
 
-    if any([colorname == DEFAULT, colorname == ""]):
-        ttk_style = ttk_class
-        colorname = PRIMARY
-    else:
-        ttk_style = f"{colorname}.{ttk_class}"
+    ttk_style = f"{colorname}.{ttk_class}"
 
     foreground = builder.colors.get(colorname)
     background = builder.on_color(foreground)

@@ -69,6 +69,9 @@ around a widget (a two-tuple gives different amounts on each side):
 
    ttk.Label(form, text="Email").grid(row=0, column=0, sticky="w", padx=5, pady=5)
 
+This is one of three spacing layers — :ref:`Spacing <arranging-spacing>` on the
+Arranging widgets page maps them all.
+
 Step 4 — make it resize with ``weight``
 ---------------------------------------
 
