@@ -59,6 +59,19 @@ widget (pack, grid, place, stacking order) have their own
 
       Read, clear, and own the current selection.
 
+   .. grid-item-card:: Busy
+      :link: busy
+      :link-type: doc
+
+      Block input to a widget while it works — ``busy``, ``busy_forget``.
+
+   .. grid-item-card:: Interpreter
+      :link: interpreter
+      :link-type: doc
+
+      Crossing the Tcl boundary — converting Tk values, ``register``, the Tk
+      version.
+
    .. grid-item-card:: Widget & screen info
       :link: /reference/winfo
       :link-type: doc
@@ -76,4 +89,6 @@ widget (pack, grid, place, stacking order) have their own
    lifecycle
    clipboard
    selection
+   busy
+   interpreter
    /reference/winfo

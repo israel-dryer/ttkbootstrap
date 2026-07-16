@@ -4,8 +4,48 @@ Built-in virtual events
 A **virtual event** is a named notification in double brackets — ``<<Copy>>``,
 ``<<ThemeChanged>>`` — decoupled from any one physical event. Bind them exactly
 like physical events. This page catalogs the ones Tk, ttk, and ttkbootstrap
-define; to define or fire your *own*, see
+define, and documents the methods that define your own. For how to use them, see
 :doc:`Events & callbacks </user-guide/foundations/events-and-callbacks>`.
+
+Defining your own
+-----------------
+
+A virtual event is bound to one or more physical sequences; firing any of them
+fires the virtual event. This is how you name an action once (``<<Save>>``) and
+let each platform reach it by its own key.
+
+.. py:method:: event_add(virtual, *sequences)
+   :noindex:
+
+   Map one or more physical sequences onto a virtual event, creating it if
+   needed. Adds to any sequences already mapped.
+
+   :param str virtual: the virtual event name, e.g. ``"<<Save>>"``.
+   :param sequences: physical sequences, e.g. ``"<Control-s>"``, ``"<F2>"``.
+   :returns: ``None``.
+
+.. py:method:: event_delete(virtual, *sequences)
+   :noindex:
+
+   Remove sequences from a virtual event. With no ``sequences``, removes every
+   sequence mapped to it.
+
+   :param str virtual: the virtual event name.
+   :param sequences: the sequences to unmap; omit for all.
+   :returns: ``None``.
+
+.. py:method:: event_info(virtual=None)
+   :noindex:
+
+   Report the physical sequences mapped to a virtual event. Useful for asking
+   what a built-in event is bound to on *this* platform — ``event_info("<<Copy>>")``
+   answers ``('<Control-Key-c>', ...)`` on Windows and Linux but
+   ``('<Mod1-Key-c>', ...)`` on macOS, where the copy key is Command.
+
+   :param virtual: a virtual event name; omit to list every defined virtual event.
+   :returns: the sequences mapped to ``virtual``, or the names of all virtual
+      events when called with no argument.
+   :rtype: tuple
 
 Editing & clipboard
 -------------------

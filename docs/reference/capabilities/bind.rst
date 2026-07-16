@@ -51,6 +51,25 @@ Binding callbacks
 
    :returns: ``None``.
 
+.. py:method:: unbind_all(sequence)
+   :noindex:
+
+   Remove an application-wide binding made with ``bind_all``.
+
+   :param str sequence: the event sequence to unbind.
+   :returns: ``None``.
+
+.. py:method:: unbind_class(className, sequence)
+   :noindex:
+
+   Remove a class binding made with ``bind_class``. This affects **every** widget
+   of that class, including the ones Tk installs by default — removing a built-in
+   class binding takes that behavior away from every widget of the class.
+
+   :param str className: the Tk class name, e.g. ``"TEntry"``.
+   :param str sequence: the event sequence to unbind.
+   :returns: ``None``.
+
 Bind tags
 ---------
 

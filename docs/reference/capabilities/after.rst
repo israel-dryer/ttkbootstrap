@@ -42,3 +42,15 @@ The canonical upstream reference is the Tcl
 
    :param id: the id returned by the scheduling call.
    :returns: ``None``.
+
+.. py:method:: after_info(id=None)
+   :noindex:
+
+   Report the callbacks scheduled with ``after``/``after_idle`` that have not yet
+   run — useful when tracking down a timer that outlives the widget it updates.
+
+   :param id: an optional scheduling id to ask about.
+   :returns: with no argument, the ids of all pending callbacks; with an ``id``,
+      that callback's ``(script, type)``, where type is ``"timer"`` or
+      ``"idle"``.
+   :rtype: tuple

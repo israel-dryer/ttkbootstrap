@@ -101,6 +101,17 @@ Photo images
 
    Return the value of one image option.
 
+One related method lives on the **widget**, not on ``PhotoImage``:
+
+.. py:method:: image_types()
+   :noindex:
+
+   The image types this Tk build can create — ``('photo', 'bitmap')``. Call it on
+   any widget.
+
+   :returns: the available image type names.
+   :rtype: tuple
+
 Icons
 -----
 
