@@ -87,8 +87,10 @@ class DateEntry(ConfigureDelegationMixin, Frame):
                 etc...
 
             start_date (datetime, optional):
-                The date that is in focus when the widget is displayed. Default is
-                current date.
+                The date the widget starts on — fills the field at construction
+                and is the `get_date()` fallback when the field is empty. The
+                displayed date after construction is `value` / `set_date()`.
+                Default is the current date.
 
             bootstyle (str, optional):
                 A style keyword used to set the focus color of the entry
