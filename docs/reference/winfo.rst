@@ -45,7 +45,8 @@ Where a widget sits in the tree, what it is, and whether it is still alive.
        object.
    * - ``winfo_children()``
      - list
-     - The child widget *objects*, in stacking order.
+     - The child widget *objects*, in stacking order. One level only — it does
+       not recurse.
    * - ``winfo_toplevel()``
      - widget
      - The ``Tk``/``Toplevel`` window that contains this widget.
@@ -72,6 +73,29 @@ Where a widget sits in the tree, what it is, and whether it is still alive.
      - int
      - ``1`` only if the widget **and every ancestor** are mapped — i.e. it is
        actually on screen.
+
+Two more tree accessors are not ``winfo_*`` methods, but belong beside them:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 26 14 60
+
+   * - Name
+     - Returns
+     - Meaning
+   * - ``master``
+     - widget
+     - The parent widget *object* — the counterpart to ``winfo_parent()``, which
+       returns the parent's path name instead. An attribute, not a method.
+   * - ``children``
+     - dict
+     - The child widget objects keyed by their own names
+       (``{'!button': <Button ...>}``) — the same widgets ``winfo_children()``
+       returns as a list. An attribute, not a method.
+   * - ``nametowidget(path)``
+     - widget
+     - The widget object for a path name — turns ``winfo_parent()``'s string back
+       into a usable widget.
 
 Position & size
 ---------------

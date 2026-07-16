@@ -26,10 +26,80 @@ and labels sit inside those. That parent-child chain is the widget tree:
 The tree decides three things: where a widget can be *placed* (only inside its
 parent — see :doc:`Arranging widgets </user-guide/foundations/arranging-widgets>`),
 what it *inherits* (the theme, and options like a cursor), and its *lifetime* —
-destroying a widget destroys everything under it. You can walk the tree with
-``widget.master`` (the parent) and ``widget.winfo_children()`` (the children);
-``winfo_class()`` reports the widget's Tk class (``"TButton"``). See
-:doc:`Widget & screen info </reference/winfo>` for the full introspection set.
+destroying a widget destroys everything under it.
+
+Walking the tree
+~~~~~~~~~~~~~~~~
+
+You never have to keep your own map of what contains what: every widget can tell
+you. Going **up**, ``master`` is the parent widget:
+
+.. code-block:: python
+
+   save.master           # the toolbar Frame -- the widget object itself
+
+Going **down**, ``winfo_children()`` returns a widget's children as a list, in
+stacking order:
+
+.. code-block:: python
+
+   toolbar.winfo_children()      # [<Button ...!button>, <Button ...!button2>]
+
+   for child in toolbar.winfo_children():
+       child.state(["disabled"])
+
+There is also a ``children`` **dict**, keyed by each child's own name — note it's
+an attribute, not a method, and the names are Tk's unless you chose them:
+
+.. code-block:: python
+
+   toolbar.children      # {'!button': <Button ...>, '!button2': <Button ...>}
+
+.. note::
+
+   Every widget also has a **path name** — ``".!frame.!button"`` — that spells out
+   its position in the tree, and that's what ``str(widget)`` gives you. This
+   matters because ``winfo_parent()`` returns the parent's *path*, a string,
+   while ``master`` returns the *widget*:
+
+   .. code-block:: python
+
+      save.master           # <Frame object .!frame>   -- the widget
+      save.winfo_parent()   # '.!frame'                -- a string
+
+   Reach for ``master`` when you want the parent. If you only have a path, turn it
+   back into a widget with ``nametowidget``:
+
+   .. code-block:: python
+
+      save.nametowidget(save.winfo_parent())   # the toolbar Frame
+
+``winfo_children()`` goes **one level down only** — the root's children are its
+frames, not the buttons inside them. To reach the whole tree, recurse:
+
+.. code-block:: python
+
+   def walk(widget, depth=0):
+       print("   " * depth + widget.winfo_class())
+       for child in widget.winfo_children():
+           walk(child, depth + 1)
+
+   walk(app)
+
+.. code-block:: text
+
+   Tk
+      TFrame
+         TButton
+         TButton
+      TFrame
+         TEntry
+
+``winfo_class()`` reports the widget's Tk class (``"TButton"``), which is what
+that walk prints. Finally, ``winfo_toplevel()`` jumps straight to the window a
+widget lives in, however deep it sits — useful when a callback needs the window
+but only has the widget. See :doc:`Widget & screen info </reference/winfo>` for
+the full introspection set.
 
 Options configure a widget
 --------------------------
