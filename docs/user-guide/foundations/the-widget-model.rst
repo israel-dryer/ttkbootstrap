@@ -35,29 +35,120 @@ Options configure a widget
 --------------------------
 
 Every widget is customized through **options** — ``text``, ``width``, ``image``,
-``cursor``, and so on. Set them as keyword arguments when you create the widget,
-and read or change them afterward:
+``cursor``, and so on. An option is a named setting that lives *on the widget*;
+you give it a value when you create the widget, and you can read or change it any
+time after:
 
 .. code-block:: python
 
-   btn = ttk.Button(app, text="Save", width=12)   # set at creation
+   btn = ttk.Button(app, text="Save", width=12)
 
-   btn.configure(text="Saved")     # change later (config is an alias)
-   btn["width"] = 8                # index syntax does the same
+That is the whole idea. What trips people up is that tkinter gives you **two
+interchangeable spellings** for reading and writing options afterward — a method
+pair, and an index syntax. Both are used freely in real code and throughout these
+docs, so it is worth learning both now.
 
-   print(btn.cget("text"))         # read -> "Saved"
-   print(btn["text"])              # read, index syntax -> "Saved"
+Setting an option
+~~~~~~~~~~~~~~~~~
 
-``configure()`` with no arguments returns *every* option the widget supports —
-a quick way to discover what you can set. For the full, per-widget option list,
-each widget's page in the :doc:`Widgets catalog </widgets/index>` and the
+``configure`` takes the option as a keyword argument. The index syntax assigns to
+the option by name. These two lines do exactly the same thing:
+
+.. code-block:: python
+
+   btn.configure(text="Saved")
+   btn["text"] = "Saved"
+
+Only ``configure`` can set several options in one call, which is usually why you
+would pick it:
+
+.. code-block:: python
+
+   btn.configure(text="Saved", width=8, bootstyle="success")
+
+.. note::
+
+   ``config`` is an older alias for ``configure`` — the same method under a second
+   name, kept for compatibility. You will meet it in older code and in other
+   people's examples. Prefer ``configure``; these docs use it everywhere.
+
+Reading an option
+~~~~~~~~~~~~~~~~~
+
+``cget`` takes the option name as a string. The index syntax reads the same
+option. Again, these are the same thing:
+
+.. code-block:: python
+
+   btn.cget("text")     # -> "Saved"
+   btn["text"]          # -> "Saved"
+
+The index syntax is the one that surprises newcomers: a widget is **not** a
+dictionary, but it deliberately supports ``[...]`` as a shorthand for its
+options. ``btn["text"]`` reads, and ``btn["text"] = "Saved"`` writes. Which
+spelling you use is a matter of taste — pick one and be consistent.
+
+Asking for an option the widget doesn't have raises ``TclError``, whichever
+spelling you use:
+
+.. code-block:: python
+
+   btn.cget("nope")     # TclError: unknown option "-nope"
+
+What comes back
+~~~~~~~~~~~~~~~
+
+You get back Tk's value for the option, not necessarily the Python object you
+passed in. The type follows the option:
+
+.. code-block:: python
+
+   btn.cget("text")        # 'Saved'   -- a string
+   btn.cget("width")       # 8         -- an int, even if you set the string "8"
+   btn.cget("padding")     # (5,)      -- a tuple
+
+Two options are worth calling out, because the value you get back is a *name* Tk
+uses internally rather than the thing you handed over:
+
+.. code-block:: python
+
+   btn.cget("command")           # '...<lambda>'  -- not your function
+   entry.cget("textvariable")    # 'PY_VAR0'      -- not your StringVar
+
+So don't use ``cget`` to get a callback or a variable back out. Keep your own
+reference to anything you need later — read the *value* through the variable
+itself (``size.get()``), not through the widget.
+
+Finding out what a widget accepts
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``keys()`` lists the option names a widget supports — handy at a prompt when you
+can't remember the spelling:
+
+.. code-block:: python
+
+   btn.keys()          # ['command', 'default', 'takefocus', 'text', ...]
+
+``configure()`` with **no arguments** returns a dict of every option, mapping the
+name to its full spec — ``(name, dbName, dbClass, default, current)``. Passing a
+single option name returns just that one spec, which is the way to see an
+option's *default* alongside its current value:
+
+.. code-block:: python
+
+   btn.configure("text")     # ('text', 'text', 'Text', '', 'Saved')
+   #                            name    dbName  dbClass default current
+
+For the authoritative per-widget option list, each widget's page in the
+:doc:`Widgets catalog </widgets/index>` and the
 :doc:`Widgets reference </reference/api/index>` are the place to look.
 
 .. note::
 
-   ``bootstyle`` is just another option. Everything you already know about
-   setting options applies — ``ttk.Button(app, text="Save", bootstyle="success")``
-   or ``btn.configure(bootstyle="success")``. That's the whole styling API; see
+   ``bootstyle`` is just another option. Everything on this page applies —
+   ``ttk.Button(app, text="Save", bootstyle="success")`` or
+   ``btn.configure(bootstyle="success")`` or ``btn["bootstyle"] = "success"``.
+   That's the whole styling API; see
    :doc:`Styling with bootstyle </user-guide/foundations/bootstyle-grammar>`.
 
 States (the ttk way)
@@ -181,3 +272,11 @@ A small tree, configured, with a state toggled:
      timers, variable traces, and the ``<Destroy>`` event.
    - :doc:`Cursors </reference/cursors>` — the platform-dependent ``cursor``
      option.
+
+Reference
+---------
+
+- :doc:`Configuration </reference/capabilities/configuration>` — ``configure``,
+  ``cget``, and ``keys`` in full.
+- :doc:`Widgets reference </reference/api/index>` — the options each widget
+  accepts.
