@@ -39,7 +39,7 @@ For more information, see: https://ttkbootstrap.readthedocs.io/
 """
 from tkinter import (
     Menu as _tkMenu, Text as _tkText, Canvas as _tkCanvas, Tk as _tkTk,
-    Frame as _tkFrame, LabelFrame as _tkLabelFrame, Label as _tkLabel,
+    Frame as _tkFrame, Label as _tkLabel,
     Listbox as _tkListbox,
     Variable, StringVar, IntVar, BooleanVar, DoubleVar, PhotoImage
 )
@@ -138,6 +138,12 @@ class Labelframe(BootMixin, _ttkLabelframe):
     """ttk Labelframe with ttkbootstrap theming (accepts `bootstyle=`)."""
 
 
+# The same spelling alias tkinter.ttk ships (`LabelFrame = Labelframe`). Through
+# 1.x this name was the *classic* tk widget instead; see the 2.0 breaking-changes
+# log. The classic widget remains available as `tkinter.LabelFrame`.
+LabelFrame = Labelframe
+
+
 class Menubutton(BootMixin, _ttkMenubutton):
     """ttk Menubutton with ttkbootstrap theming (accepts `bootstyle=`)."""
 
@@ -233,10 +239,6 @@ class TkLabel(AutoStyleMixin, _tkLabel):
     """
 
 
-class LabelFrame(AutoStyleMixin, _tkLabelFrame):
-    """tk LabelFrame with ttkbootstrap theming (accepts `autostyle=`)."""
-
-
 # Submodules below import the concrete widget classes from this package, so
 # they must come after the class definitions above.
 from ttkbootstrap import widgets as _widgets
@@ -293,12 +295,12 @@ from tkinter import filedialog
 
 __all__ = [
     # Tk exports
-    "Tk", "Menu", "Text", "Canvas", "Listbox", "TkFrame", "TkLabel", "LabelFrame", "Variable", "StringVar", "IntVar", "BooleanVar",
+    "Tk", "Menu", "Text", "Canvas", "Listbox", "TkFrame", "TkLabel", "Variable", "StringVar", "IntVar", "BooleanVar",
     "DoubleVar", "PhotoImage",
     "Font", "font_families", "nametofont",
 
     # TTk exports
-    "Button", "Checkbutton", "Combobox", "Entry", "Frame", "Labelframe",
+    "Button", "Checkbutton", "Combobox", "Entry", "Frame", "Labelframe", "LabelFrame",
     "Label", "Menubutton", "Notebook", "Panedwindow", "Progressbar", "Radiobutton",
     "Scale", "Scrollbar", "Separator", "Sizegrip", "Spinbox",
     "Treeview", "OptionMenu",

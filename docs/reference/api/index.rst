@@ -224,12 +224,6 @@ Structure the window and hold other widgets.
 
       The classic ``tk.Frame`` container.
 
-   .. grid-item-card:: LabelFrame
-      :link: tklabelframe
-      :link-type: doc
-
-      The classic ``tk.LabelFrame`` — a frame with a caption.
-
 Display & drawing
 -----------------
 
@@ -288,7 +282,6 @@ Show text, images, and custom graphics.
    sizegrip
    tk
    tkframe
-   tklabelframe
    label
    tklabel
    canvas

@@ -492,7 +492,10 @@ src/ttkbootstrap/
                      #   subclasses (e.g. `class Button(BootMixin, ttk.Button)`) that carry the
                      #   `bootstyle`/`autostyle` api + fluent pack/grid/place (return self). No
                      #   import-time monkey-patch (2.0, PR 3) — opt into it via enable_global_api().
-                     #   Blessed tk widgets: Tk/Menu/Text/Canvas/TkFrame/TkLabel/LabelFrame.
+                     #   Blessed tk widgets: Tk/Menu/Text/Canvas/Listbox/TkFrame/TkLabel.
+                     #   `LabelFrame` is the ttk alias for `Labelframe` (matching tkinter.ttk),
+                     #   NOT the classic tk widget (that 1.x meaning was dropped — see
+                     #   development/2_0_breaking_changes.md).
   style/             # THE CORE — theme/style engine package (see below). Split from the old
                      #   style.py in 2.0 (PR 4); public import path `ttkbootstrap.style` unchanged.
                      #   theme.py (Colors, ThemeDefinition), builders_tk.py (StyleBuilderTK),

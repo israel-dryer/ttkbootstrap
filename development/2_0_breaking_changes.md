@@ -35,6 +35,7 @@
 | **`FloodgaugeLegacy` warns on use; `publisher`/`utility` helpers moved to `internal/`** | Deprecated | this doc, below (backfill) |
 | **Fluent geometry (`pack`/`grid`/`place` return the widget)** | New | this doc, below |
 | **`TkLabel` blessed tk.Label + ColorChooser default-mode fix** | New/Fix | this doc, below |
+| **`LabelFrame` is now the ttk alias (was the classic tk widget)** | API | this doc, below — **not in the migration guide** (author call) |
 | **`neutral` color** | New | this doc, below |
 | **`ghost` button variant** | New | this doc, below |
 | **`thin` scrollbar variant** | New | this doc, below |
@@ -1763,3 +1764,37 @@ unsaved-changes confirmation) cleanly.
 `tests/test_window_api.py` (+7); docs: the *Structuring an app* "Shut down cleanly"
 section, the Windows guide "Lifecycle" section, and the `App`/`Toplevel` reference
 pages (shared `_lifecycle.rst` include). Additive — no existing signature changed.
+
+## `LabelFrame` is now the ttk alias (was the classic tk widget)  *(API)*
+
+**What.** `ttk.LabelFrame` is now an alias for `ttk.Labelframe` — the same
+spelling alias `tkinter.ttk` itself ships (`LabelFrame = Labelframe`). Through
+1.x (and early 2.0, which blessed it with `AutoStyleMixin`), the name was the
+**classic** `tkinter.LabelFrame` instead, re-exported verbatim from tkinter.
+
+**Why.** The old binding collided with ttk's `Labelframe` by letter-case alone —
+the most treacherous kind of collision — and inverted stock-tkinter semantics:
+anyone writing `ttk.LabelFrame` expecting tkinter.ttk's alias silently got an
+unthemed-model classic widget. Nothing first-party used the classic export, and
+the author never sanctioned it; it had simply been inherited from 1.x's blanket
+tk re-exports and carried through the 2.0 blessing pass.
+
+**Migration.** Code that used `ttk.LabelFrame` with only shared options
+(`text=`, `labelanchor=`, `padding=`… ) now gets the themed ttk widget — an
+upgrade. Classic-only options (`bg=`/`fg=`, `font=`, widget-option
+`padx=`/`pady=`) now raise `TclError: unknown option` — loud, not silent. Anyone
+who truly wants the classic widget uses `tkinter.LabelFrame` directly (themed
+under `enable_global_api()`, which still styles raw tk labelframes via
+`builders_tk.update_labelframe_style`).
+
+**Scope.** `__init__.py` (blessed class deleted, alias added next to
+`Labelframe`, `__all__` regrouped); docs: `reference/api/tklabelframe.rst`
+deleted + its index card/toctree entry, `labelframe.rst` now notes the alias,
+`delivery-model.rst` blessed-widget list corrected (also gained the missing
+`Listbox`). The raw-widget theming path (`TK_WIDGETS`, `update_labelframe_style`)
+is untouched.
+
+**Deliberately NOT in the *Migrating to 2.0* guide** (author call): the 1.x
+capital-F export was a side effect of the blanket tk re-exports, not a
+sanctioned API; users of the name get the themed widget transparently, and
+classic-only options fail loudly. Don't re-add a migration section for it.

@@ -56,8 +56,8 @@ Blessed tk widgets
 A few widgets have no ttk equivalent — the toplevels and the classic ``tk``
 controls. ttkbootstrap ships themed versions that pick up the theme's colors
 automatically (via :class:`~ttkbootstrap.AutoStyleMixin`): ``ttk.Tk``,
-``ttk.Toplevel``, ``ttk.Menu``, ``ttk.Text``, ``ttk.Canvas``, ``ttk.TkFrame``,
-``ttk.TkLabel``, and ``ttk.LabelFrame``. Use them in place of the ``tkinter``
+``ttk.Toplevel``, ``ttk.Menu``, ``ttk.Text``, ``ttk.Canvas``, ``ttk.Listbox``,
+``ttk.TkFrame``, and ``ttk.TkLabel``. Use them in place of the ``tkinter``
 originals and they theme themselves:
 
 .. code-block:: python
