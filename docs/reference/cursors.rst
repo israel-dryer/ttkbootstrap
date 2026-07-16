@@ -32,7 +32,8 @@ The pointers you will actually reach for, and what each conventionally means.
 
    * - Name
      - Meaning / typical use
-   * - ``arrow`` / ``left_ptr``
+   * - | ``arrow``
+       | ``left_ptr``
      - The default pointer.
    * - ``xterm``
      - Text I-beam — over editable text.
@@ -44,7 +45,8 @@ The pointers you will actually reach for, and what each conventionally means.
      - Four-way move arrows — drag to reposition.
    * - ``watch``
      - Busy / working (an ``arrow`` + hourglass on Windows).
-   * - ``crosshair`` / ``tcross``
+   * - | ``crosshair``
+       | ``tcross``
      - Precise selection or drawing.
    * - ``sizing``
      - Resize from a corner.
@@ -62,7 +64,9 @@ The pointers you will actually reach for, and what each conventionally means.
      - Action not allowed.
    * - ``pirate``
      - Delete / kill (a skull-and-crossbones).
-   * - ``dotbox`` / ``target`` / ``dot``
+   * - | ``dotbox``
+       | ``target``
+       | ``dot``
      - Miscellaneous marking pointers.
 
 Setting a cursor while busy

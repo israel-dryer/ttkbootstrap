@@ -401,11 +401,40 @@ color is a fixed snapshot that survives but doesn't adapt). Standing color/appea
 fact (probed): on a themed **tk.Text** a direct color is overridden unless
 `autostyle=False`; on a **ttk.Label** an instance `foreground`/`background`
 overrides the style and survives theme switches (no `autostyle` — ttk widgets reject
-it). **NEXT docs-H thread:** the deferred **screenshot slice** (placeholders in
-place across catalog + guides; capture tooling is Windows-canonical, so postponed on
-macOS), plus optional Track B odds/ends (Linux/x11, DPI matrix). Every docs change
-this session verified headlessly + built green (`.venv/bin/python -m sphinx -b html
--W -q -E docs <out>`, exit 0).
+it). **Session through 2026-07-15 — the HOW-TO BAND is COMPLETE (#1225) + a `busy()`
+shim (#1226), both MERGED into `2.0`.** The band was audited with the #1222 grounded
+method (one read-only agent per page; every claim probed and every snippet run
+headlessly against the real library, cross-checked against the Tcl/Tk 8.6 manuals) —
+**all 7 authored pages had a real defect**, several macOS-shaped: `tk busy` is a
+**no-op on macOS/Aqua** *and* tkinter's busy methods are **3.13+** (the page had
+claimed the opposite of both); `<Control-c>` isn't the macOS copy key (`<<Copy>>` →
+`<Mod1-Key-c>`) and `bind_all` on it clobbers the user's selection; the `TclError`
+example used a bad `bootstyle`, which warns-and-falls-back rather than raising;
+`multiple-windows` taught raw `protocol("WM_DELETE_WINDOW")` over the public
+`on_close` and its "reuse a window" broke after ✕; `ScrolledFrame` never sizes to
+content and has no hbar; the threads "one rule" gave the wrong mechanism (tkinter
+*marshals* cross-thread calls → clean `RuntimeError`); `compound="none"` was
+backwards. Authored the 3 real recipes (**animate-gif**, **splash-screen**,
+**application-icon**), converted the Foundations-overlapping index entries to
+cross-references, and — on author review — **split "Beep and show busy" into two
+how-tos** (`bell` + `busy`; one job per recipe). **#1226** adds
+`internal/busy.py` `BusyMixin` (delegates to tkinter's methods where they exist,
+issues the identical `tk.call` where they don't; all 16 aliases; mixed into
+`BootMixin`/`AutoStyleMixin`/`_BaseWindow`), verified byte-identical on a real
+3.10.11 interpreter vs 3.14; `tests/test_busy_api.py` (+25) forces the <3.13 branch
+by deleting the methods off `tkinter.Misc`. **The macOS no-op is deliberately not
+shimmed** (Tk's busy window is a *transparent* input shield; Tk has no transparent
+color, so any emulation is opaque and hides the UI) — docs state it as a plain
+platform fact plus the disable+cursor fallback. **Standing lesson (memory-saved):**
+`event_generate` **bypasses pointer hit-testing** and can never prove input is
+blocked — probe with `winfo_containing` + a positive control. **Pre-existing on
+`2.0`, unrelated:** `tests/test_menu_api.py::*_off_mac` ×3 fail on any Mac (they
+assert non-macOS behavior) — not in the known-flake list; worth gating. Suite 684.
+**NEXT docs-H thread:** the deferred **screenshot slice** (46 placeholders across
+catalog + guides; the 5 new/split how-to pages have none — decide during the slice;
+capture tooling is Windows-canonical, so postponed on macOS), plus optional Track B
+odds/ends (Linux/x11, DPI matrix). Every docs change verified headlessly + built
+green (`.venv/bin/python -m sphinx -b html -W -q -E docs <out>`, exit 0).
 
 ## Repository layout
 
@@ -435,7 +464,8 @@ src/ttkbootstrap/
                      #   scrolled, tooltip, toast, labeledscale
   dialogs/           # Messagebox, Querybox, colorchooser, datepicker, fontdialog, etc.
   localization/      # msgcat-based i18n (msgs.py holds translations)
-  internal/          # PRIVATE plumbing (no underscore in the name): publisher.py, utility.py.
+  internal/          # PRIVATE plumbing (no underscore in the name): publisher.py, utility.py,
+                     #   positioning.py, configure_delegation.py, busy.py (tkinter busy shim).
                      #   No back-compat guarantee. See "internal/ vs public" below.
   utility.py         # PUBLIC utility funcs: enable_high_dpi_awareness, scale_size
   publisher.py       # deprecation shim -> internal/publisher.py (warns; removed in 3.0)

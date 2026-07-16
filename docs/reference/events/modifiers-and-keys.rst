@@ -27,15 +27,20 @@ Prefix it to the type: ``<Control-c>``, ``<Shift-Button-1>``,
      - The ⌘ Command key (macOS).
    * - ``Option``
      - The ⌥ Option key (macOS).
-   * - ``Meta`` / ``M``
+   * - | ``Meta``
+       | ``M``
      - The Meta key (whichever ``Mod`` maps to it).
-   * - ``Mod1`` … ``Mod5`` / ``M1`` … ``M5``
+   * - | ``Mod1`` … ``Mod5``
+       | ``M1`` … ``M5``
      - A numbered X modifier. Which physical key maps to which number is
        platform-dependent.
-   * - ``Button1`` … ``Button5`` / ``B1`` … ``B5``
+   * - | ``Button1`` … ``Button5``
+       | ``B1`` … ``B5``
      - A mouse button held down — used with ``Motion`` for drags
        (``<B1-Motion>``).
-   * - ``Double`` / ``Triple`` / ``Quadruple``
+   * - | ``Double``
+       | ``Triple``
+       | ``Quadruple``
      - The pattern to repeat 2 / 3 / 4 times in quick succession, close in time
        and space — ``<Double-Button-1>`` is a double-click.
    * - ``Extended``

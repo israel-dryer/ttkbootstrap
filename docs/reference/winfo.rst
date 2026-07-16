@@ -86,17 +86,21 @@ parent (``x``/``y``) and relative to the whole screen (``rootx``/``rooty``).
    * - Method
      - Returns
      - Meaning
-   * - ``winfo_x()`` / ``winfo_y()``
+   * - | ``winfo_x()``
+       | ``winfo_y()``
      - int
      - Top-left position **relative to the parent**.
-   * - ``winfo_rootx()`` / ``winfo_rooty()``
+   * - | ``winfo_rootx()``
+       | ``winfo_rooty()``
      - int
      - Top-left position **relative to the screen** — the value to use when
        placing another window next to this one.
-   * - ``winfo_width()`` / ``winfo_height()``
+   * - | ``winfo_width()``
+       | ``winfo_height()``
      - int
      - The widget's *current* size. See the gotcha below.
-   * - ``winfo_reqwidth()`` / ``winfo_reqheight()``
+   * - | ``winfo_reqwidth()``
+       | ``winfo_reqheight()``
      - int
      - The size the widget *requests* from its geometry manager (its natural
        size before stretching). Valid immediately, without mapping.
@@ -130,7 +134,8 @@ The mouse pointer position and what lies under it, independent of any event.
    * - Method
      - Returns
      - Meaning
-   * - ``winfo_pointerx()`` / ``winfo_pointery()``
+   * - | ``winfo_pointerx()``
+       | ``winfo_pointery()``
      - int
      - Pointer position relative to the screen.
    * - ``winfo_pointerxy()``
@@ -154,10 +159,12 @@ window against the monitor.
    * - Method
      - Returns
      - Meaning
-   * - ``winfo_screenwidth()`` / ``winfo_screenheight()``
+   * - | ``winfo_screenwidth()``
+       | ``winfo_screenheight()``
      - int
      - The screen size in pixels.
-   * - ``winfo_screenmmwidth()`` / ``winfo_screenmmheight()``
+   * - | ``winfo_screenmmwidth()``
+       | ``winfo_screenmmheight()``
      - int
      - The screen size in millimeters — divide against the pixel size for the
        physical DPI.
@@ -168,11 +175,13 @@ window against the monitor.
      - str
      - A string describing the windowing server / OS
        (``"Windows 10.0 26200 Win64"``).
-   * - ``winfo_vrootwidth()`` / ``winfo_vrootheight()``
+   * - | ``winfo_vrootwidth()``
+       | ``winfo_vrootheight()``
      - int
      - The size of the **virtual root** — the bounding box of all monitors on a
        multi-monitor desktop.
-   * - ``winfo_vrootx()`` / ``winfo_vrooty()``
+   * - | ``winfo_vrootx()``
+       | ``winfo_vrooty()``
      - int
      - The virtual root's offset from the screen origin.
 
@@ -214,17 +223,22 @@ listed for completeness.
 
    * - Method
      - Meaning
-   * - ``winfo_depth()`` / ``winfo_screendepth()``
+   * - | ``winfo_depth()``
+       | ``winfo_screendepth()``
      - Bits per pixel of the widget's / screen's visual.
-   * - ``winfo_cells()`` / ``winfo_screencells()``
+   * - | ``winfo_cells()``
+       | ``winfo_screencells()``
      - Number of colormap cells.
-   * - ``winfo_visual()`` / ``winfo_screenvisual()`` / ``winfo_visualid()``
+   * - | ``winfo_visual()``
+       | ``winfo_screenvisual()``
+       | ``winfo_visualid()``
      - The X visual class (``"truecolor"``, …) and its id.
    * - ``winfo_visualsavailable()``
      - The list of visuals the screen supports.
    * - ``winfo_colormapfull()``
      - ``1`` if the widget's colormap is full.
-   * - ``winfo_atom(name)`` / ``winfo_atomname(id)``
+   * - | ``winfo_atom(name)``
+       | ``winfo_atomname(id)``
      - Intern an X11 atom name to its integer id and back.
    * - ``winfo_interps()``
      - The Tk interpreter names registered on the display.

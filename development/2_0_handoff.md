@@ -9,15 +9,21 @@
 
 **Docs Workstream H is content-complete.** The Widgets catalog (all ~29 pages), the
 self-authored API-reference layer, the Geometry + Variables reference sections, the
-usage-guide enrichment pass, and the reference/See-also cross-reference cleanup are
-all **merged into `2.0`**. Full build is green (`.venv/bin/python -m sphinx -b html
--W -q -E docs <out>`, exit 0, 0 warnings); the catalog coverage test passes.
+usage-guide enrichment pass, the reference/See-also cross-reference cleanup, and —
+as of 2026-07-15 — **the How-To band** (audit pass + 3 new recipes + the bell/busy
+split, #1225/#1226) are all **merged into `2.0`**. Full build is green
+(`.venv/bin/python -m sphinx -b html -W -q -E docs <out>`, exit 0, 0 warnings); the
+catalog coverage test passes; suite 684 passed.
 
 **The one remaining docs-H thread is the SCREENSHOT SLICE** (design: `2_0_docs_design.md`
 §7). Everything is staged for it:
 
-- **45 screenshot placeholders** are in place across `docs/` — 28 in `widgets/`, 8
-  feature-guides, 4 foundations, 4 how-to, 1 getting-started. Each is a build-safe
+- **46 screenshot placeholders** are in place across `docs/` — 28 in `widgets/`, 8
+  feature-guides, 4 foundations, 4 how-to, 2 getting-started. **Note:** the five
+  how-to pages added/split on 2026-07-15 (`animate-gif`, `splash-screen`,
+  `application-icon`, `bell`, `busy`) carry **no** placeholder — decide during the
+  slice whether they want one. `splash-screen` and `animate-gif` are the obvious
+  candidates (both are inherently visual). Each existing one is a build-safe
   admonition whose one-line body **IS the capture spec**:
   `.. admonition:: 📷 Screenshot (placeholder)` / `:class: screenshot-placeholder`.
   Find them all with `grep -rl screenshot-placeholder docs --include=*.rst`.
@@ -40,6 +46,53 @@ all **merged into `2.0`**. Full build is green (`.venv/bin/python -m sphinx -b h
 The dated running log below has the full history. Latest entry first.
 
 ---
+
+_Last updated: 2026-07-15 (**Docs HOW-TO BAND — COMPLETE, plus a busy() shim. Both
+MERGED into `2.0`** (#1225 `84b6f78f`, #1226 `c7d10f0d`). Ran the plan in the (now
+deleted) `2_0_docs_howto_handoff.md`. **Method:** the PR-#1222 grounded audit — one
+read-only agent per authored page, each probing every claim and running every
+snippet headlessly, cross-checking the Tcl/Tk 8.6 manuals. It paid off: **every one
+of the 7 pages had a real defect**, several macOS-shaped. Fixes (each re-verified
+before acting): **feedback** — `tk busy` is a documented **no-op on macOS/Aqua**
+(PORTABILITY section, still in Tk 9; reproduced: no `_Busy` window created,
+hit-testing unchanged, yet `busy_status()` reports True) **and** tkinter's busy
+methods are **3.13+** (zero mentions of "busy" anywhere in 3.10's tkinter package),
+though the Tcl command is Tk 8.6 and reachable via `tk.call` on any Python — the
+page had claimed the *opposite* on both counts; **clipboard** — `<Control-c>` isn't
+the copy key on macOS (`<<Copy>>` → `<Mod1-Key-c>`), and `bind_all` on the native
+copy key clobbers the user's Entry/Text selection; **error-handling** — the
+`TclError` example used a bad `bootstyle`, which warns and falls back rather than
+raising (unreachable `except`), the handler must live on the **root** (a Toplevel's
+is never called), and the boundary is callback-vs-setup, not before/after
+`mainloop()`; **multiple-windows** — taught raw `protocol("WM_DELETE_WINDOW")`
+instead of 2.0's public `on_close`, and "reuse a window" broke after ✕
+(`deiconify()` → TclError); **scrollable** — ScrolledFrame never sizes to content
+(`propagate(False)`), has no hbar, and the note warned against a nested frame that
+works while omitting the real Notebook/PanedWindow constraint
+(`add(scroller.container)`); **threads** — the "one rule" gave the wrong mechanism
+(tkinter *marshals* cross-thread calls → clean `RuntimeError`, not corruption);
+**working-with-images** — `compound="none"` documented backwards. **Authored** the 3
+real recipes (animate-gif, splash-screen, application-icon) and **resolved the
+index** (the Foundations-overlapping entries became cross-references; the
+"being written" note dropped). Then, on author review: **"Beep and show busy" was
+split into two how-tos** (`bell.rst` "Ring the system bell" + `busy.rst` "Mark a
+window busy") — one job per recipe; 4 inbound links retargeted, all of which pointed
+at the busy half. **#1226 shims the version gap**: new `internal/busy.py` `BusyMixin`
+delegates to tkinter's methods where they exist and issues the identical `tk.call`
+where they don't (all 16 aliases mirrored), mixed into
+`BootMixin`/`AutoStyleMixin`/`_BaseWindow` — verified byte-identical on a real
+**3.10.11** interpreter vs 3.14; `tests/test_busy_api.py` (+25) includes a test that
+deletes the methods off `tkinter.Misc` to exercise the <3.13 branch on any
+interpreter. **The macOS no-op is deliberately NOT shimmed** — Tk's busy window is a
+*transparent* input shield and Tk has no transparent color
+(`background="transparent"` → TclError), so any emulation is opaque and hides the UI
+it shields; docs state it as a plain platform-support fact + the disable+cursor
+fallback. **Standing lesson (memory-saved):** `event_generate` **bypasses pointer
+hit-testing**, so it can never prove input is blocked — probe with
+`winfo_containing` plus a positive control. **Known-failing, pre-existing on `2.0`
+and unrelated:** `tests/test_menu_api.py::*_off_mac` ×3 assert non-macOS behavior
+and fail on any Mac — not in the CLAUDE.md known-flake list; worth gating. Suite 684
+passed; build green. Prior entry follows.**)_
 
 _Last updated: 2026-07-14 (**Docs REFERENCE-STRUCTURE + CROSS-REFERENCE CLEANUP —
 all MERGED into `2.0`.** Sparked by the observation that catalog pages linked

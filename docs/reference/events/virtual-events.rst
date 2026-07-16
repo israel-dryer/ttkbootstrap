@@ -65,19 +65,24 @@ below has a ``<<Select…>>`` counterpart (e.g. ``<<SelectNextWord>>``) that the
    * - Virtual event
      - Default key
      - Moves the caret
-   * - ``<<PrevChar>>`` / ``<<NextChar>>``
+   * - | ``<<PrevChar>>``
+       | ``<<NextChar>>``
      - ``Left`` / ``Right``
      - one character
-   * - ``<<PrevWord>>`` / ``<<NextWord>>``
+   * - | ``<<PrevWord>>``
+       | ``<<NextWord>>``
      - ``Control-Left`` / ``Control-Right``
      - one word
-   * - ``<<PrevLine>>`` / ``<<NextLine>>``
+   * - | ``<<PrevLine>>``
+       | ``<<NextLine>>``
      - ``Up`` / ``Down``
      - one line
-   * - ``<<PrevPara>>`` / ``<<NextPara>>``
+   * - | ``<<PrevPara>>``
+       | ``<<NextPara>>``
      - ``Control-Up`` / ``Control-Down``
      - one paragraph
-   * - ``<<LineStart>>`` / ``<<LineEnd>>``
+   * - | ``<<LineStart>>``
+       | ``<<LineEnd>>``
      - ``Home`` / ``End``
      - to the line edge
 
@@ -117,7 +122,8 @@ the widget in the handler.
      - ``Notebook`` — the active tab changed.
    * - ``<<TreeviewSelect>>``
      - ``Treeview`` — the selection changed.
-   * - ``<<TreeviewOpen>>`` / ``<<TreeviewClose>>``
+   * - | ``<<TreeviewOpen>>``
+       | ``<<TreeviewClose>>``
      - ``Treeview`` — a node was expanded / collapsed.
    * - ``<<ListboxSelect>>``
      - ``Listbox`` — the selection changed.

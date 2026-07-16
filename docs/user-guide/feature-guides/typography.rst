@@ -89,10 +89,12 @@ loop. These are the fonts ttkbootstrap manages:
    * - ``TkMenuFont``
      - proportional
      - Menu items.
-   * - ``TkCaptionFont`` / ``TkSmallCaptionFont``
+   * - | ``TkCaptionFont``
+       | ``TkSmallCaptionFont``
      - proportional
      - Window and dialog captions.
-   * - ``TkIconFont`` / ``TkTooltipFont``
+   * - | ``TkIconFont``
+       | ``TkTooltipFont``
      - proportional
      - Icon labels and tooltips.
    * - ``TkFixedFont``
