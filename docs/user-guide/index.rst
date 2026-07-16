@@ -186,8 +186,76 @@ Each subsystem, end to end — its concepts and its usage in one place.
 How-To
 ------
 
-Task-focused recipes — common tkinter jobs done the ttkbootstrap way. See the
-:doc:`How-To index <how-to/index>`.
+Task-focused recipes — common tkinter jobs done the ttkbootstrap way.
+
+.. grid:: 1 2 2 2
+   :gutter: 3
+
+   .. grid-item-card:: Show images and icons
+      :link: how-to/working-with-images
+      :link-type: doc
+
+      ``PhotoImage`` and Pillow, the keep-a-reference gotcha, and themed glyphs.
+
+   .. grid-item-card:: Scroll long content
+      :link: how-to/scrollable
+      :link-type: doc
+
+      ``ScrolledFrame`` and ``ScrolledText`` for content that outgrows the window.
+
+   .. grid-item-card:: Open a second window
+      :link: how-to/multiple-windows
+      :link-type: doc
+
+      A second ``Toplevel``, a modal that returns a value, and the close button.
+
+   .. grid-item-card:: Run background work
+      :link: how-to/threads
+      :link-type: doc
+
+      ``after`` and worker threads, updating widgets safely from the main loop.
+
+   .. grid-item-card:: Copy and paste text
+      :link: how-to/clipboard
+      :link-type: doc
+
+      The clipboard methods, the copy shortcut, and the current selection.
+
+   .. grid-item-card:: Handle callback errors
+      :link: how-to/error-handling
+      :link-type: doc
+
+      Take over ``report_callback_exception`` and deal with ``TclError``.
+
+   .. grid-item-card:: Ring the system bell
+      :link: how-to/bell
+      :link-type: doc
+
+      A system beep to flag a rejected action or a finished job.
+
+   .. grid-item-card:: Mark a window busy
+      :link: how-to/busy
+      :link-type: doc
+
+      A wait cursor and a block on clicks while a slow job runs.
+
+   .. grid-item-card:: Animate a GIF
+      :link: how-to/animate-gif
+      :link-type: doc
+
+      Frame-by-frame animation with ``PhotoImage`` and ``after``.
+
+   .. grid-item-card:: Show a splash screen
+      :link: how-to/splash-screen
+      :link-type: doc
+
+      A borderless startup window that hands off to the main one.
+
+   .. grid-item-card:: Set the app icon
+      :link: how-to/application-icon
+      :link-type: doc
+
+      The titlebar and taskbar icon, and the Windows ``.ico`` case.
 
 .. toctree::
    :hidden:
@@ -233,7 +301,6 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way. See the
    :hidden:
    :caption: How-To
 
-   how-to/index
    how-to/working-with-images
    how-to/scrollable
    how-to/multiple-windows

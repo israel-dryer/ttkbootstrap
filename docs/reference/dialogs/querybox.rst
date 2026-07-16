@@ -83,7 +83,8 @@ Pickers
 Files
 -----
 
-These wrap :doc:`tkinter.filedialog </user-guide/how-to/index>`; extra keyword
+These wrap `tkinter.filedialog
+<https://docs.python.org/3/library/dialog.html#module-tkinter.filedialog>`__; extra keyword
 arguments (``initialdir``, ``filetypes``, ``defaultextension``, …) pass straight
 through. A cancelled dialog returns ``None``.
 

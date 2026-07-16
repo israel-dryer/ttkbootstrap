@@ -56,12 +56,17 @@ Pick the method for the buttons your question needs:
 
    * - Method
      - Buttons / use
-   * - ``show_info`` / ``show_warning`` / ``show_error`` / ``show_question``
+   * - | ``show_info``
+       | ``show_warning``
+       | ``show_error``
+       | ``show_question``
      - A message with the matching icon and a single **OK** button by default
        (any of them also accepts a custom ``buttons=`` list).
-   * - ``ok`` / ``okcancel``
+   * - | ``ok``
+       | ``okcancel``
      - Confirm an action (returns ``"OK"`` / ``"Cancel"``).
-   * - ``yesno`` / ``yesnocancel``
+   * - | ``yesno``
+       | ``yesnocancel``
      - A yes/no decision, optionally with a third *Cancel* out.
    * - ``retrycancel``
      - Offer a retry after a failure.
@@ -148,8 +153,10 @@ The full set — every method returns its value or ``None`` on cancel:
      - a ``tkinter.font.Font``.
    * - ``get_color(parent, initialcolor=)``
      - a ``ColorChoice`` (see below).
-   * - ``get_open_filename`` / ``get_open_filenames`` / ``get_save_filename`` /
-       ``get_directory``
+   * - | ``get_open_filename``
+       | ``get_open_filenames``
+       | ``get_save_filename``
+       | ``get_directory``
      - a file path / paths (see *File dialogs*).
 
 The number pickers **validate for you** — a value outside ``minvalue`` /
