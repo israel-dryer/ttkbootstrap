@@ -38,6 +38,7 @@
 | **`LabelFrame` is now the ttk alias (was the classic tk widget)** | API | this doc, below — **not in the migration guide** (author call) |
 | **Bare `outline` renders neutral (was primary)** | Visual | this doc, below |
 | **`@surface` fixed on Checkbutton / Radiobutton (background now paints)** | Fix | this doc, below |
+| **ToolTip popup topmost by default (`topmost=False` opts out)** | New | this doc, below |
 | **`neutral` color** | New | this doc, below |
 | **`ghost` button variant** | New | this doc, below |
 | **`thin` scrollbar variant** | New | this doc, below |
@@ -1842,3 +1843,22 @@ toolbutton/menubutton/entry silently drops the token and falls back to the
 plain style (their builders don't participate in surface naming). Extend per
 demand; the grammar page names only supported cases (button family variants,
 check/radio labels).
+
+## ToolTip popup is topmost by default  *(New / behavior)*
+
+**What.** The tooltip popup `Toplevel` now defaults `topmost=True` (a
+`setdefault` next to the existing `alpha=0.95`), so tips draw above every
+window. `ToolTip(..., topmost=False)` opts out via the existing
+Toplevel-kwargs passthrough (now documented, catalog + reference).
+
+**Why (#1086).** A `-topmost` main window hid its own tooltips on Windows —
+the popup sat below it. Native tooltips are always-on-top (Win32 tooltips are
+`WS_EX_TOPMOST`; aqua help tags float), so topmost *is* the platform-native
+default. Probed: on aqua the tooltip's `help` window class (#1125) already
+floats natively — `-topmost` reads 1 with or without the attribute — so the
+change is a no-op there; Windows/X11 are where the new default lands.
+
+**Accepted edge.** Alt-Tabbing away while a tip is showing (pointer unmoved →
+no `<Leave>`) leaves it briefly floating over the new foreground app until the
+mouse moves. Native tooltips share the property (they mask it with auto-hide
+timeouts, which ours doesn't have).

@@ -57,6 +57,15 @@ or a pair like ``"top left"``:
 A ``ToolTip`` isn't fire-and-forget — ``configure()`` changes its ``text``,
 ``bootstyle``, and other options later, and a visible tip updates in place.
 
+Extra keyword arguments go to the popup window itself. The tip draws above
+every window — like native tooltips — so it stays readable even over a
+``topmost`` main window; pass ``topmost=False`` to keep it above its own
+application only:
+
+.. code-block:: python
+
+   ToolTip(save, text="Save the file", topmost=False)
+
 Color
 -----
 

@@ -52,6 +52,12 @@ Options are passed to the constructor and can be changed later with
      - Placement relative to the widget — a space-separated combination of
        ``"left"``, ``"right"``, ``"top"``, ``"bottom"``, ``"center"`` (e.g.
        ``"top left"``). Default ``None`` (offset from the pointer).
+   * - ``**kwargs``
+     - ``any``
+     - Passed to the popup :class:`~ttkbootstrap.Toplevel` — e.g. ``alpha``
+       (default ``0.95``) and ``topmost``. ``topmost`` defaults to ``True`` so
+       the tip draws above every window, matching native tooltips; pass
+       ``topmost=False`` to keep it above its own application only.
 
 Methods
 -------

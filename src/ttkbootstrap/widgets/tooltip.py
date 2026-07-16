@@ -106,6 +106,9 @@ class ToolTip:
 
             **kwargs (Dict):
                 Other keyword arguments passed to the `Toplevel` window.
+                `topmost` defaults to True so the tooltip draws above every
+                window, matching native tooltips (pass `topmost=False` to
+                keep it above its own application only).
         """
         self.widget = widget
         self.text = text
@@ -128,6 +131,11 @@ class ToolTip:
         kwargs["window_type"] = "tooltip"
         if "alpha" not in kwargs:
             kwargs["alpha"] = 0.95
+        # Native tooltips draw above every window (Win32 tooltips are TOPMOST;
+        # aqua help tags float); without this, a `-topmost` main window hides
+        # its own tooltips (#1086).
+        if "topmost" not in kwargs:
+            kwargs["topmost"] = True
         self.toplevel_kwargs = kwargs
 
         # the live popup label, held so a visible tooltip can be reconfigured

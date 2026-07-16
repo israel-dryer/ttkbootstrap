@@ -199,3 +199,21 @@ def test_configure_reconfigures_live_popup(root):
     assert tip._label.cget("text") == "updated"
     tip.hide_tip()
     assert tip.toplevel is None
+
+def test_tooltip_topmost_default_and_optout(root):
+    """The popup is topmost by default, matching native tooltips (#1086);
+    `topmost=False` opts out. On aqua the tooltip window *class* floats
+    natively, so the opt-out is asserted at the kwargs seam, not the
+    attribute."""
+    btn = ttk.Button(root, text="x")
+    btn.pack()
+
+    tip = ToolTip(btn, text="tip")
+    assert tip.toplevel_kwargs["topmost"] is True
+    tip.show_tip()
+    root.update_idletasks()
+    assert int(tip.toplevel.attributes("-topmost")) == 1
+    tip.hide_tip()
+
+    plain = ToolTip(btn, text="tip", topmost=False)
+    assert plain.toplevel_kwargs["topmost"] is False
