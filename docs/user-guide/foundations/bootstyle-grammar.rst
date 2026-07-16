@@ -77,11 +77,12 @@ Add a **variant** to change visual weight. The color still leads:
    The same primary color as solid, outline, link, and ghost buttons in a row —
    showing the four visual weights at a glance.
 
-You can drop the color as well — a bare ``outline`` button uses ``primary``:
+You can drop the color as well — with no color token, every button-family
+variant keeps the quiet ``neutral`` look:
 
 .. code-block:: python
 
-   ttk.Button(app, text="Outline", bootstyle="outline")   # primary outline
+   ttk.Button(app, text="Outline", bootstyle="outline")   # neutral outline
 
 Point a control at a **surface** with an ``@`` token so it blends on a card or an
 accent bar instead of the window background:

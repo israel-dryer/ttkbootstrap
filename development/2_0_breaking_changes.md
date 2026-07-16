@@ -36,6 +36,7 @@
 | **Fluent geometry (`pack`/`grid`/`place` return the widget)** | New | this doc, below |
 | **`TkLabel` blessed tk.Label + ColorChooser default-mode fix** | New/Fix | this doc, below |
 | **`LabelFrame` is now the ttk alias (was the classic tk widget)** | API | this doc, below — **not in the migration guide** (author call) |
+| **Bare `outline` renders neutral (was primary)** | Visual | this doc, below |
 | **`neutral` color** | New | this doc, below |
 | **`ghost` button variant** | New | this doc, below |
 | **`thin` scrollbar variant** | New | this doc, below |
@@ -1798,3 +1799,28 @@ is untouched.
 capital-F export was a side effect of the blanket tk re-exports, not a
 sanctioned API; users of the name get the themed widget transparently, and
 classic-only options fail loudly. Don't re-add a migration section for it.
+
+## Bare `outline` renders neutral (was primary)  *(Visual / small API)*
+
+**What.** `bootstyle="outline"` with no color token — on Button, Menubutton, and
+the `toolbutton` variant — now builds the **neutral** outline look under the
+unprefixed style name (`Outline.TButton` etc.) instead of falling back to
+`primary`. Named colors (`primary outline`, …) are unchanged.
+
+**Why.** #1098/#1099 moved every *bare* button-family style onto the quiet
+neutral look (bare solid → neutral; bare ghost/link → body text). Bare `outline`
+was the one variant still jumping to primary — an inconsistency surfaced while
+verifying the bootstyle-grammar docs page, which had (accurately) documented the
+special case. The grammar now teaches one rule: drop the color and any
+button-family variant renders neutral; name a color to accent it.
+
+**Mechanics.** The three `_build_neutral_outline_*` helpers take the final style
+name from the caller, so the bare and `neutral`-prefixed names build the same
+look; `builders/button.py`, `builders/menubutton.py`, `builders/toolbutton.py`.
+Toggles (`round`/`square`) keep their primary fallback — a switch's accent
+carries the on-state and is not part of this cleanup.
+
+**Docs.** `foundations/bootstyle-grammar.rst` updated ("with no color token,
+every button-family variant keeps the quiet neutral look"). Not added to the
+migration guide — same author call as the `LabelFrame` alias: a visual-default
+shift users absorb, not an API break to migrate.
