@@ -38,8 +38,10 @@ Interaction and data
   current selection.
 - :doc:`Handle callback errors <error-handling>` — take over
   ``report_callback_exception`` and deal with ``TclError``.
-- :doc:`Beep and show busy <feedback>` — a system beep and a busy state that
-  blocks a window while it works.
+- :doc:`Ring the system bell <bell>` — a system beep to flag a rejected action
+  or a finished job.
+- :doc:`Mark a window busy <busy>` — a wait cursor and a block on clicks while
+  a slow job runs.
 
 Presentation
 ------------

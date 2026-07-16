@@ -1,27 +1,5 @@
-Beep and show busy
-==================
-
-Two small built-in ways to tell the user something happened: a beep for
-attention, and a busy state that blocks a window while it works.
-
-Beep with ``bell``
-------------------
-
-``bell()`` rings the system alert sound — a quick way to flag an invalid action
-or a finished job. Every widget has it:
-
-.. code-block:: python
-
-   app.bell()
-
-It plays the platform's default alert; there is no volume or tone control. Use it
-sparingly — a beep on every keystroke gets old fast.
-
-Our dialogs and toasts can ring it for you: pass ``alert=True`` to
-``ToastNotification``, and ``Messagebox`` error dialogs already do.
-
 Mark a window busy
-------------------
+==================
 
 For a slow operation you want to both **show a wait cursor** and **stop the user
 clicking** meanwhile. ``busy()`` does both: it covers the widget with a
@@ -40,8 +18,11 @@ runs, so without it the user sees nothing before the blocking work starts —
 and Tk's own docs recommend a full ``update`` here, to guarantee the hold takes
 effect before any queued clicks are dispatched.
 
-Always release it — even on error — by pairing the calls with ``try``/
-``finally``:
+Always release it
+-----------------
+
+Pair the calls with ``try``/``finally`` so an exception can't strand the app
+looking busy forever:
 
 .. code-block:: python
 
@@ -62,10 +43,9 @@ keep a slow action from being started twice:
 
 .. warning::
 
-   **The busy overlay does nothing on macOS.** Tk's busy command has no effect
-   under Aqua. The calls succeed and ``busy_status()`` still reports ``True``,
-   but no overlay is drawn and no input is blocked — it fails silently rather
-   than raising.
+   **The busy overlay is not supported on macOS.** The calls succeed and
+   ``busy_status()`` still reports ``True``, but nothing is drawn and nothing is
+   blocked — so it fails quietly rather than raising.
 
    On macOS, get the same effect by disabling the controls that start the work
    and setting the cursor yourself:
@@ -123,6 +103,8 @@ busy state is up.
 
    - :doc:`Run background work <threads>` — the thread-and-``after`` pattern for
      work too long to block on.
+   - :doc:`Ring the system bell <bell>` — the other half of telling the user what
+     is going on.
    - :doc:`Windows guide </user-guide/feature-guides/windows>` — window-level
      behavior.
 
