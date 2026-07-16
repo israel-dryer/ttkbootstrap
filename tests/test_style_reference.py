@@ -41,6 +41,19 @@ def _included_families():
     return families
 
 
+def _secondary_includes():
+    """Partials a page folds in *after* its first one, i.e. as a variant section.
+
+    Derived from the `.. include::` order on each API page, which is what
+    actually determines the heading level the partial needs.
+    """
+    nested = set()
+    for rst in _API_DIR.glob("*.rst"):
+        found = _INCLUDE_RE.findall(rst.read_text(encoding="utf-8"))
+        nested.update(found[1:])
+    return nested
+
+
 def test_style_reference_families_nonempty():
     gen = _load_generator()
     families = gen.style_reference_families()
@@ -69,4 +82,33 @@ def test_every_partial_is_included_by_an_api_page():
             f"styling partial '{family}' is not `.. include::`d by any "
             "docs/reference/api/*.rst page; fold it into the relevant widget's "
             "Styling options section."
+        )
+
+
+def test_nested_partials_match_the_pages():
+    # A partial included *after* another one on the same page renders as a
+    # variant section underneath it, so its subsections must be a heading level
+    # deeper -- otherwise they repeat the parent's headings at the same level and
+    # read as duplicates. Keep the generator's set and the pages in step.
+    gen = _load_generator()
+    assert gen.NESTED_PARTIALS == _secondary_includes(), (
+        "tools/generate_style_reference.py NESTED_PARTIALS disagrees with the "
+        "`.. include::` order in docs/reference/api/. Update the set and "
+        "regenerate with `python tools/generate_style_reference.py`."
+    )
+
+
+def test_nested_partials_use_a_deeper_heading_rule():
+    # The mechanical consequence of the above: nested partials underline with
+    # `^`, standalone ones with `~`.
+    gen = _load_generator()
+    for family in gen.style_reference_families():
+        body = (_PARTIAL_DIR / f"{family}.rst").read_text(encoding="utf-8")
+        rules = {line[0] for line in body.split("\n")
+                 if line and set(line) in ({"~"}, {"^"})}
+        expected = "^" if family in gen.NESTED_PARTIALS else "~"
+        assert rules == {expected}, (
+            f"styling partial '{family}' underlines with {sorted(rules)}; "
+            f"expected only '{expected}'. Regenerate with "
+            "`python tools/generate_style_reference.py`."
         )
