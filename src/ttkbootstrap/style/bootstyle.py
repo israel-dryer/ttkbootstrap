@@ -23,6 +23,7 @@ from ttkbootstrap.constants import (
     BootStyle,
     surface_segment,
 )
+from ttkbootstrap.internal.busy import BusyMixin
 from ttkbootstrap.style import _compat
 from ttkbootstrap.style.engine import Style
 from ttkbootstrap.style.builders_ttk import StyleBuilderTTK
@@ -973,7 +974,7 @@ class FluentGeometryMixin:
     place = place_configure
 
 
-class BootMixin(FluentGeometryMixin):
+class BootMixin(FluentGeometryMixin, BusyMixin):
     """Mixin that adds the ``bootstyle`` API to a ttk widget class.
 
     Concrete subclasses such as ``class Button(BootMixin, ttk.Button)`` are
@@ -1141,7 +1142,7 @@ class BootMixin(FluentGeometryMixin):
         return super().__getitem__(key)
 
 
-class AutoStyleMixin(FluentGeometryMixin):
+class AutoStyleMixin(FluentGeometryMixin, BusyMixin):
     """Mixin that auto-applies the theme to a legacy ``tk`` widget class.
 
     The tk counterpart to `BootMixin`. Legacy tk widgets have no ttk style;

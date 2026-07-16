@@ -16,6 +16,7 @@ from typing import Any, Callable, Optional, Tuple, Union
 from ttkbootstrap import utils
 from ttkbootstrap.constants import *
 from ttkbootstrap.internal import positioning
+from ttkbootstrap.internal.busy import BusyMixin
 from ttkbootstrap.style import Style, Bootstyle
 from ttkbootstrap.style._compat import normalize_window_kwargs
 
@@ -185,7 +186,7 @@ def on_select_all(event: tkinter.Event) -> None:
         widget.icursor(END)
 
 
-class _BaseWindow:
+class _BaseWindow(BusyMixin):
     """Window logic shared by `App` (root) and `Toplevel` (secondary).
 
     Used as a mixin alongside `tkinter.Tk`/`tkinter.Toplevel`, so both classes
