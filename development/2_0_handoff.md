@@ -10,10 +10,14 @@
 **Docs Workstream H is content-complete.** The Widgets catalog (all ~29 pages), the
 self-authored API-reference layer, the Geometry + Variables reference sections, the
 usage-guide enrichment pass, the reference/See-also cross-reference cleanup, and —
-as of 2026-07-15 — **the How-To band** (audit pass + 3 new recipes + the bell/busy
-split, #1225/#1226) are all **merged into `2.0`**. Full build is green
+as of 2026-07-15 — **the How-To band** (#1225/#1226) plus a **review-driven batch**
+(#1227–#1233: the bell/busy split + index removal, variant-styling nesting, the
+`busy()` shim, `command`-fires-on-invoke, the widget-model configuration + tree
+sections, the 41→8 Misc reference audit, and the new **What tkinter wraps**
+Foundations page) are all **merged into `2.0`**. Full build is green
 (`.venv/bin/python -m sphinx -b html -W -q -E docs <out>`, exit 0, 0 warnings); the
-catalog coverage test passes; suite 684 passed.
+catalog coverage test passes; **suite 689 passed, 0 failed — green on macOS for the
+first time** (#1229 made the menu `*_off_mac` tests platform-independent).
 
 **The one remaining docs-H thread is the SCREENSHOT SLICE** (design: `2_0_docs_design.md`
 §7). Everything is staged for it:
@@ -46,6 +50,76 @@ catalog coverage test passes; suite 684 passed.
 The dated running log below has the full history. Latest entry first.
 
 ---
+
+_Last updated: 2026-07-15b (**AUTHOR-REVIEW BATCH — #1227–#1233, all MERGED into
+`2.0`.** Everything here came from the author reading the merged How-To band and
+pulling threads; each item is listed with what the probe actually showed, because
+in almost every case the plausible answer was the wrong one. **#1227** dropped the
+`how-to/index` page (the only band index — getting-started/foundations/
+feature-guides have none; it duplicated the sidebar and invented 3 buckets for 11
+recipes), unslashed **32 list-table cells** onto rST line blocks, and closed out
+the how-to handoff; deleting the index exposed a dead link (`querybox.rst` pointed
+"tkinter.filedialog" at `/user-guide/how-to/index`). **#1228** fixed duplicated
+**Styling options** headings on Button/Checkbutton: those pages fold in *two*
+generated partials and every partial carries the same 5 headings, so all 5
+rendered twice at h3 separated only by a bold paragraph. Content was NOT duplicated
+(mapping/layout/states differ; checkbutton-vs-toggle even differ on options) — the
+defect was structural, fixed by rendering nested partials one level deeper (`^` vs
+`~`) under a real heading; `NESTED_PARTIALS` is guarded by two tests derived from
+the `.. include::` order, **both verified to fail** when the set is wrong.
+**#1229** made the menu `*_off_mac` tests force the windowing-system probe
+(`_force_off_aqua`, mirroring the existing `_force_aqua`) instead of trusting the
+host — they had failed on every Mac forever. Forcing beat `skipif`: under skipif a
+macOS dev runs *neither* branch. **Suite is now 689/0 on macOS.** **#1230**
+corrected `command` semantics on radiobutton+checkbutton (catalog *and* reference):
+it fires on **invoke**, not on selection change. Probed: `size.set("large")`
+selects without firing; invoking the *already-selected* button fires without a
+change — so the old wording was wrong in both directions. Matches the Tk manual
+("evaluate whenever the widget is invoked"). Space also invokes, so the docs say
+"invoked", not "clicked". **#1231/#1232** reworked **the widget model**: the
+configuration patterns are now explicit (configure/cget/`[]` as interchangeable
+spellings; a widget is NOT a dict; `config` is an older alias; keys()/no-arg
+configure() dict/`configure("opt")` spec) with a new **What comes back** section
+(`cget("width")`→int even when set from `"8"`, `padding`→tuple, and
+`command`/`textvariable` → **Tk's name, not your object**); plus **Walking the
+tree** (`master` is the object, `winfo_parent()` is a *string*, `nametowidget()`
+converts back, `children` is a **dict attribute** not a method, `winfo_children()`
+does **not** recurse). Probing corrected two bugs on `capabilities/configuration.rst`
+— `cget` was documented "always as a string from Tk; cast as needed" (false: int
+and tuple come back, and Tk normalizes width to int for you) and `configure`'s
+`:returns:` never mentioned the **no-arg dict**, its most-used form. **#1232 also
+closed the reference audit: 41 → 8** of `tkinter.Misc`'s 156 public methods. New
+`capabilities/busy.rst` (**a hole we made ourselves in #1226**: 16 aliases shipped,
+3 documented, in a how-to, no reference page) and new `capabilities/interpreter.rst`
+(the author's "base widget page" idea — the homeless methods shared a real theme:
+they all cross the Python↔Tcl boundary — `getboolean`/`getint`/`getdouble`,
+`register`/`deletecommand` (what `validatecommand` uses), `info_patchlevel` (a
+version *tuple*)). Asymmetric gaps filled: `after_info`, `unbind_all`/
+`unbind_class`, `selection_handle`, `quit` (verified `mainloop` returns, widgets
+survive, loop re-enters), `image_types`, and `event_add`/`event_delete`/`event_info`
+— bind.rst had *promised* "their options live in the Events reference" and the
+Events reference never specced them. The **option database** got a brief mention +
+Tk-manual link (author's call: not ours to teach, but the tk widgets make it
+reachable); probing corrected the draft — it can't reach ttk widgets at all, and on
+the tk widgets **our own theming overrides it** (`ttk.Text` reads `#ffffff` despite
+`option_add("*Text.background", …)`; only `autostyle=False` lets it through).
+Remaining 8 are deliberate: `getvar`/`setvar` (Variables guide), `propagate`/
+`slaves` (bare aliases), `send`/`tk_bisque`/`tk_setPalette`/`tk_strictMotif`
+(legacy). **#1233** added the Foundations page **What tkinter wraps** — the docs
+leaned on the Tcl relationship everywhere (`TclError` across 8 pages, a dash the
+reader never wrote, `bad window path name`, "named Tcl variable", "a Tcl
+interpreter belongs to the thread that created it", msgcat) and explained it
+nowhere (`how-a-tkinter-app-runs` never says "Tcl"). Scope is the **seam, not
+Tcl**; spine is that a widget *is* a Tcl command named by its path
+(`app.tk.call(str(save), "cget", "-text")` == `save.cget("text")`), from which
+`invalid command name`, `unknown option "-nope"`, `PY_VAR0` and the
+callback-is-a-name all follow; ends with a table translating the TclErrors readers
+hit. Placed **after** the-widget-model deliberately. **PROCESS NOTE:** #1231 was
+reported merged with work it did not contain — a `checkout -b … || checkout …`
+fallback silently left the commits on a second branch while `git push origin
+<name>` pushed a *different* ref. Recovered intact as #1232. Verify
+`git branch --show-current` before pushing; and note the Misc audit is what caught
+it (it would have read 41, not 8). Prior entry follows.**)_
 
 _Last updated: 2026-07-15 (**Docs HOW-TO BAND — COMPLETE, plus a busy() shim. Both
 MERGED into `2.0`** (#1225 `84b6f78f`, #1226 `c7d10f0d`). Ran the plan in the (now

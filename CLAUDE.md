@@ -341,7 +341,15 @@ Feature guides · How-To — **there is NO "Concepts" band** (dissolved: styling
 essentials → Fundamentals; deep styling/theming → Feature guides). **Variables &
 events are FEATURES** (Foundations gives the on-ramp; robust `Variables`/`Events`
 feature guides own the depth). Author was firm: **teach layout/mechanics
-BY BUILDING, never option-tours.** The full IA (charters, §14 curriculum map,
+BY BUILDING, never option-tours.** **More standing rules (2026-07-15 batch):**
+**one job per How-To** (that split "Beep and show busy" in two); **no band index
+pages** (only How-To had one — the sidebar + the user-guide cards already do it);
+**don't `/`-join items in a table cell** — one per line via an rST line block
+(prose slashes are fine: *"returns "OK" / "Cancel""* reads well in a sentence);
+**state what a thing IS, not what it isn't** — don't write defensively at a bug you
+just found (the macOS busy limit is "not supported on macOS", full stop; the
+rationale for why it can't be emulated belongs in git, not the page — CLAUDE.md's
+comment convention applies to docs too). The full IA (charters, §14 curriculum map,
 tkinter-surface coverage audit + supersession map, screenshot-placeholder
 convention) lives in `development/2_0_docs_design.md`. **NEXT (content authoring,
 fresh branch off `2.0`):** the **Build-your-first-app** tutorial
@@ -364,7 +372,9 @@ grounding discipline, build cmd, done/remaining, PR-stack state, deferred ideas)
 in **`development/2_0_docs_api_reference.md` — read it first to continue this
 work.** Headlines: a **Capabilities** section (`docs/reference/capabilities/`, one
 spec page per Tcl/Tk-manual area — configuration/pack/grid/place/stacking/focus/
-grab/after/lifecycle/clipboard/selection, with events+winfo folded in) plus
+grab/after/lifecycle/clipboard/selection, with events+winfo folded in; `busy` and
+`interpreter` were added later by the #1232 audit, and pack/grid/place/stacking
+have since moved to the top-level Geometry section) plus
 **per-widget API pages** (`docs/reference/api/<w>.rst`, options tables +
 `py:method` specs). **Done:** the Capabilities section + the tk pages
 Text/Canvas/Listbox/Menu. **Remaining:** the trivial tk containers (Tk/TkFrame/
@@ -427,9 +437,47 @@ shimmed** (Tk's busy window is a *transparent* input shield; Tk has no transpare
 color, so any emulation is opaque and hides the UI) — docs state it as a plain
 platform fact plus the disable+cursor fallback. **Standing lesson (memory-saved):**
 `event_generate` **bypasses pointer hit-testing** and can never prove input is
-blocked — probe with `winfo_containing` + a positive control. **Pre-existing on
-`2.0`, unrelated:** `tests/test_menu_api.py::*_off_mac` ×3 fail on any Mac (they
-assert non-macOS behavior) — not in the known-flake list; worth gating. Suite 684.
+blocked — probe with `winfo_containing` + a positive control. **An author-review
+batch then merged (#1227–#1233)**, all driven by the author reading the shipped
+docs; in nearly every case the plausible answer was wrong and only a probe settled
+it: #1227 **dropped `how-to/index`** (the only band index; it duplicated the sidebar
+and invented 3 buckets) + **unslashed 32 list-table cells** onto rST line blocks;
+#1228 **nested the variant Styling-options sections** on Button/Checkbutton (two
+generated partials × the same 5 headings had rendered every heading twice at h3 —
+structural, not duplicated content; nested partials now render at `^`, guarded by
+two tests derived from the `.. include::` order); #1229 made the menu `*_off_mac`
+tests **force the windowing-system probe** rather than trust the host (**suite is
+now 689/0 on macOS** — forcing beats `skipif`, which would leave a Mac dev running
+neither branch); #1230 fixed **`command` fires on invoke, not on selection change**
+(probed: `var.set()` selects without firing; re-invoking the already-selected button
+fires without a change — wrong in *both* directions; Space invokes too, so the docs
+say "invoked"); #1231/#1232 reworked **the widget model** — explicit
+configure/cget/`[]` patterns (a widget is NOT a dict; `config` is an older alias),
+a new **What comes back** section (`cget("width")`→int even from `"8"`;
+`command`/`textvariable` → **Tk's name, not your object**), and **Walking the tree**
+(`master` is the object, `winfo_parent()` a *string*, `nametowidget()` converts,
+`children` is a **dict attribute**, `winfo_children()` does **not** recurse);
+#1232 also closed a **reference audit of `tkinter.Misc`: 41 → 8 undocumented** —
+new `capabilities/busy.rst` (a hole we made in #1226: 16 aliases shipped, 3
+documented, no reference page) and `capabilities/interpreter.rst` (the homeless
+methods shared a theme — they all cross the Python↔Tcl boundary), plus `after_info`,
+`unbind_all`/`unbind_class`, `selection_handle`, `quit`, `image_types`, and
+`event_add`/`event_delete`/`event_info` (bind.rst had *promised* the Events
+reference specced them; it didn't). The **option database** got a brief mention +
+Tk-manual link (not ours to teach, but the tk widgets make it reachable) — probing
+corrected the draft: it can't reach ttk widgets at all, and on tk widgets **our own
+theming overrides it** (only `autostyle=False` lets it through). Remaining 8 are
+deliberate (`getvar`/`setvar` → Variables guide; `propagate`/`slaves` aliases; 4
+legacy). #1233 added the Foundations page **What tkinter wraps** — the docs leaned
+on the Tcl seam everywhere (`TclError` across 8 pages, a dash the reader never
+wrote, `bad window path name`, "named Tcl variable") and explained it nowhere; its
+scope is the **seam, not Tcl**, spined on `app.tk.call(str(w), "cget", "-text")`
+== `w.cget("text")`, placed **after** the-widget-model. **Two corrections to earlier
+CLAUDE.md claims:** the menu `*_off_mac` failures are **fixed** (not "worth
+gating"), and suite is **689**. **PROCESS NOTE:** a `checkout -b … || checkout …`
+fallback once left commits on a second branch while `git push origin <name>` pushed
+a different ref — #1231 merged without the work reported in it (recovered as
+#1232). **Verify `git branch --show-current` before pushing.**
 **NEXT docs-H thread:** the deferred **screenshot slice** (46 placeholders across
 catalog + guides; the 5 new/split how-to pages have none — decide during the slice;
 capture tooling is Windows-canonical, so postponed on macOS), plus optional Track B
