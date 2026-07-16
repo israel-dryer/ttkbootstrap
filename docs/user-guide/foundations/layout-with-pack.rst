@@ -81,7 +81,8 @@ That's the distinction worth remembering:
 
 The other options: ``anchor`` positions a widget within its space when it isn't
 filling (``anchor="w"`` left-aligns), ``padx``/``pady`` add space outside it, and
-``ipadx``/``ipady`` inside it. See the :doc:`Pack reference
+``ipadx``/``ipady`` inside it — :ref:`Spacing <arranging-spacing>` on the
+Arranging widgets page maps the spacing layers. See the :doc:`Pack reference
 </reference/geometry/pack>`.
 
 Step 4 — combine managers by nesting frames
