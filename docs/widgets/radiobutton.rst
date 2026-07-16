@@ -40,8 +40,8 @@ button.
 Reacting to a choice
 --------------------
 
-To run code the moment the selection changes, pass ``command=`` — it fires on the
-button that becomes selected:
+To run code when the user picks an option, pass ``command=`` — it fires when that
+button is **invoked**: clicked, or activated with :kbd:`Space` while focused.
 
 .. code-block:: python
 
@@ -49,6 +49,12 @@ button that becomes selected:
        print("chose", size.get())
 
    ttk.Radiobutton(app, text="Small", variable=size, value="small", command=on_choice)
+
+To react to the choice however it changes, trace the variable instead:
+
+.. code-block:: python
+
+   size.trace_add("write", lambda *_: print("size is now", size.get()))
 
 The toolbutton look
 -------------------

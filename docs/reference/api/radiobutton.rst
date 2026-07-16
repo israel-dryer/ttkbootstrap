@@ -48,7 +48,8 @@ Each option can be set in the constructor and changed later with ``configure()``
      - The value written to ``variable`` when this button is selected.
    * - ``command``
      - ``callable``
-     - The function called when this button is selected.
+     - The function called when this button is *invoked* — clicked, or activated
+       with :kbd:`Space`.
    * - ``image``
      - ``PhotoImage``
      - An image to display in place of, or beside, the text.

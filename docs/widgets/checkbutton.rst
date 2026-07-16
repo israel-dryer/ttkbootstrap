@@ -31,8 +31,9 @@ Bind the checkbutton to a ``BooleanVar`` with ``variable=``. The variable is
 
    app.mainloop()
 
-To run code the moment it is toggled, pass ``command=`` — it fires on each change,
-after the variable has updated:
+To run code when the user toggles it, pass ``command=`` — it fires when the
+checkbutton is **invoked** (clicked, or activated with :kbd:`Space` while
+focused), after the variable has updated, so it can read the new value:
 
 .. code-block:: python
 
@@ -40,6 +41,12 @@ after the variable has updated:
        print("now", agree.get())
 
    ttk.Checkbutton(app, text="Notifications", variable=agree, command=on_toggle)
+
+To react to the value however it changes, trace the variable instead:
+
+.. code-block:: python
+
+   agree.trace_add("write", lambda *_: print("now", agree.get()))
 
 Switch and toolbutton looks
 ---------------------------
