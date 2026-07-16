@@ -68,6 +68,13 @@ respond to input, and how ttkbootstrap styles them.
 
       The widget tree, options (``configure``/``cget``), and ttk states.
 
+   .. grid-item-card:: What tkinter wraps
+      :link: foundations/what-tkinter-wraps
+      :link-type: doc
+
+      The Tcl/Tk layer underneath — path names, dashed options, and how to read
+      a ``TclError``.
+
    .. grid-item-card:: Arranging widgets
       :link: foundations/arranging-widgets
       :link-type: doc
@@ -273,6 +280,7 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way.
 
    foundations/how-a-tkinter-app-runs
    foundations/the-widget-model
+   foundations/what-tkinter-wraps
    foundations/arranging-widgets
    foundations/layout-with-grid
    foundations/layout-with-pack

@@ -165,6 +165,8 @@ spelling you use:
 
    btn.cget("nope")     # TclError: unknown option "-nope"
 
+.. _widget-model-what-comes-back:
+
 What comes back
 ~~~~~~~~~~~~~~~
 
