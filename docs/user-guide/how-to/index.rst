@@ -1,23 +1,21 @@
 How-To
 ======
 
-.. note::
-
-   The How-To section is being written for 2.0. Each recipe below will become
-   its own page as it is authored; this page lists the planned set.
-
 Short, task-focused recipes for common jobs — the everyday tkinter tasks a
 newcomer arrives needing, written the ttkbootstrap way (ttkbootstrap widgets and
 idioms throughout, with links to the :doc:`Reference </reference/index>` for the
-full API). This band absorbs the recipes from the old cookbook.
+full API).
 
 Building interfaces
 -------------------
 
-- **Lay out widgets** — ``pack``, ``grid``, and ``place``, and when to reach for
-  each (uses the fluent geometry helpers).
-- **Wire events and variables** — ``bind``, ``command=``, and the tk variable
-  classes (``StringVar``/``IntVar``/…).
+- **Lay out widgets** — for ``pack``, ``grid``, and ``place``, and when to reach
+  for each, see :doc:`Arranging widgets
+  </user-guide/foundations/arranging-widgets>`.
+- **Wire events and variables** — for ``bind``, ``command=``, and the variable
+  classes, see :doc:`Events and callbacks
+  </user-guide/foundations/events-and-callbacks>` and the
+  :doc:`Variables guide </user-guide/feature-guides/variables>`.
 - **Menus** — for a menu bar, submenus, context menus, and the cross-platform
   macOS application menu, see the :doc:`Menus guide </user-guide/feature-guides/menus>`.
 - :doc:`Show images and icons <working-with-images>` — ``PhotoImage`` and Pillow,
@@ -30,7 +28,8 @@ Interaction and data
 
 - **Message boxes and dialogs** — for ``Messagebox``/``Querybox`` and the shipped
   pickers, see the :doc:`Dialogs guide </user-guide/feature-guides/dialogs>`.
-- **Validate a form** — attach validation rules and read the result.
+- **Validate a form** — for attaching validation rules and reading the result,
+  see the :doc:`Validation guide </user-guide/feature-guides/validation>`.
 - :doc:`Open a second window <multiple-windows>` — a second ``Toplevel``, a modal
   dialog that returns a value, and the close button.
 - :doc:`Run background work <threads>` — ``after`` and worker threads, updating
@@ -39,13 +38,16 @@ Interaction and data
   current selection.
 - :doc:`Handle callback errors <error-handling>` — take over
   ``report_callback_exception`` and deal with ``TclError``.
-- :doc:`Beep and show busy <feedback>` — a system beep and a busy overlay that
-  blocks a window while it works.
+- :doc:`Ring the system bell <bell>` — a system beep to flag a rejected action
+  or a finished job.
+- :doc:`Mark a window busy <busy>` — a wait cursor and a block on clicks while
+  a slow job runs.
 
 Presentation
 ------------
 
-- **Animate a GIF** *(salvaged from the cookbook)* — frame-by-frame animation
-  with ``PhotoImage``.
-- **Splash screen** — a borderless startup window with ``window_type``.
-- **Application icon** — set the window/taskbar icon.
+- :doc:`Animate a GIF <animate-gif>` — frame-by-frame animation with
+  ``PhotoImage`` and ``after``.
+- :doc:`Show a splash screen <splash-screen>` — a borderless startup window that
+  hands off to the main one.
+- :doc:`Set the app icon <application-icon>` — the titlebar and taskbar icon.

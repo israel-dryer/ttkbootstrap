@@ -66,7 +66,7 @@ time freezes the whole UI — nothing redraws or responds until it returns:
 The fix is never to do long work directly in a callback. Break it into small
 steps scheduled with ``after`` (below), or run it on a background thread and send
 the result back to the loop. For a quick "working…" state while a short step
-blocks, see :doc:`Beep and show busy </user-guide/how-to/feedback>`.
+blocks, see :doc:`Mark a window busy </user-guide/how-to/busy>`.
 
 Scheduling with ``after``
 -------------------------

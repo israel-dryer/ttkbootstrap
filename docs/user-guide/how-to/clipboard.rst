@@ -38,7 +38,15 @@ Read what is on the clipboard with ``clipboard_get``:
       except TclError:
           text = ""
 
-A copy action, wired to a button or a shortcut, is just those two calls:
+.. note::
+
+   On Linux the clipboard belongs to the app that set it, so what you copy is
+   typically gone once your app exits — unless the user runs a clipboard manager
+   that holds onto it. Windows and macOS hand the text to the system, where it
+   outlives the process. Nothing to code around; just don't rely on a copy
+   surviving your own shutdown on Linux.
+
+A copy action, wired to a button, is just those two calls:
 
 .. code-block:: python
 
@@ -47,7 +55,22 @@ A copy action, wired to a button or a shortcut, is just those two calls:
        app.clipboard_append(result_var.get())
 
    ttk.Button(app, text="Copy", command=copy_result, bootstyle="secondary").pack()
-   app.bind_all("<Control-c>", lambda e: copy_result())
+
+To put it on a keyboard shortcut too, pick the key for the platform — macOS
+copies with **Command-c**, Windows and Linux with **Control-c**:
+
+.. code-block:: python
+
+   copy_key = "<Command-c>" if ttk.windowing_system(app) == "aqua" else "<Control-c>"
+   app.bind(copy_key, lambda e: copy_result())
+
+.. warning::
+
+   Bind the shortcut on a specific widget or frame, not with ``bind_all``. The
+   copy key is already the native copy gesture inside every Entry and Text —
+   ``bind_all`` fires on top of that handling, so a user who selects text in a
+   field and copies it gets your value on the clipboard instead of their
+   selection.
 
 The current selection
 ---------------------
@@ -70,14 +93,26 @@ through the same call instead:
 
 .. note::
 
-   The **PRIMARY** selection is an X11 (Linux) convention — highlighting text
-   makes it available to paste with the middle mouse button. On Windows and macOS
-   there is no persistent PRIMARY selection, so for portable copy/paste use the
-   **clipboard** methods above; keep PRIMARY for Linux-specific niceties.
+   Reading your own app's selection with ``selection_get`` works on every
+   platform. What differs is **sharing** it with other applications: on Linux
+   (X11), PRIMARY is a system-wide channel — highlighting text makes it pastable
+   with the middle mouse button. On Windows and macOS, Tk provides PRIMARY only
+   within your own application. For copy and paste that crosses application
+   boundaries, use the **clipboard** methods above everywhere.
 
 .. seealso::
 
    - :doc:`Events guide </user-guide/feature-guides/events>` — binding the
      copy/paste shortcuts.
-   - The ``<<Copy>>`` / ``<<Paste>>`` / ``<<Cut>>`` virtual events that Entry and
-     Text already handle for you.
+   - :doc:`Menus guide </user-guide/feature-guides/menus>` — putting Copy and
+     Paste on a menu with the right accelerator per platform.
+
+Reference
+---------
+
+- :doc:`Clipboard </reference/capabilities/clipboard>` — ``clipboard_clear``,
+  ``clipboard_append``, and ``clipboard_get``.
+- :doc:`Selection </reference/capabilities/selection>` — ``selection_get`` and
+  the ``selection=`` argument.
+- :doc:`Built-in virtual events </reference/events/virtual-events>` — the
+  ``<<Copy>>`` / ``<<Cut>>`` / ``<<Paste>>`` events Entry and Text already handle.

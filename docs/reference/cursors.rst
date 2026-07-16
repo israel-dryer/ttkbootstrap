@@ -19,7 +19,7 @@ widget inherits its parent's cursor.
    is platform-dependent** — the same name can look different on Windows, macOS,
    and Linux, and several names map to the same system pointer. For a busy
    pointer over a whole window, prefer the ``busy`` helper — see
-   :doc:`Beep and show busy </user-guide/how-to/feedback>`.
+   :doc:`Mark a window busy </user-guide/how-to/busy>`.
 
 Common cursors
 --------------
@@ -78,7 +78,7 @@ it. Force the pointer to update before the work starts:
    do_slow_work()
    app.configure(cursor="")      # restore
 
-See :doc:`Beep and show busy </user-guide/how-to/feedback>` for the ``busy``
+See :doc:`Mark a window busy </user-guide/how-to/busy>` for the ``busy``
 helper, which does this for a whole window (and disables input) in one call.
 
 All portable names

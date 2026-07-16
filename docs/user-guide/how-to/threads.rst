@@ -9,9 +9,9 @@ can slice up, and a worker thread for work you can't.
 
 .. seealso::
 
-   :doc:`How a tkinter app runs </user-guide/foundations/how-a-tkinter-app-runs>`
-   for the event loop this recipe builds on — why one slow callback stalls
-   everything.
+   - :doc:`How a tkinter app runs </user-guide/foundations/how-a-tkinter-app-runs>`
+     — the event loop this recipe builds on, and why one slow callback stalls
+     everything.
 
 Deferring and repeating with ``after``
 --------------------------------------
@@ -69,9 +69,13 @@ separate :class:`threading.Thread` so the UI thread stays free. The catch:
 .. admonition:: The one rule
    :class: warning
 
-   **Never touch a widget from a worker thread.** Tkinter is not thread-safe;
-   calling a widget method off the main thread causes intermittent crashes and
-   corruption. The worker computes; the **main thread** updates the UI.
+   **Never touch a widget from a worker thread.** A Tcl interpreter belongs to
+   the thread that created it. Tkinter will forward a call made from another
+   thread back to that thread — but only while the event loop is running.
+   Outside it, the call fails with ``RuntimeError: main thread is not in main
+   loop``; inside it, your worker blocks until the UI thread services the call,
+   serializing the work onto the very thread you were trying to keep free. The
+   worker computes; the **main thread** updates the UI.
 
 The safe pattern hands results back through a :class:`queue.Queue` that the main
 thread drains with a short ``after`` poll. The worker only ever ``put``\ s onto
@@ -105,17 +109,20 @@ the queue; only the poller — running on the UI thread — configures widgets:
                    bar.configure(value=payload)
                elif kind == "done":
                    status.configure(text=payload, bootstyle="success")
+                   run.configure(state="normal")
                    return                    # stop polling; work is done
        except queue.Empty:
            pass
        app.after(100, drain)                 # nothing yet — check again soon
 
    def start():
+       run.configure(state="disabled")       # no second worker on the same queue
        status.configure(text="Working…", bootstyle="warning")
        threading.Thread(target=work, daemon=True).start()
        app.after(100, drain)                 # begin polling for results
 
-   ttk.Button(app, text="Start", command=start, bootstyle="primary").pack(pady=10)
+   run = ttk.Button(app, text="Start", command=start, bootstyle="primary")
+   run.pack(pady=10)
 
    app.mainloop()
 
@@ -128,7 +135,9 @@ How it fits together:
   whatever the worker has queued, updates the widgets, and reschedules itself
   until it sees the ``"done"`` message. A ``Queue`` is thread-safe, so this
   hand-off needs no locks.
-- **``daemon=True``** lets the program exit even if the thread is still running.
+- **The Start button** disables itself for the duration. Without that, a second
+  click starts a second worker and a second poller racing on one queue.
+- ``daemon=True`` lets the program exit even if the thread is still running.
 
 .. admonition:: 📷 Screenshot (placeholder)
    :class: screenshot-placeholder
@@ -144,6 +153,15 @@ How it fits together:
 
 .. seealso::
 
-   The `threading <https://docs.python.org/3/library/threading.html>`_ and
-   `queue <https://docs.python.org/3/library/queue.html>`_ modules for the
-   standard-library tools this pattern uses.
+   - :doc:`Scroll long content <scrollable>` — streaming worker output into a
+     ``ScrolledText``.
+   - `threading <https://docs.python.org/3/library/threading.html>`_ — the worker
+     thread this pattern runs the blocking work on.
+   - `queue <https://docs.python.org/3/library/queue.html>`_ — the thread-safe
+     hand-off between the worker and the poller.
+
+Reference
+---------
+
+- :doc:`After </reference/capabilities/after>` — ``after``, ``after_cancel``,
+  ``after_idle``, and job ids.

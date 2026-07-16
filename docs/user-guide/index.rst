@@ -236,8 +236,12 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way. See the
    how-to/index
    how-to/working-with-images
    how-to/scrollable
-   how-to/feedback
-   how-to/clipboard
-   how-to/error-handling
    how-to/multiple-windows
    how-to/threads
+   how-to/clipboard
+   how-to/error-handling
+   how-to/bell
+   how-to/busy
+   how-to/animate-gif
+   how-to/splash-screen
+   how-to/application-icon

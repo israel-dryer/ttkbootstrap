@@ -35,11 +35,22 @@ value, and traceback. This is your **safety net**, not a substitute for handling
 expected failures where they happen; use it to make sure nothing fails
 *invisibly*.
 
+Set it on the root. Every window's callback errors route to the root's handler,
+so one covers the whole app — and a handler set on a ``Toplevel`` is never
+called at all.
+
 .. note::
 
-   This handler only sees exceptions raised **inside** the event loop — callbacks
-   and ``after`` jobs. An exception raised during setup, before ``mainloop()``,
-   propagates normally; wrap that code in your own ``try``/``except``.
+   This handler only sees exceptions raised inside a **callback** — a ``command=``
+   handler, a ``bind`` callback, an ``after`` job. Straight-line setup code is not
+   a callback, so an exception there propagates normally; wrap that code in your
+   own ``try``/``except``.
+
+.. warning::
+
+   If a repeating ``after`` job is what's failing, showing a modal dialog from
+   this handler queues one dialog per tick. Log instead, or stop the job before
+   you show anything.
 
 ``TclError``
 ------------
@@ -54,18 +65,28 @@ a call is expected to fail:
    from tkinter import TclError
 
    try:
-       widget.configure(bootstyle="not-a-real-style")
-   except TclError as err:
-       ...
+       text = app.clipboard_get()
+   except TclError:
+       text = ""          # the clipboard is empty, or holds something that isn't text
 
 A common source is a numeric variable holding in-progress text: ``IntVar.get()``
 raises ``TclError`` when the bound entry is empty or half-typed. Guard the read,
 or validate the field instead — see
 :doc:`Input validation </user-guide/feature-guides/validation>`.
 
+.. note::
+
+   An unrecognized ``bootstyle`` is **not** one of these cases. Rather than
+   raising, an unknown token warns and is ignored, and the widget falls back to
+   its plain style — so a misspelled ``bootstyle`` shows up as a widget that
+   looks wrong, not as an exception you can catch.
+
 .. seealso::
 
    - :doc:`Variables guide </user-guide/feature-guides/variables>` — the
      numeric-variable coercion gotcha.
+   - :doc:`Copy and paste text <clipboard>` — the clipboard call guarded above.
+   - :doc:`The bootstyle grammar </user-guide/foundations/bootstyle-grammar>` —
+     the token vocabulary, and what an unknown token does.
    - :doc:`How a tkinter app runs </user-guide/foundations/how-a-tkinter-app-runs>`
      — the event loop that these callbacks run inside.

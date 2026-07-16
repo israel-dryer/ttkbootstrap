@@ -4,9 +4,8 @@ Scroll long content
 When content outgrows its window — a long form, a wall of log text — you need a
 scrollable region. Plain tkinter makes you pair a ``Canvas`` (or ``Text``) with
 a ``Scrollbar`` and wire the two together by hand. ttkbootstrap ships two widgets
-that do that wiring for you: :class:`~ttkbootstrap.ScrolledFrame` for arbitrary
-widgets, and :class:`~ttkbootstrap.ScrolledText` for text. Both are re-exported
-at the top level.
+that do that wiring for you: :doc:`ScrolledFrame </widgets/scrolled>` for
+arbitrary widgets, and :doc:`ScrolledText </widgets/scrolled>` for text.
 
 A scrollable frame
 ------------------
@@ -33,8 +32,11 @@ they overflow:
 - ``auto_hide=True`` hides the scrollbar until the pointer enters the region, then
   shows it — tidy for dense UIs. Leave it off (the default) to keep the scrollbar
   always visible.
-- The frame scrolls vertically by default. Pass ``height=``/``width=`` to fix its
-  size; without a fixed size it requests the size of its content.
+- The frame scrolls vertically only.
+- The viewport is a fixed size — the content never stretches it, which is the
+  whole point: the overflow scrolls instead. It defaults to 300×200; pass
+  ``height=``/``width=`` to change that, or ``pack(fill="both", expand=True)``
+  as above to let it fill its parent.
 
 .. admonition:: 📷 Screenshot (placeholder)
    :class: screenshot-placeholder
@@ -44,9 +46,12 @@ they overflow:
 
 .. note::
 
-   Add your widgets with the ``ScrolledFrame`` as their ``master`` — not a child
-   frame of your own. The widget manages an internal container and reparents
-   your content into the scrollable area automatically.
+   ``pack``/``grid``/``place`` on a ``ScrolledFrame`` lay out the whole assembly
+   — frame plus scrollbar — so most parents just work. A ``Notebook`` or
+   ``PanedWindow`` is different: it takes a child rather than laying one out, so
+   give it ``scroller.container``::
+
+      notebook.add(scroller.container, text="Settings")
 
 A scrollable text box
 ---------------------
@@ -72,16 +77,18 @@ for the standard Text API (``insert``, ``get``, ``delete``, tags):
 
 - ``.text`` is the real ``Text`` widget — anything the :doc:`Text reference
   </reference/api/text>` documents works on it.
-- Pass ``hbar=True`` for a horizontal scrollbar too (off by default); ``vbar`` is
-  on by default.
+- Pass ``hbar=True`` for a horizontal scrollbar too (off by default; ``vbar`` is
+  on). Turning it on also stops the text wrapping — long lines run off to the
+  right and scroll sideways instead, which is what the horizontal bar is for.
 - ``see("end")`` keeps the newest content in view — the usual move for a log.
 
 .. admonition:: Making a log read-only
    :class: note
 
    A ``Text`` is editable by default. To use one purely for output, set its
-   ``state`` to ``"disabled"`` and flip it back around each write, since a
-   disabled Text rejects ``insert`` too::
+   ``state`` to ``"disabled"`` and flip it back around each write — a disabled
+   Text silently discards ``insert``, with no error, so the line simply never
+   appears::
 
       log.text.configure(state="normal")
       log.text.insert("end", line)
@@ -89,6 +96,8 @@ for the standard Text API (``insert``, ``get``, ``delete``, tags):
 
 .. seealso::
 
+   - :doc:`Scrolled </widgets/scrolled>` — the widget catalog entry for both
+     widgets.
    - :doc:`Arranging widgets </user-guide/foundations/arranging-widgets>` — packing
      and gridding content.
    - :doc:`Run background work <threads>` — streaming output into a
