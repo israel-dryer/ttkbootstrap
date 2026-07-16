@@ -1,9 +1,13 @@
 """Menu API: the macOS application-menu helpers on ``ttk.Menu``.
 
 The helpers wrap the native macOS application menu (the special apple/window/help
-menus and the ``tk::mac`` standard commands) so callers stay in Python. On the
-CI platform (win32/x11) the ``add_*_menu`` helpers no-op; the aqua path is
-exercised by forcing the windowing-system probe.
+menus and the ``tk::mac`` standard commands) so callers stay in Python. Off macOS
+the ``add_*_menu`` helpers no-op.
+
+`Menu` picks the path from a single ``windowing_system(self) == "aqua"`` probe, so
+**both** paths are exercised by forcing that probe rather than by trusting the
+host. That keeps the suite deterministic -- and green -- on every platform,
+instead of testing only the branch the developer happens to be sitting on.
 """
 
 import ttkbootstrap as ttk
@@ -15,6 +19,11 @@ def _force_aqua(monkeypatch):
     monkeypatch.setattr(menu_mod, "windowing_system", lambda widget: "aqua")
 
 
+def _force_off_aqua(monkeypatch):
+    """Make ``Menu`` believe it is not running on macOS."""
+    monkeypatch.setattr(menu_mod, "windowing_system", lambda widget: "x11")
+
+
 def test_menu_is_the_extended_class(root):
     assert isinstance(ttk.Menu(root), menu_mod.Menu)
     for name in ("add_application_menu", "add_window_menu", "add_help_menu",
@@ -22,13 +31,15 @@ def test_menu_is_the_extended_class(root):
         assert hasattr(ttk.Menu(root), name), name
 
 
-def test_application_and_window_menus_are_none_off_mac(root):
+def test_application_and_window_menus_are_none_off_mac(root, monkeypatch):
+    _force_off_aqua(monkeypatch)
     menubar = ttk.Menu(root)
     assert menubar.add_application_menu() is None
     assert menubar.add_window_menu() is None
 
 
-def test_on_hooks_are_noop_off_mac(root):
+def test_on_hooks_are_noop_off_mac(root, monkeypatch):
+    _force_off_aqua(monkeypatch)
     menubar = ttk.Menu(root)
     # Must not raise and must not register the mac commands off-aqua.
     menubar.on_preferences(lambda: None)
@@ -37,7 +48,8 @@ def test_on_hooks_are_noop_off_mac(root):
     assert not root.tk.call("info", "commands", "::tk::mac::Quit")
 
 
-def test_help_menu_is_a_real_cascade_off_mac(root):
+def test_help_menu_is_a_real_cascade_off_mac(root, monkeypatch):
+    _force_off_aqua(monkeypatch)
     menubar = ttk.Menu(root)
     help_menu = menubar.add_help_menu(command=lambda: None)
     assert isinstance(help_menu, ttk.Menu)
