@@ -299,6 +299,22 @@ compat surface, so small + orthogonal. Tier 2 follows E.
 
 ---
 
+## Post-2.0 (2.1) backlog
+
+Tracked enhancements deliberately held out of the feature-frozen 2.0:
+
+- **bootstyle value tokens** — hex + ramp-addressed accents and surfaces
+  (`bootstyle="@background[200] danger"`, `"#2f2f2f"`, `"@#ff0000"`). Design
+  brief: `development/2_1_bootstyle_value_tokens_design.md` (PROPOSED,
+  2026-07-16; design session before implementation). Tracked as **#1236**
+  on the **2.1 milestone**.
+- **`@surface` participation for toolbutton/menubutton/entry** — those recipes
+  silently drop the surface token today (known gap, logged in
+  `2_0_breaking_changes.md` under the check/radio surface fix). Extend per
+  demand.
+
+---
+
 ## Open questions
 
 - **bootstyle strictness default**: warn-by-default with opt-in strict mode
