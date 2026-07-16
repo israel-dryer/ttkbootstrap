@@ -5,8 +5,8 @@ Tcl ``tk busy`` command is Tk 8.6 and works on every Python we support. These
 tests pin that the shim presents the same surface either way -- delegating to
 tkinter's methods when they exist and issuing the same Tcl call when they don't.
 
-Note: ``tk busy`` is a documented no-op on macOS (aqua), so these tests assert
-Tk's *bookkeeping* (status/cget/current), which is consistent across platforms,
+``tk busy`` is not supported on macOS (aqua), so these tests assert Tk's
+*bookkeeping* (status/cget/current), which is consistent across platforms,
 rather than whether input is actually blocked.
 """
 import tkinter

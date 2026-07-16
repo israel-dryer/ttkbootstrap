@@ -10,13 +10,8 @@ exist at all, leaving `tk.call` reach-ins as the only way to use it.
 exist, and issues the identical `tk.call` where they don't, so the same code
 runs on every supported Python.
 
-Note: `tk busy` has no effect on macOS (aqua) -- a Tk limitation, documented in
-the PORTABILITY section of the `tk busy` manual and still present in Tk 9. The
-calls succeed and `busy_status` reports True, but nothing is drawn or blocked.
-This mixin does not paper over that: emulating the transparent input shield
-would mean covering the widget with an opaque frame (Tk has no transparent
-color), which would hide the UI it is meant to shield. On macOS, disable the
-controls that start the work and set `cursor=` instead.
+`tk busy` is not supported on macOS (aqua): the calls succeed and `busy_status`
+reports True, but nothing is drawn or blocked.
 """
 from tkinter import _cnfmerge
 
