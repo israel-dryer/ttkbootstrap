@@ -478,6 +478,39 @@ gating"), and suite is **689**. **PROCESS NOTE:** a `checkout -b … || checkout
 fallback once left commits on a second branch while `git push origin <name>` pushed
 a different ref — #1231 merged without the work reported in it (recovered as
 #1232). **Verify `git branch --show-current` before pushing.**
+**Session 2026-07-16 (all MERGED into `2.0`) — an author-review + issue-sweep
+batch.** **#1235** docs polish + three probe-driven style fixes: tutorial uses
+top-level `ttk.Tableview`/`ttk.Validation`; widget-model Tk/Tcl glosses (+
+*What tkinter wraps* pointers); arranging-widgets gains a **Spacing** section
+(three layers: `padx`/`pady` vs `padding` vs `ipadx`/`ipady` + the
+container-owns-margins idiom) and a **Geometry managers** section;
+**`LabelFrame` is now the ttk alias for `Labelframe`** (matching tkinter.ttk —
+the 1.x classic-tk export was never sanctioned; deliberately NOT in the
+migration guide, author call, see the dev-log entry); **bare `outline` renders
+neutral** across the button family (closing the last primary fallback from
+#1098/#1099; toggles keep primary — the accent carries on-state); **`@surface`
+fixed on Checkbutton/Radiobutton** (builders resolved the surface for text but
+never set `background=`; tests now assert background — the `@surface` silent
+drop on toolbutton/menubutton/entry is a KNOWN, logged gap). **#1237** the
+**2.1 value-tokens design brief** (`development/
+2_1_bootstyle_value_tokens_design.md`, PROPOSED, design-session-gated) + a
+**Post-2.0 (2.1) backlog** section in `2_0_plan.md`; tracked as **issue #1236
+on the new 2.1 milestone** (repo's first milestone). **Open-issue sweep** (all
+8 verified by probe, not by reading): #1155 closed (Dialog.close() shipped +
+documented); **#1239** merged — **eager native-dialog base styles**
+(entry/combobox/menubutton/scrollbars join #1062's TButton in
+`create_default_style`; fixes the dark-mode white-on-white file dialog, #1224
+closed) + **DateEntry `start_date` docs per author ruling** ("a configuration
+option, by its name — no configure-time display refresh"; it fills the field
+at construction and is the `get_date()` empty-field fallback; live handle is
+`value`/`set_date()`; #1151 closed); #1161/#1160/#1238 **paired on the 2.1
+milestone** under one future design — a **durable style-options layer** the
+builders read from (the author then closed #1160/#1161). **#1240** merged —
+**ToolTip popup `topmost=True` by default** (native parity; `topmost=False`
+opts out via the now-documented Toplevel-kwargs passthrough; probed: aqua's
+`help` window class already floats, so the default lands on Windows/X11;
+#1086 closed). Suite on `2.0` is **692** excl. the two known flakes; every
+docs change verified headlessly + built green.
 **NEXT docs-H thread:** the deferred **screenshot slice** (46 placeholders across
 catalog + guides; the 5 new/split how-to pages have none — decide during the slice;
 capture tooling is Windows-canonical, so postponed on macOS), plus optional Track B
