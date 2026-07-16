@@ -51,7 +51,8 @@ Each option can be set in the constructor and changed later with ``configure()``
      - The value written to ``variable`` when unchecked.
    * - ``command``
      - ``callable``
-     - The function called when the check state is toggled.
+     - The function called when the checkbutton is *invoked* — clicked, or
+       activated with :kbd:`Space`.
    * - ``image``
      - ``PhotoImage``
      - An image to display in place of, or beside, the text.
