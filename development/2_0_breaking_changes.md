@@ -37,6 +37,7 @@
 | **`TkLabel` blessed tk.Label + ColorChooser default-mode fix** | New/Fix | this doc, below |
 | **`LabelFrame` is now the ttk alias (was the classic tk widget)** | API | this doc, below — **not in the migration guide** (author call) |
 | **Bare `outline` renders neutral (was primary)** | Visual | this doc, below |
+| **`@surface` fixed on Checkbutton / Radiobutton (background now paints)** | Fix | this doc, below |
 | **`neutral` color** | New | this doc, below |
 | **`ghost` button variant** | New | this doc, below |
 | **`thin` scrollbar variant** | New | this doc, below |
@@ -1824,3 +1825,20 @@ carries the on-state and is not part of this cleanup.
 every button-family variant keeps the quiet neutral look"). Not added to the
 migration guide — same author call as the `LabelFrame` alias: a visual-default
 shift users absorb, not an API break to migrate.
+
+## `@surface` fixed on Checkbutton / Radiobutton  *(Fix)*
+
+**What.** `bootstyle="@card …"` / `"@primary …"` on a plain Checkbutton or
+Radiobutton now paints the widget background with the resolved surface. The
+builders already resolved the surface for the label/indicator colors
+(`resolve_surface` + `on_surface_fg`) and registered the surface-prefixed style
+name, but never configured `background=` — so the style inherited the window
+background and showed as a wrong-colored box on a card or accent bar, silently.
+One-line fix in each builder (`builders/checkbutton.py`, `radiobutton.py`);
+found while documenting the `@surface` rationale on the grammar page.
+
+**Known remaining gap (deliberate, unfixed).** `@surface` on
+toolbutton/menubutton/entry silently drops the token and falls back to the
+plain style (their builders don't participate in surface naming). Extend per
+demand; the grammar page names only supported cases (button family variants,
+check/radio labels).

@@ -67,6 +67,9 @@ def test_checkbutton_on_surface(root):
     assert _lookup(root, cb.cget("style"), "foreground") == b.on_color(
         b.colors.primary
     )
+    # the widget background paints the surface itself (regression: the builder
+    # resolved the surface for text colors but never configured background=)
+    assert _lookup(root, cb.cget("style"), "background") == str(b.colors.primary)
 
 
 def test_radiobutton_on_surface_builds(root):
@@ -74,6 +77,7 @@ def test_radiobutton_on_surface_builds(root):
     rb = ttk.Radiobutton(root, bootstyle="@card")
     assert rb.cget("style") == "@card.TRadiobutton"
     assert _lookup(root, rb.cget("style"), "foreground") == str(b.colors.fg)
+    assert _lookup(root, rb.cget("style"), "background") == b.card_surface()
 
 
 # --- toggle --------------------------------------------------------------- #
