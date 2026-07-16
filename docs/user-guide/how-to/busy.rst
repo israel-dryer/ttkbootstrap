@@ -61,19 +61,11 @@ keep a slow action from being started twice:
 
 .. note::
 
-   The busy overlay itself is a Tk 8.6 feature, so it is there on every Python
-   we support — but tkinter only grew the ``busy()`` / ``tk_busy_*`` methods in
-   **3.13**. To use it on Python 3.10–3.12, call Tk directly; it is the same
-   command underneath:
-
-   .. code-block:: python
-
-      app.tk.call("tk", "busy", "hold", app, "-cursor", "watch")
-      app.update()
-      try:
-          do_slow_work()
-      finally:
-          app.tk.call("tk", "busy", "forget", app)
+   ``busy()`` works on every Python ttkbootstrap supports. tkinter only grew
+   these methods in 3.13; on 3.10–3.12 ttkbootstrap supplies them, issuing the
+   same Tk command underneath. They are also spelled ``tk_busy_hold`` /
+   ``tk_busy_forget`` / ``tk_busy_status`` / ``tk_busy_configure`` — the same
+   calls under their longer names.
 
 .. note::
 
@@ -83,12 +75,6 @@ keep a slow action from being started twice:
    keystrokes, so move focus off the busy area if that matters. Set ``cursor=``
    alone (see :doc:`Cursors </reference/cursors>`) when you only want to change
    the pointer.
-
-.. note::
-
-   The methods are also spelled ``tk_busy_hold`` / ``tk_busy_forget`` /
-   ``tk_busy_status`` / ``tk_busy_configure``. Those are the same calls under
-   their longer names, added in the same version.
 
 Long work still needs a thread
 ------------------------------
