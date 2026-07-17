@@ -1227,9 +1227,13 @@ def bootify(cls):
     - A widget with its **own ttk class** has no ttkbootstrap style recipe: a
       bare color (``bootstyle="info"``) warns and leaves the widget's style
       unchanged. Name a base type explicitly (``bootstyle="info-frame"``) to
-      borrow a standard recipe where the widget's elements support it. The
-      widget's internal sub-widgets style themselves and are not reached
-      either way.
+      borrow a standard recipe where the widget's elements support it.
+
+    A composite widget's internals follow the active theme on their own
+    (standard-class children resolve against the per-theme base styles), but
+    the accent is not fanned out to them — which child should carry it is the
+    widget's design, not something a wrapper can infer. To accent a specific
+    internal, use `apply_bootstyle` on that child.
     """
     return type(cls.__name__, (BootMixin, cls), {})
 
