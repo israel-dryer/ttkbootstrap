@@ -7,6 +7,16 @@ they are drawn on demand, icons are crisp at any size and **follow the theme**:
 a glyph recolors when you switch themes, inverts on an ``outline`` button, and
 mutes when the widget is disabled. No extra dependency, no image files to ship.
 
+.. image:: /_static/examples/icons-matrix-light.png
+   :class: tb-screenshot-light
+   :width: 308px
+   :alt: A grid of two dozen varied Bootstrap Icons glyphs in the semantic colors — light theme
+
+.. image:: /_static/examples/icons-matrix-dark.png
+   :class: tb-screenshot-dark
+   :width: 308px
+   :alt: A grid of two dozen varied Bootstrap Icons glyphs in the semantic colors — dark theme
+
 Adding an icon to a widget
 --------------------------
 

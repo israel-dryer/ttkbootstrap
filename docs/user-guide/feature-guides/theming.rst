@@ -69,14 +69,14 @@ A toggle button is the common case:
 
    .. figure:: /_static/examples/theming-sample-light.png
       :class: tb-window-screenshot
-      :width: 278px
+      :width: 298px
       :alt: A sample window in a theme's light mode
 
       Light
 
    .. figure:: /_static/examples/theming-sample-dark.png
       :class: tb-window-screenshot
-      :width: 278px
+      :width: 298px
       :alt: The same window in the family's dark mode
 
       Dark
