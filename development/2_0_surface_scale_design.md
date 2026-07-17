@@ -50,12 +50,21 @@ Border and surface stay **orthogonal**: the `card`/`highlight` frame *variants*
 and remain internal. A bordered card on a surface would be `card @card` once the
 variant honors surface too — deferred; not needed here.
 
+## Follow-up: `card` frame variant renamed → `bordered`
+
+The Frame catalog page documents the border variant, so the `card`-variant vs
+`@card`-surface clash was in fact user-facing. Resolved by renaming the **variant**
+`card` → `bordered` (what it does — a hairline border; `highlight` keeps its name
+as the focus-ring sibling). Clean rename, no back-compat alias: the variants are
+new in unreleased 2.0 (#1126). Border and surface are now fully orthogonal and
+compose — `bordered @card` is a hairline-bordered frame filled with the card
+surface, and the border derives from `builder.border(surface)` so it stays visible
+on any surface. `Card.TFrame` → `Bordered.TFrame` (datepicker, ScrolledText,
+tests updated); `bordered`/`highlight` stay out of the cross-family public Literal
+(frame-only) but are documented on the Frame page.
+
 ## Not done (deliberately)
 
-- No rename of the internal `card`/`highlight` frame **variant**. The
-  variant-vs-surface name clash only surfaced when the `card` variant was exposed
-  in user docs; the docs now use the `@card` *surface* instead, so users never
-  see the clash. Renaming the internal token is optional cleanup for later.
 - `labelframe` not added as a surface consumer yet (no driver).
 
 ## Tests

@@ -96,7 +96,7 @@ class ScrolledText(ConfigureDelegationMixin, ttk.Frame):
 
         super().__init__(master, padding=padding)
 
-        # The border is owned by an inner "card" frame, so the text and the
+        # The border is owned by an inner `highlight` frame, so the text and the
         # scrollbar sit inside a single bordered box (the inner Text is kept
         # borderless -- see StyleBuilderTK.update_text_style) rather than the
         # scrollbar hanging outside the text's own edge. A grid inside it keeps

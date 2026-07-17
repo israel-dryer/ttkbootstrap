@@ -323,7 +323,7 @@ class DatePickerDialog:
     def _setup_calendar(self) -> None:
         """Setup the calendar widget"""
         # create the widget containers
-        frm_style = "Card.TFrame" if windowing_system(self.root) != 'aqua' else "TFrame"
+        frm_style = "Bordered.TFrame" if windowing_system(self.root) != 'aqua' else "TFrame"
         self.frm_calendar = ttk.Frame(master=self.root, padding=2, style=frm_style).pack(fill=BOTH, expand=YES)
         self.frm_title = ttk.Frame(self.frm_calendar, padding=(3, 3)).pack(fill=X)
         self.frm_header = ttk.Frame(self.frm_calendar).pack(fill=X)
