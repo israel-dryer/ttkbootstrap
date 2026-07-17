@@ -8,10 +8,12 @@ then the ``bootstyle`` colors, variants, and states.
 
 .. image:: /_static/examples/button-hero-light.png
    :class: tb-screenshot-light
+   :width: 298px
    :alt: A row of buttons — solid primary, outline, link, and icon-only — light theme
 
 .. image:: /_static/examples/button-hero-dark.png
    :class: tb-screenshot-dark
+   :width: 298px
    :alt: A row of buttons — solid primary, outline, link, and icon-only — dark theme
 
 Usage
@@ -70,10 +72,12 @@ becomes a square sized to the glyph:
 
 .. image:: /_static/examples/button-icons-light.png
    :class: tb-screenshot-light
+   :width: 236px
    :alt: A Save button with a leading icon, a Next button with a trailing icon, and a square icon-only trash button — light theme
 
 .. image:: /_static/examples/button-icons-dark.png
    :class: tb-screenshot-dark
+   :width: 236px
    :alt: A Save button with a leading icon, a Next button with a trailing icon, and a square icon-only trash button — dark theme
 
 A row of buttons
@@ -156,10 +160,12 @@ in every theme. The nine semantic colors:
 
 .. image:: /_static/examples/button-colors-light.png
    :class: tb-screenshot-light
+   :width: 712px
    :alt: A strip of the nine button colors — light theme
 
 .. image:: /_static/examples/button-colors-dark.png
    :class: tb-screenshot-dark
+   :width: 712px
    :alt: A strip of the nine button colors — dark theme
 
 The default color

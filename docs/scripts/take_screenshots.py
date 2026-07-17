@@ -10,6 +10,11 @@ Output (no scenes):  docs/_static/examples/<name>-light.png
 Output (scenes):     docs/_static/examples/<name>-<scene>-light.png
                                             <name>-<scene>-dark.png
 
+Images keep the capture box's full pixel density (2x on Retina); each rST
+image directive pins the display size with ``:width: <W>px`` using the
+logical size the harness prints per shot. That keeps HiDPI captures crisp
+and makes the display size independent of which machine captured.
+
 Canonical captures are taken on Windows (the docs' visual canon: Segoe UI,
 native chrome for full-window shots). The harness also runs on macOS for
 authoring/verification: it captures the Tk window by its CGWindowID
@@ -120,20 +125,16 @@ def _mac_grab_window(win, content_only, x, y, w, h):
     finally:
         os.unlink(path)
     # The image is in physical (Retina) pixels, bounds/Tk coords in points.
+    # Keep the full pixel density — the rST pins the display size via
+    # ``:width:`` (the logical size), so Retina captures stay crisp.
     scale = img.width / bounds["Width"]
     if content_only:
         # Crop the content area (Tk root coords) out of the whole-window image.
         box = tuple(round(v * scale) for v in
                     (x - bounds["X"], y - bounds["Y"],
                      x - bounds["X"] + w, y - bounds["Y"] + h))
-        img = img.crop(box)
-    if scale != 1:
-        # Normalize to logical size so the docs show the widget at its
-        # on-screen size — the same density the Windows canon captures at.
-        img = img.resize((max(1, round(img.width / scale)),
-                          max(1, round(img.height / scale))),
-                         Image.LANCZOS)
-    return img
+        return img.crop(box), (w, h)
+    return img, (round(bounds["Width"]), round(bounds["Height"]))
 
 
 def _patch(cls):
@@ -165,25 +166,40 @@ def _patch(cls):
             h = win.winfo_height()
             inset = 2  # trim window-border artifact from captured edges
             if sys.platform == "darwin":
-                img = _mac_grab_window(win, not whole_window,
-                                       x + inset, y + inset,
-                                       w - 2 * inset, h - 2 * inset)
+                img, logical = _mac_grab_window(win, not whole_window,
+                                                x + inset, y + inset,
+                                                w - 2 * inset, h - 2 * inset)
             elif whole_window and sys.platform == "win32":
                 # inset=2 cuts just inside the native frame so the docs'
                 # single CSS border replaces it (no native + CSS double border)
                 fx, fy, fw, fh = _windows_frame_rect(win)
                 img = _grab_region(win, fx + inset, fy + inset,
                                    fw - 2 * inset, fh - 2 * inset)
+                logical = (fw - 2 * inset, fh - 2 * inset)
             else:
                 img = _grab_region(win, x + inset, y + inset,
                                    w - 2 * inset, h - 2 * inset)
-            # Default 720px keeps shots crisp inside a sidebar'd doc page; a
+                logical = (w - 2 * inset, h - 2 * inset)
+            if sys.platform == "win32":
+                # At >100% display scaling Tk coordinates are physical pixels;
+                # report the CSS-pixel (logical) size for the rST ``:width:``.
+                dpi_scale = win.winfo_fpixels("1i") / 96
+                if dpi_scale > 1:
+                    logical = (round(logical[0] / dpi_scale),
+                               round(logical[1] / dpi_scale))
+            # Default 720px logical keeps shots inside a sidebar'd doc page; a
             # scene can opt into a wider capture via app._capture_max_width.
             max_w = getattr(self, "_capture_max_width", 720)
-            if img.width > max_w:
-                ratio = max_w / img.width
-                img = img.resize((max_w, max(1, int(img.height * ratio))), Image.LANCZOS)
+            if logical[0] > max_w:
+                ratio = max_w / logical[0]
+                density = img.width / logical[0]
+                logical = (max_w, max(1, round(logical[1] * ratio)))
+                img = img.resize((round(logical[0] * density),
+                                  max(1, round(logical[1] * density))),
+                                 Image.LANCZOS)
             img.save(output)
+            # The harness prints this as the ``:width:`` to pin in the rST.
+            print(f"TTKB_LOGICAL {logical[0]}x{logical[1]}", flush=True)
             self.destroy()
 
         def _capture():
@@ -243,7 +259,8 @@ def probe_scenes(source: Path) -> list[str]:
 
 
 def run_scene(source: Path, theme: str, output: Path, delay: int = 800,
-              scene: str = "") -> bool:
+              scene: str = "") -> tuple[bool, str]:
+    """Run one capture; return (success, logical "WxH" for the rST :width:)."""
     env = {
         **os.environ,
         "TTKB_THEME":      theme,
@@ -258,8 +275,16 @@ def run_scene(source: Path, theme: str, output: Path, delay: int = 800,
         env=env,
         timeout=20,
         cwd=str(REPO),
+        capture_output=True,
+        text=True,
     )
-    return result.returncode == 0
+    logical = ""
+    for line in (result.stdout or "").splitlines():
+        if line.startswith("TTKB_LOGICAL "):
+            logical = line.split(" ", 1)[1].strip()
+    if result.returncode != 0 and result.stderr:
+        print(result.stderr.strip().splitlines()[-1], end="  ")
+    return result.returncode == 0, logical
 
 
 def main():
@@ -304,8 +329,9 @@ def main():
                     label = f"{name}:{scene}"
                     print(f"  {label:28s} [{suffix:5s}]  ", end="", flush=True)
                     try:
-                        success = run_scene(source, theme, out, scene=scene)
-                        print(f"OK  {out.relative_to(REPO)}" if success else "FAIL  non-zero exit")
+                        success, logical = run_scene(source, theme, out, scene=scene)
+                        print(f"OK  {out.relative_to(REPO)}  ({logical})" if success
+                              else "FAIL  non-zero exit")
                         ok += success; failed += not success
                     except subprocess.TimeoutExpired:
                         print("FAIL  timeout"); failed += 1
@@ -315,8 +341,9 @@ def main():
                 out = OUTPUT / f"{name}-{suffix}.png"
                 print(f"  {name:28s} [{suffix:5s}]  ", end="", flush=True)
                 try:
-                    success = run_scene(source, theme, out)
-                    print(f"OK  {out.relative_to(REPO)}" if success else "FAIL  non-zero exit")
+                    success, logical = run_scene(source, theme, out)
+                    print(f"OK  {out.relative_to(REPO)}  ({logical})" if success
+                          else "FAIL  non-zero exit")
                     ok += success; failed += not success
                 except subprocess.TimeoutExpired:
                     print("FAIL  timeout"); failed += 1
