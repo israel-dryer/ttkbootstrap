@@ -110,11 +110,15 @@ its own:
            Sidebar(self).pack(side=LEFT, fill=Y)
            Content(self).pack(side=LEFT, fill=BOTH, expand=YES)
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/app-structures-skeleton-light.png
+   :class: tb-screenshot-light
+   :width: 456px
+   :alt: A secondary sidebar with two buttons on the left and a content panel filling the rest of the window — light theme
 
-   The composed skeleton: a narrow ``secondary`` sidebar with two buttons on the
-   left and a content panel filling the rest of the window.
+.. image:: /_static/examples/app-structures-skeleton-dark.png
+   :class: tb-screenshot-dark
+   :width: 456px
+   :alt: A secondary sidebar with two buttons on the left and a content panel filling the rest of the window — dark theme
 
 Subclass a frame, not the root
 ------------------------------
