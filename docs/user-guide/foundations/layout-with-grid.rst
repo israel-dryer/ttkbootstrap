@@ -54,13 +54,13 @@ full width of its cell. Stretch the entries across column 1:
 Now the labels sit left and the entries widen to fill their column.
 
 .. image:: /_static/examples/layout-with-grid-sticky-light.png
-   :class: tb-screenshot-light
-   :width: 296px
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 298px
    :alt: A form with Email and Password left-aligned in column 0 and the entries stretched across column 1 — light theme
 
 .. image:: /_static/examples/layout-with-grid-sticky-dark.png
-   :class: tb-screenshot-dark
-   :width: 296px
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 298px
    :alt: A form with Email and Password left-aligned in column 0 and the entries stretched across column 1 — dark theme
 
 Step 3 — add breathing room with ``padx`` / ``pady``
@@ -145,25 +145,37 @@ the window:
 
 .. container:: tb-screenshot-row
 
-   .. image:: /_static/examples/layout-with-grid-narrow-light.png
-      :class: tb-screenshot-light
-      :width: 256px
-      :alt: The sign-in form at a narrow width — light theme
+   .. figure:: /_static/examples/layout-with-grid-narrow-light.png
+      :figclass: tb-screenshot-light
+      :class: tb-window-screenshot
+      :width: 258px
+      :alt: The sign-in form in a narrow window — light theme
 
-   .. image:: /_static/examples/layout-with-grid-narrow-dark.png
-      :class: tb-screenshot-dark
-      :width: 256px
-      :alt: The sign-in form at a narrow width — dark theme
+      Narrow window
 
-   .. image:: /_static/examples/layout-with-grid-wide-light.png
-      :class: tb-screenshot-light
-      :width: 436px
-      :alt: The same form widened — the entry column stretches while the labels stay put — light theme
+   .. figure:: /_static/examples/layout-with-grid-narrow-dark.png
+      :figclass: tb-screenshot-dark
+      :class: tb-window-screenshot
+      :width: 258px
+      :alt: The sign-in form in a narrow window — dark theme
 
-   .. image:: /_static/examples/layout-with-grid-wide-dark.png
-      :class: tb-screenshot-dark
-      :width: 436px
-      :alt: The same form widened — the entry column stretches while the labels stay put — dark theme
+      Narrow window
+
+   .. figure:: /_static/examples/layout-with-grid-wide-light.png
+      :figclass: tb-screenshot-light
+      :class: tb-window-screenshot
+      :width: 438px
+      :alt: The same form in a wide window — the entry column stretches while the labels stay put — light theme
+
+      Wide window — the entry column stretches, the labels stay put
+
+   .. figure:: /_static/examples/layout-with-grid-wide-dark.png
+      :figclass: tb-screenshot-dark
+      :class: tb-window-screenshot
+      :width: 438px
+      :alt: The same form in a wide window — the entry column stretches while the labels stay put — dark theme
+
+      Wide window — the entry column stretches, the labels stay put
 
 Recap
 -----

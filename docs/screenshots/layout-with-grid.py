@@ -15,6 +15,7 @@ def sticky():
     ttk.Entry(form).grid(row=0, column=1, sticky="ew")
     ttk.Label(form, text="Password").grid(row=1, column=0, sticky="w")
     ttk.Entry(form).grid(row=1, column=1, sticky="ew")
+    app._capture_full_window = True  # layout shown at the app level
     app.mainloop()
 
 
@@ -29,6 +30,7 @@ def _finished(app):
     ttk.Entry(form, show="•").grid(row=1, column=1, sticky="ew", padx=5, pady=5)
     ttk.Button(form, text="Sign in", bootstyle="primary").grid(
         row=2, column=0, columnspan=2, sticky="e", padx=5, pady=(10, 0))
+    app._capture_full_window = True  # layout shown at the app level
     app.mainloop()
 
 
