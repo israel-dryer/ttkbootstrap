@@ -64,11 +64,15 @@ needs. ``expand=True`` is the missing piece: it hands the widget the container's
    content.pack(side="top", fill="both", expand=True)   # take everything left over
    ttk.Label(content, text="Content goes here").pack()
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/layout-with-pack-toolbar-light.png
+   :class: tb-screenshot-light
+   :width: 356px
+   :alt: A toolbar spanning the top edge with its buttons at the left and a content area filling the space beneath — light theme
 
-   The toolbar spanning the top edge with its buttons at the left, and the
-   content area filling all the space beneath it.
+.. image:: /_static/examples/layout-with-pack-toolbar-dark.png
+   :class: tb-screenshot-dark
+   :width: 356px
+   :alt: A toolbar spanning the top edge with its buttons at the left and a content area filling the space beneath — dark theme
 
 That's the distinction worth remembering:
 
@@ -117,11 +121,15 @@ with a fixed sidebar beside a content area that fills the rest.
 
    app.mainloop()
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/layout-with-pack-shell-light.png
+   :class: tb-screenshot-light
+   :width: 596px
+   :alt: An app shell — header across the top, status bar across the bottom, a fixed-width sidebar on the left, and the content area filling the middle — light theme
 
-   The full app shell — header bar across the top, status bar across the bottom,
-   a fixed-width sidebar on the left, and the content area filling the middle.
+.. image:: /_static/examples/layout-with-pack-shell-dark.png
+   :class: tb-screenshot-dark
+   :width: 596px
+   :alt: An app shell — header across the top, status bar across the bottom, a fixed-width sidebar on the left, and the content area filling the middle — dark theme
 
 The header and status bars ``fill="x"`` against their edges; the ``middle`` frame
 ``expand=True`` so it takes everything left; inside it the sidebar takes a
