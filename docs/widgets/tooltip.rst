@@ -6,11 +6,15 @@ widget. ``ToolTip`` is a ttkbootstrap widget (a real class with its own API,
 imported as ``ttk.ToolTip``). This page covers attaching one, the hover delay and
 wrapping, then the ``bootstyle`` color.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/tooltip-hero-light.png
+   :class: tb-screenshot-light
+   :width: 276px
+   :alt: A button with a tooltip popup showing beneath it — light theme
 
-   A button with a tooltip popup showing beneath the pointer, in light and dark
-   themes.
+.. image:: /_static/examples/tooltip-hero-dark.png
+   :class: tb-screenshot-dark
+   :width: 276px
+   :alt: A button with a tooltip popup showing beneath it — dark theme
 
 Usage
 -----

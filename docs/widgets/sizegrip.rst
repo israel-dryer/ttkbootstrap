@@ -5,11 +5,15 @@ A **sizegrip** is the small ribbed handle in the bottom-right corner of a window
 that the user drags to resize it. ``Sizegrip`` is the native ``ttk.Sizegrip``,
 styled with ``bootstyle=``.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/sizegrip-hero-light.png
+   :class: tb-screenshot-light
+   :width: 296px
+   :alt: A window with the ribbed sizegrip handle in its bottom-right corner — light theme
 
-   A window with the ribbed sizegrip handle in its bottom-right corner, in light
-   and dark themes.
+.. image:: /_static/examples/sizegrip-hero-dark.png
+   :class: tb-screenshot-dark
+   :width: 296px
+   :alt: A window with the ribbed sizegrip handle in its bottom-right corner — dark theme
 
 Usage
 -----

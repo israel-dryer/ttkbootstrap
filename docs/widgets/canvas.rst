@@ -9,11 +9,15 @@ theme). This page covers drawing items, the coordinate system, ids and tags, the
 stacking order, state-driven styling, making items interactive, embedding text and
 widgets, and scrolling a drawing larger than the window.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/canvas-hero-light.png
+   :class: tb-screenshot-light
+   :width: 316px
+   :alt: A canvas with a filled rectangle, an oval, a line, and a caption — light theme
 
-   A canvas with a filled rectangle, an oval, a line, and a caption, in light and
-   dark themes.
+.. image:: /_static/examples/canvas-hero-dark.png
+   :class: tb-screenshot-dark
+   :width: 316px
+   :alt: A canvas with a filled rectangle, an oval, a line, and a caption — dark theme
 
 Usage
 -----

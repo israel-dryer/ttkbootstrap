@@ -7,11 +7,15 @@ ttkbootstrap widget (a real class with its own API, imported as
 ``ttk.ToastNotification``). This page covers showing one, how long it stays, where
 it appears, then the ``bootstyle`` color and icon.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/toast-hero-light.png
+   :class: tb-screenshot-light
+   :width: 300px
+   :alt: A success toast reading "Saved — your file was saved" — light theme
 
-   A success toast in the bottom-right corner reading "Saved — your file was
-   saved", in light and dark themes.
+.. image:: /_static/examples/toast-hero-dark.png
+   :class: tb-screenshot-dark
+   :width: 300px
+   :alt: A success toast reading "Saved — your file was saved" — dark theme
 
 Usage
 -----

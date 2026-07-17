@@ -7,11 +7,15 @@ real class with its own API, imported as ``ttk.Floodgauge``). This page covers
 driving the value and its label, the indeterminate mode, the orientation, then the
 ``bootstyle`` color.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/floodgauge-hero-light.png
+   :class: tb-screenshot-light
+   :width: 316px
+   :alt: A floodgauge filled to 75% with "75% complete" shown across it — light theme
 
-   A floodgauge filled to 75% with "75% complete" shown across it, in light and
-   dark themes.
+.. image:: /_static/examples/floodgauge-hero-dark.png
+   :class: tb-screenshot-dark
+   :width: 316px
+   :alt: A floodgauge filled to 75% with "75% complete" shown across it — dark theme
 
 Usage
 -----

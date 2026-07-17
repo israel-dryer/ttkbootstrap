@@ -6,10 +6,15 @@ a caption. ``Labelframe`` is the native ``ttk.Labelframe``, styled with
 ``bootstyle=``. This page covers grouping widgets under a label, then the
 ``bootstyle`` color.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/labelframe-hero-light.png
+   :class: tb-screenshot-light
+   :width: 296px
+   :alt: A "Contact" labelframe grouping two labeled fields — light theme
 
-   A "Contact" labelframe grouping a couple of fields, in light and dark themes.
+.. image:: /_static/examples/labelframe-hero-dark.png
+   :class: tb-screenshot-dark
+   :width: 296px
+   :alt: A "Contact" labelframe grouping two labeled fields — dark theme
 
 Usage
 -----

@@ -7,10 +7,15 @@ imported as ``ttk.Meter``). This page covers showing and updating a value, the
 full/semicircle shapes, the interactive dial, the striped look, then the
 ``bootstyle`` color.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/meter-hero-light.png
+   :class: tb-screenshot-light
+   :width: 228px
+   :alt: A meter reading 65 with a "storage used" subtext — light theme
 
-   A meter reading 65% with a "storage used" subtext, in light and dark themes.
+.. image:: /_static/examples/meter-hero-dark.png
+   :class: tb-screenshot-dark
+   :width: 228px
+   :alt: A meter reading 65 with a "storage used" subtext — dark theme
 
 Usage
 -----
@@ -68,10 +73,15 @@ half-circle gauge):
 
    Meter(app, amount_used=65, meter_type="semi")
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/meter-types-light.png
+   :class: tb-screenshot-light
+   :width: 400px
+   :alt: The same value as a full-circle ring and a semicircle gauge — light theme
 
-   The same value as a full-circle ring and a semicircle gauge, side by side.
+.. image:: /_static/examples/meter-types-dark.png
+   :class: tb-screenshot-dark
+   :width: 400px
+   :alt: The same value as a full-circle ring and a semicircle gauge — dark theme
 
 An interactive dial
 -------------------
@@ -86,10 +96,15 @@ meter becomes an input, not just a readout:
 
    dial.amount_used_var.get()           # read what the user set
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/meter-interactive-light.png
+   :class: tb-screenshot-light
+   :width: 228px
+   :alt: An interactive volume dial reading 30 — light theme
 
-   An interactive meter with the handle mid-arc, being dragged to a new value.
+.. image:: /_static/examples/meter-interactive-dark.png
+   :class: tb-screenshot-dark
+   :width: 228px
+   :alt: An interactive volume dial reading 30 — dark theme
 
 Striped
 -------
@@ -104,10 +119,15 @@ progress look:
 ``wedge_size`` instead draws the indicator as a moving wedge over the base ring,
 rather than a filled arc — a pointer look for a live reading.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/meter-striped-light.png
+   :class: tb-screenshot-light
+   :width: 400px
+   :alt: A striped meter beside a solid one — light theme
 
-   A meter whose indicator arc is broken into segments, beside a solid one.
+.. image:: /_static/examples/meter-striped-dark.png
+   :class: tb-screenshot-dark
+   :width: 400px
+   :alt: A striped meter beside a solid one — dark theme
 
 Color
 -----
@@ -118,11 +138,15 @@ Color
 
    Meter(app, amount_used=50, bootstyle="warning")
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/meter-colors-light.png
+   :class: tb-screenshot-light
+   :width: 668px
+   :alt: A row of meters in primary, success, info, warning, and danger — light theme
 
-   A row of meters in primary, success, info, warning, and danger, in light and
-   dark themes.
+.. image:: /_static/examples/meter-colors-dark.png
+   :class: tb-screenshot-dark
+   :width: 668px
+   :alt: A row of meters in primary, success, info, warning, and danger — dark theme
 
 Reference
 ---------

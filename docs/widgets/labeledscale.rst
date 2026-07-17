@@ -7,11 +7,15 @@ is a ttkbootstrap widget (a real class with its own API, imported as
 ``ttk.LabeledScale``). This page covers building one, where the label sits, then
 the ``bootstyle`` color.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/labeledscale-hero-light.png
+   :class: tb-screenshot-light
+   :width: 296px
+   :alt: A labeled scale with the value label riding above the handle — light theme
 
-   A labeled scale partway along its track with the value label above the handle,
-   in light and dark themes.
+.. image:: /_static/examples/labeledscale-hero-dark.png
+   :class: tb-screenshot-dark
+   :width: 296px
+   :alt: A labeled scale with the value label riding above the handle — dark theme
 
 Usage
 -----

@@ -6,10 +6,15 @@ a handle. ``Scale`` is the native ``ttk.Scale``, styled with ``bootstyle=``. Thi
 page covers binding its value, reacting as it moves, the orientation, then the
 ``bootstyle`` color.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/scale-hero-light.png
+   :class: tb-screenshot-light
+   :width: 276px
+   :alt: A horizontal scale partway along its track — light theme
 
-   A horizontal scale partway along its track in light and dark themes.
+.. image:: /_static/examples/scale-hero-dark.png
+   :class: tb-screenshot-dark
+   :width: 276px
+   :alt: A horizontal scale partway along its track — dark theme
 
 Usage
 -----

@@ -7,11 +7,15 @@ above a console. ``Panedwindow`` is the native ``ttk.Panedwindow``, styled with
 ``bootstyle=``. This page covers adding panes, controlling how they share space,
 then the ``bootstyle`` color.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/panedwindow-hero-light.png
+   :class: tb-screenshot-light
+   :width: 356px
+   :alt: A narrow sidebar and a wide content pane with the sash between them — light theme
 
-   A horizontal panedwindow — a narrow sidebar and a wide content pane with the
-   sash between them — in light and dark themes.
+.. image:: /_static/examples/panedwindow-hero-dark.png
+   :class: tb-screenshot-dark
+   :width: 356px
+   :alt: A narrow sidebar and a wide content pane with the sash between them — dark theme
 
 Usage
 -----

@@ -6,11 +6,15 @@ A **frame** is a rectangular container that groups and lays out other widgets.
 using it to structure a layout, padding its contents, then adding a border and a
 colored background.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/frame-hero-light.png
+   :class: tb-screenshot-light
+   :width: 316px
+   :alt: A colored header frame above a plain content frame — light theme
 
-   A window split into frames — a colored header frame above a plain content
-   frame — in light and dark themes.
+.. image:: /_static/examples/frame-hero-dark.png
+   :class: tb-screenshot-dark
+   :width: 316px
+   :alt: A colored header frame above a plain content frame — dark theme
 
 Usage
 -----

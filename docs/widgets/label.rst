@@ -6,10 +6,15 @@ name, a status line. ``Label`` is the native ``ttk.Label``, styled with
 ``bootstyle=``. This page covers showing static and dynamic text, coloring it,
 wrapping long text, then fonts and images.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/label-hero-light.png
+   :class: tb-screenshot-light
+   :width: 166px
+   :alt: A heading label and a colored status label — light theme
 
-   A heading label and a colored status label in light and dark themes.
+.. image:: /_static/examples/label-hero-dark.png
+   :class: tb-screenshot-dark
+   :width: 166px
+   :alt: A heading label and a colored status label — dark theme
 
 Usage
 -----

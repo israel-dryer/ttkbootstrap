@@ -6,11 +6,15 @@ values. ``Spinbox`` is the native ``ttk.Spinbox``, styled with ``bootstyle=``.
 This page covers stepping over a numeric range, stepping through a list, reacting
 to the arrows, then the ``bootstyle`` color and states.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/spinbox-hero-light.png
+   :class: tb-screenshot-light
+   :width: 247px
+   :alt: A numeric spinbox and a list spinbox with up/down arrows — light theme
 
-   A numeric spinbox and a list spinbox in light and dark themes, showing the
-   up/down arrows.
+.. image:: /_static/examples/spinbox-hero-dark.png
+   :class: tb-screenshot-dark
+   :width: 247px
+   :alt: A numeric spinbox and a list spinbox with up/down arrows — dark theme
 
 Usage
 -----
