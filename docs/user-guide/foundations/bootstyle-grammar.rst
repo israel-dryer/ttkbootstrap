@@ -26,9 +26,12 @@ slot order::
 
    [@surface] [color] [variant] <base-type> [orient]
 
-- **@surface** — the surface the control sits on: ``@card`` (a neutral raised
-  panel) or an accent (``@primary`` …), so a ghost, outline, or link control
-  blends on a card or an accent bar instead of only the window background.
+- **@surface** — the surface the control sits on, a mode-aware elevation scale
+  ``@chrome`` (recessive app framing) → ``@card`` (a raised panel), or an accent
+  (``@primary`` …), so a ghost, outline, or link control blends on a card or an
+  accent bar instead of only the window background. A container **frame** can take
+  the same token to *become* that surface — ``ttk.Frame(app, bootstyle="@card")``
+  is a sidebar or panel on the scale.
   Optional and position-free.
 - **color** — the semantic intent: ``primary``, ``secondary``, ``success``,
   ``info``, ``warning``, ``danger``, ``light``, ``dark``, ``neutral``.
@@ -97,7 +100,7 @@ sits on:
 
 .. code-block:: python
 
-   card = ttk.Frame(app, bootstyle="card", padding=12)
+   card = ttk.Frame(app, bootstyle="@card", padding=12)   # the frame IS the card surface
    ttk.Button(card, text="More", bootstyle="@card primary ghost")
 
 The token exists because tkinter has no transparency. Where a control seems to
@@ -105,8 +108,10 @@ let the surface show through — the fill of a ghost, outline, or link button, t
 label background of a checkbutton or radiobutton — the widget is really painted
 a solid color, and by default that color is the window background. Sitting on a
 card or an accent bar, that shows up as a wrong-colored box around the control.
-``@card`` (a neutral raised panel) or an accent (``@primary`` …) names the
-surface instead, and the theme paints the control to match it.
+``@chrome`` or ``@card`` (the neutral elevation scale) or an accent
+(``@primary`` …) names the surface instead, and the theme paints the control to
+match it. A container frame can take the same token to *render as* that surface,
+so a control and the panel beneath it agree.
 
 Chameleon base-types
 --------------------

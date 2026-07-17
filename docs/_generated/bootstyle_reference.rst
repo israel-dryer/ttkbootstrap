@@ -12,7 +12,7 @@ Surfaces
 
 The optional ``@<surface>`` slot names the surface a control sits on so it can blend on a card or an accent bar. It accepts:
 
-``@card``, ``@primary``, ``@secondary``, ``@success``, ``@info``, ``@warning``, ``@danger``, ``@light``, ``@dark``.
+``@chrome``, ``@card``, ``@primary``, ``@secondary``, ``@success``, ``@info``, ``@warning``, ``@danger``, ``@light``, ``@dark``.
 
 Widget families and variants
 ----------------------------

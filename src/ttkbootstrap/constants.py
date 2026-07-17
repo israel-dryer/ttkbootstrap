@@ -118,14 +118,16 @@ BOOTSTYLE_ORIENTS: Final = ("horizontal", "vertical")
 
 # Named neutral surfaces a widget can be placed on (2.0 surface-color). The
 # *surface* is the background a widget renders against; the style engine resolves
-# it to a concrete color (style/builders_ttk.py `resolve_surface`). `background`
-# is the application default -- the only surface that produces no style-name
-# segment; `card` is a mode-aware raised panel. Accent colors (BOOTSTYLE_COLORS)
-# are ALSO valid surfaces (resolved separately), so a ghost/outline/link control
-# can blend into an accent container. A non-default surface prefixes the style
-# name with an `@<surface>.` segment. Raw-hex surfaces are deferred.
+# it to a concrete color (style/builders_ttk.py `resolve_surface`). They form a
+# mode-aware elevation scale `background` < `chrome` < `card`: `background` is
+# the application default -- the only surface that produces no style-name segment;
+# `chrome` is the recessive app-framing step (toolbars, status bars); `card` is
+# the raised-panel ceiling. Accent colors (BOOTSTYLE_COLORS) are ALSO valid
+# surfaces (resolved separately), so a ghost/outline/link control can blend into
+# an accent container. A non-default surface prefixes the style name with an
+# `@<surface>.` segment. Raw-hex surfaces are deferred.
 DEFAULT_SURFACE: Final = "background"
-BOOTSTYLE_SURFACES: Final = ("background", "card")
+BOOTSTYLE_SURFACES: Final = ("background", "chrome", "card")
 # The full accepted surface vocabulary: named neutral surfaces + every accent
 # color (an accent doubles as a surface). Single source of truth, shared by the
 # bootstyle-string validator and the builder's resolver so they cannot diverge.

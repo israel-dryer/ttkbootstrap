@@ -29,7 +29,13 @@ from ttkbootstrap.style.theme import (
 _TROUGH_SHADE = 0.2    # recessed dark-theme track/trough behind a filled bar
 _STRIPE_TINT = 0.2     # lighter diagonal highlight over a progress bar
 _MUTE_AMOUNT = 0.4     # unchecked-indicator muting
-_CARD_ELEVATION = 0.06  # mode-aware raise of the background for the `card` surface
+# Surface elevation scale (2.0 surface-color): a mode-aware step off the
+# background -- darker in a light theme, lighter in a dark one -- so each named
+# surface reads as progressively more separated from the base content. `chrome`
+# is the recessive framing step (toolbars, status bars); `card` is the ceiling,
+# a distinct grouped panel that can even sit on chrome.
+_CHROME_ELEVATION = 0.03  # `chrome` surface: recessive app framing
+_CARD_ELEVATION = 0.06    # `card` surface: a distinct raised panel (the ceiling)
 
 
 class StyleBuilderTTK:
@@ -152,17 +158,35 @@ class StyleBuilderTTK:
         """
         return _accent_on_color(color)
 
-    def card_surface(self) -> str:
-        """Return the `card` surface: a mode-aware raise of the background.
+    def _elevated_surface(self, elevation: float) -> str:
+        """Raise `colors.bg` by `elevation` in a mode-aware direction.
 
         Darkens the background in a light theme, lightens it in a dark theme, so
-        a card reads as a subtly raised panel in either mode. Derived from
-        `colors.bg` at build time, so it follows theme switches.
+        the surface reads as separated from the base content in either mode.
+        Derived from `colors.bg` at build time, so it follows theme switches.
         """
         bg = self.colors.bg
         if self.is_light_theme:
-            return self.shade(bg, _CARD_ELEVATION)
-        return self.tint(bg, _CARD_ELEVATION)
+            return self.shade(bg, elevation)
+        return self.tint(bg, elevation)
+
+    def chrome_surface(self) -> str:
+        """Return the `chrome` surface: the recessive app-framing step.
+
+        A whisper of separation from the background for structural framing --
+        toolbars, sidebars' quieter cousins, status bars -- deliberately subtler
+        than `card` so a card placed on chrome still reads as raised.
+        """
+        return self._elevated_surface(_CHROME_ELEVATION)
+
+    def card_surface(self) -> str:
+        """Return the `card` surface: a mode-aware raise of the background.
+
+        The top of the elevation scale -- a distinct grouped panel that reads as
+        raised over both the background and `chrome`. Derived from `colors.bg` at
+        build time, so it follows theme switches.
+        """
+        return self._elevated_surface(_CARD_ELEVATION)
 
     def resolve_surface(self, surface: str | None = None) -> str:
         """Resolve a surface token to a concrete background color.
@@ -172,7 +196,9 @@ class StyleBuilderTTK:
           - `None` / `""` / `"background"` -- the application background
             (`colors.bg`); the default, and the only surface that produces no
             style-name segment.
-          - `"card"` -- a mode-aware raised surface (`card_surface`).
+          - `"chrome"` -- the recessive app-framing surface (`chrome_surface`).
+          - `"card"` -- a mode-aware raised surface (`card_surface`), the top of
+            the elevation scale (`background` < `chrome` < `card`).
           - an accent color name (`primary`, `success`, ..., `neutral`) -- that
             color, so a ghost/outline/link control can blend into an accent
             container (e.g. an accent toolbar).
@@ -186,6 +212,8 @@ class StyleBuilderTTK:
         """
         if not surface or surface == DEFAULT_SURFACE:
             return self.colors.bg
+        if surface == "chrome":
+            return self.chrome_surface()
         if surface == "card":
             return self.card_surface()
         if surface in BOOTSTYLE_COLORS:
