@@ -509,8 +509,54 @@ builders read from (the author then closed #1160/#1161). **#1240** merged —
 **ToolTip popup `topmost=True` by default** (native parity; `topmost=False`
 opts out via the now-documented Toplevel-kwargs passthrough; probed: aqua's
 `help` window class already floats, so the default lands on Windows/X11;
-#1086 closed). Suite on `2.0` is **692** excl. the two known flakes; every
+#1086 closed). Suite on `2.0` was **692** excl. the two known flakes; every
 docs change verified headlessly + built green.
+**Session 2026-07-16b (all MERGED into `2.0`) — the widget API-reference
+introspection audit + an author-review batch.** **#1244** ran the #1232 Misc-audit
+method over **every** reference page (31 widget pages + `tk.rst` +
+`reference/windows/` + `reference/dialogs/`): enumerate each live class's public
+surface minus the Capabilities-owned baseline, diff both directions against the
+page's specs/prose/options tables, probe every flag before acting. Real gaps
+closed (canvas `find_above`/`find_below` + text-item `select_*`; menu
+`add`/`xposition`/`type`; entry-family `scan_*` + `cursor` rows; the
+inconsistent `cursor`/`takefocus` cluster; DateEntry `state`; wm_-alias sentence
++ `configure(menu=)` note on windows pages; QueryDialog `validate`/`apply`;
+toast documented only the deprecated `hide_toast` alias, not `hide()`; tooltip
+`destroy()`; `report_callback_exception`). Verified-deliberate exclusions
+(probed): classic-tk **trap methods inherited by ttk widgets** (Panedwindow
+`sash*`/`proxy*`/`pane(config|cget)`, `Scrollbar.activate` — all TclError on the
+ttk widget), deprecated Tableview aliases, Floodgauge's Canvas base (author:
+impl detail), Text `debug`/`window_config`/`yview_pickplace`, entry-family
+`background` compat option. **Author ruling (memory-saved): "works ≠ designed
+surface"** — composite widgets' container-Frame option passthrough
+(borderwidth/relief/padding on DateEntry/Meter/LabeledScale/Tableview) is NOT
+API and must not be documented; designed delegates (DateEntry `state`/`width`)
+are. The audit found two library bugs, fixed separately: **#1245**
+`Tableview.configure` never returned query results (+ no `pagesize` cget
+parity; `style`/`class` kept on the wrapper so the #1122 theme-walk read is
+unchanged; explicit `__getitem__`/`__setitem__` because tkinter binds
+`__getitem__ = cget` at *function* level, bypassing subclass overrides), and
+**#1247** `bootify` **crashed** (`TclError: Layout not found`) for any widget
+with its own ttk class — even bare construction — because the unknown-family
+resolve returned the raw bootstyle fragment as a style name; now
+warn-and-keep-current-style (silent for the implicit `default`), with the
+effectiveness contract documented (full vocabulary for standard ttk classes;
+explicit base type `"info-frame"` borrows a recipe; probed: composite internals
+follow the theme on their own — only the accent isn't fanned out;
+`apply_bootstyle` on the child is the designed path). **#1246** fixed the
+author's nine docs-review findings: `create_alias("Caption")` shadowed
+`TkCaptionFont` → `HeadingSm`; `grid_propagate` taught nowhere on the grid
+foundations page (pack/frame/reference already covered it); pack/grid/place
+got real Options list-tables; `El`/`StyleName`/`Theme` attributes documented
+(napoleon Attributes + `#:` dataclass doc-comments; `__slots__` descriptors
+excluded from `:members:` to avoid duplicate-object warnings); `icon_element`'s
+grammar list de-blockquoted (nested inline markup is illegal in rST); and four
+leftover **mkdocs `!!!` admonitions in docstrings** (scaling.py high-DPI,
+colordropper, tableview ×2) that rendered as plain text → napoleon `Warning:`
+sections. **#1248** unslashed the new geometry tables' paired option cells onto
+rST line blocks (the #1227 convention applies at authoring time, not just in
+sweeps; memory-saved). Suite on `2.0` is **701** excl. the two known flakes;
+every claim probed live and every docs change built green.
 **NEXT docs-H thread:** the deferred **screenshot slice** (46 placeholders across
 catalog + guides; the 5 new/split how-to pages have none — decide during the slice;
 capture tooling is Windows-canonical, so postponed on macOS), plus optional Track B
