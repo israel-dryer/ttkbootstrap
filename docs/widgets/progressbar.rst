@@ -7,11 +7,15 @@ is the native ``ttk.Progressbar``, styled with ``bootstyle=``. This page covers
 both modes, driving the value, the striped and vertical looks, then the
 ``bootstyle`` color.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/progressbar-hero-light.png
+   :class: tb-screenshot-light
+   :width: 316px
+   :alt: A determinate bar partway across and an indeterminate bar — light theme
 
-   A determinate bar partway across and an indeterminate bar, in light and dark
-   themes.
+.. image:: /_static/examples/progressbar-hero-dark.png
+   :class: tb-screenshot-dark
+   :width: 316px
+   :alt: A determinate bar partway across and an indeterminate bar — dark theme
 
 Determinate: a known amount
 ---------------------------
