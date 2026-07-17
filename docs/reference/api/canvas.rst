@@ -318,6 +318,14 @@ Finding items
 
    :rtype: tuple[int, ...]
 
+.. py:method:: find_above(tagOrId)
+   :noindex:
+
+   Return the id of the item just above the topmost matching item in the
+   stacking order. ``find_below(tagOrId)`` is the downward counterpart.
+
+   :rtype: tuple[int, ...]
+
 .. py:method:: find_closest(x, y, halo=None, start=None)
    :noindex:
 
@@ -443,6 +451,16 @@ or the special indices ``"insert"``, ``"end"``, ``"sel.first"``/``"sel.last"``.
    :noindex:
 
    Move the insert cursor within a text item.
+
+   :returns: ``None``.
+
+.. py:method:: select_from(tagOrId, index)
+   :noindex:
+
+   Anchor the selection inside a text item at ``index``; extend it with
+   ``select_to(tagOrId, index)`` and ``select_adjust(tagOrId, index)``.
+   ``select_clear()`` removes the selection, and ``select_item()`` returns the
+   id of the item holding it (or ``None``).
 
    :returns: ``None``.
 

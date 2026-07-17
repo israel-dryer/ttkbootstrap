@@ -2,6 +2,10 @@
    included by the App, Toplevel, and Tk pages. The window pages slot
    place_window_center in after this, under Size and position. Not standalone.
 
+Every window-manager method below is also available under its formal
+``wm_``-prefixed name (``wm_title``, ``wm_geometry``, …); the short names are
+aliases.
+
 .. rubric:: Title, icon, and taskbar
 
 .. py:method:: title(string=None)

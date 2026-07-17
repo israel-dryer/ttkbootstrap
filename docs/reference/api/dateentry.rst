@@ -47,6 +47,11 @@ Options
      - ``bool``
      - Whether the popup shows the leading/trailing days of adjacent months as
        muted, non-selectable labels. Default ``True``.
+   * - ``state``
+     - ``str``
+     - ``"normal"``, ``"readonly"``, or ``"disabled"``. Queries return the entry
+       field's state; setting ``"normal"`` or ``"disabled"`` also applies to the
+       date button.
    * - ``raise_exception``
      - ``bool``
      - Whether an invalid typed date raises ``ValueError``. When ``False``, a
@@ -61,7 +66,9 @@ Options
        borderless. Default ``"Select new date"``.
 
 A ``width`` passed via ``**kwargs`` is applied to the entry field, not the
-container frame.
+container frame. The widget also accepts the standard
+:doc:`Frame </reference/api/frame>` container options (``padding``,
+``borderwidth``, ``relief``, …).
 
 Methods
 -------

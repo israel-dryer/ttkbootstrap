@@ -82,6 +82,10 @@ other option is keyword-only.
      - ``float``
      - The window's opacity, ``0.0``–``1.0``. Default ``1.0`` (opaque).
 
+After construction, the classic root-window options are available through
+``configure()`` — most usefully ``menu``, the ``Menu`` widget to use as the
+window's menu bar.
+
 Theming
 -------
 
@@ -103,6 +107,21 @@ Lifecycle
    :returns: ``None``.
 
 .. include:: /reference/windows/_lifecycle.rst
+
+Error handling
+--------------
+
+.. py:method:: report_callback_exception(exc, val, tb)
+   :noindex:
+
+   Called by tkinter whenever a callback raises an uncaught exception; the
+   default prints the traceback to ``sys.stderr``. Assign your own function (or
+   override in a subclass) to log or display callback errors — see
+   :doc:`Handle errors gracefully </user-guide/how-to/error-handling>`.
+
+   :param exc: the exception class.
+   :param val: the exception instance.
+   :param tb: the traceback object.
 
 Window management
 -----------------

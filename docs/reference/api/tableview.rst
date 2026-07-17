@@ -14,7 +14,9 @@ column id), rows by index or by **iid** (the row id).
 Options
 -------
 
-All options are passed to the constructor.
+All options are passed to the constructor. The widget also accepts the standard
+:doc:`Frame </reference/api/frame>` container options (``padding``,
+``borderwidth``, ``relief``, …).
 
 .. list-table::
    :header-rows: 1
