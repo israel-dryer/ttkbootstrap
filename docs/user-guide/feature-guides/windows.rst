@@ -177,10 +177,15 @@ known (the constructor ``size`` counts):
    the active one. ``screeninfo`` is an optional dependency — ttkbootstrap's only
    required one is Pillow.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/windows-centered-light.png
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 298px
+   :alt: A small About Toplevel window centered with place_window_center — light theme
 
-   A small Toplevel centered over its parent window with ``place_window_center``.
+.. image:: /_static/examples/windows-centered-dark.png
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 298px
+   :alt: A small About Toplevel window centered with place_window_center — dark theme
 
 Focus, modality & lifecycle
 ---------------------------
