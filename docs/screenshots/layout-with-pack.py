@@ -16,6 +16,7 @@ def toolbar():
     content = ttk.Frame(app, padding=20)
     content.pack(side="top", fill="both", expand=True)
     ttk.Label(content, text="Content goes here").pack()
+    app._capture_full_window = True  # layout shown at the app level
     app.mainloop()
 
 
@@ -38,6 +39,7 @@ def shell():
     content = ttk.Frame(middle, padding=20)
     content.pack(side="left", fill="both", expand=True)
     ttk.Label(content, text="Content goes here").pack()
+    app._capture_full_window = True  # layout shown at the app level
     app.mainloop()
 
 

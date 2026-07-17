@@ -65,13 +65,13 @@ needs. ``expand=True`` is the missing piece: it hands the widget the container's
    ttk.Label(content, text="Content goes here").pack()
 
 .. image:: /_static/examples/layout-with-pack-toolbar-light.png
-   :class: tb-screenshot-light
-   :width: 356px
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 358px
    :alt: A toolbar spanning the top edge with its buttons at the left and a content area filling the space beneath — light theme
 
 .. image:: /_static/examples/layout-with-pack-toolbar-dark.png
-   :class: tb-screenshot-dark
-   :width: 356px
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 358px
    :alt: A toolbar spanning the top edge with its buttons at the left and a content area filling the space beneath — dark theme
 
 That's the distinction worth remembering:
@@ -122,13 +122,13 @@ with a fixed sidebar beside a content area that fills the rest.
    app.mainloop()
 
 .. image:: /_static/examples/layout-with-pack-shell-light.png
-   :class: tb-screenshot-light
-   :width: 596px
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 598px
    :alt: An app shell — header across the top, status bar across the bottom, a fixed-width sidebar on the left, and the content area filling the middle — light theme
 
 .. image:: /_static/examples/layout-with-pack-shell-dark.png
-   :class: tb-screenshot-dark
-   :width: 596px
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 598px
    :alt: An app shell — header across the top, status bar across the bottom, a fixed-width sidebar on the left, and the content area filling the middle — dark theme
 
 The header and status bars ``fill="x"`` against their edges; the ``middle`` frame
