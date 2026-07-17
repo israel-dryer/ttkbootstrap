@@ -5,11 +5,15 @@ A **separator** is a thin line that divides content into groups — between sect
 of a form or items in a menu-like list. ``Separator`` is the native
 ``ttk.Separator``, styled with ``bootstyle=``.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/separator-hero-light.png
+   :class: tb-screenshot-light
+   :width: 276px
+   :alt: Two stacked sections divided by a horizontal separator — light theme
 
-   Two stacked sections divided by a horizontal separator, in light and dark
-   themes.
+.. image:: /_static/examples/separator-hero-dark.png
+   :class: tb-screenshot-dark
+   :width: 276px
+   :alt: Two stacked sections divided by a horizontal separator — dark theme
 
 Usage
 -----

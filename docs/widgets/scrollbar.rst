@@ -7,10 +7,15 @@ native ``ttk.Scrollbar``, styled with
 ``bootstyle=``. This page covers wiring it to a widget, the orientation, then the
 ``bootstyle`` color and variants.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/scrollbar-hero-light.png
+   :class: tb-screenshot-light
+   :width: 400px
+   :alt: A scrolled text box with a vertical scrollbar — light theme
 
-   A scrolled text box with a vertical scrollbar in light and dark themes.
+.. image:: /_static/examples/scrollbar-hero-dark.png
+   :class: tb-screenshot-dark
+   :width: 400px
+   :alt: A scrolled text box with a vertical scrollbar — dark theme
 
 Wiring it up
 ------------
