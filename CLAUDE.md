@@ -555,7 +555,7 @@ src/ttkbootstrap/
   publisher.py       # deprecation shim -> internal/publisher.py (warns; removed in 3.0)
 tests/               # HEADLESS pytest only (4 test_*.py + conftest.py). CI-runnable.
 examples/            # interactive mainloop() demos (moved out of tests/ in #1068)
-docs/, gallery/, cookbook/   # documentation and examples
+docs/, gallery/      # documentation and showcase apps
 ```
 
 ### internal/ vs public (important — new in 2.0)
