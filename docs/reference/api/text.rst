@@ -529,6 +529,8 @@ Search
 Undo stack
 ~~~~~~~~~~
 
+Each ``edit_*`` method wraps the generic ``edit(*args)`` dispatcher.
+
 .. py:method:: edit_undo()
    :noindex:
 

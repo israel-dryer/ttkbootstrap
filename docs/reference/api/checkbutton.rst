@@ -73,6 +73,12 @@ Each option can be set in the constructor and changed later with ``configure()``
      - ``str``
      - ``"normal"`` or ``"disabled"``. For finer control use the ``state`` method
        (see :doc:`Capabilities </reference/capabilities/index>`).
+   * - ``cursor``
+     - ``str``
+     - The mouse cursor over the checkbutton (see :doc:`Cursors </reference/cursors>`).
+   * - ``takefocus``
+     - ``bool``
+     - Whether the checkbutton accepts keyboard focus during traversal.
 
 Methods
 -------

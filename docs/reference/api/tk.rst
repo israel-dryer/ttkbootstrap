@@ -41,6 +41,10 @@ The root window takes the same surface options as a
    * - ``use``
      - ``str``
      - **Constructor only.** The window id to embed this interpreter into.
+   * - ``container``
+     - ``bool``
+     - **Constructor only.** Make the window a container that another
+       application can be embedded into. Rarely needed.
    * - ``background`` (``bg``)
      - ``str``
      - The fill color of the window.
@@ -66,6 +70,12 @@ The root window takes the same surface options as a
    * - ``pady``
      - ``int``
      - Internal vertical padding between the border and the content, in pixels.
+   * - ``width``
+     - ``int``
+     - The requested width in pixels. Usually set with ``geometry()`` instead.
+   * - ``height``
+     - ``int``
+     - The requested height in pixels. Usually set with ``geometry()`` instead.
    * - ``cursor``
      - ``str``
      - The mouse cursor (see :doc:`Cursors </reference/cursors>`).
@@ -93,6 +103,21 @@ As the application's root window, ``Tk`` carries the full window-manager
 .. include:: /reference/windows/_wm-1.rst
 
 .. include:: /reference/windows/_wm-2.rst
+
+Error handling
+--------------
+
+.. py:method:: report_callback_exception(exc, val, tb)
+   :noindex:
+
+   Called by tkinter whenever a callback raises an uncaught exception; the
+   default prints the traceback to ``sys.stderr``. Assign your own function (or
+   override in a subclass) to log or display callback errors — see
+   :doc:`Handle errors gracefully </user-guide/how-to/error-handling>`.
+
+   :param exc: the exception class.
+   :param val: the exception instance.
+   :param tb: the traceback object.
 
 Shared capabilities
 -------------------

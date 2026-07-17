@@ -62,6 +62,9 @@ Each option can be set in the constructor and changed later with ``configure()``
    * - ``exportselection``
      - ``bool``
      - Whether the selection is exported to the clipboard/X selection.
+   * - ``cursor``
+     - ``str``
+     - The mouse cursor over the field (see :doc:`Cursors </reference/cursors>`).
    * - ``takefocus``
      - ``bool``
      - Whether the field accepts keyboard focus during traversal.
@@ -139,6 +142,14 @@ Methods
 
    Query or set the horizontal view; usually wired to a scrollbar. Has
    ``xview_moveto(fraction)`` and ``xview_scroll(number, what)`` variants.
+
+.. py:method:: scan_mark(x)
+   :noindex:
+
+   Record a starting point for a fast drag-scroll (paired with
+   ``scan_dragto(x)``, which scrolls the view relative to that point).
+
+   :returns: ``None``.
 
 .. _combobox-styling:
 

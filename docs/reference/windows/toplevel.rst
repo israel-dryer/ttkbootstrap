@@ -71,6 +71,10 @@ where ``title`` may be passed positionally and every other option is keyword-onl
      - ``float``
      - The window's opacity, ``0.0``–``1.0``. Default ``1.0`` (opaque).
 
+After construction, the classic window options are available through
+``configure()`` — most usefully ``menu``, a ``Menu`` widget to use as this
+window's menu bar.
+
 Theming
 -------
 

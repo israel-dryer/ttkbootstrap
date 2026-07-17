@@ -45,6 +45,12 @@ Each option can be set in the constructor and changed later with ``configure()``
    * - ``yscrollcommand``
      - ``callable``
      - A callback connecting the tree to a vertical scrollbar.
+   * - ``cursor``
+     - ``str``
+     - The mouse cursor over the tree (see :doc:`Cursors </reference/cursors>`).
+   * - ``takefocus``
+     - ``bool``
+     - Whether the tree accepts keyboard focus during traversal.
 
 Methods
 -------

@@ -71,7 +71,9 @@ FontDialog
 ----------
 
 A font selector for choosing a family, size, weight, slant, and effects, with a
-live preview of the current selection.
+live preview of the current selection. A ``Dialog`` subclass, so it also carries
+the :doc:`base Dialog interface </reference/dialogs/dialog-classes>`
+(``close()``, the ``create_*`` build hooks, …).
 
 Options
 ~~~~~~~
@@ -120,7 +122,9 @@ ColorChooserDialog
 
 A color picker with color-model sliders and a preview. The user can adjust the
 sliders, enter a value, or reach the eyedropper (:py:class:`ColorDropperDialog`)
-to sample a color from the screen.
+to sample a color from the screen. A ``Dialog`` subclass, so it also carries
+the :doc:`base Dialog interface </reference/dialogs/dialog-classes>`
+(``close()``, the ``create_*`` build hooks, …).
 
 Options
 ~~~~~~~
