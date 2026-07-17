@@ -109,15 +109,17 @@ html[data-theme="dark"] .bd-content img.tb-dialog-screenshot {
 }
 
 /* Full-window screenshots. The native OS border is cropped during capture, so
-   draw a clean border in its place, following the theme's border token. */
-.tb-window-screenshot,
-.tb-dialog-screenshot {
+   draw a clean border in its place, following the theme's border token. Scope
+   to the img — docutils copies :class: onto the image-reference <a> wrapper
+   too, and a bare selector would border both (a double border). */
+img.tb-window-screenshot,
+img.tb-dialog-screenshot {
     border-radius: 6px;
     border: 1px solid var(--pst-color-border);
     box-shadow: 0 6px 22px rgba(0, 0, 0, 0.16);
 }
-html[data-theme="dark"] .tb-window-screenshot,
-html[data-theme="dark"] .tb-dialog-screenshot {
+html[data-theme="dark"] img.tb-window-screenshot,
+html[data-theme="dark"] img.tb-dialog-screenshot {
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
 }
 
