@@ -56,11 +56,15 @@ Start with a **color** — the widget picks the right shape from its own class:
    ttk.Label(app, text="Heads up", bootstyle="warning")
    ttk.Progressbar(app, bootstyle="success")   # orient inferred → horizontal
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/bootstyle-grammar-colors-light.png
+   :class: tb-screenshot-light
+   :width: 469px
+   :alt: A row of buttons in the semantic colors — primary, secondary, success, info, warning, danger — light theme
 
-   A row of buttons in the semantic colors — primary, secondary, success, info,
-   warning, danger — light and dark themes side by side.
+.. image:: /_static/examples/bootstyle-grammar-colors-dark.png
+   :class: tb-screenshot-dark
+   :width: 469px
+   :alt: A row of buttons in the semantic colors — primary, secondary, success, info, warning, danger — dark theme
 
 Add a **variant** to change visual weight. The color still leads:
 
@@ -71,11 +75,15 @@ Add a **variant** to change visual weight. The color still leads:
    ttk.Button(app, text="Link",    bootstyle="primary link")
    ttk.Button(app, text="Ghost",   bootstyle="primary ghost")
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/bootstyle-grammar-weights-light.png
+   :class: tb-screenshot-light
+   :width: 290px
+   :alt: The primary color as solid, outline, link, and ghost buttons in a row — light theme
 
-   The same primary color as solid, outline, link, and ghost buttons in a row —
-   showing the four visual weights at a glance.
+.. image:: /_static/examples/bootstyle-grammar-weights-dark.png
+   :class: tb-screenshot-dark
+   :width: 290px
+   :alt: The primary color as solid, outline, link, and ghost buttons in a row — dark theme
 
 You can drop the color as well — with no color token, every button-family
 variant keeps the quiet ``neutral`` look:
