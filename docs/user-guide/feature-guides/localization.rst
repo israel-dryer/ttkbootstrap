@@ -149,11 +149,35 @@ Pressing a language button re-translates every ``LocaleVar`` at once; the plain
 ``L("Language")`` label, resolved when it was built, stays put — which is why
 anything that must switch live is bound to a ``LocaleVar``.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. container:: tb-screenshot-row
 
-   The window shown once in English and once after pressing *Español*, the bound
-   heading switched live while the layout is unchanged.
+   .. figure:: /_static/examples/localization-english-light.png
+      :figclass: tb-screenshot-light
+      :width: 116px
+      :alt: The window with an English heading — light theme
+
+      English
+
+   .. figure:: /_static/examples/localization-english-dark.png
+      :figclass: tb-screenshot-dark
+      :width: 116px
+      :alt: The window with an English heading — dark theme
+
+      English
+
+   .. figure:: /_static/examples/localization-spanish-light.png
+      :figclass: tb-screenshot-light
+      :width: 116px
+      :alt: The same window after Español, the heading switched to Spanish — light theme
+
+      After *Español*
+
+   .. figure:: /_static/examples/localization-spanish-dark.png
+      :figclass: tb-screenshot-dark
+      :width: 116px
+      :alt: The same window after Español, the heading switched to Spanish — dark theme
+
+      After *Español*
 
 .. seealso::
 
