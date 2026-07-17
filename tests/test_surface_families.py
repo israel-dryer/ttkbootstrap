@@ -156,6 +156,7 @@ def test_every_gated_family_honors_surface(root):
         "scale": ttk.Scale(root, bootstyle="@card"),
         "progressbar": ttk.Progressbar(root, bootstyle="@card"),
         "scrollbar": ttk.Scrollbar(root, bootstyle="@card"),
+        "frame": ttk.Frame(root, bootstyle="@card"),
     }
     # the test must cover exactly the gate (update both together)
     assert set(cases) == set(bs._SURFACE_FAMILIES)

@@ -131,10 +131,20 @@ def test_surface_token_is_case_normalized(root):
     )
 
 
-def test_frame_ignores_surface_family_gate(root):
-    """Frames are surface producers -- an @surface token is gated out."""
-    frm = ttk.Frame(root, bootstyle="@card primary")
-    assert "@" not in frm.cget("style")
+def test_frame_consumes_surface(root):
+    """A frame renders AS the surface it names -- a container that *is* a
+    surface (2.0 surface-color), so `@card`/`@chrome` fill it with the elevation
+    surface for sidebars and panels."""
+    frm = ttk.Frame(root, bootstyle="@card")
+    assert frm.cget("style") == "@card.TFrame"
+    bg = root.tk.call("ttk::style", "lookup", "@card.TFrame", "-background")
+    assert bg and bg != str(root.cget("background"))  # not the plain window bg
+
+
+def test_frame_surface_composes_with_color(root):
+    """A surface prefix composes with an accent-colored frame fill."""
+    frm = ttk.Frame(root, bootstyle="@chrome primary")
+    assert frm.cget("style") == "@chrome.primary.TFrame"
 
 
 def test_unknown_surface_warns(root):
