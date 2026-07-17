@@ -103,11 +103,15 @@ whichever label was clicked, so name them for how you'll test them:
    elif choice == "This one":
        apply_to_current()
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/dialogs-message-light.png
+   :class: tb-screenshot-light tb-dialog-screenshot
+   :width: 270px
+   :alt: An Apply changes dialog with secondary Cancel, primary This one, and success All buttons — light theme
 
-   The "Apply changes" dialog with three custom buttons — a secondary *Cancel*, a
-   primary *This one*, and a success-green *All* — in the active theme.
+.. image:: /_static/examples/dialogs-message-dark.png
+   :class: tb-screenshot-dark tb-dialog-screenshot
+   :width: 270px
+   :alt: An Apply changes dialog with secondary Cancel, primary This one, and success All buttons — dark theme
 
 .. note::
 
@@ -209,11 +213,19 @@ three models, so you take whichever the calling code needs:
        r, g, b = picked.rgb                       # each 0–255
        h, s, l = picked.hsl                       # h 0–360, s/l 0–100
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. the calendar popup dismisses on the harness's app-lift when captured on
+   Windows, so the date-picker half is captured on macOS (like the DateEntry
+   catalog shot); the color chooser is shown here for now.
 
-   The date picker (a themed calendar popup) beside the color chooser, both in the
-   active theme.
+.. image:: /_static/examples/dialogs-color-light.png
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 544px
+   :alt: The color chooser dialog — spectrum, current/new swatches, and HSL/RGB/hex fields — light theme
+
+.. image:: /_static/examples/dialogs-color-dark.png
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 544px
+   :alt: The color chooser dialog — spectrum, current/new swatches, and HSL/RGB/hex fields — dark theme
 
 File dialogs
 ~~~~~~~~~~~~
@@ -310,11 +322,15 @@ through a reusable version, and :doc:`Input validation
 </user-guide/feature-guides/validation>` covers checking the fields before you
 accept them.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/dialogs-custom-light.png
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 318px
+   :alt: A custom modal dialog built from a Toplevel — a titled form with Name and Email fields and Cancel/OK buttons — light theme
 
-   A custom modal dialog built from a ``Toplevel`` — a titled form with two fields
-   and *Cancel* / *OK* buttons — centered over its parent.
+.. image:: /_static/examples/dialogs-custom-dark.png
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 318px
+   :alt: A custom modal dialog built from a Toplevel — a titled form with Name and Email fields and Cancel/OK buttons — dark theme
 
 .. seealso::
 
