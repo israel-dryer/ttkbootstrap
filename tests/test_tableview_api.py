@@ -237,3 +237,48 @@ def test_menu_labels_have_no_decorative_glyphs(root):
     # (the first header entry, "Reset table", is covered by the glyph check above;
     # no literal-text assertion here -- the label is localized, so it varies by
     # the active MessageCatalog locale.)
+
+
+# --------------------------------------------------------------------------
+# configure/cget query parity
+# --------------------------------------------------------------------------
+
+def test_configure_query_returns_spec(root):
+    # Regression: configure() computed the query result and dropped it
+    # (no ``return``), so every query answered None.
+    tv = _make_table(root)
+    spec = tv.configure("height")
+    assert spec is not None and spec[0] == "height"
+
+
+def test_configure_no_args_returns_option_dict(root):
+    tv = _make_table(root)
+    options = tv.configure()
+    assert isinstance(options, dict)
+    assert "height" in options
+    assert "pagesize" in options
+
+
+def test_pagesize_configure_and_cget_parity(root):
+    # ``pagesize`` was settable via configure(pagesize=...) but raised
+    # "unknown option" on every query form.
+    tv = _make_table(root)
+    tv.configure(pagesize=5)
+    assert tv.cget("pagesize") == 5
+    assert tv.configure("pagesize")[-1] == 5
+    assert tv["pagesize"] == 5
+
+
+def test_cget_routes_to_view_with_frame_fallback(root):
+    tv = _make_table(root)
+    tv.configure(height=4)             # a Treeview option (rows)
+    assert tv.cget("height") == 4      # read back from the view, not the frame
+    tv.configure(relief="solid")       # a frame-only option
+    assert str(tv.cget("relief")) == "solid"
+
+
+def test_style_stays_on_the_wrapper_frame(root):
+    # The theme walk reads cget("style") off the wrapper; it must keep
+    # reporting the frame's style, not the inner Treeview's.
+    tv = _make_table(root)
+    assert str(tv.cget("style")) != str(tv.view.cget("style"))
