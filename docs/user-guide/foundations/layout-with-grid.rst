@@ -53,11 +53,15 @@ full width of its cell. Stretch the entries across column 1:
 
 Now the labels sit left and the entries widen to fill their column.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/layout-with-grid-sticky-light.png
+   :class: tb-screenshot-light
+   :width: 296px
+   :alt: A form with Email and Password left-aligned in column 0 and the entries stretched across column 1 — light theme
 
-   The form after ``sticky``: "Email" and "Password" left-aligned in column 0,
-   the entry fields stretched to span column 1.
+.. image:: /_static/examples/layout-with-grid-sticky-dark.png
+   :class: tb-screenshot-dark
+   :width: 296px
+   :alt: A form with Email and Password left-aligned in column 0 and the entries stretched across column 1 — dark theme
 
 Step 3 — add breathing room with ``padx`` / ``pady``
 ----------------------------------------------------
@@ -139,11 +143,27 @@ the window:
 
    app.mainloop()
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. container:: tb-screenshot-row
 
-   The finished sign-in form at two widths, side by side — narrow and wide — to
-   show the entry column stretching with the window while the labels stay put.
+   .. image:: /_static/examples/layout-with-grid-narrow-light.png
+      :class: tb-screenshot-light
+      :width: 256px
+      :alt: The sign-in form at a narrow width — light theme
+
+   .. image:: /_static/examples/layout-with-grid-narrow-dark.png
+      :class: tb-screenshot-dark
+      :width: 256px
+      :alt: The sign-in form at a narrow width — dark theme
+
+   .. image:: /_static/examples/layout-with-grid-wide-light.png
+      :class: tb-screenshot-light
+      :width: 436px
+      :alt: The same form widened — the entry column stretches while the labels stay put — light theme
+
+   .. image:: /_static/examples/layout-with-grid-wide-dark.png
+      :class: tb-screenshot-dark
+      :width: 436px
+      :alt: The same form widened — the entry column stretches while the labels stay put — dark theme
 
 Recap
 -----
