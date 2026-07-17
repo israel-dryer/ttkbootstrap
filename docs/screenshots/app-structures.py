@@ -6,7 +6,7 @@ from ttkbootstrap.constants import *
 
 class Sidebar(ttk.Frame):
     def __init__(self, master):
-        super().__init__(master, padding=8, bootstyle="card")
+        super().__init__(master, padding=8, bootstyle="@card")
         ttk.Button(self, text="Home").pack(fill=X, pady=2)
         ttk.Button(self, text="Settings").pack(fill=X, pady=2)
 

@@ -8,7 +8,7 @@ def toolbar():
     # taking the leftover space.
     app = ttk.App(title="Pack", size=(360, 220))
 
-    bar = ttk.Frame(app, bootstyle="secondary")
+    bar = ttk.Frame(app, bootstyle="@chrome")
     bar.pack(side="top", fill="x")
     ttk.Button(bar, text="New").pack(side="left", padx=2, pady=2)
     ttk.Button(bar, text="Open").pack(side="left", padx=2, pady=2)
@@ -26,13 +26,13 @@ def shell():
 
     ttk.Label(app, text="  My App", bootstyle="inverse-primary").pack(
         side="top", fill="x", ipady=8)
-    ttk.Label(app, text="  Ready", bootstyle="inverse-secondary").pack(
+    ttk.Label(app, text="  Ready", bootstyle="@chrome").pack(
         side="bottom", fill="x", ipady=4)
 
     middle = ttk.Frame(app)
     middle.pack(side="top", fill="both", expand=True)
 
-    sidebar = ttk.Frame(middle, width=160, bootstyle="secondary")
+    sidebar = ttk.Frame(middle, width=160, bootstyle="@card")
     sidebar.pack(side="left", fill="y")
     sidebar.pack_propagate(False)
 

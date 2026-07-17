@@ -40,7 +40,7 @@ the window. ``fill="x"`` stretches it to the container's full width:
 
 .. code-block:: python
 
-   toolbar = ttk.Frame(app, bootstyle="secondary")
+   toolbar = ttk.Frame(app, bootstyle="@chrome")
    toolbar.pack(side="top", fill="x")        # span the width, hug the top
 
    ttk.Button(toolbar, text="New").pack(side="left", padx=2, pady=2)
@@ -105,13 +105,13 @@ with a fixed sidebar beside a content area that fills the rest.
 
    ttk.Label(app, text="  My App", bootstyle="inverse-primary").pack(
        side="top", fill="x", ipady=8)
-   ttk.Label(app, text="  Ready", bootstyle="inverse-secondary").pack(
+   ttk.Label(app, text="  Ready", bootstyle="@chrome").pack(
        side="bottom", fill="x", ipady=4)
 
    middle = ttk.Frame(app)
    middle.pack(side="top", fill="both", expand=True)
 
-   sidebar = ttk.Frame(middle, width=160, bootstyle="secondary")
+   sidebar = ttk.Frame(middle, width=160, bootstyle="@card")
    sidebar.pack(side="left", fill="y")
    sidebar.pack_propagate(False)          # keep the fixed width
 
