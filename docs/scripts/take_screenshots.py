@@ -96,6 +96,41 @@ def _grab_region(win, x, y, w, h):
     return ImageGrab.grab(bbox=(x, y, x + w, y + h))
 
 
+def _mac_composite(app, rect_pts, fill):
+    # Composite ALL of this process's on-screen windows (popups, popdowns,
+    # dialogs) over a union rect, straight from the window server — works
+    # regardless of the active Space. Returns a PIL image in physical pixels.
+    import CoreFoundation
+    import Quartz
+    from PIL import Image
+    infos = Quartz.CGWindowListCopyWindowInfo(
+        Quartz.kCGWindowListOptionOnScreenOnly, Quartz.kCGNullWindowID)
+    mine = [i for i in infos if i.get("kCGWindowOwnerPID") == os.getpid()]
+    # The array is composited first-on-top; the app root sits on a raised
+    # window level while the harness holds it topmost, so order by our own
+    # rule — popups in front of the app window — rather than trusting the
+    # server's current z-order.
+    root_name = app.wm_title()
+    mine.sort(key=lambda i: i.get("kCGWindowName") == root_name)
+    ids = [i["kCGWindowNumber"] for i in mine]
+    x, y, w, h = rect_pts
+    rect = Quartz.CGRectMake(x, y, w, h)
+    arr = CoreFoundation.CFArrayCreate(None, ids, len(ids), None)
+    cgimg = Quartz.CGWindowListCreateImageFromArray(
+        rect, arr, Quartz.kCGWindowImageBoundsIgnoreFraming)
+    width = Quartz.CGImageGetWidth(cgimg)
+    height = Quartz.CGImageGetHeight(cgimg)
+    bpr = Quartz.CGImageGetBytesPerRow(cgimg)
+    data = Quartz.CGDataProviderCopyData(Quartz.CGImageGetDataProvider(cgimg))
+    img = Image.frombuffer("RGBA", (width, height), bytes(data),
+                           "raw", "BGRA", bpr, 1)
+    # Transparent gaps (outside window corners) take the theme background
+    # instead of rendering black.
+    canvas = Image.new("RGB", img.size, fill)
+    canvas.paste(img, mask=img.getchannel("A"))
+    return canvas
+
+
 def _mac_grab_window(win, content_only, x, y, w, h):
     # Capture the Tk window by CGWindowID — the window server composites it
     # regardless of which Space is active or what overlaps it. Falls back to
@@ -149,11 +184,14 @@ def _patch(cls):
     def _mainloop(self, *args, **kwargs):
         def _grab():
             # Scenes can set app._capture_target (a Toplevel, e.g. a dialog) to
-            # capture that window instead of the app, and/or
+            # capture that window instead of the app,
             # app._capture_full_window to grab the whole OS window (titlebar +
-            # chrome) rather than just the content area.
+            # chrome) rather than just the content area, or
+            # app._capture_extra (a list of popup Toplevels — popdowns,
+            # calendars, tooltips) to composite them with the app content.
             target = getattr(self, "_capture_target", None)
             full = getattr(self, "_capture_full_window", False)
+            extra = getattr(self, "_capture_extra", None)
             whole_window = full or target is not None
             win = target if target is not None else self
             win.update_idletasks()
@@ -165,7 +203,39 @@ def _patch(cls):
             w = win.winfo_width()
             h = win.winfo_height()
             inset = 2  # trim window-border artifact from captured edges
-            if sys.platform == "darwin":
+            if extra:
+                # Composite shot: the app content area plus popup windows
+                # (popdowns, calendars, tooltips) — the union of their rects.
+                pad = 4  # breathing room so popup edges aren't flush-cropped
+                rects = [(x + inset, y + inset, w - 2 * inset, h - 2 * inset)]
+                for item in extra:
+                    # Accept a widget or a raw Tcl window path (some popups —
+                    # e.g. the combobox popdown — exist only on the Tcl side).
+                    if isinstance(item, str):
+                        tkc = self.tk
+                        tkc.call("update", "idletasks")
+                        px, py, pw, ph = (
+                            int(tkc.call("winfo", cmd, item))
+                            for cmd in ("rootx", "rooty", "width", "height"))
+                    else:
+                        item.update_idletasks()
+                        px, py, pw, ph = (item.winfo_rootx(), item.winfo_rooty(),
+                                          item.winfo_width(), item.winfo_height())
+                    # pad the popup only — padding the app content rect would
+                    # bleed the capture into the window chrome
+                    rects.append((px - pad, py - pad, pw + 2 * pad, ph + 2 * pad))
+                ux = min(r[0] for r in rects)
+                uy = min(r[1] for r in rects)
+                ux2 = max(r[0] + r[2] for r in rects)
+                uy2 = max(r[1] + r[3] for r in rects)
+                logical = (ux2 - ux, uy2 - uy)
+                if sys.platform == "darwin":
+                    rgb = self.winfo_rgb(self.cget("background"))
+                    fill = tuple(v // 256 for v in rgb)
+                    img = _mac_composite(self, (ux, uy, *logical), fill)
+                else:
+                    img = _grab_region(win, ux, uy, *logical)
+            elif sys.platform == "darwin":
                 img, logical = _mac_grab_window(win, not whole_window,
                                                 x + inset, y + inset,
                                                 w - 2 * inset, h - 2 * inset)

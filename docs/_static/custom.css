@@ -84,6 +84,16 @@ html[data-theme="light"] .tb-screenshot-light { display: block !important; }
 html[data-theme="dark"]  .tb-screenshot-dark  { display: block !important; }
 html[data-theme="dark"]  .tb-screenshot-light { display: none  !important; }
 
+/* Side-by-side screenshots (e.g. a widget closed and open). Wrap the image
+   pairs in `.. container:: tb-screenshot-row`; the theme switcher still shows
+   one image per pair, and rows wrap on narrow screens. */
+.tb-screenshot-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    column-gap: 1.25rem;
+}
+
 /* Override pydata's dark-mode content-image rule, which paints a white
    background-color and a border-radius that flashes during image decode. Our
    screenshots are already theme-matched, so strip it. */

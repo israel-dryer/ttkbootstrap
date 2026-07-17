@@ -7,11 +7,15 @@ class with its own API, imported as ``ttk.DateEntry``). This page covers reading
 and setting the date, the format and calendar options, then the ``bootstyle``
 color.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/dateentry-open-light.png
+   :class: tb-screenshot-light
+   :width: 296px
+   :alt: A date entry with its pop-up calendar open — light theme
 
-   A date entry closed, and with its pop-up calendar open, in light and dark
-   themes.
+.. image:: /_static/examples/dateentry-open-dark.png
+   :class: tb-screenshot-dark
+   :width: 296px
+   :alt: A date entry with its pop-up calendar open — dark theme
 
 Usage
 -----

@@ -5,11 +5,15 @@ An **entry** is a single-line text field. ``Entry`` is the native ``ttk.Entry``,
 styled with ``bootstyle=``. This page covers reading and writing its value,
 masking a password, validating input, then the ``bootstyle`` color and states.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/entry-hero-light.png
+   :class: tb-screenshot-light
+   :width: 314px
+   :alt: A labeled entry, and an invalid entry with a danger-red border — light theme
 
-   A labeled entry in light and dark themes, and the same entry with a
-   ``danger``-red focus border when its value is invalid.
+.. image:: /_static/examples/entry-hero-dark.png
+   :class: tb-screenshot-dark
+   :width: 314px
+   :alt: A labeled entry, and an invalid entry with a danger-red border — dark theme
 
 Usage
 -----
