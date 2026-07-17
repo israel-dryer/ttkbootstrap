@@ -180,6 +180,44 @@ def test_apply_bootstyle_styles_existing_instance(root):
     assert b.cget("style") == "danger.TButton"
 
 
+class _CustomClassFrame(tkttk.Frame):
+    """A stand-in for a third-party widget with its own ttk widget class."""
+
+    def __init__(self, master=None, **kw):
+        kw.setdefault("class_", "ThirdPartyGadget")
+        super().__init__(master, **kw)
+
+
+def test_bootify_unknown_family_bare_construction(root):
+    # Regression: constructing a bootified custom-class widget crashed with
+    # TclError "Layout default not found" -- the implicit default resolve
+    # returned the raw bootstyle fragment as if it were a ttk style name.
+    w = ttk.bootify(_CustomClassFrame)(root)
+    assert str(w.cget("style")) == ""
+
+
+def test_bootify_unknown_family_color_warns_and_keeps_style(root):
+    # A bare color has no recipe for an unknown widget class: fail loudly,
+    # leave the style unchanged (was: TclError "Layout info not found").
+    Wrapped = ttk.bootify(_CustomClassFrame)
+    with pytest.warns(UserWarning, match="ThirdPartyGadget"):
+        w = Wrapped(root, bootstyle="info")
+    assert str(w.cget("style")) == ""
+
+
+def test_bootify_unknown_family_explicit_base_type_works(root):
+    # Naming a base type explicitly borrows the standard recipe.
+    w = ttk.bootify(_CustomClassFrame)(root, bootstyle="info-frame")
+    assert str(w.cget("style")) == "info.TFrame"
+
+
+def test_apply_bootstyle_unknown_family_warns_not_crashes(root):
+    w = _CustomClassFrame(root)
+    with pytest.warns(UserWarning, match="ThirdPartyGadget"):
+        returned = ttk.apply_bootstyle(w, "info")
+    assert returned == str(w.cget("style"))
+
+
 def test_enable_global_api_is_idempotent_and_styles_stock_widgets(root):
     """Runs last: enabling the global API is an irreversible process-wide switch."""
     ttk.enable_global_api()

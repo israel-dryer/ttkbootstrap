@@ -27,6 +27,22 @@ The widgets ttkbootstrap ships already accept ``bootstyle``. These helpers exten
 that keyword to widgets it does not ship — a third-party ttk widget, or a plain
 ``tkinter.ttk`` widget you created yourself.
 
+How much of the ``bootstyle`` vocabulary applies depends on the widget's ttk
+class. A widget that keeps a standard ttk class (a subclass of ``ttk.Button``,
+``ttk.Entry``, …) gets the full vocabulary and behaves exactly like the
+corresponding ttkbootstrap widget. A widget with its own ttk class has no
+ttkbootstrap style recipe: a bare color (``bootstyle="info"``) warns and leaves
+the widget's style unchanged, and naming a base type explicitly
+(``bootstyle="info-frame"``) borrows that standard recipe where the widget's
+elements support it.
+
+A composite widget's internals follow the active theme on their own —
+standard-class children resolve against the per-theme base styles, so they
+match every theme switch without any wrapping. The accent, however, is not
+fanned out to them: which child should carry it is the widget's design, not
+something a wrapper can infer. To accent a specific internal, call
+``apply_bootstyle`` on that child.
+
 .. autofunction:: ttkbootstrap.bootify
 
 .. autofunction:: ttkbootstrap.apply_bootstyle
