@@ -11,12 +11,15 @@ We build it one piece at a time. Each step is runnable on its own, and each
 links onward to the Foundations page that covers the idea in depth. The
 :ref:`complete program <first-app-complete>` is at the end.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/build-your-first-app-hero-light.png
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 558px
+   :alt: The finished contact book — a New contact form above a searchable table of contacts with a status line — light theme
 
-   The finished contact book: a "New contact" form (name, email, category, and
-   an **Add contact** button) above a searchable table listing the contacts,
-   with a status line at the bottom.
+.. image:: /_static/examples/build-your-first-app-hero-dark.png
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 558px
+   :alt: The finished contact book — a New contact form above a searchable table of contacts with a status line — dark theme
 
 What you need
 -------------
@@ -107,11 +110,15 @@ The two pieces that make a grid form behave:
 the form. The ``state="readonly"`` combobox lets the user pick a category but
 not type a new one.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/build-your-first-app-form-light.png
+   :class: tb-screenshot-light
+   :width: 356px
+   :alt: The New contact labelframe with aligned Name, Email, and Category rows; the entry and combobox stretch to the frame width — light theme
 
-   The "New contact" labelframe with aligned Name, Email, and Category rows; the
-   entry and combobox stretch to the frame width.
+.. image:: /_static/examples/build-your-first-app-form-dark.png
+   :class: tb-screenshot-dark
+   :width: 356px
+   :alt: The New contact labelframe with aligned Name, Email, and Category rows; the entry and combobox stretch to the frame width — dark theme
 
 .. seealso::
 
@@ -175,11 +182,27 @@ pattern (here: *something* ``@`` *something* ``.`` *something*). By default the
 rule fires on **focus-out**, so the field flags only after the user leaves it —
 not on every keystroke.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. container:: tb-screenshot-row
 
-   The email entry showing a ``danger``-red border after an invalid address
-   loses focus, beside a valid one with the normal border.
+   .. image:: /_static/examples/build-your-first-app-email-invalid-light.png
+      :class: tb-screenshot-light
+      :width: 198px
+      :alt: An email entry with a danger-red border after an invalid address — light theme
+
+   .. image:: /_static/examples/build-your-first-app-email-invalid-dark.png
+      :class: tb-screenshot-dark
+      :width: 198px
+      :alt: An email entry with a danger-red border after an invalid address — dark theme
+
+   .. image:: /_static/examples/build-your-first-app-email-valid-light.png
+      :class: tb-screenshot-light
+      :width: 198px
+      :alt: An email entry with a valid address and the normal border — light theme
+
+   .. image:: /_static/examples/build-your-first-app-email-valid-dark.png
+      :class: tb-screenshot-dark
+      :width: 198px
+      :alt: An email entry with a valid address and the normal border — dark theme
 
 .. seealso::
 

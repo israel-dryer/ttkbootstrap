@@ -343,11 +343,27 @@ A small tree, configured, with a state toggled:
 
    app.mainloop()
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. container:: tb-screenshot-row
 
-   The Save button in both states — greyed-out (disabled) with the entry empty,
-   and solid green (enabled) once text is typed.
+   .. image:: /_static/examples/the-widget-model-disabled-light.png
+      :class: tb-screenshot-light
+      :width: 174px
+      :alt: A greyed-out Save button below an empty entry — light theme
+
+   .. image:: /_static/examples/the-widget-model-disabled-dark.png
+      :class: tb-screenshot-dark
+      :width: 174px
+      :alt: A greyed-out Save button below an empty entry — dark theme
+
+   .. image:: /_static/examples/the-widget-model-enabled-light.png
+      :class: tb-screenshot-light
+      :width: 174px
+      :alt: A solid green Save button below an entry with text — light theme
+
+   .. image:: /_static/examples/the-widget-model-enabled-dark.png
+      :class: tb-screenshot-dark
+      :width: 174px
+      :alt: A solid green Save button below an entry with text — dark theme
 
 .. seealso::
 
