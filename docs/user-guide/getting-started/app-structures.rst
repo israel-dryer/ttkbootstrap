@@ -92,7 +92,7 @@ its own:
 
    class Sidebar(ttk.Frame):
        def __init__(self, master):
-           super().__init__(master, padding=8, bootstyle="secondary")
+           super().__init__(master, padding=8, bootstyle="card")
            ttk.Button(self, text="Home").pack(fill=X, pady=2)
            ttk.Button(self, text="Settings").pack(fill=X, pady=2)
 
@@ -111,14 +111,14 @@ its own:
            Content(self).pack(side=LEFT, fill=BOTH, expand=YES)
 
 .. image:: /_static/examples/app-structures-skeleton-light.png
-   :class: tb-screenshot-light
-   :width: 456px
-   :alt: A secondary sidebar with two buttons on the left and a content panel filling the rest of the window — light theme
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 458px
+   :alt: A card sidebar with two buttons on the left and a content panel filling the rest of the window — light theme
 
 .. image:: /_static/examples/app-structures-skeleton-dark.png
-   :class: tb-screenshot-dark
-   :width: 456px
-   :alt: A secondary sidebar with two buttons on the left and a content panel filling the rest of the window — dark theme
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 458px
+   :alt: A card sidebar with two buttons on the left and a content panel filling the rest of the window — dark theme
 
 Subclass a frame, not the root
 ------------------------------
