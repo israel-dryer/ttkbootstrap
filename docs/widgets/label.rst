@@ -116,8 +116,12 @@ its values:
 
    ttk.Label(app, text="Name", width=12, anchor="e").pack()
 
-A ``relief=`` (``"solid"``, ``"groove"``, …) with some ``padding=`` turns a label
-into a bordered chip or badge — pair it with an ``@<color>`` surface for a filled tag.
+A filled ``@<color>`` label with a little ``padding=`` reads as a tag or badge — a
+status pill, a category chip:
+
+.. code-block:: python
+
+   ttk.Label(app, text="NEW", bootstyle="@success", padding=(8, 2))
 
 Fonts and images
 ----------------
