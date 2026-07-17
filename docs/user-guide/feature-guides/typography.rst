@@ -142,11 +142,35 @@ The monospace font (``TkFixedFont``) is left alone unless you ask for it with
 
    ttk.set_global_family("Inter", mono_family="Cascadia Code")
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. container:: tb-screenshot-row
 
-   The same small window rendered with the default family and with a custom
-   ``set_global_family`` family side by side, showing the whole UI restyled.
+   .. figure:: /_static/examples/typography-default-light.png
+      :figclass: tb-screenshot-light
+      :width: 201px
+      :alt: A small window in the default family — light theme
+
+      Default family
+
+   .. figure:: /_static/examples/typography-default-dark.png
+      :figclass: tb-screenshot-dark
+      :width: 201px
+      :alt: A small window in the default family — dark theme
+
+      Default family
+
+   .. figure:: /_static/examples/typography-custom-light.png
+      :figclass: tb-screenshot-light
+      :width: 221px
+      :alt: The same window after set_global_family, restyled to a serif — light theme
+
+      After ``set_global_family``
+
+   .. figure:: /_static/examples/typography-custom-dark.png
+      :figclass: tb-screenshot-dark
+      :width: 221px
+      :alt: The same window after set_global_family, restyled to a serif — dark theme
+
+      After ``set_global_family``
 
 Building a type system
 ----------------------
@@ -192,11 +216,15 @@ Pick a name that is not already taken — Tk predefines ``TkCaptionFont``,
 the rest of the code just names the role; restyle a role later — a bigger
 heading, a different family — in that one place and the whole app follows.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/typography-scale-light.png
+   :class: tb-screenshot-light
+   :width: 239px
+   :alt: A card with a bold heading, default body text, and a small caption — the type scale in one view — light theme
 
-   A small card using three roles — bold ``TkHeadingFont`` title, default body
-   text, and the italic ``Caption`` alias — showing the type scale in one view.
+.. image:: /_static/examples/typography-scale-dark.png
+   :class: tb-screenshot-dark
+   :width: 239px
+   :alt: A card with a bold heading, default body text, and a small caption — the type scale in one view — dark theme
 
 **Seeing what the fonts are.** ``Fonts.names()`` lists the managed named fonts and
 ``Fonts.describe(name)`` returns a font's resolved family/size/weight (omit the
