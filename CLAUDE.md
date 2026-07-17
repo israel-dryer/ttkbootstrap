@@ -557,11 +557,58 @@ sections. **#1248** unslashed the new geometry tables' paired option cells onto
 rST line blocks (the #1227 convention applies at authoring time, not just in
 sweeps; memory-saved). Suite on `2.0` is **701** excl. the two known flakes;
 every claim probed live and every docs change built green.
-**NEXT docs-H thread:** the deferred **screenshot slice** (46 placeholders across
-catalog + guides; the 5 new/split how-to pages have none — decide during the slice;
-capture tooling is Windows-canonical, so postponed on macOS), plus optional Track B
-odds/ends (Linux/x11, DPI matrix). Every docs change verified headlessly + built
-green (`.venv/bin/python -m sphinx -b html -W -q -E docs <out>`, exit 0).
+**Session 2026-07-16c→17 — the SCREENSHOT SLICE started: harness + the full
+widgets catalog (PRs #1251 + #1254, OPEN at handoff — merge #1251 first, then
+retarget #1254 from the harness branch to `2.0`).** Also merged: **#1250**
+deleted the stale pre-2.0 `docs_scripts/` + `cookbook/` trees (mkdocs-era,
+unreferenced; `examples/` and `gallery/` stay), and 30 merged local branches
+were pruned (`feat/2.0-pr6-toolkit-migration` left — unmerged/superseded, user
+call pending). **#1251** ports bootstack's `docs/scripts/take_screenshots.py`:
+scene files `docs/screenshots/<page>.py` (a `SCENES` dict of self-contained
+callables that MIRROR the page's own code blocks), captured per theme into
+`docs/_static/examples/<page>-<scene>-{light,dark}.png` via a patched `ttk.App`
+(forced theme; position→focus→grab→destroy); proof = button.rst. **Sizing
+contract:** PNGs keep the capture box's full pixel density (2× on Retina) and
+every rST image directive pins `:width: <logical>px` (the harness prints the
+value per shot) — never downscale (blurry on HiDPI) and never leave unpinned
+(2× renders double-size). **macOS authoring path** (Windows stays the canonical
+capture box): capture by CGWindowID (`screencapture -l`; needs
+`pyobjc-framework-Quartz`, installed in `.venv`) — a plain region grab sees only
+the active Space, so a full-screen IDE yields wallpaper/IDE shots. **#1254**
+authors every remaining catalog scene — **`docs/widgets/` has ZERO placeholders**
+(26 pages, 31 shots × light/dark, each eyeballed against its spec; one commit
+per family). Harness capabilities grown along the way: **composite capture**
+(`app._capture_extra` = popup widgets *or raw Tcl paths* — the combobox popdown
+exists only Tcl-side; mac composites via `CGWindowListCreateImageFromArray`
+over the union rect, popups ordered in front, theme-bg fill; win32 = union
+region grab); **parent capture** for native aqua menus, which BLOCK the Tcl
+loop while posted (`app.capture_via_parent()` announces the content rect, the
+scene posts, the harness parent composites the child pid's windows — a posted
+menu sits on window-server layer ≥ 100 — and kills the blocked child; the
+in-child grab is suppressed in this mode because its timer CAN fire during
+menu tracking and destroyed the app mid-shot); **NSAppearance pinned** to the
+captured theme after Tk init (native titlebars/menus follow the SYSTEM
+appearance — a dark-mode host tinted the light shots; pinning before Tk creates
+its NSApplication crashes, and a MISMATCHED pin aborts menu tracking, so menu
+scenes revert to the system appearance before posting — the two light menu-open
+shots carry a system-dark menu, author-accepted as provisional). Scene/authoring
+rules from author review: **size the window tall enough that a popup drops
+within it**; closed+open pairs render **side by side** via the new
+`tb-screenshot-row` flex container (stacked pairs don't align); dateentry shows
+the **open** shot only; a text highlight tag needs **both** bg and fg —
+`ttk.contrast_color(colors.warning, model="hex")`, NOT
+`colors.get_foreground()` (theme-dependent; returned white-on-yellow in light).
+All PNGs are provisional macOS renders; the Windows canonical run re-captures
+byte-for-byte under the same names and the pinned `:width:` values stay valid.
+**NEXT docs-H thread:** the remaining **~29 placeholders outside the catalog**
+(getting-started · foundations · feature guides · how-tos; same pipeline —
+suggest one PR for foundations+getting-started, one for the guides; the 5
+new/split how-to pages have no placeholders — decide during the slice); then
+the **Windows canonical capture run** (which also re-takes the two menu-open
+light shots properly); landing/hero shots per design §6–§7; plus optional
+Track B odds/ends (Linux/x11, DPI matrix). Every docs change verified
+headlessly + built green
+(`.venv/bin/python -m sphinx -b html -W -q -E docs <out>`, exit 0).
 
 ## Repository layout
 
