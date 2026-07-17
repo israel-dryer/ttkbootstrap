@@ -45,10 +45,43 @@ def statespec(spec):
 class El:
     """A ttk layout element: a name, layout options, and child elements.
 
-    `layout()` lowers an `El` tree to ttk's nested `(name, {opts, "children":
-    [...]})` form. Mirrors bootstack's `Element.spec()`, but takes children as a
-    constructor `children=[...]` kwarg (unambiguous; reads as the tree it builds)
-    rather than fluent positional parenting.
+    Build an `El` tree and pass it to `layout()`, which lowers it to ttk's
+    nested ``(name, {options, "children": [...]})`` form and registers the
+    style.
+
+    Parameters:
+
+        name (str):
+            The element name (e.g. ``"Button.border"``).
+
+        side (str):
+            Which side of the remaining space the element occupies:
+            ``"left"``, ``"right"``, ``"top"``, or ``"bottom"``.
+
+        sticky (str):
+            How the element stretches within its allocation — any
+            combination of ``"nsew"``.
+
+        expand (bool):
+            Whether the element claims any leftover space.
+
+        border (int):
+            The border width reserved inside the element.
+
+        children (list[El]):
+            Elements nested inside this one.
+
+    Attributes:
+
+        name (str):
+            The element name.
+
+        options (dict):
+            The layout options that were set (``side``/``sticky``/
+            ``expand``/``border``).
+
+        children (list[El]):
+            The nested child elements.
     """
 
     __slots__ = ("name", "options", "children")
@@ -143,19 +176,43 @@ def state_map(style, ttk_style, **options):
 
 
 class StyleName:
-    """Absorbs the colorname / orientation / `.TS->.S` name surgery builders repeat.
+    """Derive the related names a custom style is built from.
 
-    From a ttk class token ("TScale", "TRadiobutton"), the requested colorname,
-    and an optional orientation it derives the three names every builder opens
-    with:
+    From a ttk class token (``"TScale"``, ``"TRadiobutton"``), a color name,
+    and an optional orientation, computes the style name and the matching
+    element-name prefix, so the three always agree.
 
-      .colorname  PRIMARY when the input is DEFAULT/"" (the per-widget default),
-                  else the input unchanged.
-      .ttk_style   the full ttk style name ("Horizontal.TScale",
-                  "info.Horizontal.TScale", "TRadiobutton", ...).
-      .element    the element-name prefix with the class token's leading "T"
-                  dropped ("info.Horizontal.TScale" -> "info.Horizontal.Scale"),
-                  matching the old `h_ttkstyle.replace(".TS", ".S")` dance.
+    Parameters:
+
+        ttk_class (str):
+            The ttk widget class token (e.g. ``"TButton"``,
+            ``"Treeview"``).
+
+        colorname (str):
+            The accent color name; ``DEFAULT`` or ``""`` resolves to
+            ``"primary"``.
+
+        orient (str):
+            An optional orientation segment (``"Horizontal"`` /
+            ``"Vertical"``).
+
+        surface (str):
+            An optional surface-color token carried as a name prefix.
+
+    Attributes:
+
+        colorname (str):
+            The resolved color name — ``"primary"`` when the input was the
+            default, otherwise the input unchanged.
+
+        ttk_style (str):
+            The full ttk style name (``"Horizontal.TScale"``,
+            ``"info.Horizontal.TScale"``, ``"TRadiobutton"``, …).
+
+        element (str):
+            The element-name prefix: ``ttk_style`` with the class token's
+            leading ``"T"`` dropped (``"info.Horizontal.TScale"`` →
+            ``"info.Horizontal.Scale"``).
     """
 
     __slots__ = ("colorname", "ttk_style", "element")

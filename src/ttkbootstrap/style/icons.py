@@ -299,11 +299,12 @@ def icon_element(style, name, *, size, default, states=None, **options):
 
     Per-state spec grammar (`default` and each `states` value):
 
-      - **bare string** -> the icon *name*; its color **follows the foreground**
-        configured for that state.
-      - **dict `{name?, color?}`** -> `name` omitted = the `default` icon;
-        `color` omitted = follows the foreground. `color` is a bootstyle keyword
-        or a hex, resolved once against the active theme.
+    - A **bare string** is the icon *name*; its color follows the foreground
+      configured for that state.
+    - A **dict** with optional `name` and `color` keys: `name` omitted uses
+      the `default` icon; `color` omitted follows the foreground. `color` is
+      a bootstyle keyword or a hex value, resolved once against the active
+      theme.
 
     ```python
     state_map(style, "Favorite.TCheckbutton", foreground={"disabled": "#888"})

@@ -13,7 +13,7 @@ def enable_high_dpi_awareness(root=None, scaling=None):
     AFTER creating the `Tk` object. A number between 1.6 and 2.0 is
     usually suffient to scale for high-dpi screen.
 
-    !!! warning
+    Warning:
         If the `root` argument is provided, then `scaling` must also
         be provided. Otherwise, there is no effect.
 

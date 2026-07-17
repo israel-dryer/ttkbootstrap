@@ -57,11 +57,13 @@ worked example.
 
 .. autoclass:: ttkbootstrap.El
    :members:
+   :exclude-members: name, options, children
 
 .. autofunction:: ttkbootstrap.register_style
 
 .. autoclass:: ttkbootstrap.StyleName
    :members:
+   :exclude-members: colorname, element, ttk_style
 
 .. note::
 

@@ -182,13 +182,15 @@ than erroring, so it is safe to call at startup:
 
 .. code-block:: python
 
-   ttk.Fonts.create_alias("Caption", family="Georgia", size=9, slant="italic")
+   ttk.Fonts.create_alias("HeadingSm", family="Helvetica", size=12, weight="bold")
 
-   ttk.Label(app, text="figure 1 — quarterly revenue", font="Caption").pack()
+   ttk.Label(app, text="Quarterly revenue", font="HeadingSm").pack()
 
-Define your fonts once and the rest of the code just names the role; restyle a
-role later — a bigger caption, a different heading family — in that one place and
-the whole app follows.
+Pick a name that is not already taken — Tk predefines ``TkCaptionFont``,
+``TkHeadingFont``, and the other built-in roles above, so an alias like
+``Caption`` would shadow territory Tk already names. Define your fonts once and
+the rest of the code just names the role; restyle a role later — a bigger
+heading, a different family — in that one place and the whole app follows.
 
 .. admonition:: 📷 Screenshot (placeholder)
    :class: screenshot-placeholder
