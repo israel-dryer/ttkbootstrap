@@ -6,11 +6,15 @@ A **button** runs an action when clicked. ``Button`` is the native
 the action, adding an icon, laying out a row, the default button, and disabling —
 then the ``bootstyle`` colors, variants, and states.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/button-hero-light.png
+   :class: tb-screenshot-light
+   :width: 298px
+   :alt: A row of buttons — solid primary, outline, link, and icon-only — light theme
 
-   A row of buttons in light and dark themes: a solid primary, an outline, a
-   link, and an icon button.
+.. image:: /_static/examples/button-hero-dark.png
+   :class: tb-screenshot-dark
+   :width: 298px
+   :alt: A row of buttons — solid primary, outline, link, and icon-only — dark theme
 
 Usage
 -----
@@ -66,11 +70,15 @@ becomes a square sized to the glyph:
 
    ttk.Button(app, icon="trash", icon_only=True, bootstyle="danger")
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/button-icons-light.png
+   :class: tb-screenshot-light
+   :width: 236px
+   :alt: A Save button with a leading icon, a Next button with a trailing icon, and a square icon-only trash button — light theme
 
-   A Save button with a leading icon, a Next button with a trailing icon, and a
-   square icon-only trash button.
+.. image:: /_static/examples/button-icons-dark.png
+   :class: tb-screenshot-dark
+   :width: 236px
+   :alt: A Save button with a leading icon, a Next button with a trailing icon, and a square icon-only trash button — dark theme
 
 A row of buttons
 ----------------
@@ -146,14 +154,19 @@ in every theme. The nine semantic colors:
 
 .. code-block:: python
 
-   for color in ["primary", "secondary", "success", "info", "warning",
-                 "danger", "light", "dark", "neutral"]:
+   for color in ["neutral", "primary", "secondary", "success", "info",
+                 "warning", "danger", "light", "dark"]:
        ttk.Button(app, text=color.title(), bootstyle=color).pack(padx=8, pady=2)
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/button-colors-light.png
+   :class: tb-screenshot-light
+   :width: 712px
+   :alt: A strip of the nine button colors — light theme
 
-   A swatch strip of the nine button colors in light and dark themes.
+.. image:: /_static/examples/button-colors-dark.png
+   :class: tb-screenshot-dark
+   :width: 712px
+   :alt: A strip of the nine button colors — dark theme
 
 The default color
 -----------------
