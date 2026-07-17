@@ -60,10 +60,13 @@ Methods
 
    :returns: the toast itself, usable as a dismiss handle.
 
-.. py:method:: hide_toast()
+.. py:method:: hide()
    :noindex:
 
-   Dismiss the toast immediately.
+   Dismiss the toast immediately: it leaves its corner stack (the remaining
+   toasts reflow to close the gap), fades out, and is destroyed. Idempotent and
+   safe to call on a toast that was never shown. ``hide_toast()`` is a
+   back-compat alias.
 
    :returns: ``None``.
 

@@ -227,6 +227,24 @@ Methods
 
    The entered or chosen value cast to ``datatype``, or ``None`` if cancelled.
 
+.. py:method:: validate()
+   :noindex:
+
+   Called when the user submits, before the dialog closes. The default checks
+   the ``datatype`` cast, the ``minvalue``/``maxvalue`` range, and membership
+   in ``items``; override it in a subclass to add your own checks.
+
+   :returns: ``True`` to accept and close; ``False`` to keep the dialog open.
+   :rtype: bool
+
+.. py:method:: apply()
+   :noindex:
+
+   Called after a validated submit closes the dialog (a no-op by default).
+   Override it in a subclass to process the result.
+
+   :returns: ``None``.
+
 See also
 --------
 

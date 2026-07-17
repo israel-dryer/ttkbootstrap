@@ -67,6 +67,10 @@ Options
    * - ``title``
      - ``str``
      - The title shown on a torn-off menu.
+   * - ``type``
+     - ``str``
+     - The menu flavor: ``"normal"``, ``"menubar"``, or ``"tearoff"``. Set when
+       the menu is created; changing it later has no effect.
    * - ``cursor``
      - ``str``
      - The mouse cursor over the menu (see :doc:`Cursors </reference/cursors>`).
@@ -130,7 +134,10 @@ leading ``index`` and insert before it.
 
    Insert an entry of ``itemType`` (``"command"``, ``"cascade"``,
    ``"checkbutton"``, ``"radiobutton"``, ``"separator"``) before ``index``. The
-   ``insert_command`` / ``insert_cascade`` / … shortcuts wrap this.
+   ``insert_command`` / ``insert_cascade`` / ``insert_checkbutton`` /
+   ``insert_radiobutton`` / ``insert_separator`` shortcuts wrap this, and
+   ``add(itemType, **options)`` is the appending equivalent that the ``add_*``
+   shortcuts wrap.
 
    :returns: ``None``.
 
@@ -215,6 +222,14 @@ Posting and invoking
    Highlight an entry as the active one.
 
    :returns: ``None``.
+
+.. py:method:: xposition(index)
+   :noindex:
+
+   Return the x pixel coordinate of an entry within the menu;
+   ``yposition(index)`` is the vertical counterpart.
+
+   :rtype: int
 
 macOS application menu (ttkbootstrap)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

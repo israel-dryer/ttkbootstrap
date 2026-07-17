@@ -644,7 +644,7 @@ class Tableview(ttk.Frame):
 
     def configure(self, cnf=None, **kwargs) -> Union[Any, None]:
         """Configure the internal `Treeview` widget. If cnf is provided,
-        value of the option is return. Otherwise the widget is
+        the option's configure spec is returned. Otherwise the widget is
         configured via kwargs.
 
         Parameters:
@@ -654,21 +654,76 @@ class Tableview(ttk.Frame):
 
             **kwargs (Dict):
                 Optional keyword arguments used to configure the internal
-                Treeview widget.
+                Treeview widget. Options the Treeview does not accept are
+                applied to the container frame.
 
         Returns:
 
             Union[Any, None]:
-                The value of cnf or None.
+                The configure spec of cnf, the full option dict for a
+                no-argument call, or None after a set.
         """
+        if isinstance(cnf, dict):
+            kwargs = {**cnf, **kwargs}
+            cnf = None
+        if "pagesize" in kwargs:
+            pagesize: int = kwargs.pop("pagesize")
+            self._pagesize.set(value=pagesize)
+            if cnf is None and not kwargs:
+                return None
+        if cnf == "pagesize":
+            return ("pagesize", "pagesize", "Pagesize", None, self._pagesize.get())
+        if cnf in ("style", "class"):
+            # the wrapper frame's own identity (the theme walk reads style)
+            return super().configure(cnf)
         try:
-            if "pagesize" in kwargs:
-                pagesize: int = kwargs.pop("pagesize")
-                self._pagesize.set(value=pagesize)
+            result = self.view.configure(cnf, **kwargs)
+        except tk.TclError:
+            result = super().configure(cnf, **kwargs)
+        if cnf is None and not kwargs and result is not None:
+            # no-arg query: merge the custom option into the full dict
+            result["pagesize"] = (
+                "pagesize", "pagesize", "Pagesize", None, self._pagesize.get()
+            )
+        return result
 
-            self.view.configure(cnf, **kwargs)
-        except:
-            super().configure(cnf, **kwargs)
+    def cget(self, cnf) -> Any:
+        """Return the current value of an option, matching `configure`'s
+        routing: the custom `pagesize`, then the internal `Treeview`,
+        falling back to the container frame.
+
+        Parameters:
+
+            cnf (str):
+                The option to query.
+
+        Returns:
+
+            Any:
+                The value of the option.
+        """
+        if cnf == "pagesize":
+            return self._pagesize.get()
+        if cnf in ("style", "class"):
+            # the wrapper frame's own identity (the theme walk reads style)
+            return super().cget(cnf)
+        try:
+            return self.view.cget(cnf)
+        except tk.TclError:
+            return super().cget(cnf)
+
+    # tkinter binds `__getitem__ = cget` at function level, so the inherited
+    # subscript forms bypass the overrides above; route them explicitly.
+    def __getitem__(self, key: str) -> Any:
+        if key in ("bootstyle", "style"):
+            return super().__getitem__(key)
+        return self.cget(key)
+
+    def __setitem__(self, key: str, value: Any) -> None:
+        if key in ("bootstyle", "style"):
+            super().__setitem__(key, value)
+            return
+        self.configure(**{key: value})
 
     # DATA HANDLING
 

@@ -84,6 +84,15 @@ Methods
 
    :returns: ``None``.
 
+.. py:method:: destroy()
+   :noindex:
+
+   Release the tooltip: cancel pending timers, drop the popup, and unbind its
+   handlers from the target widget. Idempotent; called automatically when the
+   target widget is destroyed.
+
+   :returns: ``None``.
+
 See also
 --------
 

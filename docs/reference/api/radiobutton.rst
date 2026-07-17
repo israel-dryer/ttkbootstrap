@@ -70,6 +70,12 @@ Each option can be set in the constructor and changed later with ``configure()``
      - ``str``
      - ``"normal"`` or ``"disabled"``. For finer control use the ``state`` method
        (see :doc:`Capabilities </reference/capabilities/index>`).
+   * - ``cursor``
+     - ``str``
+     - The mouse cursor over the radiobutton (see :doc:`Cursors </reference/cursors>`).
+   * - ``takefocus``
+     - ``bool``
+     - Whether the radiobutton accepts keyboard focus during traversal.
 
 Methods
 -------
