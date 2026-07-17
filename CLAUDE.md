@@ -600,15 +600,21 @@ the **open** shot only; a text highlight tag needs **both** bg and fg —
 `colors.get_foreground()` (theme-dependent; returned white-on-yellow in light).
 All PNGs are provisional macOS renders; the Windows canonical run re-captures
 byte-for-byte under the same names and the pinned `:width:` values stay valid.
-**NEXT docs-H thread:** the remaining **~29 placeholders outside the catalog**
-(getting-started · foundations · feature guides · how-tos; same pipeline —
-suggest one PR for foundations+getting-started, one for the guides; the 5
-new/split how-to pages have no placeholders — decide during the slice); then
-the **Windows canonical capture run** (which also re-takes the two menu-open
-light shots properly); landing/hero shots per design §6–§7; plus optional
-Track B odds/ends (Linux/x11, DPI matrix). Every docs change verified
-headlessly + built green
-(`.venv/bin/python -m sphinx -b html -W -q -E docs <out>`, exit 0).
+**Both catalog PRs (#1251 harness + #1254 catalog) are now MERGED into `2.0`.**
+**NEXT docs-H thread — TRANSFERRED TO THE WINDOWS BOX, tracked as issue #1255:**
+the remaining **30 placeholders across 18 pages outside the catalog** (foundations
+7 · getting-started 4 · feature guides 14 · how-tos 5 — full per-page inventory +
+capture specs in #1255), then the **Windows canonical capture run** of the whole
+catalog (re-capture byte-for-byte under the same names; also re-takes the two
+menu-open light shots properly). Same pipeline as #1251/#1254 (scene file in
+`docs/screenshots/<page>.py` → `python docs/scripts/take_screenshots.py <page>` →
+replace the placeholder admonition with the light/dark `.. image::` pair, pinning
+`:width:` to the harness-printed logical px). Suggested PR split: foundations +
+getting-started · feature guides · how-tos. Find the placeholders with
+`grep -rl screenshot-placeholder docs --include='*.rst'`; each admonition body IS
+the capture spec. Then landing/hero shots per design §6–§7; plus optional Track B
+odds/ends (Linux/x11, DPI matrix). Every docs change verified headlessly + built
+green (`.venv/bin/python -m sphinx -b html -W -q -E docs <out>`, exit 0).
 
 ## Repository layout
 
