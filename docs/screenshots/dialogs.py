@@ -74,7 +74,8 @@ def color():
 def custom():
     app = ttk.App(title="Editor")
     ttk.Label(app, text="Editor", padding=20).pack()
-    win = ttk.Toplevel(master=app, title="New contact", size=(320, 210))
+    win = ttk.Toplevel(master=app, title="New contact")
+    win.minsize(330, 1)   # comfortable width; height auto-sizes -> buttons at the bottom
     frm = ttk.Frame(win, padding=20)
     frm.pack(fill="both", expand=True)
     frm.columnconfigure(1, weight=1)

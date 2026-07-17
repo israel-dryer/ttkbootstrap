@@ -324,12 +324,12 @@ accept them.
 
 .. image:: /_static/examples/dialogs-custom-light.png
    :class: tb-screenshot-light tb-window-screenshot
-   :width: 318px
+   :width: 328px
    :alt: A custom modal dialog built from a Toplevel — a titled form with Name and Email fields and Cancel/OK buttons — light theme
 
 .. image:: /_static/examples/dialogs-custom-dark.png
    :class: tb-screenshot-dark tb-window-screenshot
-   :width: 318px
+   :width: 328px
    :alt: A custom modal dialog built from a Toplevel — a titled form with Name and Email fields and Cancel/OK buttons — dark theme
 
 .. seealso::

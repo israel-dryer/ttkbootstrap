@@ -11,7 +11,8 @@ def centered():
     app = ttk.App(title="Editor")
     ttk.Label(app, text="Editor", padding=20).pack()
 
-    win = ttk.Toplevel(master=app, title="About", size=(300, 170))
+    win = ttk.Toplevel(master=app, title="About")
+    win.minsize(280, 1)   # comfortable width; height auto-sizes -> OK sits at the bottom
     frm = ttk.Frame(win, padding=20)
     frm.pack(fill="both", expand=True)
     ttk.Label(frm, text="About Editor", font="TkHeadingFont").pack(anchor="w")

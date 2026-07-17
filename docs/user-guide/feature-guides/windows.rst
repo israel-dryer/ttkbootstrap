@@ -179,12 +179,12 @@ known (the constructor ``size`` counts):
 
 .. image:: /_static/examples/windows-centered-light.png
    :class: tb-screenshot-light tb-window-screenshot
-   :width: 298px
+   :width: 278px
    :alt: A small About Toplevel window centered with place_window_center — light theme
 
 .. image:: /_static/examples/windows-centered-dark.png
    :class: tb-screenshot-dark tb-window-screenshot
-   :width: 298px
+   :width: 278px
    :alt: A small About Toplevel window centered with place_window_center — dark theme
 
 Focus, modality & lifecycle
