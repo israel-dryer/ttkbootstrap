@@ -24,11 +24,13 @@ Every option below is a keyword argument to ``grid()``.
    * - Option
      - Type
      - Description
-   * - ``row`` / ``column``
+   * - | ``row``
+       | ``column``
      - ``int``
      - The cell to occupy (0-based). ``column`` defaults to ``0``; ``row``
        defaults to the first empty row.
-   * - ``rowspan`` / ``columnspan``
+   * - | ``rowspan``
+       | ``columnspan``
      - ``int``
      - How many rows / columns the widget covers. Default ``1``.
    * - ``sticky``
@@ -36,11 +38,13 @@ Every option below is a keyword argument to ``grid()``.
      - Which sides of the cell the widget sticks to — any combination of
        ``"nsew"``. Opposite pairs stretch the widget; the default centers it
        at its natural size.
-   * - ``padx`` / ``pady``
+   * - | ``padx``
+       | ``pady``
      - ``int | tuple``
      - External space around the widget, in pixels. A ``(left, right)`` /
        ``(top, bottom)`` tuple pads the two sides differently.
-   * - ``ipadx`` / ``ipady``
+   * - | ``ipadx``
+       | ``ipady``
      - ``int``
      - Internal padding added to the widget's own size, in pixels.
    * - ``in_``

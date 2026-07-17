@@ -24,19 +24,23 @@ Every option below is a keyword argument to ``place()``.
    * - Option
      - Type
      - Description
-   * - ``x`` / ``y``
+   * - | ``x``
+       | ``y``
      - ``int``
      - The anchor point's position, in pixels from the parent's top-left
        corner.
-   * - ``relx`` / ``rely``
+   * - | ``relx``
+       | ``rely``
      - ``float``
      - The anchor point's position as a fraction of the parent's size,
        ``0.0``–``1.0``. Combines with ``x`` / ``y``, which then act as a
        pixel offset.
-   * - ``width`` / ``height``
+   * - | ``width``
+       | ``height``
      - ``int``
      - The widget's size, in pixels.
-   * - ``relwidth`` / ``relheight``
+   * - | ``relwidth``
+       | ``relheight``
      - ``float``
      - The widget's size as a fraction of the parent's size, ``0.0``–``1.0``.
        Combines with ``width`` / ``height`` as a pixel adjustment.

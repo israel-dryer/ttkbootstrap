@@ -41,14 +41,17 @@ Every option below is a keyword argument to ``pack()``.
      - Where the widget sits inside its slot when it does not fill it:
        ``"center"``, a side (``"n"``/``"s"``/``"e"``/``"w"``), or a corner
        (``"ne"``, ``"sw"``, …).
-   * - ``padx`` / ``pady``
+   * - | ``padx``
+       | ``pady``
      - ``int | tuple``
      - External space around the widget, in pixels. A ``(left, right)`` /
        ``(top, bottom)`` tuple pads the two sides differently.
-   * - ``ipadx`` / ``ipady``
+   * - | ``ipadx``
+       | ``ipady``
      - ``int``
      - Internal padding added to the widget's own size, in pixels.
-   * - ``before`` / ``after``
+   * - | ``before``
+       | ``after``
      - ``Widget``
      - Insert the widget into the packing order relative to a sibling that is
        already packed.
