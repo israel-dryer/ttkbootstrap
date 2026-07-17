@@ -235,22 +235,22 @@ def test_scrolledtext_focus_drives_the_border_state(root):
 
 
 def test_highlight_frame_border_maps_to_accent_on_focus(root):
-    # card = inert border; highlight = same resting border with a focus map to
-    # the accent (the focus ring).
+    # bordered = inert border; highlight = same resting border with a focus map
+    # to the accent (the focus ring).
     st = ScrolledText(root, height=5)
     st.pack()
-    # a plain card frame forces the (lazily built) Card.TFrame style to exist
-    card = ttk.Frame(root, bootstyle="card")
-    card.pack()
+    # a plain bordered frame forces the (lazily built) Bordered.TFrame style to exist
+    bordered = ttk.Frame(root, bootstyle="bordered")
+    bordered.pack()
     root.update_idletasks()
     style = ttk.Style.get_instance()
     resting = str(style.lookup("Highlight.TFrame", "bordercolor"))
     focus_map = str(style.map("Highlight.TFrame", "bordercolor"))
     assert "focus" in focus_map
     assert str(style.colors.primary) in focus_map
-    # the card variant is inert: the same resting border, no focus map
-    assert not style.map("Card.TFrame", "bordercolor")
-    assert str(style.lookup("Card.TFrame", "bordercolor")) == resting
+    # the bordered variant is inert: the same resting border, no focus map
+    assert not style.map("Bordered.TFrame", "bordercolor")
+    assert str(style.lookup("Bordered.TFrame", "bordercolor")) == resting
 
 
 def test_scrolledframe_vscroll_is_deprecated_alias_of_vbar(root):

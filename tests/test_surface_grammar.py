@@ -147,6 +147,25 @@ def test_frame_surface_composes_with_color(root):
     assert frm.cget("style") == "@chrome.primary.TFrame"
 
 
+def test_bordered_variant_fills_and_borders_from_surface(root):
+    """`bordered` (border, orthogonal to surface) composes with `@card`: the
+    frame fills with the card surface and its hairline border is derived from
+    that surface, so the border stays visible on any surface."""
+    style = ttk.Style.get_instance()
+    plain = ttk.Frame(root, bootstyle="bordered")
+    assert plain.cget("style") == "Bordered.TFrame"
+
+    carded = ttk.Frame(root, bootstyle="bordered @card")
+    carded.pack()
+    root.update_idletasks()
+    st = carded.cget("style")
+    assert st == "@card.Bordered.TFrame"
+    fill = str(style.lookup(st, "background"))
+    border = str(style.lookup(st, "bordercolor"))
+    assert fill == str(style.colors.bg) or fill != str(root.cget("background"))
+    assert border and border != fill      # a visible hairline off the surface
+
+
 def test_unknown_surface_warns(root):
     with pytest.warns(UserWarning):
         btn = ttk.Button(root, bootstyle="@bogus ghost")

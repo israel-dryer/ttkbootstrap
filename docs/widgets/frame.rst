@@ -21,7 +21,12 @@ Usage
 
 A frame holds other widgets: pass the frame as their ``master``, then place the
 frame in its own parent. Frames are how you break a window into regions and nest
-layouts — a header, a sidebar, a form — each managed independently:
+layouts — a header, a sidebar, a form — each managed independently.
+
+A frame's ``bootstyle`` controls three independent things: a **border**
+(``bordered``), a **surface** to fill it (``@card`` / ``@chrome``), and a bold
+**color** fill (``primary`` …). They compose — ``"bordered @card"`` is a bordered
+panel on the card surface.
 
 .. code-block:: python
 
@@ -32,7 +37,7 @@ layouts — a header, a sidebar, a form — each managed independently:
 
    header = ttk.Frame(app, padding=10, bootstyle="primary")
    header.pack(fill=X)
-   ttk.Label(header, text="Dashboard", bootstyle="inverse-primary").pack()
+   ttk.Label(header, text="Dashboard", bootstyle="@primary").pack()
 
    content = ttk.Frame(app, padding=20)
    content.pack(fill=BOTH, expand=YES)
@@ -49,38 +54,62 @@ Adding a border
 ---------------
 
 By default a frame is invisible — it takes the window background. The most common
-reason to style one is to **set a region off with a border**. The ``card`` variant
-draws a hairline border around the frame's contents:
+reason to style one is to **set a region off with a border**. The ``bordered``
+variant draws a hairline border around the frame's contents:
 
 .. code-block:: python
 
-   ttk.Frame(app, padding=16, bootstyle="card")
+   ttk.Frame(app, padding=16, bootstyle="bordered")
+
+The border color is derived from the surface the frame is filled with, so it stays
+a visible hairline on the window, a card, or a chrome panel alike.
 
 The ``highlight`` variant is the same hairline, but drawn in the **accent color
 while the frame is in the** ``focus`` **state**. A frame does not track its
 children's focus on its own, so you set that state yourself — for example, to make
-a card glow while an entry inside it is focused:
+a panel glow while an entry inside it is focused:
 
 .. code-block:: python
 
-   card = ttk.Frame(app, padding=16, bootstyle="highlight")
-   card.pack()
-   entry = ttk.Entry(card)
+   panel = ttk.Frame(app, padding=16, bootstyle="highlight")
+   panel.pack()
+   entry = ttk.Entry(panel)
    entry.pack()
 
-   entry.bind("<FocusIn>",  lambda event: card.state(["focus"]))
-   entry.bind("<FocusOut>", lambda event: card.state(["!focus"]))
+   entry.bind("<FocusIn>",  lambda event: panel.state(["focus"]))
+   entry.bind("<FocusOut>", lambda event: panel.state(["!focus"]))
 
-Prefer ``card`` and ``highlight`` over a raw ``relief=``/``borderwidth=`` border:
-plain ttk relief is theme-dependent and needs a non-zero ``borderwidth`` to show
-at all, while the ``card`` hairline matches the rest of the theme.
+Prefer ``bordered`` and ``highlight`` over a raw ``relief=``/``borderwidth=``
+border: plain ttk relief is theme-dependent and needs a non-zero ``borderwidth``
+to show at all, while the ``bordered`` hairline matches the rest of the theme.
+
+Filling with a surface
+----------------------
+
+Give a frame an ``@`` **surface** token to fill it with a neutral panel color on
+the theme's elevation scale — ``@chrome`` (recessive framing: a toolbar or status
+bar) or ``@card`` (a raised panel: a sidebar or grouped region). Unlike a bold
+color, a surface reads as a subtle, theme-matched region and gives the widgets
+inside it a background to blend onto:
+
+.. code-block:: python
+
+   sidebar = ttk.Frame(app, bootstyle="@card", padding=12)   # the frame IS the card surface
+   sidebar.pack(side="left", fill="y")
+   ttk.Button(sidebar, text="Home", bootstyle="@card link").pack(fill="x")
+
+Put the same ``@card`` token on the controls inside so a ghost, outline, or link
+button blends onto the surface instead of painting a wrong-colored box. See
+:doc:`Styling with bootstyle </user-guide/foundations/bootstyle-grammar>` for the
+full surface grammar. A surface composes with ``bordered`` — ``"bordered @card"``
+is a card panel with a hairline edge.
 
 Colored background
 ------------------
 
-Less often, give a frame a ``bootstyle`` color to make it a filled band — a
-colored header or footer. Put ``inverse-<color>`` labels inside so their text
-reads against the fill (as the header in `Usage`_ does):
+Less often, give a frame a ``bootstyle`` color to make it a bold filled band — a
+colored header or footer. Put ``@<color>`` labels inside so their text reads
+against the fill (as the header in `Usage`_ does):
 
 .. code-block:: python
 
