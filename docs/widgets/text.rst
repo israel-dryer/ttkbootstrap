@@ -8,11 +8,15 @@ you fine-tune with fonts, colors, and tags). This page covers inserting and
 reading text, indices, editing, tags for styled spans, marks, searching, undo,
 and appearance.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/text-hero-light.png
+   :class: tb-screenshot-light
+   :width: 392px
+   :alt: A text widget with several lines and one span highlighted by a tag — light theme
 
-   A text widget with several lines, one span highlighted by a tag, in light and
-   dark themes.
+.. image:: /_static/examples/text-hero-dark.png
+   :class: tb-screenshot-dark
+   :width: 392px
+   :alt: A text widget with several lines and one span highlighted by a tag — dark theme
 
 Usage
 -----

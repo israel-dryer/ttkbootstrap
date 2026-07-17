@@ -7,11 +7,15 @@ multi-column **table**, or both at once. ``Treeview`` is the native
 the tree/table/columns modes, reading and changing items, reacting to a
 selection, sorting, row tags for color, then the ``bootstyle`` color and states.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/treeview-hero-light.png
+   :class: tb-screenshot-light
+   :width: 390px
+   :alt: A treeview with a file tree in the first column and data columns beside it — light theme
 
-   A treeview in light and dark themes, showing a tree on the left column and
-   several data columns beside it.
+.. image:: /_static/examples/treeview-hero-dark.png
+   :class: tb-screenshot-dark
+   :width: 390px
+   :alt: A treeview with a file tree in the first column and data columns beside it — dark theme
 
 Usage
 -----

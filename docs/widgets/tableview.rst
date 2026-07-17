@@ -9,11 +9,15 @@ configuring columns, sorting, filtering, reading and changing rows, the
 right-click menu, reacting to a selection, exporting, and the ``bootstyle``
 color.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/tableview-hero-light.png
+   :class: tb-screenshot-light
+   :width: 620px
+   :alt: A tableview with column headers, rows, a search bar, and pagination controls — light theme
 
-   A tableview with column headers, several rows, a search bar, and pagination
-   controls, in light and dark themes.
+.. image:: /_static/examples/tableview-hero-dark.png
+   :class: tb-screenshot-dark
+   :width: 620px
+   :alt: A tableview with column headers, rows, a search bar, and pagination controls — dark theme
 
 Usage
 -----
