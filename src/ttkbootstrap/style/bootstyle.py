@@ -98,13 +98,15 @@ _TOKEN_SPLIT = re.compile(r"[-\s]+")
 # (e.g. "@primary success ghost") and, when non-default, prefixes the style name
 # with an `@<surface>.` segment. `_SURFACE_FAMILIES` gates which families a recipe
 # consumes surface for yet -- it grows one PR at a time as families are migrated;
-# a surface for any other family is silently ignored (frames are intentionally
-# never in it -- they are surface producers, not consumers). The token vocab lives
-# once in constants (`BOOTSTYLE_SURFACE_TOKENS`).
+# a surface for any other family is silently ignored. `frame` consumes a surface
+# to fill itself with it (`@card`/`@chrome` -- a container that *is* a surface, so
+# a sidebar or panel renders on the elevation scale); leaf widgets consume it to
+# blend onto the surface they sit on. The token vocab lives once in constants
+# (`BOOTSTYLE_SURFACE_TOKENS`).
 _SURFACE_TOKENS = frozenset(BOOTSTYLE_SURFACE_TOKENS)
 _SURFACE_FAMILIES = frozenset(
     {"button", "checkbutton", "radiobutton", "toggle", "label",
-     "scale", "progressbar", "scrollbar"}
+     "scale", "progressbar", "scrollbar", "frame"}
 )
 
 

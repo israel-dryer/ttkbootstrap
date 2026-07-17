@@ -31,6 +31,16 @@ def test_card_surface_differs_from_background(root):
     assert card == b.card_surface()
 
 
+def test_chrome_surface_sits_between_background_and_card(root):
+    """The elevation scale is background < chrome < card: chrome is a distinct,
+    subtler step than card (both mode-aware raises of the background)."""
+    b = _builder()
+    chrome = b.resolve_surface("chrome")
+    assert chrome == b.chrome_surface()
+    assert chrome != b.colors.bg          # distinct from the base
+    assert chrome != b.resolve_surface("card")   # a different rung than card
+
+
 def test_accent_surface_resolves_to_color(root):
     b = _builder()
     assert b.resolve_surface("primary") == b.colors.primary

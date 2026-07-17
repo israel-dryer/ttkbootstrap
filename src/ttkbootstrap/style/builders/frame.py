@@ -17,12 +17,15 @@ def build_frame_style(builder: StyleBuilderTTK, colorname=DEFAULT):
             The color label used to style the widget.
     """
     ttk_class = "TFrame"
+    # The surface the frame sits on (2.0 surface-color); default == theme bg, so
+    # a plain `@card`/`@chrome` frame gets the elevation surface as its fill.
+    surface = builder.resolve_surface(builder._surface)
 
     if any([colorname == DEFAULT, colorname == ""]):
-        ttk_style = ttk_class
-        background = builder.colors.bg
+        ttk_style = builder.surface_prefix(ttk_class)
+        background = surface
     else:
-        ttk_style = f"{colorname}.{ttk_class}"
+        ttk_style = builder.surface_prefix(f"{colorname}.{ttk_class}")
         background = builder.colors.get(colorname)
 
     builder.configure(ttk_style, background=background)
