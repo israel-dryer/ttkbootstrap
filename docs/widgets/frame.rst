@@ -37,7 +37,7 @@ panel on the card surface.
 
    header = ttk.Frame(app, padding=10, bootstyle="primary")
    header.pack(fill=X)
-   ttk.Label(header, text="Dashboard", bootstyle="inverse-primary").pack()
+   ttk.Label(header, text="Dashboard", bootstyle="@primary").pack()
 
    content = ttk.Frame(app, padding=20)
    content.pack(fill=BOTH, expand=YES)
@@ -108,8 +108,8 @@ Colored background
 ------------------
 
 Less often, give a frame a ``bootstyle`` color to make it a bold filled band — a
-colored header or footer. Put ``inverse-<color>`` labels inside so their text
-reads against the fill (as the header in `Usage`_ does):
+colored header or footer. Put ``@<color>`` labels inside so their text reads
+against the fill (as the header in `Usage`_ does):
 
 .. code-block:: python
 
