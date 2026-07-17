@@ -167,11 +167,15 @@ A small toolbar of icon-only buttons beside a labeled action:
 
    app.mainloop()
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/icons-toolbar-light.png
+   :class: tb-screenshot-light
+   :width: 195px
+   :alt: A toolbar — home, gear, and trash icon-only buttons beside a green Save button with a check glyph — light theme
 
-   The toolbar — three colored icon-only buttons (home, gear, trash) beside a
-   green "Save" button with a leading check glyph.
+.. image:: /_static/examples/icons-toolbar-dark.png
+   :class: tb-screenshot-dark
+   :width: 195px
+   :alt: A toolbar — home, gear, and trash icon-only buttons beside a green Save button with a check glyph — dark theme
 
 .. seealso::
 
