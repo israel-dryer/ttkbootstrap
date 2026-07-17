@@ -39,9 +39,9 @@ both — each covers different platforms:
    )
 
    panel = ttk.Frame(splash, bootstyle="primary").pack(fill="both", expand=True)
-   ttk.Label(panel, text="Contact Book", bootstyle="inverse-primary",
+   ttk.Label(panel, text="Contact Book", bootstyle="@primary",
              font="-size 18 -weight bold").pack(pady=(50, 4))
-   status = ttk.Label(panel, text="Starting…", bootstyle="inverse-primary")
+   status = ttk.Label(panel, text="Starting…", bootstyle="@primary")
    status.pack()
 
    splash.place_window_center()

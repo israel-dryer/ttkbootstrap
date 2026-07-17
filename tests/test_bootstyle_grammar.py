@@ -177,6 +177,22 @@ def test_normalize_tuple_warns_when_asked():
         ) == "primary-outline"
 
 
+def test_inverse_modifier_is_deprecated_but_still_resolves(root):
+    """`inverse-<color>` is deprecated in favor of the `@<color>` surface, but it
+    keeps working (back-compat) and warns, steering to the `@` token."""
+    with pytest.warns(DeprecationWarning, match="inverse"):
+        lbl = ttk.Label(root, bootstyle="inverse-primary")
+    assert lbl.cget("style") == "primary.Inverse.TLabel"
+
+
+def test_inverse_is_not_advertised(root):
+    """The deprecated modifier is excluded from BootType and the BootStyle
+    Literal, so it is never suggested/autocompleted."""
+    from typing import get_args
+    assert "inverse" not in get_args(C.BootType)
+    assert not any("inverse" in s for s in get_args(C.BootStyle))
+
+
 # --------------------------------------------------------------------------- #
 # Registry round-trip: every built-in (variant, family) is expressible
 # --------------------------------------------------------------------------- #
@@ -188,8 +204,10 @@ def test_every_registry_key_roundtrips():
         # family is a real vocabulary token...
         assert family in C.BOOTSTYLE_FAMILIES, (variant, family)
         # ...and the variant is either the default or a known modifier
-        known_modifiers = set(C.BOOTSTYLE_MODIFIERS) | set(
-            C.BOOTSTYLE_INTERNAL_MODIFIERS
+        known_modifiers = (
+            set(C.BOOTSTYLE_MODIFIERS)
+            | set(C.BOOTSTYLE_INTERNAL_MODIFIERS)
+            | set(C.BOOTSTYLE_DEPRECATED_MODIFIERS)
         )
         assert variant == DEFAULT_VARIANT or variant in known_modifiers, (
             variant, family,
@@ -286,7 +304,7 @@ def test_valid_widget_construction_is_warning_free(root):
         ttk.Button(root, bootstyle="primary")
         ttk.Checkbutton(root, bootstyle="success-round-toggle")
         ttk.Progressbar(root, bootstyle="info-striped")
-        ttk.Label(root, bootstyle="inverse")
+        ttk.Label(root, bootstyle="@primary")   # accent-surface label (was inverse)
 
 
 def test_composite_widgets_construct_without_tuple_warning(root):

@@ -97,9 +97,6 @@ families ``toggle`` / ``toolbutton``.
    * - ``button``
      - ghost
      - ``primary ghost``
-   * - ``label``
-     - inverse
-     - ``primary inverse``
    * - ``button``
      - link
      - ``primary link``

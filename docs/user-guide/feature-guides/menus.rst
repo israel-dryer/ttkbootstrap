@@ -180,7 +180,7 @@ that calls :meth:`tk_popup` with the pointer's **screen** coordinates:
    import ttkbootstrap as ttk
 
    app = ttk.App()
-   target = ttk.Label(app, text="Right-click me", padding=40, bootstyle="inverse-secondary")
+   target = ttk.Label(app, text="Right-click me", padding=40, bootstyle="@secondary")
    target.pack(fill="both", expand=True)
 
    context = ttk.Menu(app, tearoff=False)

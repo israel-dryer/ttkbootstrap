@@ -14,6 +14,7 @@ from ttkbootstrap.constants import (
     BOOTSTYLE_COLORS,
     BOOTSTYLE_MODIFIERS,
     BOOTSTYLE_INTERNAL_MODIFIERS,
+    BOOTSTYLE_DEPRECATED_MODIFIERS,
     BOOTSTYLE_FAMILIES,
     BOOTSTYLE_ORIENTS,
     BOOTSTYLE_SURFACE_TOKENS,
@@ -55,7 +56,11 @@ class Keywords:
 
     COLORS = list(BOOTSTYLE_COLORS)
     ORIENTS = list(BOOTSTYLE_ORIENTS)
-    TYPES = list(BOOTSTYLE_MODIFIERS) + list(BOOTSTYLE_INTERNAL_MODIFIERS)
+    TYPES = (
+        list(BOOTSTYLE_MODIFIERS)
+        + list(BOOTSTYLE_INTERNAL_MODIFIERS)
+        + list(BOOTSTYLE_DEPRECATED_MODIFIERS)
+    )
     CLASSES = list(BOOTSTYLE_FAMILIES)
     # Longest-first alternation so a longer token wins over a substring it
     # contains (e.g. `labelframe` over `label`, `menubutton` over `button`).
@@ -77,7 +82,14 @@ class Keywords:
 # --------------------------------------------------------------------------- #
 _COLORS = frozenset(BOOTSTYLE_COLORS)
 _PUBLIC_MODIFIERS = frozenset(BOOTSTYLE_MODIFIERS)
-_MODIFIERS = _PUBLIC_MODIFIERS | frozenset(BOOTSTYLE_INTERNAL_MODIFIERS)
+_DEPRECATED_MODIFIERS = frozenset(BOOTSTYLE_DEPRECATED_MODIFIERS)
+# Accepted (so back-compat tokens still resolve) but not advertised: public +
+# internal + deprecated. Deprecated ones warn on use (see `_classify_tokens`).
+_MODIFIERS = (
+    _PUBLIC_MODIFIERS
+    | frozenset(BOOTSTYLE_INTERNAL_MODIFIERS)
+    | _DEPRECATED_MODIFIERS
+)
 _FAMILIES = frozenset(BOOTSTYLE_FAMILIES)
 _ORIENTS = frozenset(BOOTSTYLE_ORIENTS)
 # winfo_class inference matches the class name by substring; try longer family
@@ -167,6 +179,11 @@ def _classify_tokens(style_string, *, source=None, warn=False):
                 _compat.report_invalid("color", token, source)
             color = color or token
         elif token in _MODIFIERS:
+            if warn and token in _DEPRECATED_MODIFIERS:
+                _compat.warn_deprecated(
+                    f"the {token!r} bootstyle modifier",
+                    "an '@<color>' surface token (e.g. '@primary')",
+                )
             if warn and modifier and token != modifier:
                 _compat.report_invalid("modifier", token, source)
             modifier = modifier or token
