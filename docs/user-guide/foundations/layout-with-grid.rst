@@ -95,6 +95,12 @@ they stretch to fill it. This pairing is the whole secret to a responsive grid:
    means "stay at content size"; larger weights split the spare space in
    proportion.
 
+Sizing also flows the other way: a container with gridded children shrinks or
+grows to fit them, so a ``width``/``height`` you set on the container yields to
+the content. Call ``grid_propagate(False)`` on the container to keep the fixed
+size instead (the grid counterpart of ``pack_propagate`` from
+:doc:`Layout with pack </user-guide/foundations/layout-with-pack>`).
+
 Step 5 — span several cells
 ---------------------------
 

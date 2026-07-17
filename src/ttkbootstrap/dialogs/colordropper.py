@@ -29,7 +29,7 @@ class ColorDropperDialog:
 
     This widget is implemented for **Windows** and **Linux** only.
 
-    !!! warning "high resolution displays"
+    Warning:
         This widget may not function properly on high resolution
         displays if you are not using the application in high
         resolution mode. This is enabled automatically on Windows.

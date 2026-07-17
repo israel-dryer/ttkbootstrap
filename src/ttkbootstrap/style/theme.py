@@ -831,15 +831,28 @@ class Theme:
             to skip it.
     """
 
+    #: Family name; generated variants are ``<name>-light`` / ``<name>-dark``.
     name: str
+    #: Accent ``[500]`` anchor color (hex).
     primary: str = None
+    #: Accent ``[500]`` anchor color (hex).
     success: str = None
+    #: Accent ``[500]`` anchor color (hex).
     info: str = None
+    #: Accent ``[500]`` anchor color (hex).
     warning: str = None
+    #: Accent ``[500]`` anchor color (hex).
     danger: str = None
+    #: Optional colored secondary accent (hex); derives from the neutral
+    #: ramp when omitted.
     secondary: str = None
+    #: Gray base for the neutral ramp (secondary, the light/dark accents).
     neutral: str = _DEFAULT_NEUTRAL
+    #: ``{'background': ..., 'foreground': ...}`` for the light variant, or
+    #: ``None`` to skip it.
     light: dict = None
+    #: ``{'background': ..., 'foreground': ...}`` for the dark variant, or
+    #: ``None`` to skip it.
     dark: dict = None
 
     def _definition(self, mode):

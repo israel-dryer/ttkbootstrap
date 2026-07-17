@@ -12,17 +12,51 @@ The canonical upstream reference is the Tk
 `grid <https://www.tcl-lang.org/man/tcl8.6/TkCmd/grid.htm>`__ manual page
 (Tcl 8.6).
 
+Options
+-------
+
+Every option below is a keyword argument to ``grid()``.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 16 62
+
+   * - Option
+     - Type
+     - Description
+   * - ``row`` / ``column``
+     - ``int``
+     - The cell to occupy (0-based). ``column`` defaults to ``0``; ``row``
+       defaults to the first empty row.
+   * - ``rowspan`` / ``columnspan``
+     - ``int``
+     - How many rows / columns the widget covers. Default ``1``.
+   * - ``sticky``
+     - ``str``
+     - Which sides of the cell the widget sticks to — any combination of
+       ``"nsew"``. Opposite pairs stretch the widget; the default centers it
+       at its natural size.
+   * - ``padx`` / ``pady``
+     - ``int | tuple``
+     - External space around the widget, in pixels. A ``(left, right)`` /
+       ``(top, bottom)`` tuple pads the two sides differently.
+   * - ``ipadx`` / ``ipady``
+     - ``int``
+     - Internal padding added to the widget's own size, in pixels.
+   * - ``in_``
+     - ``Widget``
+     - Grid inside a container other than the parent (the container must be
+       the parent or one of its descendants). Rarely needed.
+
 Placing a widget
 ----------------
 
 .. py:method:: grid(**options)
    :noindex:
 
-   Place the widget in a cell (or span of cells). Alias: ``grid_configure``.
+   Place the widget in a cell (or span of cells), using the options above.
+   Alias: ``grid_configure``.
 
-   :param options: ``row``, ``column``, ``rowspan``, ``columnspan``,
-      ``sticky`` (any of ``"nsew"``), ``padx``/``pady`` (external),
-      ``ipadx``/``ipady`` (internal).
    :returns: the widget (ttkbootstrap), for chaining.
 
 .. py:method:: grid_forget()

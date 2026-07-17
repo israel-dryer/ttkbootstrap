@@ -12,14 +12,60 @@ The canonical upstream reference is the Tk
 `pack <https://www.tcl-lang.org/man/tcl8.6/TkCmd/pack.htm>`__ manual page
 (Tcl 8.6).
 
+Options
+-------
+
+Every option below is a keyword argument to ``pack()``.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 16 62
+
+   * - Option
+     - Type
+     - Description
+   * - ``side``
+     - ``str``
+     - The side of the remaining space the widget stacks against: ``"top"``
+       (default), ``"bottom"``, ``"left"``, or ``"right"``.
+   * - ``fill``
+     - ``str``
+     - Stretch the widget to fill its slot: ``"x"``, ``"y"``, ``"both"``, or
+       ``"none"`` (default).
+   * - ``expand``
+     - ``bool``
+     - Claim a share of the parent's leftover space — the *slot* grows; pair
+       with ``fill`` so the widget grows with it.
+   * - ``anchor``
+     - ``str``
+     - Where the widget sits inside its slot when it does not fill it:
+       ``"center"``, a side (``"n"``/``"s"``/``"e"``/``"w"``), or a corner
+       (``"ne"``, ``"sw"``, …).
+   * - ``padx`` / ``pady``
+     - ``int | tuple``
+     - External space around the widget, in pixels. A ``(left, right)`` /
+       ``(top, bottom)`` tuple pads the two sides differently.
+   * - ``ipadx`` / ``ipady``
+     - ``int``
+     - Internal padding added to the widget's own size, in pixels.
+   * - ``before`` / ``after``
+     - ``Widget``
+     - Insert the widget into the packing order relative to a sibling that is
+       already packed.
+   * - ``in_``
+     - ``Widget``
+     - Pack inside a container other than the parent (the container must be
+       the parent or one of its descendants). Rarely needed.
+
+Methods
+-------
+
 .. py:method:: pack(**options)
    :noindex:
 
-   Place the widget against a side of its parent. Alias: ``pack_configure``.
+   Place the widget against a side of its parent, using the options above.
+   Alias: ``pack_configure``.
 
-   :param options: ``side`` (``"top"``/``"bottom"``/``"left"``/``"right"``),
-      ``fill`` (``"x"``/``"y"``/``"both"``), ``expand`` (bool), ``anchor``,
-      ``padx``/``pady`` (external), ``ipadx``/``ipady`` (internal).
    :returns: the widget (ttkbootstrap), for chaining.
 
 .. py:method:: pack_forget()

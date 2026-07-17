@@ -680,10 +680,10 @@ class Tableview(ttk.Frame):
         method. You may use a mixture of string and dictionary in
         the list of coldata.
 
-        !!!warning "Existing table data will be erased.
-            This method will completely rebuild the underlying table
-            with the new column and row data. Any existing data will
-            be lost.
+        Warning:
+            Existing table data will be erased: this method completely
+            rebuilds the underlying table with the new column and row
+            data, and any existing data is lost.
 
         Parameters:
 
@@ -847,15 +847,12 @@ class Tableview(ttk.Frame):
         of the columns in the table from left to right starting with
         index 0.
 
-        !!!Warning "Use this method with caution!
-            This method may or may not suffer performance issues.
-            Internally, this method calls the `delete_column` method
-            on each column specified in the list. The `delete_column`
-            method deletes the related column from each record in
-            the table data. So, if there are a lot of records this
-            could be problematic. It may be more beneficial to use
-            the `build_table_data` if you plan on changing the
-            structure of the table dramatically.
+        Warning:
+            This method calls `delete_column` for each column in the
+            list, and `delete_column` removes the value from every
+            record — with many records this can be slow. To change the
+            table's structure dramatically, `build_table_data` is
+            usually the better tool.
 
         Parameters:
 
