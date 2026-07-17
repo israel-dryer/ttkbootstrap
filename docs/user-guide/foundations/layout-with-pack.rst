@@ -103,7 +103,7 @@ with a fixed sidebar beside a content area that fills the rest.
 
    app = ttk.App(title="App shell", size=(600, 400))
 
-   ttk.Label(app, text="  My App", bootstyle="inverse-primary").pack(
+   ttk.Label(app, text="  My App", bootstyle="@primary").pack(
        side="top", fill="x", ipady=8)
    ttk.Label(app, text="  Ready", bootstyle="@chrome").pack(
        side="bottom", fill="x", ipady=4)
