@@ -730,8 +730,32 @@ class Bootstyle:
                     ):
                         return style_string
                 else:
-                    # A third-party widget whose class maps to no ttkbootstrap
-                    # builder: pass its style through untouched.
+                    if is_bootstyle:
+                        # A bootstyle on a widget whose class maps to no
+                        # ttkbootstrap family (e.g. a bootified third-party
+                        # widget with its own widget class): there is no
+                        # recipe to build, and the raw fragment ("info") is
+                        # not a ttk style name -- assigning it would crash
+                        # with "Layout ... not found". Fail loudly (except
+                        # for the implicit default resolve) and keep the
+                        # widget's current style.
+                        if style_string != "default":
+                            widget_class = ""
+                            try:
+                                widget_class = widget.winfo_class()
+                            except (AttributeError, TclError):
+                                pass
+                            _compat.report_invalid(
+                                "family", widget_class or "<unknown>",
+                                style_string,
+                            )
+                        try:
+                            return str(widget.cget("style"))
+                        except (AttributeError, TclError):
+                            return ""
+                    # An already-built style name from a third-party widget
+                    # whose class maps to no ttkbootstrap builder: pass it
+                    # through untouched.
                     return style_string
 
         # Graceful degrade (2.0 surface-color): if a surface was requested but the
@@ -1184,16 +1208,28 @@ def bootify(cls):
     """Return a ``bootstyle``-enabled subclass of any ttk widget class.
 
     Use this to wrap a third-party ttk-derived widget that ttkbootstrap does
-    not ship a blessed subclass for:
+    not ship a subclass for:
 
     ```python
-    ThemedCalendar = bootify(tkcalendar.Calendar)
-    cal = ThemedCalendar(root, bootstyle="info")
+    ThemedGadget = bootify(Gadget)
+    gadget = ThemedGadget(root, bootstyle="info")
     ```
 
-    The result is ``type(cls.__name__, (BootMixin, cls), {})`` — i.e. the same
-    construction used for the built-in blessed widgets, so it gains the full
+    The result is ``type(cls.__name__, (BootMixin, cls), {})`` — the same
+    construction used for the widgets ttkbootstrap ships, so it gains the full
     ``bootstyle`` API without mutating the original class.
+
+    How much of the vocabulary applies depends on the widget's ttk class:
+
+    - A widget that keeps a **standard ttk class** (a subclass of
+      ``ttk.Button``, ``ttk.Entry``, …) gets the full vocabulary — it behaves
+      exactly like the corresponding ttkbootstrap widget.
+    - A widget with its **own ttk class** has no ttkbootstrap style recipe: a
+      bare color (``bootstyle="info"``) warns and leaves the widget's style
+      unchanged. Name a base type explicitly (``bootstyle="info-frame"``) to
+      borrow a standard recipe where the widget's elements support it. The
+      widget's internal sub-widgets style themselves and are not reached
+      either way.
     """
     return type(cls.__name__, (BootMixin, cls), {})
 
@@ -1210,6 +1246,11 @@ def apply_bootstyle(widget, bootstyle: BootStyle | str) -> str:
     b = ttk.Button(root, text="Save")
     apply_bootstyle(b, "success")
     ```
+
+    The same widget-class rules as `bootify` apply: a widget with its own ttk
+    class has no style recipe, so a bare color warns and leaves the style
+    unchanged — name a base type explicitly (``"info-frame"``) to borrow a
+    standard recipe.
 
     Returns the resolved ttk style name.
     """
