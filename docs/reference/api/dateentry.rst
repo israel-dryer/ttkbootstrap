@@ -66,9 +66,7 @@ Options
        borderless. Default ``"Select new date"``.
 
 A ``width`` passed via ``**kwargs`` is applied to the entry field, not the
-container frame. The widget also accepts the standard
-:doc:`Frame </reference/api/frame>` container options (``padding``,
-``borderwidth``, ``relief``, …).
+container frame.
 
 Methods
 -------

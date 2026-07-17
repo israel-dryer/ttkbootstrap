@@ -13,9 +13,7 @@ Options
 -------
 
 Each option can be passed to the constructor and changed later with
-``configure()``. The widget also accepts the standard
-:doc:`Frame </reference/api/frame>` container options (``padding``,
-``borderwidth``, ``relief``, …).
+``configure()``.
 
 .. list-table::
    :header-rows: 1

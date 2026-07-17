@@ -11,10 +11,6 @@ complete lookup reference.
 Options
 -------
 
-In addition to the options below, the widget accepts the standard
-:doc:`Frame </reference/api/frame>` container options (``padding``,
-``borderwidth``, ``relief``, …).
-
 .. list-table::
    :header-rows: 1
    :widths: 20 18 62
