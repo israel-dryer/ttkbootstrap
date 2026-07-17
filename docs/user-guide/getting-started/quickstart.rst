@@ -19,6 +19,16 @@ Hello ttkbootstrap
 
    app.mainloop()
 
+.. image:: /_static/examples/quickstart-hello-light.png
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 162px
+   :alt: The Hello window — a greeting label above primary, success, and danger-outline buttons — light theme
+
+.. image:: /_static/examples/quickstart-hello-dark.png
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 162px
+   :alt: The Hello window — a greeting label above primary, success, and danger-outline buttons — dark theme
+
 A few things to notice:
 
 - ``ttk.App`` creates the root window and installs a theme in one step. Pass
