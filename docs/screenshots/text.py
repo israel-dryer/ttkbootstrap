@@ -17,7 +17,7 @@ def hero():
 
     colors = ttk.Style.get_instance().colors
     text.tag_configure("hl", background=colors.warning,
-                       foreground=colors.get_foreground("warning"))
+                       foreground=ttk.contrast_color(colors.warning, model="hex"))
     text.tag_add("hl", "5.0", "5.6")  # highlight "Friday"
 
     app.mainloop()
