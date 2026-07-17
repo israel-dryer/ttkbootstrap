@@ -65,11 +65,21 @@ A toggle button is the common case:
 
    app.mainloop()
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. container:: tb-screenshot-row
 
-   The same window in its light and dark mode side by side, showing the matched
-   surfaces of a single theme family.
+   .. figure:: /_static/examples/theming-sample-light.png
+      :class: tb-window-screenshot
+      :width: 278px
+      :alt: A sample window in a theme's light mode
+
+      Light
+
+   .. figure:: /_static/examples/theming-sample-dark.png
+      :class: tb-window-screenshot
+      :width: 278px
+      :alt: The same window in the family's dark mode
+
+      Dark
 
 To pair themes from different families (say a light theme with an unrelated dark
 one), set the pair explicitly with ``app.set_theme_modes(light=..., dark=...)`` or
