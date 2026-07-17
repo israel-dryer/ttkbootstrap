@@ -220,7 +220,7 @@ class ToastNotification:
 
         icon_lbl = Label(
             self.container,
-            bootstyle=f"{self.bootstyle}-inverse",
+            bootstyle=f"@{self.bootstyle}",
             anchor=CENTER,
         )
         # rowspan=2 -> the icon cell is as tall as the title+message block;
@@ -236,14 +236,14 @@ class ToastNotification:
             self.container,
             text=self.title,
             font=self.title_font,
-            bootstyle=f"{self.bootstyle}-inverse",
+            bootstyle=f"@{self.bootstyle}",
             anchor=NW,
         ).grid(row=0, column=1, sticky=NSEW, padx=10, pady=(5, 0))
         Label(
             self.container,
             text=self.message,
             wraplength=utils.scale_size(self.toplevel, 300),
-            bootstyle=f"{self.bootstyle}-inverse",
+            bootstyle=f"@{self.bootstyle}",
             anchor=NW,
         ).grid(row=1, column=1, sticky=NSEW, padx=10, pady=(0, 5))
 

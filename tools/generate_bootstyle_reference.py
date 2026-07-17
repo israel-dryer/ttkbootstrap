@@ -36,6 +36,7 @@ from ttkbootstrap.constants import (  # noqa: E402
     BOOTSTYLE_COLORS,
     BOOTSTYLE_BASES,
     BOOTSTYLE_INTERNAL_MODIFIERS,
+    BOOTSTYLE_DEPRECATED_MODIFIERS,
     BOOTSTYLE_SURFACES,
     DEFAULT_SURFACE,
     NEUTRAL,
@@ -60,13 +61,15 @@ def _public_keys():
 
     The internal composite variants (`meter`/`metersubtxt`/`date`/`table`) are
     plumbing for Meter/DateEntry/Tableview -- never typed by a user -- so they
-    are excluded from the public reference.
+    are excluded from the public reference. Deprecated variants (`inverse`) still
+    resolve for back-compat but are no longer advertised, so they are excluded too.
     """
     load_builders()
+    hidden = set(BOOTSTYLE_INTERNAL_MODIFIERS) | set(BOOTSTYLE_DEPRECATED_MODIFIERS)
     return sorted(
         (variant, family)
         for variant, family in builder_keys()
-        if variant not in BOOTSTYLE_INTERNAL_MODIFIERS
+        if variant not in hidden
     )
 
 

@@ -66,7 +66,10 @@ BootColor = Literal["primary", "secondary", "success", "danger", "warning", "inf
 # is the reconciled set -- `round` is included (it is buildable; its historical
 # omission was a bug), and `toggle`/`toolbutton` are *removed* because they are
 # base-types (widget families), not modifiers. Those two moved to `BootBase`.
-BootType = Literal["outline", "link", "ghost", "inverse", "round", "square", "striped", "thin"]
+# `inverse` is NOT here: it is deprecated in favor of the `@<color>` surface token
+# (an `@primary` label is identical to the old `inverse-primary`), so it is no
+# longer advertised -- see BOOTSTYLE_DEPRECATED_MODIFIERS.
+BootType = Literal["outline", "link", "ghost", "round", "square", "striped", "thin"]
 
 # Base-types a user may name explicitly in a bootstyle string. Most base-types
 # are inferred from the widget's class and never typed; these two "chameleon"
@@ -94,8 +97,14 @@ BOOTSTYLE_COLORS: Final = (
 NEUTRAL_FAMILIES: Final = ("button", "menubutton", "toolbutton")
 # Public, documented type modifiers -- matches BootType.
 BOOTSTYLE_MODIFIERS: Final = (
-    "outline", "link", "ghost", "inverse", "round", "square", "striped", "thin",
+    "outline", "link", "ghost", "round", "square", "striped", "thin",
 )
+# Deprecated modifiers: still valid grammar tokens (accepted, back-compat through
+# 2.x, removed in 3.0) but NOT advertised -- kept out of BootType, the generated
+# BootStyle Literal, the reference table, and the autocomplete/suggestion pool.
+# Using one emits a DeprecationWarning naming the replacement. `inverse-<color>`
+# is superseded by the `@<color>` surface token (identical result on a label).
+BOOTSTYLE_DEPRECATED_MODIFIERS: Final = ("inverse",)
 # Composite modifiers kept out of the cross-family public Literal (a frame-only
 # variant like `bordered` must not generate `bordered-button`). `meter`/
 # `metersubtxt`/`table` are truly internal sub-style tokens (Meter/DateEntry/
@@ -157,7 +166,6 @@ def surface_segment(surface: str) -> str:
 BootStyle = Literal[
     'danger',
     'danger ghost',
-    'danger inverse',
     'danger link',
     'danger outline',
     'danger outline toolbutton',
@@ -170,7 +178,6 @@ BootStyle = Literal[
     'danger toolbutton',
     'dark',
     'dark ghost',
-    'dark inverse',
     'dark link',
     'dark outline',
     'dark outline toolbutton',
@@ -184,7 +191,6 @@ BootStyle = Literal[
     'ghost',
     'info',
     'info ghost',
-    'info inverse',
     'info link',
     'info outline',
     'info outline toolbutton',
@@ -195,10 +201,8 @@ BootStyle = Literal[
     'info thin',
     'info toggle',
     'info toolbutton',
-    'inverse',
     'light',
     'light ghost',
-    'light inverse',
     'light link',
     'light outline',
     'light outline toolbutton',
@@ -220,7 +224,6 @@ BootStyle = Literal[
     'outline toolbutton',
     'primary',
     'primary ghost',
-    'primary inverse',
     'primary link',
     'primary outline',
     'primary outline toolbutton',
@@ -235,7 +238,6 @@ BootStyle = Literal[
     'round toggle',
     'secondary',
     'secondary ghost',
-    'secondary inverse',
     'secondary link',
     'secondary outline',
     'secondary outline toolbutton',
@@ -250,7 +252,6 @@ BootStyle = Literal[
     'striped',
     'success',
     'success ghost',
-    'success inverse',
     'success link',
     'success outline',
     'success outline toolbutton',
@@ -266,7 +267,6 @@ BootStyle = Literal[
     'toolbutton',
     'warning',
     'warning ghost',
-    'warning inverse',
     'warning link',
     'warning outline',
     'warning outline toolbutton',
@@ -457,7 +457,7 @@ NEUTRAL: Final[BootColor] = "neutral"
 OUTLINE: Final[BootType] = "outline"
 LINK: Final[BootType] = "link"
 GHOST: Final[BootType] = "ghost"
-INVERSE: Final[BootType] = "inverse"
+INVERSE: Final = "inverse"  # deprecated; use an @<color> surface token
 STRIPED: Final[BootType] = "striped"
 THIN: Final[BootType] = "thin"
 SQUARE: Final[BootType] = "square"

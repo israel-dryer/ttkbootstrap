@@ -183,6 +183,10 @@ removed in 3.0.
 - **Tuple and list bootstyle** — the canonical form is a single string.
   ``bootstyle=("primary", "outline")`` becomes ``bootstyle="primary outline"``. See
   :doc:`Styling with bootstyle </user-guide/foundations/bootstyle-grammar>`.
+- **The ``inverse-<color>`` modifier** — superseded by the ``@<color>`` **surface**
+  token, which does the same thing (fills the label with the color and picks a
+  contrasting text). ``bootstyle="inverse-primary"`` becomes ``bootstyle="@primary"``.
+  See :doc:`Styling with bootstyle </user-guide/foundations/bootstyle-grammar>`.
 - **Legacy theme names** — ``"darkly"``, ``"cosmo"``, ``"litera"``, and the rest of
   the pre-2.0 Bootswatch names still work; naming one registers it on demand with a
   warning. See *Theme names changed* below.

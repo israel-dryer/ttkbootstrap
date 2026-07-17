@@ -51,17 +51,17 @@ status (``success``, ``danger``, ``secondary`` for muted):
    ttk.Label(app, text="Failed", bootstyle="danger")
 
 To put a label on a **colored fill** (inside a colored :doc:`Frame <frame>`, say),
-use ``inverse-<color>`` — it paints the background a palette color and the text to
-read against it:
+give it an ``@<color>`` **surface** token — it paints the background that palette
+color and picks the text to read against it:
 
 .. code-block:: python
 
-   ttk.Label(app, text="Header", bootstyle="inverse-primary")
+   ttk.Label(app, text="Header", bootstyle="@primary")
 
 Setting colors directly
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-``bootstyle`` and ``inverse-`` both draw from the theme palette. For any **other**
+``bootstyle`` and ``@<color>`` both draw from the theme palette. For any **other**
 color, ``Label`` is one of the few ttk widgets that accept ``foreground`` and
 ``background`` directly (most take their colors only from a style); a value set this
 way overrides the ``bootstyle`` color. Pass a raw color, or read one from the active
@@ -87,7 +87,7 @@ picks black or white to read against a background:
 
 A direct color — raw or read from ``style.colors`` — is a **fixed snapshot**: it
 stays as you set it across theme switches but does not adapt to the new theme. Use
-``bootstyle`` / ``inverse-`` for theme-following colors; see
+``bootstyle`` / ``@<color>`` for theme-following colors; see
 :doc:`Theming & Colors </user-guide/feature-guides/theming>` for the palette and
 rebuilding on a theme change.
 
@@ -116,8 +116,12 @@ its values:
 
    ttk.Label(app, text="Name", width=12, anchor="e").pack()
 
-A ``relief=`` (``"solid"``, ``"groove"``, …) with some ``padding=`` turns a label
-into a bordered chip or badge — pair it with ``inverse-<color>`` for a filled tag.
+A filled ``@<color>`` label with a little ``padding=`` reads as a tag or badge — a
+status pill, a category chip:
+
+.. code-block:: python
+
+   ttk.Label(app, text="NEW", bootstyle="@success", padding=(8, 2))
 
 Fonts and images
 ----------------
