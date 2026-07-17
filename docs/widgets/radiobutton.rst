@@ -6,11 +6,15 @@ others clear. ``Radiobutton`` is the native ``ttk.Radiobutton``, styled with
 ``bootstyle=``. This page covers building a group, reacting to a choice, the
 toolbutton look, then the ``bootstyle`` color and states.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/radiobutton-hero-light.png
+   :class: tb-screenshot-light
+   :width: 315px
+   :alt: A vertical radio group and a horizontal segmented toolbutton group — light theme
 
-   A vertical radio group and a horizontal toolbutton (segmented) group, in light
-   and dark themes.
+.. image:: /_static/examples/radiobutton-hero-dark.png
+   :class: tb-screenshot-dark
+   :width: 315px
+   :alt: A vertical radio group and a horizontal segmented toolbutton group — dark theme
 
 Usage
 -----
@@ -75,10 +79,15 @@ control:
        ttk.Radiobutton(group, text=label.title(), variable=view, value=label,
                        bootstyle="toolbutton").pack(side=LEFT)
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/radiobutton-toolbutton-light.png
+   :class: tb-screenshot-light
+   :width: 216px
+   :alt: A three-segment toolbutton group with the middle option selected — light theme
 
-   A three-segment toolbutton group with the middle option selected.
+.. image:: /_static/examples/radiobutton-toolbutton-dark.png
+   :class: tb-screenshot-dark
+   :width: 216px
+   :alt: A three-segment toolbutton group with the middle option selected — dark theme
 
 Color
 -----

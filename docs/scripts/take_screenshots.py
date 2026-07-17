@@ -180,9 +180,27 @@ def _patch(cls):
         for key in ("theme", "themename", "light_theme", "dark_theme"):
             kwargs.pop(key, None)
         orig_init(self, *args, theme=theme, **kwargs)
+        if sys.platform == "darwin":
+            # Native chrome (titlebars, menus) follows the SYSTEM appearance,
+            # not the Tk theme — pin the app's appearance to the captured
+            # theme so light shots get light chrome on a dark-mode host.
+            # (After Tk exists: it owns the NSApplication instance.)
+            try:
+                from AppKit import NSApplication, NSAppearance
+                name = ("NSAppearanceNameDarkAqua" if "dark" in theme
+                        else "NSAppearanceNameAqua")
+                NSApplication.sharedApplication().setAppearance_(
+                    NSAppearance.appearanceNamed_(name))
+            except ImportError:
+                pass
 
     def _mainloop(self, *args, **kwargs):
         def _grab():
+            # In parent-capture mode the harness parent takes the shot and
+            # kills this process; the normal grab (whose timer can still fire
+            # during native menu tracking) must not destroy the app under it.
+            if getattr(self, "_ttkb_parent_mode", False):
+                return
             # Scenes can set app._capture_target (a Toplevel, e.g. a dialog) to
             # capture that window instead of the app,
             # app._capture_full_window to grab the whole OS window (titlebar +
@@ -284,8 +302,36 @@ def _patch(cls):
         self.after(delay, _capture)
         orig_loop(self, *args, **kwargs)
 
+    def _capture_via_parent(self):
+        # For popups that BLOCK the Tcl event loop while open (native aqua
+        # menus): announce the content rect, then the scene posts the menu.
+        # The harness parent process composites this process's windows —
+        # including the native menu — and then kills the blocked child.
+        import json
+        self._ttkb_parent_mode = True
+        if sys.platform == "darwin":
+            # Menu tracking aborts under a pinned appearance that mismatches
+            # the system — revert to the system appearance. The menu then
+            # renders system-colored (a provisional mismatch on a dark-mode
+            # host; the Windows canonical run replaces these shots).
+            try:
+                from AppKit import NSApplication
+                NSApplication.sharedApplication().setAppearance_(None)
+            except ImportError:
+                pass
+        self.update_idletasks()
+        target = getattr(self, "_capture_target", None)
+        win = target if target is not None else self
+        rect = [win.winfo_rootx() + 2, win.winfo_rooty() + 2,
+                win.winfo_width() - 4, win.winfo_height() - 4]
+        rgb = self.winfo_rgb(self.cget("background"))
+        fill = "#%02x%02x%02x" % tuple(v // 256 for v in rgb)
+        print("TTKB_PARENT_GRAB " + json.dumps({"rect": rect, "fill": fill}),
+              flush=True)
+
     cls.__init__ = _init
     cls.mainloop = _mainloop
+    cls.capture_via_parent = _capture_via_parent
 
 
 _patch(App)  # ttk.Window is the same class
@@ -303,6 +349,68 @@ if scene_name and hasattr(mod, "SCENES") and scene_name in mod.SCENES:
     mod.SCENES[scene_name]()
 # else: exec_module already ran the app (non-scene scripts)
 """
+
+
+def _parent_composite_mac(pid: int, content_rect, fill_hex: str,
+                          output: Path) -> tuple[int, int]:
+    """Composite a child process's windows (incl. a posted native menu).
+
+    Mirrors the in-process composite, but runs in the harness parent so it
+    works while the child's event loop is blocked by native menu tracking.
+    Menu windows sit on high window-server layers (>= 100); they define the
+    union rect together with the announced content rect and draw on top.
+    """
+    import CoreFoundation
+    import Quartz
+    from PIL import Image
+    import time
+    mine = []
+    deadline = time.time() + 4
+    while time.time() < deadline:
+        infos = Quartz.CGWindowListCopyWindowInfo(
+            Quartz.kCGWindowListOptionOnScreenOnly, Quartz.kCGNullWindowID)
+        mine = [i for i in infos if i.get("kCGWindowOwnerPID") == pid]
+        # wait until the posted menu (layer >= 100) is registered too
+        if mine and any(i.get("kCGWindowLayer", 0) >= 100 for i in mine):
+            break
+        time.sleep(0.25)
+    if not mine:
+        # never composite an empty id list — Quartz falls back to the desktop
+        raise RuntimeError(f"no on-screen windows for pid {pid}")
+    if os.environ.get("TTKB_DEBUG"):
+        for i in mine:
+            print(f"  [debug] win {i['kCGWindowNumber']} "
+                  f"name={i.get('kCGWindowName')!r} "
+                  f"layer={i.get('kCGWindowLayer')}")
+    pad = 4
+    rects = [tuple(content_rect)]
+    for info in mine:
+        if info.get("kCGWindowLayer", 0) >= 100:  # pop-up menu windows
+            b = info["kCGWindowBounds"]
+            rects.append((b["X"] - pad, b["Y"] - pad,
+                          b["Width"] + 2 * pad, b["Height"] + 2 * pad))
+    ux = min(r[0] for r in rects)
+    uy = min(r[1] for r in rects)
+    ux2 = max(r[0] + r[2] for r in rects)
+    uy2 = max(r[1] + r[3] for r in rects)
+    mine.sort(key=lambda i: -i.get("kCGWindowLayer", 0))  # menus on top
+    ids = [i["kCGWindowNumber"] for i in mine]
+    rect = Quartz.CGRectMake(ux, uy, ux2 - ux, uy2 - uy)
+    arr = CoreFoundation.CFArrayCreate(None, ids, len(ids), None)
+    cgimg = Quartz.CGWindowListCreateImageFromArray(
+        rect, arr, Quartz.kCGWindowImageBoundsIgnoreFraming)
+    width = Quartz.CGImageGetWidth(cgimg)
+    height = Quartz.CGImageGetHeight(cgimg)
+    bpr = Quartz.CGImageGetBytesPerRow(cgimg)
+    data = Quartz.CGDataProviderCopyData(Quartz.CGImageGetDataProvider(cgimg))
+    img = Image.frombuffer("RGBA", (width, height), bytes(data),
+                           "raw", "BGRA", bpr, 1)
+    fill = tuple(int(fill_hex[i:i + 2], 16) for i in (1, 3, 5))
+    canvas = Image.new("RGB", img.size, fill)
+    canvas.paste(img, mask=img.getchannel("A"))
+    output.parent.mkdir(parents=True, exist_ok=True)
+    canvas.save(output)
+    return round(ux2 - ux), round(uy2 - uy)
 
 
 def probe_scenes(source: Path) -> list[str]:
@@ -340,21 +448,52 @@ def run_scene(source: Path, theme: str, output: Path, delay: int = 800,
     }
     if scene:
         env["TTKB_SCENE"] = scene
-    result = subprocess.run(
+    import json
+    import threading
+    import time
+    proc = subprocess.Popen(
         [sys.executable, "-c", _RUNNER],
         env=env,
-        timeout=20,
         cwd=str(REPO),
-        capture_output=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
         text=True,
     )
+    watchdog = threading.Timer(25, proc.kill)
+    watchdog.start()
     logical = ""
-    for line in (result.stdout or "").splitlines():
-        if line.startswith("TTKB_LOGICAL "):
-            logical = line.split(" ", 1)[1].strip()
-    if result.returncode != 0 and result.stderr:
-        print(result.stderr.strip().splitlines()[-1], end="  ")
-    return result.returncode == 0, logical
+    parent_grabbed = False
+    try:
+        for line in proc.stdout:
+            line = line.strip()
+            if line.startswith("TTKB_LOGICAL "):
+                logical = line.split(" ", 1)[1].strip()
+            elif line.startswith("TTKB_PARENT_GRAB ") and sys.platform == "darwin":
+                # (On other platforms the marker is ignored; the watchdog
+                # reaps the blocked child and the shot reports FAIL.)
+                # The child is about to block in a native menu; give the menu
+                # a beat to open, composite from here, then kill the child.
+                time.sleep(0.5)
+                info = json.loads(line.split(" ", 1)[1])
+                size = _parent_composite_mac(proc.pid, info["rect"],
+                                             info["fill"], output)
+                logical = f"{size[0]}x{size[1]}"
+                parent_grabbed = True
+                proc.kill()
+                break
+        proc.wait(timeout=20)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        raise
+    finally:
+        watchdog.cancel()
+    if parent_grabbed:
+        return True, logical
+    if proc.returncode != 0:
+        err = (proc.stderr.read() or "").strip()
+        if err:
+            print(err.splitlines()[-1], end="  ")
+    return proc.returncode == 0, logical
 
 
 def main():
