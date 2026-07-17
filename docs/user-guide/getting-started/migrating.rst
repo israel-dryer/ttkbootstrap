@@ -277,6 +277,26 @@ not on hover; and the date picker opens as a frameless popover that dismisses on
 outside click or ``Escape``. None of these need a code change. Pin exact 1.x colors,
 if you need them, by authoring your own theme.
 
+.. admonition:: Accent buttons on a matching accent surface
+   :class: note
+
+   The button hairline is invisible on the window background, but a solid
+   **accent** button on a **matching accent** container — a ``primary`` button on a
+   ``primary`` toolbar — now shows that border as an outlined box where 1.x blended
+   the two together. If you want the button to disappear into the surface (a
+   toolbar action, say), don't fight the border with a solid fill: make the button a
+   **ghost** on that surface with a matching ``@`` token:
+
+   .. code-block:: python
+
+      toolbar = ttk.Frame(app, bootstyle="primary")
+      ttk.Button(toolbar, text="Save", bootstyle="@primary ghost")   # blends in
+
+   The ghost takes the frame's accent as its background and paints its label in the
+   contrast color, so it reads as part of the toolbar until hovered. See
+   :doc:`Styling with bootstyle </user-guide/foundations/bootstyle-grammar>` for the
+   ``@surface`` grammar.
+
 
 New in 2.0
 ----------
