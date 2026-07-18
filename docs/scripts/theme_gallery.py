@@ -46,10 +46,12 @@ def _capture_one(theme: str, out: str) -> None:
     holder.pack(fill="both", expand=True)
     card = ttk.Frame(holder, padding=12)
     card.pack(fill="x", padx=12, pady=12)
-    ttk.Label(card, text=family, font="-size 12 -weight bold").pack(anchor="w")
+    combo = ttk.Combobox(card, values=[f"{family}-light", f"{family}-dark"], state="readonly")
+    combo.set(theme)                       # the exact theme name, in a real widget
+    combo.pack(fill="x")
 
     chips = ttk.Frame(card)
-    chips.pack(fill="x", pady=(8, 10))
+    chips.pack(fill="x", pady=(10, 10))
     for c in ["primary", "success", "info", "warning", "danger"]:
         ttk.Label(chips, bootstyle=f"@{c}", padding=(0, 10)).pack(
             side="left", fill="x", expand=True, padx=1)

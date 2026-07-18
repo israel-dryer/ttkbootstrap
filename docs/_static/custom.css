@@ -102,12 +102,14 @@ html[data-theme="dark"]  .tb-screenshot-light { display: none  !important; }
 .bd-content img.tb-screenshot-dark,
 .bd-content img.tb-screenshot-light,
 .bd-content img.tb-window-screenshot,
-.bd-content img.tb-dialog-screenshot {
+.bd-content img.tb-dialog-screenshot,
+.bd-content img.tb-gallery {
     background-color: transparent !important;
     filter: none !important;
 }
 .bd-content img.tb-screenshot-dark,
-.bd-content img.tb-screenshot-light {
+.bd-content img.tb-screenshot-light,
+.bd-content img.tb-gallery {
     border-radius: 0 !important;
 }
 
