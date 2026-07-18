@@ -306,11 +306,11 @@ class StyleBuilderTK:
     def update_text_style(self, widget: tk.Text):
         """Update the text style.
 
-        Only the colors are themed; the border/relief is intentionally left at
-        tk's default so a surrounding container can own it -- `ScrolledText`
-        draws a single card border and keeps the inner `Text` borderless. A
-        standalone `Text` keeps its native border; set `highlightthickness` /
-        `highlightbackground` yourself for a themed one.
+        A standalone `Text` gets a flat, themed 1px border (matching the input
+        widgets) in place of tk's native sunken relief. A container that owns
+        the border -- `ScrolledText` draws a single card border around the text
+        and scrollbar -- marks its inner `Text` with `_tb_borderless` to keep it
+        edgeless so the two borders don't stack.
 
         Parameters:
 
@@ -327,3 +327,15 @@ class StyleBuilderTK:
             padx=self.style.scaling.logical(5),
             pady=self.style.scaling.logical(5),
         )
+        if getattr(widget, "_tb_borderless", False):
+            widget.configure(
+                relief="flat", borderwidth=0, highlightthickness=0,
+            )
+        else:
+            widget.configure(
+                relief="flat",
+                borderwidth=0,
+                highlightthickness=self.style.scaling.logical(1),
+                highlightbackground=self.colors.border,
+                highlightcolor=self.colors.primary,
+            )
