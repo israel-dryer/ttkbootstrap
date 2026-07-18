@@ -38,10 +38,14 @@ def _capture_one(theme: str, out: str) -> None:
     app = ttk.App(theme=theme)
     app.attributes("-topmost", True)
     app.after(0, lambda: app.geometry("+200+120"))
-    app.minsize(235, 1)
+    app.minsize(259, 1)
 
-    card = ttk.Frame(app, padding=12)
-    card.pack(fill="both", expand=True)
+    # Inset the card inside a holder so the grabbed card rect sits clear of the
+    # window's rounded bottom corners (which would otherwise bleed the desktop).
+    holder = ttk.Frame(app)
+    holder.pack(fill="both", expand=True)
+    card = ttk.Frame(holder, padding=12)
+    card.pack(fill="x", padx=12, pady=12)
     ttk.Label(card, text=family, font="-size 12 -weight bold").pack(anchor="w")
 
     chips = ttk.Frame(card)
