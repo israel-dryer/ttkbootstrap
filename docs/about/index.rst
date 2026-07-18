@@ -4,7 +4,7 @@ About
 ttkbootstrap is a theming extension for tkinter. It generates modern, flat,
 Bootstrap-inspired themes on demand and adds a single ``bootstyle`` keyword to
 the widgets you already use — so a standard tkinter app can look current without
-a rewrite.
+a complete rewrite.
 
 Beautiful, easy-to-use styles
 -----------------------------
