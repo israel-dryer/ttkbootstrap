@@ -73,9 +73,11 @@ geometry managers, variables, events, the widget tree — still applies, and the
 :doc:`documentation </user-guide/index>` teaches it in that dialect rather than
 sending you elsewhere.
 
-That focus is a design choice. A richer, component-oriented framework is a
-separate project (bootstack); ttkbootstrap stays small, dependency-light (only
-Pillow, for image-based assets), and true to the library it extends.
+That focus is a design choice. ttkbootstrap stays small, dependency-light (only
+Pillow), and true to the library it extends. If you want the other thing — a full
+component framework with its own widgets, reactive state, and app packaging —
+that's a separate project called `bootstack <https://bootstack.org/>`_, built on
+Tk by the same author.
 
 What 2.0 brings
 ---------------
