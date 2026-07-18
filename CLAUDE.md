@@ -616,6 +616,37 @@ the capture spec. Then landing/hero shots per design §6–§7; plus optional Tr
 odds/ends (Linux/x11, DPI matrix). Every docs change verified headlessly + built
 green (`.venv/bin/python -m sphinx -b html -W -q -E docs <out>`, exit 0).
 
+**Session 2026-07-17 — the placeholder slice + the Windows canonical recapture
+are DONE and MERGED into `2.0`.** The remaining non-catalog placeholders landed as
+**PR (a)** foundations + getting-started (**#1256**) and **PR (c)** how-tos
+(**#1261**); **PR (b) #1262** carried the feature-guide shots + a new top-level
+**Themes catalog** page (`docs/themes.rst` + `docs/scripts/theme_gallery.py`,
+15 families as side-by-side light/dark cards, in the nav before Release Notes) +
+the **Windows canonical recapture of the whole widget catalog**. The recapture
+also: **regrouped the catalog by purpose** (bootstack pattern — seven octicon
+cards + captioned toctrees, replacing the flat list); gave the container/popup
+shots the **window treatment** (frame/labelframe/panedwindow/notebook/sizegrip as
+full windows; dateentry/menubutton/optionmenu/tooltip/combobox as full windows
+with a posted popup + `tb-window-screenshot`); fixed the tooltip + combobox popups
+(weren't showing on Windows) via the win32 parent-capture; and **dropped the closed
+dropdown shots** (combobox/menubutton/optionmenu now show only the open window,
+like dateentry). Two **standing screenshot facts (memory-saved):** the Windows box
+runs at **100% scaling = 1× density** (macOS Retina was 2×) — sharp on standard
+displays, soft on HiDPI viewers, accepted; and bordered screenshots need
+**`box-sizing: content-box`** (the theme's global border-box otherwise subtracts
+the 1px border from the pinned `:width:` and distorts the aspect — the same bug
+lies **dormant in bootstack**, tracked for a future issue). **PR #1262 also carried
+three library regression fixes (with tests):** `fix(optionmenu)` — the dropdown was
+a raw `tkinter.Menu` showing the native light menu in a dark theme (a PR-3
+monkey-patch-removal regression), now themed at construction; `fix(text)` — a
+standalone `Text` gets its flat themed 1px border back (2.0 left tk's sunken
+relief), with `ScrolledText` marking its inner text `_tb_borderless` so the
+container border isn't doubled; `fix(combobox)` — the border no longer paints the
+focus-ring while pressed (accent on focus only). Suite **708 passed** excl. the
+`nl.msg` env flake. **NEXT (optional):** the deferred **macOS application-menu
+shot** (`menus.rst`, inherently a Mac capture), **landing/hero shots** for the docs
+index (design §6–§7), and Track B odds/ends (Linux/x11, the DPI matrix).
+
 ## Repository layout
 
 ```
