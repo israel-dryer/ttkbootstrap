@@ -57,10 +57,15 @@ the dialog left behind:
 
    who = ask_name(app)
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/multiple-windows-dialog-light.png
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 238px
+   :alt: A modal "Your name" dialog with an entry and an OK button — light theme
 
-   The modal "Your name" dialog centered on screen, with the entry and OK button.
+.. image:: /_static/examples/multiple-windows-dialog-dark.png
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 238px
+   :alt: A modal "Your name" dialog with an entry and an OK button — dark theme
 
 .. tip::
 

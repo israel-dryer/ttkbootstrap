@@ -38,11 +38,15 @@ they overflow:
   ``height=``/``width=`` to change that, or ``pack(fill="both", expand=True)``
   as above to let it fill its parent.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/scrollable-settings-light.png
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 358px
+   :alt: A settings window with a scrollable column of toggle options and a scrollbar at the right edge — light theme
 
-   The settings window showing a scrollable column of toggle options with the
-   scrollbar appearing at the right edge.
+.. image:: /_static/examples/scrollable-settings-dark.png
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 358px
+   :alt: A settings window with a scrollable column of toggle options and a scrollbar at the right edge — dark theme
 
 .. note::
 
