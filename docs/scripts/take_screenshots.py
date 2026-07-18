@@ -291,6 +291,11 @@ def _patch(cls):
             self.destroy()
 
         def _capture():
+            # In parent-capture mode the harness parent takes the shot; don't
+            # lift/refocus here — that would steal focus from a posted menu and
+            # dismiss it before the parent grabs.
+            if getattr(self, "_ttkb_parent_mode", False):
+                return
             self.attributes("-topmost", True)
             self.lift()
             self.update_idletasks()
@@ -322,8 +327,15 @@ def _patch(cls):
         self.update_idletasks()
         target = getattr(self, "_capture_target", None)
         win = target if target is not None else self
-        rect = [win.winfo_rootx() + 2, win.winfo_rooty() + 2,
-                win.winfo_width() - 4, win.winfo_height() - 4]
+        if sys.platform == "win32":
+            # Whole OS window frame (titlebar + menubar + client). A menu posted
+            # within the window drops inside this rect, so the parent's plain
+            # region grab captures the window and the open menu together.
+            fx, fy, fw, fh = _windows_frame_rect(win)
+            rect = [fx + 2, fy + 2, fw - 4, fh - 4]
+        else:
+            rect = [win.winfo_rootx() + 2, win.winfo_rooty() + 2,
+                    win.winfo_width() - 4, win.winfo_height() - 4]
         rgb = self.winfo_rgb(self.cget("background"))
         fill = "#%02x%02x%02x" % tuple(v // 256 for v in rgb)
         print("TTKB_PARENT_GRAB " + json.dumps({"rect": rect, "fill": fill}),
@@ -478,6 +490,20 @@ def run_scene(source: Path, theme: str, output: Path, delay: int = 800,
                 size = _parent_composite_mac(proc.pid, info["rect"],
                                              info["fill"], output)
                 logical = f"{size[0]}x{size[1]}"
+                parent_grabbed = True
+                proc.kill()
+                break
+            elif line.startswith("TTKB_PARENT_GRAB ") and sys.platform == "win32":
+                # Same idea on Windows: the child is blocked in a posted native
+                # menu, so grab the announced window rect from here (the menu is
+                # drawn on top, inside the rect), then reap the child.
+                time.sleep(0.6)
+                info = json.loads(line.split(" ", 1)[1])
+                x, y, w, h = info["rect"]
+                from PIL import ImageGrab
+                img = ImageGrab.grab(bbox=(x, y, x + w, y + h))
+                img.save(str(output))
+                logical = f"{w}x{h}"
                 parent_grabbed = True
                 proc.kill()
                 break

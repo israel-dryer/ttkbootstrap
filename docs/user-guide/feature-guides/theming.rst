@@ -65,11 +65,21 @@ A toggle button is the common case:
 
    app.mainloop()
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. container:: tb-screenshot-row
 
-   The same window in its light and dark mode side by side, showing the matched
-   surfaces of a single theme family.
+   .. figure:: /_static/examples/theming-sample-light.png
+      :class: tb-window-screenshot
+      :width: 298px
+      :alt: A sample window in a theme's light mode
+
+      Light
+
+   .. figure:: /_static/examples/theming-sample-dark.png
+      :class: tb-window-screenshot
+      :width: 298px
+      :alt: The same window in the family's dark mode
+
+      Dark
 
 To pair themes from different families (say a light theme with an unrelated dark
 one), set the pair explicitly with ``app.set_theme_modes(light=..., dark=...)`` or
@@ -84,11 +94,8 @@ ttkbootstrap ships **15 theme families** — ``bootstrap``, ``pydata``, ``nord``
 with a light and dark variant, for **30 built-in themes**. List them live with
 ``app.theme_names()``.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
-
-   The theme gallery — a sample card rendered in all 15 families, each as a
-   light/dark pair, so the reader can browse the built-in look and feel.
+Browse every one — a sample card per family, in light and dark — in the
+:doc:`Themes catalog </themes>`.
 
 .. admonition:: Coming from 1.x
    :class: note

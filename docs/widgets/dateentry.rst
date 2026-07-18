@@ -8,13 +8,13 @@ and setting the date, the format and calendar options, then the ``bootstyle``
 color.
 
 .. image:: /_static/examples/dateentry-open-light.png
-   :class: tb-screenshot-light
-   :width: 296px
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 298px
    :alt: A date entry with its pop-up calendar open — light theme
 
 .. image:: /_static/examples/dateentry-open-dark.png
-   :class: tb-screenshot-dark
-   :width: 296px
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 298px
    :alt: A date entry with its pop-up calendar open — dark theme
 
 Usage

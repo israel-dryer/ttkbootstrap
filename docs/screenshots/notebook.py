@@ -17,6 +17,7 @@ def hero():
 
     notebook.select(1)  # middle tab selected
 
+    app._capture_full_window = True  # a tabbed container fills the window
     app.mainloop()
 
 

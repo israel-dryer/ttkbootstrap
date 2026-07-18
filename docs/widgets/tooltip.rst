@@ -7,13 +7,13 @@ imported as ``ttk.ToolTip``). This page covers attaching one, the hover delay an
 wrapping, then the ``bootstyle`` color.
 
 .. image:: /_static/examples/tooltip-hero-light.png
-   :class: tb-screenshot-light
-   :width: 276px
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 298px
    :alt: A button with a tooltip popup showing beneath it — light theme
 
 .. image:: /_static/examples/tooltip-hero-dark.png
-   :class: tb-screenshot-dark
-   :width: 276px
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 298px
    :alt: A button with a tooltip popup showing beneath it — dark theme
 
 Usage

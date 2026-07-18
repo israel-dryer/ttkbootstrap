@@ -262,3 +262,30 @@ def test_scrolledframe_vscroll_is_deprecated_alias_of_vbar(root):
         warnings.simplefilter("always")
         assert sf.vscroll is sf.vbar
     assert any(issubclass(w.category, DeprecationWarning) for w in caught)
+
+
+# --------------------------------------------------------------------------- #
+# Text border theming (2.0 regression fixes)
+# --------------------------------------------------------------------------- #
+def test_standalone_text_gets_a_flat_themed_border(root):
+    """A standalone Text should carry a flat, themed 1px border in place of
+    tk's native sunken relief (restored after 2.0 dropped it)."""
+    style = ttk.Style.get_instance()
+    style.theme_use("bootstrap-light")
+    text = ttk.Text(root)
+    root.update_idletasks()
+    assert str(text.cget("relief")) == "flat"
+    assert int(text.cget("highlightthickness")) == 1
+    assert str(text.cget("highlightbackground")) == style.colors.border
+
+
+def test_scrolledtext_inner_text_stays_borderless_across_theme_switch(root):
+    """ScrolledText owns the border via its container; its inner Text must stay
+    edgeless even after a theme walk repaints it (the `_tb_borderless` marker)."""
+    style = ttk.Style.get_instance()
+    style.theme_use("bootstrap-light")
+    st = ScrolledText(root)
+    assert int(st._text.cget("highlightthickness")) == 0
+    style.theme_use("bootstrap-dark")
+    root.update_idletasks()
+    assert int(st._text.cget("highlightthickness")) == 0

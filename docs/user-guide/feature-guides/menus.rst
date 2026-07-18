@@ -78,11 +78,22 @@ window with ``configure(menu=...)``:
 - ``configure(menu=menubar)`` (equivalently ``app["menu"] = menubar``) installs
   the bar on a top-level window — ``App`` or a ``Toplevel``.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/menus-file_menu-light.png
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 358px
+   :alt: An app with a File / Edit menu bar, the File menu open showing New, Open, a separator, and Exit — light theme
 
-   The app with a **File** / **Edit** menu bar, the File menu open showing New,
-   Open…, a separator, and Exit.
+.. image:: /_static/examples/menus-file_menu-dark.png
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 358px
+   :alt: The same File menu open in dark theme; the native menubar dropdown stays light — dark theme
+
+.. note::
+
+   On **Windows**, menu-bar menus are drawn by the operating system, so a
+   dropped menu-bar menu keeps the native (light) look and does **not** follow a
+   dark theme — visible above. Pop-up menus (:meth:`tk_popup`, below) are drawn
+   by Tk and do theme.
 
 Keyboard shortcuts (accelerators)
 ---------------------------------
@@ -204,11 +215,15 @@ that calls :meth:`tk_popup` with the pointer's **screen** coordinates:
   releases the menu's input grab even if the user dismisses the popup without
   choosing anything.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/menus-context-light.png
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 318px
+   :alt: A window with a Cut / Copy / Paste context menu popped up over the text — light theme
 
-   The labeled target with a Cut / Copy / Paste context menu popped up at the
-   pointer after a right-click.
+.. image:: /_static/examples/menus-context-dark.png
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 318px
+   :alt: The same Cut / Copy / Paste context menu, themed dark — dark theme
 
 .. admonition:: Right-click across platforms
    :class: note

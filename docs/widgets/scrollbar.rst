@@ -9,12 +9,12 @@ native ``ttk.Scrollbar``, styled with
 
 .. image:: /_static/examples/scrollbar-hero-light.png
    :class: tb-screenshot-light
-   :width: 400px
+   :width: 276px
    :alt: A scrolled text box with a vertical scrollbar — light theme
 
 .. image:: /_static/examples/scrollbar-hero-dark.png
    :class: tb-screenshot-dark
-   :width: 400px
+   :width: 276px
    :alt: A scrolled text box with a vertical scrollbar — dark theme
 
 Wiring it up

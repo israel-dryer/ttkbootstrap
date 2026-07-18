@@ -8,12 +8,12 @@ wrapping long text, then fonts and images.
 
 .. image:: /_static/examples/label-hero-light.png
    :class: tb-screenshot-light
-   :width: 166px
+   :width: 199px
    :alt: A heading label and a colored status label — light theme
 
 .. image:: /_static/examples/label-hero-dark.png
    :class: tb-screenshot-dark
-   :width: 166px
+   :width: 199px
    :alt: A heading label and a colored status label — dark theme
 
 Usage

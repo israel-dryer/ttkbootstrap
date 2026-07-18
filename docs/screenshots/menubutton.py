@@ -3,14 +3,6 @@
 import ttkbootstrap as ttk
 
 
-def closed():
-    app = ttk.App(title="Menubutton")
-    frm = ttk.Frame(app, padding=20).pack()
-    menubutton = ttk.Menubutton(frm, text="Actions", bootstyle="primary")
-    menubutton.pack()
-    app.mainloop()
-
-
 def open():
     # tall enough that the posted menu drops within the window
     app = ttk.App(title="Menubutton", size=(220, 175))
@@ -38,6 +30,5 @@ def open():
 
 
 SCENES = {
-    "closed": closed,
     "open": open,
 }

@@ -8,13 +8,13 @@ above a console. ``Panedwindow`` is the native ``ttk.Panedwindow``, styled with
 then the ``bootstyle`` color.
 
 .. image:: /_static/examples/panedwindow-hero-light.png
-   :class: tb-screenshot-light
-   :width: 356px
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 358px
    :alt: A narrow sidebar and a wide content pane with the sash between them — light theme
 
 .. image:: /_static/examples/panedwindow-hero-dark.png
-   :class: tb-screenshot-dark
-   :width: 356px
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 358px
    :alt: A narrow sidebar and a wide content pane with the sash between them — dark theme
 
 Usage

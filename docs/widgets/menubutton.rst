@@ -6,27 +6,15 @@ A **menubutton** is a button that opens a dropdown menu when clicked.
 page covers attaching its menu, choosing where the menu opens, then the
 ``bootstyle`` colors, variants, and states.
 
-.. container:: tb-screenshot-row
+.. image:: /_static/examples/menubutton-open-light.png
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 218px
+   :alt: A primary menubutton with its dropdown menu open — light theme
 
-   .. image:: /_static/examples/menubutton-closed-light.png
-      :class: tb-screenshot-light
-      :width: 117px
-      :alt: A closed primary menubutton — light theme
-
-   .. image:: /_static/examples/menubutton-closed-dark.png
-      :class: tb-screenshot-dark
-      :width: 117px
-      :alt: A closed primary menubutton — dark theme
-
-   .. image:: /_static/examples/menubutton-open-light.png
-      :class: tb-screenshot-light
-      :width: 216px
-      :alt: A primary menubutton with its dropdown menu open — light theme
-
-   .. image:: /_static/examples/menubutton-open-dark.png
-      :class: tb-screenshot-dark
-      :width: 216px
-      :alt: A primary menubutton with its dropdown menu open — dark theme
+.. image:: /_static/examples/menubutton-open-dark.png
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 218px
+   :alt: A primary menubutton with its dropdown menu open — dark theme
 
 Usage
 -----

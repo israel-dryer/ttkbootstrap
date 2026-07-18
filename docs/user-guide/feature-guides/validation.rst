@@ -52,11 +52,27 @@ call:
 
    app.mainloop()
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. container:: tb-screenshot-row
 
-   An entry with a valid value (normal border) beside the same entry holding an
-   out-of-range value (``danger``-red border).
+   .. image:: /_static/examples/validation-valid-light.png
+      :class: tb-screenshot-light
+      :width: 158px
+      :alt: An entry with a valid in-range value and the normal border — light theme
+
+   .. image:: /_static/examples/validation-valid-dark.png
+      :class: tb-screenshot-dark
+      :width: 158px
+      :alt: An entry with a valid in-range value and the normal border — dark theme
+
+   .. image:: /_static/examples/validation-invalid-light.png
+      :class: tb-screenshot-light
+      :width: 158px
+      :alt: The same entry holding an out-of-range value with a danger-red border — light theme
+
+   .. image:: /_static/examples/validation-invalid-dark.png
+      :class: tb-screenshot-dark
+      :width: 158px
+      :alt: The same entry holding an out-of-range value with a danger-red border — dark theme
 
 .. note::
 

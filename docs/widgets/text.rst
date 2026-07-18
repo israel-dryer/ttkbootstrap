@@ -10,12 +10,12 @@ and appearance.
 
 .. image:: /_static/examples/text-hero-light.png
    :class: tb-screenshot-light
-   :width: 392px
+   :width: 268px
    :alt: A text widget with several lines and one span highlighted by a tag — light theme
 
 .. image:: /_static/examples/text-hero-dark.png
    :class: tb-screenshot-dark
-   :width: 392px
+   :width: 268px
    :alt: A text widget with several lines and one span highlighted by a tag — dark theme
 
 Usage

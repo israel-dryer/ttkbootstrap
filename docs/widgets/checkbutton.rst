@@ -8,12 +8,12 @@ then the ``bootstyle`` color and states.
 
 .. image:: /_static/examples/checkbutton-hero-light.png
    :class: tb-screenshot-light
-   :width: 297px
+   :width: 281px
    :alt: A checkbox, a round toggle switch, and a toolbutton checkbutton, each on and off — light theme
 
 .. image:: /_static/examples/checkbutton-hero-dark.png
    :class: tb-screenshot-dark
-   :width: 297px
+   :width: 281px
    :alt: A checkbox, a round toggle switch, and a toolbutton checkbutton, each on and off — dark theme
 
 Usage
@@ -73,12 +73,12 @@ toolbar or a filter chip:
 
 .. image:: /_static/examples/checkbutton-looks-light.png
    :class: tb-screenshot-light
-   :width: 308px
+   :width: 294px
    :alt: A round toggle, a square toggle, and a toolbutton checkbutton, each on and off — light theme
 
 .. image:: /_static/examples/checkbutton-looks-dark.png
    :class: tb-screenshot-dark
-   :width: 308px
+   :width: 294px
    :alt: A round toggle, a square toggle, and a toolbutton checkbutton, each on and off — dark theme
 
 Non-boolean values

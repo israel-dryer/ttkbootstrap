@@ -113,7 +113,9 @@ class ScrolledText(ConfigureDelegationMixin, ttk.Frame):
         self._border.grid_columnconfigure(0, weight=1)
 
         self._text: ttk.Text = ttk.Text(self._border, **kwargs)
-        # the container owns the border; keep the text itself edgeless
+        # the container owns the border; keep the text itself edgeless -- the
+        # marker keeps update_text_style borderless on theme-walk repaints too
+        self._text._tb_borderless = True
         self._text.configure(highlightthickness=0, borderwidth=0, relief=FLAT)
         self._hbar: Optional[ttk.Scrollbar] = None
         self._vbar: Optional[ttk.Scrollbar] = None

@@ -15,6 +15,7 @@ def hero():
     ttk.Label(contact, text="Email").pack(anchor=W, pady=(8, 0))
     ttk.Entry(contact).pack(fill=X)
 
+    app._capture_full_window = True  # a form section in a window — show the chrome
     app.mainloop()
 
 

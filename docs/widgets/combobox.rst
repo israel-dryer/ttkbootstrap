@@ -6,27 +6,15 @@ the native ``ttk.Combobox``, styled with ``bootstyle=``. This page covers offeri
 choices, reacting to a selection, the pick-only vs. editable modes, then the
 ``bootstyle`` color and states.
 
-.. container:: tb-screenshot-row
+.. image:: /_static/examples/combobox-open-light.png
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 228px
+   :alt: A combobox with its dropdown list open — light theme
 
-   .. image:: /_static/examples/combobox-closed-light.png
-      :class: tb-screenshot-light
-      :width: 208px
-      :alt: A closed combobox — light theme
-
-   .. image:: /_static/examples/combobox-closed-dark.png
-      :class: tb-screenshot-dark
-      :width: 208px
-      :alt: A closed combobox — dark theme
-
-   .. image:: /_static/examples/combobox-open-light.png
-      :class: tb-screenshot-light
-      :width: 226px
-      :alt: A combobox with its dropdown list open — light theme
-
-   .. image:: /_static/examples/combobox-open-dark.png
-      :class: tb-screenshot-dark
-      :width: 226px
-      :alt: A combobox with its dropdown list open — dark theme
+.. image:: /_static/examples/combobox-open-dark.png
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 228px
+   :alt: A combobox with its dropdown list open — dark theme
 
 Usage
 -----
