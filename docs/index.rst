@@ -128,4 +128,4 @@ ttkbootstrap requires Python 3.10 or newer. Install it with pip:
    widgets/index
    reference/index
    themes
-   release-notes
+   about/index
