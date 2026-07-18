@@ -33,22 +33,21 @@ def message():
 
 
 def date():
-    # The date picker is a frameless popover meant to drop under a widget, so
-    # capture it the way a user meets it: opened from a DateEntry, composited
-    # with the field (a standalone borderless popup captures poorly).
+    # The calendar popover dismisses on focus move, so use the parent-capture:
+    # announce the (tall) window rect, open the calendar (it drops within), and
+    # the harness parent grabs the region while it's up.
     from ttkbootstrap.widgets import DateEntry
-    app = ttk.App(title="Due date", size=(300, 315))
+    app = ttk.App(title="Due date", size=(300, 340))
     frm = ttk.Frame(app, padding=20)
-    frm.pack()
+    frm.pack(anchor="n", fill="x")
     picker = DateEntry(frm)
-    picker.pack()
-    app.after(300, picker.button.invoke)
+    picker.pack(anchor="w")
 
-    def wire():
-        tops = [w for w in app.winfo_children() if isinstance(w, tkinter.Toplevel)]
-        app._capture_extra = tops
+    def open_cal():
+        app.capture_via_parent()
+        picker.button.invoke()   # opens the modal calendar (drops below the field)
 
-    app.after(700, wire)
+    app.after(500, open_cal)
     app.mainloop()
 
 

@@ -213,19 +213,27 @@ three models, so you take whichever the calling code needs:
        r, g, b = picked.rgb                       # each 0–255
        h, s, l = picked.hsl                       # h 0–360, s/l 0–100
 
-.. the calendar popup dismisses on the harness's app-lift when captured on
-   Windows, so the date-picker half is captured on macOS (like the DateEntry
-   catalog shot); the color chooser is shown here for now.
+.. container:: tb-screenshot-row
 
-.. image:: /_static/examples/dialogs-color-light.png
-   :class: tb-screenshot-light tb-window-screenshot
-   :width: 544px
-   :alt: The color chooser dialog — spectrum, current/new swatches, and HSL/RGB/hex fields — light theme
+   .. image:: /_static/examples/dialogs-date-light.png
+      :class: tb-screenshot-light tb-window-screenshot
+      :width: 298px
+      :alt: The date picker — a themed calendar dropped under the field — light theme
 
-.. image:: /_static/examples/dialogs-color-dark.png
-   :class: tb-screenshot-dark tb-window-screenshot
-   :width: 544px
-   :alt: The color chooser dialog — spectrum, current/new swatches, and HSL/RGB/hex fields — dark theme
+   .. image:: /_static/examples/dialogs-date-dark.png
+      :class: tb-screenshot-dark tb-window-screenshot
+      :width: 298px
+      :alt: The date picker — a themed calendar dropped under the field — dark theme
+
+   .. image:: /_static/examples/dialogs-color-light.png
+      :class: tb-screenshot-light tb-window-screenshot
+      :width: 544px
+      :alt: The color chooser — spectrum, current/new swatches, and HSL/RGB/hex fields — light theme
+
+   .. image:: /_static/examples/dialogs-color-dark.png
+      :class: tb-screenshot-dark tb-window-screenshot
+      :width: 544px
+      :alt: The color chooser — spectrum, current/new swatches, and HSL/RGB/hex fields — dark theme
 
 File dialogs
 ~~~~~~~~~~~~
