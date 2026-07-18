@@ -7,27 +7,15 @@ a variable — a compact alternative to a group of :doc:`radiobuttons
 ``bootstyle=``. This page covers building one, reacting to a choice, then the
 ``bootstyle`` color and states.
 
-.. container:: tb-screenshot-row
+.. image:: /_static/examples/optionmenu-open-light.png
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 218px
+   :alt: An option menu with its list open — light theme
 
-   .. image:: /_static/examples/optionmenu-closed-light.png
-      :class: tb-screenshot-light
-      :width: 120px
-      :alt: A closed option menu — light theme
-
-   .. image:: /_static/examples/optionmenu-closed-dark.png
-      :class: tb-screenshot-dark
-      :width: 120px
-      :alt: A closed option menu — dark theme
-
-   .. image:: /_static/examples/optionmenu-open-light.png
-      :class: tb-screenshot-light
-      :width: 216px
-      :alt: An option menu with its list open — light theme
-
-   .. image:: /_static/examples/optionmenu-open-dark.png
-      :class: tb-screenshot-dark
-      :width: 216px
-      :alt: An option menu with its list open — dark theme
+.. image:: /_static/examples/optionmenu-open-dark.png
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 218px
+   :alt: An option menu with its list open — dark theme
 
 Usage
 -----

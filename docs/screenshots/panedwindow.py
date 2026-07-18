@@ -22,6 +22,7 @@ def hero():
         paned.sashpos(0, 110)
 
     app.after(300, split)
+    app._capture_full_window = True  # panes fill the window — show the chrome
     app.mainloop()
 
 

@@ -6,13 +6,13 @@ that the user drags to resize it. ``Sizegrip`` is the native ``ttk.Sizegrip``,
 styled with ``bootstyle=``.
 
 .. image:: /_static/examples/sizegrip-hero-light.png
-   :class: tb-screenshot-light
-   :width: 296px
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 298px
    :alt: A window with the ribbed sizegrip handle in its bottom-right corner — light theme
 
 .. image:: /_static/examples/sizegrip-hero-dark.png
-   :class: tb-screenshot-dark
-   :width: 296px
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 298px
    :alt: A window with the ribbed sizegrip handle in its bottom-right corner — dark theme
 
 Usage

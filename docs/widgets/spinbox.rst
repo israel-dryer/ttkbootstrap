@@ -8,12 +8,12 @@ to the arrows, then the ``bootstyle`` color and states.
 
 .. image:: /_static/examples/spinbox-hero-light.png
    :class: tb-screenshot-light
-   :width: 247px
+   :width: 205px
    :alt: A numeric spinbox and a list spinbox with up/down arrows — light theme
 
 .. image:: /_static/examples/spinbox-hero-dark.png
    :class: tb-screenshot-dark
-   :width: 247px
+   :width: 205px
    :alt: A numeric spinbox and a list spinbox with up/down arrows — dark theme
 
 Usage

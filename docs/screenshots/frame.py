@@ -13,6 +13,7 @@ def hero():
     content = ttk.Frame(app, padding=20).pack(fill=BOTH, expand=YES)
     ttk.Label(content, text="Body goes here").pack()
 
+    app._capture_full_window = True  # a composed layout — show the window chrome
     app.mainloop()
 
 

@@ -9,12 +9,12 @@ it appears, then the ``bootstyle`` color and icon.
 
 .. image:: /_static/examples/toast-hero-light.png
    :class: tb-screenshot-light
-   :width: 300px
+   :width: 296px
    :alt: A success toast reading "Saved — your file was saved" — light theme
 
 .. image:: /_static/examples/toast-hero-dark.png
    :class: tb-screenshot-dark
-   :width: 300px
+   :width: 296px
    :alt: A success toast reading "Saved — your file was saved" — dark theme
 
 Usage

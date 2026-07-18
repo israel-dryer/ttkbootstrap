@@ -3,14 +3,6 @@
 import ttkbootstrap as ttk
 
 
-def closed():
-    app = ttk.App(title="OptionMenu")
-    frm = ttk.Frame(app, padding=20).pack()
-    size = ttk.StringVar()
-    ttk.OptionMenu(frm, size, "Medium", "Small", "Medium", "Large").pack()
-    app.mainloop()
-
-
 def open():
     # tall enough that the posted list drops within the window
     app = ttk.App(title="OptionMenu", size=(220, 175))
@@ -33,6 +25,5 @@ def open():
 
 
 SCENES = {
-    "closed": closed,
     "open": open,
 }

@@ -7,12 +7,12 @@ masking a password, validating input, then the ``bootstyle`` color and states.
 
 .. image:: /_static/examples/entry-hero-light.png
    :class: tb-screenshot-light
-   :width: 314px
+   :width: 238px
    :alt: A labeled entry, and an invalid entry with a danger-red border — light theme
 
 .. image:: /_static/examples/entry-hero-dark.png
    :class: tb-screenshot-dark
-   :width: 314px
+   :width: 238px
    :alt: A labeled entry, and an invalid entry with a danger-red border — dark theme
 
 Usage

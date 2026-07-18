@@ -7,13 +7,13 @@ page visible. ``Notebook`` is the native ``ttk.Notebook``, styled with
 tab change, disabling or hiding a tab, then the ``bootstyle`` color.
 
 .. image:: /_static/examples/notebook-hero-light.png
-   :class: tb-screenshot-light
-   :width: 336px
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 338px
    :alt: A three-tab notebook with the middle tab selected — light theme
 
 .. image:: /_static/examples/notebook-hero-dark.png
-   :class: tb-screenshot-dark
-   :width: 336px
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 338px
    :alt: A three-tab notebook with the middle tab selected — dark theme
 
 Usage

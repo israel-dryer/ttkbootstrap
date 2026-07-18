@@ -7,13 +7,13 @@ using it to structure a layout, padding its contents, then adding a border and a
 colored background.
 
 .. image:: /_static/examples/frame-hero-light.png
-   :class: tb-screenshot-light
-   :width: 316px
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 318px
    :alt: A colored header frame above a plain content frame — light theme
 
 .. image:: /_static/examples/frame-hero-dark.png
-   :class: tb-screenshot-dark
-   :width: 316px
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 318px
    :alt: A colored header frame above a plain content frame — dark theme
 
 Usage

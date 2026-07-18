@@ -8,12 +8,12 @@ toolbutton look, then the ``bootstyle`` color and states.
 
 .. image:: /_static/examples/radiobutton-hero-light.png
    :class: tb-screenshot-light
-   :width: 315px
+   :width: 297px
    :alt: A vertical radio group and a horizontal segmented toolbutton group — light theme
 
 .. image:: /_static/examples/radiobutton-hero-dark.png
    :class: tb-screenshot-dark
-   :width: 315px
+   :width: 297px
    :alt: A vertical radio group and a horizontal segmented toolbutton group — dark theme
 
 Usage
@@ -81,12 +81,12 @@ control:
 
 .. image:: /_static/examples/radiobutton-toolbutton-light.png
    :class: tb-screenshot-light
-   :width: 216px
+   :width: 202px
    :alt: A three-segment toolbutton group with the middle option selected — light theme
 
 .. image:: /_static/examples/radiobutton-toolbutton-dark.png
    :class: tb-screenshot-dark
-   :width: 216px
+   :width: 202px
    :alt: A three-segment toolbutton group with the middle option selected — dark theme
 
 Color

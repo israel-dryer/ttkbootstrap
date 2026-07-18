@@ -1,6 +1,5 @@
 """Screenshot scenes for docs/widgets/dateentry.rst."""
 
-import tkinter
 from datetime import datetime
 
 import ttkbootstrap as ttk
@@ -8,22 +7,21 @@ from ttkbootstrap.widgets import DateEntry
 
 
 def open():
-    # tall enough that the pop-up calendar drops within the window
-    app = ttk.App(title="DateEntry", size=(300, 315))
-    frm = ttk.Frame(app, padding=20).pack()
+    # The calendar popover dismisses on focus move, so use the parent-capture:
+    # announce the (tall) window rect, open the calendar (it drops within), and
+    # the harness parent grabs the region while it's up.
+    app = ttk.App(title="DateEntry", size=(300, 340))
+    frm = ttk.Frame(app, padding=20)
+    frm.pack(anchor="n", fill="x")
     picker = DateEntry(frm)
-    picker.pack()
+    picker.pack(anchor="w")
     picker.set_date(datetime(2026, 7, 16))
 
-    # The calendar button opens a modal dialog; Tk's modal wait still pumps
-    # after() callbacks, so the popup can be wired into the capture afterwards.
-    app.after(300, picker.button.invoke)
+    def open_cal():
+        app.capture_via_parent()
+        picker.button.invoke()   # opens the modal calendar (drops below the field)
 
-    def wire():
-        tops = [w for w in app.winfo_children() if isinstance(w, tkinter.Toplevel)]
-        app._capture_extra = tops
-
-    app.after(700, wire)
+    app.after(500, open_cal)
     app.mainloop()
 
 

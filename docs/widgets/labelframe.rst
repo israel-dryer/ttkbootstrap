@@ -7,13 +7,13 @@ a caption. ``Labelframe`` is the native ``ttk.Labelframe``, styled with
 ``bootstyle`` color.
 
 .. image:: /_static/examples/labelframe-hero-light.png
-   :class: tb-screenshot-light
-   :width: 296px
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 298px
    :alt: A "Contact" labelframe grouping two labeled fields — light theme
 
 .. image:: /_static/examples/labelframe-hero-dark.png
-   :class: tb-screenshot-dark
-   :width: 296px
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 298px
    :alt: A "Contact" labelframe grouping two labeled fields — dark theme
 
 Usage
