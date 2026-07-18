@@ -94,21 +94,8 @@ ttkbootstrap ships **15 theme families** — ``bootstrap``, ``pydata``, ``nord``
 with a light and dark variant, for **30 built-in themes**. List them live with
 ``app.theme_names()``.
 
-.. tab-set::
-
-   .. tab-item:: Light
-
-      .. image:: /_static/examples/theming-gallery-light.png
-         :class: tb-gallery
-         :width: 590px
-         :alt: A sample card in each of the 15 theme families — palette, buttons, and controls — light mode
-
-   .. tab-item:: Dark
-
-      .. image:: /_static/examples/theming-gallery-dark.png
-         :class: tb-gallery
-         :width: 590px
-         :alt: A sample card in each of the 15 theme families — palette, buttons, and controls — dark mode
+Browse every one — a sample card per family, in light and dark — in the
+:doc:`Themes catalog </themes>`.
 
 .. admonition:: Coming from 1.x
    :class: note
