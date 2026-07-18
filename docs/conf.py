@@ -86,6 +86,11 @@ intersphinx_mapping = {
 html_theme = "pydata_sphinx_theme"
 
 html_theme_options = {
+    # Permanent banner pointing app-builders to the sibling framework.
+    "announcement": (
+        "Building a whole app, not just theming one? "
+        '<a href="https://bootstack.org">Try bootstack →</a>'
+    ),
     "github_url": "https://github.com/israel-dryer/ttkbootstrap",
     "logo": {
         "image_light": "_static/ttkbootstrap-wordmark-light.svg",
