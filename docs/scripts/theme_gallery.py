@@ -1,10 +1,11 @@
-"""Generate the theme-gallery images: a sample card per family, tiled light/dark.
+"""Capture one sample card per theme -> ``theming-card-<theme>.png``.
 
 The Style engine is one-theme-per-process, so this re-execs itself once per
-theme (``TTKB_GALLERY_THEME`` set) to capture a single card, then tiles the 15
-families into ``theming-gallery-{light,dark}.png``. The two grids sit in Light /
-Dark tabs on the theming page (sphinx-design ``tab-set``). Cards sit on a
-transparent ground with a per-mode hairline.
+theme (``TTKB_GALLERY_THEME`` set) to capture a single card. The Themes catalog
+page (``docs/themes.rst``) lays the 30 cards out by family: a family heading with
+its light and dark cards side by side (so the light/dark toggle pair reads at a
+glance). Cards have transparent corners (the pydata white-image bg is stripped by
+the ``tb-gallery`` class).
 
     python docs/scripts/theme_gallery.py
 """
@@ -17,15 +18,12 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent.parent
 OUT = REPO / "docs" / "_static" / "examples"
-TMP = OUT / "_gallery_cards"
 
 FAMILIES = [
     "bootstrap", "pydata", "nord", "solarized", "catppuccin",
     "gruvbox", "dracula", "tokyo-night", "one", "everforest",
     "vapor", "minty", "pulse", "united", "sandstone",
 ]
-COLS, GAP, MARGIN = 2, 18, 22
-BORDER = {"light": (214, 218, 223), "dark": (58, 64, 72)}
 
 
 def _capture_one(theme: str, out: str) -> None:
@@ -84,49 +82,22 @@ def _capture_one(theme: str, out: str) -> None:
     app.mainloop()
 
 
-def _tile(mode: str):
-    from PIL import Image, ImageDraw
-
-    cards = []
-    for fam in FAMILIES:
-        p = TMP / f"{fam}-{mode}.png"
-        subprocess.run(
-            [sys.executable, __file__],
-            env={**os.environ, "TTKB_GALLERY_THEME": f"{fam}-{mode}",
-                 "TTKB_GALLERY_OUT": str(p)},
-            cwd=str(REPO), check=True, capture_output=True, text=True,
-        )
-        cards.append(Image.open(p).convert("RGBA"))
-    cw = max(c.width for c in cards)
-    ch = max(c.height for c in cards)
-    rows = (len(cards) + COLS - 1) // COLS
-    w = MARGIN * 2 + COLS * cw + (COLS - 1) * GAP
-    h = MARGIN * 2 + rows * ch + (rows - 1) * GAP
-    canvas = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(canvas)
-    for i, card in enumerate(cards):
-        r, c = divmod(i, COLS)
-        x = MARGIN + c * (cw + GAP)
-        y = MARGIN + r * (ch + GAP)
-        canvas.paste(card, (x, y), card)
-        draw.rectangle([x, y, x + card.width - 1, y + card.height - 1],
-                       outline=BORDER[mode], width=1)
-    out = OUT / f"theming-gallery-{mode}.png"
-    canvas.save(out)
-    print(f"{mode} gallery {canvas.size} -> {out.relative_to(REPO)}")
-
-
 def main():
     theme = os.environ.get("TTKB_GALLERY_THEME")
     if theme:                       # re-exec branch: capture one card
         _capture_one(theme, os.environ["TTKB_GALLERY_OUT"])
         return
-    TMP.mkdir(parents=True, exist_ok=True)
-    for mode in ("light", "dark"):
-        _tile(mode)
-    for p in TMP.glob("*.png"):
-        p.unlink()
-    TMP.rmdir()
+    for fam in FAMILIES:
+        for mode in ("light", "dark"):
+            name = f"{fam}-{mode}"
+            out = OUT / f"theming-card-{name}.png"
+            subprocess.run(
+                [sys.executable, __file__],
+                env={**os.environ, "TTKB_GALLERY_THEME": name,
+                     "TTKB_GALLERY_OUT": str(out)},
+                cwd=str(REPO), check=True, capture_output=True, text=True,
+            )
+            print(f"{name} -> {out.relative_to(REPO)}")
 
 
 if __name__ == "__main__":
