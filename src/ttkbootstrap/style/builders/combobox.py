@@ -75,13 +75,11 @@ def build_combobox_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         lightcolor=[
             ("focus invalid", builder.colors.danger),
             ("focus !disabled", focus_ring),
-            ("pressed !disabled", focus_ring),
             ("readonly", readonly),
         ],
         darkcolor=[
             ("focus invalid", builder.colors.danger),
             ("focus !disabled", focus_ring),
-            ("pressed !disabled", focus_ring),
             ("readonly", readonly),
         ],
     )
