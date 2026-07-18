@@ -48,10 +48,15 @@ event loop, so the clock updates once a second without ever blocking. ``after``
 returns an id you can pass to :meth:`~tkinter.Misc.after_cancel` to stop a
 pending call.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/threads-clock-light.png
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 208px
+   :alt: A window with a large digital clock — light theme
 
-   A window showing a large digital clock updating every second.
+.. image:: /_static/examples/threads-clock-dark.png
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 208px
+   :alt: A window with a large digital clock — dark theme
 
 .. warning::
 
@@ -139,11 +144,15 @@ How it fits together:
   click starts a second worker and a second poller racing on one queue.
 - ``daemon=True`` lets the program exit even if the thread is still running.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/threads-worker-light.png
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 258px
+   :alt: The worker window mid-run — a Working status, a success progressbar partway across, and the disabled Start button — light theme
 
-   The worker window mid-run: a "Working…" status, the success progressbar
-   partway across, and the Start button.
+.. image:: /_static/examples/threads-worker-dark.png
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 258px
+   :alt: The worker window mid-run — a Working status, a success progressbar partway across, and the disabled Start button — dark theme
 
 .. note::
 
