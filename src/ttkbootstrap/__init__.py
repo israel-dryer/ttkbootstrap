@@ -196,6 +196,20 @@ class OptionMenu(BootMixin, _ttkOptionMenu):
     __getitem__ = _ttkOptionMenu.__getitem__
     __setitem__ = _ttkOptionMenu.__setitem__
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # tkinter.ttk.OptionMenu builds its dropdown as a raw tkinter.Menu, which
+        # never goes through ttkbootstrap's tk-widget theming and so shows the
+        # native (light) menu in a dark theme. Paint it at construction; the menu
+        # is a child of this widget, so the theme walk repaints it on switch.
+        from ttkbootstrap.style.bootstyle import Bootstyle
+        try:
+            menu = self.nametowidget(self.cget("menu"))
+            Bootstyle.update_tk_widget_style(menu)
+            Bootstyle.stamp_theme_version(menu)
+        except Exception:
+            pass
+
 
 # --------------------------------------------------------------------------- #
 # Concrete tk widget classes — the blessed `autostyle` set. These legacy tk

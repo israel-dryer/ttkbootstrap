@@ -89,3 +89,24 @@ def test_standard_commands_registered_on_mac(root, monkeypatch):
                 root.tk.deletecommand(cmd)
             except Exception:
                 pass
+
+
+def test_optionmenu_dropdown_follows_the_theme(root):
+    """ttk.OptionMenu builds its dropdown as a raw tkinter.Menu; ttkbootstrap
+    must theme it like the blessed ``ttk.Menu`` (a 2.0 regression when the
+    import-time menu monkey-patch was removed -- the dropdown showed the native
+    light look in a dark theme). It should match at construction and follow a
+    theme switch."""
+    from ttkbootstrap.style.engine import Style
+
+    st = Style.get_instance()
+    for theme in ("bootstrap-dark", "bootstrap-light"):
+        st.theme_use(theme)
+        var = ttk.StringVar()
+        om = ttk.OptionMenu(root, var, "Medium", "Small", "Medium", "Large")
+        dropdown = root.nametowidget(om.cget("menu"))
+        blessed = ttk.Menu(root)
+        assert dropdown.cget("background") == blessed.cget("background"), theme
+        assert dropdown.cget("background") != "SystemMenu", theme
+        om.destroy()
+        blessed.destroy()
