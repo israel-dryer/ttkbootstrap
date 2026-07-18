@@ -126,10 +126,15 @@ stays on screen:
 
    app.mainloop()
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
+.. image:: /_static/examples/working-with-images-photo-light.png
+   :class: tb-screenshot-light
+   :width: 220px
+   :alt: A resized photo displayed inside a padded label — light theme
 
-   The window showing the loaded, resized photo inside its padded label.
+.. image:: /_static/examples/working-with-images-photo-dark.png
+   :class: tb-screenshot-dark
+   :width: 220px
+   :alt: A resized photo displayed inside a padded label — dark theme
 
 .. seealso::
 
