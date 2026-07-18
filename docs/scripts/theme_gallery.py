@@ -1,0 +1,127 @@
+"""Generate the theme-gallery images: a sample card per family, tiled light/dark.
+
+The Style engine is one-theme-per-process, so this re-execs itself once per
+theme (``TTKB_GALLERY_THEME`` set) to capture a single card, then tiles the 15
+families into ``theming-gallery-{light,dark}.png``. The two grids sit in Light /
+Dark tabs on the theming page (sphinx-design ``tab-set``). Cards sit on a
+transparent ground with a per-mode hairline.
+
+    python docs/scripts/theme_gallery.py
+"""
+from __future__ import annotations
+
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parent.parent.parent
+OUT = REPO / "docs" / "_static" / "examples"
+TMP = OUT / "_gallery_cards"
+
+FAMILIES = [
+    "bootstrap", "pydata", "nord", "solarized", "catppuccin",
+    "gruvbox", "dracula", "tokyo-night", "one", "everforest",
+    "vapor", "minty", "pulse", "united", "sandstone",
+]
+COLS, GAP, MARGIN = 2, 18, 22
+BORDER = {"light": (214, 218, 223), "dark": (58, 64, 72)}
+
+
+def _capture_one(theme: str, out: str) -> None:
+    """Build one theme's sample card and grab it to ``out`` (own process)."""
+    import tkinter
+    import ttkbootstrap as ttk
+    from PIL import ImageGrab
+
+    family = theme.rsplit("-", 1)[0]
+    app = ttk.App(theme=theme)
+    app.attributes("-topmost", True)
+    app.after(0, lambda: app.geometry("+200+120"))
+    app.minsize(235, 1)
+
+    card = ttk.Frame(app, padding=12)
+    card.pack(fill="both", expand=True)
+    ttk.Label(card, text=family, font="-size 12 -weight bold").pack(anchor="w")
+
+    chips = ttk.Frame(card)
+    chips.pack(fill="x", pady=(8, 10))
+    for c in ["primary", "success", "info", "warning", "danger"]:
+        ttk.Label(chips, bootstyle=f"@{c}", padding=(0, 10)).pack(
+            side="left", fill="x", expand=True, padx=1)
+
+    row = ttk.Frame(card)
+    row.pack(fill="x")
+    ttk.Button(row, text="Default", bootstyle="primary").pack(side="left", fill="x", expand=True, padx=(0, 6))
+    ttk.Button(row, text="Outline", bootstyle="primary outline").pack(side="left", fill="x", expand=True, padx=(0, 6))
+    ttk.Button(row, text="Ghost", bootstyle="primary ghost").pack(side="left", fill="x", expand=True)
+
+    controls = ttk.Frame(card)
+    controls.pack(fill="x", pady=(10, 0))
+    app._vars = [tkinter.IntVar(value=1) for _ in range(3)]
+    rb, cb, tg = app._vars
+    ttk.Radiobutton(controls, variable=rb, value=1, bootstyle="primary").pack(side="left", padx=(0, 14))
+    ttk.Checkbutton(controls, variable=cb, bootstyle="success").pack(side="left", padx=(0, 14))
+    ttk.Checkbutton(controls, variable=tg, bootstyle="info round toggle").pack(side="left", padx=(0, 14))
+    scale = ttk.Scale(controls, from_=0, to=100, bootstyle="primary")
+    scale.set(60)
+    scale.pack(side="left", fill="x", expand=True)
+
+    def grab():
+        app.update_idletasks()
+        x, y = card.winfo_rootx(), card.winfo_rooty()
+        img = ImageGrab.grab(bbox=(x, y, x + card.winfo_width(), y + card.winfo_height()))
+        img.save(out)
+        app.destroy()
+
+    app.after(600, grab)
+    app.mainloop()
+
+
+def _tile(mode: str):
+    from PIL import Image, ImageDraw
+
+    cards = []
+    for fam in FAMILIES:
+        p = TMP / f"{fam}-{mode}.png"
+        subprocess.run(
+            [sys.executable, __file__],
+            env={**os.environ, "TTKB_GALLERY_THEME": f"{fam}-{mode}",
+                 "TTKB_GALLERY_OUT": str(p)},
+            cwd=str(REPO), check=True, capture_output=True, text=True,
+        )
+        cards.append(Image.open(p).convert("RGBA"))
+    cw = max(c.width for c in cards)
+    ch = max(c.height for c in cards)
+    rows = (len(cards) + COLS - 1) // COLS
+    w = MARGIN * 2 + COLS * cw + (COLS - 1) * GAP
+    h = MARGIN * 2 + rows * ch + (rows - 1) * GAP
+    canvas = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(canvas)
+    for i, card in enumerate(cards):
+        r, c = divmod(i, COLS)
+        x = MARGIN + c * (cw + GAP)
+        y = MARGIN + r * (ch + GAP)
+        canvas.paste(card, (x, y), card)
+        draw.rectangle([x, y, x + card.width - 1, y + card.height - 1],
+                       outline=BORDER[mode], width=1)
+    out = OUT / f"theming-gallery-{mode}.png"
+    canvas.save(out)
+    print(f"{mode} gallery {canvas.size} -> {out.relative_to(REPO)}")
+
+
+def main():
+    theme = os.environ.get("TTKB_GALLERY_THEME")
+    if theme:                       # re-exec branch: capture one card
+        _capture_one(theme, os.environ["TTKB_GALLERY_OUT"])
+        return
+    TMP.mkdir(parents=True, exist_ok=True)
+    for mode in ("light", "dark"):
+        _tile(mode)
+    for p in TMP.glob("*.png"):
+        p.unlink()
+    TMP.rmdir()
+
+
+if __name__ == "__main__":
+    main()
