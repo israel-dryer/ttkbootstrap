@@ -11,11 +11,22 @@ API to ttk widgets. Pure Python; the only runtime dependency is Pillow
 `src/ttkbootstrap/__init__.py`, typically imported as `import ttkbootstrap as ttk`.
 
 - Package version / metadata: `pyproject.toml` (src layout, `requires-python >=3.10`).
-- Docs site: mkdocs (`mkdocs.yml`, `docs/`), published to readthedocs.
+- Docs site: Sphinx + `pydata_sphinx_theme` (`docs/`, config in `docs/conf.py`),
+  published to Read the Docs. (Was mkdocs pre-2.0; rebuilt onto Sphinx in Workstream H.)
 
 ## Direction: 2.0 cleanup (read before large changes)
 
-The active initiative is a **2.0 cleanup/consolidation release — no new
+> **STATUS (2026-07-19): ttkbootstrap 2.0.0 is RELEASED.** Tagged `v2.0.0`,
+> published to PyPI (https://pypi.org/project/ttkbootstrap/2.0.0/), GitHub release
+> live. **`master` has been promoted to 2.0** — the old 1.x `master` is preserved
+> on the **`release/v1`** branch and as the **`version-1`** Read the Docs version
+> (docs at `/en/version-1/`; `latest` now serves the 2.0 Sphinx docs). **New work
+> targets `master`** (the 2.0 mainline); the `2.0` branch is retired (identical to
+> `master`). 1.x maintenance, if any, targets `release/v1`. RTD redirect map for
+> the old mkdocs URLs: `development/2_0_rtd_redirects.md`. Everything below is the
+> record of how 2.0 was built — background, not an active worklist.
+
+The initiative was a **2.0 cleanup/consolidation release — no new
 features.** Goals: remove cruft, standardize/normalize the API (aggressive/
 breaking is OK when meaningful, paired with a migration path), fix memory leaks
 and theme-switch perf, make user-defined custom styles easy, and overhaul the
@@ -23,8 +34,9 @@ docs. ttkbootstrap stays a **styling extension for vanilla tkinter** — not a
 widget library (the forward-looking framework is a separate project, bootstack).
 
 The full worklist (locked decisions + workstreams) lives in
-**`development/2_0_plan.md`**, and the integration branch is **`2.0`** (cut PRs
-against it, not `master`). Headlines: mixin-hybrid API (replace the import-time
+**`development/2_0_plan.md`**. (During development the integration branch was
+**`2.0`**; it has since been promoted to `master` — see the status banner above,
+so new work targets `master`.) Headlines: mixin-hybrid API (replace the import-time
 monkey-patch), single canonical `bootstyle` string (no tuple/list/alt-order),
 semantic-anchor theme model, deterministic version-stamped theme walk +
 image-cache cleanup (mechanisms borrowed from bootstack, not its API), and a
@@ -761,6 +773,35 @@ migrating/theming guides; `tests/widget_styles/test_theme_anchor.py` +2. Suite
 (optional, unchanged):** the deferred **macOS application-menu shot** (`menus.rst`),
 landing/hero polish, Track B odds/ends (Linux/x11, DPI matrix).
 
+**Session 2026-07-19 — RELEASE: ttkbootstrap 2.0.0 shipped.** The last mile, all
+merged into `2.0` then promoted to `master`. **Docs/README/packaging prep**
+(PRs #1265–#1274): completed the ghost variants + LabeledScale/theme fixes (above);
+a **from-scratch README rewrite** for 2.0 (hero + `bootstyle`-first framing, icons
+clarified — 2.0 ships Bootstrap Icons built-in, `ttkbootstrap-icons` is the
+optional extension for *other* sets, verified still 2.0-compatible); removed stale
+files (`README_ja/zh`, `ROADMAP.md`, `beginningresult.png`) + fixed `MANIFEST.in`;
+a **Release-notes nav link** to GitHub Releases + JetBrains **Support** on the docs
+About page; an **Object lifetime** Foundations page; and **RTD/packaging**:
+`sphinx-notfound-page` + `docs/404.rst` (absolute body links), `.readthedocs.yaml`
+`fail_on_warning: true` + `ubuntu-24.04`, and the copy-paste **redirect map**
+`development/2_0_rtd_redirects.md` (mkdocs dir-URLs → Sphinx `.html`, `latest`
+-scoped to protect the `version-1` build; includes the retired ja/zh trees).
+**The release cutover:** snapshot 1.x to **`release/v1`** (the 65 master-only
+commits were all JP/ZH translations of deleted mkdocs docs — nothing to
+forward-port); **promote `2.0` → `master`** via reset + force-push (Option A);
+RTD `latest` now serves the 2.0 Sphinx docs, `version-1` preserves 1.x at
+`/en/version-1/`; **redirects added in the RTD dashboard** (user) + spot-checked.
+**Publish:** git tag **`v2.0.0`** (annotated, on `a2920620`) + a **GitHub release**
+(title `v2.0.0`, matching the `vX.Y.Z` convention); `python -m build` →
+`twine check` PASSED → **uploaded to PyPI**
+(https://pypi.org/project/ttkbootstrap/2.0.0/); verified by a clean-env
+`pip install ttkbootstrap==2.0.0` (30 themes, icon engine, theme switch all work).
+No CI publish workflow exists (`.github/workflows/` is empty) — PyPI upload is
+manual, creds in a gitignored repo-root `.pypirc`. **Announcement** (r/tkinter —
+python.org no longer allows announcements — + LinkedIn) drafted; advised to post a
+**weekday** (Tue–Wed AM) not the release Sunday, after a short soft-bake. **2.0 is
+DONE.** Optional post-release polish only from here.
+
 ## Repository layout
 
 ```
@@ -892,7 +933,9 @@ A virtualenv with an editable install lives at `.venv/` (Python 3.x on macOS;
 - pytest is installed in `.venv`. If a fresh env lacks it: `pip install pytest`.
 - The interactive demos in `examples/` call `mainloop()` and need a display —
   they are NOT collected by pytest.
-- Build docs: `mkdocs serve` (deps in `requirements.txt`).
+- Build docs: `python -m sphinx -b html -W -q -E docs <out>` (must exit 0 — the
+  docs are kept warning-clean; RTD enforces `fail_on_warning`). Deps in
+  `docs/requirements.txt`. On this box use `.venv-home/Scripts/python.exe`.
 
 ### Writing tests
 
@@ -918,5 +961,5 @@ interactive/visual demo in `examples/`, not `tests/`.
   where both are viable (perf and cross-platform consistency).
 - Commit messages: imperative subject; reference the issue (`fixes #NNNN`)
   where applicable.
-- Branch + PR per change. **2.0 cleanup work targets the `2.0` branch**;
-  maintenance/bugfixes target `master`.
+- Branch + PR per change. **Work targets `master`** (now the 2.0 mainline; the
+  `2.0` branch is retired). 1.x maintenance, if any, targets **`release/v1`**.
