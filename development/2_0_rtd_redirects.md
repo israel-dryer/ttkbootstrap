@@ -101,3 +101,31 @@ Notes:
 - `about/` and `license/` still exist under `about/` — add exacts if those old
   paths saw traffic (`/en/latest/about/` → `/en/latest/about/index.html`,
   `/en/latest/license/` → `/en/latest/about/license.html`).
+
+## Retired translations (ja / zh)
+
+1.x shipped Japanese and Chinese translations via the `mkdocs-static-i18n`
+plugin — a **single** RTD (English) project with the other locales built as
+**subpaths** of the English build, i.e. `/en/latest/ja/...` and
+`/en/latest/zh/...`. 2.0 is English-only.
+
+Nothing is lost: the translated 1.x docs live on in the `version-1` build at
+`/en/version-1/ja/...` and `/en/version-1/zh/...`. For `latest`, point the retired
+language trees at the (English) home so old links don't 404:
+
+| Type | From URL | To URL |
+|---|---|---|
+| Wildcard | `/en/latest/ja/*` | `/en/latest/index.html` |
+| Wildcard | `/en/latest/zh/*` | `/en/latest/index.html` |
+
+Sending them to the English home (rather than a per-page English target) is the
+honest destination — 2.0 has no translations, and RTD applies one redirect, not a
+chain, so a `ja/styleguide/button/` → `.../styleguide/button/` hop would just land
+on another dead URL.
+
+**Confirm the URL shape first.** The table above assumes the `mkdocs-static-i18n`
+subpath form (`/en/latest/ja/...`). If instead the translations were set up as
+separate **RTD translation projects**, they live at `/ja/latest/...` and
+`/zh/latest/...`; in that case handle them per-project (deactivate the `latest`
+version or redirect `/ja/latest/*` → the English `latest`), and their 1.x content
+stays at `/ja/version-1/...`.
