@@ -75,6 +75,13 @@ respond to input, and how ttkbootstrap styles them.
       The Tcl/Tk layer underneath — path names, dashed options, and how to read
       a ``TclError``.
 
+   .. grid-item-card:: Object lifetime
+      :link: foundations/object-lifetime
+      :link-type: doc
+
+      Why a label empties or an image vanishes — keeping variables, images, and
+      fonts alive.
+
    .. grid-item-card:: Arranging widgets
       :link: foundations/arranging-widgets
       :link-type: doc
@@ -281,6 +288,7 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way.
    foundations/how-a-tkinter-app-runs
    foundations/the-widget-model
    foundations/what-tkinter-wraps
+   foundations/object-lifetime
    foundations/arranging-widgets
    foundations/layout-with-grid
    foundations/layout-with-pack

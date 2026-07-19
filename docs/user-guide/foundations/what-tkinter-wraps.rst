@@ -87,8 +87,8 @@ The widget and the variable are linked through that name, which is how a
 ``textvariable`` keeps an entry and your value in step without any code of yours
 running. It also explains the classic footgun: let the Python object be garbage
 collected and the Tcl variable goes with it, while the widget keeps pointing at a
-name that no longer exists. See the
-:doc:`Variables guide </user-guide/feature-guides/variables>`.
+name that no longer exists. See
+:doc:`Object lifetime </user-guide/foundations/object-lifetime>`.
 
 A callback is a registered command
 ----------------------------------
@@ -154,8 +154,10 @@ hadn't wrapped yet.
 
    - :doc:`The widget model </user-guide/foundations/the-widget-model>` — the
      tree, options, and what reading one gives back.
+   - :doc:`Object lifetime </user-guide/foundations/object-lifetime>` — the
+     lifetime rule that follows from this seam: variables, images, and fonts.
    - :doc:`Variables guide </user-guide/feature-guides/variables>` — the named
-     variables this page describes, and the lifetime rule that follows.
+     variables this page describes, and the one-owning-reference rule.
    - :doc:`Handle callback errors </user-guide/how-to/error-handling>` — catching
      ``TclError`` where it's expected.
 
