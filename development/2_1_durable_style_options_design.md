@@ -113,6 +113,12 @@ recorded for `TEntry` (the class) *and* for `danger.TEntry`. Setting the propert
 once on the base class fans out to every variant — exactly what "set general
 properties on the base style class" asks for.
 
+**Retroactive fan-out (added in implementation).** Fan-out at build time alone is
+order-dependent: a variant built *before* the user sets the base override would
+never receive it. So recording a base-class override also pushes it onto every
+*already-built* descendant immediately (via the same most-specific-wins merge),
+making the result independent of whether the override or the widget came first.
+
 ## 3. Capture immediacy & theme independence
 
 - `configure` keeps its current behavior (apply now) **and** records — so an

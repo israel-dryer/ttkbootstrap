@@ -330,13 +330,17 @@ class StyleBuilderTTK:
 
         # General styles used by Tableview and Tooltip internals.
         self.build_style("link", "button", DEFAULT, required=True)
-        self.style.configure("symbol.Link.TButton", font="-size 16")
+        # Framework writes go through the internal path (self.configure ->
+        # _build_configure), NOT the public Style.configure, so their font/
+        # borderwidth/relief are not captured as durable "user" overrides.
+        self.configure("symbol.Link.TButton", font="-size 16")
+        self.register_ttkstyle("symbol.Link.TButton")
 
         self.build_style(
             DEFAULT_VARIANT, "label", DEFAULT, required=True
         )
-        self.style.configure(
-            style="tooltip.TLabel",
+        self.configure(
+            "tooltip.TLabel",
             background="#fffddd",
             foreground="#333",
             bordercolor="#888",
@@ -345,6 +349,7 @@ class StyleBuilderTTK:
             lightcolor="#fffddd",
             relief=RAISED,
         )
+        self.register_ttkstyle("tooltip.TLabel")
 
     def update_combobox_popdown_style(self, widget):
         """Delegate Tcl-level Combobox popdown styling to its family module."""
