@@ -762,6 +762,24 @@ class Style(ttk.Style):
             if name not in handled and opts:
                 self._build_configure(name, **opts)
 
+    def _effective_style_option(self, ttk_style, option, default=None):
+        """The value `ttk_style` will end up with for `option`.
+
+        Prefers a durable user override (most-specific ancestor wins) over the
+        current Tcl lookup. A recipe that *derives* geometry from an option (e.g.
+        treeview `rowheight` from `font`) must consult the registry rather than
+        `lookup` alone: overrides are re-applied AFTER the recipe runs, so the
+        lookup would still see the pre-override value.
+        """
+        value = None
+        for name in self._style_ancestors(ttk_style):
+            opts = self._user_options.get(name)
+            if opts and option in opts:
+                value = opts[option]
+        if value is None:
+            value = self.lookup(ttk_style, option) or None
+        return default if value is None else value
+
     def reset_style_options(self, style=None):
         """Drop durable style-option overrides recorded via ``configure()``.
 
