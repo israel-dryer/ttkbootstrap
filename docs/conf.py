@@ -23,6 +23,12 @@ extensions = [
     "sphinx_design",
     "sphinx_copybutton",
     "myst_parser",
+    # Themed, navigable 404 page (docs/404.rst). The mkdocs->Sphinx move changed
+    # every URL; RTD redirects (development/2_0_rtd_redirects.md) catch the known
+    # paths, and this handles anything they miss. The extension rewrites the 404
+    # page's links to absolute so they resolve at any served path depth; on Read
+    # the Docs the URL prefix is detected automatically.
+    "notfound.extension",
 ]
 
 # ---------------------------------------------------------------------------

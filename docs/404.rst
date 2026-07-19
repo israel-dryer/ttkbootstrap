@@ -1,0 +1,21 @@
+:orphan:
+
+Page not found
+==============
+
+The page you're looking for may have moved. The 2.0 release rebuilt this
+documentation from the ground up, which reorganized the site and changed page
+URLs — an old bookmark or search result can land here.
+
+Use the search box or the navigation, or jump to one of these:
+
+.. Absolute links (not ``:doc:``): this page is served in place at whatever URL
+.. 404'd, so relative links would resolve against that path. Absolute paths
+.. resolve from the domain root regardless of depth.
+
+- `Documentation home </en/latest/index.html>`_
+- `Quickstart </en/latest/user-guide/getting-started/quickstart.html>`_
+- `Widgets </en/latest/widgets/index.html>`_
+- `API reference </en/latest/reference/index.html>`_
+- `Migrating to 2.0 </en/latest/user-guide/getting-started/migrating.html>`_ — if
+  you followed a link into the 1.x docs.
