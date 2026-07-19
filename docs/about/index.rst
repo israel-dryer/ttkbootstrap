@@ -100,6 +100,29 @@ a sharper, more consistent version of the same idea:
 The through-line is the same as day one: make a standard tkinter app look good
 with as little ceremony as possible.
 
+Support
+-------
+
+ttkbootstrap is proudly developed with the support of the `PyCharm IDE
+<https://www.jetbrains.com/pycharm/>`_, generously provided by JetBrains.
+
+.. image:: https://github.com/user-attachments/assets/f6d4e79d-97f4-4368-a944-affd423aa922
+   :target: https://www.jetbrains.com/
+   :alt: JetBrains logo
+   :width: 200px
+   :class: only-light
+
+.. image:: https://github.com/user-attachments/assets/1e42e5db-ffb5-4c8d-b238-3f5633fb7e6d
+   :target: https://www.jetbrains.com/
+   :alt: JetBrains logo
+   :width: 200px
+   :class: only-dark
+
+.. rst-class:: sd-text-muted
+
+© 2025 JetBrains s.r.o. JetBrains and the JetBrains logo are registered
+trademarks of JetBrains s.r.o.
+
 ----
 
 ttkbootstrap is released under the :doc:`MIT License <license>`. Release notes for
