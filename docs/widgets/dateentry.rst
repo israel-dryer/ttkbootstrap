@@ -48,17 +48,23 @@ The widget exposes its parts as ``picker.entry`` (the text field) and
 interaction. The ``value`` property is a shorthand for get/set.
 
 ``get_date()`` parses the **live entry text**, so typed keyboard edits are honored,
-and an unparseable entry is flagged ``invalid`` when the field loses focus. By
-default the field starts on today's date, and if the text is empty or can't be
-parsed ``get_date()`` falls back to the last date set — it does **not** return
-``None``.
+and an unparseable entry is flagged ``invalid`` when the field loses focus.
+
+Whether an empty field can return ``None`` depends on how you create the widget:
+
+- **Default** (``value`` omitted) — the field starts on today's date, and an empty
+  or unparseable field falls back to the last date set. ``get_date()`` never
+  returns ``None``. Deleting the text by hand does **not** produce ``None`` — it
+  still falls back. Use a nullable field (below) for an optional date.
+- **Nullable** (``value=None``) — the field can be genuinely empty, and
+  ``get_date()`` / ``value`` return ``None`` while it is.
 
 Empty and clearable
 ~~~~~~~~~~~~~~~~~~~~~
 
 For an optional date — a form field that starts blank — pass ``value=None``. The
-field is then empty until a date is chosen, and ``get_date()`` / ``value`` return
-``None`` while it is empty. ``clear()`` (or ``set_date(None)``) empties it again:
+field is then empty until a date is chosen. ``clear()`` (or ``set_date(None)``)
+empties it again:
 
 .. code-block:: python
 
@@ -71,6 +77,9 @@ field is then empty until a date is chosen, and ``get_date()`` / ``value`` retur
 An empty field is valid (not flagged ``invalid``), and cancelling the pop-up leaves
 the field empty rather than filling in a date. This matches the ``Querybox.get_date``
 *dialog*, which also returns ``None`` on cancel.
+
+``clear()`` and ``set_date(None)`` also switch a default field to the nullable model,
+so after clearing it, ``get_date()`` returns ``None`` until the next date is set.
 
 To run code when the user picks from the calendar, bind ``<<DateEntrySelected>>``:
 
