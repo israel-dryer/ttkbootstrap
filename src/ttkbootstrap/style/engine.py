@@ -18,6 +18,34 @@ from ttkbootstrap.style.scaling import Scaling
 from ttkbootstrap.style.builders_ttk import StyleBuilderTTK
 
 
+# Geometry/layout options a user's `style.configure(...)` may set that should
+# SURVIVE variant builds and theme switches (the durable style-options layer,
+# #1238/#1161). Colors are deliberately excluded: they stay theme-reactive, so a
+# `configure(background=...)` applies once but is not replayed on rebuild. The
+# set must cover every non-color option any recipe writes, or that option stays
+# clobbered; `tests/test_durable_style_options.py` guards that by AST-scanning
+# the recipes.
+DURABLE_STYLE_OPTIONS = frozenset({
+    "padding",
+    "borderwidth",
+    "focusthickness",
+    "thickness",
+    "rowheight",
+    "sashthickness",
+    "gripcount",
+    "tabmargins",
+    "arrowsize",
+    "anchor",
+    "font",
+    "relief",
+    "pbarrelief",
+    "justify",
+    "insertwidth",
+    "indicatormargin",
+    "indicatorsize",
+})
+
+
 class Style(ttk.Style):
     """A singleton class for creating and managing the application
     theme and widget styles.
@@ -77,6 +105,10 @@ class Style(ttk.Style):
         self._theme_definitions = {}
         self._style_registry = set()  # all styles used
         self._theme_styles = {}  # styles used in theme
+        # Durable style-options layer (#1238/#1161): user `configure()` overrides
+        # keyed by style name, replayed after each build so they survive variant
+        # builds and theme switches. Only DURABLE_STYLE_OPTIONS are recorded.
+        self._user_options = {}
         self._theme_names = set()
         # Optional designated light/dark theme pair for the theme_mode setter /
         # toggle_theme(); None means "derive from the -light/-dark naming".
@@ -162,6 +194,13 @@ class Style(ttk.Style):
         """
         if query_opt:
             return super().configure(style, query_opt=query_opt, **kw)
+
+        # Capture durable geometry overrides so they survive later variant
+        # builds / theme switches (see _reapply_user_options). Builders write via
+        # _build_configure, NOT this public path, so recipe writes are not
+        # recorded -- only genuine user calls are.
+        if kw:
+            self._record_user_options(style, kw)
 
         # local import breaks the engine<-bootstyle cycle (bootstyle imports engine)
         from ttkbootstrap.style.bootstyle import Bootstyle
@@ -664,6 +703,81 @@ class Style(ttk.Style):
         self._style_registry.add(ttkstyle)
         theme = self.theme.name
         self._theme_styles[theme].add(ttkstyle)
+        # A recipe just (re)built this style, overwriting any user override with
+        # its hardcoded defaults. Replay the durable overrides so the user wins.
+        self._reapply_user_options(ttkstyle)
+
+    # -- durable style options (#1238/#1161) -------------------------------- #
+
+    def _record_user_options(self, style, kw):
+        """Record the durable (geometry) subset of a user `configure()` call.
+
+        Colors are intentionally skipped so they stay theme-reactive. Already-
+        built descendant variants are updated now (retroactive fan-out), so the
+        override reaches existing styles too and the result is independent of
+        whether the override or the widget came first.
+        """
+        recorded = {k: v for k, v in kw.items() if k in DURABLE_STYLE_OPTIONS}
+        if not recorded:
+            return
+        self._user_options.setdefault(style, {}).update(recorded)
+        for built in list(self._theme_styles.get(self.theme.name, ())):
+            if built != style and style in self._style_ancestors(built):
+                self._reapply_user_options(built)
+
+    @staticmethod
+    def _style_ancestors(style):
+        """ttk's dotted-name resolution chain, least- to most-specific.
+
+        ``"danger.Outline.TButton"`` -> ``["TButton", "Outline.TButton",
+        "danger.Outline.TButton"]``. Mirrors ttk stripping leading tokens, so an
+        override set on the base class fans out to its variants (#1238).
+        """
+        parts = style.split(".")
+        return [".".join(parts[i:]) for i in range(len(parts) - 1, -1, -1)]
+
+    def _reapply_user_options(self, built_style=None):
+        """Replay durable user overrides after a style (re)build.
+
+        For ``built_style``, overrides recorded on it AND on its base-class
+        ancestors are merged most-specific-wins and applied in one write (the
+        base-class fan-out). Every other recorded override is restored onto its
+        own name, which also covers un-namespaced globals like ``"Sash"`` that
+        any build clobbers (#1161). Writes go through ``_build_configure`` (the
+        internal path), so they are not re-recorded.
+        """
+        if not self._user_options:
+            return
+        handled = set()
+        if built_style:
+            merged = {}
+            for name in self._style_ancestors(built_style):
+                opts = self._user_options.get(name)
+                if opts:
+                    merged.update(opts)
+                    handled.add(name)
+            if merged:
+                self._build_configure(built_style, **merged)
+        for name, opts in self._user_options.items():
+            if name not in handled and opts:
+                self._build_configure(name, **opts)
+
+    def reset_style_options(self, style=None):
+        """Drop durable style-option overrides recorded via ``configure()``.
+
+        With no argument, clears every recorded override; with a style name,
+        clears only that one. The recipe's default value returns the next time
+        the affected style is rebuilt (a theme switch or a new variant build).
+
+        Parameters:
+
+            style (str, optional):
+                The style name to reset; ``None`` (default) resets all.
+        """
+        if style is None:
+            self._user_options.clear()
+        else:
+            self._user_options.pop(style, None)
 
     def _theme_walk(self):
         """Repaint the live widget tree for the current theme.

@@ -446,7 +446,11 @@ def _build_icon_style(style, base, name, size, states, compound, icon_only=False
         config["compound"] = compound
     if padding is not None:
         config["padding"] = padding
-    style.configure(derived, **config)
+    # Internal path (not public Style.configure) so this derived style's padding
+    # is not captured as a durable user override; register it as the public path
+    # would have.
+    style._build_configure(derived, **config)
+    style._register_ttkstyle(derived)
     if image_map:
         style.map(derived, image=image_map)
     return derived
