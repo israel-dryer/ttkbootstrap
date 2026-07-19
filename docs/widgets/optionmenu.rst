@@ -74,13 +74,16 @@ the list later — repopulate it when your data changes:
 Color
 -----
 
-``bootstyle`` sets the button's color from the semantic palette, with an
-``outline`` variant for a bordered button:
+``bootstyle`` sets the button's color from the semantic palette. Like a
+:doc:`menubutton <menubutton>`, it also takes an ``outline`` variant for a
+bordered button and a ``ghost`` variant that stays transparent until you hover
+it — quiet enough for a toolbar:
 
 .. code-block:: python
 
    ttk.OptionMenu(app, size, "Medium", "Small", "Medium", "Large", bootstyle="success")
    ttk.OptionMenu(app, size, "Medium", "Small", "Medium", "Large", bootstyle="info outline")
+   ttk.OptionMenu(app, size, "Medium", "Small", "Medium", "Large", bootstyle="info ghost")
 
 .. admonition:: Across platforms
    :class: note

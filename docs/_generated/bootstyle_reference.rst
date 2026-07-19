@@ -97,6 +97,12 @@ families ``toggle`` / ``toolbutton``.
    * - ``button``
      - ghost
      - ``primary ghost``
+   * - ``menubutton``
+     - ghost
+     - ``primary ghost``
+   * - ``toolbutton``
+     - ghost
+     - ``primary ghost toolbutton``
    * - ``button``
      - link
      - ``primary link``

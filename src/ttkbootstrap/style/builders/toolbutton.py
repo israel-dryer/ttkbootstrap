@@ -27,12 +27,13 @@ def build_toolbutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     # surface raise so "on" still reads as distinct from "off".
     unselected = neutral_fill(builder, 1)
 
-    if colorname == NEUTRAL:
-        ttk_style = f"{NEUTRAL}.{ttk_class}"
+    # A bare toolbutton renders neutral, like every bare button-family variant
+    # (2.0) -- identical to `neutral toolbutton`; you opt into an accent ON with
+    # `primary toolbutton`. With no accent to latch to, ON is a stronger surface
+    # raise rather than a color.
+    if colorname in (NEUTRAL, DEFAULT, ""):
+        ttk_style = f"{NEUTRAL}.{ttk_class}" if colorname == NEUTRAL else ttk_class
         selected = neutral_fill(builder, 2)
-    elif any([colorname == DEFAULT, colorname == ""]):
-        ttk_style = ttk_class
-        selected = builder.colors.primary
     else:
         ttk_style = f"{colorname}.{ttk_class}"
         selected = builder.colors.get(colorname)
@@ -88,6 +89,89 @@ def build_toolbutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
     )
 
     # register ttk style
+    builder.register_ttkstyle(ttk_style)
+
+
+@register_builder("ghost", "toolbutton")
+def build_ghost_toolbutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
+    """Create a ghost toolbutton style for the ttk.Checkbutton
+    and ttk.Radiobutton widgets.
+
+    A ghost toolbutton is transparent at rest -- no fill, no border, just its
+    label -- and gains a subtle wash when toggled ON: a light tint of the accent
+    for a colored ghost, or a neutral surface raise for the default/neutral one.
+    It is the toggle analog of the ghost button, and quieter than the `outline`
+    toolbutton (which shows an accent border at rest and a full accent fill ON):
+    it suits flat toolbars where only the ON button should read as filled.
+
+    Parameters:
+
+        builder (StyleBuilderTTK):
+            The style builder
+        colorname (str):
+            The color label used to style the widget.
+    """
+    ttk_class = "Ghost.Toolbutton"
+
+    # OFF is the flat app surface with no border; ON is a subtle wash. For
+    # `neutral`/default (no accent to latch to), ON is a neutral surface raise
+    # rather than a color -- like the neutral solid/outline toolbutton. A bare
+    # ghost toolbutton renders neutral, like every bare button-family variant.
+    # ON (selected) reuses the ghost *button's* engaged surface -- its hover
+    # wash -- so a toggled ghost toolbutton and a hovered ghost button read
+    # identically: `neutral_fill(1)` for neutral, a 0.16 accent tint for colored.
+    surface = builder.colors.bg
+    if colorname in (NEUTRAL, DEFAULT, ""):
+        ttk_style = f"{NEUTRAL}.{ttk_class}" if colorname == NEUTRAL else ttk_class
+        off_fg = builder.mute(builder.colors.fg, surface)  # muted off text
+        selected = neutral_fill(builder, 1)
+        on_selected = builder.on_color(selected)
+    else:
+        ttk_style = f"{colorname}.{ttk_class}"
+        accent = builder.colors.get(colorname)
+        off_fg = accent  # the accent text is the resting signal (no border)
+        selected = builder.mute(accent, surface, 0.16)  # light accent wash
+        on_selected = accent  # accent text stays on the quiet wash
+
+    disabled = builder.disabled()
+    on_disabled = builder.disabled("text", disabled)
+
+    # A toolbutton is a toggle: only ON (selected) and OFF (unselected) change
+    # the appearance -- no hover/active or pressed preview. Flat relief draws no
+    # border; keep dark/light on the fill so no clam bevel leaks, and hold
+    # borderwidth=1 (like the ghost button) so the ghost reserves the same space
+    # and matches the solid/outline toolbutton size.
+    fill_states = [
+        ("disabled", disabled),
+        ("selected !disabled", selected),
+    ]
+    builder.configure(
+        ttk_style,
+        foreground=off_fg,
+        background=surface,
+        darkcolor=surface,
+        lightcolor=surface,
+        relief=tk.FLAT,
+        borderwidth=1,  # reserve the 1px the solid/outline hairline occupies
+        focusthickness=builder.scale_size(1),  # match solid toolbutton height
+        focuscolor=off_fg,
+        padding=builder.scale_size((10, 4)),
+        anchor=tk.CENTER,
+    )
+    builder.style.map(
+        ttk_style,
+        foreground=[
+            ("disabled", on_disabled),
+            ("selected !disabled", on_selected),
+        ],
+        focuscolor=[  # focus ring tracks the text color
+            ("disabled", on_disabled),
+            ("selected !disabled", on_selected),
+        ],
+        background=fill_states,
+        darkcolor=fill_states,
+        lightcolor=fill_states,
+    )
     builder.register_ttkstyle(ttk_style)
 
 

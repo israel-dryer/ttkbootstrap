@@ -70,6 +70,30 @@ def test_neutral_resolves_without_warning(root):
         ttk.Button(root, bootstyle="neutral-outline")
 
 
+def test_bare_solid_toolbutton_is_neutral(root):
+    """A bare `toolbutton` renders neutral -- its ON (selected) fill is the
+    neutral raise, identical to `neutral toolbutton`, not the primary accent.
+
+    This is the last button-family bare default to switch off primary (2.0):
+    plain buttons and the outline toolbutton were already neutral by default.
+    """
+    style = root.style
+    ttk.Checkbutton(root, text="x", bootstyle="toolbutton")
+    ttk.Checkbutton(root, text="x", bootstyle="neutral toolbutton")
+
+    def selected_fill(name):
+        return {
+            tuple(item[:-1]): str(item[-1]).lower()
+            for item in style.map(name, "background")
+        }[("selected", "!disabled")]
+
+    bare = selected_fill("Toolbutton")
+    assert bare == selected_fill("neutral.Toolbutton"), \
+        "bare solid toolbutton must fill like `neutral toolbutton` when ON"
+    assert bare != str(style.colors.primary).lower(), \
+        "bare toolbutton ON must be the neutral raise, not the primary accent"
+
+
 def test_neutral_scope_matches_neutral_families():
     """neutral is advertised only for the neutral families (button-family)."""
     assert NEUTRAL_FAMILIES == ("button", "menubutton", "toolbutton")
