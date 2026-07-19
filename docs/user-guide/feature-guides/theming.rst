@@ -104,6 +104,10 @@ Browse every one — a sample card per family, in light and dark — in the
    registered by default. Call :func:`~ttkbootstrap.install_legacy_themes` to
    register them all (it warns, and they are removed in 3.0), or just name one —
    ``App(themename="darkly")`` lazily registers that single theme with a warning.
+   The five names that carried over into the curated catalog above — ``minty``,
+   ``pulse``, ``sandstone``, ``united``, ``vapor`` — instead resolve to their
+   curated variant at the 1.x theme's own light/dark mode (``vapor`` →
+   ``vapor-dark``), with no warning.
 
 Reading theme colors
 --------------------

@@ -15,7 +15,7 @@
 |---|---|---|
 | Theme model, `Theme`, default theme, ramp addressing | API | `development/2_0_theme_migration.md` |
 | **User theme store removed; ttkcreator exports a `Theme(...).register()` snippet** | Removed | this doc, below |
-| **Legacy theme names auto-register on use (no hard-stop)** | Fix/Deprecated | this doc, below (Slice 1) |
+| **Legacy theme names auto-register on use; adapted names resolve to their curated theme** | Fix/Deprecated | this doc, below (Slice 1) |
 | **`App` (canonical) / `Window` alias; `theme` / `themename` alias** | New | this doc, below (Slice 2) |
 | **`on_close` window close handler (`App`/`Toplevel` method + kwarg)** | New | this doc, below |
 | **`utils/` package; `utility`/`colorutils` → warn-and-forward shims** | Deprecated | this doc, below (Slice 0) |
@@ -316,6 +316,22 @@ mapping (`darkly` ≠ `bootstrap-dark`, different palettes), so forcing migratio
 would change every app's colors *and* its code. This intentionally reverses
 Workstream E's "opt-in only" decision — that decision is what created the wall —
 while keeping its deprecation nudge (a per-name `DeprecationWarning`).
+
+**Adapted names use the curated theme (not the legacy dict).** Five pre-2.0 names
+carried over into the curated catalog as families — `minty`, `pulse`, `sandstone`,
+`united`, `vapor`. For these, `theme_use("minty")` now resolves to the **curated**
+variant at the legacy theme's own light/dark mode (`minty` → `minty-light`,
+`vapor` → `vapor-dark`) instead of adapting the legacy 16-key dict — so 1.x code
+gets the polished 2.0 version of that theme, with **no** deprecation warning (it's
+a first-class 2.0 theme now). The *legacy* mode is used, never the app's current
+mode, so a 1.x caller sees the light/dark they expect. An explicit
+`install_legacy_themes()` still wins (it registers the legacy `minty` by name,
+which then takes precedence). Legacy names with no curated counterpart (`darkly`,
+`flatly`, …) are unchanged — legacy dict + warning, as above.
+
+**`cerulean` spelling accepted.** 1.x shipped Bootswatch's *cerulean* misspelled as
+`cerculean`; the typo stays the canonical name (1.x code uses it), and the correct
+spelling `cerulean` is now accepted as an alias.
 
 **Not changed.** The default theme: `ttk.Window()` with no name still renders
 `bootstrap-light` — a documented *visual* change, not a crash.

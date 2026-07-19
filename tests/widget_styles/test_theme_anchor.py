@@ -268,6 +268,57 @@ def test_legacy_theme_use_lazy_registers_then_bulk_opt_in(root):
         style.theme_use("bootstrap-light")
 
 
+def test_adapted_legacy_name_resolves_to_curated_variant(root):
+    """Backwards compat: a pre-2.0 name that carried over as a curated family
+    resolves to that family's variant at the LEGACY theme's own mode -- never an
+    error, never a deprecation warning, and never the app's current mode. So a
+    1.x caller's `theme_use("minty")` (light in 1.x) yields `minty-light` and
+    `theme_use("vapor")` (dark in 1.x) yields `vapor-dark`."""
+    style = root.style
+    try:
+        for legacy, expected in (("minty", "minty-light"),
+                                 ("pulse", "pulse-light"),
+                                 ("united", "united-light"),
+                                 ("vapor", "vapor-dark")):
+            with warnings.catch_warnings(record=True) as w:
+                warnings.simplefilter("always")
+                style.theme_use(legacy)
+            assert style.theme.name == expected
+            assert not [x for x in w if issubclass(x.category, DeprecationWarning)
+                        and "legacy" in str(x.message)], \
+                f"adapted name {legacy!r} should not warn -- it maps to a curated theme"
+            # the bare legacy name itself is never registered; it resolved to
+            # the curated variant, not the legacy dict
+            assert legacy not in style._theme_names
+        # a legacy name with NO curated counterpart is left unchanged, so it
+        # still takes the legacy-dict migration path (and its warning)
+        assert style._resolve_theme_alias("darkly") == "darkly"
+        assert style._resolve_theme_alias("minty") == "minty-light"
+        assert style._resolve_theme_alias("vapor") == "vapor-dark"
+    finally:
+        style.theme_use("bootstrap-light")
+
+
+def test_cerulean_spelling_alias_resolves(root):
+    """1.x shipped Bootswatch's "cerulean" misspelled as "cerculean"; both
+    spellings now work (the typo stays canonical for 1.x code)."""
+    style = root.style
+    before = set(style._theme_names)
+    try:
+        assert style._resolve_theme_alias("cerulean") == "cerculean"
+        with pytest.warns(DeprecationWarning, match="legacy"):
+            style.theme_use("cerulean")
+        assert style.theme.name == "cerculean"
+    finally:
+        for name in list(style._theme_names):
+            if name not in before:
+                style._theme_names.discard(name)
+                style._theme_definitions.pop(name, None)
+                style._theme_styles.pop(name, None)
+                style._theme_objects.pop(name, None)
+        style.theme_use("bootstrap-light")
+
+
 # --------------------------------------------------------------------------- #
 # Light/dark theme mode (theme_mode get/set / toggle_theme / set_theme_modes)
 # --------------------------------------------------------------------------- #

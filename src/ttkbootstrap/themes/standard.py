@@ -386,3 +386,11 @@ STANDARD_THEMES = {
         },
     },
 }
+
+# Spelling aliases for legacy names -> their canonical `STANDARD_THEMES` key.
+# ttkbootstrap 1.x shipped Bootswatch's "cerulean" theme misspelled as
+# "cerculean"; 1.x code uses the typo, so it stays the canonical key, and the
+# correct spelling is accepted as an alias.
+LEGACY_THEME_ALIASES = {
+    "cerulean": "cerculean",
+}

@@ -236,9 +236,15 @@ The built-in catalog is now 15 curated **families**, each generating a matched
    registers it on demand with a warning. To register the whole pre-2.0 set at once
    (say, to list them in a theme picker), call
    :func:`~ttkbootstrap.install_legacy_themes`. Legacy themes keep their authored
-   colors; only their inconsistent plumbing is regenerated. There is no one-to-one
-   legacy-to-curated mapping (``darkly`` is not ``bootstrap-dark``), so pick a
-   curated theme deliberately rather than expecting an automatic swap.
+   colors; only their inconsistent plumbing is regenerated. For most names there is
+   no one-to-one legacy-to-curated mapping (``darkly`` is not ``bootstrap-dark``), so
+   pick a curated theme deliberately rather than expecting an automatic swap.
+
+   Five names *did* carry over into the curated catalog — ``minty``, ``pulse``,
+   ``sandstone``, ``united``, and ``vapor``. Naming one of these gives you the
+   **curated** theme at the 1.x theme's own light/dark mode (``minty`` →
+   ``minty-light``, ``vapor`` → ``vapor-dark``), with no warning. And ``cerulean``
+   works whether or not you spell it the way 1.x did (``cerculean``).
 
 See :doc:`Theming & Colors </user-guide/feature-guides/theming>` for the theme model
 and how to author your own.
