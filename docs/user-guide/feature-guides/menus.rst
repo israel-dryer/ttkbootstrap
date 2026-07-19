@@ -300,12 +300,6 @@ are simply skipped — put your Exit and Preferences where those platforms expec
 them (under *File* and *Edit*, say). ``add_help_menu`` returns an ordinary Help
 cascade off macOS, so a Help menu is present everywhere.
 
-.. admonition:: 📷 Screenshot (placeholder)
-   :class: screenshot-placeholder
-
-   The macOS screen-top menu bar with the bold **Editor** application menu open,
-   showing About Editor, Preferences… (⌘,), and Quit.
-
 .. seealso::
 
    - :doc:`Windows </user-guide/feature-guides/windows>` — the cross-platform
