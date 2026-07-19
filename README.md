@@ -105,8 +105,17 @@ guide sorts every change into breaking / deprecated / notable / new.
 
 ## Icons
 
-Add icons to your app's buttons and labels with the
-[ttkbootstrap-icons](https://github.com/israel-dryer/ttkbootstrap-icons) library.
+ttkbootstrap ships with the full [Bootstrap Icons](https://icons.getbootstrap.com/)
+set (2,000+ glyphs), rendered from a bundled font — theme-following, crisp at any
+size, and no extra dependency. Add one with the `icon=` keyword:
+
+```python
+ttk.Button(app, text="Settings", icon="gear-fill", bootstyle="primary")
+```
+
+Need other icon families — Font Awesome, Material, Lucide, and more? The
+[ttkbootstrap-icons](https://github.com/israel-dryer/ttkbootstrap-icons) extension
+is still available and adds installable icon providers alongside the built-in set.
 
 ## Contributing
 
