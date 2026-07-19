@@ -142,4 +142,5 @@ ttkbootstrap requires Python 3.10 or newer. Install it with pip:
    widgets/index
    reference/index
    themes
+   Release notes <https://github.com/israel-dryer/ttkbootstrap/releases>
    about/index
