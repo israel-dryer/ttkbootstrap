@@ -2,93 +2,130 @@
 [![Downloads](https://pepy.tech/badge/ttkbootstrap)](https://pepy.tech/project/ttkbootstrap)
 [![Downloads](https://pepy.tech/badge/ttkbootstrap/month)](https://pepy.tech/project/ttkbootstrap)
 ![](https://img.shields.io/github/issues/israel-dryer/ttkbootstrap.svg)
-![](https://img.shields.io/github/issues-closed/israel-dryer/ttkbootstrap.svg)
 ![](https://img.shields.io/github/license/israel-dryer/ttkbootstrap.svg)
 ![](https://img.shields.io/github/stars/israel-dryer/ttkbootstrap.svg)
-![](https://img.shields.io/github/forks/israel-dryer/ttkbootstrap.svg)
+![](https://img.shields.io/pypi/pyversions/ttkbootstrap.svg)
 
 # ttkbootstrap
 
-ttkbootstrap is a theming extension for tkinter. It generates modern, flat,
-Bootstrap-inspired light and dark themes on demand and adds a single
-`bootstyle` keyword to every ttk widget — so you describe *intent*
-(`"primary"`, `"success"`, `"outline"`) instead of hand-picking colors or
-wrangling long ttk style names.
+**Modern, themed tkinter — style any ttk widget with one keyword.**
 
-## Documentation
-👀 Read the [documentation](https://ttkbootstrap.readthedocs.io/en/latest/).
+ttkbootstrap is a theming extension for tkinter. It generates flat,
+Bootstrap-inspired light and dark themes on demand and adds a single ``bootstyle``
+keyword to every ttk widget, so you describe *intent* — ``"primary"``,
+``"success"``, ``"outline"`` — instead of hand-tuning colors or long ttk style
+names.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/israel-dryer/ttkbootstrap/master/docs/_static/examples/home-hero-dark.png">
   <img alt="A ttkbootstrap window: color swatches above themed buttons, inputs, a meter, a table, and a notebook" src="https://raw.githubusercontent.com/israel-dryer/ttkbootstrap/master/docs/_static/examples/home-hero-light.png">
 </picture>
 
-## Features
+## Why ttkbootstrap
 
-✔️ [**30 curated themes**](https://ttkbootstrap.readthedocs.io/en/latest/themes.html)  
-Fifteen families, each with a coordinated light and dark variant, that re-theme at runtime.
+- 🎨 **30 curated themes** — fifteen families, each in a coordinated light and dark variant, that switch at runtime.
+- ⌨️ **One-keyword styling** — `bootstyle="success"`, `bootstyle="info outline"`, `bootstyle="round toggle"`. The same keyword means the same thing on every widget.
+- 🧩 **Batteries-included** — styled ttk widgets plus a few extras (`Meter`, `DateEntry`, `Floodgauge`, `Tableview`) and fully themed dialogs.
+- 🛠️ **Your own themes & styles** — a declarative `Theme(...)` API and a public toolkit for building custom widget styles.
+- 🪶 **Pure Python** — one dependency (Pillow), Python 3.10+, no native extensions.
 
-✔️ [**One-keyword styling**](https://ttkbootstrap.readthedocs.io/en/latest/user-guide/foundations/bootstyle-grammar.html)  
-Style any ttk widget with the `bootstyle` keyword — `bootstyle="success"`, `bootstyle="info outline"`, `bootstyle="round toggle"` — instead of the legacy `primary.Striped.Horizontal.TProgressbar` style names. If you've used Bootstrap on the web, the idea will feel familiar.
+It's a **styling layer for vanilla tkinter**, not a new framework: the widgets stay
+tkinter's, and everything you already know about tkinter still applies.
 
-✔️ [**Batteries-included widgets**](https://ttkbootstrap.readthedocs.io/en/latest/widgets/index.html)  
-Beyond the styled ttk widgets, ttkbootstrap ships a few extras — **Meter**, **DateEntry**, **Floodgauge**, and **Tableview** — plus fully themed **dialogs**.
-
-✔️ [**Custom themes & styles**](https://ttkbootstrap.readthedocs.io/en/latest/user-guide/feature-guides/theming.html)  
-Define your own theme with the declarative `Theme(...)` API, or build reusable custom widget styles — the same machinery the built-in themes use.
-
-## Installation
-
-Requires Python 3.10+. Install with pip:
+## Install
 
 ```bash
 python -m pip install ttkbootstrap
 ```
 
-## Simple usage
-
-Instead of long ttk style names, style widgets with the `bootstyle` keyword:
+## Quickstart
 
 ```python
 import ttkbootstrap as ttk
 
-app = ttk.App(title="ttkbootstrap", theme="bootstrap-dark")
+app = ttk.App(title="Hello")
 
-ttk.Button(app, text="Submit", bootstyle="success").pack(side="left", padx=5, pady=10)
-ttk.Button(app, text="Submit", bootstyle="info outline").pack(side="left", padx=5, pady=10)
+ttk.Label(app, text="Hello from ttkbootstrap!").pack(padx=16, pady=(16, 8))
+ttk.Button(app, text="Primary", bootstyle="primary").pack(padx=16, pady=4)
+ttk.Button(app, text="Success", bootstyle="success").pack(padx=16, pady=4)
+ttk.Button(app, text="Danger Outline", bootstyle="danger outline").pack(padx=16, pady=(4, 16))
 
 app.mainloop()
 ```
 
-The `bootstyle` value is a small grammar — a color plus optional modifiers and a type:
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/israel-dryer/ttkbootstrap/master/docs/_static/examples/quickstart-hello-dark.png">
+  <img alt="The Hello window: a greeting label above primary, success, and danger-outline buttons" src="https://raw.githubusercontent.com/israel-dryer/ttkbootstrap/master/docs/_static/examples/quickstart-hello-light.png">
+</picture>
 
-- `bootstyle="info"` — a colored widget
-- `bootstyle="info outline"` — color + variant
-- `bootstyle="success round toggle"` — color + modifier + type
+## The bootstyle keyword
 
-Dashes work too (`"info-outline"`). See the [bootstyle grammar](https://ttkbootstrap.readthedocs.io/en/latest/user-guide/foundations/bootstyle-grammar.html) for the full reference, and [Build your first app](https://ttkbootstrap.readthedocs.io/en/latest/user-guide/getting-started/build-your-first-app.html) for a step-by-step walkthrough.
+A `bootstyle` value is a small grammar — a **color**, plus an optional **modifier**
+and **widget type** — and the same keyword carries the same meaning across widgets:
+
+```python
+ttk.Button(app, bootstyle="success")
+ttk.Progressbar(app, bootstyle="success")
+ttk.Entry(app, bootstyle="success")
+```
+
+Add a modifier or a type for variants: `"info outline"`, `"success round toggle"`,
+`"warning striped"`. The vocabulary is closed, so a typo fails loudly instead of
+silently doing nothing. See the
+[bootstyle grammar](https://ttkbootstrap.readthedocs.io/en/latest/user-guide/foundations/bootstyle-grammar.html)
+for the full reference.
+
+## Themes
+
+Thirty curated light and dark themes, switchable at runtime:
+
+```python
+app.theme_use("bootstrap-dark")   # any theme by name
+app.toggle_theme()                # flip light <-> dark
+```
+
+Browse them in the
+[themes gallery](https://ttkbootstrap.readthedocs.io/en/latest/themes.html).
+
+## Documentation
+
+- **[Documentation](https://ttkbootstrap.readthedocs.io/en/latest/)** — guides, the widget catalog, and the API reference.
+- **[Build your first app](https://ttkbootstrap.readthedocs.io/en/latest/user-guide/getting-started/build-your-first-app.html)** — a step-by-step walkthrough.
+- **[Migrating to 2.0](https://ttkbootstrap.readthedocs.io/en/latest/user-guide/getting-started/migrating.html)** — upgrading from 1.x.
+- **[Release notes](https://github.com/israel-dryer/ttkbootstrap/releases)** — what changed in each version.
 
 ## Upgrading from 1.x
 
-2.0 is a cleanup-and-consolidation release with breaking changes (a canonical `bootstyle` grammar, a new theme catalog, `App` alongside `Window`, and more). Your existing code mostly keeps working — legacy theme names and older spellings are accepted with a deprecation warning. See the [Migrating to 2.0](https://ttkbootstrap.readthedocs.io/en/latest/user-guide/getting-started/migrating.html) guide.
+2.0 is a cleanup-and-consolidation release with some breaking changes — a canonical
+`bootstyle` grammar, a new theme catalog, and `App` alongside `Window`. Most code
+keeps working: legacy theme names and older spellings are accepted with a
+deprecation warning. The
+[Migrating to 2.0](https://ttkbootstrap.readthedocs.io/en/latest/user-guide/getting-started/migrating.html)
+guide sorts every change into breaking / deprecated / notable / new.
 
 ## Icons
 
-Add icons to your app's buttons and labels with the [ttkbootstrap-icons](https://github.com/israel-dryer/ttkbootstrap-icons) library.
+ttkbootstrap ships with the full [Bootstrap Icons](https://icons.getbootstrap.com/)
+set (2,000+ glyphs), rendered from a bundled font — theme-following, crisp at any
+size, and no extra dependency. Add one with the `icon=` keyword:
+
+```python
+ttk.Button(app, text="Settings", icon="gear-fill", bootstyle="primary")
+```
+
+Need other icon families — Font Awesome, Material, Lucide, and more? The
+[ttkbootstrap-icons](https://github.com/israel-dryer/ttkbootstrap-icons) extension
+is still available and adds installable icon providers alongside the built-in set.
 
 ## Contributing
-We welcome contributions! If you'd like to contribute to ttkbootstrap, please check out our contributing guidelines.
 
-## Links
-- **Documentation:** https://ttkbootstrap.readthedocs.io/en/latest/
-- **Release notes:** https://github.com/israel-dryer/ttkbootstrap/releases
-- **GitHub:** https://github.com/israel-dryer/ttkbootstrap
+Contributions are welcome — please check out our contributing guidelines.
 
 ## Support
 
 This project is proudly developed with the support of the
 <a href="https://www.jetbrains.com/pycharm/" target="_blank" rel="noopener">PyCharm IDE</a>, generously provided by JetBrains.
 
-<a href="https://www.jetbrains.com/" target="_blank" rel="noopener"> <picture> <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/f6d4e79d-97f4-4368-a944-affd423aa922"> <img width="250" alt="JetBrains logo" src="https://github.com/user-attachments/assets/1e42e5db-ffb5-4c8d-b238-3f5633fb7e6d"> </picture> </a> 
+<a href="https://www.jetbrains.com/" target="_blank" rel="noopener"> <picture> <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/f6d4e79d-97f4-4368-a944-affd423aa922"> <img width="250" alt="JetBrains logo" src="https://github.com/user-attachments/assets/1e42e5db-ffb5-4c8d-b238-3f5633fb7e6d"> </picture> </a>
 
 <sub> © 2025 JetBrains s.r.o. JetBrains and the JetBrains logo are registered trademarks of JetBrains s.r.o. </sub>
