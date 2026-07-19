@@ -24,7 +24,10 @@ def build_table_treeview_style(builder: StyleBuilderTTK, colorname=DEFAULT):
 
     f = font.nametofont("TkDefaultFont")
     metrics = f.metrics()
-    row_height = metrics['linespace'] + metrics['ascent']
+    # A comfortable data-grid row: the text line plus ~half an ascent of
+    # breathing room. Bare `linespace` (1.x) left the text flush to the row
+    # edges; `linespace + ascent` overshot to nearly 2x the line height.
+    row_height = metrics['linespace'] + metrics['ascent'] // 2
     on_disabled = builder.disabled("text", builder.colors.inputbg)
 
     if any([colorname == DEFAULT, colorname == ""]):

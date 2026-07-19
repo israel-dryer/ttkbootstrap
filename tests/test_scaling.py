@@ -405,6 +405,30 @@ def _is_logical_toolkit_call(call):
     )
 
 
+def _reads_font_metric(value):
+    """A value indexing into font metrics is already in physical pixels.
+
+    `metrics['linespace']` / `f.metrics()['ascent']` return DPI-aware physical
+    pixels (the font itself scales), so a ratio of them (e.g. a treeview
+    ``rowheight`` of ``linespace + ascent // 2``) is physical too -- the ``// 2``
+    is a proportion of a metric, not a logical pixel dimension that must go
+    through the scaling service.
+    """
+    def _is_metric_access(node):
+        if not isinstance(node, ast.Subscript):
+            return False
+        base = node.value
+        if isinstance(base, ast.Name) and base.id == "metrics":
+            return True
+        return (
+            isinstance(base, ast.Call)
+            and isinstance(base.func, ast.Attribute)
+            and base.func.attr == "metrics"
+        )
+
+    return any(_is_metric_access(node) for node in ast.walk(value))
+
+
 def _is_hairline_border(arg, value):
     """A 1px border is a physical hairline, not a scaled logical dimension.
 
@@ -439,6 +463,7 @@ def test_builder_numeric_geometry_is_scaled_or_already_physical():
                         and _contains_nonzero_literal(value)
                         and not _contains_scaling_call(value)
                         and not _is_hairline_border(keyword.arg, value)
+                        and not _reads_font_metric(value)
                     ):
                         violations.append(f"{path.name}:{call.lineno}:{keyword.arg}")
     assert not violations, "unscaled literal builder geometry: " + ", ".join(
