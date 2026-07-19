@@ -35,10 +35,14 @@ Options
        Default ``6``.
    * - ``start_date``
      - ``datetime | date``
-     - The date the widget starts on — fills the field at construction and is
-       the ``get_date()`` fallback when the field is empty. The displayed date
-       after construction is ``value`` / ``set_date()``. Default ``None``
-       (today).
+     - The date the calendar popup focuses on when no date is selected. When
+       ``value`` is omitted it also fills the field at construction and is the
+       ``get_date()`` fallback for an empty field. Default ``None`` (today).
+   * - ``value``
+     - ``datetime | date | None``
+     - The initially selected date. Pass ``value=None`` for an empty, clearable
+       field — ``get_date()`` / ``value`` then return ``None`` until a date is
+       chosen. If omitted, the field defaults to ``start_date`` or today.
    * - ``button_icon``
      - ``str``
      - The Bootstrap-Icons glyph shown on the button. Default
@@ -82,10 +86,20 @@ Methods
 .. py:method:: set_date(new_date)
    :noindex:
 
-   Set the selected date and update the entry text.
+   Set the selected date and update the entry text. Passing ``None`` clears the
+   field (equivalent to :py:meth:`clear`).
 
-   :param new_date: the date to display.
-   :type new_date: datetime | date
+   :param new_date: the date to display, or ``None`` to clear the field.
+   :type new_date: datetime | date | None
+   :returns: ``None``.
+
+.. py:method:: clear()
+   :noindex:
+
+   Clear the selected date, leaving the field empty. Afterwards ``value`` /
+   :py:meth:`get_date` return ``None`` and the calendar popup opens on the
+   configured ``start_date`` (or today).
+
    :returns: ``None``.
 
 .. py:method:: enable()
@@ -106,6 +120,8 @@ Methods
    :noindex:
 
    The currently selected date (property; a synonym for :py:meth:`get_date`).
+   Assigning ``None`` clears the field. Returns ``None`` when the field is empty
+   in the nullable model (see the ``value`` option).
 
 .. py:attribute:: enabled
    :noindex:

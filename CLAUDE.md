@@ -802,6 +802,58 @@ python.org no longer allows announcements — + LinkedIn) drafted; advised to po
 **weekday** (Tue–Wed AM) not the release Sunday, after a short soft-bake. **2.0 is
 DONE.** Optional post-release polish only from here.
 
+## Direction: 2.1 milestone (post-release)
+
+> **STATUS (2026-07-19): 2.1 is the active milestone** (GitHub milestone #1, the
+> repo's first). Six issues; new work targets `master`. Backlog framing lives in
+> `development/2_0_plan.md` "Post-2.0 (2.1) backlog".
+
+Recommended order (dependency- and design-gate-driven):
+
+1. **#1253 — `DateEntry.value` nullable (additive slice).** IN PROGRESS. Un-gated,
+   self-contained, fully scoped. The release turned two of the original acceptance
+   criteria into breaking changes, so #1253 is split along the semver line (see the
+   issue comment, the record): the **additive** slice ships in 2.1 behind an
+   internal `_UNSET` sentinel — omitted `value` still defaults to today (2.0.0
+   behavior preserved, no break); explicit `value=None` gives a genuinely empty,
+   clearable field (`clear()`, `set_date(None)`, `value = None`), and `get_date()`
+   returns `None` **only** for a widget that opted into the nullable model. The
+   **breaking** finish — making `value=None` the default and removing the
+   `_startdate` empty-read fallback unconditionally — is deferred to **3.0**,
+   tracked in **#1276** (see below).
+
+**3.0 (future major) — deferred breaking work.** GitHub **milestone #2 (`3.0`)** +
+the **`Version 3`** label (matching the `Version 1`/`Version 2` convention) exist as
+the home for cleanup deferred out of 2.x. Two kinds of deferred work: (a) the
+**~30 code shims** marked `removed in 3.0` across ~19 source files — these are
+grep-discoverable (`grep -r "removed in 3.0" src`), so they are intentionally NOT
+enumerated in a meta-issue (a hand-maintained list would just drift); (b) **design
+decisions** with no code shim (e.g. a future default change), which ARE the fragile
+ones and get their own tracked issues. First such issue: **#1276** — make
+`DateEntry` `value=None` the default + drop the `start_date` empty-read fallback
+(the 3.0 half of #1253). Don't build a full 3.0 removal checklist until 3.0 is
+actually scoped.
+2. **#1238 design → #1238 + #1160 + #1161 cluster.** These three are ONE design
+   problem: a *durable style-options layer the builders read from* (so a user's
+   `style.configure("TEntry", padding=…)` survives a bootstyle/theme rebuild).
+   #1238 is the umbrella; #1160 (Treeview/Tableview row-height ignores the
+   configured font) and #1161 (PanedWindow `sashthickness` clobbered on theme
+   change) are the two concrete bugs that layer fixes, landed as its first proof.
+   Design-session-gated (project hard rule). #1160/#1161 each have a root-caused
+   standalone patch in their threads as a fallback if the layer design stalls.
+3. **#1236 — bootstyle value tokens (hex + ramp accents/surfaces).**
+   Design-session-gated; brief in `development/2_1_bootstyle_value_tokens_design.md`
+   (§10 open questions to settle first). Sequenced AFTER #1238 because both refactor
+   the same builder color/config seam — avoid two concurrent rewrites of it.
+4. **#1242 — in-house themed file dialog (X11 default; opt-in elsewhere).** Biggest
+   single build (draw our own dialog; the Tk X11 `tkfbox.tcl` canvas hardcodes a
+   white panel no styling can reach). Most standalone, lowest urgency (dialog is
+   already functional/readable). Prior art in `development/filedialogs/`. Natural
+   drop-candidate if 2.1 needs to close sooner.
+
+NOTE (line numbers): #1160/#1161 reference `src/ttkbootstrap/style.py:NNNN` — filed
+pre-2.0-split; those builders now live in the `style/` package (`builders_ttk.py`).
+
 ## Repository layout
 
 ```

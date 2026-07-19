@@ -20,6 +20,11 @@ from ttkbootstrap.style._compat import (
     warn_deprecated,
 )
 
+# Distinguishes an omitted `value` (default to today, preserving 2.0.0
+# behavior) from an explicit `value=None` (empty, nullable model). Do NOT
+# overload `None` with both meanings. See issue #1253.
+_UNSET = object()
+
 
 class DateEntry(ConfigureDelegationMixin, Frame):
     """A date entry widget combines an Entry field and a Button for date selection.
@@ -63,6 +68,7 @@ class DateEntry(ConfigureDelegationMixin, Frame):
             date_format: str = r"%x",
             first_weekday: int = 6,
             start_date: Optional[Union[datetime, date]] = None,
+            value: Any = _UNSET,
             bootstyle: str = "primary",
             button_icon: str = "calendar-week",
             show_outside_days: bool = True,
@@ -87,10 +93,21 @@ class DateEntry(ConfigureDelegationMixin, Frame):
                 etc...
 
             start_date (datetime, optional):
-                The date the widget starts on — fills the field at construction
-                and is the `get_date()` fallback when the field is empty. The
-                displayed date after construction is `value` / `set_date()`.
+                The date the calendar popup focuses on when no date is
+                selected. When `value` is omitted, `start_date` also fills the
+                field at construction and is the `get_date()` fallback for an
+                empty field (2.0.0 behavior, preserved for compatibility).
                 Default is the current date.
+
+            value (datetime | date | None, optional):
+                The initially selected date. Pass `value=None` for an
+                explicitly empty, clearable field — `get_date()` / `value`
+                then return `None` until a date is chosen. If omitted, the
+                field defaults to `start_date` or today (2.0.0 behavior; the
+                empty-by-default model is deferred to 3.0). Passing `value`
+                (including `None`) opts the widget into the nullable model,
+                where an empty field reads as `None` rather than falling back
+                to `start_date`.
 
             bootstyle (str, optional):
                 A style keyword used to set the focus color of the entry
@@ -135,7 +152,14 @@ class DateEntry(ConfigureDelegationMixin, Frame):
         self.__enabled = True  # User/Programmer should NOT be able to change this, therefore double underscores
         self.__dateformat = self._validate_dateformat(date_format)
         self._firstweekday = first_weekday
+        # `_configured_start_date` is the popup-focus config (what the user
+        # passed / configured; may be None -> today). `_startdate` is the live
+        # popup-focus tracker (follows the selected value while one exists).
+        self._configured_start_date = start_date
         self._startdate = start_date or datetime.today()
+        # Passing `value` (including None) opts into the nullable model: an
+        # empty field reads as None instead of falling back to `_startdate`.
+        self._nullable = value is not _UNSET
         self._bootstyle = bootstyle
         self._button_icon = button_icon
         self._show_outside_days = show_outside_days
@@ -179,8 +203,16 @@ class DateEntry(ConfigureDelegationMixin, Frame):
         # Mark the entry `invalid` on blur when its text is not a valid date.
         self.entry.bind("<FocusOut>", self._on_entry_blur, add="+")
 
-        # Initialize this widget
-        self.set_date(self._startdate)
+        # Initialize this widget. In the nullable model the selected `value`
+        # drives the field; otherwise fall back to the 2.0.0 today/start_date
+        # behavior.
+        if self._nullable:
+            if value is None:
+                self.clear()
+            else:
+                self.set_date(value)
+        else:
+            self.set_date(self._startdate)
 
     # -- configure delegates ------------------------------------------------- #
     # One get/set handler per custom option (value=None queries, else sets).
@@ -222,8 +254,11 @@ class DateEntry(ConfigureDelegationMixin, Frame):
 
     @configure_delegate("start_date")
     def _cfg_start_date(self, value):
+        # Reconfiguring `start_date` changes only future popup-focus behavior;
+        # it does not touch the displayed/selected value.
         if value is None:
             return self._startdate
+        self._configured_start_date = value
         self._startdate = value
 
     @configure_delegate("bootstyle")
@@ -308,46 +343,72 @@ class DateEntry(ConfigureDelegationMixin, Frame):
     def value(self) -> Optional[datetime]:
         """The currently selected date (synonym for :meth:`get_date`).
 
-        Reads the live entry text, falling back to the last set date when the
-        text is empty or unparseable. Assigning is equivalent to
-        :meth:`set_date`.
+        Reads the live entry text. In the nullable model an empty field
+        returns ``None``; otherwise it falls back to the last set date.
+        Assigning is equivalent to :meth:`set_date` (assigning ``None``
+        clears the field).
         """
         return self.get_date()
 
     @value.setter
-    def value(self, new_date: Union[datetime, date]) -> None:
+    def value(self, new_date: Union[datetime, date, None]) -> None:
         self.set_date(new_date)
 
     # -- date access --------------------------------------------------------- #
     def get_date(self) -> Optional[datetime]:
         """Get the currently selected date.
 
-        Parses the **live entry text** so typed keyboard edits are honored. If
-        the text is empty or cannot be parsed, the last date set on the widget
-        is returned as a fallback.
+        Parses the **live entry text** so typed keyboard edits are honored.
 
         Returns:
-            datetime: The currently selected date as a datetime object.
+            datetime | None: The selected date. When the text is empty or
+                cannot be parsed, returns ``None`` in the nullable model
+                (see the ``value`` constructor parameter); otherwise the last
+                date set on the widget is returned as a fallback.
         """
         parsed = self._coerce_date(self.entry.get())
         if parsed is not None:
             return parsed
+        if self._nullable:
+            return None
         return self._startdate
 
-    def set_date(self, new_date: Union[datetime, date]) -> None:
+    def set_date(self, new_date: Union[datetime, date, None]) -> None:
         """Set the currently selected date.
 
         Updates the entry field and internal state with the new date.
         Time components (hours, minutes, seconds, microseconds) are ignored
-        and will be stripped from datetime objects.
+        and will be stripped from datetime objects. Passing ``None`` is
+        equivalent to :meth:`clear`.
 
         Parameters:
-            new_date (datetime | date): The new date to set.
+            new_date (datetime | date | None): The new date to set, or
+                ``None`` to clear the field.
         """
+        if new_date is None:
+            self.clear()
+            return
         _date: datetime = self._clean_datetime(new_date)
         self._startdate = _date
         self._write_entry(_date.strftime(self.__dateformat))
         # A freshly set date is valid by construction.
+        self.entry.state(['!invalid'])
+
+    def clear(self) -> None:
+        """Clear the selected date, leaving the field empty.
+
+        After clearing, ``value`` / :meth:`get_date` return ``None`` and the
+        field is valid (an empty field is not an error). The calendar popup
+        will open on the configured ``start_date`` (or today) until a new date
+        is selected. Clearing opts the widget into the nullable model.
+        """
+        # An explicit clear signals nullable intent, so an empty field reads
+        # as None from here on.
+        self._nullable = True
+        self._write_entry("")
+        # Popup focus reverts to the configured start_date (or today); the
+        # selected value is now empty.
+        self._startdate = self._configured_start_date or datetime.today()
         self.entry.state(['!invalid'])
 
     def _coerce_date(self, text: str) -> Optional[datetime]:
