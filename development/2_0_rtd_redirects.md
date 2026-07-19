@@ -17,18 +17,25 @@ homes.
 Read the Docs does **not** read redirects from `.readthedocs.yaml`. Add them in
 the project dashboard: **Admin → Redirects**, or via the
 [RTD redirects API](https://docs.readthedocs.io/en/stable/api/v3.html#redirects).
-The `From URL` is the path under the version root (RTD applies it across
-versions). Wildcards use a trailing `*`, captured as `:splat` in the `To URL`.
+
+**Scope every rule to `latest` only.** Keep the full `From URL` including the
+`/en/latest/` prefix (an **Exact redirect**) — *not* a version-relative page
+redirect. The 1.x docs are published as their own version (`release/v1`), and a
+version-relative rule like `styleguide/*` would also fire on
+`/en/<release-v1-slug>/styleguide/...` and **hijack the real 1.x pages**. Keeping
+`/en/latest/` in the `From URL` confines each redirect to the 2.0 docs. Wildcards
+use a trailing `*`, captured as `:splat` in the `To URL`.
 
 `docs/404.rst` (the `sphinx-notfound-page` extension) is the safety net for
 anything not listed here.
 
-## Keep the last 1.x version active
+## Keep the 1.x version live and unredirected
 
-Old **versioned** builds keep their original mkdocs URLs, so `/en/v1.x/...` links
-still resolve as long as that version is not deactivated. Only `latest`/`stable`
-serve the new structure and need these redirects — confirm `stable` is not
-silently pointing 1.x readers at 2.0's pages.
+The 1.x docs are published as the `release/v1` version, so their original mkdocs
+URLs still resolve at `/en/<release-v1-slug>/...`. Leave that version active and
+make sure **no redirect matches it** (that is what the `latest`-scoped `From URL`s
+above guarantee). Only `latest` — and `stable`, if you point it at 2.0 — serves
+the new structure and needs these redirects.
 
 ## Exact redirects (highest-traffic pages, land precisely)
 
