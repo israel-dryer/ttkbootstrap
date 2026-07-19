@@ -8,7 +8,6 @@
 ![](https://img.shields.io/github/forks/israel-dryer/ttkbootstrap.svg)
 
 # ttkbootstrap
-English | [日本語](README_ja.md) | [中文](README_zh.md)
 
 ttkbootstrap is a theming extension for tkinter. It generates modern, flat,
 Bootstrap-inspired light and dark themes on demand and adds a single
