@@ -841,6 +841,16 @@ actually scoped.
    change) are the two concrete bugs that layer fixes, landed as its first proof.
    Design-session-gated (project hard rule). #1160/#1161 each have a root-caused
    standalone patch in their threads as a fallback if the layer design stalls.
+   **Design brief: `development/2_1_durable_style_options_design.md`** (PROPOSED,
+   2026-07-19). Mechanism (grounded in the 2.0 engine): capture user overrides on
+   the *public* `Style.configure` (builders write via the internal
+   `_build_configure`, a clean seam) into a durable, theme-independent registry,
+   and re-apply them last after every `build_style` so user values win over the
+   recipe; base→variant propagation makes a base-class override fan out. #1160 is
+   a *companion* builder fix (rowheight from the effective font, not
+   `TkDefaultFont`), not the same mechanism. Key open question (§10.1): record all
+   configure options vs a geometry allowlist (lean) — the latter preserves color
+   reactivity.
 3. **#1236 — bootstyle value tokens (hex + ramp accents/surfaces).**
    Design-session-gated; brief in `development/2_1_bootstyle_value_tokens_design.md`
    (§10 open questions to settle first). Sequenced AFTER #1238 because both refactor

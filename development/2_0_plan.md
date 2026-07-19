@@ -317,6 +317,14 @@ Tracked enhancements deliberately held out of the feature-frozen 2.0:
   gap). X11 default / native elsewhere / routed through the `Querybox.get_*`
   wrappers; prior art in `development/filedialogs/`. Tracked as **#1242** on
   the **2.1 milestone**; design pass before implementation.
+- **Durable style options** — a user's `style.configure("TEntry", padding=3)`
+  is clobbered when a bootstyle variant is built or the theme switches, because
+  recipes re-write hardcoded geometry per-`(theme,variant)`. One umbrella design
+  covers three issues: **#1238** (set general properties on the base class),
+  **#1161** (PanedWindow `Sash` sashthickness), **#1160** (Treeview rowheight
+  ignores the configured font — a companion builder fix). Design brief:
+  `development/2_1_durable_style_options_design.md` (PROPOSED, 2026-07-19; design
+  session before implementation). All on the **2.1 milestone**.
 
 ---
 
