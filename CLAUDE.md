@@ -689,6 +689,78 @@ __main__.py` is modified in the tree — that is the AUTHOR'S demo WIP, leave it
 untouched** (as with the author's other live WIP: dialog-button styling in
 `dialogs/colorchooser.py`, `dialogs/fontdialog.py`, `examples/widgets/dialogs.py`).
 
+**Session 2026-07-18b→19 — ghost variant across the button family + LabeledScale
+`value=` + demo rework + landing hero + Object lifetime docs (all MERGED into
+`2.0`; supersedes the 2026-07-18 UNCOMMITTED state above — now shipped).**
+**#1265 (`feat/2.0-ghost-and-widget-polish`, merge `c896b18d`)** completed the
+**`ghost`** look across the button family (plain Button already had it): a new
+**ghost toolbutton** (`style/builders/toolbutton.py`, `("ghost","toolbutton")`) —
+transparent at rest, and when toggled **ON reuses the ghost *button's* hover
+surface** (`neutral_fill(1)` neutral / a `0.16` accent tint colored), no
+hover/press preview (a toolbutton is a toggle), quieter than `outline toolbutton`;
+and a new **ghost menubutton** (`style/builders/menubutton.py`,
+`("ghost","menubutton")`) — momentary like a button (wash on hover/press), caret
+via `_build_menubutton_arrow`, **inherited free by `OptionMenu`** (winfo_class
+`TMenubutton`). Because menubutton **infers** its base, ghost menubutton reuses the
+existing `ghost`/`<color> ghost` strings (NO new `BootStyle` entries — only a
+reference-table row); ghost *toolbutton* DID add 10 entries (`<color> ghost
+toolbutton` + bare + `neutral ghost toolbutton`), regenerated via
+`tools/generate_bootstyle_reference.py`. Registry keys added to
+`test_builder_registry` EXPECTED_KEYS; catalog docs surface the three toolbutton
+fills (checkbutton/radiobutton), the three menubutton variants, and outline+ghost
+on optionmenu; logged in `2_0_breaking_changes.md`. The PR also folded in the held
+**bare-solid-neutral toolbutton** + **Tableview row-height 27→21** + **demo
+rework** (the 2026-07-18 WIP) and a **LabeledScale `value=`** fix
+(`widgets/labeledscale.py`): the advertised param was ignored (ctor always set
+`from_`); now forwarded, default `None`→`from_` (a **sentinel**, so a non-zero
+`from_` and the passed-`variable` contract survive — `test_explicit_variable_
+respected`), **clamped into `[from_,to]`** because LabeledScale's `_adjust` reverts
+out-of-range values and `_last_valid` must stay in range (a bare `ttk.Scale` stores
+raw). Suite **718 passed** excl. the `nl.msg` flake. **#1266 (`docs/2.0-landing-
+hero`, merge `5d10c788`)** added the **landing hero**: `docs/screenshots/home-
+hero.py` — a self-contained widget **sampler** (own `App`, **module-level so the
+harness writes clean `home-hero-{light,dark}.png`** — a SCENES dict would name them
+`<page>-<scene>-…`; reads the live theme name; `_capture_full_window`,
+`_capture_max_width=960`), captured **874×529** light/dark on THIS Windows box;
+wired into `docs/index.rst` after `.. container:: hero-ctas`, deleted the stale "in
+development" `.. note::`, added the `quickstart hello` **glimpse** shot after the
+code block. It shows the palette + the button family (default/primary/outline/
+ghost) + inputs + toolbuttons (all ON) + meter/progress + a **Tableview** + a
+**Notebook** — the choice controls (check/radio/toggle) live on the notebook's
+**VISIBLE first tab** because **only the active tab renders in a static screenshot**
+(anything on a hidden tab is invisible). The scene is **frozen/self-contained
+(adapt the demo, don't import it)** so the demo evolves independently. **#1267
+(`docs/2.0-object-lifetime`, merge `1624fafb`)** added a Foundations page
+**`object-lifetime.rst`** consolidating tkinter's GC footguns (previously scattered
+across ~9 files) onto the *Python owns / Tcl references by name* model from
+`what-tkinter-wraps`: a collected `StringVar`/`PhotoImage`/named `Font` takes its
+Tcl entity with it → the widget empties/blanks/reverts, while **widgets survive
+because the tree owns them**; teach-by-example fixes (instance attr / return it /
+`label.image=`) + the inverse (callbacks/`after` keeping objects alive; the
+pending-`after`-into-a-destroyed-widget case → `after_cancel` in `destroy()`).
+Wired into the foundations toctree + card after What-tkinter-wraps; repointed that
+page's variable-footgun link + seealso at it. Every claim probed live (var→empty,
+image→blank, `ttk.Font`→reverts, orphan widget survives) and every snippet verified
+headlessly; docs build clean under `-W`. **A follow-on theme backwards-compat fix**
+(`style/engine.py` `_resolve_theme_alias` + a guard in `theme_use`): an
+unregistered theme name is routed through an alias resolver so the five pre-2.0
+names that carried over as curated families (`minty`/`pulse`/`sandstone`/`united`/
+`vapor`) resolve to their **curated** variant at the *legacy theme's own*
+light/dark mode (`minty`→`minty-light`, `vapor`→`vapor-dark`) — no error, no
+deprecation warning, and **never the app's current mode** (a 1.x caller sees the
+light/dark they expect). An explicit `install_legacy_themes()` still wins (only
+names not already registered are aliased). Legacy-only names (`darkly`/`flatly`/…)
+keep the legacy-dict migration path + warning. Added `LEGACY_THEME_ALIASES` in
+`themes/standard.py` so the historical `cerculean` typo (1.x shipped Bootswatch's
+*cerulean* misspelled; the typo stays canonical for 1.x code) also accepts the
+correct `cerulean` spelling. **Author ruling: bare curated-*only* family names
+(`nord`/`bootstrap`/…) intentionally stay an error** — not a backwards-compat case.
+Logged in `2_0_breaking_changes.md` (extended the Slice-1 legacy-names entry) + the
+migrating/theming guides; `tests/widget_styles/test_theme_anchor.py` +2. Suite
+**719 passed** excl. the `nl.msg` flake; docs build clean under `-W`. **NEXT
+(optional, unchanged):** the deferred **macOS application-menu shot** (`menus.rst`),
+landing/hero polish, Track B odds/ends (Linux/x11, DPI matrix).
+
 ## Repository layout
 
 ```

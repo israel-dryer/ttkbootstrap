@@ -11,7 +11,7 @@ from typing import Any, Optional
 
 from ttkbootstrap.internal import utility as util
 from ttkbootstrap.constants import *
-from ttkbootstrap.themes.standard import STANDARD_THEMES
+from ttkbootstrap.themes.standard import LEGACY_THEME_ALIASES, STANDARD_THEMES
 
 from ttkbootstrap.style.theme import ThemeDefinition
 from ttkbootstrap.style.scaling import Scaling
@@ -206,6 +206,30 @@ class Style(ttk.Style):
         self._theme_definitions[theme] = definition
         self._theme_styles[theme] = set()
 
+    def _resolve_theme_alias(self, themename):
+        """Map a pre-2.0 name that was adapted into the curated catalog to that
+        theme's variant matching its ORIGINAL light/dark mode.
+
+        Backwards compatibility: five legacy names carry over as curated
+        families (``minty``/``pulse``/``sandstone``/``united``/``vapor``). A 1.x
+        caller writing ``theme_use("minty")`` expects a *light* minty and
+        ``theme_use("vapor")`` a *dark* vapor -- the legacy theme's own mode, not
+        the app's current mode. Resolve to ``<name>-<legacy-mode>`` when that
+        curated variant is registered; otherwise return the name unchanged, so a
+        legacy name with no curated counterpart still falls through to the
+        legacy-dict migration path in ``theme_use``.
+
+        A spelling alias (``cerulean`` -> the misspelled-but-canonical
+        ``cerculean``) is normalized first, so both spellings resolve.
+        """
+        themename = LEGACY_THEME_ALIASES.get(themename, themename)
+        spec = STANDARD_THEMES.get(themename)
+        if spec is not None:
+            variant = f"{themename}-{spec.get('type', 'light')}"
+            if variant in self._theme_names:
+                return variant
+        return themename
+
     def theme_use(self, themename=None):
         """Changes the theme used in rendering the application widgets.
 
@@ -234,6 +258,13 @@ class Style(ttk.Style):
 
         # change to an existing theme
         existing_themes = super().theme_names()
+        # Backwards compat: a pre-2.0 name adapted into the curated catalog (and
+        # not otherwise registered -- so an explicit install_legacy_themes()
+        # still wins) resolves to its curated variant at the legacy mode, e.g.
+        # theme_use("minty") -> "minty-light". Legacy names with no curated
+        # counterpart pass through unchanged to the legacy-dict path below.
+        if themename not in existing_themes and themename not in self._theme_names:
+            themename = self._resolve_theme_alias(themename)
         if themename in existing_themes:
             self.theme = self._theme_definitions.get(themename)
             super().theme_use(themename)
