@@ -805,64 +805,91 @@ DONE.** Optional post-release polish only from here.
 ## Direction: 2.1 milestone (post-release)
 
 > **STATUS (2026-07-19): 2.1 is the active milestone** (GitHub milestone #1, the
-> repo's first). Six issues; new work targets `master`. Backlog framing lives in
-> `development/2_0_plan.md` "Post-2.0 (2.1) backlog".
+> repo's first). New work targets `master`. Backlog framing lives in
+> `development/2_0_plan.md` "Post-2.0 (2.1) backlog". **Labels carry no version** —
+> the author dropped the `Version 1/2/3` labels because the milestone already
+> conveys the target release; tag issues/PRs topically (`enhancement`/`bug`) and
+> set the **milestone**.
 
-Recommended order (dependency- and design-gate-driven):
+Order (dependency- and design-gate-driven), with status:
 
-1. **#1253 — `DateEntry.value` nullable (additive slice).** IN PROGRESS. Un-gated,
-   self-contained, fully scoped. The release turned two of the original acceptance
-   criteria into breaking changes, so #1253 is split along the semver line (see the
-   issue comment, the record): the **additive** slice ships in 2.1 behind an
-   internal `_UNSET` sentinel — omitted `value` still defaults to today (2.0.0
-   behavior preserved, no break); explicit `value=None` gives a genuinely empty,
-   clearable field (`clear()`, `set_date(None)`, `value = None`), and `get_date()`
-   returns `None` **only** for a widget that opted into the nullable model. The
-   **breaking** finish — making `value=None` the default and removing the
-   `_startdate` empty-read fallback unconditionally — is deferred to **3.0**,
-   tracked in **#1276** (see below).
-
-**3.0 (future major) — deferred breaking work.** GitHub **milestone #2 (`3.0`)** +
-the **`Version 3`** label (matching the `Version 1`/`Version 2` convention) exist as
-the home for cleanup deferred out of 2.x. Two kinds of deferred work: (a) the
-**~30 code shims** marked `removed in 3.0` across ~19 source files — these are
-grep-discoverable (`grep -r "removed in 3.0" src`), so they are intentionally NOT
-enumerated in a meta-issue (a hand-maintained list would just drift); (b) **design
-decisions** with no code shim (e.g. a future default change), which ARE the fragile
-ones and get their own tracked issues. First such issue: **#1276** — make
-`DateEntry` `value=None` the default + drop the `start_date` empty-read fallback
-(the 3.0 half of #1253). Don't build a full 3.0 removal checklist until 3.0 is
-actually scoped.
-2. **#1238 design → #1238 + #1160 + #1161 cluster.** These three are ONE design
-   problem: a *durable style-options layer the builders read from* (so a user's
-   `style.configure("TEntry", padding=…)` survives a bootstyle/theme rebuild).
-   #1238 is the umbrella; #1160 (Treeview/Tableview row-height ignores the
-   configured font) and #1161 (PanedWindow `sashthickness` clobbered on theme
-   change) are the two concrete bugs that layer fixes, landed as its first proof.
-   Design-session-gated (project hard rule). #1160/#1161 each have a root-caused
-   standalone patch in their threads as a fallback if the layer design stalls.
-   **Design brief: `development/2_1_durable_style_options_design.md`** (PROPOSED,
-   2026-07-19). Mechanism (grounded in the 2.0 engine): capture user overrides on
-   the *public* `Style.configure` (builders write via the internal
-   `_build_configure`, a clean seam) into a durable, theme-independent registry,
-   and re-apply them last after every `build_style` so user values win over the
-   recipe; base→variant propagation makes a base-class override fan out. #1160 is
-   a *companion* builder fix (rowheight from the effective font, not
-   `TkDefaultFont`), not the same mechanism. Key open question (§10.1): record all
-   configure options vs a geometry allowlist (lean) — the latter preserves color
-   reactivity.
-3. **#1236 — bootstyle value tokens (hex + ramp accents/surfaces).**
+1. **#1253 — `DateEntry.value` nullable (additive slice). DONE (#1277).** The
+   release turned two of the original acceptance criteria into breaking changes, so
+   #1253 was split along the semver line (recorded in the issue comment): the
+   **additive** slice shipped behind an internal `_UNSET` sentinel — omitted `value`
+   still defaults to today (2.0.0 behavior preserved, no break); explicit
+   `value=None` gives a genuinely empty, clearable field (`clear()`,
+   `set_date(None)`, `value = None`), and `get_date()` returns `None` **only** for a
+   widget that opted into the nullable model (entering it via ctor `value=` or a
+   runtime `clear()`). The **breaking** finish — `value=None` as the default +
+   dropping the `_startdate` empty-read fallback unconditionally — is deferred to
+   **3.0**, tracked in **#1276**.
+2. **#1238 + #1161 — durable style options. DONE (design #1278, impl #1279).**
+   #1238/#1160/#1161 were ONE design problem: a *durable style-options layer* so a
+   user's `style.configure("TEntry", padding=…)` survives a bootstyle-variant build
+   or theme switch. Brief (decisions LOCKED):
+   `development/2_1_durable_style_options_design.md`. **Mechanism:** capture the
+   geometry subset of user overrides on the **public** `Style.configure` into a
+   theme-independent `Style._user_options` registry, and re-apply it after every
+   build (`_register_ttkstyle` tail) so user values are the last write and beat the
+   recipe. The seam that makes it work: **builders write via the internal
+   `_build_configure`, users via the public `configure`** — so recipe writes are
+   never captured. Locked decisions: **geometry allowlist** (`DURABLE_STYLE_OPTIONS`
+   in `style/engine.py`; colors stay theme-reactive), **base→variant fan-out**
+   most-specific-wins, `reset_style_options()`, `map` overrides out of scope.
+   Three implementation findings worth remembering:
+   - **Fan-out had to become retroactive.** Build-time-only fan-out is
+     order-dependent (a variant built *before* the override never got it), so
+     recording also pushes onto already-built descendants.
+   - **Two framework seam violations fixed** — `create_default_style`
+     (`symbol.Link.TButton`/`tooltip.TLabel`) and `apply_icon`'s derived style were
+     calling the *public* `Style.configure` internally, which would miscapture their
+     `font`/`padding`/`relief` as fake user overrides. **Rule: framework code uses
+     `_build_configure`, never the public `configure`.**
+   - **Durability ≠ the widget honoring the option.** ttk `Entry`/`Combobox`/
+     `Spinbox` read `font` from the widget/named font (`TkTextFont`), **not** the
+     style — so `configure("TEntry", font=…)` persists but never renders (probed:
+     entry height unchanged at 29px vs 50px when set on the widget). `padding` —
+     the actual #1238/discussion-#536 ask — is honored and renders (29→59px).
+   Guarded by `tests/test_durable_style_options.py` (+16) incl. an **AST guard**
+   asserting every non-color option any recipe writes is in the allowlist (it
+   already caught `pbarrelief`).
+3. **#1160 — Treeview/Tableview rowheight ignores the configured font. NEXT.** The
+   *companion* builder fix, not the durable layer: `treeview.py` computes
+   `rowheight` from `TkDefaultFont` at build time (two different formulas — `Table.
+   Treeview` uses `linespace + ascent//2`, plain `Treeview` uses `linespace`), so a
+   configured font clips rows. **Locked scope: build-time effective-font source
+   only** — read the style's font via `style.lookup(..., "font")` with a
+   `TkDefaultFont` fallback, mirroring the #1158 autofit fix. Live font-change →
+   rowheight recompute is explicitly out of scope (no rebuild fires for a bare
+   `configure(font=…)`).
+4. **Docs slice** for the durable layer — a "Persistent style options" section
+   (durability contract, base→variant fan-out, `reset_style_options`, and the
+   ttk-ignores-style-`font` caveat above).
+5. **#1236 — bootstyle value tokens (hex + ramp accents/surfaces).**
    Design-session-gated; brief in `development/2_1_bootstyle_value_tokens_design.md`
-   (§10 open questions to settle first). Sequenced AFTER #1238 because both refactor
-   the same builder color/config seam — avoid two concurrent rewrites of it.
-4. **#1242 — in-house themed file dialog (X11 default; opt-in elsewhere).** Biggest
+   (§10 open questions to settle first). Sequenced AFTER the #1238 work because both
+   touch the builder color/config seam — avoid two concurrent rewrites of it.
+6. **#1242 — in-house themed file dialog (X11 default; opt-in elsewhere).** Biggest
    single build (draw our own dialog; the Tk X11 `tkfbox.tcl` canvas hardcodes a
    white panel no styling can reach). Most standalone, lowest urgency (dialog is
    already functional/readable). Prior art in `development/filedialogs/`. Natural
    drop-candidate if 2.1 needs to close sooner.
 
 NOTE (line numbers): #1160/#1161 reference `src/ttkbootstrap/style.py:NNNN` — filed
-pre-2.0-split; those builders now live in the `style/` package (`builders_ttk.py`).
+pre-2.0-split; those recipes now live in the `style/builders/` package (per-family
+modules registered via `@register_builder`, e.g. `builders/treeview.py`), with
+`builders_ttk.py` only the thin `StyleBuilderTTK` coordinator.
+
+**3.0 (future major) — deferred breaking work.** GitHub **milestone #2 (`3.0`)** is
+the home for cleanup deferred out of 2.x. Two kinds: (a) the **~30 code shims**
+marked `removed in 3.0` across ~19 source files — grep-discoverable
+(`grep -r "removed in 3.0" src`), so intentionally NOT enumerated in a meta-issue (a
+hand-maintained list would just drift); (b) **design decisions** with no code shim
+(e.g. a future default change), which ARE the fragile ones and get their own tracked
+issues. First such issue: **#1276** — make `DateEntry` `value=None` the default +
+drop the `start_date` empty-read fallback (the 3.0 half of #1253). Don't build a
+full 3.0 removal checklist until 3.0 is actually scoped.
 
 ## Repository layout
 
