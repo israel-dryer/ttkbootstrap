@@ -846,10 +846,16 @@ Order (dependency- and design-gate-driven), with status:
      calling the *public* `Style.configure` internally, which would miscapture their
      `font`/`padding`/`relief` as fake user overrides. **Rule: framework code uses
      `_build_configure`, never the public `configure`.**
-   - **Durability ≠ the widget honoring the option.** ttk `Entry`/`Combobox`/
-     `Spinbox` read `font` from the widget/named font (`TkTextFont`), **not** the
-     style — so `configure("TEntry", font=…)` persists but never renders (probed:
-     entry height unchanged at 29px vs 50px when set on the widget). `padding` —
+   - **Durability ≠ the widget honoring the option.** The layer faithfully
+     persists any allowlisted option — including ones the widget never reads. Two
+     probed cases the docs must name: (a) ttk `Entry`/`Combobox`/`Spinbox` read
+     `font` from the widget/named font (`TkTextFont`), **not** the style, so
+     `configure("TEntry", font=…)` persists but never renders (entry height
+     unchanged at 29px, vs 50px when set on the widget); (b) `sashthickness` works
+     **only** on the global pseudo-style `"Sash"` — `configure("TPanedwindow",
+     sashthickness=20)` persists and does nothing (sash gap stays 2px vs 20px via
+     `"Sash"`), because `ttk::panedwindow` is a C widget querying the literal name
+     `"Sash"` and has no `Sash` element in its layout to namespace. `padding` —
      the actual #1238/discussion-#536 ask — is honored and renders (29→59px).
    Guarded by `tests/test_durable_style_options.py` (+16) incl. an **AST guard**
    asserting every non-color option any recipe writes is in the allowlist (it
@@ -864,8 +870,12 @@ Order (dependency- and design-gate-driven), with status:
    rowheight recompute is explicitly out of scope (no rebuild fires for a bare
    `configure(font=…)`).
 4. **Docs slice** for the durable layer — a "Persistent style options" section
-   (durability contract, base→variant fan-out, `reset_style_options`, and the
-   ttk-ignores-style-`font` caveat above).
+   (durability contract, base→variant fan-out, `reset_style_options`) plus a real
+   **"options the widget doesn't read"** caveat covering both probed cases above
+   (`font` on the input family; `sashthickness` only on `"Sash"`). #1161's
+   "not discoverable" half resolves HERE, deliberately: a `bootstyle` keyword for
+   sash thickness would be misleading, since `bootstyle` is per-widget but sash
+   thickness is process-global.
 5. **#1236 — bootstyle value tokens (hex + ramp accents/surfaces).**
    Design-session-gated; brief in `development/2_1_bootstyle_value_tokens_design.md`
    (§10 open questions to settle first). Sequenced AFTER the #1238 work because both
