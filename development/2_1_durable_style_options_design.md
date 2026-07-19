@@ -5,11 +5,12 @@
 > builds and theme switches, instead of being silently clobbered by the recipe
 > that rebuilds the style.
 >
-> **Status: PROPOSED — the umbrella design for the #1238 / #1161 / #1160 2.1
-> cluster (milestone 2.1).** Per the project hard rule, a design session settling
-> §10 precedes any implementation. Pairs with `2_0_engine_design.md` (the
-> version-stamped walk + lazy build) and `2_0_style_split_design.md` (the `style/`
-> package this touches).
+> **Status: DECISIONS LOCKED (design session 2026-07-19) — ready to implement per
+> the §8 PR shape.** The umbrella design for the #1238 / #1161 / #1160 2.1 cluster
+> (milestone 2.1). The three load-bearing forks were settled by the author (§10);
+> the remaining items are implementation-detail leans, locked here. Pairs with
+> `2_0_engine_design.md` (the version-stamped walk + lazy build) and
+> `2_0_style_split_design.md` (the `style/` package this touches).
 >
 > Grounded against the 2.0 engine on 2026-07-19 by two code sweeps (engine
 > lifecycle + the full hardcoded-write inventory); file:line refs throughout are
@@ -139,10 +140,22 @@ adaptivity. Three postures:
   silently doesn't persist.
 - **(c) Color denylist.** Record all except a fixed set of color options.
 
-Lean: **(b) an allowlist**, because the whole framing of the cluster is
-*geometry* persistence and it keeps the theme's color-reactivity promise intact —
-but this is the load-bearing decision for the session (see §10.1). (a) is the
-tempting simplicity if we accept frozen colors.
+**LOCKED: (b) a geometry allowlist** (design session 2026-07-19). Colors stay
+theme-reactive; only geometry/layout options persist. A user's `configure(...,
+background=…)` applies immediately (unchanged) but is **not** recorded for replay,
+so the theme's color reactivity is untouched.
+
+**The allowlist** must cover — at minimum — every non-color option any recipe
+writes, or that option stays clobbered. From the §9 sweep that is: `padding`,
+`borderwidth`, `focusthickness`, `thickness`, `rowheight`, `sashthickness`,
+`gripcount`, `tabmargins`, `arrowsize`, `anchor`, plus `font` (durable, not
+theme-reactive; the documented `configure(".", font=…)` technique, #322) and the
+common geometry a user might add (`relief`, `justify`, `insertwidth`,
+`indicatormargin`, `indicatorsize`). Finalize the exact set at implementation and
+**guard it with a sync test**: enumerate every non-color option written by any
+recipe and assert each is in the allowlist (same spirit as the codebase's other
+AST/sync guards), so a future recipe adding a geometry write can't silently escape
+durability.
 
 ## 5. API surface
 
@@ -230,24 +243,32 @@ Highest-risk clobbers (shared/global, one build wipes a user global): `"Sash"`
 `borderwidth`. Silently-drifting *computed* geometry: both treeview `rowheight`
 formulas (#1160), recolored-progressbar `thickness`, spinbox arrow-gap.
 
-## 10. Open questions (settle in the design session)
+## 10. Resolved decisions (design session 2026-07-19)
 
-1. **What to record** — everything (a) vs geometry allowlist (b) vs color
-   denylist (c). Lean: **(b) allowlist**, preserving color reactivity. *The
-   load-bearing decision.* If (b): confirm the allowlist from §9.
-2. **Base→variant propagation** — honor ttk inheritance so a base-class override
-   fans out to variants (lean: **yes** — it *is* the #1238 ask). Confirm
-   most-specific-wins ordering (exact name over base class).
-3. **New API** — spine-only (no API) + `reset_style_options` (lean), vs also a
-   `user_options` introspection view, vs nothing at all.
-4. **`map` overrides** — out of scope for v1 (lean) vs include (larger).
-5. **#1160 scope** — build-time effective-font fix only (lean), vs also live
-   font-change → rowheight recompute (needs a rebuild trigger; bigger).
-6. **Re-apply granularity** — re-apply the whole registry after each build
-   (simple, cheap; lean) vs only overrides matching the built name.
-7. **Persistence scope** — per-`Style`-singleton (process-level, matches the
-   current singleton model; lean) — confirm no multi-root concern beyond the
-   known singleton caveat.
+**Author calls (the three load-bearing forks):**
+
+1. **What to record → geometry allowlist.** Colors are not recorded; they stay
+   theme-reactive. Allowlist spec + sync-test guard in §4.
+2. **Base→variant propagation → yes, fan out.** Building a variant re-applies
+   overrides recorded on its base class, most-specific-wins (exact name over base
+   class). Setting a property once on the base class reaches every variant — the
+   #1238 ask. §2.
+3. **#1160 scope → build-time effective-font source only.** Treeview/Tableview
+   `rowheight` derives from the style's effective font at build (fallback
+   `TkDefaultFont`); no live font-change recompute (that tail is §11). §6.
+
+**Implementation-detail leans (locked here; low-stakes, revisit only if
+implementation surprises):**
+
+4. **New API → spine + one `reset_style_options(style=None)`.** No introspection
+   view in v1 (add later if debugging needs it). §5.
+5. **`map` overrides → out of scope for v1** (configure-only). §7, §11.
+6. **Re-apply granularity → re-apply the whole registry after each build.**
+   Simple and cheap (the registry is a handful of entries); no per-name matching
+   logic, and it covers global/un-namespaced names (`Sash`, `.`) for free. §2.
+7. **Persistence scope → process-level, on the `Style` singleton.** Matches the
+   current singleton model; no multi-root concern beyond the known singleton
+   caveat.
 
 ## 11. Out of scope
 
