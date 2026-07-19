@@ -29,11 +29,15 @@ Bootstrap-inspired light and dark themes on demand and adds a single
 
       Browse widgets
 
-.. note::
+.. image:: /_static/examples/home-hero-light.png
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 874px
+   :alt: A ttkbootstrap window — semantic color swatches above cards of themed buttons, inputs, toolbuttons, a meter, a data table, and a notebook — light theme
 
-   **ttkbootstrap 2.0 is in development.** These docs are being rebuilt to
-   match. Screenshots and the full catalog land in later documentation slices;
-   the structure you see here is the new information architecture.
+.. image:: /_static/examples/home-hero-dark.png
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 874px
+   :alt: A ttkbootstrap window — semantic color swatches above cards of themed buttons, inputs, toolbuttons, a meter, a data table, and a notebook — dark theme
 
 Why ttkbootstrap
 ----------------
@@ -80,6 +84,16 @@ A themed window is a handful of lines — every widget takes ``bootstyle``:
    ttk.Button(app, text="Danger Outline", bootstyle="danger outline").pack(padx=16, pady=(4, 16))
 
    app.mainloop()
+
+.. image:: /_static/examples/quickstart-hello-light.png
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 162px
+   :alt: The Hello window — a greeting label above primary, success, and danger-outline buttons — light theme
+
+.. image:: /_static/examples/quickstart-hello-dark.png
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 162px
+   :alt: The Hello window — a greeting label above primary, success, and danger-outline buttons — dark theme
 
 Start here
 ----------
