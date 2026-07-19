@@ -819,7 +819,20 @@ Recommended order (dependency- and design-gate-driven):
    clearable field (`clear()`, `set_date(None)`, `value = None`), and `get_date()`
    returns `None` **only** for a widget that opted into the nullable model. The
    **breaking** finish — making `value=None` the default and removing the
-   `_startdate` empty-read fallback unconditionally — is deferred to **3.0**.
+   `_startdate` empty-read fallback unconditionally — is deferred to **3.0**,
+   tracked in **#1276** (see below).
+
+**3.0 (future major) — deferred breaking work.** GitHub **milestone #2 (`3.0`)** +
+the **`Version 3`** label (matching the `Version 1`/`Version 2` convention) exist as
+the home for cleanup deferred out of 2.x. Two kinds of deferred work: (a) the
+**~30 code shims** marked `removed in 3.0` across ~19 source files — these are
+grep-discoverable (`grep -r "removed in 3.0" src`), so they are intentionally NOT
+enumerated in a meta-issue (a hand-maintained list would just drift); (b) **design
+decisions** with no code shim (e.g. a future default change), which ARE the fragile
+ones and get their own tracked issues. First such issue: **#1276** — make
+`DateEntry` `value=None` the default + drop the `start_date` empty-read fallback
+(the 3.0 half of #1253). Don't build a full 3.0 removal checklist until 3.0 is
+actually scoped.
 2. **#1238 design → #1238 + #1160 + #1161 cluster.** These three are ONE design
    problem: a *durable style-options layer the builders read from* (so a user's
    `style.configure("TEntry", padding=…)` survives a bootstyle/theme rebuild).
