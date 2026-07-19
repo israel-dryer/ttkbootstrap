@@ -623,7 +623,24 @@ neutral surface raise for the default/neutral ghost. Additive.
 **Why.** It fills the gap between `link` (text-only, hyperlink feel) and `outline`
 (bordered): more button-like than a link (it has a hover surface), quieter than an
 outline. Common for toolbar/icon buttons and low-emphasis actions. Ported from
-bootstack's ghost button (derivation, not API). Button family only.
+bootstack's ghost button (derivation, not API).
+
+**Toolbutton too.** `ghost` also composes with the `toolbutton` base
+(`bootstyle="ghost-toolbutton"`, `bootstyle="primary-ghost-toolbutton"`) for the
+`Checkbutton`/`Radiobutton` toggles — the toggle analog. It is **transparent at
+rest** (no fill, no border) and, **when toggled ON (selected)**, shows the *same*
+engaged surface as a hovered ghost button (`neutral_fill(1)` for neutral, a 0.16
+accent tint for colored); there is no hover/pressed preview (a toolbutton is a
+toggle). Quieter than `outline-toolbutton` (accent border at rest, full accent
+fill ON) — it suits flat toolbars where only the ON button should read as filled.
+
+**Menubutton too.** `ghost` also applies to `Menubutton`
+(`bootstyle="ghost"`, `bootstyle="primary-ghost"` — the base is inferred, so no
+extra token). A menubutton is momentary (like a button), so it behaves exactly
+like the ghost button: transparent at rest, a subtle wash on hover/press, with the
+caret keeping the text color. A low-emphasis dropdown trigger, quieter than
+`outline`. Because the base is inferred, the ghost menubutton reuses the existing
+`ghost` / `<color> ghost` bootstyle strings (no new `BootStyle` entries).
 
 **Migration.** None (additive).
 
@@ -1826,6 +1843,27 @@ carries the on-state and is not part of this cleanup.
 every button-family variant keeps the quiet neutral look"). Not added to the
 migration guide — same author call as the `LabelFrame` alias: a visual-default
 shift users absorb, not an API break to migrate.
+
+## Bare solid `toolbutton` renders neutral (was primary)  *(Visual)*
+
+**What.** `bootstyle="toolbutton"` with no color token — a Checkbutton/
+Radiobutton rendered as a segmented/toggle button — now fills its **ON
+(selected)** state with the neutral raise (identical to `neutral toolbutton`)
+instead of the `primary` accent. Named colors (`primary toolbutton`, …) are
+unchanged; the OFF state was already neutral.
+
+**Why.** The companion to the bare-`outline` cleanup above. #1098 moved every
+bare button-family style onto the quiet neutral look and #1235 did the same for
+bare `outline` — but the bare **solid** toolbutton was still latching to
+`primary` when ON, making it byte-identical to `primary toolbutton` and the last
+button-family bare default jumping to the accent. Now the whole family teaches
+one rule: drop the color and it renders neutral; name a color to accent it.
+
+**Mechanics.** `builders/toolbutton.py` — the `DEFAULT`/`""` branch merges into
+the `neutral` path (ON = `neutral_fill(builder, 2)`), the bare name registered
+alongside the `neutral`-prefixed one. Distinct from the *round/square toggle
+switch*, which keeps its primary on-state (its accent carries the toggle). Test:
+`tests/widget_styles/test_neutral.py::test_bare_solid_toolbutton_is_neutral`.
 
 ## `@surface` fixed on Checkbutton / Radiobutton  *(Fix)*
 

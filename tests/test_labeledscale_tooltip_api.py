@@ -80,9 +80,40 @@ def test_doublevar_fractional_and_label_format(root):
 def test_explicit_variable_respected(root):
     var = ttk.DoubleVar(value=2)
     ls = LabeledScale(root, from_=0, to=10, variable=var)
-    assert ls.value == 0  # ctor sets the var to from_
+    assert ls.value == 0  # no value given -> ctor sets the var to from_
     ls.value = 5
     assert var.get() == 5
+
+
+def test_value_initializes_the_scale(root):
+    """`value` forwards to the scale, like `ttk.Scale`'s `value` option."""
+    ls = LabeledScale(root, from_=0, to=10, value=7)
+    ls.pack()
+    root.update_idletasks()
+    assert ls.value == 7
+    assert ls.label["text"] == "7"      # the initial value is displayed
+
+
+def test_value_defaults_to_from(root):
+    """Omitting `value` starts the scale at `from_` (historical behavior),
+    even when `from_` is non-zero."""
+    ls = LabeledScale(root, from_=5, to=10)
+    assert ls.value == 5
+
+
+def test_value_is_clamped_into_range(root):
+    """An out-of-range `value` clamps to the nearest bound -- LabeledScale
+    reverts out-of-range values, so an unclamped one could not stick anyway."""
+    assert LabeledScale(root, from_=0, to=10, value=15).value == 10
+    assert LabeledScale(root, from_=0, to=10, value=-5).value == 0
+
+
+def test_value_overrides_passed_variable(root):
+    """An explicit `value` wins over a passed variable's initial value."""
+    var = ttk.DoubleVar(value=2)
+    ls = LabeledScale(root, from_=0, to=10, variable=var, value=8)
+    assert ls.value == 8
+    assert var.get() == 8
 
 
 def test_destroy_with_pending_idle_is_safe(root):

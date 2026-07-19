@@ -244,3 +244,75 @@ def build_outline_menubutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
 
     # register ttkstyle1
     builder.register_ttkstyle(ttk_style)
+
+
+@register_builder("ghost", "menubutton")
+def build_ghost_menubutton_style(builder: StyleBuilderTTK, colorname=DEFAULT):
+    """Create a ghost style for the ttk.Menubutton widget.
+
+    A ghost menubutton is transparent at rest -- no fill, no border, just its
+    label and caret -- and gains a subtle wash on hover/press: a light tint of
+    the accent for a colored ghost, or a neutral surface raise for the
+    default/neutral one. It is the menubutton analog of the ghost button: a
+    low-emphasis dropdown trigger, quieter than `outline`. A bare ghost
+    menubutton renders neutral, like every bare button-family variant.
+
+    Parameters:
+
+        builder (StyleBuilderTTK):
+            The style builder
+        colorname (str):
+            The color label used to style the widget.
+    """
+    ttk_class = "Ghost.TMenubutton"
+    surface = builder.colors.bg
+
+    # OFF is the flat surface with no border; hover/press wash it. For
+    # `neutral`/default (no accent to latch to) the wash is a neutral surface
+    # raise rather than a color -- like the neutral outline menubutton.
+    if colorname in (DEFAULT, "", NEUTRAL):
+        ttk_style = f"{NEUTRAL}.{ttk_class}" if colorname == NEUTRAL else ttk_class
+        fg = builder.colors.fg
+        hover = neutral_fill(builder, 1)
+        pressed = neutral_fill(builder, 2)
+    else:
+        ttk_style = f"{colorname}.{ttk_class}"
+        fg = builder.colors.get(colorname)  # accent text is the resting signal
+        hover = builder.mute(fg, surface, 0.16)  # light accent wash
+        pressed = builder.mute(fg, surface, 0.26)
+
+    disabled_fg = builder.disabled("text")
+
+    # A menubutton is momentary (like a button): wash on hover/press, no toggle.
+    # Flat relief draws no border; keep dark/light on the fill so no clam bevel
+    # leaks, and hold borderwidth=1 (like the ghost button) so the ghost reserves
+    # the same space as the solid/outline menubutton.
+    fill_states = [
+        ("disabled", surface),
+        ("pressed !disabled", pressed),
+        ("hover !disabled", hover),
+    ]
+    builder.configure(
+        ttk_style,
+        foreground=fg,
+        background=surface,
+        darkcolor=surface,
+        lightcolor=surface,
+        relief=tk.FLAT,
+        borderwidth=1,  # reserve the 1px the solid/outline hairline occupies
+        focusthickness=builder.scale_size(1),
+        focuscolor=fg,
+        padding=builder.scale_size((10, 4, 6, 4)),
+    )
+    builder.style.map(
+        ttk_style,
+        foreground=[("disabled", disabled_fg)],
+        focuscolor=[("disabled", disabled_fg)],
+        background=fill_states,
+        darkcolor=fill_states,
+        lightcolor=fill_states,
+    )
+    # caret-down-fill indicator; the caret keeps the text color (only the
+    # background washes on hover/press), so normal == active.
+    _build_menubutton_arrow(builder, ttk_style, fg, disabled_fg, fg)
+    builder.register_ttkstyle(ttk_style)

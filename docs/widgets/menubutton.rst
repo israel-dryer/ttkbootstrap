@@ -70,13 +70,16 @@ Where the menu opens
 Colors and variants
 -------------------
 
-``bootstyle`` sets the button's color from the semantic palette, and a
-``outline`` variant gives a bordered button instead of a filled one:
+``bootstyle`` sets the button's color from the semantic palette, and a variant
+changes how much the button fills, from boldest to quietest: solid fills with the
+color, ``outline`` gives a bordered button instead, and ``ghost`` is transparent
+until you hover it — a low-emphasis dropdown trigger for a toolbar or menu bar:
 
 .. code-block:: python
 
    ttk.Menubutton(app, text="Solid",   bootstyle="primary")
    ttk.Menubutton(app, text="Outline", bootstyle="primary outline")
+   ttk.Menubutton(app, text="Ghost",   bootstyle="primary ghost")
 
 States
 ------

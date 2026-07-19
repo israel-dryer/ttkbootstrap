@@ -33,6 +33,7 @@ class LabeledScale(Frame):
             variable: Optional[Variable] = None,
             from_: Union[int, float] = 0,
             to: Union[int, float] = 10,
+            value: Optional[Union[int, float]] = None,
             bootstyle: str = DEFAULT,
             compound: str = "top",
             **kwargs: Any
@@ -55,6 +56,11 @@ class LabeledScale(Frame):
             to (int or float, optional):
                 The maximum value of the scale. Defaults to 10.
 
+            value (int or float, optional):
+                The initial value of the scale (like ``ttk.Scale``'s ``value``).
+                Clamped into the ``from_``..``to`` range. If omitted, the scale
+                starts at ``from_``.
+
             bootstyle (str, optional):
                 The style keyword used to set the color of the scale and label.
                 Options include primary, secondary, success, info, warning,
@@ -73,9 +79,17 @@ class LabeledScale(Frame):
         self._label_top = compound == "top"
         super().__init__(master=master, **kwargs)
 
+        # Resolve the initial value. `ttk.Scale` accepts a `value`; forward it
+        # here. Unlike a bare Scale (which stores an out-of-range value raw),
+        # `_adjust` reverts out-of-range values to `_last_valid`, which must stay
+        # in range -- so clamp the initial value into [from_, to]. Omitting
+        # `value` keeps the historical default of starting at `from_`.
+        lo, hi = (from_, to) if from_ <= to else (to, from_)
+        initial = from_ if value is None else min(max(value, lo), hi)
+
         self._variable: Variable = variable if variable is not None else DoubleVar(master)
-        self._variable.set(from_)
-        self._last_valid: Union[int, float] = from_
+        self._variable.set(initial)
+        self._last_valid: Union[int, float] = initial
         self._bootstyle = bootstyle
         self._adjust_id: Optional[str] = None  # pending after_idle for the label
 

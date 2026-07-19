@@ -71,6 +71,17 @@ toolbar or a filter chip:
 
    ttk.Checkbutton(app, text="Bold", variable=agree, bootstyle="toolbutton")
 
+A toolbutton comes in three fills, quietest to boldest. ``ghost toolbutton`` is
+transparent until checked, then shows a subtle wash — the least noisy option for
+a flat toolbar where only the on button should stand out. ``outline toolbutton``
+adds a colored border at rest, and plain ``toolbutton`` fills solid when checked.
+Prefix any of them with a color:
+
+.. code-block:: python
+
+   ttk.Checkbutton(app, text="Bold", variable=agree, bootstyle="ghost toolbutton")
+   ttk.Checkbutton(app, text="Bold", variable=agree, bootstyle="primary outline toolbutton")
+
 .. image:: /_static/examples/checkbutton-looks-light.png
    :class: tb-screenshot-light
    :width: 294px

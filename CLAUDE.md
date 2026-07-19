@@ -647,6 +647,48 @@ focus-ring while pressed (accent on focus only). Suite **708 passed** excl. the
 shot** (`menus.rst`, inherently a Mac capture), **landing/hero shots** for the docs
 index (design §6–§7), and Track B odds/ends (Linux/x11, the DPI matrix).
 
+**Session 2026-07-18 — landing-hero direction + two visual tweaks (UNCOMMITTED
+in the working tree on `2.0`; nothing pushed).** Work paused mid-session for the
+author to rework the demo. **(1) Landing hero — DECISION + DEFERRED to the
+author.** The hero should be a **curated widget SAMPLER, not an example app**:
+ttkbootstrap is a styling layer, so visitors scan for "what will my widgets look
+like + what's the palette," not "what can I build" (that's bootstack's framing).
+Density is fine; what to avoid is a *fake-app dashboard* aesthetic (bootstack's
+KPI/chart/txn hero) that over-claims a framework. Plan: the **author is reworking
+the `__main__` demo** into that sampler and will hand it off; then **copy it into a
+self-contained scene** `docs/screenshots/home-hero.py` (own `ttk.App`, ends in
+`mainloop()`, `app._capture_full_window = True`, `app._capture_max_width` ~940 —
+adapt, don't import the demo), capture light/dark on THIS Windows box, and wire the
+`.. image::` pair into `docs/index.rst` **right after the `.. container:: hero-ctas`
+block** (CSS infra already present: `tb-screenshot-light/dark` + `tb-window-
+screenshot`). Also add the **"glimpse" shot** after that section's code block (reuse
+the `quickstart` `hello` scene) and **delete the stale "in development" `.. note::`**.
+A throwaway sampler scene was built and discarded this session (the author preferred
+tuning the proven demo). **(2) Bare solid `toolbutton` now renders NEUTRAL (was
+primary)** — `style/builders/toolbutton.py`: the `DEFAULT`/`""` branch merged into
+the `neutral` path (ON/selected = `neutral_fill(builder, 2)` `#e0e0e0`, was
+`colors.primary`), so a bare `toolbutton` is now byte-identical to `neutral
+toolbutton`; the last button-family bare default still latching to the accent.
+Outline toolbutton (already neutral) and the round/square **toggle switch** (keeps
+primary — its accent carries the on-state) are unchanged. Test
+`test_bare_solid_toolbutton_is_neutral` in `tests/widget_styles/test_neutral.py`;
+logged in `2_0_breaking_changes.md`. **(3) Tableview row height 27→21px** —
+`style/builders/treeview.py` `Table.Treeview`: `row_height = linespace + ascent //
+2` (was `linespace + ascent`, ~2× the text line and visibly bloated; original 1.x
+was bare `linespace` = flush/cramped). The plain **`Treeview`** builder (`linespace`)
+is UNCHANGED, so only Tableview shots move. The `// 2` literal tripped
+`tests/test_scaling.py`'s geometry-scaling AST guard → added a narrow, documented
+`_reads_font_metric` exemption (font metrics are already DPI-physical; a ratio of a
+metric is not a logical pixel literal — same spirit as the existing
+`_is_hairline_border` exception). **Re-captured the 4 Tableview screenshots at 21px**
+(`tableview-hero-{light,dark}`, `build-your-first-app-hero-{light,dark}` — the only
+two scenes rendering a Tableview; the `hero` scene only in build-your-first-app);
+pinned `:width:` unchanged (620/558) so **no rST edits**. Suite **709 passed** (1
+known `nl.msg` env flake); docs build clean under `-W`. **`src/ttkbootstrap/
+__main__.py` is modified in the tree — that is the AUTHOR'S demo WIP, leave it
+untouched** (as with the author's other live WIP: dialog-button styling in
+`dialogs/colorchooser.py`, `dialogs/fontdialog.py`, `examples/widgets/dialogs.py`).
+
 ## Repository layout
 
 ```

@@ -89,6 +89,16 @@ control:
    :width: 202px
    :alt: A three-segment toolbutton group with the middle option selected — dark theme
 
+The segments come in three fills, quietest to boldest. ``ghost toolbutton`` is
+transparent until selected, then shows a subtle wash; ``outline toolbutton`` adds
+a colored border at rest; plain ``toolbutton`` fills solid when selected. Prefix
+any of them with a color:
+
+.. code-block:: python
+
+   ttk.Radiobutton(group, text="Grid", variable=view, value="grid",
+                   bootstyle="ghost toolbutton").pack(side=LEFT)
+
 Color
 -----
 
