@@ -20,9 +20,10 @@ the project dashboard: **Admin → Redirects**, or via the
 
 **Scope every rule to `latest` only.** Keep the full `From URL` including the
 `/en/latest/` prefix (an **Exact redirect**) — *not* a version-relative page
-redirect. The 1.x docs are published as their own version (`release/v1`), and a
-version-relative rule like `styleguide/*` would also fire on
-`/en/<release-v1-slug>/styleguide/...` and **hijack the real 1.x pages**. Keeping
+redirect. The 1.x docs are published as the `version-1` RTD version (built from
+the `release/v1` branch) at `https://ttkbootstrap.readthedocs.io/en/version-1/`,
+and a version-relative rule like `styleguide/*` would also fire on
+`/en/version-1/styleguide/...` and **hijack the real 1.x pages**. Keeping
 `/en/latest/` in the `From URL` confines each redirect to the 2.0 docs. Wildcards
 use a trailing `*`, captured as `:splat` in the `To URL`.
 
@@ -31,11 +32,11 @@ anything not listed here.
 
 ## Keep the 1.x version live and unredirected
 
-The 1.x docs are published as the `release/v1` version, so their original mkdocs
-URLs still resolve at `/en/<release-v1-slug>/...`. Leave that version active and
-make sure **no redirect matches it** (that is what the `latest`-scoped `From URL`s
-above guarantee). Only `latest` — and `stable`, if you point it at 2.0 — serves
-the new structure and needs these redirects.
+The 1.x docs are live as the `version-1` RTD version, so their original mkdocs
+URLs still resolve at `/en/version-1/...`. Leave that version active and make sure
+**no redirect matches it** (that is what the `latest`-scoped `From URL`s above
+guarantee). Only `latest` — and `stable`, if you point it at 2.0 — serves the new
+structure and needs these redirects.
 
 ## Exact redirects (highest-traffic pages, land precisely)
 
