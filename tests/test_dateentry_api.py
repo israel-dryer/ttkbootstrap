@@ -262,3 +262,151 @@ def test_legacy_dateformat_attribute_is_deprecated(root):
         warnings.simplefilter("always")
         assert de.dateformat == "%Y-%m-%d"
     assert any(issubclass(w.category, DeprecationWarning) for w in caught)
+
+
+# --- nullable value model (#1253, additive 2.1 slice) ----------------------
+# `value` is keyword-only and driven by an internal sentinel: omitting it keeps
+# the 2.0.0 today/start_date behavior; passing it (incl. None) opts into the
+# nullable model where an empty field reads as None.
+
+def test_value_is_keyword_only(root):
+    param = inspect.signature(DateEntry.__init__).parameters["value"]
+    assert param.kind is inspect.Parameter.KEYWORD_ONLY
+
+
+def test_omitted_value_defaults_to_today(root):
+    """Compat: with `value` omitted a blank DateEntry still selects today."""
+    de = DateEntry(root, date_format="%Y-%m-%d")
+    assert de.get_date() == datetime.today().replace(
+        hour=0, minute=0, second=0, microsecond=0
+    )
+    assert de.entry.get() != ""
+
+
+def test_omitted_value_keeps_startdate_fallback(root):
+    """Compat: legacy widgets still fall back to `start_date`, never None."""
+    de = DateEntry(root, date_format="%Y-%m-%d", start_date=datetime(2000, 1, 1))
+    de.entry.delete(0, "end")            # manually empty the field
+    assert de.get_date() == datetime(2000, 1, 1)
+    de.entry.insert(0, "not a date")     # unparseable, non-empty
+    assert de.get_date() == datetime(2000, 1, 1)
+
+
+def test_value_none_constructs_empty(root):
+    de = DateEntry(root, date_format="%Y-%m-%d", value=None)
+    assert de.entry.get() == ""
+    assert de.value is None
+    assert de.get_date() is None
+
+
+def test_explicit_value_selects_it(root):
+    de = DateEntry(root, date_format="%Y-%m-%d", value=datetime(2024, 7, 4))
+    assert de.entry.get() == "2024-07-04"
+    assert de.get_date() == datetime(2024, 7, 4)
+
+
+def test_value_accepts_plain_date(root):
+    de = DateEntry(root, date_format="%Y-%m-%d", value=date(2024, 7, 4))
+    assert de.get_date() == datetime(2024, 7, 4)
+
+
+def test_value_none_with_startdate_is_empty_but_focuses_startdate(root):
+    """`value=None, start_date=S`: empty field, popup focuses S."""
+    de = DateEntry(root, date_format="%Y-%m-%d",
+                   value=None, start_date=datetime(2030, 5, 6))
+    assert de.entry.get() == ""
+    assert de.get_date() is None
+    # popup-focus date (used when opening the picker) is the configured start_date
+    assert de._startdate == datetime(2030, 5, 6)
+
+
+def test_clear_empties_and_reads_none(root):
+    de = DateEntry(root, date_format="%Y-%m-%d", value=datetime(2024, 1, 1))
+    de.clear()
+    assert de.entry.get() == ""
+    assert de.get_date() is None
+    assert de.value is None
+
+
+def test_clear_reverts_popup_focus_to_configured_startdate(root):
+    de = DateEntry(root, date_format="%Y-%m-%d",
+                   value=datetime(2024, 1, 1), start_date=datetime(2030, 5, 6))
+    de.clear()
+    assert de._startdate == datetime(2030, 5, 6)
+
+
+def test_clear_without_startdate_focuses_today(root):
+    de = DateEntry(root, date_format="%Y-%m-%d", value=datetime(2024, 1, 1))
+    de.clear()
+    # popup-focus date is today (carries time, like the constructor's default)
+    assert de._startdate.date() == datetime.today().date()
+
+
+def test_set_date_none_equivalent_to_clear(root):
+    de = DateEntry(root, date_format="%Y-%m-%d", value=datetime(2024, 1, 1))
+    de.set_date(None)
+    assert de.entry.get() == ""
+    assert de.get_date() is None
+
+
+def test_value_none_setter_equivalent_to_clear(root):
+    de = DateEntry(root, date_format="%Y-%m-%d", value=datetime(2024, 1, 1))
+    de.value = None
+    assert de.entry.get() == ""
+    assert de.value is None
+
+
+def test_clear_promotes_legacy_widget_to_nullable(root):
+    """clear() on a legacy widget signals nullable intent -> empty reads None."""
+    de = DateEntry(root, date_format="%Y-%m-%d", start_date=datetime(2000, 1, 1))
+    assert de.get_date() == datetime(2000, 1, 1)
+    de.clear()
+    assert de.get_date() is None
+
+
+def test_nullable_manual_empty_reads_none(root):
+    de = DateEntry(root, date_format="%Y-%m-%d", value=datetime(2024, 1, 1))
+    de.entry.delete(0, "end")
+    assert de.get_date() is None
+
+
+def test_nullable_invalid_text_does_not_expose_startdate(root):
+    """Invalid non-empty text reads None in nullable mode (not start_date)."""
+    de = DateEntry(root, date_format="%Y-%m-%d",
+                   value=None, start_date=datetime(2030, 5, 6))
+    de.entry.insert(0, "not a date")
+    assert de.get_date() is None
+
+
+def test_clear_marks_field_valid(root):
+    de = DateEntry(root, date_format="%Y-%m-%d", value=datetime(2024, 1, 1))
+    de.entry.state(["invalid"])
+    de.clear()
+    assert "invalid" not in de.entry.state()
+
+
+def test_clear_works_while_disabled(root):
+    de = DateEntry(root, date_format="%Y-%m-%d", value=datetime(2024, 1, 1))
+    de.disable()
+    de.clear()
+    assert de.entry.get() == ""
+    assert de.get_date() is None
+    # the field is left disabled again after the transparent toggle
+    assert de.enabled is False
+    assert "disabled" in de.entry.state()
+
+
+def test_set_value_after_clear_restores_selection(root):
+    de = DateEntry(root, date_format="%Y-%m-%d", value=None)
+    de.value = datetime(2025, 3, 3)
+    assert de.get_date() == datetime(2025, 3, 3)
+    assert de.entry.get() == "2025-03-03"
+
+
+def test_configure_start_date_does_not_change_displayed_value(root):
+    de = DateEntry(root, date_format="%Y-%m-%d", value=datetime(2024, 1, 1))
+    de.configure(start_date=datetime(2030, 5, 6))
+    # displayed/selected value is unchanged; only future popup focus moved
+    assert de.entry.get() == "2024-01-01"
+    assert de.get_date() == datetime(2024, 1, 1)
+    assert de.cget("start_date") == datetime(2030, 5, 6)
