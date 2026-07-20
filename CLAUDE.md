@@ -810,6 +810,11 @@ DONE.** Optional post-release polish only from here.
 > the author dropped the `Version 1/2/3` labels because the milestone already
 > conveys the target release; tag issues/PRs topically (`enhancement`/`bug`) and
 > set the **milestone**.
+>
+> **The durable style-options cluster is COMPLETE** — #1253, #1238, #1161, #1160
+> all closed (PRs #1277–#1283). Suite **770 passed**. Remaining 2.1 work: the two
+> big design-gated items **#1236** (value tokens) and **#1242** (file dialog), plus
+> the small review follow-ups **#1284** / **#1286** (and **#1285**, unmilestoned).
 
 Order (dependency- and design-gate-driven), with status:
 
@@ -860,22 +865,64 @@ Order (dependency- and design-gate-driven), with status:
    Guarded by `tests/test_durable_style_options.py` (+16) incl. an **AST guard**
    asserting every non-color option any recipe writes is in the allowlist (it
    already caught `pbarrelief`).
-3. **#1160 — Treeview/Tableview rowheight ignores the configured font. NEXT.** The
-   *companion* builder fix, not the durable layer: `treeview.py` computes
-   `rowheight` from `TkDefaultFont` at build time (two different formulas — `Table.
-   Treeview` uses `linespace + ascent//2`, plain `Treeview` uses `linespace`), so a
-   configured font clips rows. **Locked scope: build-time effective-font source
-   only** — read the style's font via `style.lookup(..., "font")` with a
-   `TkDefaultFont` fallback, mirroring the #1158 autofit fix. Live font-change →
-   rowheight recompute is explicitly out of scope (no rebuild fires for a bare
-   `configure(font=…)`).
-4. **Docs slice** for the durable layer — a "Persistent style options" section
-   (durability contract, base→variant fan-out, `reset_style_options`) plus a real
-   **"options the widget doesn't read"** caveat covering both probed cases above
-   (`font` on the input family; `sashthickness` only on `"Sash"`). #1161's
-   "not discoverable" half resolves HERE, deliberately: a `bootstyle` keyword for
+3. **#1160 — Treeview/Tableview rowheight ignores the configured font. DONE
+   (#1281).** The *companion* builder fix, not the durable layer: `treeview.py`
+   computed `rowheight` from `TkDefaultFont` at build time, so a configured font
+   clipped rows. Row height now derives from the style's effective font, resolved
+   via a new **`Style._effective_style_option`** — which prefers a durable override
+   over the live Tcl `lookup`, because **overrides are re-applied AFTER a recipe
+   runs**, so a recipe deriving geometry from an option would otherwise compute
+   from the pre-override value. (Before that: `configure(".", font=…)` worked but
+   `configure("Treeview", font=…)` silently did not.) Metrics come from Tk's
+   `font metrics`, which accepts any font *description* (named font, tuple, or
+   `-size N` spec), so no `Font` object is allocated per build. The two row
+   formulas live in `_grid_row_height`/`_tree_row_height` **so the geometry passed
+   to `configure(rowheight=…)` carries no numeric literal** — that keeps
+   `test_scaling`'s AST guard strict instead of widening its font-metric
+   exemption. Locked scope was build-time only; live font-change recompute stays
+   out (an existing style is not rebuilt).
+4. **Docs slice. DONE (#1283).** *Change an option everywhere* (fan-out,
+   specificity, retroactivity, the colors exception, `reset_style_options`) plus
+   *Options a widget doesn't read*, in `feature-guides/custom-styles.rst`. #1161's
+   "not discoverable" half resolved HERE, deliberately: a `bootstyle` keyword for
    sash thickness would be misleading, since `bootstyle` is per-widget but sash
-   thickness is process-global.
+   thickness is process-global. **rST trap learned:** a line block (`|`) inside a
+   list-table cell needs a **blank line before it**, or the literal `|` leaks into
+   the rendered text — and `-W` does NOT flag it (same class as the earlier
+   double-backtick bug). Verify built HTML, don't trust a clean build.
+
+**Review round (post-#1281).** A `/review` over the combined `#1279 + #1281` found
+three real defects, all fixed in **#1282**: (a) a base-class override **stretched
+`icon_only` buttons** (29×29 → 103×27) because #1279 wired the derived icon style
+into fan-out — triggered by exactly the workflow #1238 enables; (b) **notebook tab
+padding was silently un-overridable** — the recipe mapped `padding`/`bordercolor`
+to the *same* value for both `selected` and `!selected`, and since those cover
+every state, `lookup` always resolved through the map and masked any user
+`configure` (vanilla ttk honors the same call, so this was ours, not Tk's; note
+`bordercolor` had **no** `configure` value, only the map, so it had to move into
+`configure` rather than just be deleted); (c) `_effective_style_option` **swallowed
+falsy lookups** (`or None` turned a real `borderwidth=0` into the caller's
+default). Perf was measured and dismissed (0.06 ms per `configure` with 44 built
+styles). A second review of #1282/#1283 confirmed all three fixes correct
+(notebook values identical across *every* state; the icon fix not over-broad — a
+text+icon button still follows a global override) and found one latent issue,
+now **#1284**.
+
+**Open follow-ups from those reviews:** **#1284** (icon styles register *before*
+they configure, so `registered ⇒ configured` is false — a failed configure leaves
+a permanently blank icon the build gate never rebuilds; low severity, self-heals
+on theme change), **#1286** (backfill tests for guarantees we rely on but don't
+pin), and **#1285** (design question: should the layer *warn* when a durable
+option can't take effect? Four distinct no-op cases surfaced — silently inert
+overrides are the worst failure mode for a "set it once and it sticks" promise).
+
+**Standing lesson from this cluster:** durability ≠ the widget honoring the
+option. `style.configure` persistence cannot make a widget read an option it never
+reads. Probed cases: `font` on `Entry`/`Combobox`/`Spinbox` (they use the widget /
+named `TkTextFont`), and `sashthickness` (only the global `"Sash"` style works —
+`ttk::panedwindow` is a C widget querying that literal name). A third class is
+**self-inflicted**: a recipe that `map`s an option for *all* states masks
+`configure` entirely — audit for that shape before adding a map.
 5. **#1236 — bootstyle value tokens (hex + ramp accents/surfaces).**
    Design-session-gated; brief in `development/2_1_bootstyle_value_tokens_design.md`
    (§10 open questions to settle first). Sequenced AFTER the #1238 work because both
