@@ -31,6 +31,14 @@ def _padding(app, style):
     return int(val)
 
 
+def _padding_tuple(app, style):
+    """Full padding as a tuple of ints (ttk returns "6 5" or (6, 5))."""
+    val = _lookup(app, style, "padding")
+    if isinstance(val, str):
+        val = val.split()
+    return tuple(int(p) for p in val)
+
+
 @pytest.fixture(autouse=True)
 def _isolate_user_options(root):
     """Reset durable overrides and rebuild touched base styles after each test."""
@@ -42,11 +50,9 @@ def _isolate_user_options(root):
         ("default", "entry"),
         ("default", "panedwindow"),
         ("default", "button"),
+        ("default", "notebook"),
     ):
-        try:
-            builder.build_style(variant, family, "default")
-        except Exception:
-            pass
+        builder.build_style(variant, family, "default")
 
 
 # --- #1238: overrides survive variant builds and theme switches ------------
@@ -157,6 +163,66 @@ def test_reset_all_clears_registry(root):
     root.style.configure("Sash", sashthickness=9)
     root.style.reset_style_options()
     assert root.style._user_options == {}
+
+
+# --- computed layout is not stretched by a base-class override -------------
+# `icon_only` padding is derived to make the control square, so it must win over
+# a fanned-out `TButton` padding -- while a plain text+icon button still follows
+# that override (the fix must not be over-broad).
+
+def test_icon_only_button_stays_square_under_base_override(root):
+    root.style.configure("TButton", padding=(40, 2))
+    btn = ttk.Button(root, icon="calendar-week", icon_only=True)
+    btn.pack()
+    root.update_idletasks()
+    assert btn.winfo_reqwidth() == btn.winfo_reqheight()
+
+
+def test_text_icon_button_still_follows_base_override(root):
+    root.style.configure("TButton", padding=(40, 2))
+    btn = ttk.Button(root, text="Save", icon="calendar-week")
+    btn.pack()
+    root.update_idletasks()
+    assert _padding_tuple(root, btn.cget("style")) == (40, 2)
+
+
+# --- an all-states map must not mask a user configure ----------------------
+
+def test_notebook_tab_padding_override_takes_effect(root):
+    """The recipe used to map padding for every state, masking `configure`."""
+    ttk.Notebook(root)
+    root.style.configure("TNotebook.Tab", padding=(30, 20))
+    assert _padding_tuple(root, "TNotebook.Tab") == (30, 20)
+
+
+def test_notebook_tab_defaults_unchanged(root):
+    """Dropping the redundant map must not change the default look."""
+    ttk.Notebook(root)
+    assert _padding_tuple(root, "TNotebook.Tab") == (6, 5)
+    # bordercolor moved from the map into configure; it must still be set
+    assert _lookup(root, "TNotebook.Tab", "bordercolor") != ""
+
+
+# --- _effective_style_option and falsy values ------------------------------
+
+def test_effective_option_preserves_falsy_value(root):
+    """A real 0 is a value, not an absence -- it must not fall through."""
+    root.style._build_configure("Probe.TFrame", borderwidth=0)
+    assert root.style._effective_style_option(
+        "Probe.TFrame", "borderwidth", "FALLBACK"
+    ) == 0
+
+
+def test_effective_option_returns_default_when_unset(root):
+    assert root.style._effective_style_option(
+        "Probe.TFrame", "nosuchoption", "FALLBACK"
+    ) == "FALLBACK"
+
+
+def test_effective_option_prefers_override_over_lookup(root):
+    root.style._build_configure("Probe2.TFrame", borderwidth=3)
+    root.style.configure("Probe2.TFrame", borderwidth=9)
+    assert root.style._effective_style_option("Probe2.TFrame", "borderwidth") == 9
 
 
 # --- the allowlist covers every geometry option recipes write --------------

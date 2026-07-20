@@ -50,6 +50,7 @@ def build_notebook_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         ttk_style_tab,
         focuscolor="",
         foreground=selected_fg,
+        bordercolor=border_color,
         padding=builder.scale_size((6, 5)),
     )
     builder.style.map(
@@ -62,14 +63,13 @@ def build_notebook_style(builder: StyleBuilderTTK, colorname=DEFAULT):
             ("selected", builder.colors.bg),
             ("!selected", unselected_bg),
         ],
-        bordercolor=[
-            ("selected", border_color),
-            ("!selected", border_color),
-        ],
-        padding=[
-            ("selected", builder.scale_size((6, 5))),
-            ("!selected", builder.scale_size((6, 5))),
-        ],
+        # NOTE: `padding` and `bordercolor` are deliberately NOT mapped. They
+        # used to be mapped to the same value for both `selected` and
+        # `!selected` -- a no-op that changed nothing visually but, because the
+        # two states cover every state, made `lookup` always resolve through the
+        # map and silently mask any user `configure(ttk_style_tab, padding=...)`.
+        # The values still come from `configure` above; leaving them unmapped is
+        # what makes a user override (durable or not) actually take effect.
         foreground=[("selected", selected_fg), ("!selected", unselected_fg)],
     )
 

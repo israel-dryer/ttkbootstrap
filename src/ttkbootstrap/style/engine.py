@@ -771,14 +771,15 @@ class Style(ttk.Style):
         `lookup` alone: overrides are re-applied AFTER the recipe runs, so the
         lookup would still see the pre-override value.
         """
-        value = None
-        for name in self._style_ancestors(ttk_style):
+        for name in reversed(self._style_ancestors(ttk_style)):
             opts = self._user_options.get(name)
             if opts and option in opts:
-                value = opts[option]
-        if value is None:
-            value = self.lookup(ttk_style, option) or None
-        return default if value is None else value
+                return opts[option]
+        # `lookup` returns "" for an unset option; anything else is a real value
+        # -- including falsy ones like 0, which must not fall through to
+        # `default` (a `borderwidth` of 0 is a value, not an absence).
+        looked_up = self.lookup(ttk_style, option)
+        return default if looked_up == "" else looked_up
 
     def reset_style_options(self, style=None):
         """Drop durable style-option overrides recorded via ``configure()``.

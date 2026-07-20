@@ -446,11 +446,17 @@ def _build_icon_style(style, base, name, size, states, compound, icon_only=False
         config["compound"] = compound
     if padding is not None:
         config["padding"] = padding
-    # Internal path (not public Style.configure) so this derived style's padding
-    # is not captured as a durable user override; register it as the public path
-    # would have.
-    style._build_configure(derived, **config)
+    # Register FIRST, then configure. Registering replays durable user overrides
+    # onto this style (a `configure("TButton", padding=...)` fans out to
+    # `Icon<digest>.TButton`), so writing the icon's own values afterwards keeps
+    # them authoritative: `icon_only` padding is computed to make the control
+    # square, not a default a base-class override should stretch. Only the
+    # options actually in `config` are pinned, so a plain (text+icon) button
+    # still follows a global padding override.
+    # Internal path (not public Style.configure) so this padding is not captured
+    # as a durable user override; register as the public path would have.
     style._register_ttkstyle(derived)
+    style._build_configure(derived, **config)
     if image_map:
         style.map(derived, image=image_map)
     return derived
