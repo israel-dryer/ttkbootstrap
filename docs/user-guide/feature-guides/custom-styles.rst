@@ -23,6 +23,77 @@ its base class (``my.TButton`` → ``TButton``), so you only set what changes:
 
    app.mainloop()
 
+Change an option everywhere
+---------------------------
+
+To change a look for every widget of one kind, configure its **base style**. The
+change reaches the colored variants too, and it survives a theme switch:
+
+.. code-block:: python
+
+   import ttkbootstrap as ttk
+
+   app = ttk.App(theme="bootstrap-light")
+
+   app.style.configure("TEntry", padding=8)
+
+   ttk.Entry(app).pack(padx=10, pady=4)
+   ttk.Entry(app, bootstyle="danger").pack(padx=10, pady=4)
+
+   app.mainloop()
+
+Both entries are padded — the plain one and the ``danger`` one. Set the option
+once on the base class and every variant built from it picks it up.
+
+To change one variant only, configure that name instead. The more specific name
+wins, so this pads every entry by ``8`` except the ``danger`` ones:
+
+.. code-block:: python
+
+   app.style.configure("TEntry", padding=8)
+   app.style.configure("danger.TEntry", padding=20)
+
+It also works the other way round: you can set the option after the widgets
+already exist, and they update.
+
+**Colors are the exception.** A color you set this way applies immediately but is
+not carried across a theme switch — colors keep following the theme, so a
+``bootstrap-light`` entry does not stay light after switching to
+``bootstrap-dark``. To change the colors a theme uses, see
+:doc:`Theming & Colors <theming>`.
+
+To go back to the shipped look, drop the option and let the next rebuild restore
+it:
+
+.. code-block:: python
+
+   app.style.reset_style_options("TEntry")   # one style
+   app.style.reset_style_options()           # everything you have set
+
+Options a widget doesn't read
+-----------------------------
+
+A style option only does something if the widget actually reads it. A few don't,
+and the setting is quietly ignored — the option is stored, it just never reaches
+the screen. These are the ones worth knowing:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 70
+
+   * - Setting
+     - What to do instead
+   * - ``font`` on an entry, combobox, or spinbox
+     - These take their font from the widget, not the style.
+
+       | Pass it to the widget: ``ttk.Entry(app, font="-size 14")``
+       | Or change the named font they use, ``TkTextFont``
+   * - ``sashthickness`` on a panedwindow style
+     - The sash is drawn from a single global style, so it cannot be set per
+       widget — every panedwindow shares one thickness.
+
+       | Configure that style: ``app.style.configure("Sash", sashthickness=6)``
+
 Build a style from scratch
 --------------------------
 
