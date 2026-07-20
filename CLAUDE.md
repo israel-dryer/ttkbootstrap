@@ -815,6 +815,14 @@ DONE.** Optional post-release polish only from here.
 > all closed (PRs #1277–#1283). Suite **770 passed**. Remaining 2.1 work: the two
 > big design-gated items **#1236** (value tokens) and **#1242** (file dialog), plus
 > the small review follow-ups **#1284** / **#1286** (and **#1285**, unmilestoned).
+>
+> **User-visible 2.1 changes are logged in `development/2_1_changes.md`** (the
+> running log, same role `2_0_breaking_changes.md` played for 2.0; it is the source
+> for the 2.1 release notes). **Log there as you land**, not at release time. Scope
+> is relative to *released 2.0.0* — a regression introduced and fixed inside the
+> 2.1 cycle never reached a user and belongs in this dev log, not that one. There
+> are **no API breaks in 2.1** so far; the one change visible without any user code
+> change is Treeview/Tableview row height now following a configured font.
 
 Order (dependency- and design-gate-driven), with status:
 
