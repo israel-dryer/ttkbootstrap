@@ -1,5 +1,6 @@
 """Root-bound scaling and asset-geometry regression tests."""
 import ast
+import tkinter
 from math import floor
 from pathlib import Path
 
@@ -53,13 +54,42 @@ def test_logical_matrix_uses_round_half_up(factor, expected):
 
 
 @pytest.mark.parametrize(
-    ("windowing_system", "baseline"),
-    [("win32", 4 / 3), ("x11", 4 / 3), ("aqua", 1.0)],
+    ("windowing_system", "tk_version", "baseline"),
+    [
+        ("win32", 8.6, 4 / 3),
+        ("x11", 8.6, 4 / 3),
+        ("win32", 9.0, 4 / 3),
+        ("x11", 9.0, 4 / 3),
+        # aqua is the only platform whose baseline moved: it assumed 72 dpi
+        # until Tk 9 aligned it with everyone else at 96.
+        ("aqua", 8.6, 1.0),
+        ("aqua", 9.0, 4 / 3),
+    ],
 )
-def test_platform_baseline_and_nominal_noise(windowing_system, baseline):
+def test_platform_baseline_and_nominal_noise(
+    monkeypatch, windowing_system, tk_version, baseline
+):
+    # force the version rather than skip, so both eras run on either host
+    monkeypatch.setattr(tkinter, "TkVersion", tk_version)
     scaling = Scaling(_FakeRoot(windowing_system, baseline * 1.00049))
     assert scaling.baseline == baseline
     assert scaling.factor == 1.0
+
+
+def test_a_standard_display_scales_nothing_on_either_tk(monkeypatch):
+    """A 100% display renders identical geometry on Tk 8.6 and Tk 9.
+
+    The regression this pins: aqua reports `tk scaling` 1.0 on Tk 8.6 and
+    1.333 on Tk 9 for the very same screen. Reading the 8.6 baseline on Tk 9
+    inflated every asset and padding by 4/3 while the text, whose rendered
+    size did not change, stayed put.
+    """
+    for tk_version, reported in ((8.6, 1.0), (9.0, 4 / 3)):
+        monkeypatch.setattr(tkinter, "TkVersion", tk_version)
+        scaling = Scaling(_FakeRoot("aqua", reported))
+        assert scaling.factor == 1.0
+        assert scaling.logical(15) == 15
+        assert scaling.logical((6, 5)) == [6, 5]
 
 
 def test_source_conversion_rounds_only_at_final_boundary():

@@ -22,6 +22,7 @@
 | **Notebook tab `padding` / `bordercolor` are now overridable** | Fix | this doc, below |
 | **`DateEntry(value=…)` — a nullable, clearable date field** | New | this doc, below |
 | **Scrolling works on Tcl/Tk 9** | Fix | this doc, below |
+| **macOS renders at its designed size on Tcl/Tk 9** | Fix | this doc, below |
 
 There are **no API breaks in 2.1**: nothing was removed, and no call that worked
 in 2.0.0 fails. One change is visually noticeable without any code change (the
@@ -172,3 +173,39 @@ units, following Tk's own convention for units-based widgets.
 Widgets that rely on Tk's class bindings (`Treeview`, `Listbox`, `Text`, and so
 `ScrolledText`) were never affected: Tk 9 binds `<TouchpadScroll>` on those
 classes itself. Fixes #1290.
+
+---
+
+## macOS renders at its designed size on Tcl/Tk 9  *(Fix)*
+
+**What.** On a Tk 9 interpreter, every asset and every pixel-valued piece of
+geometry rendered **33% larger than designed** on macOS — while the text inside
+it stayed the same size. Padding, borders, indicators and icons inflated around
+unchanged type:
+
+| widget | Tk 8.6 | Tk 9 in 2.0.0 | Tk 9 in 2.1 |
+|---|---|---|---|
+| `Button` | 56 x 30 | 62 x 32 | 56 x 30 |
+| `Entry` | 194 x 30 | 198 x 34 | 194 x 30 |
+| `Checkbutton` | 44 x 18 | 52 x 24 | 44 x 18 |
+| `Label` (text only, no scaled padding) | 34 x 20 | 34 x 20 | 34 x 20 |
+
+That last row is the tell: a plain label was identical throughout, because it is
+pure text. Only the parts ttkbootstrap scales moved.
+
+**Who notices.** macOS users on an interpreter linked against Tk 9 — Homebrew,
+conda or pyenv. Windows and Linux were never affected, and the python.org
+installers still ship Tk 8.6.
+
+**Why.** ttkbootstrap converts logical UI units to pixels against a baseline for
+what "100% scaling" reports. Aqua assumed **72 dpi** (`tk scaling` 1.0), while
+every other platform assumed 96 (4/3). Tk 9 aligned aqua with the rest at 96, so
+the same unchanged screen now reports 1.333 — and reading it against the old
+baseline yielded a 4/3 factor where the answer should be 1.0. The baseline is now
+gated on the Tk version as well as the platform.
+
+**Fonts were never the problem, which is what makes it subtle.** Tk 9 restates
+`TkDefaultFont` as size 10 where Tk 8.6 called it 13, but both render at a 16px
+linespace — the nominal number changed with the dpi assumption, the rendered text
+did not. Had the text actually grown, scaling the assets to match would have been
+correct.
