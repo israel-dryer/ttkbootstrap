@@ -13,8 +13,12 @@ from PIL.Image import Resampling
 import ttkbootstrap as ttk
 from ttkbootstrap import utils
 from ttkbootstrap.constants import *
+from ttkbootstrap.internal import wheel
 
 ColorChoice = namedtuple('ColorChoice', 'rgb hsl hex')
+
+# trackpad pixels per zoom step -- one notch's worth of gesture
+_ZOOM_STEP_PIXELS = 40
 
 
 class ColorDropperDialog:
@@ -39,6 +43,7 @@ class ColorDropperDialog:
         """Initialize the dropper with no active toplevel and an empty result."""
         self.toplevel: Optional[ttk.Toplevel] = None
         self.result: ttk.Variable = ttk.Variable()
+        self._touchpad = wheel.PixelAccumulator()
 
     def build_screenshot_canvas(self) -> None:
         """Build the screenshot canvas"""
@@ -73,20 +78,26 @@ class ColorDropperDialog:
         self.zoom_canvas.pack(fill=BOTH, expand=YES)
         self.zoom_toplevel = toplevel
 
+    def _apply_zoom(self, steps: int) -> None:
+        """Zoom by whole steps, keeping the magnification at 1x or more."""
+        level = max(1, self.zoom_level - steps)
+        if level != self.zoom_level:
+            self.zoom_level = level
+            self.on_mouse_motion()
+
     def on_mouse_wheel(self, event: tk.Event) -> None:
-        """Zoom in and out on the image underneath the mouse
-        TODO Cross platform testing needed
+        """Zoom in and out on the image underneath the mouse"""
+        self._apply_zoom(round(wheel.wheel_notches(self.toplevel, event)))
+
+    def on_touchpad_scroll(self, event: tk.Event) -> None:
+        """Zoom in and out in response to a precise-delta gesture.
+
+        A trackpad reports pixels roughly sixty times a second, so they are
+        accumulated into whole zoom steps rather than spent as they arrive.
         """
-        if self.toplevel and self.toplevel.winsys.lower() == 'win32':
-            delta = -int(event.delta / 120)
-        elif self.toplevel and self.toplevel.winsys.lower() == 'aqua':
-            delta = -event.delta
-        elif event.num == 4:
-            delta = -1
-        elif event.num == 5:
-            delta = 1
-        self.zoom_level += delta
-        self.on_mouse_motion()
+        _, dy = wheel.precise_deltas(event)
+        if dy:
+            self._apply_zoom(self._touchpad.add(0, dy, 1, _ZOOM_STEP_PIXELS)[1])
 
     def on_left_click(self, _: tk.Event) -> Optional[ColorChoice]:
         """Capture the color underneath the mouse cursor and destroy
@@ -153,11 +164,11 @@ class ColorDropperDialog:
         self.toplevel.bind("<Button-1>", self.on_left_click, "+")
         self.toplevel.bind("<Button-3>", self.on_right_click, "+")
 
-        if self.toplevel.winsys.lower() == 'x11':
-            self.toplevel.bind("<Button-4>", self.on_mouse_wheel, "+")
-            self.toplevel.bind("<Button-5>", self.on_mouse_wheel, "+")
-        else:
-            self.toplevel.bind("<MouseWheel>", self.on_mouse_wheel, "+")
+        for seq in wheel.wheel_sequences(self.toplevel):
+            self.toplevel.bind(seq, self.on_mouse_wheel, "+")
+        if wheel.has_touchpad_scroll():
+            self.toplevel.bind(
+                wheel.TOUCHPAD_SCROLL, self.on_touchpad_scroll, "+")
 
         # initial snip setup
         self.zoom_level: int = 2
