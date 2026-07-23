@@ -10,6 +10,7 @@ from typing import Any, Callable, Optional, Tuple
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
+from ttkbootstrap.internal import wheel
 from ttkbootstrap.internal.configure_delegation import ConfigureDelegationMixin
 from ttkbootstrap.style._compat import normalize_scrolled_kwargs, warn_deprecated
 from ttkbootstrap.utils import windowing_system
@@ -433,11 +434,13 @@ class ScrolledFrame(ttk.Frame):
         # in each widget's bindtags -- no O(subtree) rebinding, no clobbering
         # the app's own wheel handlers).
         self._wheel_tag = f"ScrolledFrame_{id(self)}"
-        if self.winsys.lower() == "x11":
-            self.bind_class(self._wheel_tag, "<Button-4>", self._on_mousewheel, "+")
-            self.bind_class(self._wheel_tag, "<Button-5>", self._on_mousewheel, "+")
-        else:
-            self.bind_class(self._wheel_tag, "<MouseWheel>", self._on_mousewheel, "+")
+        self._touchpad = wheel.PixelAccumulator()
+        for seq in wheel.wheel_sequences(self):
+            self.bind_class(self._wheel_tag, seq, self._on_mousewheel, "+")
+        if wheel.has_touchpad_scroll():
+            self.bind_class(
+                self._wheel_tag, wheel.TOUCHPAD_SCROLL, self._on_touchpad_scroll, "+"
+            )
 
         # show/enable on enter, hide/disable on leave
         self.container.bind("<Enter>", self._on_enter, "+")
@@ -534,27 +537,38 @@ class ScrolledFrame(ttk.Frame):
         self._scroll_enabled = False
         self._del_scroll_binding()
 
-    def _on_mousewheel(self, event: tkinter.Event) -> None:
-        """Scroll the canvas vertically in response to the mouse wheel."""
-        # do nothing when the content already fits (avoids capturing the wheel)
+    def _content_fits(self) -> bool:
+        """Whether the content already fits (so the gesture isn't captured)."""
         try:
             first, last = self._canvas.yview()
-            if first <= 0.0 and last >= 1.0:
-                return
         except tkinter.TclError:
-            pass
-        if self.winsys.lower() == "win32":
-            delta = -int(event.delta / 120)
-        elif self.winsys.lower() == "aqua":
-            delta = -event.delta
-        elif event.num == 4:
-            delta = -1
-        elif event.num == 5:
-            delta = 1
-        else:
-            delta = 0
+            return False
+        return first <= 0.0 and last >= 1.0
+
+    def _on_mousewheel(self, event: tkinter.Event) -> None:
+        """Scroll the canvas vertically in response to the mouse wheel."""
+        if self._content_fits():
+            return
+        delta = -round(wheel.wheel_notches(self, event))
         if delta:
             self._canvas.yview_scroll(delta, UNITS)
+
+    def _on_touchpad_scroll(self, event: tkinter.Event) -> None:
+        """Scroll the canvas in response to a precise-delta gesture.
+
+        Tk reports these roughly sixty times a second in pixels, while the
+        canvas scrolls in units of a tenth of the viewport, so the pixels are
+        accumulated and spent as whole units to keep the gesture smooth.
+        """
+        if self._content_fits():
+            return
+        _, dy = wheel.precise_deltas(event)
+        if not dy:
+            return
+        step = self._canvas.winfo_height() / 10 or 1
+        _, units = self._touchpad.add(0, dy, 1, step)
+        if units:
+            self._canvas.yview_scroll(-units, UNITS)
 
     # -- scrollbar visibility ------------------------------------------------ #
     @property
@@ -635,11 +649,10 @@ class ScrolledFrame(ttk.Frame):
             return super().destroy()
         self._destroying = True
         try:
-            if self.winsys.lower() == "x11":
-                self.unbind_class(self._wheel_tag, "<Button-4>")
-                self.unbind_class(self._wheel_tag, "<Button-5>")
-            else:
-                self.unbind_class(self._wheel_tag, "<MouseWheel>")
+            for seq in wheel.wheel_sequences(self):
+                self.unbind_class(self._wheel_tag, seq)
+            if wheel.has_touchpad_scroll():
+                self.unbind_class(self._wheel_tag, wheel.TOUCHPAD_SCROLL)
         except tkinter.TclError:
             pass
 
