@@ -811,6 +811,26 @@ DONE.** Optional post-release polish only from here.
 > conveys the target release; tag issues/PRs topically (`enhancement`/`bug`) and
 > set the **milestone**.
 >
+> **2.0.1 SHIPPED (2026-07-23)** — a patch release carrying two Tcl/Tk 9 fixes and
+> nothing else: the scroll-event contract (#1290, PR #1291 — trackpads fire
+> `<TouchpadScroll>` and were completely dead; wheel deltas normalized to ±120 so
+> one notch jumped to the end; X11 no longer delivers Button-4/5) and the aqua
+> scaling baseline (PR #1292 — Tk 9 moved aqua from 72 to 96 dpi, so every asset
+> and padding rendered 33% larger than designed while the text stayed put).
+> **Cut from the `v2.0.0` tag, NOT `master`**, which is the 2.1 mainline and
+> carries features + a visual change that don't belong in a patch. The
+> `release/2.0` branch used to build it was **deleted after publishing** — per the
+> author's convention, `release/*` holds maintenance branches for *superseded*
+> majors (`release/v0.5`, `release/v1`) and the latest always lives on `master`;
+> the `v2.0.1` tag preserves the release point, so branch again from the tag if a
+> 2.0.2 is ever needed. Both fixes are also on `master`. Tag `v2.0.1` + GitHub
+> release live; on PyPI at https://pypi.org/project/ttkbootstrap/2.0.1/.
+> **Tk 9 is now testable on the Mac** — Homebrew `/opt/homebrew/bin/python3.14` is
+> Tk 9.0.4 while the default `python`/`.venv` is 8.6.17; run the suite against it
+> with a `--system-site-packages` venv + `PYTHONPATH=src`. **There is still no CI**
+> (`.github/workflows/` does not exist), so a Tk 9 run is a manual step — worth
+> doing for anything touching scaling, assets, geometry, or event bindings.
+>
 > **The durable style-options cluster is COMPLETE** — #1253, #1238, #1161, #1160
 > all closed (PRs #1277–#1283). Suite **770 passed**. Remaining 2.1 work: the two
 > big design-gated items **#1236** (value tokens) and **#1242** (file dialog), plus
