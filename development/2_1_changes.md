@@ -21,6 +21,7 @@
 | **Durable style options — `style.configure()` survives variants & theme switches** | New | this doc, below |
 | **Notebook tab `padding` / `bordercolor` are now overridable** | Fix | this doc, below |
 | **`DateEntry(value=…)` — a nullable, clearable date field** | New | this doc, below |
+| **Scrolling works on Tcl/Tk 9** | Fix | this doc, below |
 
 There are **no API breaks in 2.1**: nothing was removed, and no call that worked
 in 2.0.0 fails. One change is visually noticeable without any code change (the
@@ -136,3 +137,38 @@ where an empty field reads as `None` instead of falling back to `start_date`.
 **Why.** An optional date is a normal form requirement (discussion #476) and had
 no supported spelling. The additive half of #1253 (PR #1277); making
 `value=None` the *default* is a breaking change deferred to 3.0 (#1276).
+
+---
+
+## Scrolling works on Tcl/Tk 9  *(Fix)*
+
+**What.** `ScrolledFrame` (and the color dropper's zoom) scrolls correctly on a
+Tk 9 interpreter. In 2.0.0, on Tk 9:
+
+- a **trackpad, Magic Mouse or Magic Trackpad did nothing at all** — those
+  devices fire `<TouchpadScroll>`, which nothing was listening for;
+- **one wheel notch jumped to the end of the content** on macOS;
+- **wheel scrolling was dead on Linux**, where `<Button-4>`/`<Button-5>` are no
+  longer delivered to scripts.
+
+**Who notices.** Anyone on an interpreter linked against Tk 9 — a Homebrew,
+conda or pyenv build. The python.org installers still ship Tk 8.6, where nothing
+changes. Check with:
+
+```
+python -c "import tkinter; print(tkinter.Tcl().eval('info patchlevel'))"
+```
+
+**Why.** Tk 9 changed the scroll-event contract: precise-delta devices report
+through `<TouchpadScroll>` instead of `<MouseWheel>`, wheel deltas are normalized
+to multiples of 120 on every platform (macOS previously reported 1 per notch),
+and X11 wheel buttons are translated to `<MouseWheel>` internally (TIP 474). The
+widgets were written against Tk 8.6 and read every one of those the old way.
+
+One notch now moves one unit on every platform and Tk version, and a trackpad
+gesture scrolls smoothly — pixel deltas are accumulated and spent as whole canvas
+units, following Tk's own convention for units-based widgets.
+
+Widgets that rely on Tk's class bindings (`Treeview`, `Listbox`, `Text`, and so
+`ScrolledText`) were never affected: Tk 9 binds `<TouchpadScroll>` on those
+classes itself. Fixes #1290.
