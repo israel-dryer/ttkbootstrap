@@ -3,6 +3,7 @@
 Theme recipes use logical UI units. This service converts them exactly once to
 the physical pixels consumed by Tk and Pillow.
 """
+import tkinter
 from math import ceil, floor
 
 
@@ -42,8 +43,16 @@ class Scaling:
 
     @property
     def baseline(self) -> float:
-        """Tk scaling value that corresponds to a 1.0 (unscaled) UI factor."""
-        return 1.0 if self.windowing_system == "aqua" else 4 / 3
+        """Tk scaling value that corresponds to a 1.0 (unscaled) UI factor.
+
+        A standard-density display reports 4/3 (96 dpi) everywhere -- except on
+        aqua before Tk 9, which assumed 72 dpi and reported 1.0. Reading the
+        wrong baseline scales every asset and every pixel-valued geometry by the
+        ratio between them, so the version gate matters as much as the platform.
+        """
+        if self.windowing_system == "aqua" and tkinter.TkVersion < 8.7:
+            return 1.0
+        return 4 / 3
 
     @property
     def tk_scaling(self) -> float:
