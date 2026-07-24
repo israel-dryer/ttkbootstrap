@@ -62,6 +62,13 @@ where = ["src"]
 # Only the headless suite under tests/ is collected. Interactive mainloop()
 # demos live in examples/ and are not tests.
 testpaths = ["tests"]
+# Capture output at the Python (sys.stdout/stderr) level, NOT the default
+# fd level. The default fd capture replaces OS file descriptors 0/1/2, and on
+# Windows that intermittently breaks the Tcl interpreter's file-channel reads --
+# surfacing as a flaky `couldn't read file ".../msgs/nl.msg": No error` when
+# msgcat lazily sources a Tk-shipped catalog. sys-level capture leaves the OS
+# fds the Tcl channels depend on untouched.
+addopts = "--capture=sys"
 markers = [
     "gui: requires a Tk display (deselect with -m 'not gui')",
 ]
