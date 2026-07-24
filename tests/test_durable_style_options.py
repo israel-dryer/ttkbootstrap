@@ -19,8 +19,11 @@ import ttkbootstrap as ttk
 from ttkbootstrap.style.engine import DURABLE_STYLE_OPTIONS
 
 
-def _lookup(app, style, option):
-    return app.tk.call("ttk::style", "lookup", style, "-" + option)
+def _lookup(app, style, option, state=None):
+    args = ["ttk::style", "lookup", style, "-" + option]
+    if state is not None:
+        args.append(state)  # resolve through the map for this state spec
+    return app.tk.call(*args)
 
 
 def _padding(app, style):
@@ -128,6 +131,25 @@ def test_color_not_recorded(root):
 def test_mixed_configure_records_only_geometry(root):
     root.style.configure("TEntry", padding=3, background="#123456")
     assert root.style._user_options.get("TEntry") == {"padding": 3}
+
+
+def test_color_override_reverts_on_theme_switch(root):
+    """A color set via `configure` is not durable: a theme switch restores the
+    new theme's own value (docs *Change an option everywhere* -> "Colors are the
+    exception"). Asserting only that the registry omits it (above) does not prove
+    the revert actually happens; pin it end to end against the theme's real value.
+    """
+    style = root.style
+    ttk.Entry(root)  # ensure TEntry is built
+    style.theme_use("bootstrap-dark")
+    native_dark = _lookup(root, "TEntry", "fieldbackground")
+    style.theme_use("bootstrap-light")
+
+    style.configure("TEntry", fieldbackground="#ff0000")
+    assert _lookup(root, "TEntry", "fieldbackground") == "#ff0000"
+
+    style.theme_use("bootstrap-dark")
+    assert _lookup(root, "TEntry", "fieldbackground") == native_dark  # not #ff0000
 
 
 # --- builder writes are never captured -------------------------------------
@@ -244,6 +266,24 @@ def test_icon_style_config_failure_is_not_left_registered(root, monkeypatch):
     assert after == before  # nothing new was left registered
 
 
+def test_icon_style_reconfigures_on_theme_switch(root):
+    """`apply_icon` re-runs on a theme change, rebuilding the derived icon style
+    with the new theme's foreground color. This self-heal is the mitigation the
+    #1284 fix relies on, and it keeps a mounted icon current across themes."""
+    btn = ttk.Button(root, icon="calendar-week")
+    btn.pack()
+    root.update_idletasks()
+    style_name = btn.cget("style")
+    image_before = _lookup(root, style_name, "image")
+
+    root.style.theme_use("bootstrap-dark")
+    root.update_idletasks()
+    image_after = _lookup(root, style_name, "image")
+
+    assert image_after != ""             # still configured, not blanked
+    assert image_after != image_before   # re-rendered for the new theme's fg
+
+
 # --- an all-states map must not mask a user configure ----------------------
 
 def test_notebook_tab_padding_override_takes_effect(root):
@@ -259,6 +299,21 @@ def test_notebook_tab_defaults_unchanged(root):
     assert _padding_tuple(root, "TNotebook.Tab") == (6, 5)
     # bordercolor moved from the map into configure; it must still be set
     assert _lookup(root, "TNotebook.Tab", "bordercolor") != ""
+
+
+def test_notebook_tab_options_identical_across_states(root):
+    """#1282 removed the `padding`/`bordercolor` map entries on `TNotebook.Tab`
+    because they resolved to the same value for every state. That per-state
+    equivalence is what justified the removal; pin it so a future map re-add with
+    differing values can't silently regress the tab look. (Defaults-only tests
+    would not catch a state-specific change.)"""
+    ttk.Notebook(root)
+    for option in ("padding", "bordercolor"):
+        values = {
+            str(_lookup(root, "TNotebook.Tab", option, state))
+            for state in (None, "selected", "!selected", "active", "disabled")
+        }
+        assert len(values) == 1, f"{option} differs across states: {values}"
 
 
 # --- _effective_style_option and falsy values ------------------------------
@@ -281,6 +336,16 @@ def test_effective_option_prefers_override_over_lookup(root):
     root.style._build_configure("Probe2.TFrame", borderwidth=3)
     root.style.configure("Probe2.TFrame", borderwidth=9)
     assert root.style._effective_style_option("Probe2.TFrame", "borderwidth") == 9
+
+
+def test_effective_option_returns_inherited_value(root):
+    """The helper reports the value the style will *end up with*, which includes
+    one inherited from an ancestor rather than set on the style itself. A fresh
+    `TFrame` variant sets no `borderwidth`, so the value comes from the root `.`
+    style -- and the helper must surface it, not report it absent."""
+    inherited = root.style._effective_style_option("Fresh.TFrame", "borderwidth")
+    assert inherited == _lookup(root, ".", "borderwidth")
+    assert inherited != ""  # actually resolved through the ancestry, not empty
 
 
 # --- the allowlist covers every geometry option recipes write --------------
