@@ -12,7 +12,7 @@ them (and drift), this tool derives them:
   block below and paste it in) and the `test_bootstyle_grammar` sync test.
 - `reference_table_rst()` -> the human reference grouped by widget family,
   written to `docs/_generated/bootstyle_reference.rst` and folded into the
-  Workstream-H flagship guide (`docs/user-guide/concepts/bootstyle-grammar.rst`)
+  flagship guide (`docs/user-guide/foundations/bootstyle-grammar.rst`)
   via `.. include::`.
 
 Run it after changing the vocabulary or adding/removing a builder:
@@ -140,6 +140,27 @@ def reference_table_rst():
         "it can blend on a card or an accent bar. It accepts:",
         "",
         surfaces + ".",
+        "",
+        "Value tokens",
+        "------------",
+        "",
+        "The color slot and the ``@<surface>`` slot also accept two *value "
+        "tokens*, for a one-off color the closed vocabulary can't name. They "
+        "cannot be enumerated (the space is open), so they are patterns:",
+        "",
+        "- **Raw hex** -- ``#rrggbb`` or the ``#rgb`` shorthand, normalized to "
+        "six digits (``#2f2f2f``, ``#f0a``). As a surface: ``@#2f2f2f``.",
+        "- **Ramp-addressed role** -- ``role[stop]``, where ``role`` is one of "
+        "``primary``, ``secondary``, ``success``, ``info``, ``warning``, "
+        "``danger``, ``light``, ``dark``, ``background``, ``foreground`` and "
+        "``stop`` is a ramp step in 50-step increments from 50 to 950 "
+        "(``primary[300]``). As a surface: ``@background[200]``.",
+        "",
+        "A ramp token is semantic -- it re-resolves against the theme's anchor "
+        "on a theme switch. A raw hex is a frozen snapshot that does not adapt "
+        "(its hover/pressed/disabled/text states still recompute, so it stays "
+        "usable in both modes). A malformed value token (``#ff00zz``, "
+        "``primary[123]``) fails loudly like any other unknown token.",
         "",
         "Widget families and variants",
         "----------------------------",
