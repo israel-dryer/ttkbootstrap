@@ -113,6 +113,54 @@ card or an accent bar, that shows up as a wrong-colored box around the control.
 match it. A container frame can take the same token to *render as* that surface,
 so a control and the panel beneath it agree.
 
+Value tokens
+------------
+
+The color and ``@surface`` slots also take a **value token** — a way to name a
+one-off color the closed vocabulary can't, without registering a whole custom
+style. Two forms:
+
+- a **raw hex** color — ``#2f2f2f`` (the ``#rgb`` shorthand ``#f0a`` works too);
+- a **ramp-addressed role** — ``primary[300]``, one step of a color's 50–950
+  tint/shade ramp, the same addressing as ``style.colors.primary[300]`` in code.
+
+.. code-block:: python
+
+   # raw hex accents — the button IS that color, text auto-contrasted
+   for hexcode in ["#2f2f2f", "#e63946", "#2a9d8f", "#e9c46a"]:
+       ttk.Button(app, text=hexcode, bootstyle=hexcode).pack(side="left")
+
+   # a ramp role stepped from a light tint to a dark shade
+   for stop in [200, 400, 500, 600, 800]:
+       ttk.Button(app, text=f"primary[{stop}]", bootstyle=f"primary[{stop}]").pack(side="left")
+
+.. image:: /_static/examples/bootstyle-grammar-value_tokens-light.png
+   :class: tb-screenshot-light
+   :width: 531px
+   :alt: A row of raw-hex buttons above a row of primary-ramp buttons stepping light to dark — light theme
+
+.. image:: /_static/examples/bootstyle-grammar-value_tokens-dark.png
+   :class: tb-screenshot-dark
+   :width: 531px
+   :alt: A row of raw-hex buttons above a row of primary-ramp buttons stepping light to dark — dark theme
+
+Both forms work in the ``@surface`` slot too — ``@#2f2f2f`` and
+``@background[200]`` — so a control can blend onto an arbitrary surface.
+
+The two forms differ in one way, and it is the same trade as setting a color
+directly on a widget:
+
+- A **ramp token is semantic**: ``primary[300]`` means "a light tint of *this*
+  theme's primary," so it re-resolves on a theme switch and stays on-theme in
+  both light and dark.
+- A **raw hex is a frozen snapshot**: ``#2f2f2f`` is exactly that color in every
+  theme. Its derived states — hover, pressed, disabled, and the auto-contrasted
+  text — still recompute per theme, so the control stays usable, but the color
+  itself does not adapt. Picking a hex that reads in both modes is up to you.
+
+A malformed value token fails loudly like any other token — ``#ff00zz`` or
+``primary[123]`` warns, or raises in strict mode.
+
 Chameleon base-types
 --------------------
 
@@ -182,8 +230,9 @@ is allowed — only misspelled or unknown tokens fail.
 Beyond the grammar
 ------------------
 
-When you need a look the grammar can't name — a bespoke color, a custom element
-layout — you register your own ttk style and apply it with ``style=``. See
+For a one-off *color*, reach for a value token (above). When you need a look the
+grammar can't name — a custom element layout, a reusable named style, per-state
+overrides — you register your own ttk style and apply it with ``style=``. See
 :doc:`Custom styles </user-guide/feature-guides/custom-styles>`.
 
 The rest of this page is the full vocabulary and every registered widget family,
