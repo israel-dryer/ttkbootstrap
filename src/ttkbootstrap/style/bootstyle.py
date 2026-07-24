@@ -24,6 +24,7 @@ from ttkbootstrap.constants import (
     BootStyle,
     surface_segment,
     is_value_token,
+    looks_like_value_token,
     canonical_value_token,
     parse_ramp_token,
     is_hex_token,
@@ -146,7 +147,7 @@ def _normalize_surface(surface, family, source, warn):
     # value-token surfaces (2.1): @#hex and @role[stop]. Validated eagerly like a
     # named surface -- a malformed one loud-fails (loud dialect only); a valid one
     # is family-gated the same way, then canonicalized (hex #rgb -> #rrggbb).
-    if surface.startswith("#") or "[" in surface or "]" in surface:
+    if looks_like_value_token(surface):
         if is_value_token(surface):
             if family not in _SURFACE_FAMILIES:
                 return ""
@@ -194,7 +195,7 @@ def _classify_tokens(style_string, *, source=None, warn=False):
             if warn and color and token != color:
                 _compat.report_invalid("color", token, source)
             color = color or token
-        elif token.startswith("#") or "[" in token or "]" in token:
+        elif looks_like_value_token(token):
             # value token in the color slot: #hex or role[stop]. Validated
             # eagerly -- a malformed one loud-fails (a mistyped color), a valid
             # one is canonicalized (hex #rgb -> #rrggbb) and stored like a color.

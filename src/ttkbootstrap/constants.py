@@ -138,7 +138,8 @@ BOOTSTYLE_ORIENTS: Final = ("horizontal", "vertical")
 # the raised-panel ceiling. Accent colors (BOOTSTYLE_COLORS) are ALSO valid
 # surfaces (resolved separately), so a ghost/outline/link control can blend into
 # an accent container. A non-default surface prefixes the style name with an
-# `@<surface>.` segment. Raw-hex surfaces are deferred.
+# `@<surface>.` segment. A surface slot also accepts a value token (a raw hex
+# `@#hex` or a ramp-addressed role `@role[stop]`).
 DEFAULT_SURFACE: Final = "background"
 BOOTSTYLE_SURFACES: Final = ("background", "chrome", "card")
 # The full accepted surface vocabulary: named neutral surfaces + every accent
@@ -223,9 +224,18 @@ def looks_like_value_token(token: str) -> bool:
 
 
 def canonical_value_token(token: str) -> str:
-    """Canonicalize a valid value token (normalize hex; ramp lowercased)."""
+    """Canonicalize a valid value token.
+
+    Normalizes hex (``#rgb`` -> ``#rrggbb``) and re-serializes a ramp token from
+    its parsed role and stop, so equivalent spellings collapse to one style name
+    (``primary[050]`` -> ``primary[50]``) instead of minting duplicate styles.
+    """
     if is_hex_token(token):
         return normalize_hex_token(token)
+    ramp = parse_ramp_token(token)
+    if ramp is not None:
+        role, stop = ramp
+        return f"{role}[{stop}]"
     return token.lower()
 
 # ---------------------------------------------------------------------------

@@ -73,6 +73,20 @@ def test_hex_normalization_expands_and_lowercases():
     assert canonical_value_token("#F00") == "#ff0000"
 
 
+def test_ramp_token_canonicalizes_stop_and_role():
+    # equivalent spellings collapse to one canonical token, so they cannot mint
+    # duplicate style objects for the same color (leading zeros, casing)
+    assert canonical_value_token("primary[050]") == "primary[50]"
+    assert canonical_value_token("PRIMARY[300]") == "primary[300]"
+    assert canonical_value_token("primary[00050]") == "primary[50]"
+
+
+def test_leading_zero_stop_resolves_to_same_style(root):
+    a = ttk.Button(root, bootstyle="primary[050]").cget("style")
+    b = ttk.Button(root, bootstyle="primary[50]").cget("style")
+    assert a == b == "primary[50].TButton"
+
+
 @pytest.mark.parametrize(
     "token,expected",
     [
