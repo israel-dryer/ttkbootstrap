@@ -729,8 +729,8 @@ class Style(ttk.Style):
             return
         self._user_options.setdefault(style, {}).update(recorded)
         for built in list(self._theme_styles.get(self.theme.name, ())):
-            if built in self._derived_styles:
-                continue  # framework-derived; excluded from fan-out (#1284)
+            # Derived styles are skipped inside _reapply_user_options (#1284), so
+            # the retroactive path needs no separate guard here.
             if built != style and style in self._style_ancestors(built):
                 self._reapply_user_options(built)
 

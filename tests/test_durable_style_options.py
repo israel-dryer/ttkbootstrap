@@ -202,6 +202,22 @@ def test_registered_icon_style_is_configured(root):
         assert _lookup(root, name, "image") != ""
 
 
+def test_icon_only_button_stays_square_when_override_comes_later(root):
+    """The retroactive fan-out must skip an already-built icon style (#1284).
+
+    The sibling square test records the override *before* the button exists (the
+    build-time skip). This creates the button first, so a later base-class
+    override goes through the retroactive path in `_record_user_options`, which
+    must leave the icon's own computed padding alone.
+    """
+    btn = ttk.Button(root, icon="calendar-week", icon_only=True)
+    btn.pack()
+    root.update_idletasks()
+    root.style.configure("TButton", padding=(40, 2))  # after the widget exists
+    root.update_idletasks()
+    assert btn.winfo_reqwidth() == btn.winfo_reqheight()
+
+
 def test_icon_style_config_failure_is_not_left_registered(root, monkeypatch):
     """A raise mid-configure must not mark the icon style built (#1284).
 
