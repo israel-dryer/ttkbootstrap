@@ -316,6 +316,50 @@ def test_notebook_tab_options_identical_across_states(root):
         assert len(values) == 1, f"{option} differs across states: {values}"
 
 
+def test_no_recipe_masks_configured_padding_across_the_built_surface(root):
+    """Generalized guard for the #1282 shape (#1285 design brief, source guard).
+
+    A recipe may `map` a durable option for *some* states, but if it maps one for
+    *all* states then `lookup` always resolves through the map and masks any
+    `configure` -- the user's durable override (and the recipe's own base value)
+    go dead. The single-style notebook guard above catches only `TNotebook.Tab`;
+    this scales it across every built style, on `padding` (the canonical durable
+    option and the exact one #1282 masked): a sentinel `configure` must survive
+    `lookup`. A runtime lookup, not an AST audit -- builder `map` values are
+    variables/helpers, so the state specs aren't statically visible.
+    """
+    style = root.style
+    # populate the recipes across the widget families
+    for widget in (
+        ttk.Button, ttk.Checkbutton, ttk.Radiobutton, ttk.Entry, ttk.Combobox,
+        ttk.Spinbox, ttk.Menubutton, ttk.Label, ttk.Frame, ttk.Labelframe,
+        ttk.Notebook, ttk.Panedwindow, ttk.Progressbar, ttk.Scale,
+        ttk.Scrollbar, ttk.Treeview, ttk.Separator, ttk.Sizegrip,
+    ):
+        widget(root)
+
+    SENTINEL = 37
+    for name in sorted(style._theme_styles.get(style.theme.name, ())):
+        # Key off the style's OWN padding (not the resolved `lookup`, which also
+        # reports an inherited value). A style that only inherits padding has no
+        # configured base for a map to mask -- and writing then restoring it would
+        # freeze an inherited value into an explicit one that outlives the test.
+        own = root.tk.call("ttk::style", "configure", name, "-padding")
+        if own == "":
+            continue
+        style._build_configure(name, padding=SENTINEL)
+        resolved = _lookup(root, name, "padding")
+        style._build_configure(name, padding=own)  # restore the style's own value
+        if isinstance(resolved, (tuple, list)):
+            first = resolved[0]
+        else:
+            first = str(resolved).split()[0]
+        assert str(first) == str(SENTINEL), (
+            f"{name} resolves padding to {resolved!r} despite configure={SENTINEL}"
+            " -- a recipe maps padding across all states and masks it (#1282 shape)"
+        )
+
+
 # --- _effective_style_option and falsy values ------------------------------
 
 def test_effective_option_preserves_falsy_value(root):
