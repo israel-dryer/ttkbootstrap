@@ -835,15 +835,28 @@ DONE.** Optional post-release polish only from here.
 > all closed (PRs #1277–#1283). Suite **770 passed**. **Remaining 2.1 work (5
 > open issues) and the LOCKED sequence (2026-07-24):**
 >
-> **Phase 1 — finish the durable-options review cluster** (do this first, while
-> that seam's context is warm and BEFORE #1236 re-opens the builder color/config
-> seam): **#1284** (register-before-configure invariant bug — code-ready, smallest,
-> fix + regression test) → **#1286** (backfill the guarantees the cluster relies on
-> — cheap, overlaps #1284's test file, sets the assertion baseline) → **#1285**
-> (warn on inert durable option — design-gated; its empirical-mismatch runtime check
-> is the cousin of what #1286 pins, so do it last in the cluster; issue leans
-> option 3 empirical-detection gated behind option 4 strict-mode). #1285 was
-> **milestoned onto 2.1** this session.
+> **Phase 1 — durable-options review cluster: COMPLETE (2026-07-24, all merged).**
+> **#1284** register-before-configure invariant bug (PR #1294 — new
+> `Style._derived_styles` excludes icon styles from the durable-options fan-out;
+> `_build_icon_style` reorders to configure-first/register-last); **#1286** test
+> backfill (PR #1295 — notebook per-state equivalence, color-reverts-on-theme-
+> switch, `_effective_style_option` inherited values, icon reconfigures on theme
+> switch); **#1285** inert-option warning — **DECISION: docs-only, no runtime
+> warning** (PR #1296, design `2_1_durable_style_warn_design.md`). Key finding:
+> empirical detection (`lookup != recorded`) catches ONLY the map-masking case
+> (a library defect), NOT the font/sashthickness cases users hit — those succeed
+> at the style level. Author rationale: we wrap ttk→Tk, so "will this option take
+> effect" is lower-layer behavior we can't reliably track; a warning
+> sometimes-wrong about it is worse than none (memory:
+> feedback_wrap_a_wrapper_prefer_docs_over_runtime_detection). No API/docs change
+> (the #1283 `custom-styles.rst` caveat already covers it); shipped one source-guard
+> test (`test_no_recipe_masks_configured_padding_across_the_built_surface` — a
+> runtime `lookup` guard, NOT an AST audit, since builder `map` values are
+> variables). Each PR got a `/review` (all three caught a real self-defect: #1294 a
+> redundant guard, #1296 a test-pollution bug). Suite ~793. **Housekeeping earlier
+> this session:** closed #1224 (subsumed by #1242) and #1252 (superseded by #1253/
+> #1276); #1285 milestoned onto 2.1. **Remaining 2.1 = #1236 and #1242 only, both
+> design-session-gated (see Phases 2–3 below).**
 > **Phase 2 — #1236** (bootstyle value tokens; flagship, design-session-gated per
 > `2_1_bootstyle_value_tokens_design.md` §10). Sequenced AFTER Phase 1 because both
 > rewrite the builder color/config seam — never two concurrent rewrites of it.
