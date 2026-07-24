@@ -855,16 +855,46 @@ DONE.** Optional post-release polish only from here.
 > variables). Each PR got a `/review` (all three caught a real self-defect: #1294 a
 > redundant guard, #1296 a test-pollution bug). Suite ~793. **Housekeeping earlier
 > this session:** closed #1224 (subsumed by #1242) and #1252 (superseded by #1253/
-> #1276); #1285 milestoned onto 2.1. **Remaining 2.1 = #1236 and #1242 only, both
-> design-session-gated (see Phases 2–3 below).**
-> **Phase 2 — #1236** (bootstyle value tokens; flagship, design-session-gated per
-> `2_1_bootstyle_value_tokens_design.md` §10). Sequenced AFTER Phase 1 because both
-> rewrite the builder color/config seam — never two concurrent rewrites of it.
+> #1276); #1285 milestoned onto 2.1.
+> **Phase 2 — #1236 (bootstyle value tokens): COMPLETE (2026-07-24, all merged;
+> issue closed).** Design session settled §10 of
+> `development/2_1_bootstyle_value_tokens_design.md` (now CONFIRMED/shipped): extend
+> `Colors.get`; **docs-only registry-growth mitigation, NO runtime warning** per the
+> #1285 ruling; hex accents take the generic contrast path; accept 3-digit hex.
+> Shipped in four PRs: **#1300** engine — raw hex `#rrggbb`/`#rgb` + ramp-addressed
+> `role[stop]` in the color and `@surface` slots; loud-fail validation; ramp-reactive
+> vs hex-frozen contract (a ramp re-resolves on theme switch, a hex is a frozen
+> snapshot whose derived states still recompute); value-token vocab/validators in
+> `constants.py`, tokenizer in `bootstyle.py` (both dialects), `Colors.get`
+> resolution, `resolve_surface`/`on_surface_fg`; `examples/value_token_preview.py`.
+> **#1301** docs — grammar-page "Value tokens" section + light/dark screenshot (new
+> `value_tokens` scene) + generated-reference prose. **#1302** review follow-up —
+> ramp-token canonicalization (`primary[050]`→`primary[50]`, was minting duplicate
+> styles) + route the loud path through the exported `looks_like_value_token`. An
+> independent adversarial `/review` of the merged engine found **no correctness
+> bugs**; its two minor findings landed in #1302. Suite **837**, docs build clean.
+> **Two spin-offs from this work:** **#1299** — a pytest `--capture=sys` fix in
+> `pyproject.toml`; the long-standing flaky `nl.msg` Tcl file read was pytest's
+> **fd-level capture** swapping OS fds 0/1/2 out from under the Tk interpreter on
+> Windows (NOT an OS/AV transient, NOT a Style-singleton order flake) — **the
+> `nl.msg` flake is now GONE** (see [[pre-existing-test-flakes]]). And **#1298
+> filed** — a pre-existing durable-options gap found while testing: a durable
+> `style.configure` override is not re-applied when `theme_use` switches to an
+> **already-visited** theme (the theme walk only rebuilds *mounted* styles; the
+> first visit's eager `create_default_style` masks it). Low severity, self-heals on
+> first visit.
 > **Phase 3 — #1242** (in-house themed file dialog). Deliberately last: biggest
 > single build, most standalone (doesn't touch the seam), lowest urgency (dialog
 > works, just unthemed on X11), and the named DROP CANDIDATE if 2.1 must close
 > sooner — parks cleanly to 2.2 without stranding seam work.
-> Two design sessions gate real work: #1285 (small) and #1236 (large).
+>
+> **Remaining 2.1 = #1298 (durable theme-switch re-apply) and #1242 (themed file
+> dialog).** **NEXT SESSION:** start with **#1298** — small and a real bug, but it
+> touches the durable/engine seam (the heavily-reviewed #1284–#1286 cluster), so
+> proceed carefully and add a regression test for the pre-visited-theme case (repro:
+> `theme_use(dark); theme_use(light); configure("TEntry", padding=3); theme_use(dark)`
+> → padding reverts). Then a **design session for #1242** (§10-style gate before any
+> code; prior art in `development/filedialogs/`). One design gate remains: #1242.
 > **Housekeeping this session:** closed **#1224** (filedialog white-on-white —
 > subsumed by #1242; the dark-mode base-style half was already fixed in #1239) and
 > **#1252** (v1 empty/clearable DateEntry — superseded by shipped #1253 + 3.0 #1276).
@@ -984,10 +1014,10 @@ named `TkTextFont`), and `sashthickness` (only the global `"Sash"` style works �
 `ttk::panedwindow` is a C widget querying that literal name). A third class is
 **self-inflicted**: a recipe that `map`s an option for *all* states masks
 `configure` entirely — audit for that shape before adding a map.
-5. **#1236 — bootstyle value tokens (hex + ramp accents/surfaces).**
-   Design-session-gated; brief in `development/2_1_bootstyle_value_tokens_design.md`
-   (§10 open questions to settle first). Sequenced AFTER the #1238 work because both
-   touch the builder color/config seam — avoid two concurrent rewrites of it.
+5. **#1236 — bootstyle value tokens (hex + ramp accents/surfaces). DONE
+   (2026-07-24; PRs #1300/#1301/#1302 + the #1299 test-infra spin-off).** Design
+   session settled §10 of `development/2_1_bootstyle_value_tokens_design.md`
+   (CONFIRMED); see the Phase-2 entry in the status banner above for the full record.
 6. **#1242 — in-house themed file dialog (X11 default; opt-in elsewhere).** Biggest
    single build (draw our own dialog; the Tk X11 `tkfbox.tcl` canvas hardcodes a
    white panel no styling can reach). Most standalone, lowest urgency (dialog is
