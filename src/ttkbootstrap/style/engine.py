@@ -109,6 +109,13 @@ class Style(ttk.Style):
         # keyed by style name, replayed after each build so they survive variant
         # builds and theme switches. Only DURABLE_STYLE_OPTIONS are recorded.
         self._user_options = {}
+        # Styles the framework *derives* (e.g. the per-widget `Icon<hash>.<base>`
+        # icon styles). They are excluded from the durable-options fan-out: they
+        # already inherit a base-class `configure` through ttk's native dotted-name
+        # resolution, and fanning a user override onto them would overwrite the
+        # icon's own computed values (e.g. stretch a square `icon_only` control).
+        # See #1284.
+        self._derived_styles = set()
         self._theme_names = set()
         # Optional designated light/dark theme pair for the theme_mode setter /
         # toggle_theme(); None means "derive from the -light/-dark naming".
@@ -722,6 +729,8 @@ class Style(ttk.Style):
             return
         self._user_options.setdefault(style, {}).update(recorded)
         for built in list(self._theme_styles.get(self.theme.name, ())):
+            if built in self._derived_styles:
+                continue  # framework-derived; excluded from fan-out (#1284)
             if built != style and style in self._style_ancestors(built):
                 self._reapply_user_options(built)
 
@@ -747,6 +756,12 @@ class Style(ttk.Style):
         internal path), so they are not re-recorded.
         """
         if not self._user_options:
+            return
+        # A framework-derived style (icon styles) is excluded from fan-out: it
+        # inherits a base-class `configure` natively and owns its computed values
+        # (#1284). It never carries its own recorded overrides, so there is
+        # nothing else to replay onto it either.
+        if built_style in self._derived_styles:
             return
         handled = set()
         if built_style:

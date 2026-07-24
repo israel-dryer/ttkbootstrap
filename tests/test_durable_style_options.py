@@ -186,6 +186,48 @@ def test_text_icon_button_still_follows_base_override(root):
     assert _padding_tuple(root, btn.cget("style")) == (40, 2)
 
 
+# --- #1284: derived icon styles keep `registered => configured` ------------
+# The icon style is registered AFTER it is configured and is excluded from the
+# durable-options fan-out, so registering it can never leave it built-but-blank
+# and a base-class override can never overwrite its computed values.
+
+def test_registered_icon_style_is_configured(root):
+    """Every registered derived icon style has its glyph image set (#1284)."""
+    ttk.Button(root, icon="calendar-week", icon_only=True).pack()
+    root.update_idletasks()
+    icon_styles = [s for s in root.style._style_registry if s.startswith("Icon")]
+    assert icon_styles  # at least one derived style was built
+    for name in icon_styles:
+        assert name in root.style._derived_styles
+        assert _lookup(root, name, "image") != ""
+
+
+def test_icon_style_config_failure_is_not_left_registered(root, monkeypatch):
+    """A raise mid-configure must not mark the icon style built (#1284).
+
+    A registered-but-unconfigured style is never rebuilt (the build gate skips
+    it), so it would show a permanently blank icon with inherited base padding.
+    Configuring before registering keeps the style out of the registry on failure
+    so the next attempt retries it.
+    """
+    style = root.style
+    before = {s for s in style._style_registry if s.startswith("Icon")}
+    real = style._build_configure
+
+    def failing(ttkstyle, **kw):
+        # fail only the fresh icon style this test forces (a unique icon_size)
+        if ttkstyle.startswith("Icon") and ttkstyle not in before:
+            raise RuntimeError("boom")
+        return real(ttkstyle, **kw)
+
+    monkeypatch.setattr(style, "_build_configure", failing)
+    with pytest.raises(RuntimeError):
+        ttk.Button(root, icon="calendar-week", icon_only=True, icon_size=97)
+
+    after = {s for s in style._style_registry if s.startswith("Icon")}
+    assert after == before  # nothing new was left registered
+
+
 # --- an all-states map must not mask a user configure ----------------------
 
 def test_notebook_tab_padding_override_takes_effect(root):

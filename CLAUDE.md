@@ -832,9 +832,29 @@ DONE.** Optional post-release polish only from here.
 > doing for anything touching scaling, assets, geometry, or event bindings.
 >
 > **The durable style-options cluster is COMPLETE** — #1253, #1238, #1161, #1160
-> all closed (PRs #1277–#1283). Suite **770 passed**. Remaining 2.1 work: the two
-> big design-gated items **#1236** (value tokens) and **#1242** (file dialog), plus
-> the small review follow-ups **#1284** / **#1286** (and **#1285**, unmilestoned).
+> all closed (PRs #1277–#1283). Suite **770 passed**. **Remaining 2.1 work (5
+> open issues) and the LOCKED sequence (2026-07-24):**
+>
+> **Phase 1 — finish the durable-options review cluster** (do this first, while
+> that seam's context is warm and BEFORE #1236 re-opens the builder color/config
+> seam): **#1284** (register-before-configure invariant bug — code-ready, smallest,
+> fix + regression test) → **#1286** (backfill the guarantees the cluster relies on
+> — cheap, overlaps #1284's test file, sets the assertion baseline) → **#1285**
+> (warn on inert durable option — design-gated; its empirical-mismatch runtime check
+> is the cousin of what #1286 pins, so do it last in the cluster; issue leans
+> option 3 empirical-detection gated behind option 4 strict-mode). #1285 was
+> **milestoned onto 2.1** this session.
+> **Phase 2 — #1236** (bootstyle value tokens; flagship, design-session-gated per
+> `2_1_bootstyle_value_tokens_design.md` §10). Sequenced AFTER Phase 1 because both
+> rewrite the builder color/config seam — never two concurrent rewrites of it.
+> **Phase 3 — #1242** (in-house themed file dialog). Deliberately last: biggest
+> single build, most standalone (doesn't touch the seam), lowest urgency (dialog
+> works, just unthemed on X11), and the named DROP CANDIDATE if 2.1 must close
+> sooner — parks cleanly to 2.2 without stranding seam work.
+> Two design sessions gate real work: #1285 (small) and #1236 (large).
+> **Housekeeping this session:** closed **#1224** (filedialog white-on-white —
+> subsumed by #1242; the dark-mode base-style half was already fixed in #1239) and
+> **#1252** (v1 empty/clearable DateEntry — superseded by shipped #1253 + 3.0 #1276).
 >
 > **User-visible 2.1 changes are logged in `development/2_1_changes.md`** (the
 > running log, same role `2_0_breaking_changes.md` played for 2.0; it is the source
