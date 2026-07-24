@@ -79,6 +79,19 @@ def test_override_fans_out_to_new_variant_after_switch(root):
     assert _padding(root, "info.TEntry") == 3
 
 
+def test_override_reaches_previsited_theme(root):
+    # An override reaches a theme that was already visited (and built) BEFORE
+    # the override was set. The repeat visit takes theme_use's existing-theme
+    # branch (walk, not rebuild), so without the theme-scoped replay an override
+    # on an unmounted style would keep the recipe default there (#1298).
+    style = root.style
+    style.theme_use("bootstrap-dark")   # pre-visit + build the target theme
+    style.theme_use("bootstrap-light")  # leave it
+    style.configure("TEntry", padding=3)
+    style.theme_use("bootstrap-dark")   # repeat visit -> existing-theme branch
+    assert _padding(root, "TEntry") == 3
+
+
 def test_base_class_override_reaches_variant(root):
     # never touch the base style itself; the variant must still inherit it
     root.style.configure("TButton", focusthickness=7)

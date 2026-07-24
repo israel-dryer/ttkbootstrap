@@ -314,6 +314,12 @@ class Style(ttk.Style):
         if themename in existing_themes:
             self.theme = self._theme_definitions.get(themename)
             super().theme_use(themename)
+            # Repeat visit to an already-built theme: the walk below only
+            # rebuilds styles that mounted widgets reference, so a durable
+            # override on a style with no mounted widget is never replayed into
+            # this theme's style DB. Replay them here so an override survives a
+            # switch to any previously-visited theme, not just a first visit.
+            self._reapply_user_options_for_theme(themename)
         # setup a new theme
         elif themename in self._theme_names:
             self.theme = self._theme_definitions.get(themename)
@@ -773,6 +779,35 @@ class Style(ttk.Style):
                     handled.add(name)
             if merged:
                 self._build_configure(built_style, **merged)
+        for name, opts in self._user_options.items():
+            if name not in handled and opts:
+                self._build_configure(name, **opts)
+
+    def _reapply_user_options_for_theme(self, themename):
+        """Replay durable overrides across a theme's registered styles.
+
+        Used when `theme_use` re-visits an already-built theme (the walk only
+        rebuilds mounted styles, so unmounted ones keep the recipe defaults in
+        this theme's style DB). Each registered style gets its base-class
+        ancestors merged most-specific-wins, and any recorded name not covered
+        that way -- an un-namespaced global like ``"Sash"``, or a base whose
+        widget has not mounted under this theme -- is restored onto its own
+        name. Mirrors `_reapply_user_options` but scoped to a whole theme.
+        """
+        if not self._user_options:
+            return
+        handled = set()
+        for style in list(self._theme_styles.get(themename, ())):
+            if style in self._derived_styles:
+                continue
+            merged = {}
+            for name in self._style_ancestors(style):
+                opts = self._user_options.get(name)
+                if opts:
+                    merged.update(opts)
+                    handled.add(name)
+            if merged:
+                self._build_configure(style, **merged)
         for name, opts in self._user_options.items():
             if name not in handled and opts:
                 self._build_configure(name, **opts)
