@@ -340,12 +340,16 @@ def test_no_recipe_masks_configured_padding_across_the_built_surface(root):
 
     SENTINEL = 37
     for name in sorted(style._theme_styles.get(style.theme.name, ())):
-        original = _lookup(root, name, "padding")
-        if original == "":
-            continue  # recipe sets no padding here; a map has nothing to mask
+        # Key off the style's OWN padding (not the resolved `lookup`, which also
+        # reports an inherited value). A style that only inherits padding has no
+        # configured base for a map to mask -- and writing then restoring it would
+        # freeze an inherited value into an explicit one that outlives the test.
+        own = root.tk.call("ttk::style", "configure", name, "-padding")
+        if own == "":
+            continue
         style._build_configure(name, padding=SENTINEL)
         resolved = _lookup(root, name, "padding")
-        style._build_configure(name, padding=original)  # restore before asserting
+        style._build_configure(name, padding=own)  # restore the style's own value
         if isinstance(resolved, (tuple, list)):
             first = resolved[0]
         else:
