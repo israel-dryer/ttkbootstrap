@@ -138,7 +138,8 @@ BOOTSTYLE_ORIENTS: Final = ("horizontal", "vertical")
 # the raised-panel ceiling. Accent colors (BOOTSTYLE_COLORS) are ALSO valid
 # surfaces (resolved separately), so a ghost/outline/link control can blend into
 # an accent container. A non-default surface prefixes the style name with an
-# `@<surface>.` segment. Raw-hex surfaces are deferred.
+# `@<surface>.` segment. A surface slot also accepts a value token (a raw hex
+# `@#hex` or a ramp-addressed role `@role[stop]`).
 DEFAULT_SURFACE: Final = "background"
 BOOTSTYLE_SURFACES: Final = ("background", "chrome", "card")
 # The full accepted surface vocabulary: named neutral surfaces + every accent
