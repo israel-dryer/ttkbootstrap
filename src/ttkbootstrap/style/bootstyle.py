@@ -23,6 +23,11 @@ from ttkbootstrap.constants import (
     NEUTRAL_FAMILIES,
     BootStyle,
     surface_segment,
+    is_value_token,
+    canonical_value_token,
+    parse_ramp_token,
+    is_hex_token,
+    normalize_hex_token,
 )
 from ttkbootstrap.internal.busy import BusyMixin
 from ttkbootstrap.style import _compat
@@ -138,6 +143,17 @@ def _normalize_surface(surface, family, source, warn):
     surface = str(surface).strip().lower()
     if not surface or surface == DEFAULT_SURFACE:
         return ""
+    # value-token surfaces (2.1): @#hex and @role[stop]. Validated eagerly like a
+    # named surface -- a malformed one loud-fails (loud dialect only); a valid one
+    # is family-gated the same way, then canonicalized (hex #rgb -> #rrggbb).
+    if surface.startswith("#") or "[" in surface or "]" in surface:
+        if is_value_token(surface):
+            if family not in _SURFACE_FAMILIES:
+                return ""
+            return canonical_value_token(surface)
+        if warn:
+            _compat.report_invalid("surface", surface, source)
+        return ""
     if surface not in _SURFACE_TOKENS:
         if warn:
             suggestions = difflib.get_close_matches(
@@ -178,6 +194,17 @@ def _classify_tokens(style_string, *, source=None, warn=False):
             if warn and color and token != color:
                 _compat.report_invalid("color", token, source)
             color = color or token
+        elif token.startswith("#") or "[" in token or "]" in token:
+            # value token in the color slot: #hex or role[stop]. Validated
+            # eagerly -- a malformed one loud-fails (a mistyped color), a valid
+            # one is canonicalized (hex #rgb -> #rrggbb) and stored like a color.
+            if is_value_token(token):
+                canonical = canonical_value_token(token)
+                if warn and color and canonical != color:
+                    _compat.report_invalid("color", token, source)
+                color = color or canonical
+            elif warn:
+                _compat.report_invalid("color", token, source)
         elif token in _MODIFIERS:
             if warn and token in _DEPRECATED_MODIFIERS:
                 _compat.warn_deprecated(
@@ -217,7 +244,12 @@ def _looks_like_style_name(style_string):
     """
     if "." in style_string:
         return True
-    if style_string.startswith("@"):
+    if style_string.startswith("@") or style_string.startswith("#"):
+        return False
+    # A dotless value-token bootstyle (``primary[300]``, ``@light[200]``) carries
+    # no Title-cased class segment; keep it on the loud bootstyle path so a typo'd
+    # token is reported rather than silently ignored as a custom style name.
+    if "[" in style_string or "]" in style_string:
         return False
     return (
         "-" not in style_string
@@ -249,6 +281,10 @@ def _classify_style_name(name):
         if seg.startswith("@"):
             surface = surface or seg[1:]
         elif seg in _COLORS:
+            color = color or seg
+        elif seg.startswith("#") and is_hex_token(seg):
+            color = color or normalize_hex_token(seg)
+        elif ("[" in seg) and parse_ramp_token(seg):
             color = color or seg
         elif seg in _MODIFIERS:
             modifier = modifier or seg

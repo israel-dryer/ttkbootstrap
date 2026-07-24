@@ -4,9 +4,9 @@
 > raw hex colors and ramp-addressed roles — in the color and surface slots.
 > Author-initiated (2026-07-16), assessed feasible against the 2.0 engine.
 >
-> **Status: PROPOSED — tracked 2.1 enhancement (issue #1236, milestone 2.1).** 2.0 is feature-frozen; this
-> is additive and backward-compatible, so it loses nothing by waiting. Per the
-> project hard rule, a design session confirming §10 precedes implementation.
+> **Status: CONFIRMED — design session held 2026-07-24; §10 settled (see below).**
+> Tracked 2.1 enhancement (issue #1236, milestone 2.1). Additive and
+> backward-compatible. Implementation proceeds per the §9 PR shape.
 > Pair with `2_0_bootstyle_grammar_design.md` (the tokenizer this extends),
 > `2_0_surface_color_design.md` (the `@surface` mechanism), and
 > `2_0_theme_anchor_design.md` (the ramp model these tokens address).
@@ -172,20 +172,27 @@ styles rebuild like any other:
 
 Moderate total effort; the builder audit is the long tail.
 
-## 10. Open questions (settle in the design session)
+## 10. Open questions — SETTLED (design session, 2026-07-24)
 
-1. Extend `Colors.get` to accept value tokens vs a separate resolver
-   (lean: extend `Colors.get`).
-2. Accept 3-digit hex `#rgb` and normalize to 6 (lean: yes)?
-3. The exact rampable-role label set (lean: anything `colors.get` resolves,
-   enumerated in the docs table).
-4. Registry-growth mitigation: docs-only vs docs + one-time warning at N
-   distinct value-token styles (lean: warn at 256).
-5. Naming: keep `[stop]` brackets (matches Python-side `colors.primary[300]`)
-   vs an alternative spelling — brackets are the lean unless the Tcl audit
-   surfaces a problem.
-6. Should hex accents participate in `light`/`dark`-style contrast special
-   cases at all, or always take the generic path (lean: generic path)?
+All six confirmed; leans taken except Q4, which the #1285 ruling flipped.
+
+1. **Extend `Colors.get`** to accept value tokens (not a separate resolver) —
+   it is the single funnel and unknown labels already return `None` there.
+2. **Accept 3-digit hex `#rgb`** and normalize to 6 (`#f00` → `#ff0000`).
+3. **Rampable-role set = anything `colors.get` resolves** (the nine semantic
+   colors + the surface roles), enumerated in the docs table at implementation.
+4. **Docs-only — NO runtime warning** on registry growth. *(Overrides the
+   brief's original "warn at 256" lean.)* Rationale: the #1285 ruling —
+   ttkbootstrap wraps ttk→Tk, so a warning about lower-layer behavior it can't
+   reliably track is worse than none. The unbounded-hex leak is documented
+   prominently (§8.1) but never warned at runtime. Cross-ref
+   `2_1_durable_style_warn_design.md`.
+5. **Keep `[stop]` brackets** — matches Python-side `colors.primary[300]`
+   addressing; the Tcl-safety audit (§5) must confirm brackets are safe on
+   every engine path before this is final.
+6. **Hex accents always take the generic accent path** — a hex never matches
+   the `LIGHT`/`DARK`/`NEUTRAL` identity checks; no participation in the
+   contrast special-cases. Preserves the frozen-snapshot contract (§2).
 
 ## 11. Out of scope
 

@@ -24,6 +24,7 @@
 | **Durable style options — `style.configure()` survives variants & theme switches** | New | this doc, below |
 | **Notebook tab `padding` / `bordercolor` are now overridable** | Fix | this doc, below |
 | **`DateEntry(value=…)` — a nullable, clearable date field** | New | this doc, below |
+| **Bootstyle value tokens — raw hex + ramp accents & surfaces** | New | this doc, below |
 
 There are **no API breaks in 2.1**: nothing was removed, and no call that worked
 in 2.0.0 fails. One change is visually noticeable without any code change (the
@@ -139,3 +140,43 @@ where an empty field reads as `None` instead of falling back to `start_date`.
 **Why.** An optional date is a normal form requirement (discussion #476) and had
 no supported spelling. The additive half of #1253 (PR #1277); making
 `value=None` the *default* is a breaking change deferred to 3.0 (#1276).
+
+---
+
+## Bootstyle value tokens — raw hex + ramp accents & surfaces  *(New)*
+
+**What.** The `bootstyle` grammar's two color-bearing slots — the color slot and
+the `@surface` slot — now accept **value tokens** alongside the closed
+vocabulary:
+
+- a **raw hex** color: `bootstyle="#2f2f2f"`, `bootstyle="@#ff0000 #ffffff"`
+  (3-digit `#f00` is accepted and normalized to `#ff0000`);
+- a **ramp-addressed role**: `bootstyle="primary[300]"`,
+  `bootstyle="@background[200] danger"` — `role[stop]`, where `stop` is a
+  50–950 ramp step and `role` one of the accent roles or `background`/
+  `foreground`, matching Python-side `colors.primary[300]` addressing.
+
+Everything already in the grammar is unchanged; these are two additional
+eagerly-validated patterns, so a malformed value token (`#ff00zz`,
+`primary[123]`) fails loudly like any unknown token — warn by default, raise
+under `set_bootstyle_strict(True)` / `TTKBOOTSTRAP_STRICT=1`. Value tokens are
+legal only in the color and surface slots; variants, base-types, and orients
+stay a closed vocabulary.
+
+**Reactivity.** A ramp token is semantic and **re-resolves on a theme switch**
+(`primary[300]` is "a tint of the current theme's primary" in every theme). A
+raw hex is a deliberate **frozen snapshot** — the same trade as a direct color on
+a `Label`: it survives theme switches without adapting, and contrast is the
+caller's responsibility. A hex accent's *derived* states (hover/pressed/disabled/
+on-color) still recompute per theme, so a hex button stays usable in both modes.
+
+**Why.** A one-off color previously required the full custom-style path
+(`register_style` / `Style.configure` + `style=`) — the right home for a bespoke
+*look*, but heavy ceremony for a single *color*. Value tokens give it a one-line
+spelling, the same move Tailwind's arbitrary-value syntax (`bg-[#ff0000]`) makes
+on the same kind of closed utility vocabulary.
+
+**Note.** Each distinct hex mints a ttk style that lives for the process (styles
+are never unregistered). The closed vocabulary and the ramp tokens are finite, so
+their styles plateau; the space of raw hex values is not, so an app that feeds
+many distinct hex values through `bootstyle` accumulates styles over its lifetime.
