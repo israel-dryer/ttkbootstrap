@@ -883,18 +883,33 @@ DONE.** Optional post-release polish only from here.
 > **already-visited** theme (the theme walk only rebuilds *mounted* styles; the
 > first visit's eager `create_default_style` masks it). Low severity, self-heals on
 > first visit.
+> **#1298 (durable theme-switch re-apply) is DONE (PR #1304, OPEN at handoff).**
+> Root cause was exactly as filed: `theme_use`'s existing-theme branch
+> (`super().theme_use` + walk) rebuilds only *mounted* styles, so a durable
+> override on an unmounted style kept the recipe default in an already-built
+> theme's style DB (the first-visit `create_default_style` masked it → order
+> -dependent). Fix: new `_reapply_user_options_for_theme(themename)` in
+> `style/engine.py`, called in the existing-theme branch right after
+> `super().theme_use` — replays `_user_options` across the target theme's
+> registered styles (ancestor merge most-specific-wins + un-namespaced globals
+> like `"Sash"`; excludes derived icon styles; writes via `_build_configure` so
+> replays aren't re-captured). Mirrors `_reapply_user_options` but theme-scoped.
+> Regression test `test_override_reaches_previsited_theme` pre-visits the target
+> theme before setting the override (reads 5 without the fix, 3 with). Suite
+> **838 passed**; an adversarial `/review` of the diff found no defects (ordering
+> vs. the later walk is idempotent; the loop is guarded + fires only on repeat
+> visits). No `2_1_changes.md` entry — the durable "survives a theme switch"
+> guarantee is a new-in-2.1 feature that never shipped, so this pre-release gap is
+> a dev-log/PR item, not a user-facing changelog line.
+>
 > **Phase 3 — #1242** (in-house themed file dialog). Deliberately last: biggest
 > single build, most standalone (doesn't touch the seam), lowest urgency (dialog
 > works, just unthemed on X11), and the named DROP CANDIDATE if 2.1 must close
 > sooner — parks cleanly to 2.2 without stranding seam work.
 >
-> **Remaining 2.1 = #1298 (durable theme-switch re-apply) and #1242 (themed file
-> dialog).** **NEXT SESSION:** start with **#1298** — small and a real bug, but it
-> touches the durable/engine seam (the heavily-reviewed #1284–#1286 cluster), so
-> proceed carefully and add a regression test for the pre-visited-theme case (repro:
-> `theme_use(dark); theme_use(light); configure("TEntry", padding=3); theme_use(dark)`
-> → padding reverts). Then a **design session for #1242** (§10-style gate before any
-> code; prior art in `development/filedialogs/`). One design gate remains: #1242.
+> **Remaining 2.1 = #1242 (themed file dialog) only** — #1298 is done (PR #1304).
+> **NEXT SESSION:** a **design session for #1242** (§10-style gate before any code;
+> prior art in `development/filedialogs/`). One design gate remains: #1242.
 > **Housekeeping this session:** closed **#1224** (filedialog white-on-white —
 > subsumed by #1242; the dark-mode base-style half was already fixed in #1239) and
 > **#1252** (v1 empty/clearable DateEntry — superseded by shipped #1253 + 3.0 #1276).
