@@ -170,10 +170,13 @@ recommended insurance:
    override persists but cannot make a widget read an option it doesn't read* —
    and add that one framing sentence if it is only implied by the two examples.
    No new examples needed beyond the existing two.
-2. **Regression test (recommended).** The §4a generalized `lookup` test: for each
-   builder-produced style, assert a sentinel `configure` on a durable option
+2. **Regression test (recommended — DONE, author took it).** The §4a generalized
+   `lookup` test: for each builder-produced style, assert a sentinel `configure`
+   on `padding` (the canonical durable option and the exact one #1282 masked)
    survives `lookup` (i.e. no recipe `map` masks it). Confined to the suite; not
-   shipped into user apps. Guards against the #1282 shape recurring.
+   shipped into user apps. Landed as
+   `test_no_recipe_masks_configured_padding_across_the_built_surface`; falsified
+   against an injected all-states padding map (detector fires).
 
 **Close #1285** once the docs caveat is confirmed present (and the test landed, if
 taken). No `2_1_changes.md` entry — docs + test only, no user-visible library
