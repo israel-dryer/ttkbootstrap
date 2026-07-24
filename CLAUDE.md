@@ -883,7 +883,7 @@ DONE.** Optional post-release polish only from here.
 > **already-visited** theme (the theme walk only rebuilds *mounted* styles; the
 > first visit's eager `create_default_style` masks it). Low severity, self-heals on
 > first visit.
-> **#1298 (durable theme-switch re-apply) is DONE (PR #1304, OPEN at handoff).**
+> **#1298 (durable theme-switch re-apply) is DONE (PR #1304, MERGED).**
 > Root cause was exactly as filed: `theme_use`'s existing-theme branch
 > (`super().theme_use` + walk) rebuilds only *mounted* styles, so a durable
 > override on an unmounted style kept the recipe default in an already-built
