@@ -202,13 +202,15 @@ class StyleBuilderTTK:
           - an accent color name (`primary`, `success`, ..., `neutral`) -- that
             color, so a ghost/outline/link control can blend into an accent
             container (e.g. an accent toolbar).
+          - a value token: a raw hex (`#ff0000`, a frozen snapshot) or a
+            ramp-addressed role (`light[200]`, theme-reactive), resolved through
+            `Colors.get`.
 
-        Named and accent surfaces are theme-reactive: they re-resolve on a theme
-        switch. An unknown token routes through the shared strictness gate --
-        warn-and-fall-back-to-background by default, raise under strict mode
-        (`set_bootstyle_strict` / `TTKBOOTSTRAP_STRICT`), matching how the
-        resolver treats an unknown bootstyle token. Raw-hex surfaces are not yet
-        accepted (deferred).
+        Named, accent, and ramp surfaces are theme-reactive: they re-resolve on a
+        theme switch; a hex surface stays frozen. An unknown token routes through
+        the shared strictness gate -- warn-and-fall-back-to-background by default,
+        raise under strict mode (`set_bootstyle_strict` / `TTKBOOTSTRAP_STRICT`),
+        matching how the resolver treats an unknown bootstyle token.
         """
         if not surface or surface == DEFAULT_SURFACE:
             return self.colors.bg
@@ -216,7 +218,13 @@ class StyleBuilderTTK:
             return self.chrome_surface()
         if surface == "card":
             return self.card_surface()
-        if surface in BOOTSTYLE_COLORS:
+        # value-token surfaces (#hex / role[stop]) resolve through Colors, which
+        # returns the frozen hex or the role's current-anchor ramp step.
+        if surface.startswith("#") or "[" in surface:
+            resolved = self.colors.get(surface)
+            if resolved is not None:
+                return resolved
+        elif surface in BOOTSTYLE_COLORS:
             if surface == NEUTRAL:
                 # local import breaks the builders<-utils cycle
                 from ttkbootstrap.style.builders.utils import neutral_fill
@@ -283,9 +291,18 @@ class StyleBuilderTTK:
         (`background`/`card`/`neutral`) keep the theme's soft `fg`, so a control
         on a card does not harden its text vs the same control on the app
         background. No surface -> the theme `fg`.
+
+        A hex surface is a genuine accent (an arbitrary color) and always flips.
+        A ramp surface follows its base role: an accent role flips, a
+        background/foreground role keeps the soft `fg`.
         """
         surface = self._surface
-        if surface and surface in BOOTSTYLE_COLORS and surface != NEUTRAL:
+        if not surface:
+            return self.colors.fg
+        if surface.startswith("#"):
+            return self.on_color(self.resolve_surface(surface))
+        role = surface.split("[", 1)[0] if "[" in surface else surface
+        if role in BOOTSTYLE_COLORS and role != NEUTRAL:
             return self.on_color(self.resolve_surface(surface))
         return self.colors.fg
 

@@ -96,7 +96,14 @@ def _color_ramp(color: str) -> Mapping[int, str]:
 # no hex/named color string is that long, so an int index of this magnitude is
 # unambiguously a ramp request and never collides with ordinary str indexing
 # (char indices 0-6, slices) -- which `RampColor` delegates to `str` untouched.
-_RAMP_STOPS = frozenset(range(50, 1000, 50))
+# The stop set lives once in constants (shared with the bootstyle value-token
+# validator).
+_RAMP_STOPS = frozenset(BOOTSTYLE_RAMP_STOPS)
+
+# Ramp-token role aliases: a value token names a surface role, but the stored
+# `Colors` field uses the short name. `background`/`foreground` map to bg/fg; the
+# accent roles are stored under their own name.
+_RAMP_ROLE_FIELDS = {"background": "bg", "foreground": "fg"}
 
 
 class RampColor(str):
@@ -475,6 +482,18 @@ class Colors:
             str:
                 A hexadecimal color value.
         """
+        # Value tokens resolve to a concrete color even though they are not
+        # stored fields: a hex (#rgb/#rrggbb) returns verbatim (canonical); a
+        # ramp token (role[stop]) addresses the role's current-anchor ramp, so
+        # it re-resolves on a theme switch.
+        if isinstance(color_label, str):
+            if color_label.startswith("#") and is_hex_token(color_label):
+                return _as_ramp_color(normalize_hex_token(color_label))
+            ramp = parse_ramp_token(color_label)
+            if ramp is not None:
+                role, stop = ramp
+                anchor = self.__dict__.get(_RAMP_ROLE_FIELDS.get(role, role))
+                return _as_ramp_color(anchor[stop]) if anchor is not None else None
         return self.__dict__.get(color_label)
 
     def ramp(self, color_label: str) -> Mapping[int, str]:

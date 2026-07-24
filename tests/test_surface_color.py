@@ -79,12 +79,16 @@ def test_unknown_surface_raises_in_strict_mode(root):
         set_bootstyle_strict(prior)
 
 
-def test_raw_hex_surface_is_deferred(root):
-    """A raw hex is not yet a valid surface -- it warns and falls back."""
+def test_raw_hex_surface_resolves(root):
+    """A raw hex is a valid value-token surface -- it resolves verbatim."""
     b = _builder()
-    with pytest.warns(UserWarning):
-        value = b.resolve_surface("#123456")
-    assert value == b.colors.bg
+    assert b.resolve_surface("#123456") == "#123456"
+
+
+def test_ramp_surface_resolves(root):
+    """A ramp-addressed role surface resolves to that step of the role's ramp."""
+    b = _builder()
+    assert b.resolve_surface("light[200]") == b.colors.light[200]
 
 
 def test_card_surface_is_theme_reactive(root):
