@@ -223,9 +223,18 @@ def looks_like_value_token(token: str) -> bool:
 
 
 def canonical_value_token(token: str) -> str:
-    """Canonicalize a valid value token (normalize hex; ramp lowercased)."""
+    """Canonicalize a valid value token.
+
+    Normalizes hex (``#rgb`` -> ``#rrggbb``) and re-serializes a ramp token from
+    its parsed role and stop, so equivalent spellings collapse to one style name
+    (``primary[050]`` -> ``primary[50]``) instead of minting duplicate styles.
+    """
     if is_hex_token(token):
         return normalize_hex_token(token)
+    ramp = parse_ramp_token(token)
+    if ramp is not None:
+        role, stop = ramp
+        return f"{role}[{stop}]"
     return token.lower()
 
 # ---------------------------------------------------------------------------
