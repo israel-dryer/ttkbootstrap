@@ -10,6 +10,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from ttkbootstrap.localization import MessageCatalog
 from ttkbootstrap.style._compat import normalize_datepicker_kwargs
+from ttkbootstrap.utils import windowing_system
 from .base import Dialog
 from .datepicker import DatePickerDialog
 from .fontdialog import FontDialog
@@ -386,18 +387,36 @@ class Querybox:
     # facade as every other value, normalizing a cancel to `None`. Two dialogs
     # back them: the *native* OS chooser (`tkinter.filedialog`) and a *themed*
     # in-library one (`.filedialog.FileDialog`) that follows the active theme.
-    # The `native` keyword selects between them; `native=None` (the default)
-    # uses the native chooser for now. (PR 2 makes `None` platform-aware —
-    # themed on X11, where Tk's fallback draws an unstyleable white panel.)
+    # The `native` keyword selects between them; `native=None` (the default) is
+    # platform-aware — the native chooser on Windows/macOS (where the OS draws a
+    # great one), the themed dialog on X11, where Tk's fallback draws an
+    # unstyleable white panel that ignores the theme.
 
     @staticmethod
-    def _use_native_filedialog(native: Optional[bool]) -> bool:
+    def _use_native_filedialog(
+        native: Optional[bool], widget: Optional[tkinter.Misc] = None
+    ) -> bool:
         """Resolve the `native` selector to a native-vs-themed decision.
 
-        PR 1: native everywhere unless explicitly forced off (`native=False`).
-        The `native=None` default becomes platform-aware in PR 2.
+        An explicit `native=True`/`False` always wins. `native=None` defaults to
+        the native chooser everywhere except X11 (Linux/Unix), whose Tk fallback
+        is the one that ignores the theme. The windowing system is read from
+        `widget` (or the default root); with no interpreter to query, native is
+        the safe default.
         """
-        return native is not False
+        if native is not None:
+            return native
+        if widget is None:
+            try:
+                widget = tkinter._get_default_root()
+            except Exception:
+                widget = getattr(tkinter, "_default_root", None)
+        if widget is None:
+            return True
+        try:
+            return windowing_system(widget) != "x11"
+        except tkinter.TclError:
+            return True
 
     @staticmethod
     def _themed_filedialog(
@@ -427,11 +446,12 @@ class Querybox:
         cancelled.
 
         Forward the standard options (``title``, ``filetypes``, ``initialdir``,
-        ``initialfile``, ...) as keyword arguments. Pass ``native=False`` to
-        force the themed in-library dialog (``native=True`` forces the OS
-        chooser); the ``native=None`` default uses the OS chooser.
+        ``initialfile``, ...) as keyword arguments. The ``native=None`` default
+        uses the native OS chooser on Windows/macOS and the themed in-library
+        dialog on X11; pass ``native=False`` to force the themed dialog anywhere
+        (``native=True`` forces the OS chooser).
         """
-        if Querybox._use_native_filedialog(native):
+        if Querybox._use_native_filedialog(native, parent):
             if parent is not None:
                 kwargs["parent"] = parent
             return filedialog.askopenfilename(**kwargs) or None
@@ -445,9 +465,10 @@ class Querybox:
         """Show an *open multiple files* dialog. Returns a tuple of paths, or
         ``None`` if cancelled.
 
-        Pass ``native=False`` to force the themed in-library dialog.
+        ``native=None`` (default) uses the OS chooser on Windows/macOS and the
+        themed dialog on X11; ``native=False`` forces the themed dialog.
         """
-        if Querybox._use_native_filedialog(native):
+        if Querybox._use_native_filedialog(native, parent):
             if parent is not None:
                 kwargs["parent"] = parent
             paths = filedialog.askopenfilenames(**kwargs)
@@ -463,10 +484,11 @@ class Querybox:
         cancelled.
 
         Forward the standard options (``title``, ``filetypes``,
-        ``defaultextension``, ``initialfile``, ...) as keyword arguments. Pass
-        ``native=False`` to force the themed in-library dialog.
+        ``defaultextension``, ``initialfile``, ...) as keyword arguments.
+        ``native=None`` (default) uses the OS chooser on Windows/macOS and the
+        themed dialog on X11; ``native=False`` forces the themed dialog.
         """
-        if Querybox._use_native_filedialog(native):
+        if Querybox._use_native_filedialog(native, parent):
             if parent is not None:
                 kwargs["parent"] = parent
             return filedialog.asksaveasfilename(**kwargs) or None
@@ -480,9 +502,10 @@ class Querybox:
         """Show a *choose directory* dialog. Returns the chosen path, or ``None``
         if cancelled.
 
-        Pass ``native=False`` to force the themed in-library dialog.
+        ``native=None`` (default) uses the OS chooser on Windows/macOS and the
+        themed dialog on X11; ``native=False`` forces the themed dialog.
         """
-        if not Querybox._use_native_filedialog(native):
+        if not Querybox._use_native_filedialog(native, parent):
             return Querybox._themed_filedialog(parent, mode="directory", **kwargs)
         if parent is not None:
             kwargs["parent"] = parent

@@ -59,6 +59,12 @@ def test_normalize_filetypes_empty():
     assert fd._normalize_filetypes([]) == []
 
 
+def test_normalize_filetypes_accepts_mac_type_triple():
+    # macOS filetypes may carry a third Mac-type element; tkinter accepts it, so
+    # the themed dialog must not choke on it (the extra element is ignored).
+    assert fd._normalize_filetypes([("Text", "*.txt", "TEXT")]) == [("Text", ("*.txt",))]
+
+
 @pytest.mark.parametrize("name, globs, expected", [
     ("a.TXT", ("*.txt",), True),      # case-insensitive
     ("a.py", ("*.txt",), False),
@@ -132,11 +138,27 @@ def test_type_label():
 # Routing — Querybox selects native vs themed.
 # ---------------------------------------------------------------------------
 
-def test_use_native_filedialog_selector():
-    # PR 1: native unless explicitly forced off.
+def test_use_native_filedialog_explicit_wins():
+    # An explicit value always wins, regardless of platform.
+    assert Querybox._use_native_filedialog(True, object()) is True
+    assert Querybox._use_native_filedialog(False, object()) is False
+
+
+@pytest.mark.parametrize("winsys, native", [
+    ("x11", False),      # themed on Linux/Unix (Tk's fallback ignores the theme)
+    ("win32", True),     # native OS chooser on Windows
+    ("aqua", True),      # native OS chooser on macOS
+])
+def test_use_native_filedialog_none_is_platform_aware(monkeypatch, winsys, native):
+    monkeypatch.setattr("ttkbootstrap.dialogs.query.windowing_system",
+                        lambda w: winsys)
+    assert Querybox._use_native_filedialog(None, object()) is native
+
+
+def test_use_native_filedialog_no_root_defaults_native(monkeypatch):
+    # With no interpreter to query, native is the safe default.
+    monkeypatch.setattr("tkinter._get_default_root", lambda: None)
     assert Querybox._use_native_filedialog(None) is True
-    assert Querybox._use_native_filedialog(True) is True
-    assert Querybox._use_native_filedialog(False) is False
 
 
 def test_native_false_routes_to_themed(monkeypatch):
@@ -357,6 +379,14 @@ def test_listing_uses_taller_scoped_rowheight(root, tmp_path):
     scoped = int(style.lookup("Filedialog.Treeview", "rowheight"))
     base = int(style.lookup("Treeview", "rowheight"))
     assert scoped > base
+
+
+def test_rowheight_not_captured_as_user_override(root, tmp_path):
+    # The dialog sets rowheight via the internal _build_configure, so it must NOT
+    # land in the durable user-options registry (that path is for real user
+    # configure() calls, replayed on theme switch).
+    _build(root, tmp_path, mode="open")
+    assert "Filedialog.Treeview" not in root.style._user_options
 
 
 def test_multiple_open_returns_tuple(root, tmp_path):
