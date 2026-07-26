@@ -615,13 +615,14 @@ class FileDialog:
     def _locate(self, position: Optional[Tuple[int, int]]) -> None:
         tl = self._toplevel
         tl.update_idletasks()
-        if position is not None:
-            try:
-                x, y = ensure_on_screen(tl, *position)
-            except Exception:
-                x, y = self._center()
-        else:
-            x, y = self._center()
+        x, y = position if position is not None else self._center()
+        # Clamp both paths on-screen: a parent near a screen edge (or shorter than
+        # the dialog) can otherwise push a centered dialog partly off-screen, which
+        # would defeat the content-sizing above by hiding the bottom controls.
+        try:
+            x, y = ensure_on_screen(tl, x, y)
+        except Exception:
+            pass
         # Apply the computed coordinates. Relying on the window manager to place
         # a transient dialog works on Windows/macOS but not on X11, where an
         # unplaced window lands at the virtual-desktop origin — between monitors

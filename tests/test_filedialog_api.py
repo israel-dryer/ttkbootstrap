@@ -403,16 +403,30 @@ def test_window_sizes_to_content_not_clipped(root, tmp_path):
 
 def test_locate_applies_center_over_parent(root, tmp_path):
     # _locate must apply the centered coordinates, not rely on the window manager
-    # (which leaves an X11 transient at the virtual-desktop origin).
+    # (which leaves an X11 transient at the virtual-desktop origin). The centered
+    # result is also clamped on-screen, so compare against the clamped value.
     import re
-    from ttkbootstrap.internal.positioning import center_on_parent
+    from ttkbootstrap.internal.positioning import center_on_parent, ensure_on_screen
     dlg = _build(root, tmp_path, mode="open")
-    expected = center_on_parent(dlg._toplevel, root)
+    cx, cy = center_on_parent(dlg._toplevel, root)
+    expected = ensure_on_screen(dlg._toplevel, cx, cy)
     dlg._locate(None)
     dlg._toplevel.update_idletasks()
     m = re.search(r"\+(-?\d+)\+(-?\d+)$", dlg._toplevel.geometry())
     assert m is not None
     assert (int(m.group(1)), int(m.group(2))) == expected
+
+
+def test_locate_clamps_offscreen_position(root, tmp_path):
+    # An explicit position that would put the dialog off-screen is pulled back,
+    # so the bottom controls can't be pushed off the edge.
+    import re
+    dlg = _build(root, tmp_path, mode="open")
+    dlg._locate((-5000, -5000))
+    dlg._toplevel.update_idletasks()
+    m = re.search(r"\+(-?\d+)\+(-?\d+)$", dlg._toplevel.geometry())
+    x, y = int(m.group(1)), int(m.group(2))
+    assert x > -5000 and y > -5000
 
 
 def test_multiple_open_returns_tuple(root, tmp_path):
