@@ -905,14 +905,30 @@ DONE.** Optional post-release polish only from here.
 > **Phase 3 — #1242** (in-house themed file dialog). Deliberately last: biggest
 > single build, most standalone (doesn't touch the seam), lowest urgency (dialog
 > works, just unthemed on X11), and the named DROP CANDIDATE if 2.1 must close
-> sooner — parks cleanly to 2.2 without stranding seam work.
->
-> **Remaining 2.1 = #1242 (themed file dialog) only** — #1298 is done (PR #1304).
-> **NEXT SESSION:** a **design session for #1242** (§10-style gate before any code;
-> prior art in `development/filedialogs/`). One design gate remains: #1242.
-> **Housekeeping this session:** closed **#1224** (filedialog white-on-white —
-> subsumed by #1242; the dark-mode base-style half was already fixed in #1239) and
-> **#1252** (v1 empty/clearable DateEntry — superseded by shipped #1253 + 3.0 #1276).
+> sooner — parks cleanly to 2.2 without stranding seam work. **Design gate DONE**
+> (2026-07-26, `development/2_1_file_dialog_design.md` CONFIRMED): reproduce
+> `tkfbox.tcl`'s layout with themed widgets (`ttk.Treeview` details view swaps the
+> unstyleable `IconList` Canvas); per-platform default + `native: bool|None`
+> override (X11 → themed, Win/macOS → native, `native=False` forces themed);
+> minimal chrome (no sidebar — that's 2.2+); overwrite-confirm via `Messagebox`.
+> **PR 1 (dialog + backend + opt-in seam) BUILT** on `feat/2.1-themed-file-dialog`
+> (not yet merged): `dialogs/filedialog.py` (themed `FileDialog`, all four modes,
+> pure-Python listing/filter/nav backend) + `native=` selector on the four
+> `Querybox.get_*` wrappers (native still the default; themed only when
+> `native=False` is forced — PR 2 flips `None` to X11-aware). Findings baked in
+> from a live demo (`examples/themed_file_dialog.py`): the selection background is
+> a neutral **gray** and `secondary` *equals* that gray in a light theme (contrast
+> 1.0), so a static icon color vanishes on select → **row icons swap color with
+> selection state** (`selectfg` when selected); default flush treeview rows are too
+> short → a dialog-scoped `Filedialog.Treeview` bumps `rowheight`; and Tk's file
+> dialogs return **forward-slash** paths on every platform → results go through
+> `Path.as_posix()` for drop-in parity. `tests/test_filedialog_api.py` (+43;
+> backend + routing + all four modes + the three findings). Suite **881 passed**.
+> **NEXT:** commit PR 1, then PR 2 (X11-default routing) + PR 3 (docs) per the
+> design's §9. **Housekeeping (prior session):** closed **#1224** (filedialog
+> white-on-white — subsumed by #1242; the dark-mode base-style half was already
+> fixed in #1239) and **#1252** (v1 empty/clearable DateEntry — superseded by
+> shipped #1253 + 3.0 #1276).
 >
 > **User-visible 2.1 changes are logged in `development/2_1_changes.md`** (the
 > running log, same role `2_0_breaking_changes.md` played for 2.0; it is the source

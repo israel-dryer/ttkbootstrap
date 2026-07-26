@@ -382,57 +382,108 @@ class Querybox:
         dialog.show(position)
         return dialog.result
 
-    # File dialogs. These wrap the *native* OS file dialogs
-    # (`tkinter.filedialog`) — the one standard dialog ttkbootstrap does not
-    # restyle, because the OS draws it. They live here so a file path is fetched
-    # through the same `Querybox.get_*` facade as every other value, and they
-    # normalize the stdlib "" -on-cancel to `None` to match that contract.
+    # File dialogs. These fetch a file path through the same `Querybox.get_*`
+    # facade as every other value, normalizing a cancel to `None`. Two dialogs
+    # back them: the *native* OS chooser (`tkinter.filedialog`) and a *themed*
+    # in-library one (`.filedialog.FileDialog`) that follows the active theme.
+    # The `native` keyword selects between them; `native=None` (the default)
+    # uses the native chooser for now. (PR 2 makes `None` platform-aware —
+    # themed on X11, where Tk's fallback draws an unstyleable white panel.)
 
     @staticmethod
-    def get_open_filename(parent: Optional[tkinter.Misc] = None, **kwargs: Any) -> Optional[str]:
+    def _use_native_filedialog(native: Optional[bool]) -> bool:
+        """Resolve the `native` selector to a native-vs-themed decision.
+
+        PR 1: native everywhere unless explicitly forced off (`native=False`).
+        The `native=None` default becomes platform-aware in PR 2.
+        """
+        return native is not False
+
+    @staticmethod
+    def _themed_filedialog(
+        parent: Optional[tkinter.Misc], *, mode: str, multiple: bool = False,
+        **kwargs: Any,
+    ) -> Any:
+        """Show the in-library themed chooser and return its result."""
+        from .filedialog import FileDialog
+
+        return FileDialog(
+            parent,
+            title=kwargs.get("title"),
+            mode=mode,
+            multiple=multiple,
+            filetypes=kwargs.get("filetypes"),
+            initialdir=kwargs.get("initialdir"),
+            initialfile=kwargs.get("initialfile"),
+            defaultextension=kwargs.get("defaultextension", ""),
+        ).show()
+
+    @staticmethod
+    def get_open_filename(
+        parent: Optional[tkinter.Misc] = None, *,
+        native: Optional[bool] = None, **kwargs: Any,
+    ) -> Optional[str]:
         """Show an *open file* dialog. Returns the chosen path, or ``None`` if
         cancelled.
 
-        Wraps ``tkinter.filedialog.askopenfilename``; forward its options
-        (``title``, ``filetypes``, ``initialdir``, ``initialfile``, ...) as
-        keyword arguments.
+        Forward the standard options (``title``, ``filetypes``, ``initialdir``,
+        ``initialfile``, ...) as keyword arguments. Pass ``native=False`` to
+        force the themed in-library dialog (``native=True`` forces the OS
+        chooser); the ``native=None`` default uses the OS chooser.
         """
-        if parent is not None:
-            kwargs["parent"] = parent
-        return filedialog.askopenfilename(**kwargs) or None
+        if Querybox._use_native_filedialog(native):
+            if parent is not None:
+                kwargs["parent"] = parent
+            return filedialog.askopenfilename(**kwargs) or None
+        return Querybox._themed_filedialog(parent, mode="open", **kwargs)
 
     @staticmethod
-    def get_open_filenames(parent: Optional[tkinter.Misc] = None, **kwargs: Any) -> Optional[Tuple[str, ...]]:
+    def get_open_filenames(
+        parent: Optional[tkinter.Misc] = None, *,
+        native: Optional[bool] = None, **kwargs: Any,
+    ) -> Optional[Tuple[str, ...]]:
         """Show an *open multiple files* dialog. Returns a tuple of paths, or
         ``None`` if cancelled.
 
-        Wraps ``tkinter.filedialog.askopenfilenames``.
+        Pass ``native=False`` to force the themed in-library dialog.
         """
-        if parent is not None:
-            kwargs["parent"] = parent
-        paths = filedialog.askopenfilenames(**kwargs)
-        return tuple(paths) if paths else None
+        if Querybox._use_native_filedialog(native):
+            if parent is not None:
+                kwargs["parent"] = parent
+            paths = filedialog.askopenfilenames(**kwargs)
+            return tuple(paths) if paths else None
+        return Querybox._themed_filedialog(parent, mode="open", multiple=True, **kwargs)
 
     @staticmethod
-    def get_save_filename(parent: Optional[tkinter.Misc] = None, **kwargs: Any) -> Optional[str]:
+    def get_save_filename(
+        parent: Optional[tkinter.Misc] = None, *,
+        native: Optional[bool] = None, **kwargs: Any,
+    ) -> Optional[str]:
         """Show a *save as* dialog. Returns the chosen path, or ``None`` if
         cancelled.
 
-        Wraps ``tkinter.filedialog.asksaveasfilename``; forward its options
-        (``title``, ``filetypes``, ``defaultextension``, ``initialfile``, ...)
-        as keyword arguments.
+        Forward the standard options (``title``, ``filetypes``,
+        ``defaultextension``, ``initialfile``, ...) as keyword arguments. Pass
+        ``native=False`` to force the themed in-library dialog.
         """
-        if parent is not None:
-            kwargs["parent"] = parent
-        return filedialog.asksaveasfilename(**kwargs) or None
+        if Querybox._use_native_filedialog(native):
+            if parent is not None:
+                kwargs["parent"] = parent
+            return filedialog.asksaveasfilename(**kwargs) or None
+        return Querybox._themed_filedialog(parent, mode="save", **kwargs)
 
     @staticmethod
-    def get_directory(parent: Optional[tkinter.Misc] = None, **kwargs: Any) -> Optional[str]:
+    def get_directory(
+        parent: Optional[tkinter.Misc] = None, *,
+        native: Optional[bool] = None, **kwargs: Any,
+    ) -> Optional[str]:
         """Show a *choose directory* dialog. Returns the chosen path, or ``None``
         if cancelled.
 
-        Wraps ``tkinter.filedialog.askdirectory``.
+        Pass ``native=False`` to force the themed in-library dialog.
         """
+        if not Querybox._use_native_filedialog(native):
+            return Querybox._themed_filedialog(parent, mode="directory", **kwargs)
         if parent is not None:
             kwargs["parent"] = parent
         return filedialog.askdirectory(**kwargs) or None
