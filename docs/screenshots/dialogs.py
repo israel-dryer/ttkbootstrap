@@ -96,9 +96,54 @@ def custom():
     app.mainloop()
 
 
+def file():
+    # The themed file dialog (what X11 shows by default; native=False forces it
+    # elsewhere). Build it non-modally against a controlled temp directory so the
+    # listing is clean and reproducible, select a file so the selection styling +
+    # filename field read, and capture the toplevel.
+    import os
+    import tempfile
+    from ttkbootstrap.dialogs.filedialog import FileDialog
+
+    app = ttk.App(title="App")
+    ttk.Label(app, text="Editor", padding=20).pack()
+
+    folder = tempfile.mkdtemp(prefix="ttk_filedialog_docs_")
+    for name in ("Documents", "Downloads", "Projects"):
+        os.makedirs(os.path.join(folder, name), exist_ok=True)
+    for name in ("meeting-notes.txt", "README.txt", "budget.csv", "todo.md"):
+        with open(os.path.join(folder, name), "w") as handle:
+            handle.write("sample")
+
+    dlg = FileDialog(app, mode="open", initialdir=folder,
+                     filetypes=[("All files", "*.*"), ("Text files", "*.txt")])
+    dlg._build()
+    dlg._navigate(dlg._cwd)
+    dlg._path_var.set("My Documents")   # clean directory label for the shot
+    for iid, entry in dlg._rows.items():
+        if entry.name == "README.txt":
+            dlg._tree.selection_set(iid)
+            dlg._on_select()
+            break
+
+    win = dlg._toplevel
+    win.geometry("+80+40")
+    win.deiconify()
+
+    def wire():
+        win.attributes("-topmost", True)
+        win.lift()
+        win.update_idletasks()
+        app._capture_target = win
+
+    app.after(300, wire)
+    app.mainloop()
+
+
 SCENES = {
     "message": message,
     "date": date,
     "color": color,
     "custom": custom,
+    "file": file,
 }

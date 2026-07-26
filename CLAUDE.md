@@ -923,12 +923,32 @@ DONE.** Optional post-release polish only from here.
 > → a dialog-scoped `Filedialog.Treeview` bumps `rowheight`; and Tk's file dialogs
 > return **forward-slash** paths on every platform → results go through
 > `Path.as_posix()` for drop-in parity. `tests/test_filedialog_api.py` (+43).
-> **PR 2 (X11-default routing) BUILT** on `feat/2.1-filedialog-x11-default` (stacked
-> on PR 1; rebased onto `master` after the #1305 merge): `_use_native_filedialog`
-> now makes `native=None` **platform-aware** — native OS chooser on Windows/macOS,
-> themed dialog on X11 (queried via `windowing_system(parent-or-default-root)`;
-> falls back to native when no interpreter is reachable). +4 routing tests. Suite
-> **~885**. **NEXT:** open PR 2, then PR 3 (docs + screenshots) per the design's §9.
+> A post-hoc `/review` of the merged PR 1 + PR 2 found two real defects (both
+> fixed): a macOS 3-tuple `filetypes` crash in `_normalize_filetypes` (index, not
+> unpack), and the dialog setting `rowheight` via the *public* `Style.configure`,
+> which the durable-options layer captured as a phantom user override (switched to
+> `_build_configure`). **PR 2 (X11-default routing + review fixes) MERGED (#1306):**
+> `_use_native_filedialog` makes `native=None` **platform-aware** — native OS
+> chooser on Windows/macOS, themed dialog on X11 (via
+> `windowing_system(parent-or-default-root)`; native fallback when no interpreter
+> is reachable). Two **X11 defects** the author found running it on Linux were
+> committed just *after* #1306 merged (they missed that merge), so they landed as
+> a **separate fix PR (#1307)**: a hardcoded `640x480` clipped the bottom
+> checkbutton where platform fonts run taller (now sizes from `winfo_reqheight`,
+> `minsize`-pinned); and `_locate` computed centered coords but never *applied*
+> them, so an X11 transient opened at the virtual-desktop origin (between
+> monitors) — now applies them explicitly. `tests/test_filedialog_api.py` totals
+> **51**. (Process note: a commit pushed to a PR branch *after* the PR is merged
+> does not land — verify the merge SHA includes your latest push.) **PR 3 (docs) BUILT**
+> on `docs/2.1-filedialog-guide`: rewrote the Dialogs-guide *File dialogs* section
+> (native-vs-themed + `native=`) + `Querybox` reference `native=` params + a themed
+> `dialogs-file` screenshot scene (light/dark, Windows-canonical capture — the
+> dialog body is platform-identical; a real-Linux recapture is an optional Track-B
+> follow-up). Docs build clean under `-W`. **NEXT:** open PR 3. **Two cross-platform
+> items the author flagged for SEPARATE pre-2.1 PRs** (NOT part of #1242): the
+> **menu border is missing on X11** (a themed-menu styling gap), and it's worth
+> checking whether the base `Dialog._locate` has the same *unapplied-coords*
+> multi-monitor bug the file dialog just fixed (the pattern looks identical).
 > **Housekeeping (prior session):** closed **#1224** (filedialog
 > white-on-white — subsumed by #1242; the dark-mode base-style half was already
 > fixed in #1239) and **#1252** (v1 empty/clearable DateEntry — superseded by
