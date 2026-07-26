@@ -30,7 +30,11 @@ from ttkbootstrap.constants import *
 from ttkbootstrap.localization import MessageCatalog
 from ttkbootstrap.style import Assets
 from ttkbootstrap.style.engine import Style
-from ttkbootstrap.internal.positioning import center_on_parent, ensure_on_screen
+from ttkbootstrap.internal.positioning import (
+    center_on_parent,
+    center_on_screen,
+    ensure_on_screen,
+)
 from ttkbootstrap.utils import windowing_system
 from .message import Messagebox
 
@@ -289,14 +293,12 @@ class FileDialog:
         kwargs: dict = dict(
             transient=self._parent,
             title=self._title,
-            minsize=(480, 360),
             iconify=True,
         )
         if winsys != "win32":
             kwargs["window_type"] = "dialog"
         self._toplevel = ttk.Toplevel(**kwargs)
         self._toplevel.withdraw()  # reset the iconify state
-        self._toplevel.geometry("640x480")
         self._toplevel.protocol("WM_DELETE_WINDOW", self._cancel)
         self._toplevel.bind("<Escape>", lambda _: self._cancel())
 
@@ -326,6 +328,16 @@ class FileDialog:
         self._build_topbar(container)
         self._build_listing(container)
         self._build_form(container)
+
+        # Size from content, never a hardcoded height: platform font/padding
+        # differences (larger on X11) otherwise clip the bottom row. Open at a
+        # comfortable default but never smaller than the content needs, and don't
+        # let the window be shrunk to clip it.
+        self._toplevel.update_idletasks()
+        req_w = self._toplevel.winfo_reqwidth()
+        req_h = self._toplevel.winfo_reqheight()
+        self._toplevel.geometry(f"{max(640, req_w)}x{max(480, req_h)}")
+        self._toplevel.minsize(req_w, req_h)
 
     def _build_topbar(self, master: tkinter.Misc) -> None:
         bar = ttk.Frame(master)
@@ -606,11 +618,21 @@ class FileDialog:
         if position is not None:
             try:
                 x, y = ensure_on_screen(tl, *position)
-                tl.geometry(f"+{x}+{y}")
-                return
             except Exception:
-                pass
-        center_on_parent(tl, self._parent)
+                x, y = self._center()
+        else:
+            x, y = self._center()
+        # Apply the computed coordinates. Relying on the window manager to place
+        # a transient dialog works on Windows/macOS but not on X11, where an
+        # unplaced window lands at the virtual-desktop origin — between monitors
+        # on a multi-head setup.
+        tl.geometry(f"+{int(x)}+{int(y)}")
+
+    def _center(self) -> Tuple[int, int]:
+        """Coordinates that center the dialog over its parent (or the screen)."""
+        if self._parent is not None:
+            return center_on_parent(self._toplevel, self._parent)
+        return center_on_screen(self._toplevel)
 
 
 def _default_title(mode: str) -> str:
