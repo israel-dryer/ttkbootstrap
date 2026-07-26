@@ -59,6 +59,12 @@ def test_normalize_filetypes_empty():
     assert fd._normalize_filetypes([]) == []
 
 
+def test_normalize_filetypes_accepts_mac_type_triple():
+    # macOS filetypes may carry a third Mac-type element; tkinter accepts it, so
+    # the themed dialog must not choke on it (the extra element is ignored).
+    assert fd._normalize_filetypes([("Text", "*.txt", "TEXT")]) == [("Text", ("*.txt",))]
+
+
 @pytest.mark.parametrize("name, globs, expected", [
     ("a.TXT", ("*.txt",), True),      # case-insensitive
     ("a.py", ("*.txt",), False),
@@ -373,6 +379,14 @@ def test_listing_uses_taller_scoped_rowheight(root, tmp_path):
     scoped = int(style.lookup("Filedialog.Treeview", "rowheight"))
     base = int(style.lookup("Treeview", "rowheight"))
     assert scoped > base
+
+
+def test_rowheight_not_captured_as_user_override(root, tmp_path):
+    # The dialog sets rowheight via the internal _build_configure, so it must NOT
+    # land in the durable user-options registry (that path is for real user
+    # configure() calls, replayed on theme switch).
+    _build(root, tmp_path, mode="open")
+    assert "Filedialog.Treeview" not in root.style._user_options
 
 
 def test_multiple_open_returns_tuple(root, tmp_path):

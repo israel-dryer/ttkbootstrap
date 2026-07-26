@@ -84,7 +84,10 @@ def _normalize_filetypes(
     ``tkinter.filedialog`` and existing callers are unaffected by the route.
     """
     result: List[Tuple[str, Tuple[str, ...]]] = []
-    for label, patterns in filetypes or ():
+    for entry in filetypes or ():
+        # tkinter accepts a Mac-type third element on macOS -- (label, patterns,
+        # mactype) -- so index rather than unpack, which would raise on it.
+        label, patterns = entry[0], entry[1]
         if isinstance(patterns, str):
             parts: Sequence[str] = patterns.replace(";", " ").split()
         else:
@@ -353,7 +356,11 @@ class FileDialog:
             linespace = int(tree.tk.call("font", "metrics", "TkDefaultFont", "-linespace"))
         except tkinter.TclError:
             linespace = icon_h
-        style.configure(_ROW_STYLE, rowheight=max(icon_h, linespace) + round(0.7 * linespace))
+        # Framework code writes via the internal _build_configure, not the public
+        # Style.configure -- rowheight is a durable option, and the public path
+        # would capture this as a fake user override (replayed on theme switch).
+        style._build_configure(
+            _ROW_STYLE, rowheight=max(icon_h, linespace) + round(0.7 * linespace))
         tree.configure(style=_ROW_STYLE)
         tree.heading("#0", text=MessageCatalog.translate("Name"), anchor=W)
         tree.heading("size", text=MessageCatalog.translate("Size"), anchor=W)
