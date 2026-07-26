@@ -25,6 +25,7 @@
 | **Notebook tab `padding` / `bordercolor` are now overridable** | Fix | this doc, below |
 | **`DateEntry(value=…)` — a nullable, clearable date field** | New | this doc, below |
 | **Bootstyle value tokens — raw hex + ramp accents & surfaces** | New | this doc, below |
+| **Themed file dialog — a theme-following open/save chooser** | New | this doc, below |
 
 There are **no API breaks in 2.1**: nothing was removed, and no call that worked
 in 2.0.0 fails. One change is visually noticeable without any code change (the
@@ -180,3 +181,37 @@ on the same kind of closed utility vocabulary.
 are never unregistered). The closed vocabulary and the ramp tokens are finite, so
 their styles plateau; the space of raw hex values is not, so an app that feeds
 many distinct hex values through `bootstyle` accumulates styles over its lifetime.
+
+---
+
+## Themed file dialog — a theme-following open/save chooser  *(New)*
+
+**What.** ttkbootstrap now ships an in-library file dialog that follows the active
+theme, reproducing the familiar layout of Tk's chooser (a directory bar, a file
+listing, a filename field + filetype selector, OK/Cancel) with themed widgets.
+The four `Querybox` file wrappers gain a `native` selector to choose it:
+
+```python
+# force the themed dialog anywhere (light or dark, it matches your app)
+path = ttk.Querybox.get_open_filename(native=False, filetypes=[("Text", "*.txt")])
+
+ttk.Querybox.get_open_filenames(native=False)   # multi-select -> tuple | None
+ttk.Querybox.get_save_filename(native=False, defaultextension=".txt")
+ttk.Querybox.get_directory(native=False)
+```
+
+`native=None` (the default) uses the native OS chooser as before; `native=True`
+forces it. The return contracts are unchanged — a path `str`, a `tuple[str, …]`
+for multi-select, or `None` on cancel.
+
+**Why.** On Windows and macOS the OS draws a great native chooser, but **X11 has
+no native dialog** — Tk falls back to a chooser whose central file list is an
+unstyleable white Canvas that ignores the theme (jarring in dark mode). The themed
+dialog replaces it. On X11 it will become the **default** (so a dark-themed Linux
+app stops flashing a white panel); on Windows/macOS the native chooser stays the
+default and the themed one is opt-in via `native=False`. Addresses #1242.
+
+**Scope note.** This first slice ships the dialog and the `native=` opt-in; the
+X11-by-default routing lands next in the same 2.1 cycle. Deliberately minimal
+(no bookmarks/places sidebar) — matching Tk's chooser; a sidebar is a later
+enhancement.
