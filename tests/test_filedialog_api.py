@@ -389,6 +389,32 @@ def test_rowheight_not_captured_as_user_override(root, tmp_path):
     assert "Filedialog.Treeview" not in root.style._user_options
 
 
+def test_window_sizes_to_content_not_clipped(root, tmp_path):
+    # minsize is pinned to the content's requested size, so the window can never
+    # be shrunk to clip the bottom row -- the fix for the hardcoded-height clip
+    # that cut off the "show hidden" checkbutton where platform fonts run taller.
+    dlg = _build(root, tmp_path, mode="open")
+    tl = dlg._toplevel
+    tl.update_idletasks()
+    min_w, min_h = tl.wm_minsize()
+    assert min_h >= tl.winfo_reqheight()
+    assert min_h >= 300  # a real content height, not zero
+
+
+def test_locate_applies_center_over_parent(root, tmp_path):
+    # _locate must apply the centered coordinates, not rely on the window manager
+    # (which leaves an X11 transient at the virtual-desktop origin).
+    import re
+    from ttkbootstrap.internal.positioning import center_on_parent
+    dlg = _build(root, tmp_path, mode="open")
+    expected = center_on_parent(dlg._toplevel, root)
+    dlg._locate(None)
+    dlg._toplevel.update_idletasks()
+    m = re.search(r"\+(-?\d+)\+(-?\d+)$", dlg._toplevel.geometry())
+    assert m is not None
+    assert (int(m.group(1)), int(m.group(2))) == expected
+
+
 def test_multiple_open_returns_tuple(root, tmp_path):
     (tmp_path / "a.txt").write_text("a")
     (tmp_path / "b.txt").write_text("b")
