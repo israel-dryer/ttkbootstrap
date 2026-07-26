@@ -83,37 +83,47 @@ Pickers
 Files
 -----
 
-These wrap `tkinter.filedialog
-<https://docs.python.org/3/library/dialog.html#module-tkinter.filedialog>`__; extra keyword
-arguments (``initialdir``, ``filetypes``, ``defaultextension``, …) pass straight
-through. A cancelled dialog returns ``None``.
+Extra keyword arguments (``initialdir``, ``filetypes``, ``defaultextension``, …)
+match `tkinter.filedialog
+<https://docs.python.org/3/library/dialog.html#module-tkinter.filedialog>`__ and
+pass straight through. A cancelled dialog returns ``None``; paths use forward
+slashes on every platform.
 
-.. py:staticmethod:: get_open_filename(parent=None, **kwargs)
+The keyword-only ``native`` selects the dialog. ``None`` (the default) is
+platform-aware — the native OS chooser on Windows/macOS, ttkbootstrap's themed
+dialog on X11 (where tkinter has no native chooser). Pass ``native=False`` to
+force the themed dialog anywhere, or ``native=True`` to force the OS chooser.
+
+.. py:staticmethod:: get_open_filename(parent=None, *, native=None, **kwargs)
    :noindex:
 
    Choose one existing file to open.
 
+   :param native: ``None`` per-platform default, ``False`` themed, ``True`` OS chooser.
    :returns: the file path, or ``None`` if cancelled.
 
-.. py:staticmethod:: get_open_filenames(parent=None, **kwargs)
+.. py:staticmethod:: get_open_filenames(parent=None, *, native=None, **kwargs)
    :noindex:
 
    Choose one or more existing files to open.
 
+   :param native: ``None`` per-platform default, ``False`` themed, ``True`` OS chooser.
    :returns: a tuple of file paths, or ``None`` if cancelled.
 
-.. py:staticmethod:: get_save_filename(parent=None, **kwargs)
+.. py:staticmethod:: get_save_filename(parent=None, *, native=None, **kwargs)
    :noindex:
 
    Choose a file path to save to (prompting to confirm an overwrite).
 
+   :param native: ``None`` per-platform default, ``False`` themed, ``True`` OS chooser.
    :returns: the file path, or ``None`` if cancelled.
 
-.. py:staticmethod:: get_directory(parent=None, **kwargs)
+.. py:staticmethod:: get_directory(parent=None, *, native=None, **kwargs)
    :noindex:
 
    Choose a directory.
 
+   :param native: ``None`` per-platform default, ``False`` themed, ``True`` OS chooser.
    :returns: the directory path, or ``None`` if cancelled.
 
 See also

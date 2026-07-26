@@ -238,11 +238,8 @@ three models, so you take whichever the calling code needs:
 File dialogs
 ~~~~~~~~~~~~
 
-Opening and saving files use the **native OS** dialog — the one standard dialog
-ttkbootstrap deliberately does *not* restyle, because the OS draws it and users
-expect their platform's file picker. They're still reached through ``Querybox``,
-so a path is fetched like any other value, and — like the other ``Querybox``
-methods — they return ``None`` on cancel:
+Opening and saving files is reached through ``Querybox`` like any other value,
+and — like the other methods — returns ``None`` on cancel:
 
 .. code-block:: python
 
@@ -258,9 +255,36 @@ methods — they return ``None`` on cancel:
    folder  = Querybox.get_directory(parent=app)
    many    = Querybox.get_open_filenames(parent=app)   # a tuple of paths
 
-Each forwards its keyword arguments (``title``, ``filetypes``, ``initialdir``,
-``defaultextension``, …) to the underlying ``tkinter.filedialog`` function. The
-full module is available as ``ttk.filedialog`` for a variant these four don't
+**Native where it exists, themed where it doesn't.** On Windows and macOS these
+open the **native OS** file picker — the one users expect from their platform. On
+Linux (X11) there is no native picker; rather than fall back to tkinter's plain,
+unstyled one, ttkbootstrap opens its own **themed** dialog that follows your
+theme. You don't pick between them — ``Querybox`` chooses per platform.
+
+When you want the theme to win everywhere, pass ``native``:
+
+.. code-block:: python
+
+   Querybox.get_open_filename(parent=app, native=False)   # always the themed dialog
+   Querybox.get_open_filename(parent=app, native=True)    # always the native picker
+
+Whichever dialog runs, the result is the same — a path string (a tuple for
+``get_open_filenames``), or ``None`` on cancel — so calling code never has to
+care which one appeared. The themed dialog is shown below.
+
+.. image:: /_static/examples/dialogs-file-light.png
+   :class: tb-screenshot-light tb-window-screenshot
+   :width: 638px
+   :alt: The themed file-open dialog — a directory bar, a file list, and a filename field with a filetype filter — light theme
+
+.. image:: /_static/examples/dialogs-file-dark.png
+   :class: tb-screenshot-dark tb-window-screenshot
+   :width: 638px
+   :alt: The themed file-open dialog — a directory bar, a file list, and a filename field with a filetype filter — dark theme
+
+Each method forwards its keyword arguments (``title``, ``filetypes``,
+``initialdir``, ``defaultextension``, …) the same way to either dialog. The full
+stdlib module is available as ``ttk.filedialog`` for a variant these four don't
 cover — for example ``askopenfile``, which returns an open file object:
 
 .. code-block:: python
@@ -269,10 +293,12 @@ cover — for example ``askopenfile``, which returns an open file object:
 
 .. note::
 
-   File dialogs are the **only** stdlib dialog ttkbootstrap keeps. The others —
-   ``messagebox``, ``simpledialog``, ``colorchooser``, the font chooser — are
-   superseded by ``Messagebox`` / ``Querybox`` above; reach for those to get
-   themed, consistent dialogs.
+   The themed file dialog is a faithful stand-in for the platform picker — a
+   directory bar, a file list, and a filename field with a filetype filter —
+   deliberately minimal (no bookmarks sidebar). It is the one place ttkbootstrap
+   still defers to a stdlib dialog *at all*: the other stdlib dialogs
+   (``messagebox``, ``simpledialog``, ``colorchooser``, the font chooser) are
+   fully superseded by ``Messagebox`` / ``Querybox``, so reach for those.
 
 Driving the dialog classes directly
 -----------------------------------
