@@ -939,16 +939,27 @@ DONE.** Optional post-release polish only from here.
 > them, so an X11 transient opened at the virtual-desktop origin (between
 > monitors) — now applies them explicitly. `tests/test_filedialog_api.py` totals
 > **51**. (Process note: a commit pushed to a PR branch *after* the PR is merged
-> does not land — verify the merge SHA includes your latest push.) **PR 3 (docs) BUILT**
-> on `docs/2.1-filedialog-guide`: rewrote the Dialogs-guide *File dialogs* section
-> (native-vs-themed + `native=`) + `Querybox` reference `native=` params + a themed
+> does not land — verify the merge SHA includes your latest push.) **PR 3 (docs)
+> MERGED (#1308):** rewrote the Dialogs-guide *File dialogs* section (native-vs
+> -themed + `native=`) + `Querybox` reference `native=` params + a themed
 > `dialogs-file` screenshot scene (light/dark, Windows-canonical capture — the
 > dialog body is platform-identical; a real-Linux recapture is an optional Track-B
-> follow-up). Docs build clean under `-W`. **NEXT:** open PR 3. **Two cross-platform
-> items the author flagged for SEPARATE pre-2.1 PRs** (NOT part of #1242): the
-> **menu border is missing on X11** (a themed-menu styling gap), and it's worth
-> checking whether the base `Dialog._locate` has the same *unapplied-coords*
-> multi-monitor bug the file dialog just fixed (the pattern looks identical).
+> follow-up). An adversarial `/review` of the #1307 fix found one MEDIUM defect,
+> fixed in **PR #1311 (OPEN at pause):** `_locate` clamped an explicit `position=`
+> through `ensure_on_screen` but applied the *centered* coords raw, so a parent
+> near a screen edge (or shorter than the ~480px dialog) could push the centered
+> dialog partly off-screen — now both paths are clamped. The review confirmed the
+> rest of #1307 sound and rated a ≤40px off-true-center (withdrawn-reqsize)
+> item cosmetic/won't-fix. **#1242 is COMPLETE and in `master`** (the design's
+> three PRs + two review-driven fixes); only #1311 awaits merge.
+> **Two cross-platform items filed as SEPARATE 2.1 issues** (NOT part of #1242,
+> found during this work): **#1309** — themed popup menu border missing on X11
+> (a `StyleBuilderTK` menu styling gap); **#1310** — base `Dialog._locate`
+> (`dialogs/base.py`) has the same *unapplied-`center_on_parent`-coords* bug the
+> file dialog just fixed, so Messagebox/Querybox/pickers may open between monitors
+> on multi-head X11. **NEXT (fresh session):** merge #1311; then #1309/#1310 are the
+> remaining pre-2.1 cross-platform cleanups. With #1242 done, 2.1 has **no open
+> feature work** — only these two polish issues.
 > **Housekeeping (prior session):** closed **#1224** (filedialog
 > white-on-white — subsumed by #1242; the dark-mode base-style half was already
 > fixed in #1239) and **#1252** (v1 empty/clearable DateEntry — superseded by
