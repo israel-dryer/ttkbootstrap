@@ -132,11 +132,27 @@ def test_type_label():
 # Routing — Querybox selects native vs themed.
 # ---------------------------------------------------------------------------
 
-def test_use_native_filedialog_selector():
-    # PR 1: native unless explicitly forced off.
+def test_use_native_filedialog_explicit_wins():
+    # An explicit value always wins, regardless of platform.
+    assert Querybox._use_native_filedialog(True, object()) is True
+    assert Querybox._use_native_filedialog(False, object()) is False
+
+
+@pytest.mark.parametrize("winsys, native", [
+    ("x11", False),      # themed on Linux/Unix (Tk's fallback ignores the theme)
+    ("win32", True),     # native OS chooser on Windows
+    ("aqua", True),      # native OS chooser on macOS
+])
+def test_use_native_filedialog_none_is_platform_aware(monkeypatch, winsys, native):
+    monkeypatch.setattr("ttkbootstrap.dialogs.query.windowing_system",
+                        lambda w: winsys)
+    assert Querybox._use_native_filedialog(None, object()) is native
+
+
+def test_use_native_filedialog_no_root_defaults_native(monkeypatch):
+    # With no interpreter to query, native is the safe default.
+    monkeypatch.setattr("tkinter._get_default_root", lambda: None)
     assert Querybox._use_native_filedialog(None) is True
-    assert Querybox._use_native_filedialog(True) is True
-    assert Querybox._use_native_filedialog(False) is False
 
 
 def test_native_false_routes_to_themed(monkeypatch):

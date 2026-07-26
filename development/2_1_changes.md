@@ -204,14 +204,16 @@ ttk.Querybox.get_directory(native=False)
 forces it. The return contracts are unchanged — a path `str`, a `tuple[str, …]`
 for multi-select, or `None` on cancel.
 
+The `native=None` **default is platform-aware**: the native OS chooser on
+Windows/macOS (where the OS draws a great one), the **themed dialog on X11**,
+where Tk has no native chooser and its fallback draws the unstyleable white panel.
+So a dark-themed Linux app stops flashing a white panel with no code change, while
+Windows/macOS apps see no change unless they opt in.
+
 **Why.** On Windows and macOS the OS draws a great native chooser, but **X11 has
 no native dialog** — Tk falls back to a chooser whose central file list is an
 unstyleable white Canvas that ignores the theme (jarring in dark mode). The themed
-dialog replaces it. On X11 it will become the **default** (so a dark-themed Linux
-app stops flashing a white panel); on Windows/macOS the native chooser stays the
-default and the themed one is opt-in via `native=False`. Addresses #1242.
+dialog replaces it there. Addresses #1242.
 
-**Scope note.** This first slice ships the dialog and the `native=` opt-in; the
-X11-by-default routing lands next in the same 2.1 cycle. Deliberately minimal
-(no bookmarks/places sidebar) — matching Tk's chooser; a sidebar is a later
-enhancement.
+**Scope note.** Deliberately minimal (no bookmarks/places sidebar) — matching Tk's
+chooser; a sidebar is a later enhancement.
