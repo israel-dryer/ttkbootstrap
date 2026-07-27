@@ -101,3 +101,20 @@ def test_color_helpers_round_trip():
     from ttkbootstrap.utils.color import HEX, RGB
     assert ttk.color_to_rgb("#ff5733", model=HEX) == (255, 87, 51)
     assert ttk.color_to_hex((255, 87, 51), model=RGB) == "#ff5733"
+
+
+@pytest.mark.parametrize("bad", ["not-a-color", "#zzz", "", None])
+def test_color_to_rgb_raises_on_an_invalid_color(bad, capsys):
+    # It used to swallow the error, print a debug string, and return None -- so
+    # every caller (they all unpack the result) failed with an unrelated
+    # "cannot unpack non-iterable NoneType" and stray output on stdout.
+    with pytest.raises(ValueError, match="is not a valid"):
+        ttk.color_to_rgb(bad)
+    assert capsys.readouterr().out == ""
+
+
+def test_color_to_rgb_names_the_offending_color():
+    with pytest.raises(ValueError) as excinfo:
+        ttk.color_to_rgb("nope")
+    assert "'nope'" in str(excinfo.value)
+    assert excinfo.value.__cause__ is not None  # the underlying error is chained

@@ -26,6 +26,7 @@
 | **`DateEntry(value=…)` — a nullable, clearable date field** | New | this doc, below |
 | **Bootstyle value tokens — raw hex + ramp accents & surfaces** | New | this doc, below |
 | **Themed file dialog — a theme-following open/save chooser** | New | this doc, below |
+| **`color_to_rgb` raises on an invalid color instead of returning `None`** | Fix | this doc, below |
 
 There are **no API breaks in 2.1**: nothing was removed, and no call that worked
 in 2.0.0 fails. One change is visually noticeable without any code change (the
@@ -217,3 +218,26 @@ dialog replaces it there. Addresses #1242.
 
 **Scope note.** Deliberately minimal (no bookmarks/places sidebar) — matching Tk's
 chooser; a sidebar is a later enhancement.
+
+---
+
+## `color_to_rgb` raises on an invalid color  *(Fix)*
+
+**What.** `color_to_rgb` (also exported at top level as `ttk.color_to_rgb`) now
+raises `ValueError` naming the offending value when it cannot parse a color. It
+used to swallow the error, print the string `this` to stdout, and return `None`:
+
+```python
+ttk.color_to_rgb("not-a-color")
+# 2.0.0: prints "this", returns None
+# 2.1:   ValueError: 'not-a-color' is not a valid hex color
+```
+
+**Who notices.** Anyone who reaches the function with a bad color — through
+`color_to_hsl`, `contrast_color`, `update_hsl_value`, or `Colors.hex_to_rgb`,
+which all route through it. Every caller unpacks the result into `r, g, b`, so
+the `None` surfaced as `TypeError: cannot unpack non-iterable NoneType object`
+with no indication of which color was at fault, plus stray output on stdout that
+no application asked for. The valid-color contract is unchanged.
+
+**Why.** A bare `except: print('this')` left over from 1.x.

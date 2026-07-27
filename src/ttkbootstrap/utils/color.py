@@ -44,13 +44,19 @@ def color_to_rgb(color, model=HEX):
 
         tuple[int, int, int]:
             The rgb color values.
+
+    Raises:
+
+        ValueError:
+            The color is not valid for the given model.
     """
-    color_ = conform_color_model(color, model)    
+    color_ = conform_color_model(color, model)
     try:
         return ImageColor.getrgb(color_)
-    except:
-        print('this')
-    
+    except (ValueError, TypeError, AttributeError) as error:
+        raise ValueError(f"{color!r} is not a valid {model} color") from error
+
+
 def color_to_hex(color, model=RGB):
     """Convert color value to hex.
 
