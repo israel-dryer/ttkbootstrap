@@ -24,7 +24,14 @@ def get_image_name(image):
 
 
 def center_on_parent(win, parent=None):
-    """Center `win` on parent or over its master if not given"""
+    """Center `win` on parent or over its master if not given.
+
+    Legacy variant, kept reachable only through the deprecated
+    `ttkbootstrap.utility` shim (removed in 3.0): it applies the geometry itself
+    and does not clamp the result onto a monitor. First-party code uses the
+    same-named `ttkbootstrap.internal.positioning.center_on_parent`, which
+    returns coordinates for the caller to clamp and apply.
+    """
     win.update_idletasks()  # ensure geometry
     if parent is None:
         parent = getattr(win, 'master', None) or win  # root if no parent

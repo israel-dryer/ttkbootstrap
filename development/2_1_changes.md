@@ -26,6 +26,7 @@
 | **`DateEntry(value=…)` — a nullable, clearable date field** | New | this doc, below |
 | **Bootstyle value tokens — raw hex + ramp accents & surfaces** | New | this doc, below |
 | **Themed file dialog — a theme-following open/save chooser** | New | this doc, below |
+| **Dialogs stay on one monitor on multi-head Linux** | Fix | this doc, below |
 
 There are **no API breaks in 2.1**: nothing was removed, and no call that worked
 in 2.0.0 fails. One change is visually noticeable without any code change (the
@@ -217,3 +218,32 @@ dialog replaces it there. Addresses #1242.
 
 **Scope note.** Deliberately minimal (no bookmarks/places sidebar) — matching Tk's
 chooser; a sidebar is a later enhancement.
+
+---
+
+## Dialogs stay on one monitor on multi-head Linux  *(Fix)*
+
+**What.** `Messagebox`, `Querybox`, the date picker and the other shipped dialogs
+are now centered on their parent and clamped onto that parent's monitor. On a
+multi-monitor Linux (X11) desktop they could previously open straddling the seam
+between two screens, or offset down-right of where they belonged.
+
+**Why.** The base `Dialog` still used an older centering helper that predates the
+2.0 positioning work. Three things went wrong with it, and only the first is
+visible on Windows/macOS:
+
+- It read the dialog's size with `winfo_width() or winfo_reqwidth()`. A dialog is
+  still withdrawn when it is positioned, and an unmapped window reports a width
+  of **1** — which is truthy, so the fallback never ran. It centered a 1x1 box,
+  putting the dialog's top-left where its center belonged.
+- It re-applied a `WxH` size along with the offset, so positioning could resize a
+  dialog `build()` had already sized correctly.
+- It never clamped the result onto a monitor. Windows and macOS window managers
+  nudge a stray transient back on-screen; X11 does not.
+
+The dialogs now use the same `internal.positioning` helpers (and the same
+center → clamp → apply order) the themed file dialog was fixed onto in 2.1, so
+all of the shipped dialogs place identically.
+
+**Scope.** Positioning only — no signature, no return value, and no appearance
+change. An explicit `position=` was already clamped and is unaffected.

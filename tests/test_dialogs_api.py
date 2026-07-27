@@ -302,3 +302,86 @@ def test_querybox_file_dialogs_normalize_cancel_to_none(monkeypatch):
     assert Querybox.get_save_filename() is None
     monkeypatch.setattr(query.filedialog, "askdirectory", lambda **kw: "")
     assert Querybox.get_directory() is None
+
+
+# --- positioning -----------------------------------------------------------
+#
+# `_locate` is exercised directly (never via `show()`, which blocks on
+# grab_set/wait_window); `build()` is all it needs.
+
+def _built_dialog(root, message="hello", **kwargs):
+    dlg = MessageDialog(message, parent=root, **kwargs)
+    dlg.build()
+    dlg._toplevel.update_idletasks()
+    return dlg
+
+
+def _applied_position(dialog):
+    import re
+    dialog._toplevel.update_idletasks()
+    m = re.search(r"\+(-?\d+)\+(-?\d+)$", dialog._toplevel.geometry())
+    assert m is not None, "no +x+y in the applied geometry"
+    return int(m.group(1)), int(m.group(2))
+
+
+def test_locate_applies_center_over_parent(root):
+    # _locate must apply the centered coordinates rather than leave placement to
+    # the window manager, which drops an X11 transient at the virtual-desktop
+    # origin -- between monitors on a multi-head setup. The centered result is
+    # also clamped onto the monitor, so compare against the clamped value.
+    from ttkbootstrap.internal.positioning import center_on_parent, ensure_on_screen
+
+    dlg = _built_dialog(root)
+    expected = ensure_on_screen(
+        dlg._toplevel, *center_on_parent(dlg._toplevel, root)
+    )
+    dlg._locate()
+    assert _applied_position(dlg) == expected
+    dlg.close()
+
+
+def test_centering_never_places_a_dialog_past_its_parent_origin(root):
+    # Centering a dialog that is wider or taller than its parent yields a
+    # negative offset; pinning it to the parent's origin keeps it from hanging
+    # off the parent's top-left, which on a multi-head X11 layout puts it on the
+    # neighboring screen or in the seam between the two.
+    from ttkbootstrap.internal.positioning import _window_size
+
+    # An own parent, not the shared session root, so "smaller than the dialog"
+    # holds no matter what earlier tests left the root requesting.
+    parent = ttk.Toplevel(root)
+    parent.withdraw()
+    parent.update_idletasks()
+    dlg = _built_dialog(root, message="a message wide enough to outgrow the parent")
+    dlg._parent = parent
+    assert dlg._toplevel.winfo_reqwidth() > _window_size(parent)[0]
+
+    x, y = dlg._center()
+    assert x >= parent.winfo_rootx()
+    assert y >= parent.winfo_rooty()
+    dlg.close()
+    parent.destroy()
+
+
+def test_locate_without_a_parent_still_applies_a_position(root):
+    # parent=None falls back to the dialog's master; it must still be placed.
+    dlg = MessageDialog("hello")
+    dlg.build()
+    dlg._locate()
+    x, y = _applied_position(dlg)
+    assert x >= 0 and y >= 0
+    dlg.close()
+
+
+def test_locate_applies_an_offset_only_geometry(root):
+    # The legacy helper re-applied a width x height along with the offset, so
+    # positioning could resize the dialog build() had already sized. Record the
+    # geometry calls rather than reading them back: a withdrawn toplevel reports
+    # its unmapped 1x1 size, not the size that was requested.
+    dlg = _built_dialog(root)
+    applied = []
+    dlg._toplevel.geometry = lambda spec=None: applied.append(spec)
+    dlg._locate()
+    assert applied and all(spec.startswith("+") for spec in applied), applied
+    del dlg._toplevel.geometry
+    dlg.close()
