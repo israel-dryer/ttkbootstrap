@@ -957,13 +957,101 @@ DONE.** Optional post-release polish only from here.
 > (a `StyleBuilderTK` menu styling gap); **#1310** — base `Dialog._locate`
 > (`dialogs/base.py`) has the same *unapplied-`center_on_parent`-coords* bug the
 > file dialog just fixed, so Messagebox/Querybox/pickers may open between monitors
-> on multi-head X11. **NEXT (fresh session):** merge #1311; then #1309/#1310 are the
-> remaining pre-2.1 cross-platform cleanups. With #1242 done, 2.1 has **no open
-> feature work** — only these two polish issues.
+s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > **Housekeeping (prior session):** closed **#1224** (filedialog
 > white-on-white — subsumed by #1242; the dark-mode base-style half was already
 > fixed in #1239) and **#1252** (v1 empty/clearable DateEntry — superseded by
 > shipped #1253 + 3.0 #1276).
+>
+> **Session 2026-07-27 — pre-release cleanup audit + the two bug fixes it and
+> #1310 called for. TWO PRs OPEN at pause: #1312 (dialog positioning) and #1313
+> (`color_to_rgb`).** A "what's left before 2.1" sweep found the repo green
+> (suite 890, docs clean) and produced the punch list below; the author then
+> asked for the bugs fixed.
+>
+> **#1313 (`fix/2.1-color-to-rgb-raises`, OPEN)** — `color_to_rgb`, a public
+> export, swallowed every parse error with a bare `except`, printed the debug
+> string `this` to stdout, and returned `None`. All five callers unpack into
+> `r, g, b`, so a bad color surfaced as *"cannot unpack non-iterable NoneType"*
+> naming neither the color nor the model. Now raises `ValueError` naming the
+> value, chaining the PIL error. Not a new crash path in the color chooser —
+> `on_entry_value_change` calls `widget.validate()` first. +5 tests.
+>
+> **#1312 (`fix/2.1-dialog-centering-multihead`, OPEN)** — fixes **#1310**, but
+> **the issue's filed premise was wrong**: base `Dialog._locate` *did* apply its
+> coordinates. The actual cause is that there are **two same-named
+> `center_on_parent` functions with opposite contracts** —
+> `internal/positioning.py` (pure, *returns* coords; used by datepicker +
+> filedialog) and `internal/utility.py` (*applies* geometry, no clamp) — and
+> `dialogs/base.py` was the last caller of the legacy one. Three defects, only
+> the first visible off X11: (a) it measured the dialog with
+> `winfo_width() or winfo_reqwidth()`, but **a dialog is withdrawn when it is
+> positioned and an unmapped window reports width 1 — which is truthy**, so the
+> fallback never ran and it centered a **1×1 box** (proven: the legacy helper
+> applies `1x1+393+416`); (b) it re-applied a `WxH` size along with the offset;
+> (c) it never clamped onto a monitor. `_locate` now runs the same
+> center → clamp → apply sequence as the file dialog. The legacy helper **stays**
+> — still reachable through the deprecated `ttkbootstrap.utility` shim until 3.0
+> — with a docstring saying which of the two first-party code uses.
+>
+> **Then a `/review` of the merged #1311 found a real MEDIUM defect that this
+> branch's fix shared, so it was folded in.** Both dialogs position while
+> withdrawn, so `_window_size` falls back to the **content request — not the size
+> the window will have**: FileDialog clamped against 578×445 but maps at 640×480
+> (the `_build` floor); MessageDialog clamped against 122×102 but maps at 250×102
+> (the `minsize` floor). Under-clamping left the right-hand column — the OK/Cancel
+> buttons — past the screen edge, on the `position=None` path every
+> `Querybox.get_*` wrapper uses. Fix: an optional **`size=` override** on
+> `center_on_screen`/`center_on_parent`/`ensure_on_screen`; base `Dialog` derives
+> a `_footprint()` from the minsize floor, `FileDialog` records the geometry
+> `_build` applies. The review's two LOW findings also landed: #1311 had moved the
+> `position` unpack outside the `try`, so `show(position=(1,2,3))` raised instead
+> of centering; and its off-screen test asserted only that the result *moved*.
+>
+> **Then the author pushed back on "we can't know the monitor layout without
+> `screeninfo`" — correctly, and the claim was wrong twice.** First for Windows
+> (Tk reports the primary screen and the virtual desktop as *different* numbers,
+> and the difference derives the grid — verified: it reproduces `screeninfo`'s
+> answer exactly). Then, more importantly, in general: **Tk exposes no monitor
+> enumeration on ANY platform, but the X server does.** `XineramaQueryScreens`
+> returns the count and every monitor's `x/y/w/h` in one call. So
+> `internal/positioning.py` now resolves the layout **screeninfo → X11 Xinerama
+> via ctypes → Tk vroot**, matching how the library already reaches Windows' DPI
+> and shell APIs (**the library has never used `subprocess`** — ctypes is the
+> house pattern; don't shell out to `xrandr`). The query is skipped off X11,
+> caches its own unavailability, and cannot raise. **Windows/macOS unchanged**;
+> macOS multi-monitor still needs `screeninfo` (`CGGetActiveDisplayList` is a
+> separate, undecided call). Suite **904**, and re-run with `screeninfo` forced
+> off (136) so the fallback path is exercised.
+>
+> **KEY FACT to keep (why any of this is needed):** on X11 `winfo screenwidth`
+> reports the **union of every display**, and `winfo vrootwidth` falls back to
+> that same value unless a virtual-root WM is running (nothing modern sets
+> `__SWM_VROOT`). So Tk's own metrics can never locate a monitor seam on X11 —
+> which is exactly why a clamp against them let a dialog straddle two screens.
+> Windows differs: `winfo screenwidth` is the primary monitor, `winfo vrootwidth`
+> the virtual desktop.
+>
+> **VERIFICATION IS OUTSTANDING — do not merge #1312 blind.** New
+> **`tools/verify_positioning.py`** prints a PASS/FAIL line per check plus the raw
+> metrics; **Windows is done (4/4, Tk 8.6.15, dual 2560×1440)**, X11 and macOS are
+> not. Full instructions are in a comment on **#1310**. The two checks that matter:
+> on **X11**, run it *twice* — the second time with `screeninfo` uninstalled, since
+> that is the only way to exercise the new Xinerama path; on **macOS**, check 3
+> (mapped size vs. the footprint we clamp against) is unverified and aqua chrome
+> could differ, as #1147 already caught once — plus a **Tk 9** run via
+> `/opt/homebrew/bin/python3.14`, since 9.0 moved the aqua scaling baseline.
+>
+> **NEXT — the rest of the pre-2.1 punch list** (from the audit; none started):
+> **bump `pyproject.toml` 2.0.0 → 2.1.0** (the only hardcoded version);
+> **close #1242** (complete in `master`); **#1309** (X11 menu border) is the last
+> open feature-ish issue; **prune 10 stale local branches** (8 show merged, and
+> `feat/2.1-filedialog-x11-default` / `fix/2.1-filedialog-center-clamp` only look
+> unmerged because they were squash-merged — their content is on `master`,
+> verified); **delete `development/filedialogs/` (18 files) + `scrolledframe/`**
+> (prior art now superseded by shipped code — the #1250 precedent); and a **Tk 9
+> run on the Mac** for the 2.1 geometry/asset work generally. `2_1_changes.md` was
+> checked complete against the merged PR list before any of this.
 >
 > **User-visible 2.1 changes are logged in `development/2_1_changes.md`** (the
 > running log, same role `2_0_breaking_changes.md` played for 2.0; it is the source
@@ -1238,7 +1326,11 @@ A virtualenv with an editable install lives at `.venv/` (Python 3.x on macOS;
   they are NOT collected by pytest.
 - Build docs: `python -m sphinx -b html -W -q -E docs <out>` (must exit 0 — the
   docs are kept warning-clean; RTD enforces `fail_on_warning`). Deps in
-  `docs/requirements.txt`. On this box use `.venv-home/Scripts/python.exe`.
+  `docs/requirements.txt`. **`.venv-home` belongs to the author's other Windows
+  profile** (its base interpreter lives under `C:\Users\Israel Dryer\...`), so it
+  is unusable from the `Logistiview` profile — the docs deps were installed into
+  `.venv` there on 2026-07-27. Use whichever venv matches the profile you are on;
+  neither is stale.
 
 ### Writing tests
 
