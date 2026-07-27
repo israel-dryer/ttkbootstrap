@@ -253,3 +253,11 @@ all of the shipped dialogs place identically.
 
 **Scope.** Positioning only — no signature, no return value, and no appearance
 change. An explicit `position=` was already clamped and is unaffected.
+
+**Which screen a dialog is held on still depends on the optional `screeninfo`
+package.** With it installed, a dialog is clamped inside the monitor it opens on.
+Without it, `winfo_vroot*` reports one combined desktop spanning every monitor
+(on Windows and on X11 with Xinerama alike), so a dialog whose parent straddles
+the join between two screens is left straddling it. Centering is corrected either
+way — that half needs no monitor awareness — so the common case of a parent
+sitting on one screen is fixed regardless.

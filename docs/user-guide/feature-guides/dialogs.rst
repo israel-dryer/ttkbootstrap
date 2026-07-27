@@ -330,6 +330,16 @@ should appear next to the widget that opened it:
 
    dialog.show(position=(event.x_root, event.y_root))
 
+Either way the dialog is kept fully on screen.
+
+.. note::
+
+   Which screen it is kept on depends on the optional ``screeninfo`` package. With
+   it installed, a dialog is held inside the monitor it opens on; without it,
+   ttkbootstrap can only see one combined desktop, so on a multi-monitor setup a
+   dialog whose parent sits near the join between two screens can span both. See
+   :doc:`../getting-started/installation`.
+
 **Run it without blocking.** Pass a ``command`` — a plain zero-argument callable
 run when a button is pressed — and show it with ``wait_for_result=False``. The
 call returns immediately and your callback fires when the user answers, which
