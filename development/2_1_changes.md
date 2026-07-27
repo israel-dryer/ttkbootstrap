@@ -254,10 +254,10 @@ all of the shipped dialogs place identically.
 **Scope.** Positioning only — no signature, no return value, and no appearance
 change. An explicit `position=` was already clamped and is unaffected.
 
-**Which screen a dialog is held on still depends on the optional `screeninfo`
-package.** With it installed, a dialog is clamped inside the monitor it opens on.
-Without it, `winfo_vroot*` reports one combined desktop spanning every monitor
-(on Windows and on X11 with Xinerama alike), so a dialog whose parent straddles
-the join between two screens is left straddling it. Centering is corrected either
-way — that half needs no monitor awareness — so the common case of a parent
-sitting on one screen is fixed regardless.
+**Multi-monitor placement no longer needs the optional `screeninfo` package on
+Linux.** Tk has no monitor enumeration on any platform — `winfo screenwidth` on
+X11 reports the union of every display — so the layout is now read from X11's
+Xinerama extension directly when `screeninfo` is not installed. A dialog is
+clamped inside the monitor it opens on instead of merely inside the combined
+desktop, which is what let one straddle the join between two screens.
+`screeninfo` is still used first when present, and Windows/macOS are unchanged.

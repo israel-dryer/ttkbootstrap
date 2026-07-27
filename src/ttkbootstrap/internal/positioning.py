@@ -6,15 +6,21 @@ mechanisms ``Window``/``Toplevel`` and the dialogs need: center-on-screen,
 center-on-parent, and clamp-into-the-visible-monitor. Each is a pure geometry
 calculation returning ``(x, y)``; the caller applies the geometry string.
 
-Multi-monitor awareness is optional: if the third-party ``screeninfo`` package
-is importable we resolve the monitor under a point, otherwise we fall back to
-Tk's virtual-root dimensions (single logical screen). No new hard dependency —
-Pillow stays the only required runtime dep.
+Multi-monitor awareness comes from whichever source can answer, in order: the
+third-party ``screeninfo`` package when it is installed, then X11's Xinerama
+extension queried directly, then Tk's virtual-root dimensions (one logical
+screen). No new hard dependency — Pillow stays the only required runtime dep.
+
+Tk itself has no monitor enumeration on any platform: ``winfo screenwidth`` on
+X11 reports the union of every display, and ``winfo vrootwidth`` falls back to
+that same value unless a virtual-root window manager is running. The layout has
+to come from the platform.
 """
 from __future__ import annotations
 
+import sys
 import tkinter
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 
 try:
     from screeninfo import get_monitors  # type: ignore
@@ -24,27 +30,121 @@ except Exception:  # pragma: no cover - screeninfo is an optional extra
 
 Rect = Tuple[int, int, int, int]  # (x, y, width, height)
 
+# set once a Xinerama query has proved impossible, so we don't reload libraries
+# on every placement
+_XINERAMA_UNAVAILABLE = False
+
+
+def _load_library(name: str):  # pragma: no cover - X11 only
+    """Load a shared library by short name, or return None."""
+    import ctypes
+    import ctypes.util
+
+    candidates = (
+        ctypes.util.find_library(name),
+        f"lib{name}.so.6",
+        f"lib{name}.so.1",
+        f"lib{name}.so",
+    )
+    for candidate in candidates:
+        if not candidate:
+            continue
+        try:
+            return ctypes.CDLL(candidate)
+        except OSError:
+            continue
+    return None
+
+
+def _xinerama_monitors() -> Optional[List[Rect]]:  # pragma: no cover - X11 only
+    """Monitor rects from X11's Xinerama extension, or None when unavailable.
+
+    Asks the X server directly, the way ``screeninfo`` does, so multi-monitor
+    placement works on a plain install. ctypes into a platform library is how
+    the rest of the library reaches Windows' DPI and shell APIs.
+    """
+    global _XINERAMA_UNAVAILABLE
+    if _XINERAMA_UNAVAILABLE or sys.platform in ("win32", "darwin", "cygwin"):
+        return None
+    try:
+        import ctypes
+
+        class _XineramaScreenInfo(ctypes.Structure):
+            _fields_ = [
+                ("screen_number", ctypes.c_int),
+                ("x", ctypes.c_short),
+                ("y", ctypes.c_short),
+                ("width", ctypes.c_short),
+                ("height", ctypes.c_short),
+            ]
+
+        xlib = _load_library("X11")
+        xinerama = _load_library("Xinerama")
+        if xlib is None or xinerama is None:
+            _XINERAMA_UNAVAILABLE = True
+            return None
+
+        xlib.XOpenDisplay.argtypes = [ctypes.c_char_p]
+        xlib.XOpenDisplay.restype = ctypes.POINTER(ctypes.c_void_p)
+        xlib.XFree.argtypes = [ctypes.c_void_p]
+        xlib.XFree.restype = None
+
+        display = xlib.XOpenDisplay(b"")
+        if not display:
+            _XINERAMA_UNAVAILABLE = True
+            return None
+        try:
+            if not xinerama.XineramaIsActive(display):
+                # a single-head server answers no query; Tk's screen metrics are
+                # already correct there
+                _XINERAMA_UNAVAILABLE = True
+                return None
+            count = ctypes.c_int()
+            xinerama.XineramaQueryScreens.restype = ctypes.POINTER(_XineramaScreenInfo)
+            infos = xinerama.XineramaQueryScreens(display, ctypes.byref(count))
+            if not infos or count.value <= 0:
+                return None
+            try:
+                screens = ctypes.cast(
+                    infos, ctypes.POINTER(_XineramaScreenInfo * count.value)
+                ).contents
+                return [(s.x, s.y, s.width, s.height) for s in screens]
+            finally:
+                xlib.XFree(infos)
+        finally:
+            xlib.XCloseDisplay(display)
+    except Exception:
+        _XINERAMA_UNAVAILABLE = True
+        return None
+
+
+def _monitors() -> Optional[List[Rect]]:
+    """Every monitor's bounds, or None when the layout can't be determined."""
+    if _HAS_SCREENINFO:
+        try:
+            monitors = [(m.x, m.y, m.width, m.height) for m in get_monitors()]
+            if monitors:
+                return monitors
+        except Exception:
+            pass  # fall through to Xinerama rather than give up
+    return _xinerama_monitors()
+
 
 def _monitor_at_point(x: int, y: int) -> Optional[Rect]:
     """Return the ``(x, y, w, h)`` bounds of the monitor containing a point.
 
-    Returns ``None`` when ``screeninfo`` is unavailable so callers fall back to
-    Tk's screen/virtual-root metrics. When ``screeninfo`` is present but the
+    Returns ``None`` when no source can describe the layout, so callers fall
+    back to Tk's screen/virtual-root metrics. When the layout is known but the
     point is on no monitor, the first monitor is returned as a sane default.
     """
-    if not _HAS_SCREENINFO:
+    monitors = _monitors()
+    if not monitors:
         return None
-    try:
-        monitors = get_monitors()
-        for m in monitors:
-            if m.x <= x < m.x + m.width and m.y <= y < m.y + m.height:
-                return (m.x, m.y, m.width, m.height)
-        if monitors:
-            m = monitors[0]
-            return (m.x, m.y, m.width, m.height)
-    except Exception:
-        pass
-    return None
+    for rect in monitors:
+        mx, my, mw, mh = rect
+        if mx <= x < mx + mw and my <= y < my + mh:
+            return rect
+    return monitors[0]
 
 
 def _window_size(window: tkinter.Misc) -> Tuple[int, int]:

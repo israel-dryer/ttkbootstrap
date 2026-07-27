@@ -457,3 +457,64 @@ def test_on_close_on_app_root_veto(root):
     _fire_close(root)
     assert calls == [1] and root.winfo_exists()
     root.protocol("WM_DELETE_WINDOW", "")  # reset so the shared root is untouched
+
+
+# --- monitor discovery -----------------------------------------------------
+#
+# Tk exposes no monitor enumeration on any platform, so the layout comes from
+# screeninfo when installed and from X11's Xinerama extension otherwise. The
+# ctypes query itself needs a real X server; these cover the chain around it.
+
+def test_xinerama_query_is_skipped_off_x11(monkeypatch):
+    # It must not try to load libX11 on Windows or macOS.
+    import sys
+
+    loaded = []
+    monkeypatch.setattr(positioning, "_load_library", lambda name: loaded.append(name))
+    for platform in ("win32", "darwin", "cygwin"):
+        monkeypatch.setattr(positioning, "_XINERAMA_UNAVAILABLE", False)
+        monkeypatch.setattr(sys, "platform", platform)
+        assert positioning._xinerama_monitors() is None
+    assert loaded == []
+
+
+def test_monitors_falls_back_to_xinerama_without_screeninfo(monkeypatch):
+    layout = [(0, 0, 1920, 1080), (1920, 0, 2560, 1440)]
+    monkeypatch.setattr(positioning, "_HAS_SCREENINFO", False)
+    monkeypatch.setattr(positioning, "_xinerama_monitors", lambda: layout)
+    assert positioning._monitors() == layout
+    # and a point resolves to the monitor that contains it, not the first one
+    assert positioning._monitor_at_point(2000, 500) == (1920, 0, 2560, 1440)
+
+
+def test_monitors_falls_back_when_screeninfo_raises(monkeypatch):
+    layout = [(0, 0, 1920, 1080)]
+    monkeypatch.setattr(positioning, "_HAS_SCREENINFO", True)
+    monkeypatch.setattr(
+        positioning, "get_monitors", lambda: (_ for _ in ()).throw(RuntimeError("no display")),
+        raising=False,
+    )
+    monkeypatch.setattr(positioning, "_xinerama_monitors", lambda: layout)
+    assert positioning._monitors() == layout
+
+
+def test_monitor_at_point_returns_none_when_no_source_answers(monkeypatch):
+    monkeypatch.setattr(positioning, "_HAS_SCREENINFO", False)
+    monkeypatch.setattr(positioning, "_xinerama_monitors", lambda: None)
+    assert positioning._monitor_at_point(10, 10) is None
+
+
+def test_clamp_uses_the_monitor_under_the_point_not_the_whole_desktop(root, monkeypatch):
+    # The case that motivated this: two monitors side by side, a window that
+    # would straddle the join. Clamping against the combined desktop leaves it
+    # straddling; clamping against the monitor pulls it fully onto one screen.
+    monkeypatch.setattr(positioning, "_HAS_SCREENINFO", False)
+    monkeypatch.setattr(
+        positioning, "_xinerama_monitors", lambda: [(0, 0, 1920, 1080), (1920, 0, 1920, 1080)]
+    )
+    top = ttk.Toplevel(title="child", size=(400, 200))
+    top.update_idletasks()
+    # ask to sit across the seam at x=1920
+    x, _ = positioning.ensure_on_screen(top, 1800, 300, size=(400, 200))
+    assert x + 400 <= 1920, "the window should be pulled fully onto the left monitor"
+    top.destroy()
