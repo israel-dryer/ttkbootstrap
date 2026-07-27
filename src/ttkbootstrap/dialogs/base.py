@@ -46,12 +46,27 @@ class Dialog(BaseWidget):
         self._alert = alert
         self._initial_focus = None
 
+    def _footprint(self) -> Tuple[int, int]:
+        """The size the dialog occupies once mapped.
+
+        A dialog is still withdrawn when it is positioned, so it has no realized
+        size and its *requested* size ignores the `minsize` floor `build` pins --
+        measuring that instead centers and clamps a smaller window than the one
+        the user sees.
+        """
+        toplevel = self._toplevel
+        min_width, min_height = toplevel.wm_minsize()
+        return (
+            max(toplevel.winfo_reqwidth(), min_width),
+            max(toplevel.winfo_reqheight(), min_height),
+        )
+
     def _center(self) -> Tuple[int, int]:
         """Coordinates that center the dialog over its parent (or the screen)."""
         parent = self._parent if self._parent is not None else self.master
         if parent is not None:
-            return center_on_parent(self._toplevel, parent)
-        return center_on_screen(self._toplevel)
+            return center_on_parent(self._toplevel, parent, size=self._footprint())
+        return center_on_screen(self._toplevel, size=self._footprint())
 
     def _locate(self) -> None:
         """Center the dialog on its parent, clamped onto that monitor.
@@ -65,7 +80,7 @@ class Dialog(BaseWidget):
         toplevel.update_idletasks()
         x, y = self._center()
         try:
-            x, y = ensure_on_screen(toplevel, x, y)
+            x, y = ensure_on_screen(toplevel, x, y, size=self._footprint())
         except Exception:
             pass
         toplevel.geometry(f"+{int(x)}+{int(y)}")
@@ -93,7 +108,7 @@ class Dialog(BaseWidget):
                 x, y = position
                 # Clamp so an explicit position near a screen edge doesn't push
                 # the dialog partly (or fully) off-screen.
-                x, y = ensure_on_screen(self._toplevel, x, y)
+                x, y = ensure_on_screen(self._toplevel, x, y, size=self._footprint())
                 self._toplevel.geometry(f'+{x}+{y}')
             except Exception:
                 self._locate()

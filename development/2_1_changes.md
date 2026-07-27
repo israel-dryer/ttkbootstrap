@@ -241,6 +241,12 @@ visible on Windows/macOS:
 - It never clamped the result onto a monitor. Windows and macOS window managers
   nudge a stray transient back on-screen; X11 does not.
 
+Centering and clamping now measure the size the dialog will actually have once
+mapped — its content request raised to the `minsize` floor the dialog pins. For a
+short message that floor is over 100px wider than the content asks for, and
+clamping against the smaller number leaves the dialog's right edge, where the
+buttons are, past the screen edge.
+
 The dialogs now use the same `internal.positioning` helpers (and the same
 center → clamp → apply order) the themed file dialog was fixed onto in 2.1, so
 all of the shipped dialogs place identically.

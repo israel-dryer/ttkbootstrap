@@ -332,8 +332,9 @@ def test_locate_applies_center_over_parent(root):
     from ttkbootstrap.internal.positioning import center_on_parent, ensure_on_screen
 
     dlg = _built_dialog(root)
+    size = dlg._footprint()
     expected = ensure_on_screen(
-        dlg._toplevel, *center_on_parent(dlg._toplevel, root)
+        dlg._toplevel, *center_on_parent(dlg._toplevel, root, size=size), size=size
     )
     dlg._locate()
     assert _applied_position(dlg) == expected
@@ -384,4 +385,32 @@ def test_locate_applies_an_offset_only_geometry(root):
     dlg._locate()
     assert applied and all(spec.startswith("+") for spec in applied), applied
     del dlg._toplevel.geometry
+    dlg.close()
+
+
+def test_footprint_measures_the_mapped_size_not_the_content(root):
+    # A dialog is withdrawn when it is positioned, so it has no realized size,
+    # and its requested size ignores the minsize floor build() pins. Centering
+    # and clamping against the smaller content size misplaces the dialog by the
+    # difference -- for a short message that is over 100px of width.
+    dlg = _built_dialog(root, message="ok")
+    tl = dlg._toplevel
+    min_width, min_height = tl.wm_minsize()
+    assert tl.winfo_reqwidth() < min_width, "expected the minsize floor to bind"
+    assert dlg._footprint() == (
+        max(tl.winfo_reqwidth(), min_width),
+        max(tl.winfo_reqheight(), min_height),
+    )
+    dlg.close()
+
+
+def test_locate_keeps_the_whole_footprint_on_screen(root):
+    # Clamping against the content size reserves too little room and leaves the
+    # dialog's right edge -- where the buttons live -- past the screen edge.
+    dlg = _built_dialog(root, message="ok")
+    right_edge = root.winfo_vrootx() + root.winfo_vrootwidth()
+    dlg._center = lambda: (right_edge - 10, 0)  # hard against the right edge
+    dlg._locate()
+    x, _ = _applied_position(dlg)
+    assert x + dlg._footprint()[0] <= right_edge
     dlg.close()

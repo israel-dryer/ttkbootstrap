@@ -63,7 +63,10 @@ def _window_size(window: tkinter.Misc) -> Tuple[int, int]:
     return window.winfo_reqwidth(), window.winfo_reqheight()
 
 
-def center_on_screen(window: tkinter.Misc) -> Tuple[int, int]:
+def center_on_screen(
+        window: tkinter.Misc,
+        size: Optional[Tuple[int, int]] = None,
+) -> Tuple[int, int]:
     """Coordinates that center ``window`` on the screen.
 
     With ``screeninfo`` installed, centers on the monitor under the mouse
@@ -73,10 +76,11 @@ def center_on_screen(window: tkinter.Misc) -> Tuple[int, int]:
     have a negative origin (e.g. a screen to the left of the primary), and a
     window larger than the monitor is pinned to its top-left rather than
     overflowing. Call ``update_idletasks()`` first for an accurate size — this
-    method does so as well.
+    method does so as well. ``size`` overrides the measured size for a window
+    that is not mapped yet (see :func:`center_on_parent`).
     """
     window.update_idletasks()
-    w_width, w_height = _window_size(window)
+    w_width, w_height = size if size is not None else _window_size(window)
     monitor = _monitor_at_point(window.winfo_pointerx(), window.winfo_pointery())
     if monitor:
         mx, my, mw, mh = monitor
@@ -93,11 +97,21 @@ def center_on_screen(window: tkinter.Misc) -> Tuple[int, int]:
     return int(x), int(y)
 
 
-def center_on_parent(window: tkinter.Misc, parent: tkinter.Misc) -> Tuple[int, int]:
-    """Coordinates (in screen space) that center ``window`` over ``parent``."""
+def center_on_parent(
+        window: tkinter.Misc,
+        parent: tkinter.Misc,
+        size: Optional[Tuple[int, int]] = None,
+) -> Tuple[int, int]:
+    """Coordinates (in screen space) that center ``window`` over ``parent``.
+
+    Pass ``size`` when the caller has just sized a window that is not mapped yet:
+    a floor applied through ``wm geometry`` or ``wm minsize`` does not reach
+    ``winfo_reqwidth``, so :func:`_window_size` would measure a smaller window
+    than the one the user ends up seeing.
+    """
     window.update_idletasks()
     parent.update_idletasks()
-    w_width, w_height = _window_size(window)
+    w_width, w_height = size if size is not None else _window_size(window)
     p_x = parent.winfo_rootx()
     p_y = parent.winfo_rooty()
     # actual occupied size, not the inflated content request (see _window_size)
@@ -157,6 +171,7 @@ def ensure_on_screen(
         y: int,
         padding: int = 20,
         titlebar_height: int = 60,
+        size: Optional[Tuple[int, int]] = None,
 ) -> Tuple[int, int]:
     """Clamp ``(x, y)`` so the window stays fully visible on its monitor.
 
@@ -165,9 +180,13 @@ def ensure_on_screen(
     on-screen. Uses the ``screeninfo`` monitor under the proposed point when
     available (so a window that legitimately belongs on a secondary monitor is
     not yanked back to the primary), else Tk's virtual-root bounds.
+
+    ``size`` overrides the measured size, for a window that is not mapped yet --
+    see :func:`center_on_parent`. Clamping against too small a size
+    under-corrects and leaves the window's far edge off-screen.
     """
     window.update_idletasks()
-    w_width, w_height = _window_size(window)
+    w_width, w_height = size if size is not None else _window_size(window)
 
     monitor = _monitor_at_point(x, y)
     if monitor:

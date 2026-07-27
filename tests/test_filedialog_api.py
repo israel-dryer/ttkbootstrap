@@ -408,8 +408,9 @@ def test_locate_applies_center_over_parent(root, tmp_path):
     import re
     from ttkbootstrap.internal.positioning import center_on_parent, ensure_on_screen
     dlg = _build(root, tmp_path, mode="open")
-    cx, cy = center_on_parent(dlg._toplevel, root)
-    expected = ensure_on_screen(dlg._toplevel, cx, cy)
+    size = dlg._footprint
+    cx, cy = center_on_parent(dlg._toplevel, root, size=size)
+    expected = ensure_on_screen(dlg._toplevel, cx, cy, size=size)
     dlg._locate(None)
     dlg._toplevel.update_idletasks()
     m = re.search(r"\+(-?\d+)\+(-?\d+)$", dlg._toplevel.geometry())
@@ -417,16 +418,56 @@ def test_locate_applies_center_over_parent(root, tmp_path):
     assert (int(m.group(1)), int(m.group(2))) == expected
 
 
-def test_locate_clamps_offscreen_position(root, tmp_path):
-    # An explicit position that would put the dialog off-screen is pulled back,
-    # so the bottom controls can't be pushed off the edge.
+def _applied_position(dlg):
     import re
-    dlg = _build(root, tmp_path, mode="open")
-    dlg._locate((-5000, -5000))
     dlg._toplevel.update_idletasks()
     m = re.search(r"\+(-?\d+)\+(-?\d+)$", dlg._toplevel.geometry())
-    x, y = int(m.group(1)), int(m.group(2))
-    assert x > -5000 and y > -5000
+    assert m is not None, "no +x+y in the applied geometry"
+    return int(m.group(1)), int(m.group(2))
+
+
+def test_locate_clamps_offscreen_position(root, tmp_path):
+    # An explicit position off the top-left is pulled back onto the screen, not
+    # merely nudged: assert the whole window lands within the visible bounds.
+    dlg = _build(root, tmp_path, mode="open")
+    dlg._locate((-5000, -5000))
+    x, y = _applied_position(dlg)
+    assert x >= dlg._toplevel.winfo_vrootx()
+    assert y >= dlg._toplevel.winfo_vrooty()
+
+
+def test_locate_clamps_against_the_applied_size(root, tmp_path):
+    # _build opens the dialog at a 640x480 floor, and it is still withdrawn when
+    # positioned -- so winfo_reqwidth is NOT the size it will have (it is smaller
+    # at build time, and drifts larger once _navigate fills the path entry).
+    # Clamping has to use the size _build applied, or the right-hand column
+    # holding the OK/Cancel buttons ends up past the screen edge.
+    from ttkbootstrap.internal.positioning import ensure_on_screen
+
+    dlg = _build(root, tmp_path, mode="open")
+    tl = dlg._toplevel
+    right_edge = tl.winfo_vrootx() + tl.winfo_vrootwidth()
+    target = (right_edge - 10, 0)  # hard against the right edge
+
+    dlg._locate(target)
+    assert _applied_position(dlg) == ensure_on_screen(tl, *target, size=dlg._footprint)
+    # the whole window fits, measured against the size it will actually have
+    assert _applied_position(dlg)[0] + dlg._footprint[0] <= right_edge
+
+
+def test_footprint_is_the_size_build_applied(root, tmp_path):
+    dlg = _build(root, tmp_path, mode="open")
+    assert dlg._footprint[0] >= 640 and dlg._footprint[1] >= 480
+
+
+def test_locate_falls_back_to_centering_for_a_malformed_position(root, tmp_path):
+    # A position that isn't an (x, y) pair centers the dialog rather than raising
+    # out of show().
+    dlg = _build(root, tmp_path, mode="open")
+    dlg._locate(None)
+    centered = _applied_position(dlg)
+    dlg._locate((1, 2, 3))  # not an (x, y) pair
+    assert _applied_position(dlg) == centered
 
 
 def test_multiple_open_returns_tuple(root, tmp_path):
