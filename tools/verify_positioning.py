@@ -1,14 +1,38 @@
-"""Cross-platform verification for #1310 / PR #1312 (dialog positioning).
+"""Cross-platform verification for window and dialog positioning.
 
-Run from the repo root on each platform:
+Run from the repo root on each platform -- Windows, macOS (aqua) and Linux
+(x11):
 
     PYTHONPATH=src python tools/verify_positioning.py
 
-Prints a PASS/FAIL line per check. Checks 4, 5 and 6 open real windows and need
-a human to look at them; everything else is automatic.
+Prints a PASS/FAIL line per check. Checks 4, 5, 6 and 7 open real windows;
+4, 5 and 6 want a human to look at them, the rest are automatic.
+
+WHY THIS IS PER-PLATFORM, AND WHY A GREEN RUN ON ONE BOX PROVES LITTLE
+
+Centering a window before it is shown means predicting the size it will map at,
+and what a window reports about itself before its first map differs by platform:
+x11 says 1x1, while win32 reports the size Tk started the window at -- a
+plausible-looking number that is not the size the content will map at. Any
+check that trusts what the window reports therefore passes on whichever
+platform it happens to be right about. That is not hypothetical: it is how the
+demo shipped opening off-centre on Windows while every test passed.
+
+Two consequences for anyone adding a check here. It has to fail against the bug
+it is meant to catch -- verify that by reverting the fix, not by reading the
+code. And the *shape* of the window matters as much as the platform: a root and
+a Toplevel report differently, and so do content packed straight into the root
+versus content packed after the root has settled (see check 7).
+
+There is no CI, so these runs are manual. On macOS run it against both Tk lines
+(8.6 and 9.0 -- the aqua scaling baseline moved in 9). On x11 run it twice,
+with and without `screeninfo` installed: that is the only way to exercise the
+Xinerama fallback in check 2.
 """
 import re
+import subprocess
 import sys
+import textwrap
 import time
 import tkinter
 
@@ -172,6 +196,73 @@ print("    -> LOOK: that window should already be centered when it appears, and"
 print("             should not flash or jump on the way in.")
 hold(probe)
 probe.destroy()
+
+# --- 7. a content-sized ROOT, centered before its first map ----------------
+# This is the demo's case (`python -m ttkbootstrap`) and the one check 6 misses:
+# check 6 passes a size, which is remembered and used directly, while a window
+# sized only by its content has to be measured. What a window reports before
+# its first map is platform-specific -- x11 says 1x1, but win32 reports the
+# size Tk started it at, a plausible number unrelated to the size the content
+# will map at -- so a check that trusts it silently passes on the platform it
+# is right on. It must be a *root*: on win32 a Toplevel does report 1x1, so a
+# Toplevel version of this check passes even against the bug. Hence a separate
+# process -- this one's root has long since been shown.
+#
+# The structure matters as much as the sizing: the content goes into a frame
+# that is packed *afterwards*, exactly as the demo builds itself. Packing
+# straight into the root instead lets Tk settle the root on the real size
+# before anyone measures it, and the check then passes even against the bug.
+_child = textwrap.dedent("""
+    import ttkbootstrap as ttk
+    app = ttk.App(title="content-sized root", minsize=(600, 0))
+    app.withdraw()
+    bag = ttk.Frame(app)
+    for i in range(6):
+        ttk.Button(bag, text=f"a reasonably wide button {i}").pack(padx=30, pady=6)
+    app.update_idletasks()      # the root settles at its default size here
+    bag.pack(fill="both", expand=True)
+    predicted = app._unmapped_size()
+    applied = []
+    _g = app.geometry
+    app.geometry = lambda spec=None: (
+        applied.append(spec) if spec is not None else None) or _g(spec)
+    app.place_window_center()
+    del app.geometry
+    app.deiconify()
+    app.update_idletasks()
+    app.update()
+    print("RESULT", predicted[0], predicted[1],
+          app.winfo_width(), app.winfo_height(), applied[-1])
+""")
+_proc = subprocess.run([sys.executable, "-c", _child], capture_output=True, text=True)
+_line = next((ln for ln in _proc.stdout.splitlines() if ln.startswith("RESULT")), None)
+if _line is None:
+    check("7. a content-sized root is measured, not guessed", False,
+          f"the child process reported nothing ({_proc.stderr.strip()[:200]})",
+          always_show=True)
+else:
+    _, pw, ph, mw_, mh_, spec = _line.split(maxsplit=5)
+    predicted, mapped = (int(pw), int(ph)), (int(mw_), int(mh_))
+    check("7. a content-sized root is measured, not guessed", predicted == mapped,
+          f"predicted={predicted[0]}x{predicted[1]} "
+          f"mapped={mapped[0]}x{mapped[1]}", always_show=True)
+
+    coords = re.search(r"\+(-?\d+)\+(-?\d+)$", spec)
+    if coords is None:
+        check("7b. a content-sized root is centered", False,
+              f"no +x+y was applied ({spec})", always_show=True)
+    else:
+        ax, ay = int(coords.group(1)), int(coords.group(2))
+        monitor = p._monitor_at_point(ax, ay)
+        if monitor:
+            mx, my, mw, mh = monitor
+        else:
+            mx, my = 0, 0
+            mw, mh = app.winfo_screenwidth(), app.winfo_screenheight()
+        want = (mx + (mw - mapped[0]) // 2, my + (mh - mapped[1]) // 2)
+        check("7b. a content-sized root is centered", (ax, ay) == want,
+              f"applied=({ax},{ay}) want={want} "
+              f"mapped={mapped[0]}x{mapped[1]}", always_show=True)
 
 failed = [n for n, ok in results if not ok]
 print(f"\n{len(results) - len(failed)}/{len(results)} automatic checks passed")
