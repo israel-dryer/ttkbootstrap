@@ -817,13 +817,19 @@ DONE.** Optional post-release polish only from here.
 > one notch jumped to the end; X11 no longer delivers Button-4/5) and the aqua
 > scaling baseline (PR #1292 — Tk 9 moved aqua from 72 to 96 dpi, so every asset
 > and padding rendered 33% larger than designed while the text stayed put).
-> **Cut from the `v2.0.0` tag, NOT `master`**, which is the 2.1 mainline and
-> carries features + a visual change that don't belong in a patch. The
-> `release/2.0` branch used to build it was **deleted after publishing** — per the
-> author's convention, `release/*` holds maintenance branches for *superseded*
-> majors (`release/v0.5`, `release/v1`) and the latest always lives on `master`;
-> the `v2.0.1` tag preserves the release point, so branch again from the tag if a
-> 2.0.2 is ever needed. Both fixes are also on `master`. Tag `v2.0.1` + GitHub
+> It was cut from the `v2.0.0` tag on a `release/2.0` branch (deleted after
+> publishing). **AUTHOR CORRECTION (2026-07-28): making that branch was a
+> mistake — do not repeat it.** The convention is that **`master` is always the
+> most recent release**; `release/*` is only for *superseded* majors
+> (`release/v0.5`, `release/v1`). A patch release is cut from `master`, so the
+> version bump lands there naturally. The consequence of getting it wrong is
+> exactly what happened here: the bump commit (`8fbf3aa`) lived only on the
+> deleted branch and its tag, so **`master` kept claiming 2.0.0 while 2.0.1 was
+> the released version** — caught 2026-07-28 and corrected on
+> `chore/2.1-version-catchup`. (Both *fixes* were on `master` already, via the
+> original #1291/#1292 merges; only the bump was stranded.) Note the version
+> literal in `pyproject.toml` is load-bearing beyond packaging: `docs/conf.py`
+> reads it through `importlib.metadata`, so a stale value mislabels the docs too. Tag `v2.0.1` + GitHub
 > release live; on PyPI at https://pypi.org/project/ttkbootstrap/2.0.1/.
 > **Tk 9 is now testable on the Mac** — Homebrew `/opt/homebrew/bin/python3.14` is
 > Tk 9.0.4 while the default `python`/`.venv` is 8.6.17; run the suite against it
