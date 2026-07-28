@@ -316,11 +316,38 @@ def _built_dialog(root, message="hello", **kwargs):
     return dlg
 
 
-def _applied_position(dialog):
+def _locate_and_capture(dialog, *args):
+    """Run `_locate` and return the (x, y) it applied.
+
+    Record the call instead of reading `geometry()` back afterwards: on X11 the
+    readback is not the position that was just requested. A dialog is withdrawn
+    while it is positioned, and an unmapped window reports the placement the
+    window manager has in mind rather than the request (probed under XWayland:
+    a dialog asked for +4460+20 reads back +32+32); once mapped it tracks the
+    frame, not the client. What these tests are about is whether `_locate`
+    applies coordinates at all.
+    """
     import re
-    dialog._toplevel.update_idletasks()
-    m = re.search(r"\+(-?\d+)\+(-?\d+)$", dialog._toplevel.geometry())
-    assert m is not None, "no +x+y in the applied geometry"
+
+    toplevel = dialog._toplevel
+    applied = []
+    real = toplevel.geometry
+
+    def spy(spec=None):
+        # Only a set call carries a spec; a query would append None and break
+        # the parse below.
+        if spec is not None:
+            applied.append(spec)
+        return real(spec)
+
+    toplevel.geometry = spy
+    try:
+        dialog._locate(*args)
+    finally:
+        del toplevel.geometry
+    assert applied, "no geometry was applied"
+    m = re.search(r"\+(-?\d+)\+(-?\d+)$", applied[-1])
+    assert m is not None, f"no +x+y in the applied geometry {applied[-1]!r}"
     return int(m.group(1)), int(m.group(2))
 
 
@@ -336,8 +363,7 @@ def test_locate_applies_center_over_parent(root):
     expected = ensure_on_screen(
         dlg._toplevel, *center_on_parent(dlg._toplevel, root, size=size), size=size
     )
-    dlg._locate()
-    assert _applied_position(dlg) == expected
+    assert _locate_and_capture(dlg) == expected
     dlg.close()
 
 
@@ -368,8 +394,7 @@ def test_locate_without_a_parent_still_applies_a_position(root):
     # parent=None falls back to the dialog's master; it must still be placed.
     dlg = MessageDialog("hello")
     dlg.build()
-    dlg._locate()
-    x, y = _applied_position(dlg)
+    x, y = _locate_and_capture(dlg)
     assert x >= 0 and y >= 0
     dlg.close()
 
@@ -410,7 +435,6 @@ def test_locate_keeps_the_whole_footprint_on_screen(root):
     dlg = _built_dialog(root, message="ok")
     right_edge = root.winfo_vrootx() + root.winfo_vrootwidth()
     dlg._center = lambda: (right_edge - 10, 0)  # hard against the right edge
-    dlg._locate()
-    x, _ = _applied_position(dlg)
+    x, _ = _locate_and_capture(dlg)
     assert x + dlg._footprint()[0] <= right_edge
     dlg.close()

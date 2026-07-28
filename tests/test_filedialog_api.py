@@ -401,37 +401,58 @@ def test_window_sizes_to_content_not_clipped(root, tmp_path):
     assert min_h >= 300  # a real content height, not zero
 
 
+def _locate_and_capture(dlg, position):
+    """Run `_locate` and return the (x, y) it applied.
+
+    Record the call instead of reading `geometry()` back afterwards: on X11 the
+    readback is not the position that was just requested. A dialog is withdrawn
+    while it is positioned, and an unmapped window reports the placement the
+    window manager has in mind rather than the request (probed under XWayland:
+    a dialog asked for +4460+20 reads back +32+32); once mapped it tracks the
+    frame, not the client. What these tests are about is whether `_locate`
+    applies coordinates at all.
+    """
+    import re
+
+    tl = dlg._toplevel
+    applied = []
+    real = tl.geometry
+
+    def spy(spec=None):
+        # Only a set call carries a spec; a query would append None and break
+        # the parse below.
+        if spec is not None:
+            applied.append(spec)
+        return real(spec)
+
+    tl.geometry = spy
+    try:
+        dlg._locate(position)
+    finally:
+        del tl.geometry
+    assert applied, "no geometry was applied"
+    m = re.search(r"\+(-?\d+)\+(-?\d+)$", applied[-1])
+    assert m is not None, f"no +x+y in the applied geometry {applied[-1]!r}"
+    return int(m.group(1)), int(m.group(2))
+
+
 def test_locate_applies_center_over_parent(root, tmp_path):
     # _locate must apply the centered coordinates, not rely on the window manager
     # (which leaves an X11 transient at the virtual-desktop origin). The centered
     # result is also clamped on-screen, so compare against the clamped value.
-    import re
     from ttkbootstrap.internal.positioning import center_on_parent, ensure_on_screen
     dlg = _build(root, tmp_path, mode="open")
     size = dlg._footprint
     cx, cy = center_on_parent(dlg._toplevel, root, size=size)
     expected = ensure_on_screen(dlg._toplevel, cx, cy, size=size)
-    dlg._locate(None)
-    dlg._toplevel.update_idletasks()
-    m = re.search(r"\+(-?\d+)\+(-?\d+)$", dlg._toplevel.geometry())
-    assert m is not None
-    assert (int(m.group(1)), int(m.group(2))) == expected
-
-
-def _applied_position(dlg):
-    import re
-    dlg._toplevel.update_idletasks()
-    m = re.search(r"\+(-?\d+)\+(-?\d+)$", dlg._toplevel.geometry())
-    assert m is not None, "no +x+y in the applied geometry"
-    return int(m.group(1)), int(m.group(2))
+    assert _locate_and_capture(dlg, None) == expected
 
 
 def test_locate_clamps_offscreen_position(root, tmp_path):
     # An explicit position off the top-left is pulled back onto the screen, not
     # merely nudged: assert the whole window lands within the visible bounds.
     dlg = _build(root, tmp_path, mode="open")
-    dlg._locate((-5000, -5000))
-    x, y = _applied_position(dlg)
+    x, y = _locate_and_capture(dlg, (-5000, -5000))
     assert x >= dlg._toplevel.winfo_vrootx()
     assert y >= dlg._toplevel.winfo_vrooty()
 
@@ -449,10 +470,10 @@ def test_locate_clamps_against_the_applied_size(root, tmp_path):
     right_edge = tl.winfo_vrootx() + tl.winfo_vrootwidth()
     target = (right_edge - 10, 0)  # hard against the right edge
 
-    dlg._locate(target)
-    assert _applied_position(dlg) == ensure_on_screen(tl, *target, size=dlg._footprint)
+    applied = _locate_and_capture(dlg, target)
+    assert applied == ensure_on_screen(tl, *target, size=dlg._footprint)
     # the whole window fits, measured against the size it will actually have
-    assert _applied_position(dlg)[0] + dlg._footprint[0] <= right_edge
+    assert applied[0] + dlg._footprint[0] <= right_edge
 
 
 def test_footprint_is_the_size_build_applied(root, tmp_path):
@@ -464,10 +485,8 @@ def test_locate_falls_back_to_centering_for_a_malformed_position(root, tmp_path)
     # A position that isn't an (x, y) pair centers the dialog rather than raising
     # out of show().
     dlg = _build(root, tmp_path, mode="open")
-    dlg._locate(None)
-    centered = _applied_position(dlg)
-    dlg._locate((1, 2, 3))  # not an (x, y) pair
-    assert _applied_position(dlg) == centered
+    centered = _locate_and_capture(dlg, None)
+    assert _locate_and_capture(dlg, (1, 2, 3)) == centered  # not an (x, y) pair
 
 
 def test_multiple_open_returns_tuple(root, tmp_path):
