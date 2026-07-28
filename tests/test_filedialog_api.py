@@ -401,6 +401,41 @@ def test_window_sizes_to_content_not_clipped(root, tmp_path):
     assert min_h >= 300  # a real content height, not zero
 
 
+def test_build_without_a_parent_finds_the_default_root(root, tmp_path):
+    # The Querybox.get_* wrappers take an optional parent, so the dialog has to
+    # cope with None: it still needs an interpreter to read the windowing system
+    # from. This crashed with AttributeError on X11 -- where the themed dialog is
+    # the default, so `Querybox.get_open_filename()` was unusable there.
+    dlg = FileDialog(None, initialdir=str(tmp_path))
+    dlg._build()
+    dlg._navigate(dlg._cwd)
+    assert dlg._toplevel is not None
+    dlg._toplevel.destroy()
+
+
+def test_build_without_any_root_reports_why(monkeypatch, root, tmp_path):
+    # No parent and no root at all leaves nothing to query; say so instead of
+    # failing on None deep inside the build. Stub the lookup rather than clearing
+    # `tkinter._default_root`: the constructor translates its default title, and
+    # MessageCatalog brings up a bare Tk of its own when there is no root, which
+    # would both hide the case under test and strand a second root in the suite.
+    monkeypatch.setattr(fd, "_default_root", lambda: None)
+    dlg = FileDialog(None, initialdir=str(tmp_path))
+    with pytest.raises(RuntimeError, match="parent widget or a default root"):
+        dlg._build()
+
+
+def test_default_root_never_creates_one(monkeypatch):
+    # tkinter._get_default_root() *creates* a bare Tk() when there is no root --
+    # a stray window, and the process root the Style singleton would bind to.
+    # Looking for a root must never be what brings one into existence.
+    monkeypatch.setattr("tkinter._default_root", None, raising=False)
+    monkeypatch.setattr(
+        "tkinter._get_default_root",
+        lambda *a, **kw: pytest.fail("a root must not be created just to find one"))
+    assert fd._default_root() is None
+
+
 def _locate_and_capture(dlg, position):
     """Run `_locate` and return the (x, y) it applied.
 
