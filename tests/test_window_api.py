@@ -9,6 +9,7 @@ Covers the parts that are checkable without a real display:
 - the consistent `style` property and the aqua `overrideredirect` guard.
 """
 import re
+import time
 import warnings
 
 import pytest
@@ -134,6 +135,24 @@ def test_ensure_on_screen_clamps_far_offscreen(root):
     assert y < root.winfo_screenheight()
 
 
+def _settled(window, tries=40):
+    """Wait until the window manager has actually placed `window`.
+
+    A geometry request is not applied synchronously. Until the window has been
+    mapped and positioned, `winfo_rootx()` can report a sentinel far off-screen
+    (-32730 under XWayland), so a test that reads it immediately measures
+    nothing at all -- and passes or fails on whether some earlier test happened
+    to pump the event loop for long enough.
+    """
+    for _ in range(tries):
+        window.update_idletasks()
+        window.update()
+        if window.winfo_rootx() > -10000:
+            return window
+        time.sleep(0.05)
+    return window
+
+
 def test_below_widget_drops_below_left_aligned(root):
     # A target with room beneath it: the popup's top-left sits at the target's
     # bottom-left (standard dropdown placement).
@@ -149,6 +168,26 @@ def test_below_widget_drops_below_left_aligned(root):
     target.destroy()
 
 
+def test_below_widget_stays_aligned_near_the_screen_edge(root):
+    # A dropdown is anchored to its widget, so the free-window breathing room in
+    # ensure_on_screen must not apply: with it, a target within 20px of the screen
+    # edge had its dropdown pushed inward, off the widget it belongs to, while
+    # nowhere near leaving the screen. Only a real overflow may move it.
+    top = ttk.Toplevel(size=(300, 200))
+    top.geometry("300x200+2+300")  # hard against the left edge
+    target = ttk.Frame(top, width=120, height=24)
+    target.place(x=0, y=0)
+    _settled(top)
+
+    popup = ttk.Toplevel(size=(200, 100))
+    popup.update_idletasks()
+    x, _ = positioning.below_widget(popup, target)
+    assert x == target.winfo_rootx(), "the dropdown drifted off its target"
+    popup.destroy()
+    target.destroy()
+    top.destroy()
+
+
 def test_below_widget_flips_above_when_no_room_below(root):
     # A target pinned near the bottom of its monitor: the popup flips to sit
     # above the target rather than overflowing the screen bottom.
@@ -157,8 +196,7 @@ def test_below_widget_flips_above_when_no_room_below(root):
     top.geometry(f"300x40+200+{screen_h - 60}")
     target = ttk.Frame(top, width=120, height=24)
     target.pack(padx=4, pady=4)
-    top.update_idletasks()
-    top.update()
+    _settled(top)
 
     popup = ttk.Toplevel(size=(200, 220))
     popup.update_idletasks()

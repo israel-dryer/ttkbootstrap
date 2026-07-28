@@ -26,12 +26,24 @@ def _lookup(app, style, option, state=None):
     return app.tk.call(*args)
 
 
+def _px(value):
+    """One Tk length as an int, whatever shape Tk hands back.
+
+    A lookup returns a plain `int` or `str` for a value that was just
+    configured, but once the style has been *built* it can come back as a
+    `_tkinter.Tcl_Obj` -- a pixel object such as `<pixel object: '9'>`, which
+    `int()` rejects and `str()` renders as its number. Which of the two you get
+    is a Tk-build detail, so go through `str()` and stop caring.
+    """
+    return int(str(value))
+
+
 def _padding(app, style):
     """First padding component as an int (ttk returns a scalar or a 1-tuple)."""
     val = _lookup(app, style, "padding")
     if isinstance(val, (tuple, list)):
         val = val[0]
-    return int(val)
+    return _px(val)
 
 
 def _padding_tuple(app, style):
@@ -39,7 +51,7 @@ def _padding_tuple(app, style):
     val = _lookup(app, style, "padding")
     if isinstance(val, str):
         val = val.split()
-    return tuple(int(p) for p in val)
+    return tuple(_px(p) for p in val)
 
 
 @pytest.fixture(autouse=True)

@@ -29,6 +29,7 @@
 | **Dialogs stay on one monitor on multi-head Linux** | Fix | this doc, below |
 | **`place_window_center()` works before the window is shown** | Fix | this doc, below |
 | **`color_to_rgb` raises on an invalid color instead of returning `None`** | Fix | this doc, below |
+| **`DateEntry`'s dropdown stays aligned near a screen edge** | Fix | this doc, below |
 
 There are **no API breaks in 2.1**: nothing was removed, and no call that worked
 in 2.0.0 fails. One change is visually noticeable without any code change (the
@@ -325,3 +326,21 @@ with no indication of which color was at fault, plus stray output on stdout that
 no application asked for. The valid-color contract is unchanged.
 
 **Why.** A bare `except: print('this')` left over from 1.x.
+
+
+---
+
+## `DateEntry`'s dropdown stays aligned near a screen edge  *(Fix)*
+
+**What.** The date-picker dropdown is anchored to the entry it drops from. When
+that entry sat within 20px of a screen edge, the dropdown was pushed inward --
+visibly off the widget it belongs to -- despite being nowhere near leaving the
+screen. A dropdown now moves only when it would genuinely overflow.
+
+**Why.** `below_widget` clamped its result with `ensure_on_screen`'s default
+20px margin. That margin is breathing room for a window placed freely; a popup
+anchored to a widget wants none, because alignment with the widget is the whole
+point. The vertical axis already recognised this and passed `titlebar_height=0`;
+the horizontal one did not. Measured 9px out for a target at x=11, and only
+reachable when the parent window is near a screen edge, which is why it went
+unnoticed on a desktop where windows sit further in.
