@@ -1053,8 +1053,29 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > `geometry()` readback is not the position you applied on X11** — a withdrawn
 > window reports the WM's own placement (a dialog asked for `+4460+20` reads back
 > `+32+32`), which is why the three `_locate` tests were rewritten to record the
-> call instead. The remaining 15 suite failures on Linux are **pre-existing platform
-> gaps, none positioning-related**: `_tkinter.Tcl_Obj` from style lookups fed to
+> call instead. **The Linux suite is now GREEN — 917 passed, 0 failed** (branch
+> `fix/2.1-linux-suite-gaps`), stable across repeat runs and with every affected
+> module run standalone. It had never been run on Linux and sat at 16 failures;
+> probing each group first turned up **one real bug** — `below_widget` applied
+> `ensure_on_screen`'s 20px free-window margin to a *widget-anchored* dropdown,
+> so a DateEntry within 20px of a screen edge had its calendar pushed off the
+> entry (9px out for a target at x=11); `padding` now defaults to 0, the same
+> reasoning that already gave it `titlebar_height=0`. **The third known flake is
+> gone and was misdiagnosed:** `test_below_widget_flips_above_when_no_room_below`
+> was never order-dependent — a geometry request is not applied synchronously, and
+> until the WM places the window `winfo_rootx()` returns a sentinel, so it
+> measured nothing unless an earlier test happened to pump the loop; a
+> `_settled()` helper waits properly. The rest were test assumptions, each
+> recorded in the commit: **Tk length lookups** can return `_tkinter.Tcl_Obj`
+> pixel objects once a style is *built* (`int()` rejects them, `str()` renders
+> the number) — confined to test helpers, since `_effective_style_option` is the
+> only library consumer of a lookup and reads a *font description*, never a
+> number; **font families that are not installed do not round-trip** (Tk
+> substitutes, so `== "Georgia"` asserted the host's font inventory); and two
+> tests over-claimed — `icon_only` height is approximate *by design*
+> (`_build_icon_style`: padding is "fixed, not derived"), and `-topmost` is a
+> hint a window manager may decline, so it is asserted at the kwargs seam like
+> the aqua case already was. The former list of failures, for the record: `_tkinter.Tcl_Obj` from style lookups fed to
 > `int()` (6), hardcoded Windows font names Georgia/Courier New (5), an icon padding
 > metric, and two X11 window-manager behaviours. `test_below_widget_flips_above_when_
 > no_room_below` is **order-dependent** — it fails run alone, passes in the full
