@@ -196,21 +196,32 @@ Centering before the window appears
 
 Centering a window that is already on screen means the user watches it appear
 wherever the window manager put it, then jump to the middle. To have it *appear*
-centered, hide it while you place it:
+centered, hide it before you build the window, and show it once it is placed:
 
 .. code-block:: python
 
    app = ttk.App(title="Reports", size=(600, 400))
+   app.withdraw()             # hide it first — see below
 
-   app.withdraw()             # unmap it while we position it
+   build_the_ui(app)          # widgets, layout, whatever the window contains
+
    app.place_window_center()
    app.deiconify()            # it appears already centered
 
    app.mainloop()
 
 ``place_window_center()`` works before a window has ever been shown, so the size
-you asked for is the size it centers. The same three lines work on a ``Toplevel``,
-and on a window that takes its size from its content instead of from ``size=``.
+you asked for is the size it centers. The same applies to a ``Toplevel``, and to
+a window that takes its size from its content instead of from ``size=``.
+
+.. important::
+
+   ``withdraw()`` goes **before** you build the window's contents, not after.
+   Placement belongs to the window manager, and once a window has been shown,
+   hiding and re-showing it is a *new* placement that the manager decides for
+   itself — on Linux it lands somewhere different each run. Building widgets is
+   enough to show the window, so withdrawing first is what keeps the position
+   yours.
 
 Hide it with ``withdraw()``, not ``iconify()`` — the two are different states, and
 only one of them is invisible:

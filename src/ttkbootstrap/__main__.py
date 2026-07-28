@@ -141,8 +141,21 @@ def setup_demo(app: ttk.App, theme: str):
 
 if __name__ == "__main__":
     app = ttk.App("ttkbootstrap widget demo", minsize=(600, 0))
+    # Hide it before building the UI, not after: a window is placed by its
+    # window manager, and once it has been mapped, re-showing it is a fresh
+    # placement the manager is free to decide for itself (measured drifting
+    # hundreds of pixels, differently each run, on X11). Building widgets maps
+    # the window, so withdrawing first is what keeps the placement below ours.
+    app.withdraw()
 
     bagel, _ = setup_demo(app, "bootstrap-light")
     bagel.pack(fill='both', expand=True)
+
+    # Position it rather than leaving it to the window manager, which is free to
+    # cascade it off the bottom of the screen or -- on a multi-monitor X11
+    # desktop, where Tk reports every display as one wide screen -- drop it
+    # across the join between two.
+    app.place_window_center()
+    app.deiconify()
 
     app.mainloop()

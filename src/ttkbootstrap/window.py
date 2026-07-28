@@ -442,10 +442,20 @@ class _BaseWindow(BusyMixin):
     def _unmapped_size(self) -> Tuple[int, int]:
         """The size this window will map at, measured before it is mapped.
 
-        Prefer a size that was applied through `geometry` (the constructor's
-        `size` routes through it). Failing that, take the content's request
-        raised to the `minsize` floor, which is the size Tk will settle on.
+        A window that has been shown already knows its real size, and keeps
+        reporting it while withdrawn -- that beats anything we recorded, because
+        a window manager can resize a window without going through `geometry`
+        (maximize, a tiling layout, a user dragging the frame), which would
+        leave the recorded size stale. Failing that, prefer a size applied
+        through `geometry` (the constructor's `size` routes through it), and
+        failing *that*, the content's request raised to the `minsize` floor,
+        which is the size Tk will settle on.
         """
+        # winfo_width/height report 1 until a window has been realized, so this
+        # distinguishes "shown at some point" from "never shown".
+        width, height = self.winfo_width(), self.winfo_height()
+        if width > 1 and height > 1:
+            return width, height
         if self._applied_size is not None:
             return self._applied_size
         # A window sized by its content has no request until Tk has computed

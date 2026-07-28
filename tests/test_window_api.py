@@ -239,6 +239,28 @@ def test_unmapped_size_prefers_the_size_that_was_applied(root):
     win.destroy()
 
 
+def test_unmapped_size_prefers_the_real_size_over_a_stale_record(root):
+    # A window manager can resize a window without going through `geometry` --
+    # maximize, a tiling layout, a user dragging the frame -- which leaves the
+    # recorded size stale. A window that has been shown keeps reporting its real
+    # size while withdrawn, and that has to win, or centering places the box we
+    # remember instead of the window we have.
+    win = ttk.Toplevel(master=root, size=(300, 200))
+    ttk.Label(win, text="x").pack()
+    _settled(win)
+    assert win._applied_size == (300, 200)
+
+    win.geometry("")            # hand it back to its natural size, bypassing the record
+    _settled(win)
+    real = (win.winfo_width(), win.winfo_height())
+    win._applied_size = (300, 200)   # simulate a record left behind by an earlier size
+    win.withdraw()
+
+    assert win.winfo_width() > 1, "a shown window keeps its size while withdrawn"
+    assert win._unmapped_size() == real
+    win.destroy()
+
+
 def test_unmapped_size_falls_back_to_content_raised_to_minsize(root):
     # No size was ever applied, so the content's request stands -- but Tk will
     # not map it smaller than minsize, so that floor is part of the answer.
