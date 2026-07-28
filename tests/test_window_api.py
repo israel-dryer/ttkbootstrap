@@ -239,6 +239,39 @@ def test_unmapped_size_prefers_the_size_that_was_applied(root):
     win.destroy()
 
 
+def test_showing_the_window_retires_the_recorded_size(root):
+    # A window manager resizes windows without going through `geometry` --
+    # maximize, a tiling layout, a frame drag -- so a size recorded before the
+    # window was shown cannot be trusted afterwards. The record is dropped on
+    # map, which is what makes the *newer* of the two sizes win without anyone
+    # tracking timestamps.
+    win = ttk.Toplevel(master=root, size=(300, 200))
+    ttk.Label(win, text="x").pack()
+    assert win._applied_size == (300, 200)
+    _settled(win)                     # showing it retires the record
+    assert win._applied_size is None
+    real = (win.winfo_width(), win.winfo_height())
+
+    win.withdraw()
+    assert win.winfo_width() > 1, "a shown window keeps its size while withdrawn"
+    assert win._unmapped_size() == real, "centering would use the size we no longer have"
+    win.destroy()
+
+
+def test_a_size_set_while_hidden_beats_the_last_shown_size(root):
+    # The other direction: a `geometry` call after the window was shown is a
+    # pending request, and the realized size is the stale one. Preferring the
+    # realized size unconditionally gets this backwards.
+    win = ttk.Toplevel(master=root, size=(300, 200))
+    ttk.Label(win, text="x").pack()
+    _settled(win)
+    win.withdraw()
+    win.geometry("800x600")
+    assert (win.winfo_width(), win.winfo_height()) != (800, 600), "expected winfo to lag"
+    assert win._unmapped_size() == (800, 600)
+    win.destroy()
+
+
 def test_unmapped_size_falls_back_to_content_raised_to_minsize(root):
     # No size was ever applied, so the content's request stands -- but Tk will
     # not map it smaller than minsize, so that floor is part of the answer.

@@ -274,10 +274,18 @@ be called before the window has ever been mapped:
 
 ```python
 app = ttk.App(title="Reports", size=(600, 400))
-app.withdraw()             # unmap it while we position it
+app.withdraw()             # hide it *before* building the contents
+
+build_the_ui(app)
+
 app.place_window_center()
 app.deiconify()            # it appears already centered
 ```
+
+The `withdraw()` goes before the window's contents are built. Placement belongs
+to the window manager, and once a window has been shown, hiding and re-showing it
+is a *new* placement it decides for itself; building widgets is enough to show
+the window.
 
 That recipe is how you get a window that *appears* centered rather than appearing
 wherever the window manager put it and then jumping to the middle. Centering a
@@ -302,10 +310,16 @@ app.geometry("600x400")                           # or a direct call
 ```
 
 With no size ever applied, the content's request is used, raised to the `minsize`
-floor Tk will not map below.
+floor Tk will not map below. For a window that *has* been shown and is now
+hidden, its real size is used — 2.0.1 measured the content request there too,
+which is wrong for any window a user or window manager has resized.
 
-**Scope.** No signature change and no new arguments. The already-mapped path
-behaves exactly as before.
+`python -m ttkbootstrap` gets the same treatment: the demo never positioned
+itself at all, so it opened wherever its window manager chose, which on a
+multi-monitor Linux desktop could be across the join between two screens.
+
+**Scope.** No signature change and no new arguments. Centering a window that is
+currently on screen behaves exactly as before.
 ## `color_to_rgb` raises on an invalid color  *(Fix)*
 
 **What.** `color_to_rgb` (also exported at top level as `ttk.color_to_rgb`) now
