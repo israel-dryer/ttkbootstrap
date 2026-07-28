@@ -1032,15 +1032,38 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > Windows differs: `winfo screenwidth` is the primary monitor, `winfo vrootwidth`
 > the virtual desktop.
 >
-> **VERIFICATION IS OUTSTANDING — do not merge #1312 blind.** New
+> **VERIFICATION — Windows and macOS are DONE; only X11 is outstanding.** New
 > **`tools/verify_positioning.py`** prints a PASS/FAIL line per check plus the raw
-> metrics; **Windows is done (4/4, Tk 8.6.15, dual 2560×1440)**, X11 and macOS are
-> not. Full instructions are in a comment on **#1310**. The two checks that matter:
-> on **X11**, run it *twice* — the second time with `screeninfo` uninstalled, since
-> that is the only way to exercise the new Xinerama path; on **macOS**, check 3
-> (mapped size vs. the footprint we clamp against) is unverified and aqua chrome
-> could differ, as #1147 already caught once — plus a **Tk 9** run via
-> `/opt/homebrew/bin/python3.14`, since 9.0 moved the aqua scaling baseline.
+> metrics; **Windows 4/4 (Tk 8.6.15, dual 2560×1440)**. Full instructions are in a
+> comment on **#1310**. On **X11** (still to run) run it *twice* — the second time
+> with `screeninfo` uninstalled, since that is the only way to exercise the new
+> Xinerama path.
+>
+> **macOS verified 2026-07-28 — 5/5 on BOTH Tk lines** (aqua, single 1470×956,
+> Tk 8.6.17 and Tk 9.0.4; the Mac has a venv per Tk line — bare `python` is
+> `.venv34`/Tk 9, `.venv` is Tk 8.6). The three headless API suites
+> (`test_window_api` + `test_dialogs_api` + `test_filedialog_api`, 140 tests) pass
+> on both, and so does the **FULL suite — Tk 9: 911 passed; Tk 8.6: 908 passed +
+> 3 skipped** (the 3 are `test_scroll_events`' own Tk-9-only skips: 8.6 aqua
+> reports a notch as 1 and generates no `<TouchpadScroll>`), which closes the
+> punch list's "Tk 9 run on the Mac" item. **Both aqua-specific risks are
+> closed:** check 3 (mapped size vs. the
+> footprint we clamp against) PASSES — `250x104` both ways, so aqua chrome does
+> *not* differ the way #1147 might have suggested; and centering is byte-identical
+> on Tk 9 (`applied=(435,278)` == `want`), so 9.0's moved aqua scaling baseline
+> doesn't shift it. Manual checks confirmed by eye: the themed file dialog opens
+> fully on-screen and returns a POSIX path, and a 600×400 window is centered
+> *before* it is displayed (no flash, no jump). **One known gap stays:** without
+> `screeninfo` there is no monitor enumeration on aqua (`_monitors()` → `None` →
+> whole-screen fallback, correct on one display), so **multi-monitor macOS is
+> still unverified** — that is the undecided `CGGetActiveDisplayList` call, not
+> anything this branch regressed. Installing `screeninfo` turns checks 1 and 4
+> green. **Two rough edges in the verification tool itself** (found while running
+> it, not yet fixed): when `_monitors()` returns `None` the whole check-4 block is
+> skipped *silently* — the run reports 4 checks instead of 5 with no "skipped"
+> line; and check 6's window is destroyed at script exit, because
+> `app.after(2000, probe.destroy)` is followed only by `app.update()`, which does
+> not wait — so there is nothing on screen to eyeball.
 >
 > **NEXT — the rest of the pre-2.1 punch list** (from the audit; none started):
 > **bump `pyproject.toml` 2.0.0 → 2.1.0** (the only hardcoded version);
@@ -1049,9 +1072,10 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > `feat/2.1-filedialog-x11-default` / `fix/2.1-filedialog-center-clamp` only look
 > unmerged because they were squash-merged — their content is on `master`,
 > verified); **delete `development/filedialogs/` (18 files) + `scrolledframe/`**
-> (prior art now superseded by shipped code — the #1250 precedent); and a **Tk 9
-> run on the Mac** for the 2.1 geometry/asset work generally. `2_1_changes.md` was
-> checked complete against the merged PR list before any of this.
+> (prior art now superseded by shipped code — the #1250 precedent). (The **Tk 9
+> run on the Mac** is DONE — see the macOS verification entry above.)
+> `2_1_changes.md` was checked complete against the merged PR list before any of
+> this.
 >
 > **User-visible 2.1 changes are logged in `development/2_1_changes.md`** (the
 > running log, same role `2_0_breaking_changes.md` played for 2.0; it is the source
