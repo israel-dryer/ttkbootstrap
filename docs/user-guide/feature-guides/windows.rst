@@ -172,10 +172,14 @@ known (the constructor ``size`` counts):
 
 .. note::
 
-   Without ``screeninfo`` installed, centering falls back to the primary screen,
-   so on a multi-monitor setup the window may land on the main display rather than
-   the active one. ``screeninfo`` is an optional dependency — ttkbootstrap's only
-   required one is Pillow.
+   Centering targets the monitor under the mouse cursor, which means it needs to
+   know the display layout. With the optional ``screeninfo`` package installed,
+   ttkbootstrap reads the layout from it on every platform; without it, Linux/X11
+   reads the layout from the X server directly. On Windows and macOS without
+   ``screeninfo``, centering falls back to the primary display, so on a
+   multi-monitor setup the window may land there rather than on the active one.
+   ``screeninfo`` is an optional dependency — ttkbootstrap's only required one is
+   Pillow.
 
 .. image:: /_static/examples/windows-centered-light.png
    :class: tb-screenshot-light tb-window-screenshot
@@ -186,6 +190,51 @@ known (the constructor ``size`` counts):
    :class: tb-screenshot-dark tb-window-screenshot
    :width: 278px
    :alt: A small About Toplevel window centered with place_window_center — dark theme
+
+Centering before the window appears
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Centering a window that is already on screen means the user watches it appear
+wherever the window manager put it, then jump to the middle. To have it *appear*
+centered, hide it while you place it:
+
+.. code-block:: python
+
+   app = ttk.App(title="Reports", size=(600, 400))
+
+   app.withdraw()             # unmap it while we position it
+   app.place_window_center()
+   app.deiconify()            # it appears already centered
+
+   app.mainloop()
+
+``place_window_center()`` works before a window has ever been shown, so the size
+you asked for is the size it centers. The same three lines work on a ``Toplevel``,
+and on a window that takes its size from its content instead of from ``size=``.
+
+Hide it with ``withdraw()``, not ``iconify()`` — the two are different states, and
+only one of them is invisible:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 78
+
+   * - Method
+     - What it does
+   * - ``withdraw()``
+     - Unmaps the window entirely: nothing on screen, nothing in the taskbar.
+       ``deiconify()`` maps it again.
+   * - ``iconify()``
+     - Minimizes the window. It stays present as a taskbar button — a Dock icon
+       on macOS — and the minimizing is animated on some platforms.
+
+``iconify()`` is also refused on a transient window, raising ``TclError: can't
+iconify ".!toplevel": it is a transient``, so it is unavailable for the satellite
+windows dialogs are built from. On Linux, iconifying is a request to the window
+manager, which is free to ignore it.
+
+``state()`` reports which of the three a window is in: ``"normal"``,
+``"withdrawn"``, or ``"iconic"``.
 
 Focus, modality & lifecycle
 ---------------------------

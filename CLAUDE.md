@@ -1032,15 +1032,90 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > Windows differs: `winfo screenwidth` is the primary monitor, `winfo vrootwidth`
 > the virtual desktop.
 >
-> **VERIFICATION IS OUTSTANDING — do not merge #1312 blind.** New
+> **VERIFICATION — Windows, macOS and X11 are ALL DONE.** New
 > **`tools/verify_positioning.py`** prints a PASS/FAIL line per check plus the raw
-> metrics; **Windows is done (4/4, Tk 8.6.15, dual 2560×1440)**, X11 and macOS are
-> not. Full instructions are in a comment on **#1310**. The two checks that matter:
-> on **X11**, run it *twice* — the second time with `screeninfo` uninstalled, since
-> that is the only way to exercise the new Xinerama path; on **macOS**, check 3
-> (mapped size vs. the footprint we clamp against) is unverified and aqua chrome
-> could differ, as #1147 already caught once — plus a **Tk 9** run via
-> `/opt/homebrew/bin/python3.14`, since 9.0 moved the aqua scaling baseline.
+> metrics; **Windows 4/4 (Tk 8.6.15, dual 2560×1440)**. Full instructions are in a
+> comment on **#1310**.
+>
+> **X11 verified 2026-07-28 — 5/5** (WSL2/WSLg XWayland, Tk 8.6.12, Python 3.10.12,
+> dual 2560×1440). Run twice as the instructions require: **without `screeninfo`
+> 4/4** — the only way to exercise the new Xinerama path, and it read both monitors
+> `[(2560,0,2560,1440), (0,0,2560,1440)]` while Tk reports one 5120×1440 screen
+> *and* the same for `vroot`, which is the blind spot the whole fix exists for;
+> **with `screeninfo` 5/5**, check 2b confirming the two sources agree exactly.
+> **Two traps worth knowing before re-running it on X11:** (a) the script's check 4
+> passed **vacuously** — WSLg reports a `-32730` sentinel position until the
+> compositor has mapped a window, so `app.geometry(...)` + `update()` then building
+> the dialog immediately parks the parent nowhere near the seam. Re-run by hand with
+> a settle-wait it is genuinely green: parent at 2356 would naively centre the dialog
+> across 2441..2691 (seam at 2560) and the fix lands it 2290..2540, wholly on the
+> left monitor; four parent positions all landed inside one monitor. (b) **a
+> `geometry()` readback is not the position you applied on X11** — a withdrawn
+> window reports the WM's own placement (a dialog asked for `+4460+20` reads back
+> `+32+32`), which is why the three `_locate` tests were rewritten to record the
+> call instead. The remaining 15 suite failures on Linux are **pre-existing platform
+> gaps, none positioning-related**: `_tkinter.Tcl_Obj` from style lookups fed to
+> `int()` (6), hardcoded Windows font names Georgia/Courier New (5), an icon padding
+> metric, and two X11 window-manager behaviours. `test_below_widget_flips_above_when_
+> no_room_below` is **order-dependent** — it fails run alone, passes in the full
+> suite, and does so at the branch base too (a third known flake alongside the two
+> already logged).
+>
+> **The two rough edges the macOS run found in the tool are FIXED** (on
+> `feat/2.1-center-before-first-map`): a `hold()` helper now pumps the event loop so
+> the LOOK windows in checks 4 and 6 actually stay on screen — `after(...)` plus a
+> bare `update()` never waits, so both windows were torn down before anyone could
+> look (check 4 had the bug too, not just the new check 6) — and a missing `else` on
+> `if monitors:` made check 4 vanish silently when no layout is available; it now
+> prints `[SKIP]` and a summary line.
+>
+> **macOS verified 2026-07-28 — 5/5 on BOTH Tk lines** (aqua, single 1470×956,
+> Tk 8.6.17 and Tk 9.0.4; the Mac has a venv per Tk line — bare `python` is
+> `.venv34`/Tk 9, `.venv` is Tk 8.6). The three headless API suites
+> (`test_window_api` + `test_dialogs_api` + `test_filedialog_api`, 140 tests) pass
+> on both, and so does the **FULL suite — Tk 9: 911 passed; Tk 8.6: 908 passed +
+> 3 skipped** (the 3 are `test_scroll_events`' own Tk-9-only skips: 8.6 aqua
+> reports a notch as 1 and generates no `<TouchpadScroll>`), which closes the
+> punch list's "Tk 9 run on the Mac" item. **Both aqua-specific risks are
+> closed:** check 3 (mapped size vs. the
+> footprint we clamp against) PASSES — `250x104` both ways, so aqua chrome does
+> *not* differ the way #1147 might have suggested; and centering is byte-identical
+> on Tk 9 (`applied=(435,278)` == `want`), so 9.0's moved aqua scaling baseline
+> doesn't shift it. Manual checks confirmed by eye: the themed file dialog opens
+> fully on-screen and returns a POSIX path, and a 600×400 window is centered
+> *before* it is displayed (no flash, no jump). **One known gap stays:** without
+> `screeninfo` there is no monitor enumeration on aqua (`_monitors()` → `None` →
+> whole-screen fallback, correct on one display), so **multi-monitor macOS is
+> still unverified** — that is the undecided `CGGetActiveDisplayList` call, not
+> anything this branch regressed. Installing `screeninfo` turns checks 1 and 4
+> green. **ACCEPTED ASSUMPTION (author, 2026-07-28): multi-monitor macOS is taken on
+> trust — there is no second display to test with.** What that actually leaves
+> unverified is narrow, because the path splits: **with `screeninfo` installed** the
+> layout comes from that package and everything after it is platform-independent
+> arithmetic, already covered live on dual-monitor Windows (4/4) and dual-monitor
+> X11 (5/5) and synthetically by
+> `test_clamp_uses_the_monitor_under_the_point_not_the_whole_desktop`, so the only
+> untested link is screeninfo's own aqua backend — a third-party concern, and one
+> the Mac confirmed works on a single display. **Without `screeninfo`** aqua has no
+> enumeration at all (Xinerama is X11-only, pinned for `darwin` by
+> `test_xinerama_query_is_skipped_off_x11`), so placement falls back to Tk's screen
+> metrics; the genuinely unknown fact is what `winfo screenwidth`/`vrootwidth`
+> report on a two-display Mac. That unknown is made *safe* rather than merely
+> untested by `test_placement_stays_on_screen_when_no_layout_is_available`, which
+> pins the property that matters: with no layout, a window still lands fully inside
+> the screen Tk describes, so the worst case is landing on the wrong display —
+> never straddling two or hanging off an edge. **The real closure is the deferred
+> `CGGetActiveDisplayList` ctypes call** (the aqua sibling of the Xinerama work);
+> note it would be *partly* verifiable on a single display, since a correct
+> implementation must return one rect matching the main display.
+>
+> **Two rough edges in the verification tool itself** (found while running
+> it; **both since FIXED** — see the X11 entry above): when `_monitors()` returns
+> `None` the whole check-4 block was skipped *silently* — the run reported 4 checks
+> instead of 5 with no "skipped" line; and check 6's window was destroyed at script
+> exit, because `app.after(2000, probe.destroy)` is followed only by
+> `app.update()`, which does not wait — so there was nothing on screen to eyeball.
+> (Check 4 carried the same window-teardown bug, which this run did not reach.)
 >
 > **NEXT — the rest of the pre-2.1 punch list** (from the audit; none started):
 > **bump `pyproject.toml` 2.0.0 → 2.1.0** (the only hardcoded version);
@@ -1049,9 +1124,10 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > `feat/2.1-filedialog-x11-default` / `fix/2.1-filedialog-center-clamp` only look
 > unmerged because they were squash-merged — their content is on `master`,
 > verified); **delete `development/filedialogs/` (18 files) + `scrolledframe/`**
-> (prior art now superseded by shipped code — the #1250 precedent); and a **Tk 9
-> run on the Mac** for the 2.1 geometry/asset work generally. `2_1_changes.md` was
-> checked complete against the merged PR list before any of this.
+> (prior art now superseded by shipped code — the #1250 precedent). (The **Tk 9
+> run on the Mac** is DONE — see the macOS verification entry above.)
+> `2_1_changes.md` was checked complete against the merged PR list before any of
+> this.
 >
 > **User-visible 2.1 changes are logged in `development/2_1_changes.md`** (the
 > running log, same role `2_0_breaking_changes.md` played for 2.0; it is the source

@@ -27,6 +27,7 @@
 | **Bootstyle value tokens — raw hex + ramp accents & surfaces** | New | this doc, below |
 | **Themed file dialog — a theme-following open/save chooser** | New | this doc, below |
 | **Dialogs stay on one monitor on multi-head Linux** | Fix | this doc, below |
+| **`place_window_center()` works before the window is shown** | Fix | this doc, below |
 
 There are **no API breaks in 2.1**: nothing was removed, and no call that worked
 in 2.0.0 fails. One change is visually noticeable without any code change (the
@@ -261,3 +262,45 @@ Xinerama extension directly when `screeninfo` is not installed. A dialog is
 clamped inside the monitor it opens on instead of merely inside the combined
 desktop, which is what let one straddle the join between two screens.
 `screeninfo` is still used first when present, and Windows/macOS are unchanged.
+
+---
+
+## `place_window_center()` works before the window is shown  *(Fix)*
+
+**What.** Centering now measures the size a window will actually have, so it can
+be called before the window has ever been mapped:
+
+```python
+app = ttk.App(title="Reports", size=(600, 400))
+app.withdraw()             # unmap it while we position it
+app.place_window_center()
+app.deiconify()            # it appears already centered
+```
+
+That recipe is how you get a window that *appears* centered rather than appearing
+wherever the window manager put it and then jumping to the middle. Centering a
+window that is already on screen is unchanged.
+
+**Why.** Positioning measured an unmapped window with `winfo_reqwidth`/
+`winfo_reqheight` — what the *content* asked for, which has nothing to do with
+the size a `WxH` geometry pins. A withdrawn `App(size=(600, 400))` holding a
+small label reported **(16, 21)**, so centering placed that 16x21 box: the
+window's top-left landed at the screen center, measured **298px right and 216px
+down** of centered. Only a window sized by its content happened to come out
+right. This is the same class of defect as the dialog centering above, and it is
+fixed the same way — by recording the size that was applied rather than
+re-deriving it from a window that cannot report it yet.
+
+A window now remembers any size applied through `geometry`, which the `size=`
+constructor argument routes through, so both spellings work:
+
+```python
+app = ttk.App(title="Reports", size=(600, 400))   # constructor
+app.geometry("600x400")                           # or a direct call
+```
+
+With no size ever applied, the content's request is used, raised to the `minsize`
+floor Tk will not map below.
+
+**Scope.** No signature change and no new arguments. The already-mapped path
+behaves exactly as before.

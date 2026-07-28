@@ -4,23 +4,48 @@ Run from the repo root on each platform:
 
     PYTHONPATH=src python tools/verify_positioning.py
 
-Prints a PASS/FAIL line per check. Checks 4 and 5 open real windows and need a
-human to look at them; everything else is automatic.
+Prints a PASS/FAIL line per check. Checks 4, 5 and 6 open real windows and need
+a human to look at them; everything else is automatic.
 """
 import re
 import sys
+import time
+import tkinter
 
 import ttkbootstrap as ttk
 from ttkbootstrap.dialogs.message import MessageDialog
 from ttkbootstrap.internal import positioning as p
 
 results = []
+skipped = []
 
 
 def check(name, ok, detail="", always_show=False):
     results.append((name, ok))
     show = detail and (always_show or not ok)
     print(f"[{'PASS' if ok else 'FAIL'}] {name}{'  -- ' + detail if show else ''}")
+
+
+def skip(name, why):
+    """Record a check that could not run here, so it is never silently absent."""
+    skipped.append(name)
+    print(f"[SKIP] {name}  -- {why}")
+
+
+def hold(window, seconds=2.5):
+    """Keep a window on screen long enough to be looked at.
+
+    `after(...)` followed by a single `update()` does not wait -- the callback
+    has not fired yet, so the script races on and tears the window down. A LOOK
+    line then points at something that was never really there.
+    """
+    deadline = time.monotonic() + seconds
+    while time.monotonic() < deadline:
+        try:
+            window.update()
+        except tkinter.TclError:
+            return  # closed by hand; nothing left to show
+        time.sleep(0.05)
 
 
 app = ttk.App(title="positioning verification")
@@ -83,14 +108,16 @@ if monitors:
         d._toplevel.deiconify()
         d._toplevel.update()
         print("    -> LOOK: the dialog above should sit wholly on one screen.")
-        app.after(2500, d.close)
-        app.update()
+        hold(d._toplevel)
         try:
             d.close()
         except Exception:
             pass
     else:
         check("4. a dialog near a seam stays inside one monitor", True, "single monitor -- n/a")
+else:
+    skip("4. a dialog near a seam stays inside one monitor",
+         "no monitor layout on this platform (install screeninfo to exercise it)")
 
 # --- 5. the themed file dialog (X11 default) -------------------------------
 print("\n[MANUAL] 5. themed file dialog -- run this and confirm it opens fully")
@@ -98,8 +125,58 @@ print("            on-screen with the OK/Cancel buttons visible:\n")
 print("    python -c \"import ttkbootstrap as ttk; app=ttk.App(); "
       "print(ttk.Querybox.get_open_filename(native=False, parent=app))\"\n")
 
+# --- 6. a window centered before it has ever been shown --------------------
+# The withdraw -> center -> deiconify recipe, which makes a window *appear*
+# centered instead of appearing where the window manager put it and then
+# jumping. Centering has to measure the size the window will map at: measuring
+# its content request instead put the window's top-left at the screen center,
+# out by half the window (298x216 for a 600x400 window on a 2560x1440 display).
+probe = ttk.Toplevel(master=app, title="centered before shown", size=(600, 400))
+probe.withdraw()
+
+# Record the coordinates rather than reading geometry() back: a reparenting
+# window manager reports the frame's position, so the readback is not what was
+# applied. The frame offset moves where the window lands, not what we asked for.
+applied = []
+_real_geometry = probe.geometry
+probe.geometry = lambda spec=None: (
+    applied.append(spec) if spec is not None else None) or _real_geometry(spec)
+probe.place_window_center()
+del probe.geometry
+
+probe.deiconify()
+probe.update_idletasks()
+probe.update()
+
+mapped = (probe.winfo_width(), probe.winfo_height())
+coords = re.search(r"\+(-?\d+)\+(-?\d+)$", applied[-1]) if applied else None
+if coords is None:
+    check("6. a window is centered before it is first shown", False,
+          f"no +x+y was applied ({applied})", always_show=True)
+else:
+    ax, ay = int(coords.group(1)), int(coords.group(2))
+    monitor = p._monitor_at_point(ax, ay)
+    if monitor:
+        mx, my, mw, mh = monitor
+    else:
+        mx, my = 0, 0
+        mw, mh = probe.winfo_screenwidth(), probe.winfo_screenheight()
+    # Centered for the size it actually maps at -- computed here rather than
+    # borrowed from the positioning helpers, so this checks the answer instead
+    # of restating how it was reached.
+    want = (mx + (mw - mapped[0]) // 2, my + (mh - mapped[1]) // 2)
+    check("6. a window is centered before it is first shown", (ax, ay) == want,
+          f"applied=({ax},{ay}) want={want} mapped={mapped[0]}x{mapped[1]}",
+          always_show=True)
+print("    -> LOOK: that window should already be centered when it appears, and")
+print("             should not flash or jump on the way in.")
+hold(probe)
+probe.destroy()
+
 failed = [n for n, ok in results if not ok]
 print(f"\n{len(results) - len(failed)}/{len(results)} automatic checks passed")
+if skipped:
+    print(f"{len(skipped)} skipped: " + "; ".join(skipped))
 if failed:
     print("failed: " + "; ".join(failed))
 app.destroy()
