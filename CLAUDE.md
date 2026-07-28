@@ -1180,6 +1180,55 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > `gh` is **not** installed, so PRs cannot be opened from here; this session's
 > merges were done locally and pushed to `master`.
 >
+> **Session 2026-07-28b (Windows box) — the demo opened off-centre; fixed, and
+> the verification gap that hid it closed. AWAITS A macOS + x11 RUN.**
+> `_unmapped_size` decided "has this window ever been shown?" with
+> `winfo_width() > 1`. That is x11 reasoning: there a never-mapped window really
+> does report 1x1, but on **win32 the root reports the size Tk started it at**,
+> so the demo centred a 600x200 box that maps at 846x696 — applied `+980+620`
+> instead of `+857+372`, ~123px right and 248px down. **Only the root is
+> affected** (a win32 Toplevel does report 1x1), which is why every existing
+> Toplevel-based test passed. Being shown is now *tracked* (`_ever_shown`, set
+> from the `<Map>`/`<Configure>` handler) rather than inferred, with the watch
+> installed in both `App.__init__` and `Toplevel.__init__`. A `/code-review`
+> then found three **pre-existing** defects in last session's size bookkeeping
+> (each reproduces at the branch base); two cheap ones were folded in — the
+> handler is gated on `winfo_ismapped()` so a **stale** map dispatched after a
+> newer `geometry()` cannot discard it, and it also listens to `<Configure>`
+> because a `geometry()` call on an already-shown window is realized at once and
+> otherwise never retires. The third (a user's `bind("<Map>", ...)` without
+> `add=True` clobbers the watch — LOW, pre-existing) was **deliberately left**;
+> the fix wanted a private bindtag plus a `destroy` override on every window,
+> which the author judged not worth the lifecycle surface. **File it if it ever
+> bites.**
+>
+> **WHAT STILL NEEDS RUNNING, on macOS (both Tk lines) and x11 (with and without
+> `screeninfo`):** `tools/verify_positioning.py` — now **7 checks**, whose
+> docstring explains why a green run on one box proves little — plus
+> `python -m pytest -q` (**924 passed, 3 skipped** on Windows) and an eyeball of
+> `python -m ttkbootstrap`. **The risk being checked is narrow:** on x11 old and
+> new code both fall through to the content-request path, so behaviour is
+> identical there; what is new is that a *shown-then-withdrawn* window returns
+> its realized size only if the flag got set, i.e. only if the event arrived.
+> Measured on Windows, `winfo_ismapped()` is already 1 in **both** handlers, and
+> the flag is still set with `<Map>` suppressed — so `<Configure>` backstops it
+> and the mechanism does not hinge on map timing, the part most likely to differ
+> under a window manager.
+>
+> **The verification gap is the more valuable lesson.** Check 6 (“centered
+> before first map”) passed against this bug the whole time, because it uses
+> `Toplevel(size=(600,400))` — the *explicitly sized* path, which this never
+> touched. Closing it took three attempts, each failing for a different reason
+> worth knowing: a `Toplevel` cannot reproduce it (win32 reports 1x1 there, so
+> the check must spawn a **subprocess** with its own never-shown root); and
+> content packed **straight into the root** lets Tk settle on the real size
+> before anyone measures, so the check must build into a frame **packed
+> afterwards**, as the demo does — variant A reads `winfo=(600,246)`==mapped,
+> variant B reads `(600,200)` vs mapped `(600,246)`. New **check 7** now reads
+> FAIL/5-of-7 at the branch base and PASS/7-of-7 with the fix. **Standing rule:
+> prove a new check fails against the bug by reverting the fix, never by reading
+> the code.**
+>
 > **NEXT — the rest of the pre-2.1 punch list:**
 > **bump `pyproject.toml` → 2.1.0** *at release time* (`master` tracks the current
 > release, so it correctly reads **2.0.1** now — do not bump early);
