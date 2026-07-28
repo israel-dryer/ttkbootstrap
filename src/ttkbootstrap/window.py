@@ -7,6 +7,7 @@ size/position/geometry, resizability, high-DPI, alpha, and icon handling.
 `App` is the application root (one per process, paired with the singleton
 `Style`); `Window` is a permanent, fully-supported alias for `App`.
 """
+import re
 import sys
 import tkinter
 import warnings
@@ -195,6 +196,11 @@ class _BaseWindow(BusyMixin):
     """
 
     winsys: str
+
+    # The size last applied through `geometry`, or None if the window has only
+    # ever been sized by its content. Class-level so it is readable no matter
+    # how early `geometry` is called during construction.
+    _applied_size: Optional[Tuple[int, int]] = None
 
     @property
     def style(self) -> Style:
@@ -412,11 +418,59 @@ class _BaseWindow(BusyMixin):
 
     # -- positioning -------------------------------------------------------
 
+    def geometry(self, newGeometry: Optional[str] = None) -> Any:
+        """Set or query the window geometry, remembering any size it applies.
+
+        Tk does not report the size a window will have until it is mapped:
+        `winfo_reqwidth` is what the *content* asked for, which is nothing like
+        the size a `WxH` geometry pins. Recording the size here is what lets
+        `place_window_center` place a window correctly before it is first
+        shown -- see `_unmapped_size`.
+        """
+        if newGeometry is not None:
+            match = re.match(r"^(\d+)x(\d+)", newGeometry)
+            if match:
+                self._applied_size = (int(match.group(1)), int(match.group(2)))
+            elif newGeometry == "":
+                # `geometry("")` hands the window back to its natural size, so
+                # whatever size we were remembering no longer applies.
+                self._applied_size = None
+        return super().geometry(newGeometry)
+
+    wm_geometry = geometry
+
+    def _unmapped_size(self) -> Tuple[int, int]:
+        """The size this window will map at, measured before it is mapped.
+
+        Prefer a size that was applied through `geometry` (the constructor's
+        `size` routes through it). Failing that, take the content's request
+        raised to the `minsize` floor, which is the size Tk will settle on.
+        """
+        if self._applied_size is not None:
+            return self._applied_size
+        # A window sized by its content has no request until Tk has computed
+        # the layout, so measuring first would center against a stale one.
+        self.update_idletasks()
+        min_width, min_height = self.wm_minsize()
+        return (
+            max(self.winfo_reqwidth(), min_width),
+            max(self.winfo_reqheight(), min_height),
+        )
+
     def place_window_center(self) -> None:
         """Center the window on the screen (monitor under the cursor when
-        `screeninfo` is available), clamped to stay fully visible."""
-        x, y = positioning.center_on_screen(self)
-        x, y = positioning.ensure_on_screen(self, x, y)
+        `screeninfo` is available), clamped to stay fully visible.
+
+        Safe to call before the window is first shown, which is how you get a
+        window that *appears* centered instead of appearing and then jumping:
+        `withdraw()`, center, then `deiconify()`.
+        """
+        # An unmapped window has no realized size for positioning to measure,
+        # and its request is not the size it will have -- pass the size it will
+        # actually map at, or centering lands its top-left at the screen center.
+        size = None if self.winfo_ismapped() else self._unmapped_size()
+        x, y = positioning.center_on_screen(self, size=size)
+        x, y = positioning.ensure_on_screen(self, x, y, size=size)
         self.geometry(f'+{x}+{y}')
 
     position_center = place_window_center  # alias
