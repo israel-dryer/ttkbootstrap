@@ -201,6 +201,7 @@ class _BaseWindow(BusyMixin):
     # ever been sized by its content. Class-level so it is readable no matter
     # how early `geometry` is called during construction.
     _applied_size: Optional[Tuple[int, int]] = None
+    _map_watch: Optional[str] = None
 
     @property
     def style(self) -> Style:
@@ -431,6 +432,7 @@ class _BaseWindow(BusyMixin):
             match = re.match(r"^(\d+)x(\d+)", newGeometry)
             if match:
                 self._applied_size = (int(match.group(1)), int(match.group(2)))
+                self._forget_size_once_shown()
             elif newGeometry == "":
                 # `geometry("")` hands the window back to its natural size, so
                 # whatever size we were remembering no longer applies.
@@ -439,25 +441,39 @@ class _BaseWindow(BusyMixin):
 
     wm_geometry = geometry
 
+    def _forget_size_once_shown(self) -> None:
+        """Drop the recorded size the next time the window is shown.
+
+        Whichever of the two sizes is *newer* is the right one, and this is how
+        that ordering is kept without timestamps: a recorded size survives only
+        between the `geometry` call that set it and the next map. After the
+        window is shown its own realized size is the truth -- a window manager
+        resizes windows without going through `geometry` (maximize, tiling, a
+        frame drag) -- while a size recorded since the last map is a request
+        that has not taken effect yet.
+        """
+        if self._map_watch is None:
+            self._map_watch = self.bind("<Map>", self._on_shown, add="+")
+
+    def _on_shown(self, event: Any) -> None:
+        if event.widget is self:
+            self._applied_size = None
+
     def _unmapped_size(self) -> Tuple[int, int]:
         """The size this window will map at, measured before it is mapped.
 
-        A window that has been shown already knows its real size, and keeps
-        reporting it while withdrawn -- that beats anything we recorded, because
-        a window manager can resize a window without going through `geometry`
-        (maximize, a tiling layout, a user dragging the frame), which would
-        leave the recorded size stale. Failing that, prefer a size applied
-        through `geometry` (the constructor's `size` routes through it), and
-        failing *that*, the content's request raised to the `minsize` floor,
-        which is the size Tk will settle on.
+        A size recorded since the window was last shown is a pending request and
+        wins. Failing that, a window that has been shown keeps reporting its real
+        size while withdrawn, and that beats the content's request. Failing both,
+        the request raised to the `minsize` floor is what Tk will settle on.
         """
+        if self._applied_size is not None:
+            return self._applied_size
         # winfo_width/height report 1 until a window has been realized, so this
         # distinguishes "shown at some point" from "never shown".
         width, height = self.winfo_width(), self.winfo_height()
         if width > 1 and height > 1:
             return width, height
-        if self._applied_size is not None:
-            return self._applied_size
         # A window sized by its content has no request until Tk has computed
         # the layout, so measuring first would center against a stale one.
         self.update_idletasks()
