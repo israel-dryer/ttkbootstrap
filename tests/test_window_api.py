@@ -328,6 +328,79 @@ def test_place_window_center_before_first_map_uses_the_size_it_will_have(root):
     win.destroy()
 
 
+def test_unmapped_size_ignores_the_size_a_never_shown_window_reports(root):
+    # The size a window reports before it has ever been shown is not the size
+    # it will map at, and *which* windows report one is platform-dependent: a
+    # Toplevel says 1x1, but on win32 the root says whatever size Tk started it
+    # at -- a plausible number that passes any "is this realized yet" check
+    # made of winfo alone. That is why being shown is tracked rather than
+    # inferred, and why the reported size is forced here: the root is shared
+    # across the suite and has long since been mapped.
+    win = ttk.Toplevel(master=root)
+    win.withdraw()
+    ttk.Label(win, text="wide enough that the content decides the size").pack(
+        padx=40, pady=40
+    )
+    win.update_idletasks()
+    request = (win.winfo_reqwidth(), win.winfo_reqheight())
+    assert request != (600, 200), "the forced size has to be the wrong answer"
+
+    win.winfo_width = lambda: 600
+    win.winfo_height = lambda: 200
+    assert win._unmapped_size() == request
+    win.destroy()
+
+
+def test_being_shown_is_noticed(root):
+    # The flag is now the only evidence a window was realized, so the event
+    # that sets it has to actually arrive. (Asserting the predicted size
+    # against the realized one would be stricter than the contract: a tiling
+    # window manager sizes a new toplevel to the workspace regardless of what
+    # it asked for.)
+    win = ttk.Toplevel(master=root)
+    win.withdraw()
+    ttk.Label(win, text="x").pack()
+    win.update_idletasks()
+    assert not win._ever_shown
+    win.deiconify()
+    _settled(win)
+    assert win._ever_shown, "the window was shown and nothing noticed"
+    win.destroy()
+
+
+def test_a_stale_map_does_not_retire_a_newer_size(root):
+    # These events are dispatched when the event queue is drained, not when
+    # they occur, so a map the window has since been withdrawn from can arrive
+    # *after* a newer size was recorded. Retiring the record on that event
+    # discards the pending size and centers against one the window no longer
+    # has -- the "newer size wins" invariant, backwards.
+    win = ttk.Toplevel(master=root)
+    ttk.Label(win, text="x").pack()
+    _settled(win)
+    win.withdraw()
+    win.geometry("800x600")
+    # Delivered directly rather than by racing the queue: whether a real map is
+    # still pending after `update_idletasks` is a window-manager timing detail,
+    # and the rule under test ("an event that arrives while the window is not
+    # on screen is stale") holds regardless of how the event got there.
+    win.event_generate("<Map>", when="now")
+    assert win._unmapped_size() == (800, 600)
+    win.destroy()
+
+
+def test_a_size_applied_while_shown_is_not_a_pending_request(root):
+    # A `geometry` call on a window already on screen takes effect at once, so
+    # there is no next map to retire it. Left recorded, it would outlive any
+    # later resize and be preferred over the size the window really has.
+    win = ttk.Toplevel(master=root)
+    ttk.Label(win, text="x").pack()
+    _settled(win)
+    win.geometry("400x300")
+    _settled(win)
+    assert win._applied_size is None
+    win.destroy()
+
+
 # --------------------------------------------------------------------------
 # icon semantics
 # --------------------------------------------------------------------------

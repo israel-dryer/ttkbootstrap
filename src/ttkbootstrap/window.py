@@ -201,7 +201,11 @@ class _BaseWindow(BusyMixin):
     # ever been sized by its content. Class-level so it is readable no matter
     # how early `geometry` is called during construction.
     _applied_size: Optional[Tuple[int, int]] = None
-    _map_watch: Optional[str] = None
+    _map_watch: Optional[list] = None
+    # Whether the window has been shown yet. Only a window that has been shown
+    # reports a real size, and there is nothing to read that off: on win32 a
+    # window that has never been mapped already reports Tk's initial size.
+    _ever_shown: bool = False
 
     @property
     def style(self) -> Style:
@@ -432,7 +436,7 @@ class _BaseWindow(BusyMixin):
             match = re.match(r"^(\d+)x(\d+)", newGeometry)
             if match:
                 self._applied_size = (int(match.group(1)), int(match.group(2)))
-                self._forget_size_once_shown()
+                self._watch_for_first_map()
             elif newGeometry == "":
                 # `geometry("")` hands the window back to its natural size, so
                 # whatever size we were remembering no longer applies.
@@ -441,23 +445,36 @@ class _BaseWindow(BusyMixin):
 
     wm_geometry = geometry
 
-    def _forget_size_once_shown(self) -> None:
-        """Drop the recorded size the next time the window is shown.
+    def _watch_for_first_map(self) -> None:
+        """Note when the window is shown, and drop any recorded size then.
 
         Whichever of the two sizes is *newer* is the right one, and this is how
         that ordering is kept without timestamps: a recorded size survives only
-        between the `geometry` call that set it and the next map. After the
-        window is shown its own realized size is the truth -- a window manager
-        resizes windows without going through `geometry` (maximize, tiling, a
-        frame drag) -- while a size recorded since the last map is a request
-        that has not taken effect yet.
+        until the window is next seen on screen. After that its own realized
+        size is the truth -- a window manager resizes windows without going
+        through `geometry` (maximize, tiling, a frame drag) -- while a size
+        recorded while it was hidden is a request that has not taken effect yet.
         """
         if self._map_watch is None:
-            self._map_watch = self.bind("<Map>", self._on_shown, add="+")
+            # `<Configure>` as well as `<Map>`, because a `geometry` call made
+            # while the window is already on screen is realized immediately --
+            # there is no next map to retire the record, and a later resize
+            # would leave the stale request winning forever.
+            self._map_watch = [
+                self.bind(sequence, self._on_shown, add="+")
+                for sequence in ("<Map>", "<Configure>")
+            ]
 
     def _on_shown(self, event: Any) -> None:
-        if event.widget is self:
-            self._applied_size = None
+        # The mapped check is what makes this safe: these events are dispatched
+        # when the event queue is drained, not when they occur, so a map the
+        # window has already been withdrawn from can arrive *after* a newer
+        # size was recorded. Such an event is stale by definition -- it reports
+        # a size the window no longer has -- and must not retire that record.
+        if event.widget is not self or not self.winfo_ismapped():
+            return
+        self._ever_shown = True
+        self._applied_size = None
 
     def _unmapped_size(self) -> Tuple[int, int]:
         """The size this window will map at, measured before it is mapped.
@@ -469,11 +486,12 @@ class _BaseWindow(BusyMixin):
         """
         if self._applied_size is not None:
             return self._applied_size
-        # winfo_width/height report 1 until a window has been realized, so this
-        # distinguishes "shown at some point" from "never shown".
-        width, height = self.winfo_width(), self.winfo_height()
-        if width > 1 and height > 1:
-            return width, height
+        # Only a window that has been shown has a size to report. Asking Tk
+        # instead does not work: on x11 a never-mapped window reports 1x1, but
+        # on win32 it reports the size Tk started it at -- a plausible-looking
+        # number that has nothing to do with the size the content will map at.
+        if self._ever_shown:
+            return self.winfo_width(), self.winfo_height()
         # A window sized by its content has no request until Tk has computed
         # the layout, so measuring first would center against a stale one.
         self.update_idletasks()
@@ -662,6 +680,7 @@ class App(_BaseWindow, tkinter.Tk):
 
         super().__init__(**kwargs)
         self.winsys: str = utils.windowing_system(self)
+        self._watch_for_first_map()
 
         if scaling is not None:
             utils.enable_high_dpi_awareness(self, scaling)
@@ -850,6 +869,7 @@ class Toplevel(_BaseWindow, tkinter.Toplevel):
 
         super().__init__(**kwargs)
         self.winsys: str = utils.windowing_system(self)
+        self._watch_for_first_map()
 
         # On aqua, give a borderless popup type (tooltip/splash/...) a native
         # macOS window class instead of the default chrome, so it isn't drawn
