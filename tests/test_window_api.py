@@ -592,6 +592,35 @@ def test_monitor_at_point_returns_none_when_no_source_answers(monkeypatch):
     assert positioning._monitor_at_point(10, 10) is None
 
 
+def test_placement_stays_on_screen_when_no_layout_is_available(root, monkeypatch):
+    # macOS without `screeninfo` has no monitor enumeration at all -- Xinerama is
+    # X11-only -- so the layout is unknown and placement falls back to Tk's own
+    # screen metrics. We cannot test multi-monitor aqua without the hardware, so
+    # pin the property that makes the unknown safe: with no layout, a window still
+    # lands fully inside the screen Tk describes. The worst case is then landing
+    # on the wrong display, never straddling two or hanging off the edge.
+    monkeypatch.setattr(positioning, "_HAS_SCREENINFO", False)
+    monkeypatch.setattr(positioning, "_xinerama_monitors", lambda: None)
+    assert positioning._monitors() is None
+
+    win = ttk.Toplevel(master=root, size=(400, 200))
+    win.withdraw()
+    win.update_idletasks()
+    size = (400, 200)
+
+    # centering falls back to winfo_screenwidth/height, anchored at the origin
+    x, y = positioning.center_on_screen(win, size=size)
+    assert 0 <= x and x + size[0] <= win.winfo_screenwidth()
+    assert 0 <= y and y + size[1] <= win.winfo_screenheight()
+
+    # clamping falls back to the virtual root; a point hard against the right
+    # edge is pulled back far enough for the whole window to fit
+    right_edge = win.winfo_vrootx() + win.winfo_vrootwidth()
+    cx, _ = positioning.ensure_on_screen(win, right_edge - 10, 0, size=size)
+    assert cx + size[0] <= right_edge
+    win.destroy()
+
+
 def test_clamp_uses_the_monitor_under_the_point_not_the_whole_desktop(root, monkeypatch):
     # The case that motivated this: two monitors side by side, a window that
     # would straddle the join. Clamping against the combined desktop leaves it

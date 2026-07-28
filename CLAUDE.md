@@ -1088,7 +1088,28 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > whole-screen fallback, correct on one display), so **multi-monitor macOS is
 > still unverified** — that is the undecided `CGGetActiveDisplayList` call, not
 > anything this branch regressed. Installing `screeninfo` turns checks 1 and 4
-> green. **Two rough edges in the verification tool itself** (found while running
+> green. **ACCEPTED ASSUMPTION (author, 2026-07-28): multi-monitor macOS is taken on
+> trust — there is no second display to test with.** What that actually leaves
+> unverified is narrow, because the path splits: **with `screeninfo` installed** the
+> layout comes from that package and everything after it is platform-independent
+> arithmetic, already covered live on dual-monitor Windows (4/4) and dual-monitor
+> X11 (5/5) and synthetically by
+> `test_clamp_uses_the_monitor_under_the_point_not_the_whole_desktop`, so the only
+> untested link is screeninfo's own aqua backend — a third-party concern, and one
+> the Mac confirmed works on a single display. **Without `screeninfo`** aqua has no
+> enumeration at all (Xinerama is X11-only, pinned for `darwin` by
+> `test_xinerama_query_is_skipped_off_x11`), so placement falls back to Tk's screen
+> metrics; the genuinely unknown fact is what `winfo screenwidth`/`vrootwidth`
+> report on a two-display Mac. That unknown is made *safe* rather than merely
+> untested by `test_placement_stays_on_screen_when_no_layout_is_available`, which
+> pins the property that matters: with no layout, a window still lands fully inside
+> the screen Tk describes, so the worst case is landing on the wrong display —
+> never straddling two or hanging off an edge. **The real closure is the deferred
+> `CGGetActiveDisplayList` ctypes call** (the aqua sibling of the Xinerama work);
+> note it would be *partly* verifiable on a single display, since a correct
+> implementation must return one rect matching the main display.
+>
+> **Two rough edges in the verification tool itself** (found while running
 > it; **both since FIXED** — see the X11 entry above): when `_monitors()` returns
 > `None` the whole check-4 block was skipped *silently* — the run reported 4 checks
 > instead of 5 with no "skipped" line; and check 6's window was destroyed at script
