@@ -224,7 +224,7 @@ def center_on_parent(
 def below_widget(
         window: tkinter.Misc,
         target: tkinter.Misc,
-        padding: int = 20,
+        padding: int = 0,
         gap: int = 3,
 ) -> Tuple[int, int]:
     """Coordinates that drop ``window`` directly below ``target``, left-aligned.
@@ -236,6 +236,13 @@ def below_widget(
     ``gap`` above the target's top-left — provided there is room there. The result
     is passed through :func:`ensure_on_screen` so it never overflows horizontally
     or off the opposite edge.
+
+    ``padding`` defaults to 0 for the same reason ``titlebar_height`` does below:
+    a dropdown is anchored to a widget, not placed freely, so the breathing room
+    :func:`ensure_on_screen` keeps around a floating window would break the
+    alignment that matters here. With the default 20 a target within 20px of the
+    screen edge had its dropdown pushed inward — visibly off its own widget —
+    while still being nowhere near leaving the screen.
     """
     window.update_idletasks()
     target.update_idletasks()
