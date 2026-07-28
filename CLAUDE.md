@@ -1144,22 +1144,62 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > `app.update()`, which does not wait — so there was nothing on screen to eyeball.
 > (Check 4 carried the same window-teardown bug, which this run did not reach.)
 >
-> **NEXT — the rest of the pre-2.1 punch list** (from the audit; none started):
-> **bump `pyproject.toml` 2.0.0 → 2.1.0** (the only hardcoded version);
+> **Session 2026-07-28 (WSL2/Linux box) — everything below is MERGED to `master`
+> and pushed.** Seven branches: **#1312** dialog centering (X11 verified here,
+> macOS verified on the Mac — gate closed); **`feat/2.1-center-before-first-map`**
+> (`place_window_center` before the first map + `verify_positioning.py` check 6);
+> **`fix/2.1-filedialog-no-parent`** (`Querybox.get_open_filename()` with no
+> parent raised `AttributeError` on X11 — the one platform where the themed
+> dialog is the default, which is why it shipped); **#1313** `color_to_rgb`;
+> **`fix/2.1-linux-suite-gaps`** (the suite is GREEN on Linux — see above);
+> **`chore/2.1-version-catchup`** (`master` was still 2.0.0 — see above); and
+> **`fix/2.1-demo-window-placement`**. Suite **919**, docs clean under `-W`.
+>
+> **Three facts worth carrying forward.** (a) **`withdraw()` goes before you build
+> a window's contents, not after.** Building widgets *shows* the window, and
+> re-showing an already-shown window is a fresh placement the WM decides for
+> itself — measured drifting hundreds of px, differently each run. Reproduced in
+> **pure tkinter** (raw `tk.Tk()`, raw `geometry("+x+y")`), so it is the window
+> manager, not us. This is why `python -m ttkbootstrap` opened off-screen: it
+> never positioned itself at all. (b) **Two sources of truth need an ordering, not
+> a preference.** `_unmapped_size` first preferred the recorded size (stale after a
+> WM maximize), then the realized size (stale against a `geometry` call made while
+> hidden) — both wrong. A record now survives only between the `geometry` call
+> that set it and the next map, so the *newer* wins; all four orderings are
+> tested, one test per failure direction. (c) **`git merge-tree | grep '^<<<<<<<'`
+> is not a reliable conflict check** on modern git — it reported "0 conflicts" for
+> two branches that then conflicted for real. **Do a throwaway trial merge**
+> (`git checkout -b tmp/check master && git merge --no-commit …`) before claiming a
+> branch is ready.
+>
+> **Environment on the WSL box** (fresh this session): `.venv` now has `pytest`,
+> `screeninfo` and the docs requirements installed; `credential.helper` is set
+> **repo-locally** to the Windows-side Git Credential Manager
+> (`/mnt/c/Program Files/Git/mingw64/bin/git-credential-manager.exe`), which is how
+> pushes authenticate — `git config --local --unset credential.helper` undoes it.
+> `gh` is **not** installed, so PRs cannot be opened from here; this session's
+> merges were done locally and pushed to `master`.
+>
+> **NEXT — the rest of the pre-2.1 punch list:**
+> **bump `pyproject.toml` → 2.1.0** *at release time* (`master` tracks the current
+> release, so it correctly reads **2.0.1** now — do not bump early);
 > **close #1242** (complete in `master`); **#1309** (X11 menu border) is the last
-> open feature-ish issue; **prune 10 stale local branches** (8 show merged, and
-> `feat/2.1-filedialog-x11-default` / `fix/2.1-filedialog-center-clamp` only look
-> unmerged because they were squash-merged — their content is on `master`,
-> verified); **delete `development/filedialogs/` (18 files) + `scrolledframe/`**
-> (prior art now superseded by shipped code — the #1250 precedent). (The **Tk 9
-> run on the Mac** is DONE — see the macOS verification entry above.)
-> `2_1_changes.md` was checked complete against the merged PR list before any of
-> this.
+> open feature-ish issue; **delete `development/filedialogs/` (18 files) +
+> `scrolledframe/`** (prior art superseded by shipped code — the #1250 precedent).
+> Local branches were pruned this session; the matching **remote** branches are
+> still on GitHub, as is **`fix-dialog-has-no-size-on-linux`** — an unmerged 2021
+> branch for #761 that touches `tests/widgets/dialogs.py`, a path that no longer
+> exists, and whose subject (dialogs unsized on Linux) is superseded by the 2.1
+> sizing work; it looks safe to delete but was left for the author to call.
+> **NEW — worth considering: there is still no CI** (`.github/workflows/` does not
+> exist). Linux is now green, which is what CI would run, so a minimal workflow
+> (`pytest` + `sphinx -b html -W`) would pass today and would have caught several
+> things this session found by hand.
 >
 > **User-visible 2.1 changes are logged in `development/2_1_changes.md`** (the
 > running log, same role `2_0_breaking_changes.md` played for 2.0; it is the source
 > for the 2.1 release notes). **Log there as you land**, not at release time. Scope
-> is relative to *released 2.0.0* — a regression introduced and fixed inside the
+> is relative to the *latest released 2.0.x* (currently **2.0.1**) — a regression introduced and fixed inside the
 > 2.1 cycle never reached a user and belongs in this dev log, not that one. There
 > are **no API breaks in 2.1** so far; the one change visible without any user code
 > change is Treeview/Tableview row height now following a configured font.
