@@ -65,38 +65,52 @@ def test_surface_is_exported():
 # Fonts namespace (live root)
 # --------------------------------------------------------------------------
 
-def _resolvable_family(root, *candidates):
-    """A family Tk will resolve to *itself* on this host.
+def _resolvable_family(root, *candidates, unlike=None):
+    """A family Tk resolves to *itself*, and that differs from `unlike`.
 
     These tests assert that a family they set comes back from
-    `actual("family")`. A family that is not installed does not come back --
-    Tk silently substitutes the nearest match, so "Georgia" reads as
-    "DejaVu Serif" on a stock Linux and the assertion fails for a reason that
-    has nothing to do with the code under test. Pick a candidate that survives
-    the round trip, falling back to whatever the host does have.
+    `actual("family")`, which needs two things a hardcoded name cannot promise.
+    It must be **installed**: Tk silently substitutes the nearest match, so
+    "Georgia" reads back as "DejaVu Serif" on a stock Linux and the assertion
+    fails for a reason unrelated to the code. And where the test asserts a font
+    *changed*, it must differ from the value already in place -- otherwise the
+    assertion passes whether or not the call did anything, which is how
+    "Courier New" (-> DejaVu Sans Mono, already TkFixedFont's family here) made
+    the mono assertion vacuous.
     """
+    def usable(name):
+        return (name and not name.startswith("@") and name != unlike
+                and font.Font(root=root, family=name).actual("family") == name)
+
     for name in candidates:
-        if font.Font(root=root, family=name).actual("family") == name:
+        if usable(name):
             return name
-    for name in font.families(root=root):
-        if name and not name.startswith("@") and \
-                font.Font(root=root, family=name).actual("family") == name:
+    for name in sorted(set(font.families(root=root))):
+        if usable(name):
             return name
-    raise AssertionError("no font family on this host round-trips")
+    raise AssertionError(
+        f"no font family on this host round-trips (excluding {unlike!r})")
 
 
-def _proportional(root):
-    return _resolvable_family(root, "Georgia", "DejaVu Serif", "Liberation Serif")
+def _proportional(root, unlike=None):
+    return _resolvable_family(
+        root, "Georgia", "DejaVu Serif", "Liberation Serif", unlike=unlike)
 
 
-def _monospace(root):
-    return _resolvable_family(root, "Courier New", "DejaVu Sans Mono", "Liberation Mono")
+def _monospace(root, unlike=None):
+    return _resolvable_family(
+        root, "Courier New", "Ubuntu Mono", "Menlo", "Consolas",
+        "DejaVu Sans Mono", "Liberation Mono", unlike=unlike)
+
+
+def _current(root, named):
+    return font.nametofont(named, root=root).actual("family")
 
 
 
 def test_set_global_family_retints_proportional_fonts(restore_fonts):
     root = restore_fonts
-    family = _proportional(root)
+    family = _proportional(root, unlike=_current(root, "TkDefaultFont"))
     Fonts.set_global_family(family)
     for name in fonts.PROPORTIONAL_FONTS:
         try:
@@ -108,8 +122,9 @@ def test_set_global_family_retints_proportional_fonts(restore_fonts):
 
 def test_set_global_family_leaves_fixed_font_unless_mono_given(restore_fonts):
     root = restore_fonts
-    family, mono = _proportional(root), _monospace(root)
-    fixed_before = font.nametofont("TkFixedFont", root=root).actual("family")
+    fixed_before = _current(root, "TkFixedFont")
+    family = _proportional(root, unlike=fixed_before)
+    mono = _monospace(root, unlike=fixed_before)   # or the last assert proves nothing
     Fonts.set_global_family(family)
     assert font.nametofont("TkFixedFont", root=root).actual("family") == fixed_before
     Fonts.set_global_family(family, mono_family=mono)
@@ -142,7 +157,7 @@ def test_describe_all_and_single(restore_fonts):
 
 def test_create_alias_registers_a_named_font(restore_fonts):
     root = restore_fonts
-    family = _proportional(root)
+    family = _proportional(root, unlike=_current(root, "TkDefaultFont"))
     alias = Fonts.create_alias("TtkbTestBody", family=family, size=13)
     try:
         assert alias.actual("family") == family
@@ -182,7 +197,7 @@ def test_live_method_before_root_raises_not_spawns_phantom(monkeypatch):
 
 def test_module_set_global_family_applies_live_when_root_exists(restore_fonts):
     root = restore_fonts
-    family = _proportional(root)
+    family = _proportional(root, unlike=_current(root, "TkDefaultFont"))
     # a root exists (session root), so the seam applies immediately, no queue
     with warnings.catch_warnings():
         warnings.simplefilter("error")
@@ -193,7 +208,8 @@ def test_module_set_global_family_applies_live_when_root_exists(restore_fonts):
 
 def test_module_set_global_family_queues_before_root(restore_fonts, monkeypatch):
     root = restore_fonts
-    family, mono = _proportional(root), _monospace(root)
+    family = _proportional(root, unlike=_current(root, "TkDefaultFont"))
+    mono = _monospace(root, unlike=_current(root, "TkFixedFont"))
     config._pending.clear()
     # simulate "no root yet" -> the setter queues silently instead of applying
     monkeypatch.setattr(Style, "instance", None)

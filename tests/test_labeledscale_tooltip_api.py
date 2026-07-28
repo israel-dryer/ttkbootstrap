@@ -231,7 +231,7 @@ def test_configure_reconfigures_live_popup(root):
     tip.hide_tip()
     assert tip.toplevel is None
 
-def test_tooltip_topmost_default_and_optout(root):
+def test_tooltip_topmost_default_and_optout(root, monkeypatch):
     """The popup is topmost by default, matching native tooltips (#1086);
     `topmost=False` opts out. Asserted at the kwargs seam, not the resulting
     attribute, because whether a window actually floats is not ours to decide:
@@ -241,11 +241,22 @@ def test_tooltip_topmost_default_and_optout(root):
     btn = ttk.Button(root, text="x")
     btn.pack()
 
+    # Capture what the popup is actually constructed with: asserting the kwargs
+    # dict alone would still pass if the popup stopped being given it.
+    built_with = {}
+    real_toplevel = ttk.window.Toplevel
+
+    def spy(**kwargs):
+        built_with.update(kwargs)
+        return real_toplevel(**kwargs)
+
+    monkeypatch.setattr(ttk.window, "Toplevel", spy)
+
     tip = ToolTip(btn, text="tip")
     assert tip.toplevel_kwargs["topmost"] is True
     tip.show_tip()
     root.update_idletasks()
-    assert tip.toplevel is not None  # the popup was built with those kwargs
+    assert built_with["topmost"] is True, "the popup was not asked to be topmost"
     tip.hide_tip()
 
     plain = ToolTip(btn, text="tip", topmost=False)
