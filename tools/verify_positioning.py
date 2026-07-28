@@ -4,23 +4,48 @@ Run from the repo root on each platform:
 
     PYTHONPATH=src python tools/verify_positioning.py
 
-Prints a PASS/FAIL line per check. Checks 4 and 5 open real windows and need a
-human to look at them; everything else is automatic.
+Prints a PASS/FAIL line per check. Checks 4, 5 and 6 open real windows and need
+a human to look at them; everything else is automatic.
 """
 import re
 import sys
+import time
+import tkinter
 
 import ttkbootstrap as ttk
 from ttkbootstrap.dialogs.message import MessageDialog
 from ttkbootstrap.internal import positioning as p
 
 results = []
+skipped = []
 
 
 def check(name, ok, detail="", always_show=False):
     results.append((name, ok))
     show = detail and (always_show or not ok)
     print(f"[{'PASS' if ok else 'FAIL'}] {name}{'  -- ' + detail if show else ''}")
+
+
+def skip(name, why):
+    """Record a check that could not run here, so it is never silently absent."""
+    skipped.append(name)
+    print(f"[SKIP] {name}  -- {why}")
+
+
+def hold(window, seconds=2.5):
+    """Keep a window on screen long enough to be looked at.
+
+    `after(...)` followed by a single `update()` does not wait -- the callback
+    has not fired yet, so the script races on and tears the window down. A LOOK
+    line then points at something that was never really there.
+    """
+    deadline = time.monotonic() + seconds
+    while time.monotonic() < deadline:
+        try:
+            window.update()
+        except tkinter.TclError:
+            return  # closed by hand; nothing left to show
+        time.sleep(0.05)
 
 
 app = ttk.App(title="positioning verification")
@@ -83,14 +108,16 @@ if monitors:
         d._toplevel.deiconify()
         d._toplevel.update()
         print("    -> LOOK: the dialog above should sit wholly on one screen.")
-        app.after(2500, d.close)
-        app.update()
+        hold(d._toplevel)
         try:
             d.close()
         except Exception:
             pass
     else:
         check("4. a dialog near a seam stays inside one monitor", True, "single monitor -- n/a")
+else:
+    skip("4. a dialog near a seam stays inside one monitor",
+         "no monitor layout on this platform (install screeninfo to exercise it)")
 
 # --- 5. the themed file dialog (X11 default) -------------------------------
 print("\n[MANUAL] 5. themed file dialog -- run this and confirm it opens fully")
@@ -143,11 +170,13 @@ else:
           always_show=True)
 print("    -> LOOK: that window should already be centered when it appears, and")
 print("             should not flash or jump on the way in.")
-app.after(2000, probe.destroy)
-app.update()
+hold(probe)
+probe.destroy()
 
 failed = [n for n, ok in results if not ok]
 print(f"\n{len(results) - len(failed)}/{len(results)} automatic checks passed")
+if skipped:
+    print(f"{len(skipped)} skipped: " + "; ".join(skipped))
 if failed:
     print("failed: " + "; ".join(failed))
 app.destroy()

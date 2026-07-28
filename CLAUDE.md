@@ -1032,12 +1032,42 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > Windows differs: `winfo screenwidth` is the primary monitor, `winfo vrootwidth`
 > the virtual desktop.
 >
-> **VERIFICATION — Windows and macOS are DONE; only X11 is outstanding.** New
+> **VERIFICATION — Windows, macOS and X11 are ALL DONE.** New
 > **`tools/verify_positioning.py`** prints a PASS/FAIL line per check plus the raw
 > metrics; **Windows 4/4 (Tk 8.6.15, dual 2560×1440)**. Full instructions are in a
-> comment on **#1310**. On **X11** (still to run) run it *twice* — the second time
-> with `screeninfo` uninstalled, since that is the only way to exercise the new
-> Xinerama path.
+> comment on **#1310**.
+>
+> **X11 verified 2026-07-28 — 5/5** (WSL2/WSLg XWayland, Tk 8.6.12, Python 3.10.12,
+> dual 2560×1440). Run twice as the instructions require: **without `screeninfo`
+> 4/4** — the only way to exercise the new Xinerama path, and it read both monitors
+> `[(2560,0,2560,1440), (0,0,2560,1440)]` while Tk reports one 5120×1440 screen
+> *and* the same for `vroot`, which is the blind spot the whole fix exists for;
+> **with `screeninfo` 5/5**, check 2b confirming the two sources agree exactly.
+> **Two traps worth knowing before re-running it on X11:** (a) the script's check 4
+> passed **vacuously** — WSLg reports a `-32730` sentinel position until the
+> compositor has mapped a window, so `app.geometry(...)` + `update()` then building
+> the dialog immediately parks the parent nowhere near the seam. Re-run by hand with
+> a settle-wait it is genuinely green: parent at 2356 would naively centre the dialog
+> across 2441..2691 (seam at 2560) and the fix lands it 2290..2540, wholly on the
+> left monitor; four parent positions all landed inside one monitor. (b) **a
+> `geometry()` readback is not the position you applied on X11** — a withdrawn
+> window reports the WM's own placement (a dialog asked for `+4460+20` reads back
+> `+32+32`), which is why the three `_locate` tests were rewritten to record the
+> call instead. The remaining 15 suite failures on Linux are **pre-existing platform
+> gaps, none positioning-related**: `_tkinter.Tcl_Obj` from style lookups fed to
+> `int()` (6), hardcoded Windows font names Georgia/Courier New (5), an icon padding
+> metric, and two X11 window-manager behaviours. `test_below_widget_flips_above_when_
+> no_room_below` is **order-dependent** — it fails run alone, passes in the full
+> suite, and does so at the branch base too (a third known flake alongside the two
+> already logged).
+>
+> **The two rough edges the macOS run found in the tool are FIXED** (on
+> `feat/2.1-center-before-first-map`): a `hold()` helper now pumps the event loop so
+> the LOOK windows in checks 4 and 6 actually stay on screen — `after(...)` plus a
+> bare `update()` never waits, so both windows were torn down before anyone could
+> look (check 4 had the bug too, not just the new check 6) — and a missing `else` on
+> `if monitors:` made check 4 vanish silently when no layout is available; it now
+> prints `[SKIP]` and a summary line.
 >
 > **macOS verified 2026-07-28 — 5/5 on BOTH Tk lines** (aqua, single 1470×956,
 > Tk 8.6.17 and Tk 9.0.4; the Mac has a venv per Tk line — bare `python` is
@@ -1059,11 +1089,12 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > still unverified** — that is the undecided `CGGetActiveDisplayList` call, not
 > anything this branch regressed. Installing `screeninfo` turns checks 1 and 4
 > green. **Two rough edges in the verification tool itself** (found while running
-> it, not yet fixed): when `_monitors()` returns `None` the whole check-4 block is
-> skipped *silently* — the run reports 4 checks instead of 5 with no "skipped"
-> line; and check 6's window is destroyed at script exit, because
-> `app.after(2000, probe.destroy)` is followed only by `app.update()`, which does
-> not wait — so there is nothing on screen to eyeball.
+> it; **both since FIXED** — see the X11 entry above): when `_monitors()` returns
+> `None` the whole check-4 block was skipped *silently* — the run reported 4 checks
+> instead of 5 with no "skipped" line; and check 6's window was destroyed at script
+> exit, because `app.after(2000, probe.destroy)` is followed only by
+> `app.update()`, which does not wait — so there was nothing on screen to eyeball.
+> (Check 4 carried the same window-teardown bug, which this run did not reach.)
 >
 > **NEXT — the rest of the pre-2.1 punch list** (from the audit; none started):
 > **bump `pyproject.toml` 2.0.0 → 2.1.0** (the only hardcoded version);
