@@ -9,8 +9,11 @@ from tkinter import BaseWidget
 from typing import Any, Optional, Tuple
 
 import ttkbootstrap as ttk
-from ttkbootstrap.internal.utility import center_on_parent
-from ttkbootstrap.internal.positioning import ensure_on_screen
+from ttkbootstrap.internal.positioning import (
+    center_on_parent,
+    center_on_screen,
+    ensure_on_screen,
+)
 from ttkbootstrap.utils import windowing_system
 
 
@@ -43,9 +46,44 @@ class Dialog(BaseWidget):
         self._alert = alert
         self._initial_focus = None
 
-    def _locate(self) -> None:
+    def _footprint(self) -> Tuple[int, int]:
+        """The size the dialog occupies once mapped.
+
+        A dialog is still withdrawn when it is positioned, so it has no realized
+        size and its *requested* size ignores the `minsize` floor `build` pins --
+        measuring that instead centers and clamps a smaller window than the one
+        the user sees.
+        """
         toplevel = self._toplevel
-        center_on_parent(toplevel, self._parent)
+        min_width, min_height = toplevel.wm_minsize()
+        return (
+            max(toplevel.winfo_reqwidth(), min_width),
+            max(toplevel.winfo_reqheight(), min_height),
+        )
+
+    def _center(self) -> Tuple[int, int]:
+        """Coordinates that center the dialog over its parent (or the screen)."""
+        parent = self._parent if self._parent is not None else self.master
+        if parent is not None:
+            return center_on_parent(self._toplevel, parent, size=self._footprint())
+        return center_on_screen(self._toplevel, size=self._footprint())
+
+    def _locate(self) -> None:
+        """Center the dialog on its parent, clamped onto that monitor.
+
+        The coordinates are applied explicitly. Leaving a transient dialog to the
+        window manager works on Windows/macOS but not on X11, where an unplaced
+        window lands at the virtual-desktop origin -- between monitors on a
+        multi-head setup.
+        """
+        toplevel = self._toplevel
+        toplevel.update_idletasks()
+        x, y = self._center()
+        try:
+            x, y = ensure_on_screen(toplevel, x, y, size=self._footprint())
+        except Exception:
+            pass
+        toplevel.geometry(f"+{int(x)}+{int(y)}")
 
     def show(self, position: Optional[Tuple[int, int]] = None, wait_for_result: bool = True) -> None:
         """Show the popup dialog.
@@ -70,7 +108,7 @@ class Dialog(BaseWidget):
                 x, y = position
                 # Clamp so an explicit position near a screen edge doesn't push
                 # the dialog partly (or fully) off-screen.
-                x, y = ensure_on_screen(self._toplevel, x, y)
+                x, y = ensure_on_screen(self._toplevel, x, y, size=self._footprint())
                 self._toplevel.geometry(f'+{x}+{y}')
             except Exception:
                 self._locate()

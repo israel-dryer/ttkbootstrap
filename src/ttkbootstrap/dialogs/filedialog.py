@@ -266,6 +266,8 @@ class FileDialog:
         self._current_globs: Tuple[str, ...] = ("*",)
         self._rows: dict = {}
         self._toplevel: Optional[tkinter.Toplevel] = None
+        # the size _build applies; positioning measures this, not the content
+        self._footprint: Optional[Tuple[int, int]] = None
 
     # -- public ------------------------------------------------------------
 
@@ -336,7 +338,11 @@ class FileDialog:
         self._toplevel.update_idletasks()
         req_w = self._toplevel.winfo_reqwidth()
         req_h = self._toplevel.winfo_reqheight()
-        self._toplevel.geometry(f"{max(640, req_w)}x{max(480, req_h)}")
+        # Remember the size actually applied: the window is still withdrawn when
+        # it is positioned, and this floor does not reach winfo_reqwidth, so
+        # centering and clamping would measure the smaller content size.
+        self._footprint = (max(640, req_w), max(480, req_h))
+        self._toplevel.geometry(f"{self._footprint[0]}x{self._footprint[1]}")
         self._toplevel.minsize(req_w, req_h)
 
     def _build_topbar(self, master: tkinter.Misc) -> None:
@@ -615,12 +621,15 @@ class FileDialog:
     def _locate(self, position: Optional[Tuple[int, int]]) -> None:
         tl = self._toplevel
         tl.update_idletasks()
-        x, y = position if position is not None else self._center()
+        try:
+            x, y = position if position is not None else self._center()
+        except (TypeError, ValueError):
+            x, y = self._center()  # a malformed position falls back to centering
         # Clamp both paths on-screen: a parent near a screen edge (or shorter than
         # the dialog) can otherwise push a centered dialog partly off-screen, which
         # would defeat the content-sizing above by hiding the bottom controls.
         try:
-            x, y = ensure_on_screen(tl, x, y)
+            x, y = ensure_on_screen(tl, x, y, size=self._footprint)
         except Exception:
             pass
         # Apply the computed coordinates. Relying on the window manager to place
@@ -632,8 +641,8 @@ class FileDialog:
     def _center(self) -> Tuple[int, int]:
         """Coordinates that center the dialog over its parent (or the screen)."""
         if self._parent is not None:
-            return center_on_parent(self._toplevel, self._parent)
-        return center_on_screen(self._toplevel)
+            return center_on_parent(self._toplevel, self._parent, size=self._footprint)
+        return center_on_screen(self._toplevel, size=self._footprint)
 
 
 def _default_title(mode: str) -> str:

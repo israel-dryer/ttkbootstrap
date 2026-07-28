@@ -330,6 +330,9 @@ should appear next to the widget that opened it:
 
    dialog.show(position=(event.x_root, event.y_root))
 
+Either way the dialog is kept fully on screen, and on a multi-monitor setup it is
+held inside the monitor it opens on rather than spanning the join between two.
+
 **Run it without blocking.** Pass a ``command`` — a plain zero-argument callable
 run when a button is pressed — and show it with ``wait_for_result=False``. The
 call returns immediately and your callback fires when the user answers, which
