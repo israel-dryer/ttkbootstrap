@@ -228,6 +228,16 @@ def _format_mtime(ts: Optional[float]) -> str:
 # The dialog.
 # ---------------------------------------------------------------------------
 
+def _default_root() -> Optional[tkinter.Misc]:
+    """The root a parentless dialog belongs to, or ``None`` if there is none.
+
+    Read the module global rather than calling ``tkinter._get_default_root()``,
+    which *creates* a bare ``Tk()`` when no root exists -- a stray window, and
+    the process root that ttkbootstrap's ``Style`` singleton would then bind to.
+    """
+    return getattr(tkinter, "_default_root", None)
+
+
 class FileDialog:
     """A themed file chooser reproducing ``tkfbox.tcl``'s layout.
 
@@ -289,7 +299,15 @@ class FileDialog:
     # -- construction ------------------------------------------------------
 
     def _build(self) -> None:
-        winsys = windowing_system(self._parent)
+        # A parentless call still needs an interpreter to read the windowing
+        # system from -- Querybox's native-vs-themed routing falls back to the
+        # default root the same way. Positioning is unaffected: with no parent
+        # the dialog still centers on the screen, not on the root (see _center).
+        root = self._parent if self._parent is not None else _default_root()
+        if root is None:
+            raise RuntimeError(
+                "FileDialog needs a parent widget or a default root window")
+        winsys = windowing_system(root)
         kwargs: dict = dict(
             transient=self._parent,
             title=self._title,

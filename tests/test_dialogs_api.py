@@ -285,20 +285,23 @@ def test_querybox_file_methods_are_static_with_parent(method):
 def test_querybox_file_dialogs_normalize_cancel_to_none(monkeypatch):
     # The stdlib file dialogs return "" / () on cancel; the wrappers normalize
     # that to None to match the rest of the get_* facade. Monkeypatch the native
-    # calls so no OS dialog opens.
+    # calls so no OS dialog opens. `native=True` forces the path under test
+    # rather than trusting the host: on X11 the default routing is the themed
+    # dialog, whose modal show() would hang the suite. The routing itself is
+    # covered by test_use_native_filedialog_none_is_platform_aware.
     from ttkbootstrap.dialogs import query
 
     monkeypatch.setattr(query.filedialog, "askopenfilename", lambda **kw: "")
-    assert Querybox.get_open_filename() is None
+    assert Querybox.get_open_filename(native=True) is None
     monkeypatch.setattr(query.filedialog, "askopenfilename", lambda **kw: "C:/a/b.txt")
-    assert Querybox.get_open_filename(title="Open") == "C:/a/b.txt"
+    assert Querybox.get_open_filename(native=True, title="Open") == "C:/a/b.txt"
 
     monkeypatch.setattr(query.filedialog, "askopenfilenames", lambda **kw: ())
-    assert Querybox.get_open_filenames() is None
+    assert Querybox.get_open_filenames(native=True) is None
     monkeypatch.setattr(query.filedialog, "askopenfilenames", lambda **kw: ("a", "b"))
-    assert Querybox.get_open_filenames() == ("a", "b")
+    assert Querybox.get_open_filenames(native=True) == ("a", "b")
 
     monkeypatch.setattr(query.filedialog, "asksaveasfilename", lambda **kw: "")
-    assert Querybox.get_save_filename() is None
+    assert Querybox.get_save_filename(native=True) is None
     monkeypatch.setattr(query.filedialog, "askdirectory", lambda **kw: "")
-    assert Querybox.get_directory() is None
+    assert Querybox.get_directory(native=True) is None
