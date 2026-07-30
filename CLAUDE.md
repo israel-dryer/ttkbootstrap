@@ -805,12 +805,33 @@ DONE.** Optional post-release polish only from here.
 
 ## Direction: 2.1 milestone (post-release)
 
-> **STATUS (2026-07-19): 2.1 is the active milestone** (GitHub milestone #1, the
-> repo's first). New work targets `master`. Backlog framing lives in
-> `development/2_0_plan.md` "Post-2.0 (2.1) backlog". **Labels carry no version** —
-> the author dropped the `Version 1/2/3` labels because the milestone already
-> conveys the target release; tag issues/PRs topically (`enhancement`/`bug`) and
-> set the **milestone**.
+> **STATUS (2026-07-30): ttkbootstrap 2.1.0 is RELEASED.** Tagged `v2.1.0`
+> (annotated), [GitHub release](https://github.com/israel-dryer/ttkbootstrap/releases/tag/v2.1.0)
+> live, published to PyPI (https://pypi.org/project/ttkbootstrap/2.1.0/), verified
+> by a clean-environment install. `master` reads **2.1.0** and, per the standing
+> convention, **`master` is always the most recent release**. The 2.1 milestone
+> closed with **48 items, 0 open**. Everything below is the record of how 2.1 was
+> built — background, not an active worklist.
+>
+> **Two open milestones, both with one issue.** **`2.1.x`** (created 2026-07-30 as
+> the post-2.1 maintenance bucket) holds **#1322** — four asset-geometry tests fail
+> on a non-baseline-density display, test-only, contributor-facing. **`3.0`** holds
+> **#1276** (make `DateEntry` `value=None` the default). There is **no `2.2`
+> milestone yet**; create one when feature work is actually scoped rather than
+> in advance.
+>
+> **The next user-visible change starts a new log.** `development/2_1_changes.md`
+> is now frozen history. Create `development/2_2_changes.md` (or `2_1_1_` for a
+> patch) when the first such change lands, with scope **relative to 2.1.0**, and
+> log there as you land — not at release time. Patches have not historically got
+> their own log: 2.0.1's two Tk 9 fixes were recorded only in this file.
+>
+> New work targets `master`. **Labels carry no version** — the author dropped the
+> `Version 1/2/3` labels because the milestone already conveys the target release;
+> tag issues/PRs topically (`enhancement`/`bug`) and **set the milestone on every
+> issue AND PR** (PRs were the gap: most 2.1 PRs went unmilestoned, so
+> `gh pr list --search "milestone:2.1"` under-reported the release until it was
+> backfilled).
 >
 > **2.0.1 SHIPPED (2026-07-23)** — a patch release carrying two Tcl/Tk 9 fixes and
 > nothing else: the scroll-event contract (#1290, PR #1291 — trackpads fire
@@ -1489,13 +1510,42 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > closure is still the deferred `CGGetActiveDisplayList` ctypes call, the aqua
 > sibling of the Xinerama work.
 >
-> **User-visible 2.1 changes are logged in `development/2_1_changes.md`** (the
-> running log, same role `2_0_breaking_changes.md` played for 2.0; it is the source
-> for the 2.1 release notes). **Log there as you land**, not at release time. Scope
-> is relative to the *latest released 2.0.x* (currently **2.0.1**) — a regression introduced and fixed inside the
-> 2.1 cycle never reached a user and belongs in this dev log, not that one. There
-> are **no API breaks in 2.1** so far; the one change visible without any user code
-> change is Treeview/Tableview row height now following a configured font.
+> **Session 2026-07-30e (Windows box) — 2.1.0 SHIPPED.** Version bumped to 2.1.0
+> (#1323), release notes written from `development/2_1_changes.md`, gates re-run
+> (**934 passed, 3 skipped**; docs `-W` exit 0; CI green on all three windowing
+> systems), `python -m build` + `twine check` PASSED, **uploaded to PyPI by the
+> author**, annotated tag `v2.1.0` + GitHub release published, and verified by a
+> clean-environment install. The published artifacts are byte-identical in size to
+> the locally built ones (535,901 / 576,678).
+>
+> **The smoke test went past "does it resolve."** On a fresh venv installing from
+> PyPI: warning-free import, 30 themes, a live theme switch, the **vendored icon
+> font present on disk** (package data, the classic wheel failure), and all three
+> headline features — `Querybox.get_open_filename`, value tokens
+> (`bootstyle="#2f4f4f"` and `"primary[300]"`), and a durable option surviving a
+> variant build (`danger.TEntry` → `padding=(8,)`).
+>
+> **Three release-mechanics traps, all found by doing it rather than reading it.**
+> (a) **`dist/` is gitignored, so it keeps the previous release's artifacts** — it
+> still held the 2.0.0 wheel and sdist from July 19, and the runbook's
+> `twine upload dist/*` would have tried to re-publish 2.0.0. Runbook fixed in
+> #1324: empty `dist/` first, upload by explicit version glob, and check wheel
+> *contents* because `twine check` validates metadata only. (b) **PyPI's JSON API
+> and the simple index propagate separately** — the JSON API returned 2.1.0
+> immediately while the index pip reads did not have it yet, so the first
+> clean-env install failed on a release that was genuinely live. (c) **pip then
+> cached that empty index page**, so it kept failing *after* propagation;
+> `--no-cache-dir` is what fixes it. Verify a fresh release with that flag, or a
+> cache will read as a broken release.
+>
+> **Noted, not fixed: `ttk.__version__` does not exist** (and did not in 2.0.x
+> either). `import ttkbootstrap; ttkbootstrap.__version__` is a common reflex and
+> currently raises `AttributeError`. Additive, `2.1.x`-shaped, unfiled.
+>
+> **Also this session:** the branch sweep that started it (12 local + 6 remote
+> merged branches deleted), the stranded #1315 window fix it uncovered, the
+> `AGENTS.md` deletion, CI (#1317/#1319), the badge and change-log review (#1318),
+> the milestone backfill, and #1322 filed.
 
 Order (dependency- and design-gate-driven), with status:
 
