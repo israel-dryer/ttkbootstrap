@@ -1319,8 +1319,12 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > **NEXT — the rest of the pre-2.1 punch list. The 2.1 milestone now has ZERO
 > open issues** (verified via the API this session: #1309 auto-closed on merge,
 > #1242 was already closed). Everything below is housekeeping, not features:
-> **bump `pyproject.toml` → 2.1.0** *at release time* (`master` tracks the current
-> release, so it correctly reads **2.0.1** now — do not bump early).
+> **bump `pyproject.toml` → 2.1.0** — **DONE**, and it is the *first* step of the
+> release proper, so everything after it (build, `twine check`, upload, tag,
+> GitHub release, clean-env verify) follows in one sitting per the "Releasing"
+> runbook under *Dev environment & commands*. Until the upload lands, **2.0.1 is
+> still the latest released version**, which is why the change log's scope line
+> still names it.
 > **DONE 2026-07-30b (Windows):** the prior-art trees are deleted, the branch
 > prune is finished remotely, and the stale root scripts are gone — see that
 > session's entry below. **CI now EXISTS** (`.github/workflows/ci.yml`, #1317,
@@ -1797,11 +1801,17 @@ repo-root `.pypirc`. **`master` is always the most recent release** — a patch
 release is cut from `master`, so the version bump lands there naturally;
 `release/*` exists only for *superseded* majors.
 
-1. Bump `version` in `pyproject.toml`, **at release time, on `master`**. The
-   literal is load-bearing beyond packaging: `docs/conf.py` reads it through
-   `importlib.metadata`, so a stale value mislabels the docs too. 2.0.1 shipped
-   its bump on a throwaway `release/2.0` branch and `master` kept claiming 2.0.0
-   for days — don't repeat that branch.
+1. Bump `version` in `pyproject.toml`, **at release time, on `master`**. It is the
+   only place the version is written — nothing under `src/`, `docs/` or `tools/`
+   hardcodes it. 2.0.1 shipped its bump on a throwaway `release/2.0` branch and
+   `master` kept claiming 2.0.0 for days — don't repeat that branch.
+   `docs/conf.py` reads the *installed* distribution's version through
+   `importlib.metadata` into `release`/`version`. Neither is rendered anywhere
+   today (`html_title` is a fixed string and there is no version switcher), so a
+   wrong value is latent rather than visible — but do not read a local docs build
+   as confirmation of the bump: an editable install keeps whatever metadata it was
+   built with, and this checkout's has read **2.0.0a1** for the whole 2.x cycle.
+   RTD is unaffected; it installs fresh, so it reports the real version.
 2. Fold `development/2_<x>_changes.md` into the release notes.
 3. Run the gates: the full suite, and the docs build under `-W`.
 4. `python -m build`, then `twine check dist/*`, then `twine upload dist/*`.
