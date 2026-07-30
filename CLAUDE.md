@@ -1331,8 +1331,8 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > **`screeninfo` is deliberately left out** so the runners exercise the fallback
 > layout path, and the Xvfb display is pinned to 96 dpi so it is a
 > standard-density screen rather than an arbitrary one. **What CI does NOT
-> cover:** macOS/aqua, Tk 9, and anything visual — so the per-platform manual
-> gates below are still manual.
+> cover:** Tk 9 (every runner is Tk 8.6) and anything visual — so the
+> per-platform manual gates below are still manual.
 >
 > **HANDOFF TO THE WINDOWS BOX (next session, from 2026-07-30).** The last few
 > sessions ran on WSL2/Linux; the next is on Windows, which is a **different
