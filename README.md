@@ -1,3 +1,4 @@
+[![CI](https://github.com/israel-dryer/ttkbootstrap/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/israel-dryer/ttkbootstrap/actions/workflows/ci.yml)
 ![](https://img.shields.io/github/release/israel-dryer/ttkbootstrap.svg)
 [![Downloads](https://pepy.tech/badge/ttkbootstrap)](https://pepy.tech/project/ttkbootstrap)
 [![Downloads](https://pepy.tech/badge/ttkbootstrap/month)](https://pepy.tech/project/ttkbootstrap)

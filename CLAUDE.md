@@ -1745,3 +1745,12 @@ interactive/visual demo in `examples/`, not `tests/`.
   where applicable.
 - Branch + PR per change. **Work targets `master`** (now the 2.0 mainline; the
   `2.0` branch is retired). 1.x maintenance, if any, targets **`release/v1`**.
+- **Set a milestone on every issue AND every PR** — not just issues. The
+  milestone is the single source of truth for "which release is this in"
+  ([[feedback_no_version_labels]] is the other half: no `Version x` labels), and
+  it is only as good as its coverage. Most 2.1 PRs went unmilestoned, so
+  `gh pr list --search "milestone:2.1"` returned 17 when 19 code changes had
+  shipped — the milestone stopped being usable for exactly the question it
+  exists to answer, and reconstructing the release required diffing merged PR
+  numbers against the change log by hand. Set it when you open the PR;
+  `gh pr edit <n> --milestone "2.1"` after the fact works but is easy to forget.
