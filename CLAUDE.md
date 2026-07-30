@@ -1314,18 +1314,15 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > open issues** (verified via the API this session: #1309 auto-closed on merge,
 > #1242 was already closed). Everything below is housekeeping, not features:
 > **bump `pyproject.toml` → 2.1.0** *at release time* (`master` tracks the current
-> release, so it correctly reads **2.0.1** now — do not bump early);
-> **delete `development/filedialogs/` (18 files) +
-> `scrolledframe/`** (prior art superseded by shipped code — the #1250 precedent).
-> Local branches were pruned this session; the matching **remote** branches are
-> still on GitHub, as is **`fix-dialog-has-no-size-on-linux`** — an unmerged 2021
-> branch for #761 that touches `tests/widgets/dialogs.py`, a path that no longer
-> exists, and whose subject (dialogs unsized on Linux) is superseded by the 2.1
-> sizing work; it looks safe to delete but was left for the author to call.
-> **NEW — worth considering: there is still no CI** (`.github/workflows/` does not
-> exist). Linux is now green, which is what CI would run, so a minimal workflow
-> (`pytest` + `sphinx -b html -W`) would pass today and would have caught several
-> things this session found by hand.
+> release, so it correctly reads **2.0.1** now — do not bump early).
+> **DONE 2026-07-30b (Windows):** the prior-art trees are deleted, the branch
+> prune is finished remotely, and the stale root scripts are gone — see that
+> session's entry below. **STILL OPEN: there is still no CI**
+> (`.github/workflows/` holds only `ISSUE_TEMPLATE/`). Linux and Windows are both
+> green now, which is what CI would run, so a minimal workflow (`pytest` +
+> `sphinx -b html -W`) would pass today and would have caught several things
+> these sessions found by hand — including a Windows-only suite failure that sat
+> on `master` for two days.
 >
 > **HANDOFF TO THE WINDOWS BOX (next session, from 2026-07-30).** The last few
 > sessions ran on WSL2/Linux; the next is on Windows, which is a **different
@@ -1482,7 +1479,9 @@ named `TkTextFont`), and `sashthickness` (only the global `"Sash"` style works �
 6. **#1242 — in-house themed file dialog (X11 default; opt-in elsewhere).** Biggest
    single build (draw our own dialog; the Tk X11 `tkfbox.tcl` canvas hardcodes a
    white panel no styling can reach). Most standalone, lowest urgency (dialog is
-   already functional/readable). Prior art in `development/filedialogs/`. Natural
+   already functional/readable). Prior art was in `development/filedialogs/`
+   (deleted 2026-07-30b once the dialog shipped; recover from git if ever needed).
+   Natural
    drop-candidate if 2.1 needs to close sooner.
 
 NOTE (line numbers): #1160/#1161 reference `src/ttkbootstrap/style.py:NNNN` — filed
