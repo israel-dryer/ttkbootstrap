@@ -33,6 +33,11 @@ jobs:
             python: "3.13"
           - os: windows-latest
             python: "3.13"
+          # aqua is the third windowing system and behaves differently enough to
+          # have had its own fixes (the Tk 9 dpi baseline, native popup chrome,
+          # the busy no-op). Its positioning work is still hand-verified.
+          - os: macos-latest
+            python: "3.13"
           # The floor declared in pyproject.toml, so a 3.11+ only construct
           # cannot slip in.
           - os: ubuntu-latest
@@ -60,6 +65,12 @@ jobs:
           python -m pip install -e .
           python -m pip install pytest
 
+      # Which Tk line a runner carries is not something to assume: aqua's dpi
+      # baseline and the scroll-event contract both differ between 8.6 and 9,
+      # so record it per job rather than inferring it from the Python version.
+      - name: Report the Tk build
+        run: python -c "import sys, tkinter; print(f'{sys.platform} python={sys.version.split()[0]} tcl={tkinter.TclVersion} tk={tkinter.TkVersion}')"
+
       # screeninfo is deliberately NOT installed: it is optional at runtime, and
       # leaving it out exercises the fallback layout path (X11 Xinerama, then
       # Tk's own screen metrics), which is the more fragile of the two.
@@ -73,8 +84,10 @@ jobs:
         if: runner.os == 'Linux'
         run: xvfb-run -a -s "-screen 0 1280x1024x24 -dpi 96" python -m pytest -q
 
-      - name: Run the suite (Windows)
-        if: runner.os == 'Windows'
+      # Windows and macOS both have a real window server, so no display to set
+      # up -- Tk talks to win32 and to aqua directly.
+      - name: Run the suite
+        if: runner.os != 'Linux'
         run: python -m pytest -q
 
   docs:
