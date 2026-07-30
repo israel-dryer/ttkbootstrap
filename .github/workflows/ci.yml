@@ -1,0 +1,100 @@
+name: CI
+
+# The two gates that were previously only ever run by hand. Both had caught
+# nothing for weeks simply because nobody was on the right machine: a
+# Windows-only suite failure sat on `master` for two days (#1315), and an
+# instruction file contradicted the shipped docs toolchain for three weeks.
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A newer push supersedes an in-flight run on the same ref.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: tests (${{ matrix.os }}, py${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      # Never let one platform's failure hide another's -- the whole reason
+      # this workflow exists is that a green Linux run was taken for a green
+      # suite while Windows was red.
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            python: "3.13"
+          - os: windows-latest
+            python: "3.13"
+          # The floor declared in pyproject.toml, so a 3.11+ only construct
+          # cannot slip in.
+          - os: ubuntu-latest
+            python: "3.10"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      # The suite is headless in the sense that it never blocks on input, but
+      # every test still builds a real Tk root, so x11 needs a display and Tk's
+      # own shared libraries.
+      - name: Install Tk and a virtual display
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends xvfb tk
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+          python -m pip install pytest
+
+      # screeninfo is deliberately NOT installed: it is optional at runtime, and
+      # leaving it out exercises the fallback layout path (X11 Xinerama, then
+      # Tk's own screen metrics), which is the more fragile of the two.
+      - name: Run the suite (Linux)
+        if: runner.os == 'Linux'
+        run: xvfb-run -a python -m pytest -q
+
+      - name: Run the suite (Windows)
+        if: runner.os == 'Windows'
+        run: python -m pytest -q
+
+  docs:
+    name: docs (-W)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Matches the interpreter .readthedocs.yaml builds with.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # autodoc imports the package, which imports tkinter.
+      - name: Install Tk
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends tk
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+          python -m pip install -r docs/requirements.txt
+
+      # Read the Docs sets fail_on_warning, so -W keeps a broken cross-reference
+      # from reaching a published build.
+      - name: Build
+        run: python -m sphinx -b html -W -q -E docs _ci_docs_build
