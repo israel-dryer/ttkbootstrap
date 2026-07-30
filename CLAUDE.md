@@ -1814,7 +1814,16 @@ release is cut from `master`, so the version bump lands there naturally;
    RTD is unaffected; it installs fresh, so it reports the real version.
 2. Fold `development/2_<x>_changes.md` into the release notes.
 3. Run the gates: the full suite, and the docs build under `-W`.
-4. `python -m build`, then `twine check dist/*`, then `twine upload dist/*`.
+4. **Empty `dist/` first**, then `python -m build`, then `twine check dist/*`, then
+   upload **by explicit version glob** — `twine upload dist/ttkbootstrap-X.Y.Z*`.
+   `dist/` is gitignored, so it keeps whatever the last release built: at 2.1.0 it
+   still held the 2.0.0 wheel and sdist from July 19, and a bare `dist/*` upload
+   would have tried to re-publish 2.0.0 alongside the new version. Worth spending
+   a minute on the artifact while you are there — `twine check` validates metadata
+   but not contents, so confirm the wheel carries `ttkbootstrap/assets/icons/`
+   (the vendored Bootstrap Icons font is package data, and a wheel missing it
+   installs and then fails at first render) and that the sdist has no `docs/` or
+   `development/` in it.
 5. Annotated tag `vX.Y.Z`, plus a GitHub release titled the same way.
 6. Verify with a clean-environment `pip install ttkbootstrap==X.Y.Z`.
 
