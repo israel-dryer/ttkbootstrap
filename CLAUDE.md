@@ -833,9 +833,10 @@ DONE.** Optional post-release polish only from here.
 > release live; on PyPI at https://pypi.org/project/ttkbootstrap/2.0.1/.
 > **Tk 9 is now testable on the Mac** — Homebrew `/opt/homebrew/bin/python3.14` is
 > Tk 9.0.4 while the default `python`/`.venv` is 8.6.17; run the suite against it
-> with a `--system-site-packages` venv + `PYTHONPATH=src`. **There is still no CI**
-> (`.github/workflows/` does not exist), so a Tk 9 run is a manual step — worth
-> doing for anything touching scaling, assets, geometry, or event bindings.
+> with a `--system-site-packages` venv + `PYTHONPATH=src`. **CI does not cover
+> Tk 9** (`.github/workflows/ci.yml` runs Linux + Windows on the stock Tk that
+> ships with CPython), so a Tk 9 run stays a manual step — worth doing for
+> anything touching scaling, assets, geometry, or event bindings.
 >
 > **The durable style-options cluster is COMPLETE** — #1253, #1238, #1161, #1160
 > all closed (PRs #1277–#1283). Suite **770 passed**. **Remaining 2.1 work (5
@@ -1182,8 +1183,9 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 >
 > **Session 2026-07-28b (Windows box) — the demo opened off-centre; fixed, and
 > the verification gap that hid it closed. MERGED 2026-07-30b; **x11 VERIFIED
-> 2026-07-30c**, so only the macOS run of `verify_positioning.py` check 7 is
-> outstanding.** The branch sat unmerged
+> 2026-07-30c and macOS 2026-07-30d, so the cross-platform gate on
+> `verify_positioning.py` check 7 is now CLOSED on all three platforms.**
+> The branch sat unmerged
 > for two days because it was written on Windows *after* the Linux session closed
 > out, so no later session knew it existed. In the meantime `master`'s suite was
 > **red on Windows** — `test_unmapped_size_falls_back_to_content_raised_to_minsize`
@@ -1213,11 +1215,12 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > which the author judged not worth the lifecycle surface. **File it if it ever
 > bites.**
 >
-> **WHAT STILL NEEDS RUNNING — macOS only now (both Tk lines); x11 was run
-> 2026-07-30c, see that entry:** `tools/verify_positioning.py` — now **7 checks**,
-> whose docstring explains why a green run on one box proves little — plus
-> `python -m pytest -q` (**924 passed, 3 skipped** on Windows) and an eyeball of
-> `python -m ttkbootstrap`. **The risk being checked is narrow:** on x11 old and
+> **WHAT NEEDED RUNNING:** `tools/verify_positioning.py`, whose docstring
+> explains why a green run on one box proves little — **done on all three**
+> (Windows in this session, x11 2026-07-30c, macOS 2026-07-30d) — plus
+> `python -m pytest -q` (**924 passed, 3 skipped** on Windows; green on x11 and
+> both macOS Tk lines too) and an eyeball of `python -m ttkbootstrap`, **which
+> has only ever been done on Windows**. **The risk being checked is narrow:** on x11 old and
 > new code both fall through to the content-request path, so behaviour is
 > identical there; what is new is that a *shown-then-withdrawn* window returns
 > its realized size only if the flag got set, i.e. only if the event arrived.
@@ -1318,12 +1321,15 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > release, so it correctly reads **2.0.1** now — do not bump early).
 > **DONE 2026-07-30b (Windows):** the prior-art trees are deleted, the branch
 > prune is finished remotely, and the stale root scripts are gone — see that
-> session's entry below. **STILL OPEN: there is still no CI**
-> (`.github/workflows/` holds only `ISSUE_TEMPLATE/`). Linux and Windows are both
-> green now, which is what CI would run, so a minimal workflow (`pytest` +
-> `sphinx -b html -W`) would pass today and would have caught several things
-> these sessions found by hand — including a Windows-only suite failure that sat
-> on `master` for two days.
+> session's entry below. **CI now EXISTS** (`.github/workflows/ci.yml`, #1317,
+> badge #1318): the suite on Linux + Windows (py3.13, plus the py3.10 floor) and
+> the docs under `-W`, on push to `master` and every PR. It closes the gap that
+> let a Windows-only suite failure sit on `master` for two days (#1315).
+> **`screeninfo` is deliberately left out** so the runners exercise the fallback
+> layout path, and the Xvfb display is pinned to 96 dpi so it is a
+> standard-density screen rather than an arbitrary one. **What CI does NOT
+> cover:** macOS/aqua, Tk 9, and anything visual — so the per-platform manual
+> gates below are still manual.
 >
 > **HANDOFF TO THE WINDOWS BOX (next session, from 2026-07-30).** The last few
 > sessions ran on WSL2/Linux; the next is on Windows, which is a **different
@@ -1434,6 +1440,46 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > on the left monitor; four parent positions all landed inside one monitor.
 > **Treat an in-script check-4 PASS on this box as unproven until the parent's
 > `winfo_rootx()` is confirmed to be where it was asked to go.**
+>
+> **Session 2026-07-30d (macOS box) — the macOS gate on check 7 is CLOSED, so
+> `verify_positioning.py` is now green on all three platforms.** Run on aqua,
+> single 1470×956, against **both Tk lines** as the docstring requires —
+> Tk 8.6.17 (`.venv`) and Tk 9.0.4 (`.venv34`, what bare `python` resolves to) —
+> and, as on x11, twice: **with `screeninfo` 7/7 on both lines**, and without it
+> **5/6 with 1 skip and 1 fail on both**. The count is 7 here rather than x11's 8
+> because **check 2b (Xinerama and `screeninfo` agree) only runs on x11**; aqua
+> runs check 2 instead, which asserts the Xinerama path is *skipped* off X11.
+>
+> **The no-`screeninfo` fail/skip is the known aqua gap, not a regression:**
+> `_monitors()` returns `None` (Xinerama is X11-only, pinned for `darwin` by
+> `test_xinerama_query_is_skipped_off_x11`), so **check 1 FAILS** and **check 4
+> SKIPS** — correct on one display, and made *safe* rather than merely untested
+> by `test_placement_stays_on_screen_when_no_layout_is_available`. Both go green
+> the moment `screeninfo` is installed. **New check 7 is green on aqua:** a
+> content-sized root predicted **600×252** and mapped **600×252**, and 7b
+> centered it at exactly the wanted `(435,352)` — so the `_ever_shown`
+> `<Map>`/`<Configure>` tracking works where map timing was most likely to
+> differ. Nothing else moved: **check 3's footprint is `250x104` == mapped on
+> both Tk lines** (aqua chrome does not differ, confirming 07-28), and check 6
+> applied `(435,278)` == want with no flash or jump.
+>
+> **ENVIRONMENT CORRECTION: `screeninfo` was NOT installed in either macOS
+> venv**, despite the 2026-07-28 entry above reading as though it had been left
+> installed — so the first run of the session was the fallback path whether or
+> not that was intended. It is in the root `requirements.txt` gate set and was
+> `pip install`ed into **both** venvs this session. **Check which venv actually
+> has it before reading a check-1 FAIL as a regression** (`p._HAS_SCREENINFO` is
+> printed in the header).
+>
+> **STILL UNRUN on macOS:** check 5 is **manual and was not run** — it opens a
+> blocking modal file dialog, which is exactly what
+> [[feedback_dialog_testing]] says not to drive externally; run
+> `Querybox.get_open_filename(native=False, parent=app)` by hand and confirm it
+> opens fully on-screen with OK/Cancel visible and returns a forward-slash path.
+> The `python -m ttkbootstrap` demo eyeball is also still unrun here. And
+> **multi-monitor macOS remains taken on trust** (no second display) — the real
+> closure is still the deferred `CGGetActiveDisplayList` ctypes call, the aqua
+> sibling of the Xinerama work.
 >
 > **User-visible 2.1 changes are logged in `development/2_1_changes.md`** (the
 > running log, same role `2_0_breaking_changes.md` played for 2.0; it is the source
@@ -1721,9 +1767,17 @@ A virtualenv with an editable install lives at `.venv/` (Python 3.x on macOS;
   from a `git worktree` silently tests the *main* checkout's code; pin
   `PYTHONPATH` to the worktree's `src` when testing a branch checked out
   elsewhere.
-- **There is no CI** (`.github/workflows/` holds only `ISSUE_TEMPLATE/`), so
-  every gate is a manual step, and a platform-specific failure can sit on
-  `master` unnoticed — one did, for two days, until #1315.
+- **CI runs the two automatable gates** (`.github/workflows/ci.yml`, #1317) on
+  push to `master` and every PR: the suite on Linux + Windows (py3.13, plus the
+  py3.10 floor from `pyproject.toml`) and the docs under `-W`. `fail-fast` is
+  off so one platform's failure cannot hide another's — the whole reason it
+  exists, after a Windows-only failure sat on `master` for two days (#1315).
+  **`screeninfo` is left uninstalled on purpose** (it is optional at runtime, so
+  omitting it exercises the more fragile fallback layout path), and the Xvfb
+  display is pinned to 96 dpi to be a standard-density screen.
+- **CI does not cover macOS/aqua, Tk 9, or anything visual**, so those gates are
+  still manual and still need the right box — see `tools/verify_positioning.py`
+  and the screenshot harness.
 
 ### Releasing
 
