@@ -1181,8 +1181,9 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > merges were done locally and pushed to `master`.
 >
 > **Session 2026-07-28b (Windows box) — the demo opened off-centre; fixed, and
-> the verification gap that hid it closed. MERGED 2026-07-30b; STILL AWAITS A
-> macOS + x11 RUN of `verify_positioning.py` check 7.** The branch sat unmerged
+> the verification gap that hid it closed. MERGED 2026-07-30b; **x11 VERIFIED
+> 2026-07-30c**, so only the macOS run of `verify_positioning.py` check 7 is
+> outstanding.** The branch sat unmerged
 > for two days because it was written on Windows *after* the Linux session closed
 > out, so no later session knew it existed. In the meantime `master`'s suite was
 > **red on Windows** — `test_unmapped_size_falls_back_to_content_raised_to_minsize`
@@ -1212,9 +1213,9 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > which the author judged not worth the lifecycle surface. **File it if it ever
 > bites.**
 >
-> **WHAT STILL NEEDS RUNNING, on macOS (both Tk lines) and x11 (with and without
-> `screeninfo`):** `tools/verify_positioning.py` — now **7 checks**, whose
-> docstring explains why a green run on one box proves little — plus
+> **WHAT STILL NEEDS RUNNING — macOS only now (both Tk lines); x11 was run
+> 2026-07-30c, see that entry:** `tools/verify_positioning.py` — now **7 checks**,
+> whose docstring explains why a green run on one box proves little — plus
 > `python -m pytest -q` (**924 passed, 3 skipped** on Windows) and an eyeball of
 > `python -m ttkbootstrap`. **The risk being checked is narrow:** on x11 old and
 > new code both fall through to the content-request path, so behaviour is
@@ -1410,6 +1411,29 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > a worktree's own `src/`**: a branch suite run from a worktree silently tested
 > `master`'s code and reported 5 failures; pin `PYTHONPATH` when testing a branch
 > checked out elsewhere.
+>
+> **Session 2026-07-30c (WSL2/Linux box) — the x11 gate on check 7 is CLOSED.**
+> `tools/verify_positioning.py` was run on WSLg XWayland, Tk 8.6.12, Python
+> 3.10.12, dual 2560×1440, twice as the docstring requires: **with `screeninfo`
+> 8/8**, and **without it 7/7** (forced off with an `ImportError` shim placed
+> ahead of `src` on `PYTHONPATH`, so the check-7 subprocess inherits it too —
+> that is the only way to exercise the Xinerama path). The new **check 7 is
+> green on x11**: a content-sized root predicted 600×258 and mapped 600×258,
+> centered at exactly the wanted coords. Nothing regressed: check 3's footprint
+> matched the mapped size, and 2b confirmed Xinerama and `screeninfo` agree
+> exactly. **The full suite is 933 passed, 4 skipped on Linux** (up from 929 at
+> #1314). The demo eyeball is still unrun here.
+>
+> **Check 4 passed vacuously again, and the WSLg trap deserves restating.** In
+> the no-`screeninfo` run the dialog landed at 171..421 — nowhere near the
+> 2560 seam it is supposed to straddle — because WSLg reports a sentinel
+> position until the compositor has mapped a window, so `app.geometry(...)` +
+> `update()` parks the parent nowhere. Re-run by hand with a settle-wait it is
+> genuinely green: with the parent really at x=2362, naive centering spans
+> 2447..2697 across the seam while the clamp lands the dialog 2290..2540, wholly
+> on the left monitor; four parent positions all landed inside one monitor.
+> **Treat an in-script check-4 PASS on this box as unproven until the parent's
+> `winfo_rootx()` is confirmed to be where it was asked to go.**
 >
 > **User-visible 2.1 changes are logged in `development/2_1_changes.md`** (the
 > running log, same role `2_0_breaking_changes.md` played for 2.0; it is the source
