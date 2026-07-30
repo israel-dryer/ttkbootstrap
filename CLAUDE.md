@@ -1387,17 +1387,23 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > `requirements.txt`, which resolved to documentation deps alone, so its
 > environment had no pytest. `requirements.txt` now declares the real gate set
 > (RTD is unaffected — `.readthedocs.yaml` reads `docs/requirements.txt`
-> directly), `tmp/` is ignored, and the release steps moved into AGENTS.md.
+> directly), and `tmp/` is ignored. `build_instructions.txt`'s steps did not just
+> vanish: **this file now carries a "Releasing" runbook** under "Dev environment
+> & commands," which is where the version-bump-on-`master` convention and the
+> 2.0.1 stranded-bump warning now live.
 >
-> **AGENTS.md was the biggest find, and it is a class of bug worth watching for.**
-> It is the orientation file for AI agents, it had been frozen since ~2026-07-01,
-> and it did not merely lag — it instructed the *opposite* of current practice:
-> cut every PR against the retired `2.0` branch, suite is 177, and the docs are
-> "MkDocs, not Sphinx" with a directive to write docstrings in plain Markdown and
-> avoid reST. Docs moved to Sphinx in #1148; #1246 then had to clean up four
-> leftover mkdocs `!!!` admonitions in docstrings. **A stale instruction file is
-> worse than no file** — refreshed, and it now defers to `CLAUDE.md` as
-> authoritative rather than restating status.
+> **`AGENTS.md` is DELETED, and the reasoning generalizes.** It was an
+> orientation file for non-Claude agents, frozen since ~2026-07-01, and it did not
+> merely lag — it instructed the *opposite* of current practice: cut every PR
+> against the retired `2.0` branch, suite is 177, and the docs are "MkDocs, not
+> Sphinx" with a directive to write docstrings in plain Markdown and avoid reST.
+> Docs moved to Sphinx in #1148; #1246 then had to clean up four leftover mkdocs
+> `!!!` admonitions in docstrings — exactly the drift that instruction causes.
+> **Author ruling: don't keep a second hand-maintained instruction file.** This
+> one can be regenerated at will, so a parallel copy buys nothing and guarantees
+> staleness; the unique content (the release runbook) was ported here first.
+> **A stale instruction file is worse than no file** — the same argument that
+> keeps the 3.0 shim list grep-discoverable instead of hand-maintained.
 >
 > **Two environment facts.** `gh` **is** installed on this box (2.92.0), unlike
 > the WSL box — so PRs are a one-liner here. And an **editable install wins over
@@ -1685,6 +1691,33 @@ A virtualenv with an editable install lives at `.venv/` (Python 3.x on macOS;
   is unusable from the `Logistiview` profile — the docs deps were installed into
   `.venv` there on 2026-07-27. Use whichever venv matches the profile you are on;
   neither is stale.
+- `pip install -r requirements.txt` (root) installs the local gate set — pytest,
+  `screeninfo`, and the docs deps. RTD reads `docs/requirements.txt` directly.
+- **An editable install wins over a worktree's own `src/`.** A branch suite run
+  from a `git worktree` silently tests the *main* checkout's code; pin
+  `PYTHONPATH` to the worktree's `src` when testing a branch checked out
+  elsewhere.
+- **There is no CI** (`.github/workflows/` holds only `ISSUE_TEMPLATE/`), so
+  every gate is a manual step, and a platform-specific failure can sit on
+  `master` unnoticed — one did, for two days, until #1315.
+
+### Releasing
+
+No CI publishes; the upload is manual, with credentials in a gitignored
+repo-root `.pypirc`. **`master` is always the most recent release** — a patch
+release is cut from `master`, so the version bump lands there naturally;
+`release/*` exists only for *superseded* majors.
+
+1. Bump `version` in `pyproject.toml`, **at release time, on `master`**. The
+   literal is load-bearing beyond packaging: `docs/conf.py` reads it through
+   `importlib.metadata`, so a stale value mislabels the docs too. 2.0.1 shipped
+   its bump on a throwaway `release/2.0` branch and `master` kept claiming 2.0.0
+   for days — don't repeat that branch.
+2. Fold `development/2_<x>_changes.md` into the release notes.
+3. Run the gates: the full suite, and the docs build under `-W`.
+4. `python -m build`, then `twine check dist/*`, then `twine upload dist/*`.
+5. Annotated tag `vX.Y.Z`, plus a GitHub release titled the same way.
+6. Verify with a clean-environment `pip install ttkbootstrap==X.Y.Z`.
 
 ### Writing tests
 
