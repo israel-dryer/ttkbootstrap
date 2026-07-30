@@ -63,9 +63,15 @@ jobs:
       # screeninfo is deliberately NOT installed: it is optional at runtime, and
       # leaving it out exercises the fallback layout path (X11 Xinerama, then
       # Tk's own screen metrics), which is the more fragile of the two.
+      # The display is pinned to 96 dpi, which is the standard density the
+      # scaling code takes as its baseline (`ScalingService.baseline` is 4/3 on
+      # x11). Xvfb otherwise reports roughly 100 dpi, which is a real ~1.05
+      # scaling factor -- too small to hit the 0.005 quarter-step snap, large
+      # enough to round asset geometry up a pixel. Pinning it makes the runner a
+      # standard-density display rather than an arbitrary one.
       - name: Run the suite (Linux)
         if: runner.os == 'Linux'
-        run: xvfb-run -a python -m pytest -q
+        run: xvfb-run -a -s "-screen 0 1280x1024x24 -dpi 96" python -m pytest -q
 
       - name: Run the suite (Windows)
         if: runner.os == 'Windows'
