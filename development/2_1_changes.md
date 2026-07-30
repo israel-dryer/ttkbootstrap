@@ -1,16 +1,20 @@
-# ttkbootstrap 2.1 — notable changes (running log)
+# ttkbootstrap 2.1 — notable changes
 
+> **SHIPPED. 2.1.0 was released on 2026-07-30** — this file is now frozen
+> history, and it was the source for that release's notes. Do not add to it: a
+> change landing after 2.1.0 belongs in a new log scoped **relative to 2.1.0**
+> (`2_2_changes.md`, or `2_1_1_changes.md` for a patch), created when the first
+> such change lands.
+>
 > The consolidated log of 2.1 changes that alter behavior or appearance, each
 > with **what** changed and **why**. Same role its 2.0 counterpart
-> (`2_0_breaking_changes.md`) played: kept in `development/` so it survives, and
-> it is the source for the 2.1 release notes.
+> (`2_0_breaking_changes.md`) played: kept in `development/` so it survives.
 >
-> Scope is **relative to the latest released 2.0.x** (currently 2.0.1). Two
-> kinds of change are deliberately absent. A regression introduced *and* fixed
-> inside the 2.1 cycle never reached a user, so it belongs to the dev log in
-> `CLAUDE.md`. And anything already shipped in a 2.0.x patch must not be
-> re-announced here -- which is why the two Tcl/Tk 9 fixes have no entry: they
-> released in **2.0.1**.
+> Scope was **relative to 2.0.1**, the release 2.1 followed. Two kinds of change
+> are deliberately absent. A regression introduced *and* fixed inside the 2.1
+> cycle never reached a user, so it belongs to the dev log in `CLAUDE.md`. And
+> anything already shipped in a 2.0.x patch must not be re-announced here --
+> which is why the two Tcl/Tk 9 fixes have no entry: they released in **2.0.1**.
 >
 > Legend: **API** = source-level break · **Visual** = appearance-only (no code
 > change needed) · **New** = additive · **Fix** = something that did not work
