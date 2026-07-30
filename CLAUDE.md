@@ -796,7 +796,8 @@ RTD `latest` now serves the 2.0 Sphinx docs, `version-1` preserves 1.x at
 `twine check` PASSED → **uploaded to PyPI**
 (https://pypi.org/project/ttkbootstrap/2.0.0/); verified by a clean-env
 `pip install ttkbootstrap==2.0.0` (30 themes, icon engine, theme switch all work).
-No CI publish workflow exists (`.github/workflows/` is empty) — PyPI upload is
+No CI publish workflow exists (at the time, `.github/workflows/` was empty; #1317
+later added a test/docs workflow, still nothing that publishes) — PyPI upload is
 manual, creds in a gitignored repo-root `.pypirc`. **Announcement** (r/tkinter —
 python.org no longer allows announcements — + LinkedIn) drafted; advised to post a
 **weekday** (Tue–Wed AM) not the release Sunday, after a short soft-bake. **2.0 is
@@ -834,9 +835,10 @@ DONE.** Optional post-release polish only from here.
 > **Tk 9 is now testable on the Mac** — Homebrew `/opt/homebrew/bin/python3.14` is
 > Tk 9.0.4 while the default `python`/`.venv` is 8.6.17; run the suite against it
 > with a `--system-site-packages` venv + `PYTHONPATH=src`. **CI does not cover
-> Tk 9** (`.github/workflows/ci.yml` runs Linux + Windows on the stock Tk that
-> ships with CPython), so a Tk 9 run stays a manual step — worth doing for
-> anything touching scaling, assets, geometry, or event bindings.
+> Tk 9** (`.github/workflows/ci.yml` runs Linux, Windows and macOS on the stock
+> Tk 8.6 that ships with CPython — it reports the build per job, so this is
+> stated by the run rather than assumed), so a Tk 9 run stays a manual step —
+> worth doing for anything touching scaling, assets, geometry, or event bindings.
 >
 > **The durable style-options cluster is COMPLETE** — #1253, #1238, #1161, #1160
 > all closed (PRs #1277–#1283). Suite **770 passed**. **Remaining 2.1 work (5
@@ -1322,9 +1324,10 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > **DONE 2026-07-30b (Windows):** the prior-art trees are deleted, the branch
 > prune is finished remotely, and the stale root scripts are gone — see that
 > session's entry below. **CI now EXISTS** (`.github/workflows/ci.yml`, #1317,
-> badge #1318): the suite on Linux + Windows (py3.13, plus the py3.10 floor) and
-> the docs under `-W`, on push to `master` and every PR. It closes the gap that
-> let a Windows-only suite failure sit on `master` for two days (#1315).
+> badge #1318, macOS added in #1319): the suite on **all three windowing systems**
+> — Linux, Windows and macOS on py3.13, plus the py3.10 floor — and the docs under
+> `-W`, on push to `master` and every PR. It closes the gap that let a
+> Windows-only suite failure sit on `master` for two days (#1315).
 > **`screeninfo` is deliberately left out** so the runners exercise the fallback
 > layout path, and the Xvfb display is pinned to 96 dpi so it is a
 > standard-density screen rather than an arbitrary one. **What CI does NOT
@@ -1376,8 +1379,9 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > written on **this** box at 13:58 on 07-28, *after* the Linux session closed out
 > at 08:47. Because its own `CLAUDE.md` entry never landed, no later session knew
 > it existed. **`master`'s suite had been red on Windows for two days** as a
-> result. The whole episode is the argument for CI: **`.github/workflows/` still
-> does not exist**, and `pytest` + `sphinx -W` would have caught it the same day.
+> result. The whole episode was the argument for CI — there was none at the time,
+> and `pytest` + `sphinx -W` would have caught it the same day — which is why this
+> session ended by adding it (#1317, then macOS in #1319).
 >
 > **How to check a squash-merged branch** (the reusable part): `git branch
 > --merged` is necessary but not sufficient. `git cherry master <branch>` matches
@@ -1768,16 +1772,23 @@ A virtualenv with an editable install lives at `.venv/` (Python 3.x on macOS;
   `PYTHONPATH` to the worktree's `src` when testing a branch checked out
   elsewhere.
 - **CI runs the two automatable gates** (`.github/workflows/ci.yml`, #1317) on
-  push to `master` and every PR: the suite on Linux + Windows (py3.13, plus the
-  py3.10 floor from `pyproject.toml`) and the docs under `-W`. `fail-fast` is
-  off so one platform's failure cannot hide another's — the whole reason it
-  exists, after a Windows-only failure sat on `master` for two days (#1315).
+  push to `master` and every PR: the suite on **all three windowing systems** —
+  Linux, Windows and macOS on py3.13, plus the py3.10 floor from
+  `pyproject.toml` (macOS added in #1319) — and the docs under `-W`.
+  `fail-fast` is off so one platform's failure cannot hide another's — the whole
+  reason it exists, after a Windows-only failure sat on `master` for two days
+  (#1315). All three report **identical counts**, which is the signal to watch:
+  the suite's platform branches are forced probes (the #1229 convention), not
+  `skipif`, so every box runs the whole matrix and the numbers should match.
   **`screeninfo` is left uninstalled on purpose** (it is optional at runtime, so
   omitting it exercises the more fragile fallback layout path), and the Xvfb
   display is pinned to 96 dpi to be a standard-density screen.
-- **CI does not cover macOS/aqua, Tk 9, or anything visual**, so those gates are
-  still manual and still need the right box — see `tools/verify_positioning.py`
-  and the screenshot harness.
+- **CI does not cover Tk 9 or anything visual.** Every runner is **Tk 8.6** — the
+  workflow reports the Tcl/Tk build per job rather than leaving it inferred from
+  the Python version, because 8.6-vs-9 is the split behind the aqua dpi baseline
+  and the scroll-event contract. Adding a Tk 9 job is not free: `setup-python`
+  ships no interpreter built against it. Visual gates stay manual and still need
+  the right box — see `tools/verify_positioning.py` and the screenshot harness.
 
 ### Releasing
 
