@@ -297,10 +297,17 @@ window that is already on screen is unchanged.
 the size a `WxH` geometry pins. A withdrawn `App(size=(600, 400))` holding a
 small label reported **(16, 21)**, so centering placed that 16x21 box: the
 window's top-left landed at the screen center, measured **298px right and 216px
-down** of centered. Only a window sized by its content happened to come out
-right. This is the same class of defect as the dialog centering above, and it is
-fixed the same way — by recording the size that was applied rather than
-re-deriving it from a window that cannot report it yet.
+down** of centered. This is the same class of defect as the dialog centering
+above, and it is fixed the same way — by recording the size that was applied
+rather than re-deriving it from a window that cannot report it yet.
+
+A window sized only by its *content* was wrong for a second reason, and on
+Windows specifically: what a window reports before its first map is
+platform-dependent. On x11 a never-mapped window really does report 1x1, so
+"has this been shown yet?" could be inferred from the reported size; on win32 it
+reports a plausible number that has nothing to do with the size the content will
+map at, so the inference fired falsely and the measurement stopped early. Being
+shown is now tracked rather than inferred.
 
 A window now remembers any size applied through `geometry`, which the `size=`
 constructor argument routes through, so both spellings work:

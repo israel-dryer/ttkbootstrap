@@ -1,3 +1,15 @@
-# Documentation is built with Sphinx; the doc build dependencies live in
-# docs/requirements.txt (also referenced by .readthedocs.yaml).
+# Development dependencies -- `pip install -r requirements.txt` alongside an
+# editable install (`pip install -e .`) gives you the full local gate set.
+#
+# Runtime dependencies are declared in pyproject.toml (Pillow only). The
+# documentation build deps live in docs/requirements.txt, which is what
+# .readthedocs.yaml installs directly.
+
+pytest
+
+# Optional at runtime: enables real multi-monitor placement. Without it the
+# positioning code falls back to X11's Xinerama query and then to Tk's screen
+# metrics, so the suite is worth running both with and without it installed.
+screeninfo
+
 -r docs/requirements.txt

@@ -1314,18 +1314,15 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > open issues** (verified via the API this session: #1309 auto-closed on merge,
 > #1242 was already closed). Everything below is housekeeping, not features:
 > **bump `pyproject.toml` → 2.1.0** *at release time* (`master` tracks the current
-> release, so it correctly reads **2.0.1** now — do not bump early);
-> **delete `development/filedialogs/` (18 files) +
-> `scrolledframe/`** (prior art superseded by shipped code — the #1250 precedent).
-> Local branches were pruned this session; the matching **remote** branches are
-> still on GitHub, as is **`fix-dialog-has-no-size-on-linux`** — an unmerged 2021
-> branch for #761 that touches `tests/widgets/dialogs.py`, a path that no longer
-> exists, and whose subject (dialogs unsized on Linux) is superseded by the 2.1
-> sizing work; it looks safe to delete but was left for the author to call.
-> **NEW — worth considering: there is still no CI** (`.github/workflows/` does not
-> exist). Linux is now green, which is what CI would run, so a minimal workflow
-> (`pytest` + `sphinx -b html -W`) would pass today and would have caught several
-> things this session found by hand.
+> release, so it correctly reads **2.0.1** now — do not bump early).
+> **DONE 2026-07-30b (Windows):** the prior-art trees are deleted, the branch
+> prune is finished remotely, and the stale root scripts are gone — see that
+> session's entry below. **STILL OPEN: there is still no CI**
+> (`.github/workflows/` holds only `ISSUE_TEMPLATE/`). Linux and Windows are both
+> green now, which is what CI would run, so a minimal workflow (`pytest` +
+> `sphinx -b html -W`) would pass today and would have caught several things
+> these sessions found by hand — including a Windows-only suite failure that sat
+> on `master` for two days.
 >
 > **HANDOFF TO THE WINDOWS BOX (next session, from 2026-07-30).** The last few
 > sessions ran on WSL2/Linux; the next is on Windows, which is a **different
@@ -1359,6 +1356,60 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > **Verified on Linux, unverified elsewhere:** the border itself (all four edges
 > `colors.border`, light and dark) was confirmed against real pixels on X11 only —
 > which is the only platform it applies to, so nothing is outstanding.
+>
+> **Session 2026-07-30b (Windows box) — branch cleanup, and the stranded window
+> fix it turned up. Two PRs.** Started as housekeeping — delete every merged
+> branch, local and remote — and the audit that gate required found real work.
+>
+> **#1315 (MERGED) — the stranded fix.** Twelve local branches deleted and six
+> remote; two of the twelve were not ancestors of `master` because GitHub
+> squash-merges (verified patch-equivalent via `git cherry`, and `master` had
+> since superseded both). One branch survived the sweep —
+> `fix/2.1-center-content-sized-root`, three commits refining `_unmapped_size`,
+> written on **this** box at 13:58 on 07-28, *after* the Linux session closed out
+> at 08:47. Because its own `CLAUDE.md` entry never landed, no later session knew
+> it existed. **`master`'s suite had been red on Windows for two days** as a
+> result. The whole episode is the argument for CI: **`.github/workflows/` still
+> does not exist**, and `pytest` + `sphinx -W` would have caught it the same day.
+>
+> **How to check a squash-merged branch** (the reusable part): `git branch
+> --merged` is necessary but not sufficient. `git cherry master <branch>` matches
+> by **patch-id**, so it still reports 0 for a squash-merge whose content landed;
+> a non-zero count means *look*, not *unmerged*. And read the diff direction —
+> `git diff master..<branch>` showing thousands of deletions means the branch is
+> **behind**, not that it carries removals.
+>
+> **#1316 — the cleanup.** `development/` now holds only design and handoff
+> documents (`filedialogs/`, `scrolledframe/`, `validatedinput/` deleted — the
+> #1250 precedent), and two stale root scripts are gone: `build_instructions.txt`
+> said to bump the version in `setup.py` and run `python setup.py sdist`, and
+> there is no `setup.py`; `setup_project.bat` built a `venv\` and installed
+> `requirements.txt`, which resolved to documentation deps alone, so its
+> environment had no pytest. `requirements.txt` now declares the real gate set
+> (RTD is unaffected — `.readthedocs.yaml` reads `docs/requirements.txt`
+> directly), and `tmp/` is ignored. `build_instructions.txt`'s steps did not just
+> vanish: **this file now carries a "Releasing" runbook** under "Dev environment
+> & commands," which is where the version-bump-on-`master` convention and the
+> 2.0.1 stranded-bump warning now live.
+>
+> **`AGENTS.md` is DELETED, and the reasoning generalizes.** It was an
+> orientation file for non-Claude agents, frozen since ~2026-07-01, and it did not
+> merely lag — it instructed the *opposite* of current practice: cut every PR
+> against the retired `2.0` branch, suite is 177, and the docs are "MkDocs, not
+> Sphinx" with a directive to write docstrings in plain Markdown and avoid reST.
+> Docs moved to Sphinx in #1148; #1246 then had to clean up four leftover mkdocs
+> `!!!` admonitions in docstrings — exactly the drift that instruction causes.
+> **Author ruling: don't keep a second hand-maintained instruction file.** This
+> one can be regenerated at will, so a parallel copy buys nothing and guarantees
+> staleness; the unique content (the release runbook) was ported here first.
+> **A stale instruction file is worse than no file** — the same argument that
+> keeps the 3.0 shim list grep-discoverable instead of hand-maintained.
+>
+> **Two environment facts.** `gh` **is** installed on this box (2.92.0), unlike
+> the WSL box — so PRs are a one-liner here. And an **editable install wins over
+> a worktree's own `src/`**: a branch suite run from a worktree silently tested
+> `master`'s code and reported 5 failures; pin `PYTHONPATH` when testing a branch
+> checked out elsewhere.
 >
 > **User-visible 2.1 changes are logged in `development/2_1_changes.md`** (the
 > running log, same role `2_0_breaking_changes.md` played for 2.0; it is the source
@@ -1482,7 +1533,9 @@ named `TkTextFont`), and `sashthickness` (only the global `"Sash"` style works �
 6. **#1242 — in-house themed file dialog (X11 default; opt-in elsewhere).** Biggest
    single build (draw our own dialog; the Tk X11 `tkfbox.tcl` canvas hardcodes a
    white panel no styling can reach). Most standalone, lowest urgency (dialog is
-   already functional/readable). Prior art in `development/filedialogs/`. Natural
+   already functional/readable). Prior art was in `development/filedialogs/`
+   (deleted 2026-07-30b once the dialog shipped; recover from git if ever needed).
+   Natural
    drop-candidate if 2.1 needs to close sooner.
 
 NOTE (line numbers): #1160/#1161 reference `src/ttkbootstrap/style.py:NNNN` — filed
@@ -1638,6 +1691,33 @@ A virtualenv with an editable install lives at `.venv/` (Python 3.x on macOS;
   is unusable from the `Logistiview` profile — the docs deps were installed into
   `.venv` there on 2026-07-27. Use whichever venv matches the profile you are on;
   neither is stale.
+- `pip install -r requirements.txt` (root) installs the local gate set — pytest,
+  `screeninfo`, and the docs deps. RTD reads `docs/requirements.txt` directly.
+- **An editable install wins over a worktree's own `src/`.** A branch suite run
+  from a `git worktree` silently tests the *main* checkout's code; pin
+  `PYTHONPATH` to the worktree's `src` when testing a branch checked out
+  elsewhere.
+- **There is no CI** (`.github/workflows/` holds only `ISSUE_TEMPLATE/`), so
+  every gate is a manual step, and a platform-specific failure can sit on
+  `master` unnoticed — one did, for two days, until #1315.
+
+### Releasing
+
+No CI publishes; the upload is manual, with credentials in a gitignored
+repo-root `.pypirc`. **`master` is always the most recent release** — a patch
+release is cut from `master`, so the version bump lands there naturally;
+`release/*` exists only for *superseded* majors.
+
+1. Bump `version` in `pyproject.toml`, **at release time, on `master`**. The
+   literal is load-bearing beyond packaging: `docs/conf.py` reads it through
+   `importlib.metadata`, so a stale value mislabels the docs too. 2.0.1 shipped
+   its bump on a throwaway `release/2.0` branch and `master` kept claiming 2.0.0
+   for days — don't repeat that branch.
+2. Fold `development/2_<x>_changes.md` into the release notes.
+3. Run the gates: the full suite, and the docs build under `-W`.
+4. `python -m build`, then `twine check dist/*`, then `twine upload dist/*`.
+5. Annotated tag `vX.Y.Z`, plus a GitHub release titled the same way.
+6. Verify with a clean-environment `pip install ttkbootstrap==X.Y.Z`.
 
 ### Writing tests
 
