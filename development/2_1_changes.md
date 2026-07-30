@@ -5,12 +5,12 @@
 > (`2_0_breaking_changes.md`) played: kept in `development/` so it survives, and
 > it is the source for the 2.1 release notes.
 >
-> Scope is **relative to the latest released 2.0.x** (currently 2.0.1).
-> Regressions introduced *and* fixed within the 2.1 cycle never reached a user
-> and are deliberately not logged here (they live in the dev log in
-> `CLAUDE.md`) -- and neither does anything already shipped in a 2.0.x patch,
-> since the 2.1 notes must not re-announce it. The two Tcl/Tk 9 fixes shipped
-> in **2.0.1** for exactly that reason.
+> Scope is **relative to the latest released 2.0.x** (currently 2.0.1). Two
+> kinds of change are deliberately absent. A regression introduced *and* fixed
+> inside the 2.1 cycle never reached a user, so it belongs to the dev log in
+> `CLAUDE.md`. And anything already shipped in a 2.0.x patch must not be
+> re-announced here -- which is why the two Tcl/Tk 9 fixes have no entry: they
+> released in **2.0.1**.
 >
 > Legend: **API** = source-level break · **Visual** = appearance-only (no code
 > change needed) · **New** = additive · **Fix** = something that did not work
@@ -18,23 +18,31 @@
 
 ## Index
 
-| Area | Kind | Where |
-|---|---|---|
-| **Treeview / Tableview row height follows the configured font** | **Visual** | this doc, below |
-| **Durable style options — `style.configure()` survives variants & theme switches** | New | this doc, below |
-| **Notebook tab `padding` / `bordercolor` are now overridable** | Fix | this doc, below |
-| **`DateEntry(value=…)` — a nullable, clearable date field** | New | this doc, below |
-| **Bootstyle value tokens — raw hex + ramp accents & surfaces** | New | this doc, below |
-| **Themed file dialog — a theme-following open/save chooser** | New | this doc, below |
-| **Dialogs stay on one monitor on multi-head Linux** | Fix | this doc, below |
-| **`place_window_center()` works before the window is shown** | Fix | this doc, below |
-| **`color_to_rgb` raises on an invalid color instead of returning `None`** | Fix | this doc, below |
-| **`DateEntry`'s dropdown stays aligned near a screen edge** | Fix | this doc, below |
-| **Popup menus have their themed border on Linux** | Fix | this doc, below |
+Rows mirror the section headings below, in order.
+
+| Area | Kind |
+|---|---|
+| **Treeview / Tableview row height follows the configured font** | **Visual** |
+| **Durable style options** | New |
+| **Notebook tab `padding` / `bordercolor` are now overridable** | Fix |
+| **`DateEntry(value=…)` — a nullable, clearable date field** | New |
+| **Bootstyle value tokens — raw hex + ramp accents & surfaces** | New |
+| **Themed file dialog — a theme-following open/save chooser** | New |
+| **Dialogs stay on one monitor on multi-head Linux** | Fix |
+| **`place_window_center()` works before the window is shown** | Fix |
+| **`color_to_rgb` raises on an invalid color** | Fix |
+| **`DateEntry`'s dropdown stays aligned near a screen edge** | Fix |
+| **Popup menus have their themed border on Linux** | Fix |
 
 There are **no API breaks in 2.1**: nothing was removed, and no call that worked
-in 2.0.0 fails. One change is visually noticeable without any code change (the
+in 2.0.x fails. One change is visually noticeable without any code change (the
 first row) — it is the one to lead the release notes with.
+
+**For whoever writes the release notes:** rows 7, 8 and 10 are all window
+placement, and the first two share a root cause (an unmapped window cannot report
+the size it will map at). They are kept apart here because they fix different
+visible symptoms for different audiences, but they read well as one grouped
+"placement" item if the notes want fewer bullets.
 
 ---
 
@@ -46,10 +54,10 @@ font the application configured was ignored and taller text was clipped.
 
 **Who notices.** An app that sets a global font — the documented
 `style.configure(".", font=("Cascadia Code", 24))` technique — and shows a
-`Treeview` or `Tableview`. Those rows were clipped in 2.0.0 and now grow to fit,
+`Treeview` or `Tableview`. Those rows were clipped in 2.0.x and now grow to fit,
 so **layouts shift**:
 
-| | 2.0.0 | 2.1 |
+| | 2.0.x | 2.1 |
 |---|---|---|
 | plain `Treeview`, no configured font | 15px | 15px (unchanged) |
 | `Tableview`, no configured font | 21px | 21px (unchanged) |
@@ -72,7 +80,7 @@ creating the widget (or switch themes) for it to take effect.
 ## Durable style options  *(New)*
 
 **What.** Geometry and layout options set with `style.configure(...)` now
-**persist**. In 2.0.0 they were silently discarded the moment a `bootstyle`
+**persist**. In 2.0.x they were silently discarded the moment a `bootstyle`
 variant was built or the theme changed, because the style recipes rewrite their
 own hardcoded values on every build.
 
@@ -80,7 +88,7 @@ own hardcoded values on every build.
 app.style.configure("TEntry", padding=8)
 
 ttk.Entry(app)                      # padded
-ttk.Entry(app, bootstyle="danger")  # ALSO padded (2.0.0: reverted to default)
+ttk.Entry(app, bootstyle="danger")  # ALSO padded (2.0.x: reverted to default)
 ```
 
 Details:
@@ -110,7 +118,7 @@ under *Options a widget doesn't read*.
 
 ## Notebook tab `padding` / `bordercolor` are now overridable  *(Fix)*
 
-**What.** `style.configure("TNotebook.Tab", padding=…)` had no effect in 2.0.0.
+**What.** `style.configure("TNotebook.Tab", padding=…)` had no effect in 2.0.x.
 It does now.
 
 **Why.** The notebook recipe mapped `padding` (and `bordercolor`) to the *same*
@@ -138,7 +146,7 @@ picker.get_date()   # -> None
 picker.clear()      # back to empty; set_date(None) and value = None are equivalent
 ```
 
-**No change to existing code.** Omitting `value` keeps the 2.0.0 behavior exactly:
+**No change to existing code.** Omitting `value` keeps the 2.0.x behavior exactly:
 the field starts on today (or `start_date`), and `get_date()` never returns
 `None`. Passing `value` — including `value=None` — opts into the nullable model,
 where an empty field reads as `None` instead of falling back to `start_date`.
@@ -328,6 +336,9 @@ multi-monitor Linux desktop could be across the join between two screens.
 
 **Scope.** No signature change and no new arguments. Centering a window that is
 currently on screen behaves exactly as before.
+
+---
+
 ## `color_to_rgb` raises on an invalid color  *(Fix)*
 
 **What.** `color_to_rgb` (also exported at top level as `ttk.color_to_rgb`) now
@@ -336,7 +347,7 @@ used to swallow the error, print the string `this` to stdout, and return `None`:
 
 ```python
 ttk.color_to_rgb("not-a-color")
-# 2.0.0: prints "this", returns None
+# 2.0.x: prints "this", returns None
 # 2.1:   ValueError: 'not-a-color' is not a valid hex color
 ```
 
@@ -348,7 +359,6 @@ with no indication of which color was at fault, plus stray output on stdout that
 no application asked for. The valid-color contract is unchanged.
 
 **Why.** A bare `except: print('this')` left over from 1.x.
-
 
 ---
 
