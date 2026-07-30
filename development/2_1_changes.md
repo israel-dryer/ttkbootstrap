@@ -30,6 +30,7 @@
 | **`place_window_center()` works before the window is shown** | Fix | this doc, below |
 | **`color_to_rgb` raises on an invalid color instead of returning `None`** | Fix | this doc, below |
 | **`DateEntry`'s dropdown stays aligned near a screen edge** | Fix | this doc, below |
+| **Popup menus have their themed border on Linux** | Fix | this doc, below |
 
 There are **no API breaks in 2.1**: nothing was removed, and no call that worked
 in 2.0.0 fails. One change is visually noticeable without any code change (the
@@ -358,3 +359,36 @@ point. The vertical axis already recognised this and passed `titlebar_height=0`;
 the horizontal one did not. Measured 9px out for a target at x=11, and only
 reachable when the parent window is near a screen edge, which is why it went
 unnoticed on a desktop where windows sit further in.
+
+---
+
+## Popup menus have their themed border on Linux  *(Fix)*
+
+**What.** A themed popup menu — a `Menubutton` or `OptionMenu` dropdown, a
+right-click menu, a cascade off the menu bar — now draws the same 1px
+`colors.border` hairline on Linux that it has always had elsewhere. It used to
+have no border at all there, so a menu read as a floating block of background
+against whatever was behind it.
+
+**Who notices.** Linux/X11 users only. Windows and macOS are untouched: both
+draw menus with native OS chrome, which supplies the border, and that is why the
+gap was Linux-only. The border follows the theme, in both light and dark.
+
+**Why.** The menu recipe set `borderwidth=0, relief="flat"`. On Windows and
+macOS a popup menu is a native OS menu, so the OS frame hid that; on X11 Tk draws
+the whole menu itself, so it meant literally no border.
+
+**Note for menu entry colors.** Tk gives `tk.Menu` no border color of its own —
+it has no `highlightthickness`, `relief="solid"` is hardcoded to black, and the
+3D reliefs derive both their shades from `-background`. The border is therefore
+painted by putting the *menu* background in `colors.border` and each entry in
+`colors.bg`; entries tile the whole interior of a popup, so only the 1px strip
+shows. Two consequences on Linux:
+
+- Entry colors are theme-managed, as they already are for a themed `Text`. An
+  entry given its own `background` keeps it; the rest follow the theme.
+- `menu.cget("background")` returns the border color rather than the surface
+  color. Read `style.colors.bg` for the surface.
+
+A menu used as a menu **bar** is unaffected — its entries cover only the left of
+the bar, so painting it would flood the rest.
