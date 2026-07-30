@@ -1180,11 +1180,83 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > `gh` is **not** installed, so PRs cannot be opened from here; this session's
 > merges were done locally and pushed to `master`.
 >
-> **NEXT — the rest of the pre-2.1 punch list:**
+> **Session 2026-07-30 (WSL2/Linux box) — #1309 (X11 menu border) is DONE.**
+> PR **#1314**, squash-merged to `master` as **`07a37ae`**; suite **929**
+> (919 + 10 new in `tests/test_menu_border.py`). **The next session is on the
+> Windows box — see "Handoff to the Windows box" below.**
+>
+> **The fix.** A themed popup menu had no border on Linux (menubutton/`OptionMenu`
+> dropdowns, right-click menus, menu-bar cascades). The recipe set
+> `borderwidth=0, relief="flat"`; on Windows/macOS a popup is a **native OS menu**
+> whose frame supplied the border, so only x11 — where Tk draws the whole menu
+> itself — was left with none. Gated on `scaling.windowing_system`, so the native
+> platforms keep byte-identical configuration.
+>
+> **Why it takes an indirect route (all three measured, not assumed).** Tk gives
+> `tk.Menu` **no border color of its own**: it has no `highlightthickness`,
+> `relief="solid"` is **hardcoded black** (`#000000`, unaffected by `-foreground`
+> /`-background`), and the 3D reliefs derive *both* shades from `-background`
+> (`#e6e6e6`/`#999999` on a white bg — a bevel, not a hairline). The only route to
+> a flat `colors.border` hairline is to paint the **menu** in the border color and
+> each **entry** in the surface color: entries tile a popup's whole interior, so
+> only the 1px strip shows.
+>
+> **The trap, and why the paint waits for `<Map>`.** That holds for a popup and
+> **not** a menu bar, whose entries cover only the left of the bar — painting one
+> floods the rest (measured: an entire menubar filled `#d6d6d6`). Detecting
+> menubars is unreliable, because `Menu(app)` → `configure(menu=…)` means a menu
+> is *not yet* one when it is styled. But **Tk displays a menu bar through a
+> clone** (`.!menu` original + `.#!menu` clone, `-type menubar`), so the widget we
+> style never maps — waiting for `<Map>` makes the two cases separate themselves
+> with nothing to detect. The same hook catches entries added *after* theming,
+> which inherit the menu background and would otherwise come up border-colored.
+> The repaint rides its own bind tag, so a caller's `bind("<Map>")` cannot
+> displace it (verified: both fire).
+>
+> **Two consequences on Linux, logged in `2_1_changes.md`:** entry colors are
+> **theme-managed** (an entry given its own `background` keeps it; the rest follow
+> the theme), and **`menu.cget("background")` returns the *border* color** — read
+> `style.colors.bg` for the surface.
+>
+> **REUSABLE — pixel verification on WSLg.** Claims about what Tk *draws* were
+> settled by capturing real pixels. **Pillow's `ImageGrab.grab(xdisplay=…)` and
+> `xwd -root` both fail under WSLg** (`BadMatch` on the XWayland root), but
+> **`xwd -id <widget.winfo_id()>` works** once the window is actually mapped —
+> and only then, since WSLg reports the `-32730` sentinel position until the
+> compositor places it (the settle-loop trait already recorded for
+> `verify_positioning.py`). No netpbm/ImageMagick is installed, so the XWD v7 dump
+> is parsed directly (25-field header, endianness detected via `file_version == 7`,
+> RGB via the visual's masks) — ~70 lines. **A posted menu is capturable this
+> way**, which is how the border, the menubar flood, the hover highlight and the
+> `tk_popup` path were all confirmed. **Sample away from separators** — a
+> separator draws a 3D line spanning the full width and will masquerade as a
+> border pixel (it confounded the first measurement run).
+>
+> **Process notes (three, all mine).** (a) **`git reset --hard` discards
+> uncommitted WIP** — rewinding `master` this session destroyed the author's
+> untracked-to-me working-tree edits (`.gitignore`,
+> `examples/file_dialog_default_routing.py`; author confirmed they did not matter).
+> Being careful not to *commit* someone's WIP is not the same as not *destroying*
+> it: **stash first, or use a plain `git reset`**, when the tree is dirty.
+> (b) **"push" is not "merge"** — merging straight to `master` foreclosed the PR
+> the author then asked for, costing a force-push to undo. Push the **branch**
+> first; merging is a separate decision. (c) **GitHub squash-merges PRs**, so the
+> merge commit is a *new* SHA and `git branch -d` reports "not fully merged" —
+> confirm the content landed, then `-D`.
+>
+> **Opening a PR without `gh`.** `gh` is still not installed on the WSL box, but a
+> PR *can* be opened from here: read the token from the same credential helper the
+> pushes use (`git credential fill` → the `password=` line, never printed) and
+> `POST /repos/israel-dryer/ttkbootstrap/pulls`, then `PATCH /issues/<n>` to set
+> the **milestone** and topical label per the repo convention. Installing `gh`
+> would make this a one-liner and is worth doing.
+>
+> **NEXT — the rest of the pre-2.1 punch list. The 2.1 milestone now has ZERO
+> open issues** (verified via the API this session: #1309 auto-closed on merge,
+> #1242 was already closed). Everything below is housekeeping, not features:
 > **bump `pyproject.toml` → 2.1.0** *at release time* (`master` tracks the current
 > release, so it correctly reads **2.0.1** now — do not bump early);
-> **close #1242** (complete in `master`); **#1309** (X11 menu border) is the last
-> open feature-ish issue; **delete `development/filedialogs/` (18 files) +
+> **delete `development/filedialogs/` (18 files) +
 > `scrolledframe/`** (prior art superseded by shipped code — the #1250 precedent).
 > Local branches were pruned this session; the matching **remote** branches are
 > still on GitHub, as is **`fix-dialog-has-no-size-on-linux`** — an unmerged 2021
@@ -1195,6 +1267,39 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > exist). Linux is now green, which is what CI would run, so a minimal workflow
 > (`pytest` + `sphinx -b html -W`) would pass today and would have caught several
 > things this session found by hand.
+>
+> **HANDOFF TO THE WINDOWS BOX (next session, from 2026-07-30).** The last few
+> sessions ran on WSL2/Linux; the next is on Windows, which is a **different
+> working copy** — the WSL checkout is `/home/iddryer/ttkbootstrap` and its `.venv`
+> is a *Linux* venv, so none of it carries over. Start with:
+>
+> 1. **`git pull`** — `master` is **`07a37ae`** (the #1314 squash merge). The
+>    Windows copy is behind by at least that.
+> 2. **Use the venv that matches the profile you are on.** Per "Dev environment"
+>    above, `.venv-home` belongs to the *other* Windows profile (its base
+>    interpreter is under `C:\Users\Israel Dryer\...`) and is unusable from the
+>    `Logistiview` profile, which has the docs deps in `.venv`. Neither is stale.
+> 3. **Expected gates:** suite **929** (`python -m pytest -q`), docs clean under
+>    `-W`.
+>
+> **What the menu fix means for Windows — nothing should change, and that is the
+> thing to confirm.** The border is gated to x11, so Windows keeps the native OS
+> menu chrome it already had. Two specific implications:
+>
+> - **No screenshot recapture is needed.** Windows is the canonical capture box and
+>   Windows rendering is unchanged, so every existing menu shot (`menus.rst`, the
+>   dropdown/popup shots in the widgets catalog) stays valid. Do **not** re-run the
+>   harness for #1309.
+> - **The headless tests already cover the Windows branch** —
+>   `tests/test_menu_border.py` *forces* the windowing-system probe both ways
+>   (the #1229 convention), so `win32`/`aqua` are asserted on Linux and x11 is
+>   asserted on Windows. A 60-second eyeball of a real menubutton dropdown is
+>   still worth it, since "unchanged on Windows" is the claim the gate rests on
+>   and it has only been verified by forcing the probe, never on the platform.
+>
+> **Verified on Linux, unverified elsewhere:** the border itself (all four edges
+> `colors.border`, light and dark) was confirmed against real pixels on X11 only —
+> which is the only platform it applies to, so nothing is outstanding.
 >
 > **User-visible 2.1 changes are logged in `development/2_1_changes.md`** (the
 > running log, same role `2_0_breaking_changes.md` played for 2.0; it is the source
