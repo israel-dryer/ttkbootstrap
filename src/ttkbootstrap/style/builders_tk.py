@@ -8,6 +8,27 @@ import tkinter as tk
 from ttkbootstrap.constants import *
 from ttkbootstrap.style.theme import Colors, ThemeDefinition, _accent_on_color
 
+# Carries the menu-border repaint. A bind tag of our own rather than a binding on
+# the widget, so a caller's own bind("<Map>") cannot displace it.
+_MENU_HAIRLINE_TAG = "TtkbootstrapMenuHairline"
+
+
+def _on_menu_map(event):
+    """Repaint a popup menu's border as it is posted.
+
+    Entries added since the last post inherit the menu background, so they would
+    come up in the border color; this catches them before the menu is drawn.
+    """
+    from ttkbootstrap.style.engine import Style
+
+    try:
+        builder = Style.get_instance()._get_builder_tk()
+        builder._paint_menu_hairline(event.widget)
+    except (AttributeError, tk.TclError):
+        # A menu torn down mid-post, or posted before a theme exists, keeps its
+        # plain background rather than failing the post.
+        pass
+
 
 class StyleBuilderTK:
     """Styles legacy tkinter widgets (not ttk) to match the active theme.
@@ -269,6 +290,11 @@ class StyleBuilderTK:
     def update_menu_style(self, widget: tk.Menu):
         """Update the menu style.
 
+        On x11 the popup also gets the themed 1px border -- see
+        `_paint_menu_hairline` for how it is drawn and why it waits for `<Map>`.
+        Windows and macOS draw menus with the native OS chrome, which supplies
+        the border, so they keep the borderless configuration.
+
         Parameters:
 
             widget (tkinter.Menu):
@@ -284,6 +310,57 @@ class StyleBuilderTK:
             relief="flat",
             borderwidth=0,
         )
+        if self.style.scaling.windowing_system == "x11":
+            self._arm_menu_hairline(widget)
+
+    def _arm_menu_hairline(self, widget: tk.Menu):
+        """Reserve the border strip and arrange for it to be painted on `<Map>`.
+
+        The width is set now so posting the menu never has to re-run its
+        geometry; while the strip is still the surface color it is invisible.
+        """
+        widget.configure(borderwidth=self.style.scaling.logical(1))
+
+        if _MENU_HAIRLINE_TAG not in widget.bindtags():
+            widget.bindtags((_MENU_HAIRLINE_TAG,) + widget.bindtags())
+        if not widget.tk.call("bind", _MENU_HAIRLINE_TAG):
+            widget.bind_class(_MENU_HAIRLINE_TAG, "<Map>", _on_menu_map)
+
+        # A menu already posted once keeps its border across a theme change;
+        # one that has never been posted waits, so a menubar is never painted.
+        if getattr(widget, "_tb_menu_hairline", False):
+            self._paint_menu_hairline(widget)
+
+    def _paint_menu_hairline(self, widget: tk.Menu):
+        """Draw the themed 1px border around a popup menu.
+
+        Tk gives `tk.Menu` no border color of its own: it has no
+        `highlightthickness`, `relief="solid"` is hardcoded to black, and the 3D
+        reliefs derive their two shades from `-background`. The one way to a flat
+        border in `colors.border` is to paint the *menu* in the border color and
+        every entry in the surface color -- entries tile the whole interior of a
+        popup, so only the 1px strip is left showing.
+
+        That only holds for a popup. A menubar's entries cover just the left of
+        the bar, so the border color would flood the rest of it -- which is why
+        this waits for `<Map>`: a menu used as a menubar is displayed through a
+        clone, so the widget styled here never maps and never gets painted.
+
+        Entry colors are theme-managed, like those of a themed `Text`. An entry
+        the user gave its own color keeps it; the rest follow the theme.
+        """
+        surface = self.colors.bg
+        previous = getattr(widget, "_tb_menu_entry_bg", None)
+        widget.configure(background=self.colors.border)
+
+        end = widget.index("end")
+        for index in range(0 if end is None else end + 1):
+            current = str(widget.entrycget(index, "background"))
+            if not current or current == previous:
+                widget.entryconfigure(index, background=surface)
+
+        widget._tb_menu_entry_bg = surface
+        widget._tb_menu_hairline = True
 
     def update_labelframe_style(self, widget: tk.LabelFrame):
         """Update the labelframe style.
