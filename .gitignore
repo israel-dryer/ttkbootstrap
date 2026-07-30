@@ -24,6 +24,7 @@ tests/themes.json
 publish.bat
 /issues/
 site
+tmp/
 
 # Sphinx docs
 docs/_build/
