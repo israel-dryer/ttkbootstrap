@@ -1357,6 +1357,54 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > `colors.border`, light and dark) was confirmed against real pixels on X11 only —
 > which is the only platform it applies to, so nothing is outstanding.
 >
+> **Session 2026-07-30b (Windows box) — branch cleanup, and the stranded window
+> fix it turned up. Two PRs.** Started as housekeeping — delete every merged
+> branch, local and remote — and the audit that gate required found real work.
+>
+> **#1315 (MERGED) — the stranded fix.** Twelve local branches deleted and six
+> remote; two of the twelve were not ancestors of `master` because GitHub
+> squash-merges (verified patch-equivalent via `git cherry`, and `master` had
+> since superseded both). One branch survived the sweep —
+> `fix/2.1-center-content-sized-root`, three commits refining `_unmapped_size`,
+> written on **this** box at 13:58 on 07-28, *after* the Linux session closed out
+> at 08:47. Because its own `CLAUDE.md` entry never landed, no later session knew
+> it existed. **`master`'s suite had been red on Windows for two days** as a
+> result. The whole episode is the argument for CI: **`.github/workflows/` still
+> does not exist**, and `pytest` + `sphinx -W` would have caught it the same day.
+>
+> **How to check a squash-merged branch** (the reusable part): `git branch
+> --merged` is necessary but not sufficient. `git cherry master <branch>` matches
+> by **patch-id**, so it still reports 0 for a squash-merge whose content landed;
+> a non-zero count means *look*, not *unmerged*. And read the diff direction —
+> `git diff master..<branch>` showing thousands of deletions means the branch is
+> **behind**, not that it carries removals.
+>
+> **#1316 — the cleanup.** `development/` now holds only design and handoff
+> documents (`filedialogs/`, `scrolledframe/`, `validatedinput/` deleted — the
+> #1250 precedent), and two stale root scripts are gone: `build_instructions.txt`
+> said to bump the version in `setup.py` and run `python setup.py sdist`, and
+> there is no `setup.py`; `setup_project.bat` built a `venv\` and installed
+> `requirements.txt`, which resolved to documentation deps alone, so its
+> environment had no pytest. `requirements.txt` now declares the real gate set
+> (RTD is unaffected — `.readthedocs.yaml` reads `docs/requirements.txt`
+> directly), `tmp/` is ignored, and the release steps moved into AGENTS.md.
+>
+> **AGENTS.md was the biggest find, and it is a class of bug worth watching for.**
+> It is the orientation file for AI agents, it had been frozen since ~2026-07-01,
+> and it did not merely lag — it instructed the *opposite* of current practice:
+> cut every PR against the retired `2.0` branch, suite is 177, and the docs are
+> "MkDocs, not Sphinx" with a directive to write docstrings in plain Markdown and
+> avoid reST. Docs moved to Sphinx in #1148; #1246 then had to clean up four
+> leftover mkdocs `!!!` admonitions in docstrings. **A stale instruction file is
+> worse than no file** — refreshed, and it now defers to `CLAUDE.md` as
+> authoritative rather than restating status.
+>
+> **Two environment facts.** `gh` **is** installed on this box (2.92.0), unlike
+> the WSL box — so PRs are a one-liner here. And an **editable install wins over
+> a worktree's own `src/`**: a branch suite run from a worktree silently tested
+> `master`'s code and reported 5 failures; pin `PYTHONPATH` when testing a branch
+> checked out elsewhere.
+>
 > **User-visible 2.1 changes are logged in `development/2_1_changes.md`** (the
 > running log, same role `2_0_breaking_changes.md` played for 2.0; it is the source
 > for the 2.1 release notes). **Log there as you land**, not at release time. Scope
