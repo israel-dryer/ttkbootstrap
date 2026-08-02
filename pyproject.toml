@@ -56,7 +56,11 @@ where = ["src"]
 # app_icons ships only the two runtime assets built by tools/make_app_ico.py
 # (the .ico for Windows, the .png for macOS/Linux). The per-size source PNGs live
 # in the repo-root assets/app_icons/ and are build inputs, not shipped.
-"ttkbootstrap" = ["themes/*.json", "assets/*", "assets/icons/*", "assets/elements/*", "assets/app_icons/ttkbootstrap.ico", "assets/app_icons/ttkbootstrap.png"]
+# py.typed and the generated __init__.pyi are listed explicitly: MANIFEST.in's
+# graft already sweeps them in, but the stub is what restores widget parameters
+# in an IDE (#1327), so a wheel that quietly ships without it is a silent
+# regression rather than a visible failure.
+"ttkbootstrap" = ["py.typed", "*.pyi", "themes/*.json", "assets/*", "assets/icons/*", "assets/elements/*", "assets/app_icons/ttkbootstrap.ico", "assets/app_icons/ttkbootstrap.png"]
 
 [tool.pytest.ini_options]
 # Only the headless suite under tests/ is collected. Interactive mainloop()

@@ -1825,6 +1825,24 @@ A virtualenv with an editable install lives at `.venv/` (Python 3.x on macOS;
   from a `git worktree` silently tests the *main* checkout's code; pin
   `PYTHONPATH` to the worktree's `src` when testing a branch checked out
   elsewhere.
+- **Regenerate the type stub** after adding a widget or editing an `Options`
+  table on a `docs/reference/api/` page: `python tools/generate_widget_stubs.py`
+  (writes `src/ttkbootstrap/__init__.pyi`; `--output` targets somewhere else).
+  `tests/test_widget_stubs.py` fails until the committed stub matches, and it
+  regenerates in a **subprocess** — an in-process run would read the `(*args,
+  **kwargs)` wrappers `enable_global_api()` installs on the tkinter classes,
+  since another test in the suite enables it. The same file also audits the
+  reference tables against the live Tk option set, so an undocumented option
+  fails there rather than becoming a false positive in a user's type checker.
+- **The stub's *tooltip* is a separate, manual gate:**
+  `python tools/verify_hover.py` (needs `pip install pyright jedi`). A stub can
+  type-check perfectly and still show the wrong hover — the first working
+  version put the `Args:` docstring on the class, so editors read `__init__`,
+  found nothing, and fell back to `BootMixin.__init__`'s "*args, \*\*kwargs"
+  text. The script drives **pyright over LSP** (`textDocument/hover`, i.e. what
+  VS Code/Pylance renders) and **jedi** for signature + `bootstyle=`
+  completion. **PyCharm is not covered and cannot be scripted** — check it by
+  hand when a report names it, as #1327 did.
 - **CI runs the two automatable gates** (`.github/workflows/ci.yml`, #1317) on
   push to `master` and every PR: the suite on **all three windowing systems** —
   Linux, Windows and macOS on py3.13, plus the py3.10 floor from

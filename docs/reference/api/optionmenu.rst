@@ -12,7 +12,12 @@ for you from a variable and a list of values; construct it as
 Options
 -------
 
-Each option can be set in the constructor and changed later with ``configure()``.
+Most options are set with ``configure()`` after construction. ``OptionMenu`` is
+the exception to the usual "either place works" rule: its constructor accepts
+only ``command``, ``direction``, ``style`` and ``name`` alongside the variable
+and values, and rejects the rest with ``TclError: unknown option``. Options
+marked **Constructor only** below work the other way — set them when you build
+the widget, not afterwards.
 
 .. list-table::
    :header-rows: 1
@@ -25,6 +30,10 @@ Each option can be set in the constructor and changed later with ``configure()``
      - ``str``
      - **Constructor keyword.** An accent color, optionally with a variant. See
        :ref:`Styling options <optionmenu-styling>` for the available styles.
+   * - ``command``
+     - ``callable``
+     - **Constructor only.** A callback invoked with the chosen value after an
+       item is selected.
    * - ``icon``
      - ``str``
      - **Constructor keyword.** A Bootstrap Icons glyph name (e.g.
