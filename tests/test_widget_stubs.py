@@ -125,12 +125,15 @@ def test_class_summaries_come_from_the_reference_pages(generator):
     stub = _STUB.read_text(encoding="utf-8")
     boilerplate = []
     for name in _stubbed_classes():
-        summary = re.search(
+        found = re.search(
             rf'^class {name}\((?:Boot|AutoStyle)Mixin, [^)]+\):\n    """(.*?)"""',
             stub, re.M | re.S,
-        ).group(1)
+        )
         page_summary = generator._summary(name.lower(), "")
-        if not page_summary or " ".join(summary.split()) != page_summary:
+        if found is None or not page_summary:
+            boilerplate.append(name)
+            continue
+        if " ".join(found.group(1).split()) != page_summary:
             boilerplate.append(name)
     assert not boilerplate, (
         "these stubbed widgets show a placeholder summary instead of their "
