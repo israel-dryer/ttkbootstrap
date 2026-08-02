@@ -3,7 +3,10 @@
 > The consolidated log of changes that alter behavior or appearance since
 > **2.1.0**, each with **what** changed and **why**. Same role its predecessors
 > (`2_1_changes.md`, `2_0_breaking_changes.md`) played: kept in `development/`
-> so it survives, and the source for the release notes when this ships.
+> so it survives, and the source for this release's notes.
+>
+> **A typing- and docs-only patch.** No runtime behavior changes: the shipped
+> stub is inert at import, and the one library file touched is a reference page.
 >
 > Scope is **relative to 2.1.0**. A regression introduced *and* fixed inside
 > this cycle never reached a user, so it belongs to the dev log in `CLAUDE.md`,
