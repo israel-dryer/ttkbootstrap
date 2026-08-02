@@ -11,8 +11,12 @@ subclasses in `__init__.py`, whose shared mixin constructor is generic.
 from __future__ import annotations
 
 from datetime import date, datetime
-from tkinter import Misc, Variable, PhotoImage
+from tkinter import BitmapImage, Misc, PhotoImage, Variable
 from tkinter.font import Font
+
+# Pillow is ttkbootstrap's one runtime dependency, so its image type is always
+# importable and an `image=` option legitimately accepts it.
+from PIL.ImageTk import PhotoImage as PilImage
 from typing import Any, Callable
 
 from ttkbootstrap.style import AutoStyleMixin as AutoStyleMixin, BootMixin as BootMixin
@@ -21,7 +25,6 @@ from tkinter import Canvas as _tkinterCanvas
 from tkinter import Frame as _tkinterFrame
 from tkinter import Label as _tkinterLabel
 from tkinter import Listbox as _tkinterListbox
-from tkinter import Menu as _tkinterMenu
 from tkinter import Text as _tkinterText
 from tkinter import Tk as _tkinterTk
 from tkinter.ttk import Button as _ttkButton
@@ -43,6 +46,7 @@ from tkinter.ttk import Separator as _ttkSeparator
 from tkinter.ttk import Sizegrip as _ttkSizegrip
 from tkinter.ttk import Spinbox as _ttkSpinbox
 from tkinter.ttk import Treeview as _ttkTreeview
+from ttkbootstrap.menu import Menu as _MenuMenu
 
 from tkinter import (
     BooleanVar as BooleanVar,
@@ -183,18 +187,18 @@ class Tk(AutoStyleMixin, _tkinterTk):
         width: int = ...,
         height: int = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
     ) -> Any: ...
     config = configure
 
-class Menu(AutoStyleMixin, _tkinterMenu):
+class Menu(_MenuMenu):
     """Menu is tkinter's menu widget (tk.Menu), themed by ttkbootstrap and re-exported as ttk.Menu. It backs menu bars, cascading submenus, and right-click context menus; ttkbootstrap adds helpers for the native macOS application menu. Entries are addressed by integer index (0-based) or the special index "end" / "active" / "last"."""
     def __init__(
         self,
         master: Misc | None = ...,
         *,
         autostyle: bool = ...,
-        font: str | Font = ...,
+        font: str | Font | tuple[Any, ...] = ...,
         foreground: str = ...,
         fg: str = ...,
         background: str = ...,
@@ -213,9 +217,8 @@ class Menu(AutoStyleMixin, _tkinterMenu):
         title: str = ...,
         type: str = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         # Accepted spellings outside the documented surface.
-        class_: str = ...,
         name: str = ...,
     ) -> None:
         """Menu is tkinter's menu widget (tk.Menu), themed by ttkbootstrap and re-exported as ttk.Menu. It backs menu bars, cascading submenus, and right-click context menus; ttkbootstrap adds helpers for the native macOS application menu. Entries are addressed by integer index (0-based) or the special index "end" / "active" / "last".
@@ -246,7 +249,7 @@ class Menu(AutoStyleMixin, _tkinterMenu):
         self,
         cnf: Any = ...,
         *,
-        font: str | Font = ...,
+        font: str | Font | tuple[Any, ...] = ...,
         foreground: str = ...,
         fg: str = ...,
         background: str = ...,
@@ -265,7 +268,7 @@ class Menu(AutoStyleMixin, _tkinterMenu):
         title: str = ...,
         type: str = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
     ) -> Any: ...
     config = configure
 
@@ -276,7 +279,7 @@ class Text(AutoStyleMixin, _tkinterText):
         master: Misc | None = ...,
         *,
         autostyle: bool = ...,
-        font: str | Font = ...,
+        font: str | Font | tuple[Any, ...] = ...,
         wrap: str = ...,
         tabs: str = ...,
         tabstyle: str = ...,
@@ -313,7 +316,7 @@ class Text(AutoStyleMixin, _tkinterText):
         maxundo: int = ...,
         state: str = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         exportselection: bool = ...,
         setgrid: bool = ...,
         startline: int = ...,
@@ -321,7 +324,6 @@ class Text(AutoStyleMixin, _tkinterText):
         xscrollcommand: Callable[..., Any] = ...,
         yscrollcommand: Callable[..., Any] = ...,
         # Accepted spellings outside the documented surface.
-        class_: str = ...,
         name: str = ...,
     ) -> None:
         """Text is tkinter's multi-line text widget (tk.Text), themed by ttkbootstrap.
@@ -376,7 +378,7 @@ class Text(AutoStyleMixin, _tkinterText):
         self,
         cnf: Any = ...,
         *,
-        font: str | Font = ...,
+        font: str | Font | tuple[Any, ...] = ...,
         wrap: str = ...,
         tabs: str = ...,
         tabstyle: str = ...,
@@ -413,7 +415,7 @@ class Text(AutoStyleMixin, _tkinterText):
         maxundo: int = ...,
         state: str = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         exportselection: bool = ...,
         setgrid: bool = ...,
         startline: int = ...,
@@ -458,9 +460,8 @@ class Canvas(AutoStyleMixin, _tkinterCanvas):
         closeenough: float = ...,
         offset: str = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         # Accepted spellings outside the documented surface.
-        class_: str = ...,
         name: str = ...,
     ) -> None:
         """Canvas is tkinter's drawing surface (tk.Canvas) — a 2-D area that holds items (lines, shapes, text, images, embedded widgets) you create, move, restyle, and delete by id or tag. It is themed by ttkbootstrap.
@@ -529,7 +530,7 @@ class Canvas(AutoStyleMixin, _tkinterCanvas):
         closeenough: float = ...,
         offset: str = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
     ) -> Any: ...
     config = configure
 
@@ -547,7 +548,7 @@ class Listbox(AutoStyleMixin, _tkinterListbox):
         selectborderwidth: int = ...,
         activestyle: str = ...,
         exportselection: bool = ...,
-        font: str | Font = ...,
+        font: str | Font | tuple[Any, ...] = ...,
         foreground: str = ...,
         fg: str = ...,
         background: str = ...,
@@ -564,12 +565,11 @@ class Listbox(AutoStyleMixin, _tkinterListbox):
         highlightbackground: str = ...,
         state: str = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         setgrid: bool = ...,
         xscrollcommand: Callable[..., Any] = ...,
         yscrollcommand: Callable[..., Any] = ...,
         # Accepted spellings outside the documented surface.
-        class_: str = ...,
         name: str = ...,
     ) -> None:
         """Listbox is tkinter's list of selectable text lines (tk.Listbox), themed by ttkbootstrap. Lines are addressed by integer index (0-based) or the special index "end" / "active".
@@ -615,7 +615,7 @@ class Listbox(AutoStyleMixin, _tkinterListbox):
         selectborderwidth: int = ...,
         activestyle: str = ...,
         exportselection: bool = ...,
-        font: str | Font = ...,
+        font: str | Font | tuple[Any, ...] = ...,
         foreground: str = ...,
         fg: str = ...,
         background: str = ...,
@@ -632,7 +632,7 @@ class Listbox(AutoStyleMixin, _tkinterListbox):
         highlightbackground: str = ...,
         state: str = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         setgrid: bool = ...,
         xscrollcommand: Callable[..., Any] = ...,
         yscrollcommand: Callable[..., Any] = ...,
@@ -659,7 +659,7 @@ class TkFrame(AutoStyleMixin, _tkinterFrame):
         padx: int = ...,
         pady: int = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         class_: str = ...,
         container: bool = ...,
         visual: str = ...,
@@ -707,7 +707,7 @@ class TkFrame(AutoStyleMixin, _tkinterFrame):
         padx: int = ...,
         pady: int = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
     ) -> Any: ...
     config = configure
 
@@ -720,11 +720,11 @@ class TkLabel(AutoStyleMixin, _tkinterLabel):
         autostyle: bool = ...,
         text: str = ...,
         textvariable: Variable = ...,
-        image: PhotoImage = ...,
+        image: str | PhotoImage | BitmapImage | PilImage = ...,
         bitmap: str = ...,
         compound: str = ...,
         underline: int = ...,
-        font: str | Font = ...,
+        font: str | Font | tuple[Any, ...] = ...,
         foreground: str = ...,
         fg: str = ...,
         background: str = ...,
@@ -747,9 +747,8 @@ class TkLabel(AutoStyleMixin, _tkinterLabel):
         highlightbackground: str = ...,
         state: str = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         # Accepted spellings outside the documented surface.
-        class_: str = ...,
         name: str = ...,
     ) -> None:
         """TkLabel is tkinter's classic tk.Label, themed by ttkbootstrap and re-exported as ttk.TkLabel. It displays a line or block of read-only text, an image, or both. Prefer the ttk Label for themed text; reach for TkLabel only when you need a classic-tk option the ttk label doesn't expose (a per-widget background/foreground, bitmap, activeforeground, disabledforeground).
@@ -792,11 +791,11 @@ class TkLabel(AutoStyleMixin, _tkinterLabel):
         *,
         text: str = ...,
         textvariable: Variable = ...,
-        image: PhotoImage = ...,
+        image: str | PhotoImage | BitmapImage | PilImage = ...,
         bitmap: str = ...,
         compound: str = ...,
         underline: int = ...,
-        font: str | Font = ...,
+        font: str | Font | tuple[Any, ...] = ...,
         foreground: str = ...,
         fg: str = ...,
         background: str = ...,
@@ -819,7 +818,7 @@ class TkLabel(AutoStyleMixin, _tkinterLabel):
         highlightbackground: str = ...,
         state: str = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
     ) -> Any: ...
     config = configure
 
@@ -836,7 +835,7 @@ class Button(BootMixin, _ttkButton):
         text: str = ...,
         textvariable: Variable = ...,
         command: Callable[..., Any] = ...,
-        image: PhotoImage = ...,
+        image: str | PhotoImage | BitmapImage | PilImage = ...,
         compound: str = ...,
         underline: int = ...,
         width: int = ...,
@@ -844,7 +843,7 @@ class Button(BootMixin, _ttkButton):
         default: str = ...,
         state: str = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         # Accepted spellings outside the documented surface.
         class_: str = ...,
         name: str = ...,
@@ -883,7 +882,7 @@ class Button(BootMixin, _ttkButton):
         text: str = ...,
         textvariable: Variable = ...,
         command: Callable[..., Any] = ...,
-        image: PhotoImage = ...,
+        image: str | PhotoImage | BitmapImage | PilImage = ...,
         compound: str = ...,
         underline: int = ...,
         width: int = ...,
@@ -891,7 +890,8 @@ class Button(BootMixin, _ttkButton):
         default: str = ...,
         state: str = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
+        class_: str = ...,
         style: str = ...,
     ) -> Any: ...
     config = configure
@@ -912,14 +912,14 @@ class Checkbutton(BootMixin, _ttkCheckbutton):
         onvalue: Any = ...,
         offvalue: Any = ...,
         command: Callable[..., Any] = ...,
-        image: PhotoImage = ...,
+        image: str | PhotoImage | BitmapImage | PilImage = ...,
         compound: str = ...,
         underline: int = ...,
         width: int = ...,
         padding: int | tuple[Any, ...] = ...,
         state: str = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         # Accepted spellings outside the documented surface.
         class_: str = ...,
         name: str = ...,
@@ -963,14 +963,15 @@ class Checkbutton(BootMixin, _ttkCheckbutton):
         onvalue: Any = ...,
         offvalue: Any = ...,
         command: Callable[..., Any] = ...,
-        image: PhotoImage = ...,
+        image: str | PhotoImage | BitmapImage | PilImage = ...,
         compound: str = ...,
         underline: int = ...,
         width: int = ...,
         padding: int | tuple[Any, ...] = ...,
         state: str = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
+        class_: str = ...,
         style: str = ...,
     ) -> Any: ...
     config = configure
@@ -983,12 +984,12 @@ class Combobox(BootMixin, _ttkCombobox):
         *,
         bootstyle: str = ...,
         textvariable: Variable = ...,
-        values: list[Any] = ...,
+        values: list[Any] | tuple[Any, ...] = ...,
         postcommand: Callable[..., Any] = ...,
         height: int = ...,
         show: str = ...,
         justify: str = ...,
-        font: str | Font = ...,
+        font: str | Font | tuple[Any, ...] = ...,
         foreground: str = ...,
         validate: str = ...,
         validatecommand: Callable[..., Any] = ...,
@@ -996,7 +997,7 @@ class Combobox(BootMixin, _ttkCombobox):
         state: str = ...,
         exportselection: bool = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         width: int = ...,
         xscrollcommand: Callable[..., Any] = ...,
         # Accepted spellings outside the documented surface.
@@ -1035,12 +1036,12 @@ class Combobox(BootMixin, _ttkCombobox):
         *,
         bootstyle: str = ...,
         textvariable: Variable = ...,
-        values: list[Any] = ...,
+        values: list[Any] | tuple[Any, ...] = ...,
         postcommand: Callable[..., Any] = ...,
         height: int = ...,
         show: str = ...,
         justify: str = ...,
-        font: str | Font = ...,
+        font: str | Font | tuple[Any, ...] = ...,
         foreground: str = ...,
         validate: str = ...,
         validatecommand: Callable[..., Any] = ...,
@@ -1048,10 +1049,11 @@ class Combobox(BootMixin, _ttkCombobox):
         state: str = ...,
         exportselection: bool = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         width: int = ...,
         xscrollcommand: Callable[..., Any] = ...,
         background: str = ...,
+        class_: str = ...,
         style: str = ...,
     ) -> Any: ...
     config = configure
@@ -1069,13 +1071,13 @@ class Entry(BootMixin, _ttkEntry):
         validatecommand: Callable[..., Any] = ...,
         invalidcommand: Callable[..., Any] = ...,
         justify: str = ...,
-        font: str | Font = ...,
+        font: str | Font | tuple[Any, ...] = ...,
         foreground: str = ...,
         width: int = ...,
         state: str = ...,
         exportselection: bool = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         xscrollcommand: Callable[..., Any] = ...,
         # Accepted spellings outside the documented surface.
         background: str = ...,
@@ -1115,15 +1117,16 @@ class Entry(BootMixin, _ttkEntry):
         validatecommand: Callable[..., Any] = ...,
         invalidcommand: Callable[..., Any] = ...,
         justify: str = ...,
-        font: str | Font = ...,
+        font: str | Font | tuple[Any, ...] = ...,
         foreground: str = ...,
         width: int = ...,
         state: str = ...,
         exportselection: bool = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         xscrollcommand: Callable[..., Any] = ...,
         background: str = ...,
+        class_: str = ...,
         style: str = ...,
     ) -> Any: ...
     config = configure
@@ -1141,7 +1144,7 @@ class Frame(BootMixin, _ttkFrame):
         width: int = ...,
         height: int = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         # Accepted spellings outside the documented surface.
         class_: str = ...,
         name: str = ...,
@@ -1172,7 +1175,8 @@ class Frame(BootMixin, _ttkFrame):
         width: int = ...,
         height: int = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
+        class_: str = ...,
         style: str = ...,
     ) -> Any: ...
     config = configure
@@ -1194,7 +1198,7 @@ class Labelframe(BootMixin, _ttkLabelframe):
         width: int = ...,
         height: int = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         # Accepted spellings outside the documented surface.
         class_: str = ...,
         name: str = ...,
@@ -1233,7 +1237,8 @@ class Labelframe(BootMixin, _ttkLabelframe):
         width: int = ...,
         height: int = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
+        class_: str = ...,
         style: str = ...,
     ) -> Any: ...
     config = configure
@@ -1250,9 +1255,9 @@ class Label(BootMixin, _ttkLabel):
         icon_only: bool = ...,
         text: str = ...,
         textvariable: Variable = ...,
-        image: PhotoImage = ...,
+        image: str | PhotoImage | BitmapImage | PilImage = ...,
         compound: str = ...,
-        font: str | Font = ...,
+        font: str | Font | tuple[Any, ...] = ...,
         foreground: str = ...,
         background: str = ...,
         anchor: str = ...,
@@ -1265,7 +1270,7 @@ class Label(BootMixin, _ttkLabel):
         borderwidth: int = ...,
         state: str = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         # Accepted spellings outside the documented surface.
         class_: str = ...,
         name: str = ...,
@@ -1309,9 +1314,9 @@ class Label(BootMixin, _ttkLabel):
         icon_only: bool = ...,
         text: str = ...,
         textvariable: Variable = ...,
-        image: PhotoImage = ...,
+        image: str | PhotoImage | BitmapImage | PilImage = ...,
         compound: str = ...,
-        font: str | Font = ...,
+        font: str | Font | tuple[Any, ...] = ...,
         foreground: str = ...,
         background: str = ...,
         anchor: str = ...,
@@ -1324,7 +1329,8 @@ class Label(BootMixin, _ttkLabel):
         borderwidth: int = ...,
         state: str = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
+        class_: str = ...,
         style: str = ...,
     ) -> Any: ...
     config = configure
@@ -1343,14 +1349,14 @@ class Menubutton(BootMixin, _ttkMenubutton):
         textvariable: Variable = ...,
         menu: Menu = ...,
         direction: str = ...,
-        image: PhotoImage = ...,
+        image: str | PhotoImage | BitmapImage | PilImage = ...,
         compound: str = ...,
         underline: int = ...,
         width: int = ...,
         padding: int | tuple[Any, ...] = ...,
         state: str = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         # Accepted spellings outside the documented surface.
         class_: str = ...,
         name: str = ...,
@@ -1390,14 +1396,15 @@ class Menubutton(BootMixin, _ttkMenubutton):
         textvariable: Variable = ...,
         menu: Menu = ...,
         direction: str = ...,
-        image: PhotoImage = ...,
+        image: str | PhotoImage | BitmapImage | PilImage = ...,
         compound: str = ...,
         underline: int = ...,
         width: int = ...,
         padding: int | tuple[Any, ...] = ...,
         state: str = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
+        class_: str = ...,
         style: str = ...,
     ) -> Any: ...
     config = configure
@@ -1413,7 +1420,7 @@ class Notebook(BootMixin, _ttkNotebook):
         width: int = ...,
         height: int = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         # Accepted spellings outside the documented surface.
         class_: str = ...,
         name: str = ...,
@@ -1440,7 +1447,8 @@ class Notebook(BootMixin, _ttkNotebook):
         width: int = ...,
         height: int = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
+        class_: str = ...,
         style: str = ...,
     ) -> Any: ...
     config = configure
@@ -1456,7 +1464,7 @@ class Panedwindow(BootMixin, _ttkPanedwindow):
         width: int = ...,
         height: int = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         # Accepted spellings outside the documented surface.
         class_: str = ...,
         name: str = ...,
@@ -1483,7 +1491,8 @@ class Panedwindow(BootMixin, _ttkPanedwindow):
         width: int = ...,
         height: int = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
+        class_: str = ...,
         style: str = ...,
     ) -> Any: ...
     config = configure
@@ -1503,7 +1512,7 @@ class Progressbar(BootMixin, _ttkProgressbar):
         variable: Variable = ...,
         phase: int = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         # Accepted spellings outside the documented surface.
         class_: str = ...,
         name: str = ...,
@@ -1538,7 +1547,8 @@ class Progressbar(BootMixin, _ttkProgressbar):
         variable: Variable = ...,
         phase: int = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
+        class_: str = ...,
         style: str = ...,
     ) -> Any: ...
     config = configure
@@ -1558,14 +1568,14 @@ class Radiobutton(BootMixin, _ttkRadiobutton):
         variable: Variable = ...,
         value: Any = ...,
         command: Callable[..., Any] = ...,
-        image: PhotoImage = ...,
+        image: str | PhotoImage | BitmapImage | PilImage = ...,
         compound: str = ...,
         underline: int = ...,
         width: int = ...,
         padding: int | tuple[Any, ...] = ...,
         state: str = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         # Accepted spellings outside the documented surface.
         class_: str = ...,
         name: str = ...,
@@ -1607,14 +1617,15 @@ class Radiobutton(BootMixin, _ttkRadiobutton):
         variable: Variable = ...,
         value: Any = ...,
         command: Callable[..., Any] = ...,
-        image: PhotoImage = ...,
+        image: str | PhotoImage | BitmapImage | PilImage = ...,
         compound: str = ...,
         underline: int = ...,
         width: int = ...,
         padding: int | tuple[Any, ...] = ...,
         state: str = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
+        class_: str = ...,
         style: str = ...,
     ) -> Any: ...
     config = configure
@@ -1635,7 +1646,7 @@ class Scale(BootMixin, _ttkScale):
         command: Callable[..., Any] = ...,
         state: str = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         # Accepted spellings outside the documented surface.
         class_: str = ...,
         name: str = ...,
@@ -1672,7 +1683,8 @@ class Scale(BootMixin, _ttkScale):
         command: Callable[..., Any] = ...,
         state: str = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
+        class_: str = ...,
         style: str = ...,
     ) -> Any: ...
     config = configure
@@ -1687,7 +1699,7 @@ class Scrollbar(BootMixin, _ttkScrollbar):
         orient: str = ...,
         command: Callable[..., Any] = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         # Accepted spellings outside the documented surface.
         class_: str = ...,
         name: str = ...,
@@ -1712,7 +1724,8 @@ class Scrollbar(BootMixin, _ttkScrollbar):
         orient: str = ...,
         command: Callable[..., Any] = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
+        class_: str = ...,
         style: str = ...,
     ) -> Any: ...
     config = configure
@@ -1726,7 +1739,7 @@ class Separator(BootMixin, _ttkSeparator):
         bootstyle: str = ...,
         orient: str = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         # Accepted spellings outside the documented surface.
         class_: str = ...,
         name: str = ...,
@@ -1749,7 +1762,8 @@ class Separator(BootMixin, _ttkSeparator):
         bootstyle: str = ...,
         orient: str = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
+        class_: str = ...,
         style: str = ...,
     ) -> Any: ...
     config = configure
@@ -1762,7 +1776,7 @@ class Sizegrip(BootMixin, _ttkSizegrip):
         *,
         bootstyle: str = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         # Accepted spellings outside the documented surface.
         class_: str = ...,
         name: str = ...,
@@ -1783,7 +1797,8 @@ class Sizegrip(BootMixin, _ttkSizegrip):
         *,
         bootstyle: str = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
+        class_: str = ...,
         style: str = ...,
     ) -> Any: ...
     config = configure
@@ -1799,13 +1814,13 @@ class Spinbox(BootMixin, _ttkSpinbox):
         from_: float = ...,
         to: float = ...,
         increment: float = ...,
-        values: list[Any] = ...,
+        values: list[Any] | tuple[Any, ...] = ...,
         format: str = ...,
         wrap: bool = ...,
         command: Callable[..., Any] = ...,
         show: str = ...,
         justify: str = ...,
-        font: str | Font = ...,
+        font: str | Font | tuple[Any, ...] = ...,
         foreground: str = ...,
         validate: str = ...,
         validatecommand: Callable[..., Any] = ...,
@@ -1813,7 +1828,7 @@ class Spinbox(BootMixin, _ttkSpinbox):
         state: str = ...,
         exportselection: bool = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         width: int = ...,
         xscrollcommand: Callable[..., Any] = ...,
         # Accepted spellings outside the documented surface.
@@ -1859,13 +1874,13 @@ class Spinbox(BootMixin, _ttkSpinbox):
         from_: float = ...,
         to: float = ...,
         increment: float = ...,
-        values: list[Any] = ...,
+        values: list[Any] | tuple[Any, ...] = ...,
         format: str = ...,
         wrap: bool = ...,
         command: Callable[..., Any] = ...,
         show: str = ...,
         justify: str = ...,
-        font: str | Font = ...,
+        font: str | Font | tuple[Any, ...] = ...,
         foreground: str = ...,
         validate: str = ...,
         validatecommand: Callable[..., Any] = ...,
@@ -1873,10 +1888,11 @@ class Spinbox(BootMixin, _ttkSpinbox):
         state: str = ...,
         exportselection: bool = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         width: int = ...,
         xscrollcommand: Callable[..., Any] = ...,
         background: str = ...,
+        class_: str = ...,
         style: str = ...,
     ) -> Any: ...
     config = configure
@@ -1888,8 +1904,8 @@ class Treeview(BootMixin, _ttkTreeview):
         master: Misc | None = ...,
         *,
         bootstyle: str = ...,
-        columns: list[Any] = ...,
-        displaycolumns: list[Any] = ...,
+        columns: list[Any] | tuple[Any, ...] = ...,
+        displaycolumns: list[Any] | tuple[Any, ...] = ...,
         show: str = ...,
         selectmode: str = ...,
         height: int = ...,
@@ -1897,7 +1913,7 @@ class Treeview(BootMixin, _ttkTreeview):
         xscrollcommand: Callable[..., Any] = ...,
         yscrollcommand: Callable[..., Any] = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
         # Accepted spellings outside the documented surface.
         class_: str = ...,
         name: str = ...,
@@ -1925,8 +1941,8 @@ class Treeview(BootMixin, _ttkTreeview):
         cnf: Any = ...,
         *,
         bootstyle: str = ...,
-        columns: list[Any] = ...,
-        displaycolumns: list[Any] = ...,
+        columns: list[Any] | tuple[Any, ...] = ...,
+        displaycolumns: list[Any] | tuple[Any, ...] = ...,
         show: str = ...,
         selectmode: str = ...,
         height: int = ...,
@@ -1934,7 +1950,8 @@ class Treeview(BootMixin, _ttkTreeview):
         xscrollcommand: Callable[..., Any] = ...,
         yscrollcommand: Callable[..., Any] = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
+        class_: str = ...,
         style: str = ...,
     ) -> Any: ...
     config = configure
@@ -1948,23 +1965,12 @@ class OptionMenu(BootMixin, _ttkOptionMenu):
         default: str | None = ...,
         *values: str,
         bootstyle: str = ...,
+        command: Callable[..., Any] = ...,
         icon: str = ...,
         icon_size: int = ...,
         icon_only: bool = ...,
-        text: str = ...,
-        textvariable: Variable = ...,
-        menu: Menu = ...,
         direction: str = ...,
-        image: PhotoImage = ...,
-        compound: str = ...,
-        underline: int = ...,
-        width: int = ...,
-        padding: int | tuple[Any, ...] = ...,
-        state: str = ...,
-        cursor: str = ...,
-        takefocus: bool = ...,
         # Accepted spellings outside the documented surface.
-        class_: str = ...,
         name: str = ...,
         style: str = ...,
     ) -> None:
@@ -1976,21 +1982,11 @@ class OptionMenu(BootMixin, _ttkOptionMenu):
             default: The value to show before a choice is made.
             *values: The choices offered in the dropdown.
             bootstyle: Constructor keyword. An accent color, optionally with a variant. See Styling options for the available styles.
+            command: Constructor only. A callback invoked with the chosen value after an item is selected.
             icon: Constructor keyword. A Bootstrap Icons glyph name (e.g. "gear-fill") shown on the widget; theme-aware — it follows the foreground color and states. See the Icons guide.
             icon_size: Constructor keyword. The glyph size in pixels (scaled for high-DPI).
             icon_only: Constructor keyword. Show only the glyph (hide the text) and pad the widget into a square. Default False.
-            text: The label shown on the button.
-            textvariable: A StringVar whose value is shown as the label and tracked live.
-            menu: The Menu widget shown when the button is pressed.
             direction: Where the menu pops up relative to the button: "above", "below", "left", "right", or "flush".
-            image: An image to display in place of, or beside, the text.
-            compound: How text and image are combined: "none", "left", "right", "top", "bottom", or "center".
-            underline: The character index to underline (for a keyboard mnemonic), or -1.
-            width: The requested width in characters (negative sets a minimum).
-            padding: Extra space around the label, in pixels (a single value, or per-side).
-            state: "normal" or "disabled". For finer control use the state method (see Capabilities).
-            cursor: The mouse cursor over the menubutton (see Cursors).
-            takefocus: Whether the menubutton accepts keyboard focus during traversal.
         """
 
     def configure(
@@ -2005,14 +2001,15 @@ class OptionMenu(BootMixin, _ttkOptionMenu):
         textvariable: Variable = ...,
         menu: Menu = ...,
         direction: str = ...,
-        image: PhotoImage = ...,
+        image: str | PhotoImage | BitmapImage | PilImage = ...,
         compound: str = ...,
         underline: int = ...,
         width: int = ...,
         padding: int | tuple[Any, ...] = ...,
         state: str = ...,
         cursor: str = ...,
-        takefocus: bool = ...,
+        takefocus: bool | str = ...,
+        class_: str = ...,
         style: str = ...,
     ) -> Any: ...
     config = configure

@@ -83,8 +83,18 @@ class _LanguageServer:
             message = self._read()
             if message is None:
                 return None
-            if message.get("id") == message_id and "result" in message:
-                return message["result"]
+            if message.get("id") != message_id:
+                continue  # a notification or another request's reply
+            # Break on the id, not on `"result"`: an LSP *error* reply carries no
+            # result, and waiting for one blocks on the pipe until the server
+            # happens to write again -- a failed `initialize` (a bad pythonPath,
+            # say) would hang this gate instead of failing it.
+            if "error" in message:
+                raise SystemExit(
+                    f"the language server rejected {method}: "
+                    f"{message['error'].get('message', message['error'])}"
+                )
+            return message.get("result")
 
     def notify(self, method: str, params: dict) -> None:
         self._send(method, params, notify=True)

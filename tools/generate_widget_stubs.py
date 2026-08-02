@@ -55,26 +55,59 @@ _STUB = _SRC / "ttkbootstrap" / "__init__.pyi"
 # The type strings the reference tables use, mapped to annotations. Closed on
 # purpose: an unrecognized type is an error, not a silent `Any`, so a new
 # spelling in the docs has to be considered here first.
+#
+# The unions are deliberately wider than the docs' shorthand, because Tk accepts
+# more than one spelling of most values and a stub that rejects working code is
+# worse than one that misses a wrong value. Each was probed:
+#
+# - a font is a tuple as often as a string -- `font=("Helvetica", 12)` is the
+#   idiom the typography guide teaches;
+# - `values=`/`columns=` take a tuple as readily as a list, and the library's
+#   own screenshot scenes pass tuples;
+# - an image can be a tkinter image, a Pillow `ImageTk.PhotoImage` (Pillow is
+#   ttkbootstrap's one runtime dependency), or a Tk image *name* like
+#   `"::tk::icons::warning"`.
+_IMAGE = "str | PhotoImage | BitmapImage | PilImage"
 _TYPES = {
     "str": "str",
     "int": "int",
     "bool": "bool",
     "float": "float",
-    "list": "list[Any]",
+    "list": "list[Any] | tuple[Any, ...]",
     "tuple": "tuple[Any, ...]",
     "any": "Any",
     "callable": "Callable[..., Any]",
     "Variable": "Variable",
-    "PhotoImage": "PhotoImage",
+    "PhotoImage": _IMAGE,
     "Menu": "Menu",
     "Widget": "Misc",
     "int | tuple": "int | tuple[Any, ...]",
     "int | float": "int | float",
     "int | str": "int | str",
     "str | tuple": "str | tuple[Any, ...]",
-    "str | Font": "str | Font",
+    "str | Font": "str | Font | tuple[Any, ...]",
     "datetime | date": "datetime | date",
     "datetime | date | None": "datetime | date | None",
+}
+
+# Per-option overrides where the page's type is a simplification. `takefocus`
+# is documented `bool`, but Tk's domain is "" / 0 / 1 / a script name -- and ""
+# is both the default and what `cget` returns, so `takefocus=""` is working code
+# a plain `bool` would reject.
+_OPTION_ANNOTATIONS = {
+    "takefocus": "bool | str",
+}
+
+# Widgets whose constructor filters keywords instead of forwarding them to Tcl,
+# so the reference page's option list overstates what it accepts. `configure`
+# still takes the full set -- only construction is narrower.
+#
+# `ttk.OptionMenu.__init__` pops exactly these four and then
+# `raise TclError('unknown option -%s')` for anything left, so the page's
+# menubutton options (`text`, `width`, `padding`, `textvariable`, ...) crash at
+# construction. Probed, and visible in tkinter's own source.
+_CONSTRUCTOR_KEYWORDS = {
+    "OptionMenu": {"style", "direction", "name", "command"},
 }
 
 class _Option(NamedTuple):
@@ -109,12 +142,15 @@ _MIXIN_KEYWORDS = {"bootstyle", "icon", "icon_size", "icon_only", "autostyle"}
 # are *not* here: the reference documents them inline on the option they
 # abbreviate, so they are parsed rather than listed.)
 #
-# `name`/`class_` are constructor-only, handled by tkinter's `BaseWidget._setup`
-# for every widget. `style` is the raw ttk escape hatch that `bootstyle` fronts.
+# `name` is constructor-only and universal. `style` is the raw ttk escape hatch
+# that `bootstyle` fronts, and `class_` a real Tcl option on ttk widgets -- on
+# classic tk widgets only Frame/Toplevel extract it, and the reference pages that
+# document `class` are exactly those, so it is not added for the rest (probed:
+# `Text(class_=...)` raises `unknown option "-class"`).
 # `background` is the entry-family compat option, a verified-deliberate
 # exclusion in the #1244 reference audit.
-_CONSTRUCTOR_ONLY = {"name": "str", "class_": "str"}
-_TTK_EXTRAS = {"style": "str"}
+_CONSTRUCTOR_ONLY = {"name": "str"}
+_TTK_EXTRAS = {"style": "str", "class_": "str"}
 _ENTRY_FAMILY_COMPAT = {"background": "str"}
 
 
@@ -213,8 +249,12 @@ subclasses in `__init__.py`, whose shared mixin constructor is generic.
 from __future__ import annotations
 
 from datetime import date, datetime
-from tkinter import Misc, Variable, PhotoImage
+from tkinter import BitmapImage, Misc, PhotoImage, Variable
 from tkinter.font import Font
+
+# Pillow is ttkbootstrap's one runtime dependency, so its image type is always
+# importable and an `image=` option legitimately accepts it.
+from PIL.ImageTk import PhotoImage as PilImage
 from typing import Any, Callable
 
 from ttkbootstrap.style import AutoStyleMixin as AutoStyleMixin, BootMixin as BootMixin
@@ -303,8 +343,12 @@ def _options(page: str) -> list[tuple[str, str, str]]:
     if not path.exists():
         return []
     body = path.read_text(encoding="utf-8")
+    # `\Z` matters: without it a page whose Options table is the *last* section
+    # parses as zero options, and the stub would then declare that widget with no
+    # keywords at all -- every one of them a type error, and nothing would fail,
+    # since the sync test compares against the same empty output.
     section = re.search(
-        r"^Options\n-+\n(.*?)(?=\n[A-Za-z][^\n]*\n-{3,}\n)", body, re.S | re.M
+        r"^Options\n-+\n(.*?)(?=\n[A-Za-z][^\n]*\n-{3,}\n|\Z)", body, re.S | re.M
     )
     if not section:
         return []
@@ -330,9 +374,10 @@ def _options(page: str) -> list[tuple[str, str, str]]:
                 f"{Path(__file__).name} (and pick the annotation deliberately)."
             )
         aliases = re.findall(r"``([a-z_0-9]+)``", trailer)
+        parameter = _parameter(name)
         parsed.append(
-            _Option(_parameter(name), annotation, _flatten(description),
-                    tuple(_parameter(a) for a in aliases))
+            _Option(parameter, _OPTION_ANNOTATIONS.get(parameter, annotation),
+                    _flatten(description), tuple(_parameter(a) for a in aliases))
         )
     return parsed
 
@@ -367,8 +412,39 @@ def stub_targets():
             c for c in obj.__mro__
             if c.__module__ in ("tkinter", "tkinter.ttk") and c is not object
         )
-        targets[name] = (mixin, base, obj.__doc__ or "")
+        targets[name] = _Target(mixin, base, obj.__doc__ or "", obj.__module__)
     return targets, aliases
+
+
+class _Target(NamedTuple):
+    """A widget class the stub re-declares."""
+
+    mixin: str
+    base: type
+    """The tk/ttk class -- where the positional parameters come from."""
+    runtime_docstring: str
+    module: str
+    """Where the class is actually defined."""
+
+    @property
+    def bases(self) -> str:
+        """The base list to declare the stubbed class with.
+
+        A class defined in `__init__.py` has no other source, so the stub
+        rebuilds it from the mixin and the tk/ttk class. A class defined
+        *elsewhere* has real members of its own that would be erased by that:
+        `ttkbootstrap.menu.Menu` carries the five macOS application-menu methods
+        (#1174), and re-declaring it as `(AutoStyleMixin, tkinter.Menu)` makes
+        them unreachable to a type checker. Subclassing the real class keeps
+        them and still lets the stub state the constructor.
+        """
+        if self.module == "ttkbootstrap":
+            return f"{self.mixin}, {_base_alias(self.base)}"
+        return f"_{self.module.rsplit('.', 1)[-1].capitalize()}{self.base.__name__}"
+
+
+def _base_alias(base: type) -> str:
+    return f"_{base.__module__.split('.')[-1]}{base.__name__}"
 
 
 def _signature(name: str, options, base, summary: str) -> list[str]:
@@ -379,7 +455,7 @@ def _signature(name: str, options, base, summary: str) -> list[str]:
     cannot disagree.
     """
     positional = _positional(base)
-    documented = _constructor_options(base, options)
+    documented = _constructor_options(name, base, options)
 
     lines = ["    def __init__(", "        self,"]
     described = []
@@ -406,6 +482,9 @@ def _signature(name: str, options, base, summary: str) -> list[str]:
     extras, _ = _accepted(name, base, _spellings(documented))
     if not _accepts_options(base):
         extras = {}
+    allowed = _CONSTRUCTOR_KEYWORDS.get(name)
+    if allowed is not None:
+        extras = {k: v for k, v in extras.items() if k in allowed}
     if extras:
         lines.append("        # Accepted spellings outside the documented surface.")
         for option, annotation in sorted(extras.items()):
@@ -440,11 +519,14 @@ def _accepts_options(base) -> bool:
     )
 
 
-def _constructor_options(base, options):
+def _constructor_options(name, base, options):
     """Return the documented options a constructor accepts as keywords."""
+    # The mixin pops its own keywords before delegating, so those always work.
+    allowed = _CONSTRUCTOR_KEYWORDS.get(name)
+    if allowed is not None:
+        return [o for o in options if o.name in allowed | _MIXIN_KEYWORDS]
     if _accepts_options(base):
         return options
-    # The mixin pops its own keywords before delegating, so those still work.
     return [o for o in options if o.name in _MIXIN_KEYWORDS]
 
 
@@ -528,23 +610,36 @@ def render() -> str:
     targets, aliases = stub_targets()
     lines = [_HEADER]
 
-    bases = sorted({(t[1].__module__, t[1].__name__) for t in targets.values()})
-    for module, base in bases:
-        lines.append(f"from {module} import {base} as _{module.split('.')[-1]}{base}")
+    imports = set()
+    for name, target in targets.items():
+        if target.module == "ttkbootstrap":
+            imports.add((target.base.__module__, target.base.__name__,
+                         _base_alias(target.base)))
+        else:
+            # Subclass the real implementation, so its own members survive.
+            imports.add((target.module, name, target.bases))
+    for module, symbol, alias in sorted(imports):
+        lines.append(f"from {module} import {symbol} as {alias}")
     lines.append("")
     lines += _reexports(set(targets) | set(aliases))
     lines.append("")
 
-    for name, (mixin, base, runtime_docstring) in targets.items():
+    for name, target in targets.items():
         page = name.lower()
         options = _options(page)
-        summary = _summary(page, runtime_docstring)
-        alias = f"_{base.__module__.split('.')[-1]}{base.__name__}"
+        if not options and (_API_DOCS / f"{page}.rst").exists():
+            raise SystemExit(
+                f"{page}.rst exists but no options were parsed from it, so {name} "
+                "would be stubbed with no keywords at all -- every one of them a "
+                "type error. Check that its Options table is a name/type/"
+                "description list-table."
+            )
+        summary = _summary(page, target.runtime_docstring)
         lines.append("")
-        lines.append(f"class {name}({mixin}, {alias}):")
+        lines.append(f"class {name}({target.bases}):")
         lines += _docstring(summary)
-        lines += _signature(name, options, base, summary)
-        lines += _configure(options, base, name)
+        lines += _signature(name, options, target.base, summary)
+        lines += _configure(options, target.base, name)
 
     for alias, target in aliases.items():
         lines += ["", f"{alias} = {target}"]

@@ -22,6 +22,7 @@ import inspect
 import pathlib
 import re
 import subprocess
+import tkinter
 import sys
 
 import pytest
@@ -126,7 +127,7 @@ def test_class_summaries_come_from_the_reference_pages(generator):
     boilerplate = []
     for name in _stubbed_classes():
         found = re.search(
-            rf'^class {name}\((?:Boot|AutoStyle)Mixin, [^)]+\):\n    """(.*?)"""',
+            rf'^class {name}\([^)]+\):\n    """(.*?)"""',
             stub, re.M | re.S,
         )
         page_summary = generator._summary(name.lower(), "")
@@ -160,9 +161,15 @@ def test_required_constructor_parameters_have_no_default():
 
 
 def _stubbed_classes():
-    """The widget classes the committed stub declares."""
+    """The widget classes the committed stub declares.
+
+    Every top-level class in the stub is one: most are declared
+    `(BootMixin, ttk.X)`, but a class defined outside `__init__.py` subclasses
+    its real implementation instead (`class Menu(_MenuMenu)`) so its own members
+    survive, so matching on the mixin would miss those.
+    """
     stub = _STUB.read_text(encoding="utf-8")
-    return re.findall(r"^class (\w+)\((?:Boot|AutoStyle)Mixin, ", stub, re.M)
+    return re.findall(r"^class (\w+)\(", stub, re.M)
 
 
 def test_every_generic_widget_is_stubbed():
@@ -190,6 +197,67 @@ def _is_generic(cls):
     """Whether a class's own `__init__` takes nothing but `*args, **kwargs`."""
     parameters = list(inspect.signature(cls.__init__).parameters.values())[1:]
     return all(p.kind in (p.VAR_POSITIONAL, p.VAR_KEYWORD) for p in parameters)
+
+
+_SAMPLE_VALUES = {
+    "str": "", "int": 1, "bool": True, "float": 1.0, "Any": "",
+    "list[Any] | tuple[Any, ...]": (), "tuple[Any, ...]": (),
+    "int | tuple[Any, ...]": 1, "int | float": 1, "int | str": 1,
+    "str | tuple[Any, ...]": "", "str | Font | tuple[Any, ...]": "TkDefaultFont",
+    "bool | str": True, "Callable[..., Any]": (lambda *a: None),
+    "Misc": None, "Menu": None,
+}
+
+
+@pytest.mark.parametrize("name", _stubbed_classes())
+def test_stub_advertises_no_constructor_keyword_that_raises(name, root, generator):
+    """Every keyword the stub offers must actually work at construction.
+
+    The reference tables describe a widget's *options*, which is not the same as
+    what its constructor forwards. `ttk.OptionMenu` pops four keywords and
+    raises `TclError: unknown option` for the rest, so its page's menubutton
+    options type-checked and then crashed. This audits the direction the
+    completeness test cannot see: a stub more permissive than the library.
+    """
+    if name == "Tk":
+        pytest.skip("a second root would mis-bind the Style singleton")
+    stub = _STUB.read_text(encoding="utf-8")
+    signature = re.search(
+        rf"^class {name}\(.*?\n    def __init__\((.*?)\n    \) -> None:",
+        stub, re.S | re.M,
+    ).group(1)
+
+    cls = getattr(ttk, name)
+    offered = re.findall(r"^        ([a-z_0-9]+): ([^=\n]+?)(?: = \.\.\.)?,$",
+                         signature, re.M)
+    rejected = []
+    for keyword, annotation in offered:
+        if keyword in ("self", "master", "variable", "default"):
+            continue
+        if annotation.strip() not in _SAMPLE_VALUES:
+            continue  # no safe sample value; the type audit covers the rest
+        value = _SAMPLE_VALUES[annotation.strip()]
+        if value is None:
+            continue
+        try:
+            _build(cls, name, root, **{keyword: value})
+        except tkinter.TclError as error:
+            if "unknown option" in str(error):
+                rejected.append(f"{keyword} ({error})")
+        except Exception:
+            pass  # a value-domain complaint means the keyword itself was taken
+    assert not rejected, (
+        f"{name}: the stub offers constructor keywords the widget rejects - code "
+        f"that type-checks would raise: {rejected}. Add an entry to "
+        f"_CONSTRUCTOR_KEYWORDS in tools/generate_widget_stubs.py, then "
+        f"{_REGENERATE}."
+    )
+
+
+def _build(cls, name, root, **kwargs):
+    if name == "OptionMenu":
+        return cls(root, ttk.StringVar(), "a", **kwargs)
+    return cls(root, **kwargs)
 
 
 @pytest.mark.parametrize("name", _stubbed_classes())

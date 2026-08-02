@@ -59,10 +59,21 @@ test keeps the two from drifting apart.
 
 **What it accepts.** The documented options, plus the spellings that work
 without being part of the documented surface: Tk's `bd`/`bg`/`fg`
-abbreviations, `name`/`class_`, ttk's raw `style=`, and the entry family's
-`background`. Options a widget only accepts at construction — `autostyle`,
-`class_`, and the root window's `screen`/`container`/`visual`/`colormap` — are
-absent from `configure()`, matching what Tk does at runtime.
+abbreviations, `name`, ttk's raw `style=`/`class_=`, and the entry family's
+`background`. Value types are deliberately wide, because Tk takes more than one
+spelling of most of them and a stub that rejects working code is worse than one
+that misses a wrong value — `font=("Helvetica", 12)` as well as a string or a
+`Font`, `values=`/`columns=` as a tuple or a list, and `image=` as a tkinter
+image, a Pillow `ImageTk.PhotoImage`, or a Tk image name.
+
+Where the constructor and `configure()` differ, the stub follows what actually
+works. Options a widget only accepts at construction — `autostyle`, and the root
+window's `screen`/`container`/`visual`/`colormap` — are absent from
+`configure()`. `OptionMenu` is the reverse and the sharpest case: its
+constructor takes only `command`, `direction`, `style` and `name` and raises
+`TclError: unknown option` for the rest, so the menubutton options it inherits
+are offered on `configure()` only. Its reference page now documents `command`,
+which was missing, and no longer claims every option works in both places.
 
 **Note for the reporter's case:** nothing about `import ttkbootstrap as tb` and
 `tb.Frame(self)` was ever wrong; the parameters were simply no longer visible.
