@@ -805,26 +805,32 @@ DONE.** Optional post-release polish only from here.
 
 ## Direction: 2.1 milestone (post-release)
 
-> **STATUS (2026-07-30): ttkbootstrap 2.1.0 is RELEASED.** Tagged `v2.1.0`
-> (annotated), [GitHub release](https://github.com/israel-dryer/ttkbootstrap/releases/tag/v2.1.0)
-> live, published to PyPI (https://pypi.org/project/ttkbootstrap/2.1.0/), verified
-> by a clean-environment install. `master` reads **2.1.0** and, per the standing
-> convention, **`master` is always the most recent release**. The 2.1 milestone
-> closed with **48 items, 0 open**. Everything below is the record of how 2.1 was
-> built — background, not an active worklist.
+> **STATUS (2026-08-02): ttkbootstrap 2.1.1 is RELEASED** — a typing/docs-only
+> patch, cut from `master` per the runbook. Tagged `v2.1.1` (annotated, on
+> `4fb79e59`), [GitHub release](https://github.com/israel-dryer/ttkbootstrap/releases/tag/v2.1.1)
+> live, on PyPI (https://pypi.org/project/ttkbootstrap/2.1.1/), verified by a
+> clean-environment install. `master` reads **2.1.1** and, per the standing
+> convention, **`master` is always the most recent release**. 2.1.0 shipped
+> 2026-07-30 and its milestone closed with 48 items; everything below is the
+> record of how 2.1 was built — background, not an active worklist.
 >
-> **Two open milestones, both with one issue.** **`2.1.x`** (created 2026-07-30 as
-> the post-2.1 maintenance bucket) holds **#1322** — four asset-geometry tests fail
-> on a non-baseline-density display, test-only, contributor-facing. **`3.0`** holds
-> **#1276** (make `DateEntry` `value=None` the default). There is **no `2.2`
-> milestone yet**; create one when feature work is actually scoped rather than
-> in advance.
+> **Two open milestones, both with one issue.** **`2.1.x`** (the post-2.1
+> maintenance bucket) still holds **#1322** — four asset-geometry tests fail on a
+> non-baseline-density display, test-only, contributor-facing; it did **not** ship
+> in 2.1.1, so the milestone is still open. **`3.0`** holds **#1276** (make
+> `DateEntry` `value=None` the default). There is **no `2.2` milestone yet**;
+> create one when feature work is actually scoped rather than in advance.
+>
+> **OPEN FOLLOW-UP:** discussion **#1326** (the 2.1.1 bug report) has not been told
+> the fix shipped. A drafted reply is ready — deferred to a later session by the
+> author.
 >
 > **The next user-visible change starts a new log.** `development/2_1_changes.md`
-> is now frozen history. Create `development/2_2_changes.md` (or `2_1_1_` for a
-> patch) when the first such change lands, with scope **relative to 2.1.0**, and
-> log there as you land — not at release time. Patches have not historically got
-> their own log: 2.0.1's two Tk 9 fixes were recorded only in this file.
+> and `development/2_1_1_changes.md` are both frozen history now. Create
+> `development/2_2_changes.md` (or `2_1_2_` for another patch) when the first such
+> change lands, with scope **relative to 2.1.1**, and log there as you land — not
+> at release time. 2.1.1 was the first patch to get its own log; 2.0.1's two Tk 9
+> fixes were recorded only in this file.
 >
 > New work targets `master`. **Labels carry no version** — the author dropped the
 > `Version 1/2/3` labels because the milestone already conveys the target release;
@@ -1546,6 +1552,81 @@ s> on multi-head X11. #1311 has since **MERGED** (`c882c3db`).
 > merged branches deleted), the stranded #1315 window fix it uncovered, the
 > `AGENTS.md` deletion, CI (#1317/#1319), the badge and change-log review (#1318),
 > the milestone backfill, and #1322 filed.
+>
+> **Session 2026-08-02 (Windows box) — 2.1.1 SHIPPED: the widget type stubs are
+> back.** Started from discussion **#1326** — "updated to 2.1.0, hover
+> documentation is gone" — filed as **#1327** and fixed in **#1328**, with the
+> version bump as **#1329**. Suite **992 passed, 5 skipped**; CI green on all four
+> jobs.
+>
+> **The bug, and why nobody had reported it.** 1.x shipped a hand-written
+> `__init__.pyi` spelling out every widget's keywords. 2.0 PR 3 (`66dfa45a`)
+> deleted it when the monkey-patch became real subclasses, expecting inheritance
+> to carry the signatures. It doesn't: **`BootMixin` precedes the ttk class in the
+> MRO and its constructor is `(*args, **kwargs)`**, so that is what an editor
+> resolves, leaving the one-line class docstring as the whole tooltip. The quieter
+> half is worse — `py.typed` kept shipping, so mypy and pyright read the same
+> `**kwargs` and **stopped checking widget keywords entirely**. That failed *open*,
+> which is why it sat unreported through 2.0 and 2.1.
+>
+> **The fix is generated, not hand-maintained** (`tools/generate_widget_stubs.py`,
+> regen instructions under *Dev environment & commands*). Which classes need
+> stubbing is **discovered** — an exported mixin subclass whose ctor is generic —
+> and each one's options *and description* come from the authored reference pages
+> under `docs/reference/api/`, so the tooltip and the documentation cannot drift.
+> A measured fact made a strict stub possible: **the reference tables already cover
+> the live Tk option set**, the only gaps being `bd`/`bg`/`fg` (documented inline
+> as ``background`` (``bg``) — parse them, don't hardcode a list), the entry-family
+> `background`, and Tcl's `from`. So the stub declares **no `**kwargs`** and a typo
+> is an error again.
+>
+> **THE LESSON WORTH KEEPING: type-checking cannot see a bad tooltip.** The first
+> version type-checked perfectly under both mypy and pyright and still showed the
+> *wrong* hover — the `Args:` docstring sat on the **class**, so editors read
+> `__init__`, found nothing, and fell back to `BootMixin.__init__`'s "*args /
+> **kwargs" text, i.e. the original bug in disguise. Only an actual hover request
+> caught it. Hence **`tools/verify_hover.py`**: drives **pyright over LSP**
+> (`textDocument/hover` — what VS Code/Pylance renders) plus **jedi**, and was
+> proven to fail against that defect by reverting the fix. **PyCharm cannot be
+> scripted** — the author checked it by hand and confirmed it good.
+>
+> **A `/code-review` then found six real defects the self-review missed**, every
+> one reproduced by probe before acting. Two were the stub being *wrong*, not
+> merely narrow: **`Menu` was re-declared `(AutoStyleMixin, tkinter.Menu)`**, which
+> discarded `ttkbootstrap.menu.Menu` and its five macOS application-menu methods
+> (#1174) — a public API vanishing from editors, the very failure the PR existed to
+> fix; and **`ttk.OptionMenu.__init__` pops only `style`/`direction`/`name`/
+> `command` then raises `TclError: unknown option`**, so the menubutton options on
+> its page type-checked and then crashed. The rest were false positives on working
+> code — `font=("Helvetica", 12)`, tuple `values=`/`columns=`, Pillow's
+> `ImageTk.PhotoImage`, a Tk image *name*, `takefocus=""`, and `class_` on classic
+> tk widgets (only Frame/Toplevel extract it). **Standing rules from that:** a
+> class defined outside `__init__.py` must subclass its **real implementation**, not
+> be rebuilt from the mixin; and value annotations stay **wider than the docs'
+> shorthand**, because rejecting working code is worse than missing a wrong value.
+> My own sweep had missed the false positives because it counted only `call-arg`
+> and never `arg-type`.
+>
+> **Three test-design facts.** The sync test **regenerates in a subprocess** —
+> `enable_global_api()`, which another test enables, wraps `__init__` on the
+> tkinter classes, so an in-process run reads the wrapper and the test passes alone
+> but fails in the full suite. The completeness audit compares against
+> `configure()` keys and therefore **structurally cannot see a filtering
+> constructor**, which is how OptionMenu got through; a second test now builds each
+> widget with every keyword the stub offers. And the Options regex needs `\Z`, or a
+> page ending in its table parses as **zero options** and silently stubs that widget
+> with no keywords — nothing would fail, since the sync test compares against the
+> same empty output.
+>
+> **Release mechanics.** `dist/` again held the previous release's artifacts, as
+> #1324 warns. The **PyPI JSON API had 2.1.1 immediately while the simple index pip
+> reads had zero entries** — the 2.1.0 trap, so `--no-cache-dir` on the verify
+> earned its place again. Published sizes were byte-identical to the local build.
+> Author feedback on the notes, now in memory: **unwrapped is not unstructured** —
+> the first draft was correctly unwrapped and rejected as a wall of prose; release
+> notes need real section headings and bullet lists, and folding the *wrapped*
+> `2_1_1_changes.md` into them means **rewriting each paragraph as one long line**,
+> never pasting it through.
 
 Order (dependency- and design-gate-driven), with status:
 
