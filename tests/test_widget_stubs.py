@@ -115,6 +115,29 @@ def test_constructor_docstrings_live_on_init_not_only_the_class():
     )
 
 
+def test_class_summaries_come_from_the_reference_pages(generator):
+    """A tooltip must say what the widget *is*, not just that it is themed.
+
+    The runtime class docstrings are one-line stubs ("ttk Frame with
+    ttkbootstrap theming (accepts `bootstyle=`)"), which is what a hover showed
+    before the summary was taken from each reference page's opening prose.
+    """
+    stub = _STUB.read_text(encoding="utf-8")
+    boilerplate = []
+    for name in _stubbed_classes():
+        summary = re.search(
+            rf'^class {name}\((?:Boot|AutoStyle)Mixin, [^)]+\):\n    """(.*?)"""',
+            stub, re.M | re.S,
+        ).group(1)
+        page_summary = generator._summary(name.lower(), "")
+        if not page_summary or " ".join(summary.split()) != page_summary:
+            boilerplate.append(name)
+    assert not boilerplate, (
+        "these stubbed widgets show a placeholder summary instead of their "
+        f"reference page's description: {boilerplate}; {_REGENERATE}"
+    )
+
+
 def test_required_constructor_parameters_have_no_default():
     """`OptionMenu(master, variable)` needs both; the stub must say so.
 

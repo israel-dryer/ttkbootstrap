@@ -141,7 +141,7 @@ from ttkbootstrap.window import App as App, Toplevel as Toplevel, Window as Wind
 
 
 class Tk(AutoStyleMixin, _tkinterTk):
-    """tk root window with ttkbootstrap theming (accepts `autostyle=`)."""
+    """Tk is tkinter's classic root window (tk.Tk), themed by ttkbootstrap and re-exported as ttk.Tk. It is the main window of an application and the top of the widget tree; creating it also starts the Tcl/Tk interpreter."""
     def __init__(
         self,
         screenName: str | None = ...,
@@ -153,7 +153,7 @@ class Tk(AutoStyleMixin, _tkinterTk):
         *,
         autostyle: bool = ...,
     ) -> None:
-        """tk root window with ttkbootstrap theming (accepts `autostyle=`).
+        """Tk is tkinter's classic root window (tk.Tk), themed by ttkbootstrap and re-exported as ttk.Tk. It is the main window of an application and the top of the widget tree; creating it also starts the Tcl/Tk interpreter.
 
         Args:
             screenName: The X display to open the window on.
@@ -188,7 +188,7 @@ class Tk(AutoStyleMixin, _tkinterTk):
     config = configure
 
 class Menu(AutoStyleMixin, _tkinterMenu):
-    """A ``tk.Menu`` with ttkbootstrap theming (accepts ``autostyle=``). Beyond the standard ``add_command``/``add_cascade``/``add_checkbutton``/… menu API, this adds helpers for the macOS application-menu structure. On Windows and Linux — which have no application menu — the ``add_*_menu`` helpers and the ``on_*`` hooks are no-ops (returning ``None`` where a menu would be created), so the same code builds a native menu bar everywhere."""
+    """Menu is tkinter's menu widget (tk.Menu), themed by ttkbootstrap and re-exported as ttk.Menu. It backs menu bars, cascading submenus, and right-click context menus; ttkbootstrap adds helpers for the native macOS application menu. Entries are addressed by integer index (0-based) or the special index "end" / "active" / "last"."""
     def __init__(
         self,
         master: Misc | None = ...,
@@ -218,7 +218,7 @@ class Menu(AutoStyleMixin, _tkinterMenu):
         class_: str = ...,
         name: str = ...,
     ) -> None:
-        """A ``tk.Menu`` with ttkbootstrap theming (accepts ``autostyle=``). Beyond the standard ``add_command``/``add_cascade``/``add_checkbutton``/… menu API, this adds helpers for the macOS application-menu structure. On Windows and Linux — which have no application menu — the ``add_*_menu`` helpers and the ``on_*`` hooks are no-ops (returning ``None`` where a menu would be created), so the same code builds a native menu bar everywhere.
+        """Menu is tkinter's menu widget (tk.Menu), themed by ttkbootstrap and re-exported as ttk.Menu. It backs menu bars, cascading submenus, and right-click context menus; ttkbootstrap adds helpers for the native macOS application menu. Entries are addressed by integer index (0-based) or the special index "end" / "active" / "last".
 
         Args:
             master: The parent widget.
@@ -270,7 +270,7 @@ class Menu(AutoStyleMixin, _tkinterMenu):
     config = configure
 
 class Text(AutoStyleMixin, _tkinterText):
-    """tk Text with ttkbootstrap theming (accepts `autostyle=`)."""
+    """Text is tkinter's multi-line text widget (tk.Text), themed by ttkbootstrap."""
     def __init__(
         self,
         master: Misc | None = ...,
@@ -324,7 +324,7 @@ class Text(AutoStyleMixin, _tkinterText):
         class_: str = ...,
         name: str = ...,
     ) -> None:
-        """tk Text with ttkbootstrap theming (accepts `autostyle=`).
+        """Text is tkinter's multi-line text widget (tk.Text), themed by ttkbootstrap.
 
         Args:
             master: The parent widget.
@@ -424,7 +424,7 @@ class Text(AutoStyleMixin, _tkinterText):
     config = configure
 
 class Canvas(AutoStyleMixin, _tkinterCanvas):
-    """tk Canvas with ttkbootstrap theming (accepts `autostyle=`)."""
+    """Canvas is tkinter's drawing surface (tk.Canvas) — a 2-D area that holds items (lines, shapes, text, images, embedded widgets) you create, move, restyle, and delete by id or tag. It is themed by ttkbootstrap."""
     def __init__(
         self,
         master: Misc | None = ...,
@@ -463,7 +463,7 @@ class Canvas(AutoStyleMixin, _tkinterCanvas):
         class_: str = ...,
         name: str = ...,
     ) -> None:
-        """tk Canvas with ttkbootstrap theming (accepts `autostyle=`).
+        """Canvas is tkinter's drawing surface (tk.Canvas) — a 2-D area that holds items (lines, shapes, text, images, embedded widgets) you create, move, restyle, and delete by id or tag. It is themed by ttkbootstrap.
 
         Args:
             master: The parent widget.
@@ -534,7 +534,7 @@ class Canvas(AutoStyleMixin, _tkinterCanvas):
     config = configure
 
 class Listbox(AutoStyleMixin, _tkinterListbox):
-    """tk Listbox with ttkbootstrap theming (accepts `autostyle=`)."""
+    """Listbox is tkinter's list of selectable text lines (tk.Listbox), themed by ttkbootstrap. Lines are addressed by integer index (0-based) or the special index "end" / "active"."""
     def __init__(
         self,
         master: Misc | None = ...,
@@ -572,7 +572,7 @@ class Listbox(AutoStyleMixin, _tkinterListbox):
         class_: str = ...,
         name: str = ...,
     ) -> None:
-        """tk Listbox with ttkbootstrap theming (accepts `autostyle=`).
+        """Listbox is tkinter's list of selectable text lines (tk.Listbox), themed by ttkbootstrap. Lines are addressed by integer index (0-based) or the special index "end" / "active".
 
         Args:
             master: The parent widget.
@@ -640,7 +640,7 @@ class Listbox(AutoStyleMixin, _tkinterListbox):
     config = configure
 
 class TkFrame(AutoStyleMixin, _tkinterFrame):
-    """tk Frame with ttkbootstrap theming (accepts `autostyle=`). Exported as ``TkFrame`` to avoid colliding with the ttk ``Frame`` above."""
+    """TkFrame is tkinter's classic tk.Frame container, themed by ttkbootstrap and re-exported as ttk.TkFrame. It is a plain rectangular surface used to group and lay out other widgets. Prefer the ttk Frame for themed layout; reach for TkFrame only when you need a classic-tk option the ttk frame doesn't expose (background, highlightthickness, per-widget relief/borderwidth, an off-screen container)."""
     def __init__(
         self,
         master: Misc | None = ...,
@@ -667,7 +667,7 @@ class TkFrame(AutoStyleMixin, _tkinterFrame):
         # Accepted spellings outside the documented surface.
         name: str = ...,
     ) -> None:
-        """tk Frame with ttkbootstrap theming (accepts `autostyle=`). Exported as ``TkFrame`` to avoid colliding with the ttk ``Frame`` above.
+        """TkFrame is tkinter's classic tk.Frame container, themed by ttkbootstrap and re-exported as ttk.TkFrame. It is a plain rectangular surface used to group and lay out other widgets. Prefer the ttk Frame for themed layout; reach for TkFrame only when you need a classic-tk option the ttk frame doesn't expose (background, highlightthickness, per-widget relief/borderwidth, an off-screen container).
 
         Args:
             master: The parent widget.
@@ -712,7 +712,7 @@ class TkFrame(AutoStyleMixin, _tkinterFrame):
     config = configure
 
 class TkLabel(AutoStyleMixin, _tkinterLabel):
-    """tk Label with ttkbootstrap theming (accepts `autostyle=`). Exported as ``TkLabel`` to avoid colliding with the ttk ``Label`` above. Use it (with ``autostyle=False``) for a label that must show explicit colors the theme should not repaint."""
+    """TkLabel is tkinter's classic tk.Label, themed by ttkbootstrap and re-exported as ttk.TkLabel. It displays a line or block of read-only text, an image, or both. Prefer the ttk Label for themed text; reach for TkLabel only when you need a classic-tk option the ttk label doesn't expose (a per-widget background/foreground, bitmap, activeforeground, disabledforeground)."""
     def __init__(
         self,
         master: Misc | None = ...,
@@ -752,7 +752,7 @@ class TkLabel(AutoStyleMixin, _tkinterLabel):
         class_: str = ...,
         name: str = ...,
     ) -> None:
-        """tk Label with ttkbootstrap theming (accepts `autostyle=`). Exported as ``TkLabel`` to avoid colliding with the ttk ``Label`` above. Use it (with ``autostyle=False``) for a label that must show explicit colors the theme should not repaint.
+        """TkLabel is tkinter's classic tk.Label, themed by ttkbootstrap and re-exported as ttk.TkLabel. It displays a line or block of read-only text, an image, or both. Prefer the ttk Label for themed text; reach for TkLabel only when you need a classic-tk option the ttk label doesn't expose (a per-widget background/foreground, bitmap, activeforeground, disabledforeground).
 
         Args:
             master: The parent widget.
@@ -824,7 +824,7 @@ class TkLabel(AutoStyleMixin, _tkinterLabel):
     config = configure
 
 class Button(BootMixin, _ttkButton):
-    """ttk Button with ttkbootstrap theming (accepts `bootstyle=`)."""
+    """Button is the native ttk push button (ttk.Button), themed by ttkbootstrap — a clickable trigger that runs its command when pressed."""
     def __init__(
         self,
         master: Misc | None = ...,
@@ -850,7 +850,7 @@ class Button(BootMixin, _ttkButton):
         name: str = ...,
         style: str = ...,
     ) -> None:
-        """ttk Button with ttkbootstrap theming (accepts `bootstyle=`).
+        """Button is the native ttk push button (ttk.Button), themed by ttkbootstrap — a clickable trigger that runs its command when pressed.
 
         Args:
             master: The parent widget.
@@ -897,7 +897,7 @@ class Button(BootMixin, _ttkButton):
     config = configure
 
 class Checkbutton(BootMixin, _ttkCheckbutton):
-    """ttk Checkbutton with ttkbootstrap theming (accepts `bootstyle=`)."""
+    """Checkbutton is the native ttk labeled on/off toggle (ttk.Checkbutton), themed by ttkbootstrap."""
     def __init__(
         self,
         master: Misc | None = ...,
@@ -925,7 +925,7 @@ class Checkbutton(BootMixin, _ttkCheckbutton):
         name: str = ...,
         style: str = ...,
     ) -> None:
-        """ttk Checkbutton with ttkbootstrap theming (accepts `bootstyle=`).
+        """Checkbutton is the native ttk labeled on/off toggle (ttk.Checkbutton), themed by ttkbootstrap.
 
         Args:
             master: The parent widget.
@@ -976,7 +976,7 @@ class Checkbutton(BootMixin, _ttkCheckbutton):
     config = configure
 
 class Combobox(BootMixin, _ttkCombobox):
-    """ttk Combobox with ttkbootstrap theming (accepts `bootstyle=`)."""
+    """Combobox is the native ttk drop-down list combined with an editable text field (ttk.Combobox), themed by ttkbootstrap."""
     def __init__(
         self,
         master: Misc | None = ...,
@@ -1005,7 +1005,7 @@ class Combobox(BootMixin, _ttkCombobox):
         name: str = ...,
         style: str = ...,
     ) -> None:
-        """ttk Combobox with ttkbootstrap theming (accepts `bootstyle=`).
+        """Combobox is the native ttk drop-down list combined with an editable text field (ttk.Combobox), themed by ttkbootstrap.
 
         Args:
             master: The parent widget.
@@ -1057,7 +1057,7 @@ class Combobox(BootMixin, _ttkCombobox):
     config = configure
 
 class Entry(BootMixin, _ttkEntry):
-    """ttk Entry with ttkbootstrap theming (accepts `bootstyle=`)."""
+    """Entry is the native ttk single-line text field (ttk.Entry), themed by ttkbootstrap."""
     def __init__(
         self,
         master: Misc | None = ...,
@@ -1083,7 +1083,7 @@ class Entry(BootMixin, _ttkEntry):
         name: str = ...,
         style: str = ...,
     ) -> None:
-        """ttk Entry with ttkbootstrap theming (accepts `bootstyle=`).
+        """Entry is the native ttk single-line text field (ttk.Entry), themed by ttkbootstrap.
 
         Args:
             master: The parent widget.
@@ -1129,7 +1129,7 @@ class Entry(BootMixin, _ttkEntry):
     config = configure
 
 class Frame(BootMixin, _ttkFrame):
-    """ttk Frame with ttkbootstrap theming (accepts `bootstyle=`)."""
+    """Frame is the native ttk rectangular container for grouping and laying out other widgets (ttk.Frame), themed by ttkbootstrap."""
     def __init__(
         self,
         master: Misc | None = ...,
@@ -1147,7 +1147,7 @@ class Frame(BootMixin, _ttkFrame):
         name: str = ...,
         style: str = ...,
     ) -> None:
-        """ttk Frame with ttkbootstrap theming (accepts `bootstyle=`).
+        """Frame is the native ttk rectangular container for grouping and laying out other widgets (ttk.Frame), themed by ttkbootstrap.
 
         Args:
             master: The parent widget.
@@ -1178,7 +1178,7 @@ class Frame(BootMixin, _ttkFrame):
     config = configure
 
 class Labelframe(BootMixin, _ttkLabelframe):
-    """ttk Labelframe with ttkbootstrap theming (accepts `bootstyle=`)."""
+    """Labelframe is the native ttk frame with a caption drawn into its border (ttk.Labelframe), themed by ttkbootstrap."""
     def __init__(
         self,
         master: Misc | None = ...,
@@ -1200,7 +1200,7 @@ class Labelframe(BootMixin, _ttkLabelframe):
         name: str = ...,
         style: str = ...,
     ) -> None:
-        """ttk Labelframe with ttkbootstrap theming (accepts `bootstyle=`).
+        """Labelframe is the native ttk frame with a caption drawn into its border (ttk.Labelframe), themed by ttkbootstrap.
 
         Args:
             master: The parent widget.
@@ -1239,7 +1239,7 @@ class Labelframe(BootMixin, _ttkLabelframe):
     config = configure
 
 class Label(BootMixin, _ttkLabel):
-    """ttk Label with ttkbootstrap theming (accepts `bootstyle=`)."""
+    """Label is the native ttk widget that displays a line or block of read-only text, an image, or both (ttk.Label), themed by ttkbootstrap."""
     def __init__(
         self,
         master: Misc | None = ...,
@@ -1271,7 +1271,7 @@ class Label(BootMixin, _ttkLabel):
         name: str = ...,
         style: str = ...,
     ) -> None:
-        """ttk Label with ttkbootstrap theming (accepts `bootstyle=`).
+        """Label is the native ttk widget that displays a line or block of read-only text, an image, or both (ttk.Label), themed by ttkbootstrap.
 
         Args:
             master: The parent widget.
@@ -1330,7 +1330,7 @@ class Label(BootMixin, _ttkLabel):
     config = configure
 
 class Menubutton(BootMixin, _ttkMenubutton):
-    """ttk Menubutton with ttkbootstrap theming (accepts `bootstyle=`)."""
+    """Menubutton is the native ttk button that pops up an attached menu (ttk.Menubutton), themed by ttkbootstrap."""
     def __init__(
         self,
         master: Misc | None = ...,
@@ -1356,7 +1356,7 @@ class Menubutton(BootMixin, _ttkMenubutton):
         name: str = ...,
         style: str = ...,
     ) -> None:
-        """ttk Menubutton with ttkbootstrap theming (accepts `bootstyle=`).
+        """Menubutton is the native ttk button that pops up an attached menu (ttk.Menubutton), themed by ttkbootstrap.
 
         Args:
             master: The parent widget.
@@ -1403,7 +1403,7 @@ class Menubutton(BootMixin, _ttkMenubutton):
     config = configure
 
 class Notebook(BootMixin, _ttkNotebook):
-    """ttk Notebook with ttkbootstrap theming (accepts `bootstyle=`)."""
+    """Notebook is the native ttk tabbed container that shows one child pane at a time (ttk.Notebook), themed by ttkbootstrap."""
     def __init__(
         self,
         master: Misc | None = ...,
@@ -1419,7 +1419,7 @@ class Notebook(BootMixin, _ttkNotebook):
         name: str = ...,
         style: str = ...,
     ) -> None:
-        """ttk Notebook with ttkbootstrap theming (accepts `bootstyle=`).
+        """Notebook is the native ttk tabbed container that shows one child pane at a time (ttk.Notebook), themed by ttkbootstrap.
 
         Args:
             master: The parent widget.
@@ -1446,7 +1446,7 @@ class Notebook(BootMixin, _ttkNotebook):
     config = configure
 
 class Panedwindow(BootMixin, _ttkPanedwindow):
-    """ttk Panedwindow with ttkbootstrap theming (accepts `bootstyle=`)."""
+    """Panedwindow is the native ttk container that divides its space between children with draggable sashes (ttk.Panedwindow), themed by ttkbootstrap."""
     def __init__(
         self,
         master: Misc | None = ...,
@@ -1462,7 +1462,7 @@ class Panedwindow(BootMixin, _ttkPanedwindow):
         name: str = ...,
         style: str = ...,
     ) -> None:
-        """ttk Panedwindow with ttkbootstrap theming (accepts `bootstyle=`).
+        """Panedwindow is the native ttk container that divides its space between children with draggable sashes (ttk.Panedwindow), themed by ttkbootstrap.
 
         Args:
             master: The parent widget.
@@ -1489,7 +1489,7 @@ class Panedwindow(BootMixin, _ttkPanedwindow):
     config = configure
 
 class Progressbar(BootMixin, _ttkProgressbar):
-    """ttk Progressbar with ttkbootstrap theming (accepts `bootstyle=`)."""
+    """Progressbar is the native ttk horizontal or vertical bar that shows progress (ttk.Progressbar), themed by ttkbootstrap."""
     def __init__(
         self,
         master: Misc | None = ...,
@@ -1509,7 +1509,7 @@ class Progressbar(BootMixin, _ttkProgressbar):
         name: str = ...,
         style: str = ...,
     ) -> None:
-        """ttk Progressbar with ttkbootstrap theming (accepts `bootstyle=`).
+        """Progressbar is the native ttk horizontal or vertical bar that shows progress (ttk.Progressbar), themed by ttkbootstrap.
 
         Args:
             master: The parent widget.
@@ -1544,7 +1544,7 @@ class Progressbar(BootMixin, _ttkProgressbar):
     config = configure
 
 class Radiobutton(BootMixin, _ttkRadiobutton):
-    """ttk Radiobutton with ttkbootstrap theming (accepts `bootstyle=`)."""
+    """Radiobutton is the native ttk one-of-many selector that shares a variable with its siblings (ttk.Radiobutton), themed by ttkbootstrap."""
     def __init__(
         self,
         master: Misc | None = ...,
@@ -1571,7 +1571,7 @@ class Radiobutton(BootMixin, _ttkRadiobutton):
         name: str = ...,
         style: str = ...,
     ) -> None:
-        """ttk Radiobutton with ttkbootstrap theming (accepts `bootstyle=`).
+        """Radiobutton is the native ttk one-of-many selector that shares a variable with its siblings (ttk.Radiobutton), themed by ttkbootstrap.
 
         Args:
             master: The parent widget.
@@ -1620,7 +1620,7 @@ class Radiobutton(BootMixin, _ttkRadiobutton):
     config = configure
 
 class Scale(BootMixin, _ttkScale):
-    """ttk Scale with ttkbootstrap theming (accepts `bootstyle=`)."""
+    """Scale is the native ttk slider for choosing a numeric value from a range (ttk.Scale), themed by ttkbootstrap."""
     def __init__(
         self,
         master: Misc | None = ...,
@@ -1641,7 +1641,7 @@ class Scale(BootMixin, _ttkScale):
         name: str = ...,
         style: str = ...,
     ) -> None:
-        """ttk Scale with ttkbootstrap theming (accepts `bootstyle=`).
+        """Scale is the native ttk slider for choosing a numeric value from a range (ttk.Scale), themed by ttkbootstrap.
 
         Args:
             master: The parent widget.
@@ -1678,7 +1678,7 @@ class Scale(BootMixin, _ttkScale):
     config = configure
 
 class Scrollbar(BootMixin, _ttkScrollbar):
-    """ttk Scrollbar with ttkbootstrap theming (accepts `bootstyle=`)."""
+    """Scrollbar is the native ttk scrollbar that drives another widget's view (ttk.Scrollbar), themed by ttkbootstrap."""
     def __init__(
         self,
         master: Misc | None = ...,
@@ -1693,7 +1693,7 @@ class Scrollbar(BootMixin, _ttkScrollbar):
         name: str = ...,
         style: str = ...,
     ) -> None:
-        """ttk Scrollbar with ttkbootstrap theming (accepts `bootstyle=`).
+        """Scrollbar is the native ttk scrollbar that drives another widget's view (ttk.Scrollbar), themed by ttkbootstrap.
 
         Args:
             master: The parent widget.
@@ -1718,7 +1718,7 @@ class Scrollbar(BootMixin, _ttkScrollbar):
     config = configure
 
 class Separator(BootMixin, _ttkSeparator):
-    """ttk Separator with ttkbootstrap theming (accepts `bootstyle=`)."""
+    """Separator is the native ttk thin horizontal or vertical dividing line (ttk.Separator), themed by ttkbootstrap."""
     def __init__(
         self,
         master: Misc | None = ...,
@@ -1732,7 +1732,7 @@ class Separator(BootMixin, _ttkSeparator):
         name: str = ...,
         style: str = ...,
     ) -> None:
-        """ttk Separator with ttkbootstrap theming (accepts `bootstyle=`).
+        """Separator is the native ttk thin horizontal or vertical dividing line (ttk.Separator), themed by ttkbootstrap.
 
         Args:
             master: The parent widget.
@@ -1755,7 +1755,7 @@ class Separator(BootMixin, _ttkSeparator):
     config = configure
 
 class Sizegrip(BootMixin, _ttkSizegrip):
-    """ttk Sizegrip with ttkbootstrap theming (accepts `bootstyle=`)."""
+    """Sizegrip is the native ttk resize handle for the bottom-right corner of a window (ttk.Sizegrip), themed by ttkbootstrap."""
     def __init__(
         self,
         master: Misc | None = ...,
@@ -1768,7 +1768,7 @@ class Sizegrip(BootMixin, _ttkSizegrip):
         name: str = ...,
         style: str = ...,
     ) -> None:
-        """ttk Sizegrip with ttkbootstrap theming (accepts `bootstyle=`).
+        """Sizegrip is the native ttk resize handle for the bottom-right corner of a window (ttk.Sizegrip), themed by ttkbootstrap.
 
         Args:
             master: The parent widget.
@@ -1789,7 +1789,7 @@ class Sizegrip(BootMixin, _ttkSizegrip):
     config = configure
 
 class Spinbox(BootMixin, _ttkSpinbox):
-    """ttk Spinbox with ttkbootstrap theming (accepts `bootstyle=`)."""
+    """Spinbox is the native ttk text field with up/down arrows for stepping through numeric or listed values (ttk.Spinbox), themed by ttkbootstrap."""
     def __init__(
         self,
         master: Misc | None = ...,
@@ -1822,7 +1822,7 @@ class Spinbox(BootMixin, _ttkSpinbox):
         name: str = ...,
         style: str = ...,
     ) -> None:
-        """ttk Spinbox with ttkbootstrap theming (accepts `bootstyle=`).
+        """Spinbox is the native ttk text field with up/down arrows for stepping through numeric or listed values (ttk.Spinbox), themed by ttkbootstrap.
 
         Args:
             master: The parent widget.
@@ -1882,7 +1882,7 @@ class Spinbox(BootMixin, _ttkSpinbox):
     config = configure
 
 class Treeview(BootMixin, _ttkTreeview):
-    """ttk Treeview with ttkbootstrap theming (accepts `bootstyle=`)."""
+    """Treeview is the native ttk multi-column tree/table of items (ttk.Treeview), themed by ttkbootstrap."""
     def __init__(
         self,
         master: Misc | None = ...,
@@ -1903,7 +1903,7 @@ class Treeview(BootMixin, _ttkTreeview):
         name: str = ...,
         style: str = ...,
     ) -> None:
-        """ttk Treeview with ttkbootstrap theming (accepts `bootstyle=`).
+        """Treeview is the native ttk multi-column tree/table of items (ttk.Treeview), themed by ttkbootstrap.
 
         Args:
             master: The parent widget.
@@ -1940,7 +1940,7 @@ class Treeview(BootMixin, _ttkTreeview):
     config = configure
 
 class OptionMenu(BootMixin, _ttkOptionMenu):
-    """ttk OptionMenu with ttkbootstrap theming (accepts `bootstyle=`)."""
+    """OptionMenu is the native ttk menubutton preconfigured with a menu of options that tracks the chosen one in a variable (ttk.OptionMenu), themed by ttkbootstrap."""
     def __init__(
         self,
         master: Misc | None,
@@ -1968,7 +1968,7 @@ class OptionMenu(BootMixin, _ttkOptionMenu):
         name: str = ...,
         style: str = ...,
     ) -> None:
-        """ttk OptionMenu with ttkbootstrap theming (accepts `bootstyle=`).
+        """OptionMenu is the native ttk menubutton preconfigured with a menu of options that tracks the chosen one in a variable (ttk.OptionMenu), themed by ttkbootstrap.
 
         Args:
             master: The parent widget.

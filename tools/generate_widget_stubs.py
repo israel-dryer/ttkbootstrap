@@ -265,6 +265,33 @@ def _parameter(option: str) -> str:
     )
 
 
+# The reference pages close their opening paragraph with a sentence about the
+# page itself ("This page is the complete reference for its options..."). Useful
+# on the page, meaningless in a tooltip, so it is cut.
+_PAGE_META = re.compile(r"\s*This page is\b.*$", re.S)
+
+
+def _summary(page: str, fallback: str) -> str:
+    """The widget's description, taken from its reference page's opening prose.
+
+    The runtime class docstrings are one-line stubs ("ttk Frame with
+    ttkbootstrap theming"), which tells a reader nothing about what the widget
+    *is*. The reference pages open with authored prose that does, so a tooltip
+    gets that instead. Falls back to the runtime docstring for a class whose
+    page has no lead paragraph.
+    """
+    path = _API_DOCS / f"{page}.rst"
+    if not path.exists():
+        return fallback
+    lead = re.search(
+        r"^[A-Za-z][^\n]*\n=+\n\n(.*?)\n\n",
+        path.read_text(encoding="utf-8"), re.S | re.M,
+    )
+    if not lead:
+        return fallback
+    return _PAGE_META.sub("", _flatten(lead.group(1))).strip() or fallback
+
+
 def _options(page: str) -> list[tuple[str, str, str]]:
     """Parse a reference page's `Options` list-table.
 
@@ -508,8 +535,10 @@ def render() -> str:
     lines += _reexports(set(targets) | set(aliases))
     lines.append("")
 
-    for name, (mixin, base, summary) in targets.items():
-        options = _options(name.lower())
+    for name, (mixin, base, runtime_docstring) in targets.items():
+        page = name.lower()
+        options = _options(page)
+        summary = _summary(page, runtime_docstring)
         alias = f"_{base.__module__.split('.')[-1]}{base.__name__}"
         lines.append("")
         lines.append(f"class {name}({mixin}, {alias}):")

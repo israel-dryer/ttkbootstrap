@@ -50,10 +50,12 @@ checking widget keywords altogether.
 
 **What changed.** `ttkbootstrap/__init__.pyi` is back, now **generated** rather
 than hand-written (`python tools/generate_widget_stubs.py`). It takes each
-widget's options from the per-widget reference pages under
-`docs/reference/api/`, so the parameter descriptions in your editor are the same
-text as the documentation, and a `tests/test_widget_stubs.py` sync test keeps
-the two from drifting apart.
+widget's options *and* its description from the per-widget reference pages under
+`docs/reference/api/`, so what your editor shows is the same text as the
+documentation — the tooltip opens with what the widget actually is ("Frame is
+the native ttk rectangular container for grouping and laying out other
+widgets"), not a note that it is themed. A `tests/test_widget_stubs.py` sync
+test keeps the two from drifting apart.
 
 **What it accepts.** The documented options, plus the spellings that work
 without being part of the documented surface: Tk's `bd`/`bg`/`fg`
