@@ -1762,6 +1762,78 @@ issues. First such issue: **#1276** — make `DateEntry` `value=None` the defaul
 drop the `start_date` empty-read fallback (the 3.0 half of #1253). Don't build a
 full 3.0 removal checklist until 3.0 is actually scoped.
 
+## Direction: 2.2 milestone (IN PROGRESS)
+
+> **STATUS (2026-08-05): 2.2 is open with two PRs awaiting review — nothing
+> merged, nothing released.** `master` still reads **2.1.1**, which is still the
+> latest released version. The **`2.2` milestone (#4) was created this session**,
+> per the standing rule to create one only when feature work is actually scoped.
+>
+> **NEXT SESSION — run `/code-review` on the theme converter (#1332) BEFORE any
+> release work.** That is the author's stated gate. Precedent says take it
+> seriously: the `/code-review` on the 2.1.1 stub work found **six real defects a
+> careful self-review had missed**, two of them the shipped artifact being *wrong*
+> rather than merely narrow. Review the converter proper
+> (`src/ttkbootstrap/convert_theme.py`), not just the docs. Only after that is
+> clean does the "Releasing" runbook apply (bump `pyproject.toml` on `master`,
+> fold in `development/2_2_changes.md`, gates, build, upload, tag).
+>
+> **The two open PRs (both milestoned `2.2`):**
+>
+> - **#1332** `feat/2.2-convert-legacy-theme` — the theme converter + the docs gap
+>   that prompted it. **This is the review target.**
+> - **#1333** `fix/2.2-scrollbar-literal-render` — a one-line docs render fix,
+>   independent of #1332 and safe to merge on its own.
+>
+> **What #1332 does.** 2.0 removed the in-package user theme store
+> (`themes/user.py` + `USER_THEMES`) and ttkcreator's Import/Export buttons, but
+> **the migration guide never said so** and offered no path forward for an
+> already-saved theme. New `python -m ttkbootstrap.convert_theme` reads a 1.x
+> `user.py` **or** a `load_user_themes` JSON and emits the equivalent
+> `Theme(...).register()` call. Pure text transformation — no Tk, no display.
+> Accents + `secondary` + that mode's background/foreground carry over; the
+> plumbing colors (`border`/`inputbg`/`inputfg`/`selectbg`/`selectfg`/`active`)
+> are **dropped** because 2.x derives them from the anchors, and the opposite mode
+> is left **commented out** rather than invented. Suite **1005 passed, 5 skipped**
+> (+13); docs clean under `-W`.
+>
+> **Three facts worth carrying forward.**
+>
+> (a) **The 1.x artifact is a `.py`, not a `.json`** — settled by reading
+> `release/v1`, and it inverted the design. 1.x `save_theme` wrote
+> `'USER_THEMES = ' + json.dumps(...)` **into the in-package `user.py`**, and
+> Export was `shutil.copyfile` of that file. So the *contents* are JSON but the
+> *file* is a `.py`, and that is the **only** `json.dump*` call in all of 1.x
+> `src/` — no 1.x code ever wrote a `.json`. The `{"themes": [...]}` shape
+> `load_user_themes` reads was hand-authored only. Hence `ast.literal_eval` of the
+> `USER_THEMES` assignment is the primary input path.
+>
+> (b) **`load_user_themes` never went away and is the thinner path.** It works
+> fully in 2.1 (ramps, `@surface`, value tokens all resolve against a JSON-loaded
+> theme) but **bypasses the legacy adapter**: it takes all sixteen 1.x colors
+> verbatim where `theme_from_legacy_dict` *regenerates* `border`/`inputbg`/
+> `active` from `bg` (measured on identical input: border `#ced4da` verbatim vs
+> `#d6d6d6` adapted). It also registers a **single mode**, so `toggle_theme()`
+> has nothing to flip to. Its docstring was one line and never stated the file
+> format; #1332 fixes that.
+>
+> (c) **A converted theme is close, not pixel-identical** — an accent is
+> re-derived per mode for contrast, so a dark theme's authored `#6a5acd` resolves
+> to `#887bd7`. Documented rather than hidden.
+>
+> **A THIRD `-W`-invisible rST class**, alongside the two already recorded (nested
+> inline markup inside `**bold**`; a line block inside a list-table cell needing a
+> preceding blank line): **an inline-literal start-string not preceded by
+> whitespace never parses.** ``` ``first``..``last`` ``` shipped raw double
+> backticks to the rendered page, because rST only begins markup after whitespace
+> or an opener (`(` `[` `<` `-` `:` …) and `.` is not one — while the *closing*
+> backticks of `first` were fine, since an end-string may be followed by
+> punctuation. That is why the line rendered half-correct. **The cheap catch-all:
+> strip tags from every built page and search the body text for surviving
+> ``` `` ```** — it catches all three classes at once. After #1332 + #1333 that
+> scan is clean across the whole site. A clean `-W` build is still not evidence
+> the markup parsed.
+
 ## Repository layout
 
 ```
