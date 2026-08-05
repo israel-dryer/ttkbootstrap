@@ -41,7 +41,7 @@ Methods
 .. py:method:: set(first, last)
    :noindex:
 
-   Set the thumb to span the fractions ``first``..``last``; wired as the
+   Set the thumb to span the fractions ``first`` to ``last``; wired as the
    scrolled widget's ``xscrollcommand``/``yscrollcommand``.
 
    :returns: ``None``.
