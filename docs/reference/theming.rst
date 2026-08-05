@@ -32,9 +32,10 @@ Legacy themes
 Converting a 1.x theme
 ----------------------
 
-A custom theme saved by 1.x — a ``user.py`` holding a ``USER_THEMES`` dict, or
-a JSON file for :meth:`~ttkbootstrap.Style.load_user_themes` — converts to the
-equivalent ``Theme(...).register()`` call:
+A custom theme saved by 1.x — a ``user.py`` holding a ``USER_THEMES`` dict, a
+``.py`` holding a ``ThemeDefinition(...)`` call, or a JSON file for
+:meth:`~ttkbootstrap.Style.load_user_themes` — converts to the equivalent
+``Theme(...).register()`` call:
 
 .. code-block:: bash
 

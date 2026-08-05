@@ -259,7 +259,8 @@ save into the library; your theme lives in your own code.
 
       python -m ttkbootstrap.convert_theme user.py -o brand.py
 
-   It reads either a 1.x ``user.py`` or a ``load_user_themes`` JSON file and
-   writes the equivalent ``Theme(...).register()`` call. See
+   It reads a 1.x ``user.py``, an exported ``ThemeDefinition(...)`` file, or a
+   ``load_user_themes`` JSON file, and writes the equivalent
+   ``Theme(...).register()`` call. See
    :doc:`Migrating to 2.0 </user-guide/getting-started/migrating>` for what
    carries over and what 2.x regenerates.

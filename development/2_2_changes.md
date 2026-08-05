@@ -16,11 +16,14 @@ A custom theme saved by ttkbootstrap 1.x now converts to the 2.x
 python -m ttkbootstrap.convert_theme user.py -o brand.py
 ```
 
-It reads either input a 1.x user could be holding:
+It reads any input a 1.x user could be holding — ttkcreator had three save
+paths, and each one's artifact converts:
 
 - a **`user.py`** containing a `USER_THEMES` dict — what 1.x ttkcreator's
-  **Export** button produced (it copied the in-package `themes/user.py`), and
-  the file most people will actually have;
+  **Export** button produced (it copied the in-package `themes/user.py`);
+- a **`.py`** holding a `ThemeDefinition(...)` call — what its **Export theme
+  definition** wrote, and the one most likely to be sitting in a user's own
+  project, since the other two live inside the installed package;
 - a **JSON** file in the `Style.load_user_themes` format.
 
 Every theme in the file converts, under a single `import`. Output goes to
@@ -32,9 +35,16 @@ the theme's `background`/`foreground`.
 **What does not, deliberately:**
 
 - The plumbing colors — `border`, `inputbg`, `inputfg`, `selectbg`, `selectfg`,
-  `active` — are dropped, because 2.x derives them from the anchors. This is the
-  same regeneration `theme_from_legacy_dict` applies to the built-in legacy
-  themes.
+  `active` — are dropped, because `Theme` derives all six from the anchors and
+  the surface. (Not the same as `theme_from_legacy_dict`, which the built-in
+  legacy themes go through: that one regenerates only `border`, `inputbg` and
+  `active`, and passes the other three verbatim.)
+- The `light` and `dark` accents, because 2.x derives that pair from the
+  `neutral` ramp. A converted theme takes the default gray; `Theme(neutral=...)`
+  tunes it. Note `neutral` is the ramp *base*, not the pale `light` accent —
+  1.x's near-white `light` corresponds to ramp step `[100]`, so passing it
+  through as `neutral` would wash out `selectbg` and an uncolored `secondary`
+  along with it.
 - The opposite mode. A 1.x theme declares one mode, so the generated family
   declares that one and leaves the other commented out rather than inventing
   colors for it.
@@ -43,9 +53,10 @@ Converted output is close but not pixel-identical: an accent is re-derived per
 mode for contrast, so a dark theme's authored `#6a5acd` resolves to `#887bd7`.
 
 The module is pure text transformation — no Tk, no display, importable and
-runnable headlessly. `tests/test_convert_theme.py` (+13) covers both input
-formats, the loud-failure paths, and an end-to-end check that the emitted
-Python actually registers a theme and styles real widgets.
+runnable headlessly. `tests/test_convert_theme.py` (+23) covers all three input
+formats, the loud-failure paths, the escaping of what it emits, and an
+end-to-end check that the emitted Python actually registers a theme and styles
+real widgets.
 
 ## Documentation
 

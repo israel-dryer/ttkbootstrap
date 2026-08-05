@@ -145,9 +145,9 @@ with ttkcreator's **Import** / **Export** buttons, which copied that file in and
 out. A theme now lives in your own code as a :class:`~ttkbootstrap.Theme` you
 register at startup, so it survives reinstalls and upgrades.
 
-To carry a 1.x theme across, convert the file you saved — either a ``user.py``
-from ttkcreator's old **Export**, or a JSON file you wrote for
-``load_user_themes``:
+To carry a 1.x theme across, convert the file you saved — a ``user.py`` from
+ttkcreator's old **Export**, a ``.py`` from its **Export theme definition**, or
+a JSON file you wrote for ``load_user_themes``:
 
 .. code-block:: bash
 
@@ -176,16 +176,19 @@ needs a live style — then select it by its generated variant name:
    ttk.Theme(name="midnight", ...).register()
    app.theme_use("midnight-dark")
 
-Your accents and that mode's background and foreground carry over verbatim. Two
-things deliberately do not:
+Your accents and that mode's background and foreground carry over verbatim.
+Three things deliberately do not:
 
 - **The plumbing colors** — ``border``, ``inputbg``, ``inputfg``, ``selectbg``,
-  ``selectfg``, and ``active`` are dropped, because 2.x derives them from the
-  anchors for consistent contrast. This is the same regeneration the built-in
-  legacy themes get.
+  ``selectfg``, and ``active`` are dropped, because 2.x derives all six from the
+  anchors and the surface for consistent contrast.
+- **The light and dark accents** — 2.x derives that pair from the neutral ramp,
+  so a converted theme takes the default gray. Set
+  :attr:`neutral <ttkbootstrap.Theme.neutral>` on the ``Theme`` call to tune it;
+  it is the ramp *base*, several steps darker than 1.x's near-white ``light``.
 - **The opposite mode** — a 1.x theme declares one, so the converted family
   declares that one and leaves the other commented out. Fill it in to get a
-  matched pair that :func:`toggle_theme <ttkbootstrap.Style.toggle_theme>` can
+  matched pair that :meth:`toggle_theme <ttkbootstrap.Style.toggle_theme>` can
   flip between.
 
 Expect the result to be very close rather than pixel-identical: an accent is
