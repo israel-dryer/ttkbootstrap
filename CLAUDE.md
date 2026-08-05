@@ -821,9 +821,8 @@ DONE.** Optional post-release polish only from here.
 > `DateEntry` `value=None` the default). There is **no `2.2` milestone yet**;
 > create one when feature work is actually scoped rather than in advance.
 >
-> **OPEN FOLLOW-UP:** discussion **#1326** (the 2.1.1 bug report) has not been told
-> the fix shipped. A drafted reply is ready — deferred to a later session by the
-> author.
+> **CLOSED OUT:** discussion **#1326** (the 2.1.1 bug report) has been told the
+> fix shipped — no longer an open follow-up (author, 2026-08-05).
 >
 > **The next user-visible change starts a new log.** `development/2_1_changes.md`
 > and `development/2_1_1_changes.md` are both frozen history now. Create
