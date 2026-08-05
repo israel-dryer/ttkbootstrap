@@ -29,6 +29,21 @@ Legacy themes
 
 .. autofunction:: ttkbootstrap.install_legacy_themes
 
+Converting a 1.x theme
+----------------------
+
+A custom theme saved by 1.x — a ``user.py`` holding a ``USER_THEMES`` dict, or
+a JSON file for :meth:`~ttkbootstrap.Style.load_user_themes` — converts to the
+equivalent ``Theme(...).register()`` call:
+
+.. code-block:: bash
+
+   python -m ttkbootstrap.convert_theme user.py -o brand.py
+
+Pass ``-o`` to write a file, or omit it to print to standard output. Every
+theme in the file converts. See :doc:`Migrating to 2.0
+</user-guide/getting-started/migrating>` for what carries over.
+
 See also
 --------
 

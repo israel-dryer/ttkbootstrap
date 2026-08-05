@@ -951,7 +951,19 @@ class Style(ttk.Style):
         self.register_theme(theme)
 
     def load_user_themes(self, file):
-        """Load user themes saved in json format"""
+        """Register themes from a 1.x JSON theme file.
+
+        The file holds ``{"themes": [{"<name>": {"type": "light"|"dark",
+        "colors": {...}}}]}`` with the sixteen 1.x color keys, taken verbatim.
+        Each theme registers under its own name as a single mode. To convert a
+        1.x theme into a light/dark `Theme` family whose plumbing colors are
+        regenerated, run ``python -m ttkbootstrap.convert_theme`` instead.
+
+        Parameters:
+
+            file (str):
+                Path to the JSON theme file.
+        """
         with open(file, encoding='utf-8') as f:
             data = json.load(f)
             themes = data['themes']

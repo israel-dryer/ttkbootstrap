@@ -136,6 +136,71 @@ instead, which draws from a bundled Bootstrap Icons font:
 If you passed a character to ``ToastNotification(icon=...)``, give it a Bootstrap
 Icons glyph name instead (for example ``icon="bell-fill"``).
 
+Saved themes move into your code
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1.x saved custom themes into ``ttkbootstrap/themes/user.py`` — a module *inside*
+the installed package. That store and its ``USER_THEMES`` dict are gone, along
+with ttkcreator's **Import** / **Export** buttons, which copied that file in and
+out. A theme now lives in your own code as a :class:`~ttkbootstrap.Theme` you
+register at startup, so it survives reinstalls and upgrades.
+
+To carry a 1.x theme across, convert the file you saved — either a ``user.py``
+from ttkcreator's old **Export**, or a JSON file you wrote for
+``load_user_themes``:
+
+.. code-block:: bash
+
+   python -m ttkbootstrap.convert_theme user.py -o brand.py
+
+That writes a ready-to-run ``Theme(...).register()`` call:
+
+.. code-block:: python
+
+   import ttkbootstrap as ttk
+
+   ttk.Theme(
+       name="midnight",
+       primary="#6a5acd", secondary="#6c757d",
+       success="#02b875", info="#17a2b8",
+       warning="#f0ad4e", danger="#d9534f",
+       dark=dict(background="#1c1c1c", foreground="#e9ecef"),
+   ).register()
+
+Paste it into your startup code, after the ``App`` exists — registering a theme
+needs a live style — then select it by its generated variant name:
+
+.. code-block:: python
+
+   app = ttk.App()
+   ttk.Theme(name="midnight", ...).register()
+   app.theme_use("midnight-dark")
+
+Your accents and that mode's background and foreground carry over verbatim. Two
+things deliberately do not:
+
+- **The plumbing colors** — ``border``, ``inputbg``, ``inputfg``, ``selectbg``,
+  ``selectfg``, and ``active`` are dropped, because 2.x derives them from the
+  anchors for consistent contrast. This is the same regeneration the built-in
+  legacy themes get.
+- **The opposite mode** — a 1.x theme declares one, so the converted family
+  declares that one and leaves the other commented out. Fill it in to get a
+  matched pair that :func:`toggle_theme <ttkbootstrap.Style.toggle_theme>` can
+  flip between.
+
+Expect the result to be very close rather than pixel-identical: an accent is
+re-derived per mode for contrast, so a dark theme's authored ``#6a5acd`` may
+resolve a step lighter.
+
+.. admonition:: Keeping the JSON instead
+   :class: note
+
+   ``Style.load_user_themes(path)`` still reads the 1.x JSON format, so an
+   existing file keeps working without conversion. It is the thinner path,
+   though: it takes all sixteen 1.x colors verbatim — including the plumbing
+   2.x would otherwise regenerate — and registers a single-mode theme, so
+   ``toggle_theme()`` has nothing to flip to. Prefer converting.
+
 Keyword-only constructors and renamed options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -183,7 +248,7 @@ removed in 3.0.
 - **Tuple and list bootstyle** — the canonical form is a single string.
   ``bootstyle=("primary", "outline")`` becomes ``bootstyle="primary outline"``. See
   :doc:`Styling with bootstyle </user-guide/foundations/bootstyle-grammar>`.
-- **The ``inverse-<color>`` modifier** — superseded by the ``@<color>`` **surface**
+- **The inverse-<color> modifier** — superseded by the ``@<color>`` **surface**
   token, which does the same thing (fills the label with the color and picks a
   contrasting text). ``bootstyle="inverse-primary"`` becomes ``bootstyle="@primary"``.
   See :doc:`Styling with bootstyle </user-guide/foundations/bootstyle-grammar>`.
