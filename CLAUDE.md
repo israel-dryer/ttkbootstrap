@@ -1782,6 +1782,46 @@ full 3.0 removal checklist until 3.0 is actually scoped.
 > under *Dev environment & commands* (bump `pyproject.toml` on `master`, fold in
 > `development/2_2_changes.md`, gates, build, upload, tag).
 >
+> **HANDOFF — THE NEXT SESSION IS THE 2.2 RELEASE** (final checks, then ship).
+> Set up 2026-08-05; everything below was verified on the Windows box at
+> `e05a9deb`, so start by confirming nothing moved rather than re-deriving it.
+>
+> **State at handoff.** `master` = `e05a9deb`, tree clean, no open PRs, 2.2
+> milestone at 0 open / 3 closed. Suite **1015 passed, 5 skipped**; docs clean
+> under `-W`; CI green on all four jobs. The complete user-visible surface of
+> 2.2 since `v2.1.1` is seven files — the new `convert_theme.py`, the
+> `load_user_themes` docstring in `engine.py`, four docs pages, and the
+> converter's tests. That is the whole release: **one feature plus its docs.**
+>
+> **`development/2_2_changes.md` is complete and is the release-notes source.**
+> It was audited against `git diff v2.1.1..master` this session and the one gap
+> found — #1333's scrollbar fix, missing entirely — was added. Do not assume it
+> is still complete if anything lands before the release; re-run that diff.
+>
+> **Follow the "Releasing" runbook** under *Dev environment & commands*. Four
+> traps it already documents that are **live right now**, so do not skip them:
+>
+> - **`dist/` still holds the 2.1.1 wheel and sdist** (it is gitignored, so it
+>   keeps whatever the last release built). Empty it first and upload by
+>   explicit version glob — a bare `dist/*` would try to re-publish 2.1.1.
+> - **A local docs build cannot confirm the version bump.** This checkout's
+>   editable install reports **`2.0.0a1`** through `importlib.metadata`, which is
+>   what `docs/conf.py` reads. RTD installs fresh and is unaffected.
+> - **`twine check` validates metadata, not contents** — confirm the wheel
+>   carries `ttkbootstrap/assets/icons/` (the vendored font is package data; a
+>   wheel missing it installs and then fails at first render) and that the sdist
+>   has no `docs/` or `development/`.
+> - **Verify the clean-env install with `--no-cache-dir`.** PyPI's JSON API and
+>   the simple index propagate separately, and pip caches the empty index page —
+>   this bit both 2.1.0 and 2.1.1, each time reading as a broken release.
+>
+> **Two decisions the release needs, neither made.** (1) **`ttk.__version__` does
+> not exist** and never has — `import ttkbootstrap; ttkbootstrap.__version__`
+> raises `AttributeError`, which is a common reflex. It is additive and 2.2 is a
+> feature release, so this is the natural window; it was noted at 2.1.0 and left
+> unfiled. Author's call whether to include it or ship without. (2) **#1322's
+> milestone**, below. `.pypirc` is present at the repo root.
+>
 > **One milestone chore belongs to that release: #1322 must come off `2.1.x`.**
 > A patch is cut from `master` and `release/*` is only for superseded majors, so
 > the moment `master` reads 2.2.0 there is no branch a 2.1.2 could come from and

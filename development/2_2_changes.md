@@ -74,3 +74,8 @@ real widgets.
   in json format"`) that never stated the file format; it now specifies the
   JSON shape, the verbatim-colors/single-mode behavior, and points at the
   converter.
+- **Reference › Scrollbar** — `set()`'s description shipped raw double backticks
+  to the rendered page. In ``` ``first``..``last`` ``` the second literal's
+  start-string is not preceded by whitespace, and rST only begins inline markup
+  after whitespace or an opener (`.` is not one), so it never parsed. A clean
+  `-W` build does not flag this class of defect.
