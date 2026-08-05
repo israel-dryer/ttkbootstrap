@@ -818,8 +818,19 @@ DONE.** Optional post-release polish only from here.
 > maintenance bucket) still holds **#1322** — four asset-geometry tests fail on a
 > non-baseline-density display, test-only, contributor-facing; it did **not** ship
 > in 2.1.1, so the milestone is still open. **`3.0`** holds **#1276** (make
-> `DateEntry` `value=None` the default). There is **no `2.2` milestone yet**;
-> create one when feature work is actually scoped rather than in advance.
+> `DateEntry` `value=None` the default). (The **`2.2` milestone (#4) has since
+> been created** — see the 2.2 section below.)
+>
+> **`2.1.x` GOES UNREACHABLE THE MOMENT 2.2 SHIPS, so #1322 has to move.** It is
+> a consequence of the release convention, not a bookkeeping preference: `master`
+> is always the most recent release and a patch is cut *from* `master`, while
+> `release/*` exists only for **superseded majors** — the 2.0.1 attempt at a
+> `release/2.0` branch is recorded above as a mistake not to repeat. So once
+> `master` reads 2.2.0 there is no branch a 2.1.2 could be cut from, and anything
+> still sitting on `2.1.x` can never ship. Fix #1322 before the 2.2 release and it
+> moves to **`2.2`**; otherwise move it to a **`2.2.x`** bucket and close out
+> `2.1.x` as part of the release. Nothing about #1322 gates the release either
+> way — it is test-only and contributor-facing.
 >
 > **CLOSED OUT:** discussion **#1326** (the 2.1.1 bug report) has been told the
 > fix shipped — no longer an open follow-up (author, 2026-08-05).
@@ -1763,38 +1774,40 @@ full 3.0 removal checklist until 3.0 is actually scoped.
 
 ## Direction: 2.2 milestone (IN PROGRESS)
 
-> **STATUS (2026-08-05): 2.2 is open with two PRs awaiting review — nothing
-> merged, nothing released.** `master` still reads **2.1.1**, which is still the
-> latest released version. The **`2.2` milestone (#4) was created this session**,
-> per the standing rule to create one only when feature work is actually scoped.
+> **STATUS (2026-08-05): the 2.2 milestone's two PRs are both MERGED and the
+> review gate is CLOSED — nothing released yet.** `master` reads **2.1.1**, which
+> is still the latest released version, and the 2.2 milestone (#4, created this
+> session per the standing rule) now has **no open issues or PRs**. The next step
+> is the release proper whenever the author wants it: the "Releasing" runbook
+> under *Dev environment & commands* (bump `pyproject.toml` on `master`, fold in
+> `development/2_2_changes.md`, gates, build, upload, tag).
 >
-> **NEXT SESSION — run `/code-review` on the theme converter (#1332) BEFORE any
-> release work.** That is the author's stated gate. Precedent says take it
-> seriously: the `/code-review` on the 2.1.1 stub work found **six real defects a
-> careful self-review had missed**, two of them the shipped artifact being *wrong*
-> rather than merely narrow. Review the converter proper
-> (`src/ttkbootstrap/convert_theme.py`), not just the docs. Only after that is
-> clean does the "Releasing" runbook apply (bump `pyproject.toml` on `master`,
-> fold in `development/2_2_changes.md`, gates, build, upload, tag).
+> **One milestone chore belongs to that release: #1322 must come off `2.1.x`.**
+> A patch is cut from `master` and `release/*` is only for superseded majors, so
+> the moment `master` reads 2.2.0 there is no branch a 2.1.2 could come from and
+> `2.1.x` is unreachable. Move #1322 to **`2.2`** if it is fixed first, else to a
+> new **`2.2.x`** bucket, and close `2.1.x`. It gates nothing — four
+> asset-geometry tests that fail only on a non-baseline-density display,
+> test-only and contributor-facing.
 >
-> **The two open PRs (both milestoned `2.2`):**
+> **The two PRs, both milestoned `2.2` and squash-merged 2026-08-05:**
 >
-> - **#1332** `feat/2.2-convert-legacy-theme` — the theme converter + the docs gap
->   that prompted it. **This is the review target.**
-> - **#1333** `fix/2.2-scrollbar-literal-render` — a one-line docs render fix,
->   independent of #1332 and safe to merge on its own.
+> - **#1332** (`6f01984b`) — the theme converter + the docs gap that prompted it,
+>   plus the review round below.
+> - **#1333** (`d40e6ef8`) — a one-line docs render fix, independent of #1332.
 >
-> **What #1332 does.** 2.0 removed the in-package user theme store
+> **What #1332 shipped.** 2.0 removed the in-package user theme store
 > (`themes/user.py` + `USER_THEMES`) and ttkcreator's Import/Export buttons, but
 > **the migration guide never said so** and offered no path forward for an
-> already-saved theme. New `python -m ttkbootstrap.convert_theme` reads a 1.x
-> `user.py` **or** a `load_user_themes` JSON and emits the equivalent
-> `Theme(...).register()` call. Pure text transformation — no Tk, no display.
-> Accents + `secondary` + that mode's background/foreground carry over; the
-> plumbing colors (`border`/`inputbg`/`inputfg`/`selectbg`/`selectfg`/`active`)
-> are **dropped** because 2.x derives them from the anchors, and the opposite mode
-> is left **commented out** rather than invented. Suite **1005 passed, 5 skipped**
-> (+13); docs clean under `-W`.
+> already-saved theme. New `python -m ttkbootstrap.convert_theme` reads **all
+> three** artifacts 1.x could produce — a `user.py` holding `USER_THEMES`, a `.py`
+> holding a `ThemeDefinition(...)` call, or a `load_user_themes` JSON — and emits
+> the equivalent `Theme(...).register()` call. Pure text transformation, no Tk, no
+> display. Accents + `secondary` + that mode's background/foreground carry over;
+> the plumbing colors (`border`/`inputbg`/`inputfg`/`selectbg`/`selectfg`/
+> `active`) and the `light`/`dark` accents are **dropped** because `Theme` derives
+> them, and the opposite mode is left **commented out** rather than invented.
+> Suite **1015 passed, 5 skipped**; docs clean under `-W`.
 >
 > **Three facts worth carrying forward.**
 >
@@ -1819,6 +1832,65 @@ full 3.0 removal checklist until 3.0 is actually scoped.
 > (c) **A converted theme is close, not pixel-identical** — an accent is
 > re-derived per mode for contrast, so a dark theme's authored `#6a5acd` resolves
 > to `#887bd7`. Documented rather than hidden.
+>
+> **THE REVIEW ROUND (2026-08-05b) — six defects, and one of them was the
+> review's own.** The `/code-review` gate found 4 MEDIUM + 2 LOW in #1332, all
+> fixed in `a65d55e3` before merge. Precedent held for the third time running: a
+> careful self-review had missed every one, and two were the artifact being
+> *wrong* rather than merely narrow.
+>
+> - **Unescaped interpolation into generated source.** Every value went into the
+>   emitted file raw. 1.x only did `name.lower().replace(" ", "")`, so a quote in
+>   a theme name emitted a file that would not compile — and a crafted *color*
+>   value could close the string and append its own keyword argument, which then
+>   **executed on import** of a file we tell people to run. Fixed by routing every
+>   value through `json.dumps`, whose string escapes are a subset of Python's, so
+>   the double-quoted output style is unchanged.
+> - **A whole 1.x export format rejected.** ttkcreator had **three** save paths,
+>   not two (`release/v1:src/ttkcreator/__main__.py:34-38`): Save, Export all
+>   themes, and **Export theme definition**, which writes a `.py` holding
+>   `ThemeDefinition(name=..., themetype=..., colors={...})`. That is the one most
+>   likely to be in a user's own project, since the other two live *inside* the
+>   installed package. Now read, in both the keyword and the 1.x positional
+>   `(name, colors, themetype)` spellings.
+> - **A parity claim that was wrong for half its keys** — see (b): the docs said
+>   the six dropped plumbing colors get "the same regeneration the built-in legacy
+>   themes get," but `theme_from_legacy_dict` regenerates only **three** and
+>   passes `inputfg`/`selectbg`/`selectfg` verbatim. Replaced, not narrowed.
+> - **The `light`/`dark` accents dropped silently** and absent from the documented
+>   drop list. Now stated in the generated header, the migration guide and the
+>   change log, pointing at `Theme(neutral=...)`.
+> - Two LOW: the `-o` write sat *outside* the `try` (bare `FileNotFoundError`
+>   traceback), and shape errors in parseable input (`{"themes": null}`,
+>   `USER_THEMES = [1, 2]`) reached `TypeError`. Input shape is now validated
+>   where it is read, so the `except` tuple stays precise instead of widening to
+>   swallow genuine bugs. And a **`:func:` role on a method** — the Python domain
+>   maps `func` only to `objtype: function`, so `Style.toggle_theme` never
+>   resolved and, with `nitpicky` off, rendered as unlinked text under a clean
+>   `-W` build.
+>
+> **THE FINDING THAT WAS WRONG, and why it matters more than the five that were
+> right.** The review proposed mapping 1.x `light` → 2.x `Theme(neutral=)`,
+> reasoning that `_DEFAULT_NEUTRAL` is byte-identical to `#adb5bd` — "strong
+> evidence" of the intended mapping. That value came from **the PR's own test
+> fixture**, not from any 1.x theme. The shipped 1.x catalog's `light` is a
+> near-white (`litera`, ttkcreator's default base, ships `#F8F9FA`), which
+> corresponds to `Colors.light` = **ramp step [100]**, not the ramp *base*. Since
+> `neutral` also drives `selectbg` and an uncolored `secondary`, passing a
+> near-white through as `neutral` would have washed out selection backgrounds
+> across the theme. **A review finding is a hypothesis with a reproduction
+> attached, not a verdict** — the reproduction proves the *defect*, which does not
+> make the proposed *fix* right. Probe the recommendation against real data
+> (`STANDARD_THEMES`, `release/v1`) before implementing it.
+>
+> **Two process facts, both already in this file and both earned again.** (a) A
+> branch showing large deletions in `git diff master..<branch>` is **behind**, not
+> carrying removals — #1333 read as `CLAUDE.md | -75` purely because master had
+> moved. (b) `merge-tree | grep` is not a conflict check: a **throwaway trial
+> merge** is, and it is also the only way to gate the *combined* result, which
+> neither PR's own CI covers (each runs in isolation). Both were trial-merged
+> together and re-gated — 1015 passed, docs clean, stray-backtick scan clean —
+> before either was merged.
 >
 > **A THIRD `-W`-invisible rST class**, alongside the two already recorded (nested
 > inline markup inside `**bold**`; a line block inside a list-table cell needing a
