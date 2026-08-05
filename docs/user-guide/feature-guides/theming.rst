@@ -246,3 +246,21 @@ Edit the accent anchors and the light/dark surfaces, preview against live
 widgets, then **Export theme (.py)** -- you get a ``Theme(...).register()``
 snippet (the same shape as above) to drop into your app. The editor doesn't
 save into the library; your theme lives in your own code.
+
+.. admonition:: Coming from 1.x
+   :class: note
+
+   1.x kept custom themes in a ``USER_THEMES`` dict inside the package
+   (``themes/user.py``) and moved them around with the editor's Import and
+   Export buttons. That store is gone. To bring an old theme forward, convert
+   the file you saved:
+
+   .. code-block:: bash
+
+      python -m ttkbootstrap.convert_theme user.py -o brand.py
+
+   It reads a 1.x ``user.py``, an exported ``ThemeDefinition(...)`` file, or a
+   ``load_user_themes`` JSON file, and writes the equivalent
+   ``Theme(...).register()`` call. See
+   :doc:`Migrating to 2.0 </user-guide/getting-started/migrating>` for what
+   carries over and what 2.x regenerates.
