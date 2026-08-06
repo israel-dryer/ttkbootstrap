@@ -1774,37 +1774,34 @@ full 3.0 removal checklist until 3.0 is actually scoped.
 
 ## Direction: 2.2 milestone (IN PROGRESS)
 
-> **STATUS (2026-08-05): the 2.2 milestone's two PRs are both MERGED and the
-> review gate is CLOSED — nothing released yet.** `master` reads **2.1.1**, which
-> is still the latest released version, and the 2.2 milestone (#4, created this
-> session per the standing rule) now has **no open issues or PRs**. The next step
-> is the release proper whenever the author wants it: the "Releasing" runbook
-> under *Dev environment & commands* (bump `pyproject.toml` on `master`, fold in
-> `development/2_2_changes.md`, gates, build, upload, tag).
->
-> **SUPERSEDED (2026-08-06b): the release is no longer the next thing.** An
-> unmerged branch, `feat/2.2-version-and-cli`, now carries four more 2.2 items —
-> `__version__`, the `ttkb` CLI, pre-root `Theme.register()`, and the #1322 fix —
-> plus the review round that followed. **Land that branch first**; the release
-> runbook below is still correct and still next after it. See the two 2026-08-06
-> session entries at the end of this section for the branch's state and what the
-> next session owes it.
+> **STATUS (2026-08-06d): everything scoped for 2.2 is MERGED — the release is
+> the only thing left.** `master` = **`8cea1ced`**, reading **2.1.1**, which is
+> still the latest released version. The 2.2 milestone (#4) is at **0 open / 6
+> closed** and **`2.1.x` is CLOSED** (see the milestone chore below — done). Gates
+> on `master`: suite **1033 passed, 5 skipped**; docs clean under `-W`; CI green
+> on all five checks including the py3.10 floor.
 >
 > **HANDOFF — THE NEXT SESSION IS THE 2.2 RELEASE** (final checks, then ship).
-> Set up 2026-08-05; everything below was verified on the Windows box at
-> `e05a9deb`, so start by confirming nothing moved rather than re-deriving it.
+> The runbook is "Releasing" under *Dev environment & commands*: bump
+> `pyproject.toml` on `master`, fold in `development/2_2_changes.md`, gates,
+> build, upload, tag, GitHub release, clean-env verify.
 >
-> **State at handoff.** `master` = `e05a9deb`, tree clean, no open PRs, 2.2
-> milestone at 0 open / 3 closed. Suite **1015 passed, 5 skipped**; docs clean
-> under `-W`; CI green on all four jobs. The complete user-visible surface of
-> 2.2 since `v2.1.1` is seven files — the new `convert_theme.py`, the
-> `load_user_themes` docstring in `engine.py`, four docs pages, and the
-> converter's tests. That is the whole release: **one feature plus its docs.**
+> **What 2.2 actually contains**, since it grew past the "one feature plus its
+> docs" this handoff originally described: the **theme converter** (#1332) and a
+> docs render fix (#1333), then **#1336** — `ttkbootstrap.__version__`, the
+> **`ttkb` command line**, **`Theme(...).register()` before the app exists**, and
+> the **#1322 density pin**. Four user-visible additions and one test-only fix.
 >
-> **`development/2_2_changes.md` is complete and is the release-notes source.**
-> It was audited against `git diff v2.1.1..master` this session and the one gap
-> found — #1333's scrollbar fix, missing entirely — was added. Do not assume it
-> is still complete if anything lands before the release; re-run that diff.
+> **#1336 landed as a real merge commit, not a squash** (unlike #1332/#1333), so
+> all 18 of its commits are on `master` — `git branch -d` worked and the remote
+> branch was auto-deleted. Do not assume the squash behavior this file records
+> elsewhere; check before concluding a branch is unmerged.
+>
+> **`development/2_2_changes.md` is the release-notes source.** It was audited
+> against `git diff v2.1.1..master` on 2026-08-05 (the one gap found — #1333's
+> scrollbar fix, missing entirely — was added), and #1336 added a *Testing*
+> section covering its four items. **Re-run that diff before the release anyway**
+> — it is the check, not the changelog's own account of itself.
 >
 > **Follow the "Releasing" runbook** under *Dev environment & commands*. Four
 > traps it already documents that are **live right now**, so do not skip them:
@@ -1823,18 +1820,17 @@ full 3.0 removal checklist until 3.0 is actually scoped.
 >   the simple index propagate separately, and pip caches the empty index page —
 >   this bit both 2.1.0 and 2.1.1, each time reading as a broken release.
 >
-> **Two decisions the release needed — both now made** (2026-08-06 session,
-> below): **`ttk.__version__` is IN** (it never existed before), and **#1322 is
-> FIXED**, so it moves to the `2.2` milestone rather than a `2.2.x` bucket.
+> **Two decisions the release needed — both made and shipped** in #1336:
+> **`ttk.__version__` is IN** (it never existed before), and **#1322 is FIXED**.
 > `.pypirc` is present at the repo root.
 >
-> **One milestone chore belongs to that release: #1322 must come off `2.1.x`.**
-> A patch is cut from `master` and `release/*` is only for superseded majors, so
-> the moment `master` reads 2.2.0 there is no branch a 2.1.2 could come from and
-> `2.1.x` is unreachable. Move #1322 to **`2.2`** if it is fixed first, else to a
-> new **`2.2.x`** bucket, and close `2.1.x`. It gates nothing — four
-> asset-geometry tests that fail only on a non-baseline-density display,
-> test-only and contributor-facing.
+> **The milestone chore is DONE (2026-08-06d).** #1322 moved off `2.1.x` onto
+> **`2.2`** (it auto-closed on the #1336 merge) and **`2.1.x` is closed**, 0 open
+> / 5 closed. The reason it could not wait: a patch is cut from `master` and
+> `release/*` is only for superseded majors, so the moment `master` reads 2.2.0
+> there is no branch a 2.1.2 could come from and anything left on `2.1.x` can
+> never ship. **Open milestones now: `2.2` (0 open / 6 closed) and `3.0`
+> (#1276).**
 >
 > **The two PRs, both milestoned `2.2` and squash-merged 2026-08-05:**
 >
@@ -2050,59 +2046,48 @@ full 3.0 removal checklist until 3.0 is actually scoped.
 > so nothing is captured as a durable override, and `element_create` is
 > idempotent. The fragility was in the test, not the conftest change.
 >
-> **NEXT SESSION — a TARGETED `/code-review` of the three fix commits
-> (`3dc6978a..ef0b9001`), then ship.** The author runs it; it cannot be launched
-> from inside a session (`disable-model-invocation`). The first ten commits are
-> already-reviewed context, not the subject — and `78d3b045` is this CLAUDE.md
-> entry, so it is not either.
+> **Session 2026-08-06d — the targeted review ran, and the branch MERGED as
+> #1336 (merge commit `8cea1ced`).** The review was scoped to the three fix
+> commits `3dc6978a..ef0b9001`, and stated up front that **no library runtime
+> code changed in that range** so the risk surface was two test files — which is
+> what made it cheap enough to answer the two open questions properly.
 >
-> **Scope it to the two test files.** **No library runtime code changed in that
-> range**: `cli.py` got a docstring, `pyproject.toml` a comment, and two docs
-> pages were corrected. Nothing ships differently, so the whole risk surface is
-> `tests/test_scaling.py` and `tests/test_cli_api.py`. Say so up front, or the
-> review spends its budget re-reading the CLI.
+> **It found NO correctness defects**, breaking a five-round streak in which
+> every prior `/code-review` on this branch found something real. Two LOW
+> findings, both genuine, both fixed in `ca3d665d`:
 >
-> **The two questions worth putting in front of it**, since the author of the
-> fixes is not a neutral judge of them:
+> - **`PackageNotFoundError` leaked into the public namespace.** The
+>   `__version__` import aliased `version` but left the exception bare, so
+>   `ttkbootstrap.PackageNotFoundError` resolved at runtime while the generated
+>   `__init__.pyi` never declared it — working code a type checker rejects, and
+>   runtime disagreeing with the stub about the module's surface. Every other
+>   non-public import in that file is underscore-aliased for exactly this reason.
+> - **The theming guide's register-after-the-app snippet still was not runnable**
+>   — `ef0b9001` had expanded it *so that it would run* and it still ended on
+>   `app.theme_use("brand-light")` with `app` never bound. It now opens with
+>   `app = ttk.App()` and closes with `mainloop()`. It repeats the preceding
+>   block's `Theme(...)` call verbatim, which stays: all five accent anchors are
+>   required, so that is the price of a self-contained block.
 >
-> 1. **`tests/test_scaling.py`** — the new
->    `test_conftest_pins_a_scaled_display_back_to_baseline` is the **only test in
->    the suite that builds a real Tk root out-of-process**, and it does three
->    unusual things at once: patches `tkinter.Tk.__init__` to force
->    `tk scaling 2.0`, drives conftest's fixture through
->    `_session_root.__wrapped__()` (a **pytest implementation detail**), and holds
->    the generator so teardown does not destroy the root mid-measurement. Is that
->    a reasonable way to test this, or too clever? Note the `__wrapped__`
->    dependency fails *loudly* (`AttributeError`) if pytest ever changes it, which
->    is the safe direction — but it is still internals.
-> 2. **`tests/test_cli_api.py`** — the hand-rolled `[project.scripts]` parse that
->    replaced `tomllib`. It is deliberately not a TOML parser, so the question is
->    whether it can degrade *silently*. **Already probed, and it cannot** — the
->    expected dict is a non-empty literal, so an empty parse cannot self-cancel:
->    a missing section raises `IndexError`, single-quoted values yield `{}`, and a
->    following `[project.scripts.foo]` subtable truncates — all three fail the
->    assertion loudly. Worth a second opinion on whether a 3-line parse is the
->    right call at all versus a `tomli` fallback with a skip on 3.10, but the
->    silent-failure concern is closed.
+> **Both handoff questions came back clean, by probe rather than by reading.**
+> (1) The #1322 density guard is genuine in *both* halves — conftest's fixture
+> driven out-of-process against a root forced to `tk scaling 2.0` reads
+> `1.0 | 10 4` pinned, `1.5 | 15 6` with `_pin_baseline_density` removed, and
+> `1.0 | 15 6` with only the `create_default_style()` rebuild removed. The review
+> also closed a residual worry nobody had raised: pinning `tk scaling` *after*
+> Tk init does **not** leave fonts host-sized (`TkDefaultFont` size/linespace and
+> `-rowheight` are identical either way), so no font-metric-derived assertion is
+> left straddling two densities. `__wrapped__` is still present on pytest
+> **9.1.1**, this box's version. (2) The hand-rolled `[project.scripts]` parse
+> cannot degrade silently — independently re-confirmed.
 >
-> **What CI already answers, so the review need not.** The portability risk in
-> question 1 — subprocess Tk under `xvfb-run`, and on aqua — is covered directly
-> by opening the PR: all four jobs (Linux, Windows, macOS, the py3.10 floor) run
-> on it. **Open the PR first and let CI run in parallel with the review.** The
-> py3.10 job is exactly what would have caught the `tomllib` bug.
+> **CI on the PR was green on all five checks**, including the **py3.10 floor**
+> — the job the `tomllib` bug would have died on, so that fix is confirmed on the
+> platform it broke rather than by inspection. Opening the PR first and letting
+> CI run alongside the review worked exactly as the handoff predicted.
 >
-> **Then ship:** fold in any fixes, open the PR against `master` with the **`2.2`
-> milestone set** (on the PR, not just the issue), and move **#1322** off `2.1.x`
-> onto `2.2` since it is fixed here — closing `2.1.x` out. Then the release
-> runbook under *Dev environment & commands*, whose four live traps (stale
-> `dist/`, the local docs build reporting `2.0.0a1`, `twine check` not validating
-> contents, `--no-cache-dir` on the verify) are listed in the 2.2 STATUS banner
-> at the top of this section.
->
-> **Gates at handoff** (Windows box, `78d3b045`): suite **1033 passed, 5
-> skipped**; docs clean under `-W`; strip-tags stray-backtick scan clean. Branch
-> `feat/2.2-version-and-cli`, **13 commits, unpushed, no PR**. Both halves of the
-> #1322 fix verified to fail when removed, alone *and* in the full suite.
+> **Gates on `master` after the merge:** suite **1033 passed, 5 skipped**; docs
+> clean under `-W`.
 >
 > **Unrelated, noticed in passing — a pre-existing test-isolation leak.** Something
 > in the suite leaves `Link.TButton` padding at `40 2`. Invisible unless a test
