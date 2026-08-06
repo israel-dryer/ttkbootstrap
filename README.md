@@ -148,8 +148,8 @@ ttk.Button(app, text="Settings", icon="gear-fill", bootstyle="primary")
 ```
 
 Need other icon families — Font Awesome, Material, Lucide, and more? The
-[ttkbootstrap-icons](https://github.com/israel-dryer/ttkbootstrap-icons) extension
-is still available and adds installable icon providers alongside the built-in set.
+[tkinter-icons](https://github.com/israel-dryer/tkinter-icons) extension adds
+sixteen icon sets (61,000+ icons) alongside the built-in set.
 
 ## Contributing
 

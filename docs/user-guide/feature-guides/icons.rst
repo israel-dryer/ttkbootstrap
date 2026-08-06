@@ -192,9 +192,9 @@ Other icon sets
 
 The bundled font is Bootstrap Icons. If you need another family — Font Awesome,
 Material, Ionicons, Lucide, and more — the optional
-`ttkbootstrap-icons <https://github.com/israel-dryer/ttkbootstrap-icons>`__
-extension adds installable icon providers for your tkinter/ttkbootstrap app,
-alongside the built-in set described here.
+`tkinter-icons <https://github.com/israel-dryer/tkinter-icons>`__ extension adds
+sixteen icon sets to your tkinter/ttkbootstrap app, alongside the built-in set
+described here.
 
 .. seealso::
 
