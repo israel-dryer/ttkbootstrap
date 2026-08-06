@@ -220,6 +220,10 @@ running works too, and takes effect immediately:
 
 .. code-block:: python
 
+   import ttkbootstrap as ttk
+
+   app = ttk.App()
+
    ttk.Theme(
        name="brand",
        primary="#593196", success="#13b955", info="#009cdc",
@@ -229,6 +233,7 @@ running works too, and takes effect immediately:
    ).register()
 
    app.theme_use("brand-light")
+   app.mainloop()
 
 Registering a theme generates a ``<name>-light`` and ``<name>-dark`` variant for
 whichever surfaces you declared, so it drops straight into the light/dark

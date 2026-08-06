@@ -37,7 +37,10 @@ bootstyle)`.
 
 For more information, see: https://ttkbootstrap.readthedocs.io/
 """
-from importlib.metadata import PackageNotFoundError, version as _distribution_version
+from importlib.metadata import (
+    PackageNotFoundError as _PackageNotFoundError,
+    version as _distribution_version,
+)
 
 from tkinter import (
     Menu as _tkMenu, Text as _tkText, Canvas as _tkCanvas, Tk as _tkTk,
@@ -110,7 +113,7 @@ try:
     # consequence is that this reports what was *installed*: an editable install
     # keeps whatever metadata it was built with until it is reinstalled.
     __version__ = _distribution_version("ttkbootstrap")
-except PackageNotFoundError:
+except _PackageNotFoundError:
     # Running from a source tree that was never installed (e.g. PYTHONPATH=src)
     # -- there is no metadata to read, and guessing one would be worse than
     # saying so.
