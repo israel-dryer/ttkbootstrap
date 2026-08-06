@@ -37,11 +37,14 @@ def _pin_baseline_density(app):
     Tk 9, which reports 1.0 for the same standard density.
 
     Pinned after the root is built, since `Window()` creates the root and the
-    `Style` together. The handful of styles built eagerly at that point carry
-    the host's density; every asset a test builds, and every style built lazily
-    on first use, comes after this.
+    `Style` together -- so the handful of styles `create_default_style` builds
+    eagerly are already sized to the host. Running it again re-runs those
+    recipes at the pinned density (the recipes are invoked unconditionally; the
+    build-once check is at the call site), leaving nothing sized to the display.
+    Every other style is built lazily on first use, i.e. after this.
     """
     app.tk.call("tk", "scaling", Scaling.for_widget(app).baseline)
+    Style.get_instance()._get_builder().create_default_style()
 
 
 @pytest.fixture(scope="session", autouse=True)

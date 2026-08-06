@@ -160,6 +160,17 @@ def test_test_root_runs_at_baseline_density(root):
     assert Scaling.for_widget(root).factor == 1.0
 
 
+def test_eagerly_built_styles_are_rebuilt_at_the_pinned_density():
+    # The pin can only land after `Window()`, which builds a handful of styles
+    # on the way up -- so conftest re-runs those recipes afterward. Drop that
+    # and #1322 is only half fixed: those styles alone stay sized to the
+    # contributor's display. Asserted on the source because the effect is
+    # invisible on a standard-density box, which is where this mostly runs.
+    source = (Path(__file__).parent / "conftest.py").read_text(encoding="utf-8")
+    assert "create_default_style()" in source
+    assert source.index('"tk", "scaling"') < source.index("create_default_style()")
+
+
 def test_style_builder_utility_and_assets_share_root_service(root):
     builder = StyleBuilderTTK(build=False)
     assert builder.style.scaling is Scaling.for_widget(root)
