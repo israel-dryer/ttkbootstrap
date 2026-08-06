@@ -139,7 +139,8 @@ def setup_demo(app: ttk.App, theme: str):
     return bag, gc
 
 
-if __name__ == "__main__":
+def main():
+    """Open the widget demo. Also what `ttkb demo` runs."""
     app = ttk.App("ttkbootstrap widget demo", minsize=(600, 0))
     # Hide it before building the UI, not after: a window is placed by its
     # window manager, and once it has been mapped, re-showing it is a fresh
@@ -159,3 +160,8 @@ if __name__ == "__main__":
     app.deiconify()
 
     app.mainloop()
+    return 0
+
+
+if __name__ == "__main__":
+    main()

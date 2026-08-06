@@ -562,6 +562,11 @@ class DemoWidgets(ttk.Frame):
         sb.pack(fill=X, pady=5, expand=YES)
 
 
+def main():
+    """Open the theme creator. Also what `ttkb creator` runs."""
+    ThemeCreator().mainloop()
+    return 0
+
+
 if __name__ == "__main__":
-    creator = ThemeCreator()
-    creator.mainloop()
+    main()

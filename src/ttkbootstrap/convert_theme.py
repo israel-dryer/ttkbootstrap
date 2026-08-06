@@ -5,8 +5,11 @@ dict, a ``.py`` holding the ``ThemeDefinition(...)`` call ttkcreator's *Export
 theme definition* wrote, or a JSON file in the ``Style.load_user_themes``
 format -- and it prints Python you paste into your own app::
 
-    python -m ttkbootstrap.convert_theme mythemes.json
-    python -m ttkbootstrap.convert_theme user.py -o brand.py
+    ttkb convert-theme mythemes.json
+    ttkb convert-theme user.py -o brand.py
+
+The module stays runnable as ``python -m ttkbootstrap.convert_theme``, which is
+what to use when the scripts directory is not on PATH.
 
 The five accent anchors, the optional secondary accent, and the theme's
 background/foreground carry over. `border`, `inputbg`, `inputfg`, `selectbg`,
@@ -247,8 +250,7 @@ def convert(path):
         width=75,
     )
     header = [
-        f"# Converted from {Path(path).name} by "
-        f"python -m ttkbootstrap.convert_theme.",
+        f"# Converted from {Path(path).name} by ttkb convert-theme.",
         "#",
         *(f"# {line}" for line in note),
         "# Call register() once, after creating your App.",
@@ -261,13 +263,19 @@ def convert(path):
     return "\n".join(header) + "\n\n".join(blocks) + "\n"
 
 
-def main(argv=None):
-    """Run the command-line converter."""
-    parser = argparse.ArgumentParser(
-        prog="python -m ttkbootstrap.convert_theme",
-        description="Convert a ttkbootstrap 1.x theme file into a 2.x "
-                    "Theme(...).register() snippet.",
-    )
+#: One-line summary, shared by this module's parser and the `ttkb` subcommand.
+DESCRIPTION = (
+    "Convert a ttkbootstrap 1.x theme file into a 2.x Theme(...).register() "
+    "snippet."
+)
+
+
+def add_arguments(parser):
+    """Add the converter's arguments to `parser`.
+
+    Shared with the `ttkb convert-theme` subcommand so the two spellings cannot
+    drift apart.
+    """
     parser.add_argument(
         "file",
         help="a 1.x theme file (.json, or a .py USER_THEMES / ThemeDefinition "
@@ -276,8 +284,11 @@ def main(argv=None):
     parser.add_argument(
         "-o", "--output", help="write to this file instead of standard output"
     )
-    args = parser.parse_args(argv)
+    return parser
 
+
+def run(args, parser):
+    """Convert the file named by `args`, reporting failures through `parser`."""
     try:
         source = convert(args.file)
         if args.output:
@@ -290,6 +301,15 @@ def main(argv=None):
     else:
         sys.stdout.write(source)
     return 0
+
+
+def main(argv=None):
+    """Run the command-line converter."""
+    parser = argparse.ArgumentParser(
+        prog="python -m ttkbootstrap.convert_theme", description=DESCRIPTION
+    )
+    add_arguments(parser)
+    return run(parser.parse_args(argv), parser)
 
 
 if __name__ == "__main__":
