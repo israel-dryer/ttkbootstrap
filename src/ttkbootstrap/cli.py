@@ -37,9 +37,14 @@ def _run_creator(args, parser):
     """Open ttkcreator."""
     try:
         from ttkcreator.__main__ import main
-    except ImportError as error:
+    except ModuleNotFoundError as error:
         # ttkcreator ships alongside ttkbootstrap but is a separate top-level
-        # package, so it can be absent from a trimmed install.
+        # package, so it can be absent from a trimmed install. Only report that
+        # when ttkcreator itself is what is missing -- an import failing *inside*
+        # it is a different problem, and saying "not installed" would send the
+        # user after a package they already have.
+        if error.name not in ("ttkcreator", "ttkcreator.__main__"):
+            raise
         parser.exit(2, f"{parser.prog}: ttkcreator is not installed ({error}).\n")
     return main()
 
