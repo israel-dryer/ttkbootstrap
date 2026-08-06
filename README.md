@@ -39,6 +39,12 @@ tkinter's, and everything you already know about tkinter still applies.
 python -m pip install ttkbootstrap
 ```
 
+Then see it running — this opens a window with every widget and a theme picker:
+
+```bash
+ttkb demo
+```
+
 ## Quickstart
 
 ```python
@@ -88,6 +94,26 @@ app.toggle_theme()                # flip light <-> dark
 Browse them in the
 [themes gallery](https://ttkbootstrap.readthedocs.io/en/latest/themes.html).
 
+Design your own with the bundled editor — pick colors, preview them on live
+widgets, and export a `Theme(...)` snippet for your app:
+
+```bash
+ttkb creator
+```
+
+## Command line
+
+Installing ttkbootstrap installs `ttkb`:
+
+| Command | What it does |
+| --- | --- |
+| `ttkb version` | Print the installed version |
+| `ttkb demo` | Open the widget demo |
+| `ttkb convert-theme <file>` | Convert a 1.x theme file to the 2.x `Theme(...)` form |
+| `ttkb creator` | Open ttkcreator, the theme designer |
+
+See the [command-line reference](https://ttkbootstrap.readthedocs.io/en/latest/reference/cli.html).
+
 ## Documentation
 
 - **[Documentation](https://ttkbootstrap.readthedocs.io/en/latest/)** — guides, the widget catalog, and the API reference.
@@ -103,6 +129,13 @@ keeps working: legacy theme names and older spellings are accepted with a
 deprecation warning. The
 [Migrating to 2.0](https://ttkbootstrap.readthedocs.io/en/latest/user-guide/getting-started/migrating.html)
 guide sorts every change into breaking / deprecated / notable / new.
+
+Custom themes moved out of the package and into your own code. To bring one
+forward, convert the file 1.x saved:
+
+```bash
+ttkb convert-theme user.py -o brand.py
+```
 
 ## Icons
 

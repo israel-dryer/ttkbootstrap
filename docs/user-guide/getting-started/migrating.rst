@@ -151,7 +151,7 @@ a JSON file you wrote for ``load_user_themes``:
 
 .. code-block:: bash
 
-   python -m ttkbootstrap.convert_theme user.py -o brand.py
+   ttkb convert-theme user.py -o brand.py
 
 That writes a ready-to-run ``Theme(...).register()`` call:
 

@@ -112,6 +112,13 @@ The lookup layer:
       The mouse-pointer names the ``cursor`` option accepts — the common set,
       the full portable list, and the platform-specific pointers.
 
+   .. grid-item-card:: Command line
+      :link: cli
+      :link-type: doc
+
+      The ``ttkb`` command — print the version, open the demo, convert a 1.x
+      theme, and launch the theme designer.
+
 .. toctree::
    :hidden:
 
@@ -130,3 +137,4 @@ The lookup layer:
    capabilities/index
    events/index
    cursors
+   cli

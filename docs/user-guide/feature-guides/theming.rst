@@ -247,7 +247,7 @@ To design a theme interactively rather than by hand, run the bundled editor:
 
 .. code-block:: bash
 
-   python -m ttkcreator
+   ttkb creator
 
 Edit the accent anchors and the light/dark surfaces, preview against live
 widgets, then **Export theme (.py)** -- you get a ``Theme(...).register()``

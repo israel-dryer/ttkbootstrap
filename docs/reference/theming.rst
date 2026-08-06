@@ -39,7 +39,7 @@ A custom theme saved by 1.x — a ``user.py`` holding a ``USER_THEMES`` dict, a
 
 .. code-block:: bash
 
-   python -m ttkbootstrap.convert_theme user.py -o brand.py
+   ttkb convert-theme user.py -o brand.py
 
 Pass ``-o`` to write a file, or omit it to print to standard output. Every
 theme in the file converts. See :doc:`Migrating to 2.0

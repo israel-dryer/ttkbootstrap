@@ -108,7 +108,7 @@ demo window with a theme picker and a sample of every widget:
 
 .. code-block:: bash
 
-   python -m ttkbootstrap
+   ttkb demo
 
 Or write the smallest possible app yourself:
 
