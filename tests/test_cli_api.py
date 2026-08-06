@@ -6,9 +6,9 @@ and that a failing command names itself rather than the bare `ttkb`.
 """
 import importlib.metadata
 import json
+import re
 import subprocess
 import sys
-import tomllib
 from pathlib import Path
 
 import pytest
@@ -53,7 +53,16 @@ def test_version_is_the_installed_distribution_version():
     # that this reports what was *installed* -- an editable install keeps the
     # metadata it was built with -- so it is NOT asserted against pyproject.
     assert isinstance(ttk.__version__, str) and ttk.__version__
-    assert ttk.__version__ == importlib.metadata.version("ttkbootstrap")
+    try:
+        installed = importlib.metadata.version("ttkbootstrap")
+    except importlib.metadata.PackageNotFoundError:
+        # Running from a source tree that was never installed (PYTHONPATH=src)
+        # is a supported way to import the package, and the one case
+        # `__version__` falls back for -- so read it as the fallback, not a
+        # failure. `test_version_survives_missing_metadata` covers it directly.
+        assert ttk.__version__ == "unknown"
+    else:
+        assert ttk.__version__ == installed
 
 
 def test_version_is_declared_in_the_type_stub():
@@ -89,8 +98,12 @@ def test_version_survives_missing_metadata():
 # --------------------------------------------------------------------------
 
 def test_pyproject_installs_both_console_scripts():
-    data = tomllib.loads((REPO / "pyproject.toml").read_text(encoding="utf-8"))
-    scripts = data["project"]["scripts"]
+    # Read by hand rather than with `tomllib`, which is 3.11+ -- pyproject
+    # declares 3.10 as the floor and CI runs a job on it, so a module-level
+    # `import tomllib` would take this whole file down there.
+    text = (REPO / "pyproject.toml").read_text(encoding="utf-8")
+    section = text.split("\n[project.scripts]\n", 1)[1].split("\n[", 1)[0]
+    scripts = dict(re.findall(r'^(\S+)\s*=\s*"([^"]+)"', section, re.M))
     assert scripts == {
         "ttkbootstrap": "ttkbootstrap.cli:main",
         "ttkb": "ttkbootstrap.cli:main",
