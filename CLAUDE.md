@@ -2005,13 +2005,25 @@ full 3.0 removal checklist until 3.0 is actually scoped.
 > **The rejected finding, and it is the [[#1332 lesson]] a third time.** The
 > review called `ttkb version` importing the whole package a defect — on a Python
 > without `_tkinter` it dies instead of printing the version, and the docs call it
-> *"what to quote in a bug report"*. The **diagnosis is right and the fix it
-> proposed cannot work**: `ttkbootstrap.cli` *is inside the package*, so the entry
-> point `ttkbootstrap.cli:main` runs `__init__.py` before a line of `cli.py`
-> executes. Probed with a `MetaPathFinder` blocking `_tkinter`: the failure is at
-> `from ttkbootstrap.cli import main` itself. Nothing internal to `cli.py` can
-> change that; only moving the CLI out of the package would, which is not worth a
-> top-level module in site-packages. `pip show ttkbootstrap` already answers it.
+> *"what to quote in a bug report"*. It is dead **twice over**, and the second
+> reason is the one to keep.
+>
+> **AUTHOR RULING (2026-08-06c): there is nothing here worth fixing.** Without
+> `_tkinter` the user cannot render a single widget — ttkbootstrap does nothing
+> for them at all, so a version string is not what they need. The
+> `No module named '_tkinter'` traceback **is** the diagnosis (their problem is
+> the install, not a ttkbootstrap bug), and `pip show ttkbootstrap` answers the
+> version anyway. **Do not "fix" this by moving the CLI out of the package.**
+>
+> The mechanical reason came first and still holds: the **diagnosis is right and
+> the fix the review proposed cannot work**, because `ttkbootstrap.cli` *is inside
+> the package* — the entry point `ttkbootstrap.cli:main` runs `__init__.py` before
+> a line of `cli.py` executes, so no lazy import or direct metadata read inside
+> `cli.py` changes anything. Probed with a `MetaPathFinder`: the failure is at
+> `from ttkbootstrap.cli import main` itself. **Note `_tkinter` is the C
+> extension, not the `tkinter` package** — `tkinter/__init__.py:38` imports it, so
+> blocking either produces the same failure; `_tkinter` is the one actually absent
+> in the real case (a distro shipping the stdlib package without `python3-tk`).
 >
 > **How the new density test works, since the obvious versions don't.** Bring the
 > root up scaled by patching `tkinter.Tk.__init__` to call `tk scaling 2.0` right
