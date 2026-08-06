@@ -1815,12 +1815,10 @@ full 3.0 removal checklist until 3.0 is actually scoped.
 >   the simple index propagate separately, and pip caches the empty index page —
 >   this bit both 2.1.0 and 2.1.1, each time reading as a broken release.
 >
-> **Two decisions the release needs, neither made.** (1) **`ttk.__version__` does
-> not exist** and never has — `import ttkbootstrap; ttkbootstrap.__version__`
-> raises `AttributeError`, which is a common reflex. It is additive and 2.2 is a
-> feature release, so this is the natural window; it was noted at 2.1.0 and left
-> unfiled. Author's call whether to include it or ship without. (2) **#1322's
-> milestone**, below. `.pypirc` is present at the repo root.
+> **Two decisions the release needed — both now made** (2026-08-06 session,
+> below): **`ttk.__version__` is IN** (it never existed before), and **#1322 is
+> FIXED**, so it moves to the `2.2` milestone rather than a `2.2.x` bucket.
+> `.pypirc` is present at the repo root.
 >
 > **One milestone chore belongs to that release: #1322 must come off `2.1.x`.**
 > A patch is cut from `master` and `release/*` is only for superseded majors, so
@@ -1944,6 +1942,128 @@ full 3.0 removal checklist until 3.0 is actually scoped.
 > ``` `` ```** — it catches all three classes at once. After #1332 + #1333 that
 > scan is clean across the whole site. A clean `-W` build is still not evidence
 > the markup parsed.
+>
+> **Session 2026-08-06 — four more things landed on 2.2 before the release, on
+> the branch `feat/2.2-version-and-cli` (7 commits, not pushed, no PR yet).**
+> Gates: suite **1031 passed, 5 skipped**; docs clean under `-W`; the strip-tags
+> stray-backtick scan clean; **every commit independently green** (verified in a
+> worktree with `PYTHONPATH` pinned — an editable install otherwise wins over a
+> worktree's own `src/`). The author asked for `__version__`, #1322 if it was
+> doable, and a live demonstration that the theme converter works; the CLI and its
+> docs came out of that conversation.
+>
+> **NEXT SESSION: `/code-review` each commit on this branch, one at a time.**
+> The commits are deliberately single-purpose and in dependency order, so review
+> them in order and treat each as its own change rather than reviewing the branch
+> diff as a whole:
+>
+> | Commit | Subject | What to look hardest at |
+> |---|---|---|
+> | `dcf5cc9f` | `feat: report the installed version as ttkbootstrap.__version__` | The metadata read and its fallback; whether the stub declaration is the *only* place a public assignment can go missing |
+> | `ac47d008` | `feat(cli): add the ttkb command` | New public surface: argparse wiring, the shared `add_arguments`/`run` seam, the `main()` refactors on the two `__main__` modules, exit codes |
+> | `39599d2c` | `fix(themes): register a theme before the app exists` | The behavior change — deferral ordering vs. `theme_use`, eager validation, whether anything relied on the old `RuntimeError`, `install_legacy_themes` warning placement |
+> | `1141a202` | `test: pin the test root to baseline density` (#1322) | Whether pinning *after* the root is built leaves any eagerly-built style asserted elsewhere |
+> | `2af76d56` | `docs: document the ttkb command line` | Prose accuracy against the shipped CLI; the `ttkb`-everywhere rule |
+> | `2ec003f0` | `docs: point at tkinter-icons` | Trivial; confirm no stale link survives |
+> | *(last)* | `docs(dev): record the 2.2 additions` | That the change log matches what actually shipped |
+>
+> **Precedent worth honoring:** the last three `/code-review` rounds on this repo
+> each found real defects a careful self-review had missed, and in two of them the
+> artifact was *wrong* rather than merely narrow (#1332's unescaped interpolation;
+> #1328's `Menu` rebuilt from the mixin, discarding five public methods). Two of
+> the commits here are exactly that shape — new public surface (`cli.py`) and a
+> behavior change to an existing API (`register()`). Also remember
+> [[the #1332 lesson]]: a review finding is a hypothesis with a reproduction
+> attached; the reproduction proves the *defect*, which does not make the proposed
+> *fix* right. Probe any recommendation against real data before implementing it.
+>
+> After the reviews: fold any fixes in, then open the PR against `master` with the
+> **`2.2` milestone set** (on the PR, not just the issue), and move **#1322** off
+> `2.1.x` onto `2.2` since it is fixed here — closing `2.1.x` out.
+>
+> **(1) `ttkbootstrap.__version__`** — read from the installed metadata
+> (`importlib.metadata.version`), so `pyproject.toml` stays the one place the
+> literal lives, matching what `docs/conf.py` already did. **It also has to be
+> declared in `__init__.pyi`**: a `.pyi` replaces the module for type checkers,
+> and the stub generator's `_reexports` pass sources every name from an *import
+> statement* in `__init__.py`, so an assignment is invisible to it. Proven both
+> ways with pyright — `reportAttributeAccessIssue` without the declaration, `str`
+> with it. The line lives in `_HEADER` in `tools/generate_widget_stubs.py`. The
+> flip side of reading metadata is that it reports what was **installed**, so an
+> editable install lags a bump; that is why no test asserts it against
+> `pyproject.toml`, and why **`ttkb version` cannot confirm the release bump
+> without a reinstall** — the same trap the runbook already records for the docs
+> build. (`.venv-home` on this box reports `2.0.0a1`; `.venv314`, which `python`
+> resolves to, reports `2.1.1`.)
+>
+> **(2) The `ttkb` command line** (`src/ttkbootstrap/cli.py`, new
+> `docs/reference/cli.rst`, `tests/test_cli_api.py` +12) — `version` · `demo` ·
+> `convert-theme` · `creator`, installed under **two** `[project.scripts]` names
+> (`ttkb` and `ttkbootstrap`) per the author's choice. Each subcommand already
+> existed as its own `python -m` invocation that nothing surfaced; all of those
+> still work. The converter's arguments moved into a shared
+> `convert_theme.add_arguments`/`run` pair so the two spellings cannot drift, and
+> `__main__.py` (demo) and `ttkcreator/__main__.py` grew a `main()` instead of
+> bare `if __name__` blocks. **Standing docs rule, memory-saved:
+> [[feedback_docs_use_ttkb_cli_spelling]] — the docs say `ttkb <command>`
+> everywhere**, even where another spelling works; the alternatives are stated
+> once, in a note on the CLI page. README updated to match, and its
+> `ttkbootstrap-icons` link repointed at **`tkinter-icons`**, the extension's
+> current name (verified live: repo + PyPI both exist).
+>
+> **(3) `Theme(...).register()` now works before the App exists** — found by
+> actually running a converted theme rather than reading it. It raised
+> `RuntimeError: No Style instance yet`, which made the natural top-of-file form
+> impossible *and* made a custom theme unusable as an `App(theme=...)` argument:
+> registration needed the app, and the app needed the name. It now queues on the
+> **deferred-config seam that already existed for this exact shape**
+> (`utils/config.defer`, the `set_default_button` tenant) — and because
+> `flush_pending_config()` runs in `Style.__init__` *before* `theme_use(theme)`,
+> `import brand; ttk.App(theme="acme-light")` just works. The theme is still
+> **validated eagerly** at the `register()` call, so a missing anchor raises where
+> it is written rather than out of a window constructor. `install_legacy_themes()`
+> got the same treatment and still warns from the call site. Three tests in
+> `test_theme_anchor.py`; the two docs pages that said "register after the App
+> exists" were rewritten.
+>
+> **(4) #1322 is FIXED** — `tests/conftest.py` pins the shared root to
+> `Scaling.baseline` (4/3, or 1.0 on aqua before Tk 9), which is the issue's own
+> suggested fix. **Reproduced before fixing**: forcing `tk scaling 2.0` in the
+> fixture produced exactly the four filed failures with the issue's 144-dpi
+> numbers — `(23,23)`, `(60,8)`. With the pin the **whole suite passes at 1.0,
+> 1.4, 1.6667 and 2.0**, so the fix is density-independent rather than
+> Windows-shaped. Pinned *after* the root is built (`Window()` makes the root and
+> the `Style` together); the handful of eagerly-built styles carry the host's
+> density, and empirically nothing asserts their geometry. New
+> `test_test_root_runs_at_baseline_density` guards the invariant. **The milestone
+> chore still applies**: move #1322 off `2.1.x` (to `2.2`, since it is now fixed)
+> and close that milestone out, or it becomes unreachable when `master` reads
+> 2.2.0.
+>
+> **The converter demonstration** (the author's third ask) ran end-to-end on real
+> 1.x artifacts reconstructed from `release/v1`'s own save code — a `USER_THEMES`
+> `user.py`, a `ThemeDefinition(...)` export, and a `load_user_themes` JSON, built
+> from two shipped 1.x specs. All three converted; the generated module was
+> imported and rendered light and dark. Two findings came out of *running* it, not
+> reading it: the registration bug in (3), and that the generated header stopped a
+> step short — it now names the registered variant (`app = ttk.App(theme="acme
+> -light")`), since the 2.x name is `<family>-<mode>`, not the 1.x name.
+>
+> **`development/2_2_changes.md` is updated for all four** (new *Testing*
+> section). The release notes source is therefore current as of this work — but
+> re-run `git diff v2.1.1..master` before the release, as the handoff says.
+>
+> **Two process notes from assembling the branch.** (a) **The Bash tool is not
+> PowerShell** — `git commit -m @'…'@` there passes a literal `@` as the first
+> line of the message, which is how the first commit got a stray `@` subject
+> (fixed by `--amend -F`). Write the message to a file and use `-F`; it sidesteps
+> every quoting difference between the two shells. (b) Splitting mixed files
+> across single-purpose commits without interactive staging is done by
+> *temporarily reverting* the other thread's hunk, committing, and re-applying it
+> in the later commit — three files needed it here (`README.md`,
+> `feature-guides/theming.rst`, `migrating.rst`) plus the converter's generated
+> header, which could only claim `App(theme=…)` once the deferral commit made it
+> true.
 
 ## Repository layout
 
