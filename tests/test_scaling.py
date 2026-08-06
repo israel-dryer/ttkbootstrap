@@ -152,6 +152,14 @@ def test_public_utility_reuses_root_service():
     assert utils.scale_size(root, [22, 6]) == [33, 9]
 
 
+def test_test_root_runs_at_baseline_density(root):
+    # Every exact-pixel assertion in the suite presupposes it. The shared root
+    # is pinned in conftest so a contributor on a scaled display (Windows at
+    # 125%, the factory default on most laptops) gets the same numbers as CI
+    # rather than four one-pixel failures on a clean checkout. See #1322.
+    assert Scaling.for_widget(root).factor == 1.0
+
+
 def test_style_builder_utility_and_assets_share_root_service(root):
     builder = StyleBuilderTTK(build=False)
     assert builder.style.scaling is Scaling.for_widget(root)

@@ -19,6 +19,29 @@ import pytest
 
 import ttkbootstrap as ttk
 from ttkbootstrap.style import Style
+from ttkbootstrap.style.scaling import Scaling
+
+
+def _pin_baseline_density(app):
+    """Pin the test root to standard density, so `Scaling.factor` is exactly 1.
+
+    Assets and pixel geometry scale to the display -- that is the point -- so a
+    test asserting an exact pixel size is really asserting a display. On a
+    scaled screen (Windows at 125%, the factory default on most laptops) four
+    such tests failed on a clean checkout, with a one-pixel assertion and no
+    hint why. Pinning the shared root covers any other test carrying the same
+    latent assumption, and demotes CI's `-dpi 96` from load-bearing to
+    belt-and-braces.
+
+    `baseline` rather than a literal: it is 4/3 everywhere except aqua before
+    Tk 9, which reports 1.0 for the same standard density.
+
+    Pinned after the root is built, since `Window()` creates the root and the
+    `Style` together. The handful of styles built eagerly at that point carry
+    the host's density; every asset a test builds, and every style built lazily
+    on first use, comes after this.
+    """
+    app.tk.call("tk", "scaling", Scaling.for_widget(app).baseline)
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -31,6 +54,7 @@ def _session_root():
     """
     Style.instance = None
     app = ttk.Window()
+    _pin_baseline_density(app)
     app.withdraw()
     app.update_idletasks()
     try:
