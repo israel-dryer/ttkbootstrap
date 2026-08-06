@@ -6,6 +6,7 @@ name/colors/light-or-dark container the style engine consumes), and `Theme`
 from a handful of accent colors). Lowest layer of the `style` package.
 """
 import colorsys
+import itertools
 from collections.abc import Mapping
 from dataclasses import dataclass, fields, replace
 from functools import lru_cache
@@ -40,6 +41,12 @@ _SHADE_WEIGHTS = {
     900: 0.80,
     950: 0.90,
 }
+
+# Distinguishes one queued pre-root registration from the next. A counter and
+# not `id(self)`, because `Theme(...).register()` need not keep a reference --
+# the object can be collected and its id reused by the next theme, which is the
+# very collision the unique key exists to prevent.
+_register_calls = itertools.count()
 
 
 def _normalize_color(color: str) -> str:
@@ -926,8 +933,13 @@ class Theme:
         # local import breaks the theme <- utils cycle (utils imports style)
         from ttkbootstrap.utils import config
 
+        # A key per call, not per family: the seam keeps only the last applier
+        # for a key, so keying on the name would drop one of two `register()`
+        # calls that split a family across separate `Theme` objects -- which
+        # both take effect once the root exists.
         config.defer(
-            f"register_theme:{self.name}", lambda: self._register(definitions)
+            f"register_theme:{self.name}:{next(_register_calls)}",
+            lambda: self._register(definitions),
         )
         return self
 

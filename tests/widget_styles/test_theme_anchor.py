@@ -223,7 +223,7 @@ def test_register_queues_before_the_root_and_applies_on_flush(root, monkeypatch)
     try:
         monkeypatch.setattr(Style, "instance", None)
         Theme.from_existing(BOOTSTRAP, name="preroot").register()
-        assert "register_theme:preroot" in config._pending
+        assert any(k.startswith("register_theme:preroot:") for k in config._pending)
         assert "preroot-light" not in style._theme_names  # queued, not applied
 
         monkeypatch.undo()
@@ -231,6 +231,29 @@ def test_register_queues_before_the_root_and_applies_on_flush(root, monkeypatch)
         assert {"preroot-light", "preroot-dark"} <= style._theme_names
         style.theme_use("preroot-dark")
         assert style.theme.name == "preroot-dark"
+    finally:
+        config._pending.clear()
+        config._pending.update(pending_before)
+        _drop_themes(style, before)
+
+
+def test_two_pre_root_registrations_of_one_family_both_survive(root, monkeypatch):
+    # The seam keeps one applier per key, so keying the queue on the family name
+    # would silently drop the first of two `register()` calls that split a
+    # family across separate `Theme` objects -- and with a root already up both
+    # calls take effect. The queue must not change the answer.
+    style = root.style
+    before = set(style._theme_names)
+    pending_before = dict(config._pending)
+    config._pending.clear()
+    try:
+        monkeypatch.setattr(Style, "instance", None)
+        Theme.from_existing(BOOTSTRAP, name="split", dark=None).register()
+        Theme.from_existing(BOOTSTRAP, name="split", light=None).register()
+
+        monkeypatch.undo()
+        config.flush_pending_config()
+        assert {"split-light", "split-dark"} <= style._theme_names
     finally:
         config._pending.clear()
         config._pending.update(pending_before)
