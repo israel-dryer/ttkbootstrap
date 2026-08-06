@@ -220,7 +220,14 @@ running works too, and takes effect immediately:
 
 .. code-block:: python
 
-   ttk.Theme(name="brand", ...).register()
+   ttk.Theme(
+       name="brand",
+       primary="#593196", success="#13b955", info="#009cdc",
+       warning="#efa31d", danger="#fc3939",
+       light=dict(background="#ffffff", foreground="#17141f"),
+       dark=dict(background="#17141f", foreground="#e9ecef"),
+   ).register()
+
    app.theme_use("brand-light")
 
 Registering a theme generates a ``<name>-light`` and ``<name>-dark`` variant for

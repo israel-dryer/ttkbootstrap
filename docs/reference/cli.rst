@@ -19,8 +19,10 @@ Run ``ttkb`` with no arguments, or ``ttkb <command> --help``, for usage.
    The command installs under two names — ``ttkb`` and ``ttkbootstrap`` — that
    run the same thing.
 
-   Every command also has a ``python -m`` spelling, which is what to use when
-   your environment's scripts directory is not on ``PATH``.
+   When your environment's scripts directory is not on ``PATH``, run the same
+   commands as ``python -m ttkbootstrap.cli <command>``. The demo, converter and
+   theme designer each also keep the individual ``python -m`` spelling they had
+   before, listed below.
 
 Commands
 --------

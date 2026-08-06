@@ -6,8 +6,8 @@ reachable before only as its own `python -m ...` invocation, which nothing
 surfaced.
 
 The command installs under two names -- `ttkb` and `ttkbootstrap` -- that run
-the same thing. Every `python -m` spelling still works, and is what to reach for
-when the scripts directory is not on PATH::
+the same thing, and `python -m ttkbootstrap.cli <command>` runs it too, which is
+what to reach for when the scripts directory is not on PATH::
 
     ttkb version
     ttkb demo

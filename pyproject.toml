@@ -51,8 +51,8 @@ Documentation = "https://ttkbootstrap.readthedocs.io/en/latest/"
 
 [project.scripts]
 # Two names for one command: `ttkbootstrap` is guessable from the package name,
-# `ttkb` is what anyone types twice. Every subcommand also keeps its `python -m`
-# spelling, which is what to use when the scripts directory is not on PATH.
+# `ttkb` is what anyone types twice. When the scripts directory is not on PATH,
+# `python -m ttkbootstrap.cli <command>` runs the same thing.
 ttkbootstrap = "ttkbootstrap.cli:main"
 ttkb = "ttkbootstrap.cli:main"
 
