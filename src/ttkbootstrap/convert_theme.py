@@ -249,11 +249,18 @@ def convert(path):
         f"sets.",
         width=75,
     )
+    # A registered theme is selectable by name, and the name is `<family>-<mode>`
+    # rather than the 1.x name -- so show it. Naming the first theme names the
+    # one they just converted.
+    first, first_spec = next(iter(themes.items()))
+    registered = f"{first}-{_mode(first, first_spec)}"
     header = [
         f"# Converted from {Path(path).name} by ttkb convert-theme.",
         "#",
         *(f"# {line}" for line in note),
-        "# Call register() once, after creating your App.",
+        "#",
+        "# Import this module, then select the theme by name:",
+        f"#     app = ttk.App(theme={_literal(registered)})",
         "",
         "import ttkbootstrap as ttk",
         "",

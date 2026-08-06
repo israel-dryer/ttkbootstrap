@@ -904,28 +904,42 @@ class Theme:
         return [d for d in (self._definition("light"), self._definition("dark")) if d]
 
     def register(self):
-        """Register the generated variants on the live `Style` singleton.
+        """Register the generated variants so the theme can be selected by name.
 
         Returns this theme so ``theme = Theme(...).register()`` reads cleanly.
-        Raises `RuntimeError` if no `Style` has been created yet.
-        """
-        # local import breaks the theme<-engine cycle (engine imports theme)
-        from ttkbootstrap.style.engine import Style
 
-        style = Style.get_instance()
-        if style is None:
-            raise RuntimeError(
-                "No Style instance yet; create an App/Style before registering "
-                "a Theme, or add it to the built-in catalog."
-            )
+        A theme is declared at the top of a file, where the app root does not
+        exist yet. Registering before the root is therefore the normal case: the
+        variants are queued and registered when the root comes up, early enough
+        that ``App(theme="<name>-light")`` selects one. With a root already
+        running they register immediately.
+
+        The theme is validated here either way, so a missing anchor or an empty
+        family raises at the `register()` call rather than later, out of a
+        window constructor.
+        """
         definitions = self.to_definitions()
         if not definitions:
             raise ValueError(
                 f"Theme {self.name!r} defines neither a 'light' nor a 'dark' block."
             )
+        # local import breaks the theme <- utils cycle (utils imports style)
+        from ttkbootstrap.utils import config
+
+        config.defer(
+            f"register_theme:{self.name}", lambda: self._register(definitions)
+        )
+        return self
+
+    @staticmethod
+    def _register(definitions):
+        """Register already-generated definitions on the live `Style`."""
+        # local import breaks the theme<-engine cycle (engine imports theme)
+        from ttkbootstrap.style.engine import Style
+
+        style = Style.get_instance()
         for definition in definitions:
             style.register_theme(definition)
-        return self
 
     @classmethod
     def from_existing(cls, base: "Theme", *, name: str, **overrides) -> "Theme":

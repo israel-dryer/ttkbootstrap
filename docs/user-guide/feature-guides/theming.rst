@@ -197,13 +197,11 @@ Defining a theme
 
 Build a :class:`~ttkbootstrap.Theme` from its anchors and register it. The five
 accents are the mid-tone of each color; ``light``/``dark`` each give a background
-and foreground. Registration needs a running app (a style must exist first):
+and foreground. Register it and it is selectable by name, like any built-in:
 
 .. code-block:: python
 
    import ttkbootstrap as ttk
-
-   app = ttk.App()
 
    ttk.Theme(
        name="brand",
@@ -213,8 +211,17 @@ and foreground. Registration needs a running app (a style must exist first):
        dark=dict(background="#17141f", foreground="#e9ecef"),
    ).register()
 
-   app.theme_use("brand-light")   # registered as brand-light and brand-dark
+   app = ttk.App(theme="brand-light")   # registered as brand-light and brand-dark
    app.mainloop()
+
+Declaring the theme at the top of the file, before the app exists, is the
+normal case — that is where a theme belongs. Registering after the app is
+running works too, and takes effect immediately:
+
+.. code-block:: python
+
+   ttk.Theme(name="brand", ...).register()
+   app.theme_use("brand-light")
 
 Registering a theme generates a ``<name>-light`` and ``<name>-dark`` variant for
 whichever surfaces you declared, so it drops straight into the light/dark
@@ -257,7 +264,7 @@ save into the library; your theme lives in your own code.
 
    .. code-block:: bash
 
-      python -m ttkbootstrap.convert_theme user.py -o brand.py
+      ttkb convert-theme user.py -o brand.py
 
    It reads a 1.x ``user.py``, an exported ``ThemeDefinition(...)`` file, or a
    ``load_user_themes`` JSON file, and writes the equivalent

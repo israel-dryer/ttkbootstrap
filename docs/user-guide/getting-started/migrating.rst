@@ -167,14 +167,14 @@ That writes a ready-to-run ``Theme(...).register()`` call:
        dark=dict(background="#1c1c1c", foreground="#e9ecef"),
    ).register()
 
-Paste it into your startup code, after the ``App`` exists — registering a theme
-needs a live style — then select it by its generated variant name:
+Import that module — or paste the call into your startup code — and select the
+theme by its generated variant name:
 
 .. code-block:: python
 
-   app = ttk.App()
-   ttk.Theme(name="midnight", ...).register()
-   app.theme_use("midnight-dark")
+   import brand   # registers midnight-dark
+
+   app = ttk.App(theme="midnight-dark")
 
 Your accents and that mode's background and foreground carry over verbatim.
 Three things deliberately do not:

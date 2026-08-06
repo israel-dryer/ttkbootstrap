@@ -10,6 +10,7 @@ import warnings
 import pytest
 
 import ttkbootstrap as ttk
+from ttkbootstrap.style import Style
 from ttkbootstrap.style.theme import (
     Colors,
     Theme,
@@ -23,6 +24,7 @@ from ttkbootstrap.style.theme import (
 from ttkbootstrap.themes.builtin import BOOTSTRAP, CURATED_THEMES
 from ttkbootstrap.themes.legacy import theme_from_legacy_dict
 from ttkbootstrap.themes.standard import STANDARD_THEMES
+from ttkbootstrap.utils import config
 
 
 def sample_theme():
@@ -197,6 +199,84 @@ def test_user_theme_spec_builds_and_registers(root):
                 style._theme_styles.pop(name, None)
                 style._theme_objects.pop(name, None)
         style.theme_use("bootstrap-light")
+
+
+def _drop_themes(style, before):
+    """Unregister every theme registered since `before` and reset the theme."""
+    for name in list(style._theme_names):
+        if name not in before:
+            style._theme_names.discard(name)
+            style._theme_definitions.pop(name, None)
+            style._theme_styles.pop(name, None)
+            style._theme_objects.pop(name, None)
+    style.theme_use("bootstrap-light")
+
+
+def test_register_queues_before_the_root_and_applies_on_flush(root, monkeypatch):
+    # A theme is declared at the top of a file, where no root exists yet. It
+    # queues on the deferred-config seam and registers when the root comes up --
+    # before Style.__init__ selects its theme, so App(theme=...) can name it.
+    style = root.style
+    before = set(style._theme_names)
+    pending_before = dict(config._pending)
+    config._pending.clear()
+    try:
+        monkeypatch.setattr(Style, "instance", None)
+        Theme.from_existing(BOOTSTRAP, name="preroot").register()
+        assert "register_theme:preroot" in config._pending
+        assert "preroot-light" not in style._theme_names  # queued, not applied
+
+        monkeypatch.undo()
+        config.flush_pending_config()
+        assert {"preroot-light", "preroot-dark"} <= style._theme_names
+        style.theme_use("preroot-dark")
+        assert style.theme.name == "preroot-dark"
+    finally:
+        config._pending.clear()
+        config._pending.update(pending_before)
+        _drop_themes(style, before)
+
+
+def test_register_validates_at_the_call_site_even_without_a_root(monkeypatch):
+    # Deferring the registration must not defer the error: a bad theme has to
+    # raise where it is declared, not later out of a window constructor.
+    monkeypatch.setattr(Style, "instance", None)
+    pending_before = dict(config._pending)
+    config._pending.clear()
+    try:
+        with pytest.raises(ValueError, match="neither a 'light' nor a 'dark'"):
+            Theme(name="empty", primary="#0d6efd", success="#198754",
+                  info="#0dcaf0", warning="#ffc107", danger="#dc3545").register()
+        with pytest.raises(ValueError, match="missing accent anchor"):
+            Theme(name="bare",
+                  light=dict(background="#fff", foreground="#000")).register()
+        assert not config._pending  # nothing queued by a failed register()
+    finally:
+        config._pending.clear()
+        config._pending.update(pending_before)
+
+
+def test_install_legacy_themes_queues_before_the_root(root, monkeypatch):
+    style = root.style
+    before = set(style._theme_names)
+    pending_before = dict(config._pending)
+    config._pending.clear()
+    try:
+        monkeypatch.setattr(Style, "instance", None)
+        # the deprecation is about the names this caller asked for, so it warns
+        # from the call site whether or not the work is deferred
+        with pytest.warns(DeprecationWarning, match="Legacy"):
+            ttk.install_legacy_themes()
+        assert "install_legacy_themes" in config._pending
+        assert "darkly" not in style._theme_names
+
+        monkeypatch.undo()
+        config.flush_pending_config()
+        assert set(STANDARD_THEMES) <= style._theme_names
+    finally:
+        config._pending.clear()
+        config._pending.update(pending_before)
+        _drop_themes(style, before)
 
 
 def test_from_existing_overrides_and_rejects_unknown_tokens():
