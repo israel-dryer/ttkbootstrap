@@ -1,5 +1,7 @@
 """Root-bound scaling and asset-geometry regression tests."""
 import ast
+import subprocess
+import sys
 import tkinter
 from math import floor
 from pathlib import Path
@@ -150,6 +152,65 @@ def test_public_utility_reuses_root_service():
     service = Scaling.for_widget(root)
     assert Scaling.for_widget(root) is service
     assert utils.scale_size(root, [22, 6]) == [33, 9]
+
+
+def test_test_root_runs_at_baseline_density(root):
+    # Every exact-pixel assertion in the suite presupposes it. The shared root
+    # is pinned in conftest so a contributor on a scaled display (Windows at
+    # 125%, the factory default on most laptops) gets the same numbers as CI
+    # rather than four one-pixel failures on a clean checkout. See #1322.
+    assert Scaling.for_widget(root).factor == 1.0
+
+
+def _button_padding(widget):
+    """`TButton`'s padding as plain numbers.
+
+    Tk hands a length list back as a string or as a tuple of pixel objects
+    depending on whether the style has been rebuilt since it was configured, so
+    the representation is not comparable across two roots -- the numbers are.
+    """
+    value = widget.tk.call("ttk::style", "lookup", "TButton", "-padding")
+    return [int(str(part)) for part in
+            (value.split() if isinstance(value, str) else value)]
+
+
+def test_conftest_pins_a_scaled_display_back_to_baseline(root):
+    # #1322 in the situation it was filed from: a contributor whose display is
+    # scaled. Both halves of the fix have to hold -- the pin itself, and the
+    # rebuild of the styles `Window()` already built on the way up at the host's
+    # density. Neither can be observed on a standard-density box, which is every
+    # CI runner and most dev machines, so the root is brought up scaled here.
+    #
+    # In a subprocess because the session shares one root and one Style
+    # singleton, and through conftest's own fixture rather than a copy of it, so
+    # that removing either half is what fails (verified both ways).
+    code = (
+        "import sys, tkinter\n"
+        f"sys.path.insert(0, {str(Path(__file__).parent)!r})\n"
+        "_real = tkinter.Tk.__init__\n"
+        "def scaled(self, *a, **k):\n"
+        "    _real(self, *a, **k)\n"
+        "    self.tk.call('tk', 'scaling', 2.0)\n"
+        "tkinter.Tk.__init__ = scaled\n"
+        "import conftest\n"
+        "from ttkbootstrap.style.scaling import Scaling\n"
+        # Held, or the generator is collected here and its teardown destroys
+        # the root before it can be measured.
+        "session = conftest._session_root.__wrapped__()\n"
+        "app = next(session)\n"
+        "pad = app.tk.call('ttk::style', 'lookup', 'TButton', '-padding')\n"
+        "pad = pad.split() if isinstance(pad, str) else pad\n"
+        "print(Scaling.for_widget(app).factor, '|',\n"
+        "      *[int(str(part)) for part in pad])\n"
+    )
+    result = subprocess.run(
+        [sys.executable, "-c", code], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    factor, padding = result.stdout.split("|")
+
+    assert float(factor) == 1.0, "the shared root must be pinned to baseline"
+    assert [int(v) for v in padding.split()] == _button_padding(root), (
+        "the eagerly built styles must be rebuilt at the pinned density")
 
 
 def test_style_builder_utility_and_assets_share_root_service(root):

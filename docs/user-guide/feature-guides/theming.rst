@@ -197,7 +197,26 @@ Defining a theme
 
 Build a :class:`~ttkbootstrap.Theme` from its anchors and register it. The five
 accents are the mid-tone of each color; ``light``/``dark`` each give a background
-and foreground. Registration needs a running app (a style must exist first):
+and foreground. Register it and it is selectable by name, like any built-in:
+
+.. code-block:: python
+
+   import ttkbootstrap as ttk
+
+   ttk.Theme(
+       name="brand",
+       primary="#593196", success="#13b955", info="#009cdc",
+       warning="#efa31d", danger="#fc3939",
+       light=dict(background="#ffffff", foreground="#17141f"),
+       dark=dict(background="#17141f", foreground="#e9ecef"),
+   ).register()
+
+   app = ttk.App(theme="brand-light")   # registered as brand-light and brand-dark
+   app.mainloop()
+
+Declaring the theme at the top of the file, before the app exists, is the
+normal case — that is where a theme belongs. Registering after the app is
+running works too, and takes effect immediately:
 
 .. code-block:: python
 
@@ -213,7 +232,7 @@ and foreground. Registration needs a running app (a style must exist first):
        dark=dict(background="#17141f", foreground="#e9ecef"),
    ).register()
 
-   app.theme_use("brand-light")   # registered as brand-light and brand-dark
+   app.theme_use("brand-light")
    app.mainloop()
 
 Registering a theme generates a ``<name>-light`` and ``<name>-dark`` variant for
@@ -240,7 +259,7 @@ To design a theme interactively rather than by hand, run the bundled editor:
 
 .. code-block:: bash
 
-   python -m ttkcreator
+   ttkb creator
 
 Edit the accent anchors and the light/dark surfaces, preview against live
 widgets, then **Export theme (.py)** -- you get a ``Theme(...).register()``
@@ -257,7 +276,7 @@ save into the library; your theme lives in your own code.
 
    .. code-block:: bash
 
-      python -m ttkbootstrap.convert_theme user.py -o brand.py
+      ttkb convert-theme user.py -o brand.py
 
    It reads a 1.x ``user.py``, an exported ``ThemeDefinition(...)`` file, or a
    ``load_user_themes`` JSON file, and writes the equivalent

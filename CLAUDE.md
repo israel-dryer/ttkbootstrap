@@ -1782,6 +1782,14 @@ full 3.0 removal checklist until 3.0 is actually scoped.
 > under *Dev environment & commands* (bump `pyproject.toml` on `master`, fold in
 > `development/2_2_changes.md`, gates, build, upload, tag).
 >
+> **SUPERSEDED (2026-08-06b): the release is no longer the next thing.** An
+> unmerged branch, `feat/2.2-version-and-cli`, now carries four more 2.2 items —
+> `__version__`, the `ttkb` CLI, pre-root `Theme.register()`, and the #1322 fix —
+> plus the review round that followed. **Land that branch first**; the release
+> runbook below is still correct and still next after it. See the two 2026-08-06
+> session entries at the end of this section for the branch's state and what the
+> next session owes it.
+>
 > **HANDOFF — THE NEXT SESSION IS THE 2.2 RELEASE** (final checks, then ship).
 > Set up 2026-08-05; everything below was verified on the Windows box at
 > `e05a9deb`, so start by confirming nothing moved rather than re-deriving it.
@@ -1815,12 +1823,10 @@ full 3.0 removal checklist until 3.0 is actually scoped.
 >   the simple index propagate separately, and pip caches the empty index page —
 >   this bit both 2.1.0 and 2.1.1, each time reading as a broken release.
 >
-> **Two decisions the release needs, neither made.** (1) **`ttk.__version__` does
-> not exist** and never has — `import ttkbootstrap; ttkbootstrap.__version__`
-> raises `AttributeError`, which is a common reflex. It is additive and 2.2 is a
-> feature release, so this is the natural window; it was noted at 2.1.0 and left
-> unfiled. Author's call whether to include it or ship without. (2) **#1322's
-> milestone**, below. `.pypirc` is present at the repo root.
+> **Two decisions the release needed — both now made** (2026-08-06 session,
+> below): **`ttk.__version__` is IN** (it never existed before), and **#1322 is
+> FIXED**, so it moves to the `2.2` milestone rather than a `2.2.x` bucket.
+> `.pypirc` is present at the repo root.
 >
 > **One milestone chore belongs to that release: #1322 must come off `2.1.x`.**
 > A patch is cut from `master` and `release/*` is only for superseded majors, so
@@ -1944,6 +1950,248 @@ full 3.0 removal checklist until 3.0 is actually scoped.
 > ``` `` ```** — it catches all three classes at once. After #1332 + #1333 that
 > scan is clean across the whole site. A clean `-W` build is still not evidence
 > the markup parsed.
+>
+> **Session 2026-08-06 — four more things landed on 2.2 before the release, on
+> the branch `feat/2.2-version-and-cli` (7 commits, not pushed, no PR yet).**
+> Gates: suite **1031 passed, 5 skipped**; docs clean under `-W`; the strip-tags
+> stray-backtick scan clean; **every commit independently green** (verified in a
+> worktree with `PYTHONPATH` pinned — an editable install otherwise wins over a
+> worktree's own `src/`). The author asked for `__version__`, #1322 if it was
+> doable, and a live demonstration that the theme converter works; the CLI and its
+> docs came out of that conversation.
+>
+> **THE `/code-review` OF THOSE 7 COMMITS IS DONE (2026-08-06b) — 4 findings, all
+> real, all fixed in 3 follow-up commits. The branch now has 10 commits, still
+> unpushed with no PR.** Gates after the fixes: suite **1033 passed, 5 skipped**;
+> docs clean under `-W`. Precedent held for the fourth round running — a careful
+> self-review had missed every one.
+>
+> | Fix commit | What the review found |
+> |---|---|
+> | `3530c673` `fix(themes): keep every pre-root theme registration` | **MEDIUM.** The deferral commit keyed the queue on the *family name*, and the seam keeps one applier per key — so two `register()` calls splitting a family across separate `Theme` objects collapsed to the last. Probed: pre-root `['acme-dark']` vs post-root `['beta-dark','beta-light']`, i.e. **the queue changed the answer**, silently, surfacing only as `theme_use` raising later. Now a key per call. |
+> | `40642e23` `fix(cli): only claim ttkcreator is missing when it is` | **LOW.** The `try` wrapped an import that executes all of ttkcreator, so an `ImportError` from *inside* it reported "ttkcreator is not installed". Narrowed to `ModuleNotFoundError` naming ttkcreator itself; anything else re-raises. Trailing newline too. |
+> | `e6e2b617` `test: rebuild the eager styles at the pinned density` | **LOW.** #1322 was only half fixed: the pin lands after `Window()`, so the styles `create_default_style` builds on the way up stayed sized to the host. Re-running it re-sizes them — the recipes are invoked unconditionally, the build-once check is at the call site (probed: stale `10 4` → `15 6` at `tk scaling 2.0`). |
+>
+> **A counter, not `id(self)`.** The review proposed keying on `id(self)`, as
+> `on_theme_change` does for callbacks. **`Theme(...).register()` need not keep a
+> reference**, so the object can be collected and its id reused by the next theme
+> — reinstating the very collision. `itertools.count()` in `theme.py` instead.
+> ([[the #1332 lesson]] again: the reproduction proves the *defect*, not the
+> proposed *fix*.)
+>
+> **The #1322 guard is asserted on conftest's SOURCE, and that is a deliberate
+> compromise worth re-examining.** The first version read the eight eager styles'
+> geometry, re-ran `create_default_style`, and compared — it **passed alone and
+> failed in the full suite**, because it mutates global style state mid-run and
+> some earlier test leaks a `Link.TButton` padding of `40 2` that the rebuild
+> reset. So `create_default_style` is idempotent at session start (nothing has
+> been configured yet) but **NOT** once styles carry overrides. The replacement
+> asserts the pin precedes the rebuild in conftest's text, proven to fail with the
+> rebuild line removed. Testing it properly would mean driving a scaled root in a
+> subprocess.
+>
+> **THE `/code-review` OF THE 10 COMMITS IS DONE (2026-08-06c) — 6 findings, 5
+> real and fixed in 3 commits, 1 rejected by probe. The branch now has 13
+> commits, still unpushed with no PR.** Gates after the fixes: suite **1033
+> passed, 5 skipped**; docs clean under `-W`; the strip-tags stray-backtick scan
+> clean. Precedent held for the fifth round running.
+>
+> | Fix commit | What the review found |
+> |---|---|
+> | `3dc6978a` `fix(tests): keep the CLI tests runnable on the 3.10 floor` | **HIGH.** `import tomllib` is **3.11+**, and `test_cli_api.py` imported it at module level — so on the `ubuntu/py3.10` CI job, the job whose comment says *"a 3.11+ only construct cannot slip in"*, the module died at **collection** and took all 12 tests with it. Parsed by hand now. Also guarded the unguarded `importlib.metadata.version` call, which raises under the supported `PYTHONPATH=src` — the one case `__version__` has a fallback for. |
+> | `21e88216` `test: prove the density pin against a scaled root` | **MEDIUM — the #1322 guard did not guard.** Answers handoff question 3: the source-order guard *was* papering over it. Both strings it searched for live **inside** `_pin_baseline_density`, so deleting the **call site** left it green; and its companion asserts `factor == 1.0`, which holds anyway on any standard-density box — every CI runner. The regression was undetectable everywhere it runs. |
+> | `ef0b9001` `docs: correct the python -m claim and the register-later snippet` | **2× LOW.** The CLI page promised *"every command also has a `python -m` spelling"* with **no entry for `version`** and no such module — a reader without the scripts dir on `PATH` had nothing to run (`python -m ttkbootstrap.cli <command>` is the real general fallback). And the theming guide's register-later snippet, `ttk.Theme(name="brand", ...).register()`, is a **SyntaxError**. |
+>
+> **The rejected finding, and it is the [[#1332 lesson]] a third time.** The
+> review called `ttkb version` importing the whole package a defect — on a Python
+> without `_tkinter` it dies instead of printing the version, and the docs call it
+> *"what to quote in a bug report"*. It is dead **twice over**, and the second
+> reason is the one to keep.
+>
+> **AUTHOR RULING (2026-08-06c): there is nothing here worth fixing.** Without
+> `_tkinter` the user cannot render a single widget — ttkbootstrap does nothing
+> for them at all, so a version string is not what they need. The
+> `No module named '_tkinter'` traceback **is** the diagnosis (their problem is
+> the install, not a ttkbootstrap bug), and `pip show ttkbootstrap` answers the
+> version anyway. **Do not "fix" this by moving the CLI out of the package.**
+>
+> The mechanical reason came first and still holds: the **diagnosis is right and
+> the fix the review proposed cannot work**, because `ttkbootstrap.cli` *is inside
+> the package* — the entry point `ttkbootstrap.cli:main` runs `__init__.py` before
+> a line of `cli.py` executes, so no lazy import or direct metadata read inside
+> `cli.py` changes anything. Probed with a `MetaPathFinder`: the failure is at
+> `from ttkbootstrap.cli import main` itself. **Note `_tkinter` is the C
+> extension, not the `tkinter` package** — `tkinter/__init__.py:38` imports it, so
+> blocking either produces the same failure; `_tkinter` is the one actually absent
+> in the real case (a distro shipping the stdlib package without `python3-tk`).
+>
+> **How the new density test works, since the obvious versions don't.** Bring the
+> root up scaled by patching `tkinter.Tk.__init__` to call `tk scaling 2.0` right
+> after the real init — that is *before* `Style` builds, i.e. genuinely the
+> contributor's situation. Run it in a **subprocess** (the session shares one root
+> and one `Style` singleton) and drive **conftest's own fixture** via
+> `_session_root.__wrapped__()` rather than a copy of its body, which is what
+> makes the **call site** part of what is under test. Proven to fail with either
+> half removed, alone *and* in the full suite. Two traps: the generator must be
+> **held in a name** or it is collected on the spot and its teardown destroys the
+> root mid-measurement; and padding must be compared **as numbers** — `lookup`
+> returns `'10 4'` or `(10, 4)` depending on whether the style has been rebuilt,
+> so the same root reads differently alone vs. in-suite (the `Tcl_Obj` trait
+> already recorded above, in its tuple guise).
+>
+> **Handoff questions 1 and 2 came back clean, with reasons.** `style/theme.py`:
+> `config.defer` applies immediately once a `Style` exists, and
+> `flush_pending_config()` runs in `Style.__init__` **after** `Style.instance = self`
+> and **before** `theme_use(theme)`, so `_register`'s unguarded `get_instance()`
+> cannot see `None` and `App(theme="brand-light")` resolves; queue growth is
+> bounded by "themes registered before a root exists," and duplicate `register()`
+> calls are idempotent. `tests/conftest.py`: the claim holds **at session-root
+> creation** — `_user_options` is empty, builders write through `_build_configure`
+> so nothing is captured as a durable override, and `element_create` is
+> idempotent. The fragility was in the test, not the conftest change.
+>
+> **NEXT SESSION — a TARGETED `/code-review` of the three fix commits
+> (`3dc6978a..ef0b9001`), then ship.** The author runs it; it cannot be launched
+> from inside a session (`disable-model-invocation`). The first ten commits are
+> already-reviewed context, not the subject — and `78d3b045` is this CLAUDE.md
+> entry, so it is not either.
+>
+> **Scope it to the two test files.** **No library runtime code changed in that
+> range**: `cli.py` got a docstring, `pyproject.toml` a comment, and two docs
+> pages were corrected. Nothing ships differently, so the whole risk surface is
+> `tests/test_scaling.py` and `tests/test_cli_api.py`. Say so up front, or the
+> review spends its budget re-reading the CLI.
+>
+> **The two questions worth putting in front of it**, since the author of the
+> fixes is not a neutral judge of them:
+>
+> 1. **`tests/test_scaling.py`** — the new
+>    `test_conftest_pins_a_scaled_display_back_to_baseline` is the **only test in
+>    the suite that builds a real Tk root out-of-process**, and it does three
+>    unusual things at once: patches `tkinter.Tk.__init__` to force
+>    `tk scaling 2.0`, drives conftest's fixture through
+>    `_session_root.__wrapped__()` (a **pytest implementation detail**), and holds
+>    the generator so teardown does not destroy the root mid-measurement. Is that
+>    a reasonable way to test this, or too clever? Note the `__wrapped__`
+>    dependency fails *loudly* (`AttributeError`) if pytest ever changes it, which
+>    is the safe direction — but it is still internals.
+> 2. **`tests/test_cli_api.py`** — the hand-rolled `[project.scripts]` parse that
+>    replaced `tomllib`. It is deliberately not a TOML parser, so the question is
+>    whether it can degrade *silently*. **Already probed, and it cannot** — the
+>    expected dict is a non-empty literal, so an empty parse cannot self-cancel:
+>    a missing section raises `IndexError`, single-quoted values yield `{}`, and a
+>    following `[project.scripts.foo]` subtable truncates — all three fail the
+>    assertion loudly. Worth a second opinion on whether a 3-line parse is the
+>    right call at all versus a `tomli` fallback with a skip on 3.10, but the
+>    silent-failure concern is closed.
+>
+> **What CI already answers, so the review need not.** The portability risk in
+> question 1 — subprocess Tk under `xvfb-run`, and on aqua — is covered directly
+> by opening the PR: all four jobs (Linux, Windows, macOS, the py3.10 floor) run
+> on it. **Open the PR first and let CI run in parallel with the review.** The
+> py3.10 job is exactly what would have caught the `tomllib` bug.
+>
+> **Then ship:** fold in any fixes, open the PR against `master` with the **`2.2`
+> milestone set** (on the PR, not just the issue), and move **#1322** off `2.1.x`
+> onto `2.2` since it is fixed here — closing `2.1.x` out. Then the release
+> runbook under *Dev environment & commands*, whose four live traps (stale
+> `dist/`, the local docs build reporting `2.0.0a1`, `twine check` not validating
+> contents, `--no-cache-dir` on the verify) are listed in the 2.2 STATUS banner
+> at the top of this section.
+>
+> **Gates at handoff** (Windows box, `78d3b045`): suite **1033 passed, 5
+> skipped**; docs clean under `-W`; strip-tags stray-backtick scan clean. Branch
+> `feat/2.2-version-and-cli`, **13 commits, unpushed, no PR**. Both halves of the
+> #1322 fix verified to fail when removed, alone *and* in the full suite.
+>
+> **Unrelated, noticed in passing — a pre-existing test-isolation leak.** Something
+> in the suite leaves `Link.TButton` padding at `40 2`. Invisible unless a test
+> re-runs a builder mid-suite, which is how it surfaced. Not caused by this branch;
+> worth a look sometime, not a release gate.
+>
+> **(1) `ttkbootstrap.__version__`** — read from the installed metadata
+> (`importlib.metadata.version`), so `pyproject.toml` stays the one place the
+> literal lives, matching what `docs/conf.py` already did. **It also has to be
+> declared in `__init__.pyi`**: a `.pyi` replaces the module for type checkers,
+> and the stub generator's `_reexports` pass sources every name from an *import
+> statement* in `__init__.py`, so an assignment is invisible to it. Proven both
+> ways with pyright — `reportAttributeAccessIssue` without the declaration, `str`
+> with it. The line lives in `_HEADER` in `tools/generate_widget_stubs.py`. The
+> flip side of reading metadata is that it reports what was **installed**, so an
+> editable install lags a bump; that is why no test asserts it against
+> `pyproject.toml`, and why **`ttkb version` cannot confirm the release bump
+> without a reinstall** — the same trap the runbook already records for the docs
+> build. (`.venv-home` on this box reports `2.0.0a1`; `.venv314`, which `python`
+> resolves to, reports `2.1.1`.)
+>
+> **(2) The `ttkb` command line** (`src/ttkbootstrap/cli.py`, new
+> `docs/reference/cli.rst`, `tests/test_cli_api.py` +12) — `version` · `demo` ·
+> `convert-theme` · `creator`, installed under **two** `[project.scripts]` names
+> (`ttkb` and `ttkbootstrap`) per the author's choice. Each subcommand already
+> existed as its own `python -m` invocation that nothing surfaced; all of those
+> still work. The converter's arguments moved into a shared
+> `convert_theme.add_arguments`/`run` pair so the two spellings cannot drift, and
+> `__main__.py` (demo) and `ttkcreator/__main__.py` grew a `main()` instead of
+> bare `if __name__` blocks. **Standing docs rule, memory-saved:
+> [[feedback_docs_use_ttkb_cli_spelling]] — the docs say `ttkb <command>`
+> everywhere**, even where another spelling works; the alternatives are stated
+> once, in a note on the CLI page. README updated to match, and its
+> `ttkbootstrap-icons` link repointed at **`tkinter-icons`**, the extension's
+> current name (verified live: repo + PyPI both exist).
+>
+> **(3) `Theme(...).register()` now works before the App exists** — found by
+> actually running a converted theme rather than reading it. It raised
+> `RuntimeError: No Style instance yet`, which made the natural top-of-file form
+> impossible *and* made a custom theme unusable as an `App(theme=...)` argument:
+> registration needed the app, and the app needed the name. It now queues on the
+> **deferred-config seam that already existed for this exact shape**
+> (`utils/config.defer`, the `set_default_button` tenant) — and because
+> `flush_pending_config()` runs in `Style.__init__` *before* `theme_use(theme)`,
+> `import brand; ttk.App(theme="acme-light")` just works. The theme is still
+> **validated eagerly** at the `register()` call, so a missing anchor raises where
+> it is written rather than out of a window constructor. `install_legacy_themes()`
+> got the same treatment and still warns from the call site. Three tests in
+> `test_theme_anchor.py`; the two docs pages that said "register after the App
+> exists" were rewritten.
+>
+> **(4) #1322 is FIXED** — `tests/conftest.py` pins the shared root to
+> `Scaling.baseline` (4/3, or 1.0 on aqua before Tk 9), which is the issue's own
+> suggested fix. **Reproduced before fixing**: forcing `tk scaling 2.0` in the
+> fixture produced exactly the four filed failures with the issue's 144-dpi
+> numbers — `(23,23)`, `(60,8)`. With the pin the **whole suite passes at 1.0,
+> 1.4, 1.6667 and 2.0**, so the fix is density-independent rather than
+> Windows-shaped. Pinned *after* the root is built (`Window()` makes the root and
+> the `Style` together); the handful of eagerly-built styles carry the host's
+> density, and empirically nothing asserts their geometry. New
+> `test_test_root_runs_at_baseline_density` guards the invariant. **The milestone
+> chore still applies**: move #1322 off `2.1.x` (to `2.2`, since it is now fixed)
+> and close that milestone out, or it becomes unreachable when `master` reads
+> 2.2.0.
+>
+> **The converter demonstration** (the author's third ask) ran end-to-end on real
+> 1.x artifacts reconstructed from `release/v1`'s own save code — a `USER_THEMES`
+> `user.py`, a `ThemeDefinition(...)` export, and a `load_user_themes` JSON, built
+> from two shipped 1.x specs. All three converted; the generated module was
+> imported and rendered light and dark. Two findings came out of *running* it, not
+> reading it: the registration bug in (3), and that the generated header stopped a
+> step short — it now names the registered variant (`app = ttk.App(theme="acme
+> -light")`), since the 2.x name is `<family>-<mode>`, not the 1.x name.
+>
+> **`development/2_2_changes.md` is updated for all four** (new *Testing*
+> section). The release notes source is therefore current as of this work — but
+> re-run `git diff v2.1.1..master` before the release, as the handoff says.
+>
+> **Two process notes from assembling the branch.** (a) **The Bash tool is not
+> PowerShell** — `git commit -m @'…'@` there passes a literal `@` as the first
+> line of the message, which is how the first commit got a stray `@` subject
+> (fixed by `--amend -F`). Write the message to a file and use `-F`; it sidesteps
+> every quoting difference between the two shells. (b) Splitting mixed files
+> across single-purpose commits without interactive staging is done by
+> *temporarily reverting* the other thread's hunk, committing, and re-applying it
+> in the later commit — three files needed it here (`README.md`,
+> `feature-guides/theming.rst`, `migrating.rst`) plus the converter's generated
+> header, which could only claim `App(theme=…)` once the deferral commit made it
+> true.
 
 ## Repository layout
 

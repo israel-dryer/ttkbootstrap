@@ -957,7 +957,7 @@ class Style(ttk.Style):
         "colors": {...}}}]}`` with the sixteen 1.x color keys, taken verbatim.
         Each theme registers under its own name as a single mode. To convert a
         1.x theme into a light/dark `Theme` family whose plumbing colors are
-        regenerated, run ``python -m ttkbootstrap.convert_theme`` instead.
+        regenerated, run ``ttkb convert-theme`` instead.
 
         Parameters:
 

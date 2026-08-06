@@ -6,6 +6,7 @@ name/colors/light-or-dark container the style engine consumes), and `Theme`
 from a handful of accent colors). Lowest layer of the `style` package.
 """
 import colorsys
+import itertools
 from collections.abc import Mapping
 from dataclasses import dataclass, fields, replace
 from functools import lru_cache
@@ -40,6 +41,12 @@ _SHADE_WEIGHTS = {
     900: 0.80,
     950: 0.90,
 }
+
+# Distinguishes one queued pre-root registration from the next. A counter and
+# not `id(self)`, because `Theme(...).register()` need not keep a reference --
+# the object can be collected and its id reused by the next theme, which is the
+# very collision the unique key exists to prevent.
+_register_calls = itertools.count()
 
 
 def _normalize_color(color: str) -> str:
@@ -904,28 +911,47 @@ class Theme:
         return [d for d in (self._definition("light"), self._definition("dark")) if d]
 
     def register(self):
-        """Register the generated variants on the live `Style` singleton.
+        """Register the generated variants so the theme can be selected by name.
 
         Returns this theme so ``theme = Theme(...).register()`` reads cleanly.
-        Raises `RuntimeError` if no `Style` has been created yet.
-        """
-        # local import breaks the theme<-engine cycle (engine imports theme)
-        from ttkbootstrap.style.engine import Style
 
-        style = Style.get_instance()
-        if style is None:
-            raise RuntimeError(
-                "No Style instance yet; create an App/Style before registering "
-                "a Theme, or add it to the built-in catalog."
-            )
+        A theme is declared at the top of a file, where the app root does not
+        exist yet. Registering before the root is therefore the normal case: the
+        variants are queued and registered when the root comes up, early enough
+        that ``App(theme="<name>-light")`` selects one. With a root already
+        running they register immediately.
+
+        The theme is validated here either way, so a missing anchor or an empty
+        family raises at the `register()` call rather than later, out of a
+        window constructor.
+        """
         definitions = self.to_definitions()
         if not definitions:
             raise ValueError(
                 f"Theme {self.name!r} defines neither a 'light' nor a 'dark' block."
             )
+        # local import breaks the theme <- utils cycle (utils imports style)
+        from ttkbootstrap.utils import config
+
+        # A key per call, not per family: the seam keeps only the last applier
+        # for a key, so keying on the name would drop one of two `register()`
+        # calls that split a family across separate `Theme` objects -- which
+        # both take effect once the root exists.
+        config.defer(
+            f"register_theme:{self.name}:{next(_register_calls)}",
+            lambda: self._register(definitions),
+        )
+        return self
+
+    @staticmethod
+    def _register(definitions):
+        """Register already-generated definitions on the live `Style`."""
+        # local import breaks the theme<-engine cycle (engine imports theme)
+        from ttkbootstrap.style.engine import Style
+
+        style = Style.get_instance()
         for definition in definitions:
             style.register_theme(definition)
-        return self
 
     @classmethod
     def from_existing(cls, base: "Theme", *, name: str, **overrides) -> "Theme":

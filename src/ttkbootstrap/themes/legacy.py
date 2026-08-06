@@ -82,19 +82,15 @@ def install_legacy_themes(style=None) -> None:
     `DeprecationWarning`: the legacy names are a migration convenience, not the
     2.0 catalog.
 
+    Called before the app root exists -- the natural place, at the top of a
+    file -- the registration is queued and runs when the root comes up, early
+    enough that ``App(theme="darkly")`` selects one.
+
     Parameters:
         style: The `Style` to register onto; defaults to the live singleton.
     """
-    if style is None:
-        # local import breaks the themes<-engine import cycle
-        from ttkbootstrap.style.engine import Style
-
-        style = Style.get_instance()
-        if style is None:
-            raise RuntimeError(
-                "No Style instance yet; create an App/Style before calling "
-                "install_legacy_themes()."
-            )
+    # Warn from the call site whether or not the work is deferred: the
+    # deprecation is about the names this caller is asking for.
     warnings.warn(
         "Legacy (pre-2.0) theme names are a migration convenience and are "
         "planned for removal in 3.0; prefer the 2.0 catalog "
@@ -102,6 +98,22 @@ def install_legacy_themes(style=None) -> None:
         DeprecationWarning,
         stacklevel=2,
     )
+    if style is not None:
+        _install_legacy_themes(style)
+        return
+    # local import breaks the themes<-utils import cycle
+    from ttkbootstrap.utils import config
+
+    config.defer("install_legacy_themes", _install_legacy_themes)
+
+
+def _install_legacy_themes(style=None) -> None:
+    """Register every legacy theme not already registered on `style`."""
+    if style is None:
+        # local import breaks the themes<-engine import cycle
+        from ttkbootstrap.style.engine import Style
+
+        style = Style.get_instance()
     for name, spec in STANDARD_THEMES.items():
         if name in style._theme_names:
             continue

@@ -49,6 +49,13 @@ dependencies = ["pillow>=10,<13"]
 Homepage = "https://github.com/israel-dryer/ttkbootstrap"
 Documentation = "https://ttkbootstrap.readthedocs.io/en/latest/"
 
+[project.scripts]
+# Two names for one command: `ttkbootstrap` is guessable from the package name,
+# `ttkb` is what anyone types twice. When the scripts directory is not on PATH,
+# `python -m ttkbootstrap.cli <command>` runs the same thing.
+ttkbootstrap = "ttkbootstrap.cli:main"
+ttkb = "ttkbootstrap.cli:main"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 

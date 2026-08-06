@@ -58,8 +58,87 @@ formats, the loud-failure paths, the escaping of what it emits, and an
 end-to-end check that the emitted Python actually registers a theme and styles
 real widgets.
 
+### `ttkbootstrap.__version__`
+
+`import ttkbootstrap; ttkbootstrap.__version__` raised `AttributeError` — it had
+never existed, in any release. It now reports the installed distribution's
+version, read from the package metadata so `pyproject.toml` stays the one place
+the literal lives. The consequence of reading metadata is that it reports what
+was *installed*: an editable install keeps whatever metadata it was built with
+until it is reinstalled.
+
+It is also declared in the type stub. A `.pyi` replaces the module for type
+checkers, and the stub's re-export pass sources every name from an import
+statement in `__init__.py`; `__version__` is an assignment, so without an
+explicit declaration `ttk.__version__` was an attribute error under pyright even
+though it worked at runtime.
+
+### The `ttkb` command line
+
+Installing ttkbootstrap now installs a command — under two names, `ttkb` and
+`ttkbootstrap`, that run the same thing:
+
+| Command | What it does |
+| --- | --- |
+| `ttkb version` | Print the installed version |
+| `ttkb demo` | Open the widget demo (was `python -m ttkbootstrap`) |
+| `ttkb convert-theme <file>` | Convert a 1.x theme file (was `python -m ttkbootstrap.convert_theme`) |
+| `ttkb creator` | Open ttkcreator (was `python -m ttkcreator`) |
+
+Each of those already existed as its own `python -m` invocation, which nothing
+surfaced; every `python -m` spelling still works, and is what to use when the
+scripts directory is not on `PATH`. The converter's arguments are defined once
+and shared by both spellings, so they cannot drift apart. New
+`docs/reference/cli.rst`; `tests/test_cli_api.py` (+12).
+
+### Registering a theme before the app exists
+
+`Theme(...).register()` raised `RuntimeError: No Style instance yet` unless an
+`App` was already running — but a theme is declared at the top of a file, which
+is exactly where no app exists. Worse, it made the theme unusable as an
+`App(theme=...)` argument: registration needed the app, and the app needed the
+name. It now queues on the existing deferred-config seam (the one
+`set_default_button` uses) and registers when the root comes up, which is early
+enough for `App(theme="brand-light")` to select it. Registering with an app
+already running still applies immediately.
+
+```python
+import ttkbootstrap as ttk
+import brand                       # a converted theme module
+
+app = ttk.App(theme="acme-light")  # selectable straight away
+```
+
+The theme is still *validated* at the `register()` call, so a missing anchor
+raises where it is written rather than later out of a window constructor.
+`install_legacy_themes()` gained the same treatment, and keeps warning from the
+call site whether or not the work is deferred.
+
+## Testing
+
+- **The suite is density-independent** (#1322). Four asset-geometry tests assert
+  exact unscaled pixel sizes, so they passed only where the scaling factor was
+  exactly 1.0 — a contributor on Windows at 125% (the factory default on most
+  laptops) got four one-pixel failures on a clean checkout. The shared root is
+  now pinned to standard density in `tests/conftest.py`, rather than four
+  assertions being patched: that covers any other test carrying the same latent
+  assumption, and demotes CI's `-dpi 96` from load-bearing to belt-and-braces.
+  Verified by simulating 1.0, 1.4, 1.6667 and 2.0 — the whole suite passes at
+  every one, and the four failures reproduce exactly as filed with the pin
+  removed. `test_test_root_runs_at_baseline_density` pins the invariant.
+
 ## Documentation
 
+- **Reference › Command line** is a new page: the four subcommands, what each
+  one replaces, and the two-names/`python -m` note.
+- **Installation** and **Theming & Colors** now reach the demo and ttkcreator
+  through `ttkb demo` / `ttkb creator`; the converter is `ttkb convert-theme`
+  everywhere.
+- **Theming & Colors** and **Migrating to 2.0** no longer say a theme must be
+  registered after the `App` exists — they show the top-of-file form.
+- The **icons** guide and the README now point at
+  [tkinter-icons](https://github.com/israel-dryer/tkinter-icons), the extension's
+  current name (it was `ttkbootstrap-icons`).
 - **Migrating to 2.0** gained *Saved themes move into your code*: the
   `themes/user.py` store and ttkcreator's Import/Export buttons are gone, the
   converter command, what carries over vs. what 2.x regenerates, and a note
