@@ -1782,6 +1782,14 @@ full 3.0 removal checklist until 3.0 is actually scoped.
 > under *Dev environment & commands* (bump `pyproject.toml` on `master`, fold in
 > `development/2_2_changes.md`, gates, build, upload, tag).
 >
+> **SUPERSEDED (2026-08-06b): the release is no longer the next thing.** An
+> unmerged branch, `feat/2.2-version-and-cli`, now carries four more 2.2 items —
+> `__version__`, the `ttkb` CLI, pre-root `Theme.register()`, and the #1322 fix —
+> plus the review round that followed. **Land that branch first**; the release
+> runbook below is still correct and still next after it. See the two 2026-08-06
+> session entries at the end of this section for the branch's state and what the
+> next session owes it.
+>
 > **HANDOFF — THE NEXT SESSION IS THE 2.2 RELEASE** (final checks, then ship).
 > Set up 2026-08-05; everything below was verified on the Windows box at
 > `e05a9deb`, so start by confirming nothing moved rather than re-deriving it.
@@ -1952,34 +1960,60 @@ full 3.0 removal checklist until 3.0 is actually scoped.
 > doable, and a live demonstration that the theme converter works; the CLI and its
 > docs came out of that conversation.
 >
-> **NEXT SESSION: `/code-review` each commit on this branch, one at a time.**
-> The commits are deliberately single-purpose and in dependency order, so review
-> them in order and treat each as its own change rather than reviewing the branch
-> diff as a whole:
+> **THE `/code-review` OF THOSE 7 COMMITS IS DONE (2026-08-06b) — 4 findings, all
+> real, all fixed in 3 follow-up commits. The branch now has 10 commits, still
+> unpushed with no PR.** Gates after the fixes: suite **1033 passed, 5 skipped**;
+> docs clean under `-W`. Precedent held for the fourth round running — a careful
+> self-review had missed every one.
 >
-> | Commit | Subject | What to look hardest at |
-> |---|---|---|
-> | `dcf5cc9f` | `feat: report the installed version as ttkbootstrap.__version__` | The metadata read and its fallback; whether the stub declaration is the *only* place a public assignment can go missing |
-> | `ac47d008` | `feat(cli): add the ttkb command` | New public surface: argparse wiring, the shared `add_arguments`/`run` seam, the `main()` refactors on the two `__main__` modules, exit codes |
-> | `39599d2c` | `fix(themes): register a theme before the app exists` | The behavior change — deferral ordering vs. `theme_use`, eager validation, whether anything relied on the old `RuntimeError`, `install_legacy_themes` warning placement |
-> | `1141a202` | `test: pin the test root to baseline density` (#1322) | Whether pinning *after* the root is built leaves any eagerly-built style asserted elsewhere |
-> | `2af76d56` | `docs: document the ttkb command line` | Prose accuracy against the shipped CLI; the `ttkb`-everywhere rule |
-> | `2ec003f0` | `docs: point at tkinter-icons` | Trivial; confirm no stale link survives |
-> | *(last)* | `docs(dev): record the 2.2 additions` | That the change log matches what actually shipped |
+> | Fix commit | What the review found |
+> |---|---|
+> | `3530c673` `fix(themes): keep every pre-root theme registration` | **MEDIUM.** The deferral commit keyed the queue on the *family name*, and the seam keeps one applier per key — so two `register()` calls splitting a family across separate `Theme` objects collapsed to the last. Probed: pre-root `['acme-dark']` vs post-root `['beta-dark','beta-light']`, i.e. **the queue changed the answer**, silently, surfacing only as `theme_use` raising later. Now a key per call. |
+> | `40642e23` `fix(cli): only claim ttkcreator is missing when it is` | **LOW.** The `try` wrapped an import that executes all of ttkcreator, so an `ImportError` from *inside* it reported "ttkcreator is not installed". Narrowed to `ModuleNotFoundError` naming ttkcreator itself; anything else re-raises. Trailing newline too. |
+> | `e6e2b617` `test: rebuild the eager styles at the pinned density` | **LOW.** #1322 was only half fixed: the pin lands after `Window()`, so the styles `create_default_style` builds on the way up stayed sized to the host. Re-running it re-sizes them — the recipes are invoked unconditionally, the build-once check is at the call site (probed: stale `10 4` → `15 6` at `tk scaling 2.0`). |
 >
-> **Precedent worth honoring:** the last three `/code-review` rounds on this repo
-> each found real defects a careful self-review had missed, and in two of them the
-> artifact was *wrong* rather than merely narrow (#1332's unescaped interpolation;
-> #1328's `Menu` rebuilt from the mixin, discarding five public methods). Two of
-> the commits here are exactly that shape — new public surface (`cli.py`) and a
-> behavior change to an existing API (`register()`). Also remember
-> [[the #1332 lesson]]: a review finding is a hypothesis with a reproduction
-> attached; the reproduction proves the *defect*, which does not make the proposed
-> *fix* right. Probe any recommendation against real data before implementing it.
+> **A counter, not `id(self)`.** The review proposed keying on `id(self)`, as
+> `on_theme_change` does for callbacks. **`Theme(...).register()` need not keep a
+> reference**, so the object can be collected and its id reused by the next theme
+> — reinstating the very collision. `itertools.count()` in `theme.py` instead.
+> ([[the #1332 lesson]] again: the reproduction proves the *defect*, not the
+> proposed *fix*.)
 >
-> After the reviews: fold any fixes in, then open the PR against `master` with the
-> **`2.2` milestone set** (on the PR, not just the issue), and move **#1322** off
-> `2.1.x` onto `2.2` since it is fixed here — closing `2.1.x` out.
+> **The #1322 guard is asserted on conftest's SOURCE, and that is a deliberate
+> compromise worth re-examining.** The first version read the eight eager styles'
+> geometry, re-ran `create_default_style`, and compared — it **passed alone and
+> failed in the full suite**, because it mutates global style state mid-run and
+> some earlier test leaks a `Link.TButton` padding of `40 2` that the rebuild
+> reset. So `create_default_style` is idempotent at session start (nothing has
+> been configured yet) but **NOT** once styles carry overrides. The replacement
+> asserts the pin precedes the rebuild in conftest's text, proven to fail with the
+> rebuild line removed. Testing it properly would mean driving a scaled root in a
+> subprocess.
+>
+> **NEXT SESSION — `/code-review` the three fix commits (`d7561785..HEAD`), then
+> ship the branch.** The first four commits are already-reviewed context, not the
+> subject. It cannot be launched from inside a session (`disable-model-invocation`
+> — reserved for explicit user invocation), so the author runs `/code-review`.
+> Three questions worth putting in front of it, since the author of the fixes is
+> not a neutral judge of them:
+>
+> 1. **`style/theme.py`** — module-level `itertools.count()` and a per-call defer
+>    key. Anything the per-family key didn't have: unbounded queue growth, or
+>    `register()` in a loop queueing duplicate work that all runs at flush?
+> 2. **`tests/conftest.py`** — the second `create_default_style()` call is safe
+>    *only* because nothing is configured at session-root creation. That is the
+>    claim to check, given it is demonstrably not idempotent later.
+> 3. **`tests/test_scaling.py`** — is a source-order guard reasonable here (the
+>    repo has precedent), or papering over a claim that wants a real test?
+>
+> **Then:** fold in any fixes, open the PR against `master` with the **`2.2`
+> milestone set** (on the PR, not just the issue), and move **#1322** off `2.1.x`
+> onto `2.2` since it is fixed here — closing `2.1.x` out.
+>
+> **Unrelated, noticed in passing — a pre-existing test-isolation leak.** Something
+> in the suite leaves `Link.TButton` padding at `40 2`. Invisible unless a test
+> re-runs a builder mid-suite, which is how it surfaced. Not caused by this branch;
+> worth a look sometime, not a release gate.
 >
 > **(1) `ttkbootstrap.__version__`** — read from the installed metadata
 > (`importlib.metadata.version`), so `pyproject.toml` stays the one place the
