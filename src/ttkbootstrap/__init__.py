@@ -37,6 +37,8 @@ bootstyle)`.
 
 For more information, see: https://ttkbootstrap.readthedocs.io/
 """
+from importlib.metadata import PackageNotFoundError, version as _distribution_version
+
 from tkinter import (
     Menu as _tkMenu, Text as _tkText, Canvas as _tkCanvas, Tk as _tkTk,
     Frame as _tkFrame, Label as _tkLabel,
@@ -99,6 +101,20 @@ from ttkbootstrap.utils import (
     Fonts,
     set_global_family,
 )
+
+try:
+    #: The installed distribution's version, e.g. `"2.2.0"`.
+    #
+    # Read from the installed metadata rather than written here, so
+    # `pyproject.toml` stays the one place the version literal lives. The
+    # consequence is that this reports what was *installed*: an editable install
+    # keeps whatever metadata it was built with until it is reinstalled.
+    __version__ = _distribution_version("ttkbootstrap")
+except PackageNotFoundError:
+    # Running from a source tree that was never installed (e.g. PYTHONPATH=src)
+    # -- there is no metadata to read, and guessing one would be worse than
+    # saying so.
+    __version__ = "unknown"
 
 
 # --------------------------------------------------------------------------- #

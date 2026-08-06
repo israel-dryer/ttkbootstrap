@@ -258,6 +258,10 @@ from PIL.ImageTk import PhotoImage as PilImage
 from typing import Any, Callable
 
 from ttkbootstrap.style import AutoStyleMixin as AutoStyleMixin, BootMixin as BootMixin
+
+# Assigned in `__init__.py` rather than imported, so `_reexports` -- which
+# sources every name from an import statement -- cannot reach it.
+__version__: str
 '''
 
 
