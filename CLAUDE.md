@@ -2038,10 +2038,59 @@ full 3.0 removal checklist until 3.0 is actually scoped.
 > so nothing is captured as a durable override, and `element_create` is
 > idempotent. The fragility was in the test, not the conftest change.
 >
-> **NEXT: ship the branch.** Open the PR against `master` with the **`2.2`
+> **NEXT SESSION — a TARGETED `/code-review` of the three fix commits
+> (`3dc6978a..ef0b9001`), then ship.** The author runs it; it cannot be launched
+> from inside a session (`disable-model-invocation`). The first ten commits are
+> already-reviewed context, not the subject — and `78d3b045` is this CLAUDE.md
+> entry, so it is not either.
+>
+> **Scope it to the two test files.** **No library runtime code changed in that
+> range**: `cli.py` got a docstring, `pyproject.toml` a comment, and two docs
+> pages were corrected. Nothing ships differently, so the whole risk surface is
+> `tests/test_scaling.py` and `tests/test_cli_api.py`. Say so up front, or the
+> review spends its budget re-reading the CLI.
+>
+> **The two questions worth putting in front of it**, since the author of the
+> fixes is not a neutral judge of them:
+>
+> 1. **`tests/test_scaling.py`** — the new
+>    `test_conftest_pins_a_scaled_display_back_to_baseline` is the **only test in
+>    the suite that builds a real Tk root out-of-process**, and it does three
+>    unusual things at once: patches `tkinter.Tk.__init__` to force
+>    `tk scaling 2.0`, drives conftest's fixture through
+>    `_session_root.__wrapped__()` (a **pytest implementation detail**), and holds
+>    the generator so teardown does not destroy the root mid-measurement. Is that
+>    a reasonable way to test this, or too clever? Note the `__wrapped__`
+>    dependency fails *loudly* (`AttributeError`) if pytest ever changes it, which
+>    is the safe direction — but it is still internals.
+> 2. **`tests/test_cli_api.py`** — the hand-rolled `[project.scripts]` parse that
+>    replaced `tomllib`. It is deliberately not a TOML parser, so the question is
+>    whether it can degrade *silently*. **Already probed, and it cannot** — the
+>    expected dict is a non-empty literal, so an empty parse cannot self-cancel:
+>    a missing section raises `IndexError`, single-quoted values yield `{}`, and a
+>    following `[project.scripts.foo]` subtable truncates — all three fail the
+>    assertion loudly. Worth a second opinion on whether a 3-line parse is the
+>    right call at all versus a `tomli` fallback with a skip on 3.10, but the
+>    silent-failure concern is closed.
+>
+> **What CI already answers, so the review need not.** The portability risk in
+> question 1 — subprocess Tk under `xvfb-run`, and on aqua — is covered directly
+> by opening the PR: all four jobs (Linux, Windows, macOS, the py3.10 floor) run
+> on it. **Open the PR first and let CI run in parallel with the review.** The
+> py3.10 job is exactly what would have caught the `tomllib` bug.
+>
+> **Then ship:** fold in any fixes, open the PR against `master` with the **`2.2`
 > milestone set** (on the PR, not just the issue), and move **#1322** off `2.1.x`
 > onto `2.2` since it is fixed here — closing `2.1.x` out. Then the release
-> runbook.
+> runbook under *Dev environment & commands*, whose four live traps (stale
+> `dist/`, the local docs build reporting `2.0.0a1`, `twine check` not validating
+> contents, `--no-cache-dir` on the verify) are listed in the 2.2 STATUS banner
+> at the top of this section.
+>
+> **Gates at handoff** (Windows box, `78d3b045`): suite **1033 passed, 5
+> skipped**; docs clean under `-W`; strip-tags stray-backtick scan clean. Branch
+> `feat/2.2-version-and-cli`, **13 commits, unpushed, no PR**. Both halves of the
+> #1322 fix verified to fail when removed, alone *and* in the full suite.
 >
 > **Unrelated, noticed in passing — a pre-existing test-isolation leak.** Something
 > in the suite leaves `Link.TButton` padding at `40 2`. Invisible unless a test
