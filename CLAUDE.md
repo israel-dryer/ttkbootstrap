@@ -1990,25 +1990,58 @@ full 3.0 removal checklist until 3.0 is actually scoped.
 > rebuild line removed. Testing it properly would mean driving a scaled root in a
 > subprocess.
 >
-> **NEXT SESSION — `/code-review` the three fix commits (`d7561785..HEAD`), then
-> ship the branch.** The first four commits are already-reviewed context, not the
-> subject. It cannot be launched from inside a session (`disable-model-invocation`
-> — reserved for explicit user invocation), so the author runs `/code-review`.
-> Three questions worth putting in front of it, since the author of the fixes is
-> not a neutral judge of them:
+> **THE `/code-review` OF THE 10 COMMITS IS DONE (2026-08-06c) — 6 findings, 5
+> real and fixed in 3 commits, 1 rejected by probe. The branch now has 13
+> commits, still unpushed with no PR.** Gates after the fixes: suite **1033
+> passed, 5 skipped**; docs clean under `-W`; the strip-tags stray-backtick scan
+> clean. Precedent held for the fifth round running.
 >
-> 1. **`style/theme.py`** — module-level `itertools.count()` and a per-call defer
->    key. Anything the per-family key didn't have: unbounded queue growth, or
->    `register()` in a loop queueing duplicate work that all runs at flush?
-> 2. **`tests/conftest.py`** — the second `create_default_style()` call is safe
->    *only* because nothing is configured at session-root creation. That is the
->    claim to check, given it is demonstrably not idempotent later.
-> 3. **`tests/test_scaling.py`** — is a source-order guard reasonable here (the
->    repo has precedent), or papering over a claim that wants a real test?
+> | Fix commit | What the review found |
+> |---|---|
+> | `3dc6978a` `fix(tests): keep the CLI tests runnable on the 3.10 floor` | **HIGH.** `import tomllib` is **3.11+**, and `test_cli_api.py` imported it at module level — so on the `ubuntu/py3.10` CI job, the job whose comment says *"a 3.11+ only construct cannot slip in"*, the module died at **collection** and took all 12 tests with it. Parsed by hand now. Also guarded the unguarded `importlib.metadata.version` call, which raises under the supported `PYTHONPATH=src` — the one case `__version__` has a fallback for. |
+> | `21e88216` `test: prove the density pin against a scaled root` | **MEDIUM — the #1322 guard did not guard.** Answers handoff question 3: the source-order guard *was* papering over it. Both strings it searched for live **inside** `_pin_baseline_density`, so deleting the **call site** left it green; and its companion asserts `factor == 1.0`, which holds anyway on any standard-density box — every CI runner. The regression was undetectable everywhere it runs. |
+> | `ef0b9001` `docs: correct the python -m claim and the register-later snippet` | **2× LOW.** The CLI page promised *"every command also has a `python -m` spelling"* with **no entry for `version`** and no such module — a reader without the scripts dir on `PATH` had nothing to run (`python -m ttkbootstrap.cli <command>` is the real general fallback). And the theming guide's register-later snippet, `ttk.Theme(name="brand", ...).register()`, is a **SyntaxError**. |
 >
-> **Then:** fold in any fixes, open the PR against `master` with the **`2.2`
+> **The rejected finding, and it is the [[#1332 lesson]] a third time.** The
+> review called `ttkb version` importing the whole package a defect — on a Python
+> without `_tkinter` it dies instead of printing the version, and the docs call it
+> *"what to quote in a bug report"*. The **diagnosis is right and the fix it
+> proposed cannot work**: `ttkbootstrap.cli` *is inside the package*, so the entry
+> point `ttkbootstrap.cli:main` runs `__init__.py` before a line of `cli.py`
+> executes. Probed with a `MetaPathFinder` blocking `_tkinter`: the failure is at
+> `from ttkbootstrap.cli import main` itself. Nothing internal to `cli.py` can
+> change that; only moving the CLI out of the package would, which is not worth a
+> top-level module in site-packages. `pip show ttkbootstrap` already answers it.
+>
+> **How the new density test works, since the obvious versions don't.** Bring the
+> root up scaled by patching `tkinter.Tk.__init__` to call `tk scaling 2.0` right
+> after the real init — that is *before* `Style` builds, i.e. genuinely the
+> contributor's situation. Run it in a **subprocess** (the session shares one root
+> and one `Style` singleton) and drive **conftest's own fixture** via
+> `_session_root.__wrapped__()` rather than a copy of its body, which is what
+> makes the **call site** part of what is under test. Proven to fail with either
+> half removed, alone *and* in the full suite. Two traps: the generator must be
+> **held in a name** or it is collected on the spot and its teardown destroys the
+> root mid-measurement; and padding must be compared **as numbers** — `lookup`
+> returns `'10 4'` or `(10, 4)` depending on whether the style has been rebuilt,
+> so the same root reads differently alone vs. in-suite (the `Tcl_Obj` trait
+> already recorded above, in its tuple guise).
+>
+> **Handoff questions 1 and 2 came back clean, with reasons.** `style/theme.py`:
+> `config.defer` applies immediately once a `Style` exists, and
+> `flush_pending_config()` runs in `Style.__init__` **after** `Style.instance = self`
+> and **before** `theme_use(theme)`, so `_register`'s unguarded `get_instance()`
+> cannot see `None` and `App(theme="brand-light")` resolves; queue growth is
+> bounded by "themes registered before a root exists," and duplicate `register()`
+> calls are idempotent. `tests/conftest.py`: the claim holds **at session-root
+> creation** — `_user_options` is empty, builders write through `_build_configure`
+> so nothing is captured as a durable override, and `element_create` is
+> idempotent. The fragility was in the test, not the conftest change.
+>
+> **NEXT: ship the branch.** Open the PR against `master` with the **`2.2`
 > milestone set** (on the PR, not just the issue), and move **#1322** off `2.1.x`
-> onto `2.2` since it is fixed here — closing `2.1.x` out.
+> onto `2.2` since it is fixed here — closing `2.1.x` out. Then the release
+> runbook.
 >
 > **Unrelated, noticed in passing — a pre-existing test-isolation leak.** Something
 > in the suite leaves `Link.TButton` padding at `40 2`. Invisible unless a test
