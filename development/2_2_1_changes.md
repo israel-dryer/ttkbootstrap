@@ -34,8 +34,8 @@ window, with the menu labels sitting on it. It now stays the surface color, and
 popup menus keep the themed 1px border they gained in 2.1.
 
 **Who notices.** Linux/X11 users of an app with a menu bar
-(`window.configure(menu=...)`), running a Python whose Tk maps menu bars —
-CPython **3.13.15** and later on the 3.13 line. Windows and macOS were never
+(`window.configure(menu=...)`), on a build that maps menu bars — CPython
+**3.13.15** is the one this was found on. Windows and macOS were never
 affected: both draw menu bars with native OS chrome, which the library does not
 touch. Nothing about an app's own code decided this, so an app that looked
 correct could start showing it purely from an interpreter upgrade.
@@ -49,8 +49,9 @@ rest.
 Popups and menu bars were told apart by waiting for `<Map>`. Tk displays a menu
 bar through a *clone*, so historically the widget the library styles never
 mapped and so never got painted. That held everywhere it was measured, but it is
-a property of the Tk build rather than a guarantee, and the Tk in CPython 3.13.15
-does map it.
+a property of the build rather than a guarantee: under CPython 3.13.15 it does
+map. Not a Tk version difference either — CI's 3.10 job does not map it on the
+very same Tk 8.6.14.
 
 A menu bar is now refused explicitly — the library asks whether the menu is
 installed as a window's menu bar rather than inferring it from mapping — so the

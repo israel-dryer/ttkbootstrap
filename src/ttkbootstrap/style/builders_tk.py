@@ -19,9 +19,10 @@ def _is_menubar(widget: tk.Menu) -> bool:
     Painting one floods the bar with the border color, because a menubar's
     entries cover only its left. This used to be inferred from `<Map>` -- a
     menubar is displayed through a clone, so the widget styled here did not map
-    -- but that is a property of the Tk build, not a guarantee: a menubar does
-    map on the Tk in CPython 3.13.15, which painted every X11 menubar. Ask
-    directly instead, so the invariant no longer depends on the Tk in use.
+    -- but that is a property of the build, not a guarantee: on CI's x11 it does
+    map under CPython 3.13.15 and does not under 3.10.20, on the *same* Tk
+    (8.6.14), which painted every x11 menubar. Ask directly instead, so the
+    invariant no longer depends on what the interpreter and Tk happen to do.
 
     Two ways to serve as a menubar, since either widget may be the one that maps:
     the menu installed as some window's ``-menu``, or the clone Tk displays for

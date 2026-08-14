@@ -105,11 +105,12 @@ def test_a_menubar_that_maps_is_still_not_painted(root, x11):
     """The same guard, forced instead of trusted.
 
     The test above only shows the menubar went unpainted *because it never
-    mapped* -- and that is a property of the Tk build, not a guarantee. Tk
-    displays a menubar through a clone, so historically the widget styled here
-    did not map; on the Tk in CPython 3.13.15 it does, which painted every X11
-    menubar in the border color. Deliver the `<Map>` by hand so the refusal is
-    asserted on every box regardless of what the local Tk does.
+    mapped* -- and that is a property of the build, not a guarantee. Tk displays
+    a menubar through a clone, so historically the widget styled here did not
+    map; under CPython 3.13.15 it does, which painted every x11 menubar in the
+    border color. Not the Tk version either: CI's 3.10 job does not map it on
+    the same Tk 8.6.14. Deliver the `<Map>` by hand so the refusal is asserted
+    on every box regardless of what the local build does.
     """
     menubar = ttk.Menu(root)
     menubar.add_cascade(label="File")

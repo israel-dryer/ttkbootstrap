@@ -316,10 +316,13 @@ geometry, scaling, assets or event bindings should be read against them.
   bar must be refused explicitly — ask whether the menu is installed as a
   window's `-menu` (or is the `-type menubar` clone). It used to be inferred
   from `<Map>`, on the measurement that **Tk displays a menu bar through a
-  clone** so the widget you style never maps. **That is a property of the Tk
-  build, not a guarantee** — the Tk in CPython 3.13.15 maps it, which painted
-  every X11 menu bar in the border color. A behavioral Tk fact is worth
-  re-deriving before you lean on it.
+  clone** so the widget you style never maps. **That is a property of the build,
+  not a guarantee** — under CPython 3.13.15 it maps, which painted every X11 menu
+  bar in the border color. **Not a Tk version difference**: CI's py3.10 job does
+  *not* map it on the same **Tk 8.6.14**, so the interpreter is part of it and
+  the exact mechanism is still unidentified. Which is the lesson — a behavioral
+  Tk fact is worth re-deriving rather than leaning on, and worth designing out
+  when the invariant can be asked for directly instead.
 - **A style `lookup` can return a `_tkinter.Tcl_Obj`** once the style is *built*
   (`int()` rejects it, `str()` renders the number), and padding reads as `'10 4'`
   or `(10, 4)` depending on whether a rebuild has happened. Compare as numbers.
@@ -401,13 +404,17 @@ which one you are on rather than assuming:
   not free: `setup-python` ships no interpreter built against it. Visual gates stay
   manual and still need the right box — see `tools/verify_positioning.py` and the
   screenshot harness.
-- **The report includes the Tk *patchlevel*, and that is the point.** A CPython
-  **patch** release can change the Tk it links: 3.13.14 → 3.13.15 started mapping
-  menu bars and broke `test_a_never_posted_menu_is_not_painted` on ubuntu py3.13
-  alone. `master` had been green 8 days earlier on the same commit, so a red job on
-  a branch that touches no `src/` is worth a **control re-run of `master`'s own
-  workflow** before believing the branch caused it. Reporting only `tk=8.6` is what
-  hid the drift.
+- **The report includes the Tk *patchlevel*, because `tk=8.6` is not a build.**
+  A CPython **patch** release can change behavior: 3.13.14 → 3.13.15 started
+  mapping menu bars and broke `test_a_never_posted_menu_is_not_painted` on ubuntu
+  py3.13 alone. The patchlevel then showed it is **not** a Tk-version story — both
+  ubuntu jobs run **Tk 8.6.14** and only the 3.13 one mapped — so record the build
+  and let it correct you rather than reasoning from the version string. Observed
+  spread: linux 8.6.14, win32 8.6.15, darwin 8.6.18.
+- **A red job on a branch that touches no `src/` deserves a control run.**
+  Re-run **`master`'s own workflow** before believing the branch caused it — CI
+  had not run on `master` for 8 days, and the identical failure there is what
+  established the drift in one step.
 
 ### Generators and manual gates (`tools/`)
 
