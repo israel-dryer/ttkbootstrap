@@ -893,10 +893,10 @@ return the widget — construct-and-place in one expression). **Files:** rebuilt
 become files in sub-PR 3). Each stub is an honest "being written for 2.0" note +
 seeded intro naming the real APIs. **Build gate:** 29 pages, **zero warnings** with
 `-W --keep-going` (warnings-as-errors). **ENV GOTCHA (important):** `.venv-home`'s
-base Python lives under a different user profile (`C:\Users\Israel Dryer\...`) that
-this account (`Logistiview`) gets **Access is denied** on — `.venv-home` python/
+base Python lives under a different Windows account's home that this account gets
+**Access is denied** on — `.venv-home` python/
 sphinx-build all fail with "did not find executable". Workaround used: built a fresh
-docs venv from `py -3.13` (Python 3.13.7, under `Logistiview`) in the **scratchpad**
+docs venv from `py -3.13` (Python 3.13.7, under this account) in the **scratchpad**
 (`.../scratchpad/docsenv`), `pip install -r docs/requirements.txt`, then
 `PYTHONPATH=src .../docsenv/Scripts/python.exe -m sphinx -b html -W ...`. (The
 scratchpad venv is outside the repo so it can't be committed; note `.gitignore`'s
@@ -1197,10 +1197,11 @@ push → `gh pr create --base 2.0` → **hold for the author to merge (one PR in
 flight)** before the next. Require the fork to (a) update `2_0_breaking_changes.md`
 and (b) leave user WIP untouched, as explicit deliverables.
 
-**ENV CORRECTION (important):** on this box (Logistiview login), the repo **`.venv`
-WORKS** (`.venv/Scripts/python.exe`, run pytest with `-p no:cacheprovider` — the
+**ENV CORRECTION (important):** on this box, under the login that owns `.venv`, the
+repo **`.venv` WORKS**
+(`.venv/Scripts/python.exe`, run pytest with `-p no:cacheprovider` — the
 `.pytest_cache` dir throws Access-denied harmlessly). **`.venv-home` is NOW
-access-denied** (it belongs to the `Israel Dryer` account) — the opposite of the
+access-denied** (it belongs to the other Windows account) — the opposite of the
 earlier handoff note. **Uncommitted WIP in the working tree (leave untouched, do NOT
 commit):** the user's builder edits `src/ttkbootstrap/style/builders_tk.py`,
 `style/builders/treeview.py`, `examples/widgets/tableview_yscrollbar.py`, plus the

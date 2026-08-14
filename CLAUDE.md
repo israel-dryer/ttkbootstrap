@@ -353,7 +353,7 @@ which one you are on rather than assuming:
 
 | Box | Notes |
 | --- | --- |
-| **Windows** | The canonical screenshot-capture box, and the only one where the demo has been eyeballed. Two profiles: `.venv-home` belongs to the `Israel Dryer` profile, `.venv` to `Logistiview` — each is unusable from the other, and neither is stale. `gh` is installed. Runs at 100% scaling = 1× density. |
+| **Windows** | The canonical screenshot-capture box, and the only one where the demo has been eyeballed. The box has **two Windows accounts**, each with its own venv — `.venv-home` belongs to one, `.venv` to the other, each is unusable from the other, and neither is stale. `gh` is installed. Runs at 100% scaling = 1× density. |
 | **macOS** | One venv per Tk line: `.venv` is Tk 8.6, `.venv314` is Tk 9. Retina = 2× density. The only box that can capture native aqua menus or the application-menu shot. |
 | **WSL2 / Linux** | Checkout at `/home/iddryer/ttkbootstrap` with a *Linux* venv. **`gh` is not installed** — a PR can still be opened by reading the token from the credential helper the pushes use and POSTing to the API, but installing `gh` would make it a one-liner. |
 
@@ -366,10 +366,10 @@ which one you are on rather than assuming:
   Bootswatch theme names and the `inverse` modifier still in there).
 - Build docs: `python -m sphinx -b html -W -q -E docs <out>` (must exit 0 — the
   docs are kept warning-clean; RTD enforces `fail_on_warning`). Deps in
-  `docs/requirements.txt`. **`.venv-home` belongs to the author's other Windows
-  profile** (its base interpreter lives under `C:\Users\Israel Dryer\...`), so it
-  is unusable from the `Logistiview` profile — the docs deps were installed into
-  `.venv` there on 2026-07-27. Use whichever venv matches the profile you are on;
+  `docs/requirements.txt`. **`.venv-home` belongs to the other Windows account on
+  that box** (its base interpreter lives under that account's home), so it is
+  unusable from the one `.venv` belongs to — the docs deps were installed into
+  `.venv` there on 2026-07-27. Use whichever venv matches the account you are on;
   neither is stale.
 - `pip install -r requirements.txt` (root) installs the local gate set — pytest,
   `screeninfo`, and the docs deps. RTD reads `docs/requirements.txt` directly.
@@ -477,9 +477,9 @@ release is cut from `master`, so the version bump lands there naturally;
 the change log and the tag as human steps. Not done yet — the checklist below is
 still the live procedure.
 
-**Building is per-box, and the Windows two-profile split bites here.** `dist/`
-and `.pytest_cache/` in this checkout are owned by the `Israel Dryer` profile;
-from `Logistiview` they cannot be deleted or even `Get-Acl`'d, so step 4's
+**Building is per-box, and the Windows two-account split bites here.** `dist/`
+and `.pytest_cache/` in this checkout are owned by whichever account last built;
+from the other one they cannot be deleted or even `Get-Acl`'d, so step 4's
 "empty `dist/` first" simply fails. Build to a throwaway `--outdir` instead —
 which satisfies the same intent (no stale artifact in the upload set) more
 strongly than emptying does. `dist/` therefore still holds superseded wheels, so
