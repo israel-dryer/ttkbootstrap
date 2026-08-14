@@ -68,8 +68,15 @@ jobs:
       # Which Tk line a runner carries is not something to assume: aqua's dpi
       # baseline and the scroll-event contract both differ between 8.6 and 9,
       # so record it per job rather than inferring it from the Python version.
+      # It reports the patchlevel too, which needs a real Tk interpreter and so
+      # needs the display -- hence the same Linux/non-Linux split as the suite.
+      - name: Report the Tk build (Linux)
+        if: runner.os == 'Linux'
+        run: xvfb-run -a python tools/report_tk_build.py
+
       - name: Report the Tk build
-        run: python -c "import sys, tkinter; print(f'{sys.platform} python={sys.version.split()[0]} tcl={tkinter.TclVersion} tk={tkinter.TkVersion}')"
+        if: runner.os != 'Linux'
+        run: python tools/report_tk_build.py
 
       # screeninfo is deliberately NOT installed: it is optional at runtime, and
       # leaving it out exercises the fallback layout path (X11 Xinerama, then

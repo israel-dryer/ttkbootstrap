@@ -16,10 +16,12 @@ against real pixels on X11 (``xwd`` capture of a posted menu, all four edges
 reading exactly ``colors.border``); a headless suite cannot post and capture.
 """
 
+from types import SimpleNamespace
+
 import pytest
 
 import ttkbootstrap as ttk
-from ttkbootstrap.style.builders_tk import _MENU_HAIRLINE_TAG
+from ttkbootstrap.style.builders_tk import _MENU_HAIRLINE_TAG, _on_menu_map
 from ttkbootstrap.style.scaling import Scaling
 
 
@@ -87,8 +89,7 @@ def test_a_never_posted_menu_is_not_painted(root, x11):
     """The guard that keeps a menubar intact.
 
     A menubar's entries cover only the left of the bar, so painting it would
-    flood the rest with the border color. Tk displays a menubar through a
-    *clone*, so the widget styled here never maps -- and only a map paints.
+    flood the rest with the border color.
     """
     menubar = ttk.Menu(root)
     menubar.add_cascade(label="File")
@@ -98,6 +99,43 @@ def test_a_never_posted_menu_is_not_painted(root, x11):
         assert not getattr(menubar, "_tb_menu_hairline", False)
     finally:
         root.configure(menu="")
+
+
+def test_a_menubar_that_maps_is_still_not_painted(root, x11):
+    """The same guard, forced instead of trusted.
+
+    The test above only shows the menubar went unpainted *because it never
+    mapped* -- and that is a property of the build, not a guarantee. Tk displays
+    a menubar through a clone, so historically the widget styled here did not
+    map; under CPython 3.13.15 it does, which painted every x11 menubar in the
+    border color. Not the Tk version either: CI's 3.10 job does not map it on
+    the same Tk 8.6.14. Deliver the `<Map>` by hand so the refusal is asserted
+    on every box regardless of what the local build does.
+    """
+    menubar = ttk.Menu(root)
+    menubar.add_cascade(label="File")
+    root.configure(menu=menubar)
+    try:
+        _on_menu_map(SimpleNamespace(widget=menubar))
+        assert str(menubar.cget("background")) == root.style.colors.bg
+        assert not getattr(menubar, "_tb_menu_hairline", False)
+    finally:
+        root.configure(menu="")
+
+
+def test_a_mapped_popup_is_painted(root, x11):
+    """The positive control for the guard above.
+
+    Refusing to paint a menubar is only correct if a popup arriving down the
+    same path still gets its border -- otherwise the guard could be over-broad
+    and no test would notice.
+    """
+    popup = ttk.Menu(root)
+    popup.add_command(label="Open")
+
+    _on_menu_map(SimpleNamespace(widget=popup))
+    assert str(popup.cget("background")) == root.style.colors.border
+    assert popup._tb_menu_hairline is True
 
 
 def test_entries_follow_a_theme_switch(root, x11):
