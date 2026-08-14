@@ -26,25 +26,29 @@ requirement, and why a small value tweak usually beats restructuring layout.
 
 ## Direction
 
-> **STATUS (2026-08-06): ttkbootstrap 2.2.0 is RELEASED.** Tagged `v2.2.0`, on
-> [PyPI](https://pypi.org/project/ttkbootstrap/2.2.0/), GitHub release live,
-> verified by a clean-environment install. **`master` reads 2.2.0**, and per the
+> **STATUS (2026-08-14): ttkbootstrap 2.2.1 is RELEASED.** Tagged `v2.2.1`, on
+> [PyPI](https://pypi.org/project/ttkbootstrap/2.2.1/), GitHub release live,
+> verified by a clean-environment install. **`master` reads 2.2.1**, and per the
 > standing convention **`master` is always the most recent release**.
 >
 > **Only one milestone is open: `3.0`**, holding **#1276** (make `DateEntry`
 > `value=None` the default). No open issues besides it, no open PRs.
 >
 > **The next user-visible change starts a new change log.** Create
-> `development/2_3_changes.md` (or `2_2_1_` for a patch) when the first one
-> lands, scoped **relative to 2.2.0**, and log there as you land — not at release
+> `development/2_3_changes.md` (or `2_2_2_` for a patch) when the first one
+> lands, scoped **relative to 2.2.1**, and log there as you land — not at release
 > time. It is the release-notes source, and the release audits it against
-> `git diff v2.2.0..master`.
+> `git diff v2.2.1..master`.
 >
 > **Don't file against a `2.2.x` bucket.** A patch is cut from `master` and
 > `release/*` exists only for *superseded majors*, so the moment `master` reads
-> 2.3.0 there is no branch a 2.2.1 could come from and anything left on `2.2.x`
+> 2.3.0 there is no branch a 2.2.2 could come from and anything left on `2.2.x`
 > can never ship. This stranded #1322 on `2.1.x` and had to be unwound at release
 > time.
+>
+> **Publishing is still manual, and should not stay that way.** 2.2.1 was built
+> and uploaded by hand from a developer box; the standing intent is to build and
+> publish from the **tag** in CI for the next release. See "Releasing" below.
 
 ### The 2.x line
 
@@ -55,6 +59,7 @@ requirement, and why a small value tweak usually beats restructuring layout.
 | **2.1.0** | 2026-07-30 | Durable style options, `bootstyle` value tokens, the in-house themed file dialog, and multi-monitor-correct dialog positioning. |
 | **2.1.1** | 2026-08-02 | Typing/docs patch — the widget type stubs came back (2.0 had dropped them, silently disabling keyword checking). |
 | **2.2.0** | 2026-08-06 | `ttkb` command line, 1.x theme converter, pre-root `Theme.register()`, `__version__`. |
+| **2.2.1** | 2026-08-14 | One fix: a menu bar is never painted in the border color, whatever the Tk build does (an X11 regression surfaced by CPython 3.13.15 mapping menu bars). |
 
 **1.x is preserved** on the `release/v1` branch and as the `version-1` Read the
 Docs version (`/en/version-1/`); `latest` serves the 2.x Sphinx docs. 1.x
@@ -466,6 +471,21 @@ No CI publishes; the upload is manual, with credentials in a gitignored
 repo-root `.pypirc`. **`master` is always the most recent release** — a patch
 release is cut from `master`, so the version bump lands there naturally;
 `release/*` exists only for *superseded* majors.
+
+**The intent is to retire this manual path**: build and publish from the pushed
+**tag** in CI (Trusted Publishing, no long-lived token), leaving only the bump,
+the change log and the tag as human steps. Not done yet — the checklist below is
+still the live procedure.
+
+**Building is per-box, and the Windows two-profile split bites here.** `dist/`
+and `.pytest_cache/` in this checkout are owned by the `Israel Dryer` profile;
+from `Logistiview` they cannot be deleted or even `Get-Acl`'d, so step 4's
+"empty `dist/` first" simply fails. Build to a throwaway `--outdir` instead —
+which satisfies the same intent (no stale artifact in the upload set) more
+strongly than emptying does. `dist/` therefore still holds superseded wheels, so
+the **explicit version glob on upload is load-bearing, not belt-and-braces**.
+`build` and `twine` are also **not** installed in every venv — 2.2.0 shipped from
+the other profile's, and `.venv` needed `pip install build twine` at 2.2.1.
 
 1. Bump `version` in `pyproject.toml`, **at release time, on `master`**. It is the
    only place the version is written — nothing under `src/`, `docs/` or `tools/`
