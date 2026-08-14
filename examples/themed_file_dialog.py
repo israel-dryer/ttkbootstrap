@@ -72,7 +72,7 @@ class Demo(ttk.Frame):
 
 
 if __name__ == "__main__":
-    app = ttk.Window("Themed File Dialog — 2.1 demo", themename="bootstrap-light",
+    app = ttk.Window("Themed File Dialog — 2.1 demo", theme="bootstrap-light",
                      size=(520, 420))
     Demo(app)
     app.place_window_center()

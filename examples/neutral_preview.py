@@ -58,6 +58,6 @@ class NeutralPreview(ttk.Frame):
 
 
 if __name__ == "__main__":
-    app = ttk.Window("Neutral color preview", themename=LIGHT_THEME)
+    app = ttk.Window("Neutral color preview", theme=LIGHT_THEME)
     NeutralPreview(app)
     app.mainloop()

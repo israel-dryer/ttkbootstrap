@@ -90,7 +90,7 @@ class Demo(ttk.Frame):
 
 if __name__ == "__main__":
     app = ttk.Window("File Dialog Default Routing — 2.1 demo",
-                     themename="bootstrap-light", size=(560, 460))
+                     theme="bootstrap-light", size=(560, 460))
     Demo(app)
     app.place_window_center()
     app.mainloop()

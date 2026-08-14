@@ -141,7 +141,10 @@ src/ttkbootstrap/
                      #   missing it installs fine and dies at first render)
 tests/               # HEADLESS pytest only, CI-runnable. ~37 test_*.py + conftest.py,
                      #   plus widget_styles/, widgets/, cli/, localization/ subpackages.
-examples/            # interactive mainloop() demos (need a display; NOT collected by pytest)
+examples/            # manual visual gates — one mainloop() app per visual subsystem (color
+                     #   states, surfaces, icons, recolored assets, value tokens, file dialog).
+                     #   Need a display; NOT collected by pytest. Per-widget tours and API
+                     #   demos were removed in 2.2 — `ttkb demo` and the docs cover those.
 docs/, gallery/      # documentation and showcase apps
 tools/               # generators + manual verification gates (see Dev environment below)
 ```
@@ -352,8 +355,10 @@ which one you are on rather than assuming:
 - Run the headless suite: `python -m pytest -q` (config in `pyproject.toml`
   under `[tool.pytest.ini_options]`; `testpaths = ["tests"]`).
 - pytest is installed in `.venv`. If a fresh env lacks it: `pip install pytest`.
-- The interactive demos in `examples/` call `mainloop()` and need a display —
-  they are NOT collected by pytest.
+- The visual gates in `examples/` call `mainloop()` and need a display — they are
+  NOT collected by pytest, so nothing catches a deprecation that lands in them.
+  Sweep them when you deprecate something (2.2 found tuple `bootstyle`, legacy
+  Bootswatch theme names and the `inverse` modifier still in there).
 - Build docs: `python -m sphinx -b html -W -q -E docs <out>` (must exit 0 — the
   docs are kept warning-clean; RTD enforces `fail_on_warning`). Deps in
   `docs/requirements.txt`. **`.venv-home` belongs to the author's other Windows
@@ -443,6 +448,18 @@ deleted and why the 3.0 shim list stays grep-discoverable).
   directive pins `:width: <logical>px` (the harness prints it) — never downscale,
   never leave unpinned.
 
+The **eyeball** gates live in `examples/` rather than `tools/` — one app per
+visual subsystem, each with a light/dark toggle, to be looked at rather than
+asserted: `color_states_preview.py` (every color × state across the widget set),
+`surface_preview.py` (the elevation scale), `icon_preview.py` /
+`icon_button_preview.py` (the icon engine), `recolor_assets_preview.py`
+(`--scale 1.0|1.25|1.5|2.0`, the one gate that takes an argument),
+`value_token_preview.py`, `themed_file_dialog.py` /
+`file_dialog_default_routing.py`, `neutral_preview.py`, and
+`prerelease_visual_review.py` (the whole-widget-set sweep, run before a release).
+They are the re-runnable proof behind the design docs' recorded PASSes, so a
+color or asset change should be checked against the matching one.
+
 ### Releasing
 
 No CI publishes; the upload is manual, with credentials in a gitignored
@@ -483,7 +500,9 @@ release is cut from `master`, so the version bump lands there naturally;
 test) instead of creating their own `ttk.Window` — creating your own root
 re-triggers the singleton mis-binding above. Query a built style's value with
 `app.tk.call("ttk::style", "lookup", "<Style>", "-<option>")`. Put any
-interactive/visual demo in `examples/`, not `tests/`.
+interactive/visual demo in `examples/`, not `tests/` — but `examples/` is a
+curated set of subsystem gates, not a dumping ground. Extend the gate that
+already covers the subsystem before adding a file to it.
 
 - **The shared root is pinned to `Scaling.baseline`**, so the suite is
   density-independent and passes at 1.0, 1.4, 1.6667 and 2.0. Don't reintroduce

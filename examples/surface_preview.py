@@ -49,7 +49,7 @@ def build_controls(parent, surface):
 
 
 def main():
-    app = ttk.Window(title="Surface color preview", themename="bootstrap-light",
+    app = ttk.Window(title="Surface color preview", theme="bootstrap-light",
                      size=(720, 340))
 
     top = ttk.Frame(app, padding=10)
