@@ -13,6 +13,44 @@ from ttkbootstrap.style.theme import Colors, ThemeDefinition, _accent_on_color
 _MENU_HAIRLINE_TAG = "TtkbootstrapMenuHairline"
 
 
+def _is_menubar(widget: tk.Menu) -> bool:
+    """True when `widget` is serving as a window's menubar.
+
+    Painting one floods the bar with the border color, because a menubar's
+    entries cover only its left. This used to be inferred from `<Map>` -- a
+    menubar is displayed through a clone, so the widget styled here did not map
+    -- but that is a property of the Tk build, not a guarantee: a menubar does
+    map on the Tk in CPython 3.13.15, which painted every X11 menubar. Ask
+    directly instead, so the invariant no longer depends on the Tk in use.
+
+    Two ways to serve as a menubar, since either widget may be the one that maps:
+    the menu installed as some window's ``-menu``, or the clone Tk displays for
+    it (``-type menubar``; the original stays ``normal``).
+
+    The windows checked are the menu's own toplevel, the root, and the root's
+    direct children -- not a walk of the whole tree. A cascade posts its submenu
+    on every hover, so this runs at pointer speed and cannot afford to
+    instantiate a wrapper for every widget in the app. That covers a menubar
+    built on the window it serves, which is how one is written; a menu parented
+    to one window and installed on a *nested* toplevel would be missed.
+    """
+    if str(widget.cget("type")) == "menubar":
+        return True
+    name = str(widget)
+    root = widget._root()
+    windows = [widget.winfo_toplevel(), root]
+    windows.extend(
+        w for w in root.winfo_children() if isinstance(w, tk.Toplevel)
+    )
+    for window in windows:
+        try:
+            if str(window.cget("menu")) == name:
+                return True
+        except tk.TclError:
+            continue  # not a window, or torn down mid-check
+    return False
+
+
 def _on_menu_map(event):
     """Repaint a popup menu's border as it is posted.
 
@@ -342,13 +380,17 @@ class StyleBuilderTK:
         popup, so only the 1px strip is left showing.
 
         That only holds for a popup. A menubar's entries cover just the left of
-        the bar, so the border color would flood the rest of it -- which is why
-        this waits for `<Map>`: a menu used as a menubar is displayed through a
-        clone, so the widget styled here never maps and never gets painted.
+        the bar, so the border color would flood the rest of it -- so a menubar
+        is refused here, at the one place that paints, rather than at each
+        caller. Waiting for `<Map>` is still what defers a popup's paint until it
+        is posted; it is no longer what keeps a menubar out (see `_is_menubar`).
 
         Entry colors are theme-managed, like those of a themed `Text`. An entry
         the user gave its own color keeps it; the rest follow the theme.
         """
+        if _is_menubar(widget):
+            return
+
         surface = self.colors.bg
         previous = getattr(widget, "_tb_menu_entry_bg", None)
         widget.configure(background=self.colors.border)

@@ -312,9 +312,14 @@ geometry, scaling, assets or event bindings should be read against them.
   `relief="solid"` is hardcoded black, and the 3D reliefs derive both shades from
   `-background`. The only route to a flat hairline is painting the *menu* in the
   border color and each *entry* in the surface color. That holds for a popup and
-  **not** a menu bar (whose entries cover only the left of the bar), and the two
-  separate themselves by waiting for `<Map>` — **Tk displays a menu bar through a
-  clone**, so the widget you style never maps.
+  **not** a menu bar (whose entries cover only the left of the bar), so a menu
+  bar must be refused explicitly — ask whether the menu is installed as a
+  window's `-menu` (or is the `-type menubar` clone). It used to be inferred
+  from `<Map>`, on the measurement that **Tk displays a menu bar through a
+  clone** so the widget you style never maps. **That is a property of the Tk
+  build, not a guarantee** — the Tk in CPython 3.13.15 maps it, which painted
+  every X11 menu bar in the border color. A behavioral Tk fact is worth
+  re-deriving before you lean on it.
 - **A style `lookup` can return a `_tkinter.Tcl_Obj`** once the style is *built*
   (`int()` rejects it, `str()` renders the number), and padding reads as `'10 4'`
   or `(10, 4)` depending on whether a rebuild has happened. Compare as numbers.
@@ -390,11 +395,19 @@ which one you are on rather than assuming:
   omitting it exercises the more fragile fallback layout path), and the Xvfb
   display is pinned to 96 dpi to be a standard-density screen.
 - **CI does not cover Tk 9 or anything visual.** Every runner is **Tk 8.6** — the
-  workflow reports the Tcl/Tk build per job rather than leaving it inferred from
-  the Python version, because 8.6-vs-9 is the split behind the aqua dpi baseline
-  and the scroll-event contract. Adding a Tk 9 job is not free: `setup-python`
-  ships no interpreter built against it. Visual gates stay manual and still need
-  the right box — see `tools/verify_positioning.py` and the screenshot harness.
+  workflow reports the Tcl/Tk build per job (`tools/report_tk_build.py`) rather
+  than leaving it inferred from the Python version, because 8.6-vs-9 is the split
+  behind the aqua dpi baseline and the scroll-event contract. Adding a Tk 9 job is
+  not free: `setup-python` ships no interpreter built against it. Visual gates stay
+  manual and still need the right box — see `tools/verify_positioning.py` and the
+  screenshot harness.
+- **The report includes the Tk *patchlevel*, and that is the point.** A CPython
+  **patch** release can change the Tk it links: 3.13.14 → 3.13.15 started mapping
+  menu bars and broke `test_a_never_posted_menu_is_not_painted` on ubuntu py3.13
+  alone. `master` had been green 8 days earlier on the same commit, so a red job on
+  a branch that touches no `src/` is worth a **control re-run of `master`'s own
+  workflow** before believing the branch caused it. Reporting only `tk=8.6` is what
+  hid the drift.
 
 ### Generators and manual gates (`tools/`)
 
@@ -415,6 +428,8 @@ deleted and why the 3.0 shim list stays grep-discoverable).
   fallback layout path.
 - **`verify_hover.py`** — drives pyright over LSP and jedi. **PyCharm cannot be
   scripted**; check it by hand when a report names it.
+- **`report_tk_build.py`** — platform, Python, and the Tcl/Tk **patchlevel**. Run
+  it on a box before blaming its Tk for something; CI runs it per job.
 - **`docs/scripts/take_screenshots.py`** — scene files in
   `docs/screenshots/<page>.py` mirroring each page's own code blocks, captured
   per theme. PNGs keep the capture box's full pixel density and every rST image
