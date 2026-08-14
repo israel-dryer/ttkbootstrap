@@ -131,13 +131,18 @@ class Preview:
             size = extra
             lbl.configure(image=ttk.Icon(name, size=size, color=color))
         self.header.configure(text=f"Icon engine preview  —  theme: {themename}")
-        other = "darkly" if themename == "flatly" else "flatly"
+        other = (
+            "bootstrap-dark" if themename == "bootstrap-light"
+            else "bootstrap-light"
+        )
         self.switch_btn.configure(text=f"Switch to {other}")
         self._build_favorites(themename, pal)
 
     def _toggle_theme(self):
-        other = "darkly" if self.style.theme.name == "flatly" else "flatly"
-        self.apply_theme(other)
+        name = self.style.theme.name
+        self.apply_theme(
+            "bootstrap-dark" if name == "bootstrap-light" else "bootstrap-light"
+        )
 
     def _build_favorites(self, themename, pal):
         # The icon_element images are baked per theme, so the style is theme
@@ -180,7 +185,7 @@ class Preview:
 
 
 if __name__ == "__main__":
-    app = ttk.Window(title="ttkbootstrap 2.0 — icon engine preview", themename="flatly",
+    app = ttk.Window(title="ttkbootstrap — icon engine preview", theme="bootstrap-light",
                      size=(1100, 720))
     Preview(app)
     app.mainloop()

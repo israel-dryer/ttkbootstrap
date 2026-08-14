@@ -122,7 +122,7 @@ class Preview:
         left = ttk.Frame(panes, padding=12, bootstyle="light")
         right = ttk.Frame(panes, padding=12, bootstyle="secondary")
         ttk.Label(left, text="Panedwindow left").pack()
-        ttk.Label(right, text="Panedwindow right", bootstyle="inverse").pack()
+        ttk.Label(right, text="Panedwindow right", bootstyle="@secondary").pack()
         panes.add(left, weight=1)
         panes.add(right, weight=1)
 
@@ -139,14 +139,13 @@ class Preview:
 
     def _refresh_header(self):
         current = self.style.theme.name
-        other = "darkly" if current == "flatly" else "flatly"
+        other = "dark" if self.app.theme_mode == "light" else "light"
         percent = round(self.factor * 100)
         self.title.configure(text=f"Scaling preview — {percent}% — {current}")
         self.switch.configure(text=f"Switch to {other}")
 
     def _toggle_theme(self):
-        other = "darkly" if self.style.theme.name == "flatly" else "flatly"
-        self.style.theme_use(other)
+        self.app.toggle_theme()
         self._refresh_header()
 
 
@@ -157,7 +156,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     baseline = 1.0 if platform.system() == "Darwin" else 4 / 3
     app = ttk.Window(
-        title="ttkbootstrap 2.0 — scaling preview",
-        themename="flatly", size=(900, 760), scaling=baseline * args.scale)
+        title="ttkbootstrap — scaling preview",
+        theme="bootstrap-light", size=(900, 760), scaling=baseline * args.scale)
     Preview(app, args.scale)
     app.mainloop()

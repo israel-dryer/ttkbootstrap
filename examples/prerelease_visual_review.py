@@ -249,8 +249,8 @@ def build_controls(parent, app):
 
 
 def main():
-    app = ttk.Window("ttkbootstrap 2.0 — pre-release visual review",
-                     themename="bootstrap-light", minsize=(1180, 720))
+    app = ttk.Window("ttkbootstrap — pre-release visual review",
+                     theme="bootstrap-light", minsize=(1180, 720))
     build_controls(app, app)
     ttk.Separator(app).pack(fill=X)
 

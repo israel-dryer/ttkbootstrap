@@ -242,8 +242,8 @@ class ColorStatesPreview:
 
 if __name__ == "__main__":
     app = ttk.Window(
-        title="ttkbootstrap 2.0 — color states",
-        themename="bootstrap-light",
+        title="ttkbootstrap — color states",
+        theme="bootstrap-light",
         size=(1080, 820),
     )
     ColorStatesPreview(app)

@@ -11,7 +11,7 @@ the on-accent color on hover/press) with no code touching the icons.
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
-app = ttk.Window("Theme-aware icons", themename="bootstrap-light")
+app = ttk.Window("Theme-aware icons", theme="bootstrap-light")
 
 top = ttk.Frame(app, padding=10)
 top.pack(fill=X)
