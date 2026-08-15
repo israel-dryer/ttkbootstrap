@@ -79,7 +79,7 @@ ttk.Entry(app, bootstyle="success")
 Add a modifier or a type for variants: `"info outline"`, `"success round toggle"`,
 `"warning striped"`. The vocabulary is closed, so a typo fails loudly instead of
 silently doing nothing. See the
-[bootstyle grammar](https://ttkbootstrap.readthedocs.io/en/latest/user-guide/foundations/bootstyle-grammar.html)
+[bootstyle grammar](https://www.ttkbootstrap.org/en/latest/user-guide/foundations/bootstyle-grammar.html)
 for the full reference.
 
 ## Themes
@@ -92,7 +92,7 @@ app.toggle_theme()                # flip light <-> dark
 ```
 
 Browse them in the
-[themes gallery](https://ttkbootstrap.readthedocs.io/en/latest/themes.html).
+[themes gallery](https://www.ttkbootstrap.org/en/latest/themes.html).
 
 Design your own with the bundled editor — pick colors, preview them on live
 widgets, and export a `Theme(...)` snippet for your app:
@@ -112,13 +112,13 @@ Installing ttkbootstrap installs `ttkb`:
 | `ttkb convert-theme <file>` | Convert a 1.x theme file to the 2.x `Theme(...)` form |
 | `ttkb creator` | Open ttkcreator, the theme designer |
 
-See the [command-line reference](https://ttkbootstrap.readthedocs.io/en/latest/reference/cli.html).
+See the [command-line reference](https://www.ttkbootstrap.org/en/latest/reference/cli.html).
 
 ## Documentation
 
-- **[Documentation](https://ttkbootstrap.readthedocs.io/en/latest/)** — guides, the widget catalog, and the API reference.
-- **[Build your first app](https://ttkbootstrap.readthedocs.io/en/latest/user-guide/getting-started/build-your-first-app.html)** — a step-by-step walkthrough.
-- **[Migrating to 2.0](https://ttkbootstrap.readthedocs.io/en/latest/user-guide/getting-started/migrating.html)** — upgrading from 1.x.
+- **[Documentation](https://www.ttkbootstrap.org/en/latest/)** — guides, the widget catalog, and the API reference.
+- **[Build your first app](https://www.ttkbootstrap.org/en/latest/user-guide/getting-started/build-your-first-app.html)** — a step-by-step walkthrough.
+- **[Migrating to 2.0](https://www.ttkbootstrap.org/en/latest/user-guide/getting-started/migrating.html)** — upgrading from 1.x.
 - **[Release notes](https://github.com/israel-dryer/ttkbootstrap/releases)** — what changed in each version.
 
 ## Upgrading from 1.x
@@ -127,7 +127,7 @@ See the [command-line reference](https://ttkbootstrap.readthedocs.io/en/latest/r
 `bootstyle` grammar, a new theme catalog, and `App` alongside `Window`. Most code
 keeps working: legacy theme names and older spellings are accepted with a
 deprecation warning. The
-[Migrating to 2.0](https://ttkbootstrap.readthedocs.io/en/latest/user-guide/getting-started/migrating.html)
+[Migrating to 2.0](https://www.ttkbootstrap.org/en/latest/user-guide/getting-started/migrating.html)
 guide sorts every change into breaking / deprecated / notable / new.
 
 Custom themes moved out of the package and into your own code. To bring one

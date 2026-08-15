@@ -47,7 +47,7 @@ dependencies = ["pillow>=10,<13"]
 
 [project.urls]
 Homepage = "https://github.com/israel-dryer/ttkbootstrap"
-Documentation = "https://ttkbootstrap.readthedocs.io/en/latest/"
+Documentation = "https://www.ttkbootstrap.org/en/latest/"
 
 [project.scripts]
 # Two names for one command: `ttkbootstrap` is guessable from the package name,
