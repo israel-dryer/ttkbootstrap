@@ -79,7 +79,27 @@ The new keyword API is very flexible. The following examples all produce the sam
 
 ## Icons
 
-Add icons to your app buttons and labels using the [ttkbootstrap-icons](https://github.com/israel-dryer/ttkbootstrap-icons) library.
+1.x ships the `ttkbootstrap.icons` module, which holds two separate things:
+
+- `Icon` — base64-encoded PNGs: `Icon.info`, `Icon.warning`, `Icon.error` and
+  `Icon.question`, the alert images the message dialogs use, plus the
+  ttkbootstrap logo. Pass one to a dialog's `icon=`, or to `PhotoImage(data=...)`:
+
+  ```python
+  from ttkbootstrap.dialogs import MessageDialog
+  from ttkbootstrap.icons import Icon
+
+  dlg = MessageDialog("Ok or Cancel?", "Choose", icon=Icon.question)
+  dlg.show()
+  ```
+
+- `Emoji` — a catalog of Unicode emoji characters for use with `text=`. A
+  character shows only where the system font includes that glyph.
+
+For font-rendered icons that look the same on every platform — Bootstrap Icons,
+Font Awesome, Material, and more — the separate
+[tkinter-icons](https://github.com/israel-dryer/tkinter-icons) library adds
+those families alongside the constants above.
 
 ## Contributing
 We welcome contributions! If you'd like to contribute to ttkbootstrap, please check out our contributing guidelines.
