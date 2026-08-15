@@ -13,26 +13,26 @@ English | [日本語](README_ja.md) | [中文](README_zh.md)
 ttkbootstrap is a Python library that enhances tkinter by providing modern, flat-style themes inspired by Bootstrap. Easily create stylish GUI applications with built-in themes, pre-defined widget styles, and more.
 
 ## Documentation
-👀 Check out the [documentation](https://ttkbootstrap.readthedocs.io/en/latest/).
+👀 Check out the [documentation](https://www.ttkbootstrap.org/en/version-1/).
 
 
 ![](https://raw.githubusercontent.com/israel-dryer/ttkbootstrap/master/docs/assets/themes/themes.gif)
 
 ## Features
 
-✔️ [**Built-in Themes**](https://ttkbootstrap.readthedocs.io/en/latest/themes/)   
+✔️ [**Built-in Themes**](https://www.ttkbootstrap.org/en/version-1/themes/)   
 Over a dozen curated dark and light themes.
 
-✔️ [**Pre-defined Styles:**](https://ttkbootstrap.readthedocs.io/en/latest/styleguide/)  
+✔️ [**Pre-defined Styles:**](https://www.ttkbootstrap.org/en/version-1/styleguide/)  
 Loads of beautiful pre-defined widget styles such as **outline** and **round toggle** buttons.
 
-✔️ [**Simple keyword API:**](https://ttkbootstrap.readthedocs.io/en/latest/gettingstarted/tutorial/#use-themed-widgets)  
+✔️ [**Simple keyword API:**](https://www.ttkbootstrap.org/en/version-1/gettingstarted/tutorial/#use-themed-widgets)  
 Apply colors and types using simple keywords such as **primary** and **striped** instead of the legacy approach of **primary.Striped.Horizontal.TProgressbar**. If you've used Bootstrap for web development, you are already familiar with this approach using css classes.
 
-✔️ [**Lots of new Widgets:**](https://ttkbootstrap.readthedocs.io/en/latest/api/widgets/dateentry/)  
+✔️ [**Lots of new Widgets:**](https://www.ttkbootstrap.org/en/version-1/api/widgets/dateentry/)  
 ttkbootstrap comes with several new beautifully designed widgets such as **Meter**, **DateEntry**, and **Floodgauge**. Additionally, **dialogs** are now themed and fully customizable.
 
-✔️ [**Built-in Theme Creator:**](https://ttkbootstrap.readthedocs.io/en/latest/themes/themecreator/)  
+✔️ [**Built-in Theme Creator:**](https://www.ttkbootstrap.org/en/version-1/themes/themecreator/)  
 Want to create your own theme? Easy! ttkboostrap includes a built-in **theme creator** that enables you to easily build, load, expore, and apply your own custom themes.
 
 ## Installation
@@ -68,7 +68,7 @@ Here is the desired result:
 
 ![Here is the result of the code used above:](beginningresult.png)
 
-For more detailed usage, please refer to the [**Getting Started page**](https://ttkbootstrap.readthedocs.io/en/latest/gettingstarted/tutorial/)
+For more detailed usage, please refer to the [**Getting Started page**](https://www.ttkbootstrap.org/en/version-1/gettingstarted/tutorial/)
 This page includes creating buttons, adding widgets, different styles and more. 
 
 The new keyword API is very flexible. The following examples all produce the same result:
@@ -105,7 +105,7 @@ those families alongside the constants above.
 We welcome contributions! If you'd like to contribute to ttkbootstrap, please check out our contributing guidelines.
 
 ## Links
-- **Documentation:** https://ttkbootstrap.readthedocs.io/en/latest/  
+- **Documentation:** https://www.ttkbootstrap.org/en/version-1/  
 - **GitHub:** https://github.com/israel-dryer/ttkbootstrap
 
 ## Support

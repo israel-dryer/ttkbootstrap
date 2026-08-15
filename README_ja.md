@@ -13,26 +13,26 @@
 ttkbootstrap は、Bootstrap にインスパイアされたモダンでフラットなスタイルのテーマを提供することで、tkinter を強化する Python ライブラリです。組み込みのテーマや事前定義されたウィジェットスタイルなどを活用して、スタイリッシュな GUI アプリケーションを簡単に作成できます。
 
 ## ドキュメント
-👀 [ドキュメント](https://ttkbootstrap.readthedocs.io/en/latest/)をご覧ください。
+👀 [ドキュメント](https://www.ttkbootstrap.org/en/version-1/)をご覧ください。
 
 
 ![](https://raw.githubusercontent.com/israel-dryer/ttkbootstrap/master/docs/assets/themes/themes.gif)
 
 ## 機能
 
-✔️ [**組み込みテーマ**](https://ttkbootstrap.readthedocs.io/en/latest/themes/)   
+✔️ [**組み込みテーマ**](https://www.ttkbootstrap.org/en/version-1/themes/)   
 厳選された12種類以上のダークテーマとライトテーマ。
 
-✔️ [**定義済みスタイル:**](https://ttkbootstrap.readthedocs.io/en/latest/styleguide/)  
+✔️ [**定義済みスタイル:**](https://www.ttkbootstrap.org/en/version-1/styleguide/)  
 **アウトライン**や**丸いトグル**ボタンなど、美しい定義済みウィジェットスタイルが多数用意されています。
 
-✔️ [**シンプルなキーワードAPI:**](https://ttkbootstrap.readthedocs.io/en/latest/gettingstarted/tutorial/#use-themed-widgets)  
+✔️ [**シンプルなキーワードAPI:**](https://www.ttkbootstrap.org/en/version-1/gettingstarted/tutorial/#use-themed-widgets)  
 **primary.Striped.Horizontal.TProgressbar**といった従来の記述方法の代わりに、**primary**や**striped**といったシンプルなキーワードを使って色やタイプを適用できます。Web開発でBootstrapを使用したことがある方なら、CSSクラスを使ったこのアプローチにはすでにお馴染みでしょう。
 
-✔️ [**多数の新しいウィジェット:**](https://ttkbootstrap.readthedocs.io/en/latest/api/widgets/dateentry/)  
+✔️ [**多数の新しいウィジェット:**](https://www.ttkbootstrap.org/en/version-1/api/widgets/dateentry/)  
 ttkbootstrap には、**Meter**、**DateEntry**、**Floodgauge** など、美しくデザインされた新しいウィジェットがいくつか含まれています。 さらに、**ダイアログ**もテーマ化され、完全にカスタマイズ可能になりました。
 
-✔️ [**組み込みのテーマ作成ツール:**](https://ttkbootstrap.readthedocs.io/en/latest/themes/themecreator/)  
+✔️ [**組み込みのテーマ作成ツール:**](https://www.ttkbootstrap.org/en/version-1/themes/themecreator/)  
 独自のテーマを作成したいですか？簡単です！ttkbootstrapには、独自のカスタムテーマを簡単に作成、読み込み、閲覧、適用できる組み込みの**テーマ作成ツール**が含まれています。
 
 ## インストール
@@ -68,7 +68,7 @@ root.mainloop()
 
 ![上記のコードの実行結果は以下の通りです:](beginningresult.png)
 
-より詳細な使用方法については、[**入門ページ**](https://ttkbootstrap.readthedocs.io/en/latest/gettingstarted/tutorial/)をご参照ください。
+より詳細な使用方法については、[**入門ページ**](https://www.ttkbootstrap.org/en/version-1/gettingstarted/tutorial/)をご参照ください。
 このページには、ボタンの作成、ウィジェットの追加、さまざまなスタイルなどが含まれています。 
 
 新しいキーワードAPIは非常に柔軟です。以下の例はいずれも同じ結果を生成します：
@@ -85,7 +85,7 @@ root.mainloop()
 皆様からの貢献を歓迎します！ttkbootstrapへの貢献をご希望の場合は、貢献ガイドラインをご確認ください。
 
 ## リンク
-- **ドキュメント:** https://ttkbootstrap.readthedocs.io/en/latest/  
+- **ドキュメント:** https://www.ttkbootstrap.org/en/version-1/  
 - **GitHub:** https://github.com/israel-dryer/ttkbootstrap
 
 ## サポート
