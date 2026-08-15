@@ -5,6 +5,7 @@ deprecations, and re-exports -- WITHOUT opening a modal dialog. The dialog
 facades block on ``grab_set``/``wait_window`` when shown, so nothing here calls
 ``.show()``; the modal appearance is left to the manual visual gate.
 """
+import base64
 import inspect
 import warnings
 
@@ -12,6 +13,7 @@ import pytest
 
 import ttkbootstrap as ttk
 from ttkbootstrap.dialogs import Messagebox, Querybox
+from ttkbootstrap.dialogs import message as message_mod
 from ttkbootstrap.dialogs.base import Dialog
 from ttkbootstrap.dialogs.message import MessageDialog
 from ttkbootstrap.dialogs.query import QueryDialog
@@ -141,6 +143,106 @@ def test_command_tuple_form_is_deprecated_and_unwrapped(root):
         dialog = MessageDialog(message="x", parent=root, command=(fn, "label"))
     # the callable is unwrapped from the legacy (callable, label) tuple
     assert dialog._command is fn
+
+
+# --- MessageDialog icon forms (#1342) --------------------------------------
+
+# A 1x1 transparent GIF, the smallest thing Tk's photo image reader accepts --
+# used to exercise the base64-data and file-path forms.
+_ONE_PIXEL_GIF = "R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+
+
+def _icon_label(root, icon):
+    """Build the icon Label the way create_body does, without showing a dialog."""
+    dialog = MessageDialog(message="x", parent=root, icon=icon)
+    return dialog._create_icon_label(root)
+
+
+def _image_name(label):
+    """The Tk image name on a Label -- cget yields a 1-tuple for a PhotoImage."""
+    value = label.cget("image")
+    if isinstance(value, (tuple, list)):
+        value = value[0] if value else ""
+    return str(value)
+
+
+def test_icon_accepts_a_bootstrap_glyph_name(root):
+    # The form the reference pages have always documented ("a Bootstrap Icons
+    # glyph name"), and which used to warn and show nothing.
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", UserWarning)
+        label = _icon_label(root, "question-circle-fill")
+    assert label is not None
+    assert _image_name(label)
+
+
+def test_glyph_name_renders_at_the_dialog_size_in_the_theme_foreground(root):
+    # The defaults a bare glyph name implies. ttk.Icon dedupes on
+    # (name, size, color), so an identical call returns the same image name --
+    # asserting the icon IS Icon(name, _ICON_SIZE) pins both the size and the
+    # foreground color (no semantic color is guessed from the glyph name).
+    label = _icon_label(root, "gear-fill")
+    expected = ttk.Icon("gear-fill", message_mod._ICON_SIZE)
+    assert _image_name(label) == expected
+
+
+def test_a_custom_glyph_matches_the_built_in_alert_glyph_size(root):
+    # A caller's glyph should carry the same visual weight as the glyph
+    # show_info/show_error render for themselves.
+    custom = _image_name(_icon_label(root, "gear-fill"))
+    alert = message_mod._alert_icon("info")
+    width = lambda name: root.tk.call("image", "width", name)
+    assert width(custom) == width(alert)
+
+
+def test_icon_accepts_a_rendered_icon_image_name(root):
+    # The pre-#1342 form -- an explicit ttk.Icon(...), which stays the way to
+    # ask for a non-default size or color -- keeps working unchanged.
+    rendered = ttk.Icon("question-circle-fill", 40, "warning")
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", UserWarning)
+        label = _icon_label(root, rendered)
+    assert _image_name(label) == rendered
+
+
+def test_icon_accepts_a_photoimage_object(root):
+    photo = ttk.PhotoImage(data=_ONE_PIXEL_GIF)
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", UserWarning)
+        label = _icon_label(root, photo)
+    assert _image_name(label) == str(photo)
+
+
+def test_icon_accepts_base64_image_data(root):
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", UserWarning)
+        label = _icon_label(root, _ONE_PIXEL_GIF)
+    assert label is not None
+
+
+def test_icon_accepts_a_file_path(root, tmp_path):
+    path = tmp_path / "icon.gif"
+    path.write_bytes(base64.b64decode(_ONE_PIXEL_GIF))
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", UserWarning)
+        label = _icon_label(root, str(path))
+    assert label is not None
+
+
+def test_an_unusable_icon_still_warns_and_shows_no_icon(root):
+    # An unknown glyph name is not silently swallowed by the new candidate:
+    # ttk.Icon raises ValueError, the remaining forms fail, and the dialog is
+    # built without an icon rather than failing to open.
+    with pytest.warns(UserWarning, match="could not be loaded"):
+        assert _icon_label(root, "not-a-real-glyph-name") is None
+
+
+@pytest.mark.parametrize("method", _MESSAGEBOX_METHODS)
+def test_messagebox_icon_annotation_admits_more_than_str(method):
+    # `icon: str` was true but useless -- ttk.Icon returns a str too, so all of
+    # the accepted string forms and the rejected one shared a single type.
+    annotation = inspect.signature(getattr(Messagebox, method)).parameters["icon"].annotation
+    assert "PhotoImage" in str(annotation)
 
 
 # --- ColorChoice dedupe ----------------------------------------------------

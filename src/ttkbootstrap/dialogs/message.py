@@ -3,7 +3,7 @@
 import textwrap
 import tkinter
 import warnings
-from typing import Any, Callable, List, Optional, Tuple
+from typing import Any, Callable, List, Optional, Tuple, Union
 
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
@@ -12,10 +12,14 @@ from ttkbootstrap.style._compat import warn_deprecated
 from .base import Dialog
 
 
+# The glyph size used by every dialog icon -- the four default alert glyphs below
+# and a caller's ``icon="<glyph name>"``, so a custom glyph carries the same
+# visual weight as the built-in ones.
+_ICON_SIZE = 30
+
 # The default alert glyphs for the four Messagebox.show_* dialogs, rendered from
 # the built-in Bootstrap-Icons font (theme-matched and recolorable). Replaces the
 # base64 PNG constants from the removed ``ttkbootstrap.icons`` module (2.0).
-_ALERT_ICON_SIZE = 30
 _ALERT_ICONS = {
     "info": ("info-circle-fill", "info"),
     "warning": ("exclamation-triangle-fill", "warning"),
@@ -27,7 +31,7 @@ _ALERT_ICONS = {
 def _alert_icon(kind: str) -> str:
     """Render one alert glyph to a cached Tk image name (see ``_ALERT_ICONS``)."""
     name, color = _ALERT_ICONS[kind]
-    return ttk.Icon(name, _ALERT_ICON_SIZE, color)
+    return ttk.Icon(name, _ICON_SIZE, color)
 
 
 class MessageDialog(Dialog):
@@ -53,7 +57,7 @@ class MessageDialog(Dialog):
             alert: bool = False,
             default: Optional[str] = None,
             padding: "tuple[int, int] | int" = (20, 20),
-            icon: Optional[str] = None,
+            icon: "Optional[Union[str, tkinter.PhotoImage]]" = None,
             **kwargs: Any,
     ) -> None:
         """Create a message dialog.
@@ -98,10 +102,12 @@ class MessageDialog(Dialog):
                 Padding around the message content. Can be a single int or
                 tuple (horizontal, vertical) (default=(20, 20)).
 
-            icon (str):
-                Optional icon to display. Can be an already-rendered Tk image
-                name (e.g. from ``ttk.Icon(...)``), base64 image data, or a
-                file path.
+            icon (str | PhotoImage):
+                Optional icon to display beside the message. Can be a Bootstrap
+                Icons glyph name (e.g. ``"question-circle-fill"``, rendered in the
+                theme foreground), an already-rendered Tk image name from
+                ``ttk.Icon(...)`` -- which is how to ask for a specific size or
+                color -- a ``PhotoImage``, base64 image data, or a file path.
 
             **kwargs (Dict):
                 Additional keyword arguments. Supports 'localize' (bool)
@@ -156,18 +162,26 @@ class MessageDialog(Dialog):
     def _create_icon_label(self, container: tkinter.Misc) -> "Optional[ttk.Label]":
         """Build the icon Label from ``self._icon``, or None if it is unusable.
 
-        ``self._icon`` may be, in order of preference, an already-rendered Tk
-        image name (e.g. from ``ttk.Icon(...)`` -- the four default alert icons),
-        base64 image data, or a file path. Setting ``image=`` to a string that
-        is not an existing image raises ``TclError``, so an image name and base64
-        data disambiguate cleanly with no string sniffing.
+        ``self._icon`` may be, in order of preference, a ``PhotoImage`` or an
+        already-rendered Tk image name (e.g. from ``ttk.Icon(...)`` -- the four
+        default alert icons), a Bootstrap Icons glyph name, base64 image data, or
+        a file path. Each form fails loudly for the next to try -- ``image=``
+        raises ``TclError`` for a string that is not an existing image, and
+        ``ttk.Icon`` raises ``ValueError`` for an unknown glyph name -- so they
+        disambiguate cleanly with no string sniffing.
         """
         # Each candidate yields the image to hand to ``image=``. A rendered
         # ttk.Icon is a Tk image name (a str, pinned alive by the engine cache);
         # the data/file forms build a PhotoImage that must be retained on the
         # dialog (bound below) so it is not garbage-collected.
+        #
+        # The glyph name renders in the theme foreground: a caller's glyph carries
+        # no semantics we could map to a color, unlike the four alert glyphs whose
+        # colors are assigned by _ALERT_ICONS. ttk.Icon(...) remains the way to ask
+        # for a specific size or color.
         candidates = (
             lambda: self._icon,
+            lambda: ttk.Icon(self._icon, _ICON_SIZE),
             lambda: ttk.PhotoImage(data=self._icon),
             lambda: ttk.PhotoImage(file=self._icon),
         )
@@ -181,7 +195,8 @@ class MessageDialog(Dialog):
             return label
         warnings.warn(
             f"MessageDialog icon {self._icon!r} could not be loaded as an image "
-            "name, base64 data, or file path; no icon will be shown.",
+            "name, a Bootstrap Icons glyph name, base64 data, or a file path; "
+            "no icon will be shown.",
             UserWarning,
             stacklevel=2,
         )
@@ -260,6 +275,10 @@ class Messagebox:
 
     Every method takes ``(message, title, *, parent, alert, position,
     buttons, icon, localize)``; ``parent`` and ``alert`` are keyword-only.
+
+    ``icon`` is a Bootstrap Icons glyph name (e.g. ``"question-circle-fill"``),
+    and replaces the default glyph on the ``show_*`` methods. See
+    `MessageDialog` for the other image forms it accepts.
     """
 
     @staticmethod
@@ -271,7 +290,7 @@ class Messagebox:
             alert: bool = False,
             position: Optional[Tuple[int, int]] = None,
             buttons: Optional[List[str]] = None,
-            icon: Optional[str] = None,
+            icon: "Optional[Union[str, tkinter.PhotoImage]]" = None,
             localize: bool = True,
             **kwargs: Any,
     ) -> Optional[str]:
@@ -298,7 +317,7 @@ class Messagebox:
             alert: bool = True,
             position: Optional[Tuple[int, int]] = None,
             buttons: Optional[List[str]] = None,
-            icon: Optional[str] = None,
+            icon: "Optional[Union[str, tkinter.PhotoImage]]" = None,
             localize: bool = True,
             **kwargs: Any,
     ) -> Optional[str]:
@@ -325,7 +344,7 @@ class Messagebox:
             alert: bool = True,
             position: Optional[Tuple[int, int]] = None,
             buttons: Optional[List[str]] = None,
-            icon: Optional[str] = None,
+            icon: "Optional[Union[str, tkinter.PhotoImage]]" = None,
             localize: bool = True,
             **kwargs: Any,
     ) -> Optional[str]:
@@ -352,7 +371,7 @@ class Messagebox:
             alert: bool = False,
             position: Optional[Tuple[int, int]] = None,
             buttons: Optional[List[str]] = None,
-            icon: Optional[str] = None,
+            icon: "Optional[Union[str, tkinter.PhotoImage]]" = None,
             localize: bool = True,
             **kwargs: Any,
     ) -> Optional[str]:
@@ -379,7 +398,7 @@ class Messagebox:
             alert: bool = False,
             position: Optional[Tuple[int, int]] = None,
             buttons: Optional[List[str]] = None,
-            icon: Optional[str] = None,
+            icon: "Optional[Union[str, tkinter.PhotoImage]]" = None,
             localize: bool = True,
             **kwargs: Any,
     ) -> Optional[str]:
@@ -406,7 +425,7 @@ class Messagebox:
             alert: bool = False,
             position: Optional[Tuple[int, int]] = None,
             buttons: Optional[List[str]] = None,
-            icon: Optional[str] = None,
+            icon: "Optional[Union[str, tkinter.PhotoImage]]" = None,
             localize: bool = True,
             **kwargs: Any,
     ) -> Optional[str]:
@@ -433,7 +452,7 @@ class Messagebox:
             alert: bool = False,
             position: Optional[Tuple[int, int]] = None,
             buttons: Optional[List[str]] = None,
-            icon: Optional[str] = None,
+            icon: "Optional[Union[str, tkinter.PhotoImage]]" = None,
             localize: bool = True,
             **kwargs: Any,
     ) -> Optional[str]:
@@ -460,7 +479,7 @@ class Messagebox:
             alert: bool = False,
             position: Optional[Tuple[int, int]] = None,
             buttons: Optional[List[str]] = None,
-            icon: Optional[str] = None,
+            icon: "Optional[Union[str, tkinter.PhotoImage]]" = None,
             localize: bool = True,
             **kwargs: Any,
     ) -> Optional[str]:
@@ -487,7 +506,7 @@ class Messagebox:
             alert: bool = False,
             position: Optional[Tuple[int, int]] = None,
             buttons: Optional[List[str]] = None,
-            icon: Optional[str] = None,
+            icon: "Optional[Union[str, tkinter.PhotoImage]]" = None,
             localize: bool = True,
             **kwargs: Any,
     ) -> Optional[str]:

@@ -136,7 +136,10 @@ width=50, parent=None, alert=False, default=None, padding=(20, 20), icon=None)``
      - Padding around the content.
    * - ``icon``
      - ``str``
-     - A Bootstrap Icons glyph name shown beside the message.
+     - A Bootstrap Icons glyph name shown beside the message (e.g.
+       ``"question-circle-fill"``). For a specific size or color, pass a
+       rendered ``ttk.Icon("gear-fill", 40, "warning")`` instead. A
+       ``PhotoImage``, base64 image data, or a file path also work.
 
 Methods
 ~~~~~~~
