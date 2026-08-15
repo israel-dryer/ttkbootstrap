@@ -111,27 +111,48 @@ If you prefer explicit imports, the full paths still work too —
 ``from ttkbootstrap.widgets.tableview import Tableview`` and
 ``from ttkbootstrap.dialogs import Messagebox``.
 
-Character-icon constants removed
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The ttkbootstrap.icons module is removed
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``ttkbootstrap.icons`` module of named character constants (``Emoji`` and
-``Icon``) is removed. Those constants were just Unicode characters, and a character
-only appears if the user's system font happens to include that glyph — so they were
-never reliable across platforms, which is why the catalog is gone.
+The ``ttkbootstrap.icons`` module is removed. It held two unrelated things, and
+each has its own replacement.
 
-You can still use a literal character yourself if you want to — any widget accepts
+``Emoji`` was a catalog of Unicode characters. A character only appears if the
+user's system font includes that glyph, so the catalog was never reliable across
+platforms. You can still use a literal character yourself — any widget accepts
 ``text=`` — with the same font-dependent caveat:
 
 .. code-block:: python
 
    ttk.Label(app, text="🔔").pack()   # shows only where the system font has it
 
-For an icon that renders the same everywhere and follows the theme, use ``icon=``
-instead, which draws from a bundled Bootstrap Icons font:
+``Icon`` was a handful of base64-encoded PNGs: ``Icon.info``, ``Icon.warning``,
+``Icon.error`` and ``Icon.question`` — the four alert images the message dialogs
+drew on — plus the ttkbootstrap logo. Fixed images cannot follow a theme or scale
+to a display, which is why they gave way to font glyphs.
+
+Both are replaced by ``icon=``, which draws from a bundled Bootstrap Icons font —
+theme-following, crisp at any size, and identical on every platform:
 
 .. code-block:: python
 
    ttk.Button(app, text="Add", icon="plus-lg", bootstyle="success").pack()
+
+The dialogs take the same glyph names. The four ``ttk.Messagebox.show_*`` methods
+render their alert glyph for you, so a call that relied on the old default needs
+no change at all; pass ``icon=`` only to override it:
+
+.. code-block:: python
+
+   ttk.Messagebox.okcancel("Ok or Cancel?", "Choose", icon="question-circle-fill")
+
+For a specific size or color, render the glyph first with
+``ttk.Icon(name, size, color)`` and pass the result:
+
+.. code-block:: python
+
+   glyph = ttk.Icon("question-circle-fill", 40, "warning")
+   ttk.Messagebox.okcancel("Ok or Cancel?", "Choose", icon=glyph)
 
 If you passed a character to ``ToastNotification(icon=...)``, give it a Bootstrap
 Icons glyph name instead (for example ``icon="bell-fill"``).
