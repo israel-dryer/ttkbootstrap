@@ -36,7 +36,10 @@ keyword-only options:
        returns.
    * - ``icon``
      - ``str``
-     - A Bootstrap Icons glyph name shown beside the message.
+     - A Bootstrap Icons glyph name shown beside the message (e.g.
+       ``"question-circle-fill"``), replacing the default glyph on the
+       ``show_*`` methods. For a specific size or color, pass a rendered
+       ``ttk.Icon("gear-fill", 40, "warning")`` instead.
    * - ``localize``
      - ``bool``
      - Translate the standard button labels through the message catalog. Default
