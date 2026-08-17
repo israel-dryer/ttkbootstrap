@@ -1,0 +1,89 @@
+name: Publish
+
+# Releasing used to be a hand sequence on a developer box: build, twine check,
+# eyeball the wheel, upload with a long-lived token from a gitignored .pypirc.
+# Every step of that was per-machine -- 2.2.0 and 2.2.1 shipped from different
+# accounts with different tooling installed -- and the artifact that reached PyPI
+# was whatever that box happened to produce.
+#
+# Now the pushed tag is the trigger and the only human steps are the version
+# bump, the change log and the tag itself. Uploading uses PyPI Trusted
+# Publishing: GitHub mints a short-lived OIDC token for this workflow, so there
+# is no API token to store or rotate.
+#
+# `workflow_dispatch` runs everything except the upload, which is how to
+# exercise this file without tagging.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: build, audit and publish
+    runs-on: ubuntu-latest
+
+    # Declared so PyPI's trusted publisher can be scoped to it. Configure the
+    # publisher on PyPI with: owner israel-dryer, repository ttkbootstrap,
+    # workflow publish.yml, environment pypi.
+    environment: pypi
+
+    permissions:
+      contents: read
+      id-token: write   # mints the OIDC token Trusted Publishing exchanges
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      # A tag can point at any commit, including one CI never ran. The suite
+      # needs a display and Tk's shared libraries, same as in ci.yml.
+      - name: Install Tk and a virtual display
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends xvfb tk
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+          python -m pip install pytest build twine
+
+      - name: Run the suite
+        run: xvfb-run -a -s "-screen 0 1280x1024x24 -dpi 96" python -m pytest -q
+
+      - name: Build
+        run: python -m build --outdir dist
+
+      # twine check reads metadata only, and never opens the archives.
+      - name: Check the metadata
+        run: python -m twine check dist/*
+
+      # tools/check_dist.py opens them: the vendored icon font and the type stub
+      # are package data whose absence is invisible until a user hits it. On a
+      # tag it also asserts the built version matches the tag, so a tag pushed
+      # without the pyproject bump fails here instead of publishing the wrong
+      # version.
+      - name: Audit the artifacts
+        run: |
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            python tools/check_dist.py dist --expect-version "${GITHUB_REF_NAME#v}"
+          else
+            python tools/check_dist.py dist
+          fi
+
+      # Only a tag publishes. A dispatch run stops here, having proved the
+      # build, the suite and the artifact contents.
+      - name: Publish to PyPI
+        if: github.ref_type == 'tag'
+        uses: pypa/gh-action-pypi-publish@v1.14.2
