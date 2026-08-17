@@ -51,9 +51,11 @@ requirement, and why a small value tweak usually beats restructuring layout.
 > unwound at release time. If the next release turns out to be a minor, retarget
 > the open `2.2.2` milestone rather than leaving work in it.
 >
-> **Publishing is still manual, and should not stay that way.** 2.2.1 was built
-> and uploaded by hand from a developer box; the standing intent is to build and
-> publish from the **tag** in CI for the next release. See "Releasing" below.
+> **Publishing is no longer manual.** 2.2.1 was built and uploaded by hand from a
+> developer box; 2.2.2 adds `.github/workflows/publish.yml`, which builds and
+> publishes from the pushed **tag** through PyPI Trusted Publishing. 2.2.2 is its
+> first real run, so watch it rather than assuming — the upload is the one step
+> with no undo. See "Releasing" below.
 
 ### The 2.x line
 
@@ -406,7 +408,8 @@ which one you are on rather than assuming:
   VS Code/Pylance renders) and **jedi** for signature + `bootstyle=`
   completion. **PyCharm is not covered and cannot be scripted** — check it by
   hand when a report names it, as #1327 did.
-- **CI runs the two automatable gates** (`.github/workflows/ci.yml`, #1317) on
+- **CI runs the two automatable gates** (`.github/workflows/ci.yml`, #1317 — the
+  other workflow, `publish.yml`, fires only on a pushed tag) on
   push to `master` and every PR: the suite on **all three windowing systems** —
   Linux, Windows and macOS on py3.13, plus the py3.10 floor from
   `pyproject.toml` (macOS added in #1319) — and the docs under `-W`.
@@ -458,6 +461,10 @@ deleted and why the 3.0 shim list stays grep-discoverable).
   scripted**; check it by hand when a report names it.
 - **`report_tk_build.py`** — platform, Python, and the Tcl/Tk **patchlevel**. Run
   it on a box before blaming its Tk for something; CI runs it per job.
+- **`check_dist.py`** — opens a built wheel and sdist and asserts what
+  `twine check` cannot see: the package data is in the wheel, the sdist has no
+  docs, and the version is the one expected. The publish workflow runs it; see
+  "Releasing".
 - **`docs/scripts/take_screenshots.py`** — scene files in
   `docs/screenshots/<page>.py` mirroring each page's own code blocks, captured
   per theme. PNGs keep the capture box's full pixel density and every rST image
@@ -478,29 +485,44 @@ color or asset change should be checked against the matching one.
 
 ### Releasing
 
-No CI publishes; the upload is manual, with credentials in a gitignored
-repo-root `.pypirc`. **`master` is always the most recent release** — a patch
-release is cut from `master`, so the version bump lands there naturally;
-`release/*` exists only for *superseded* majors.
+**The pushed tag publishes** (`.github/workflows/publish.yml`, added at 2.2.2).
+It runs the suite, builds, `twine check`s, audits the archives
+(`tools/check_dist.py`) and uploads through **PyPI Trusted Publishing** — GitHub
+mints a short-lived OIDC token for that one workflow, so no API token is stored
+anywhere. Nothing is built on a developer box any more; the human steps are the
+bump, the change log, the tag and the GitHub release.
 
-**The intent is to retire this manual path**: build and publish from the pushed
-**tag** in CI (Trusted Publishing, no long-lived token), leaving only the bump,
-the change log and the tag as human steps. Not done yet — the checklist below is
-still the live procedure.
+**`master` is always the most recent release** — a patch release is cut from
+`master`, so the version bump lands there naturally; `release/*` exists only for
+*superseded* majors.
 
-**Building is per-box, and the Windows two-account split bites here.** `dist/`
-and `.pytest_cache/` in this checkout are owned by whichever account last built;
-from the other one they cannot be deleted or even `Get-Acl`'d, so step 4's
-"empty `dist/` first" simply fails. Build to a throwaway `--outdir` instead —
-which satisfies the same intent (no stale artifact in the upload set) more
-strongly than emptying does. `dist/` therefore still holds superseded wheels, so
-the **explicit version glob on upload is load-bearing, not belt-and-braces**.
-`build` and `twine` are also **not** installed in every venv — 2.2.0 shipped from
-the other profile's, and `.venv` needed `pip install build twine` at 2.2.1.
+**A dispatch run is the dry run.** `gh workflow run publish.yml` does everything
+except the upload, which is gated on `github.ref_type == 'tag'` — so the workflow
+itself can be exercised without spending a version number.
+
+**`tools/check_dist.py` opens the archives, which `twine check` never does.** It
+asserts the wheel carries the vendored icon font, the ttk element rasters,
+`py.typed` and the generated stub — each package data whose absence is invisible
+until a user hits it (a wheel without the font installs fine and dies at first
+render; 2.0 shipped with no stub at all) — and that the sdist carries no `docs/`,
+`development/`, `examples/` or `gallery/`. It takes `--expect-version`, which on a
+tag run is the tag, so a tag pushed without the bump fails the release instead of
+publishing the wrong version. Worth running against a local build too:
+`python tools/check_dist.py <dir> [--expect-version X.Y.Z]`.
+
+**Building by hand still works and is still per-box.** `dist/` and
+`.pytest_cache/` in this checkout are owned by whichever Windows account last
+built; from the other one they cannot be deleted or even `Get-Acl`'d, so
+"empty `dist/` first" simply fails — build to a throwaway `--outdir` instead. That
+also means `dist/` keeps superseded wheels, so a by-hand upload needs an
+**explicit version glob** (`twine upload dist/ttkbootstrap-X.Y.Z*`); a bare
+`dist/*` at 2.1.0 would have tried to re-publish the 2.0.0 artifacts sitting
+there. `build` and `twine` are **not** installed in every venv.
 
 1. Bump `version` in `pyproject.toml`, **at release time, on `master`**. It is the
    only place the version is written — nothing under `src/`, `docs/` or `tools/`
-   hardcodes it. 2.0.1 shipped its bump on a throwaway `release/2.0` branch and
+   hardcodes it, and the workflow checks the built version against the tag.
+   2.0.1 shipped its bump on a throwaway `release/2.0` branch and
    `master` kept claiming 2.0.0 for days — don't repeat that branch.
    `docs/conf.py` reads the *installed* distribution's version through
    `importlib.metadata` into `release`/`version`. Neither is rendered anywhere
@@ -510,18 +532,14 @@ the other profile's, and `.venv` needed `pip install build twine` at 2.2.1.
    built with, and this checkout's has read **2.0.0a1** for the whole 2.x cycle.
    RTD is unaffected; it installs fresh, so it reports the real version.
 2. Fold `development/2_<x>_changes.md` into the release notes.
-3. Run the gates: the full suite, and the docs build under `-W`.
-4. **Empty `dist/` first**, then `python -m build`, then `twine check dist/*`, then
-   upload **by explicit version glob** — `twine upload dist/ttkbootstrap-X.Y.Z*`.
-   `dist/` is gitignored, so it keeps whatever the last release built: at 2.1.0 it
-   still held the 2.0.0 wheel and sdist from July 19, and a bare `dist/*` upload
-   would have tried to re-publish 2.0.0 alongside the new version. Worth spending
-   a minute on the artifact while you are there — `twine check` validates metadata
-   but not contents, so confirm the wheel carries `ttkbootstrap/assets/icons/`
-   (the vendored Bootstrap Icons font is package data, and a wheel missing it
-   installs and then fails at first render) and that the sdist has no `docs/` or
-   `development/` in it.
-5. Annotated tag `vX.Y.Z`, plus a GitHub release titled the same way.
+3. Push `master` and confirm CI is green on it. Also run the docs under `-W`
+   locally if the release touched them — RTD builds on its own schedule and the
+   publish workflow does not gate on docs.
+4. Annotated tag `vX.Y.Z`, pushed. That triggers the publish workflow — **watch
+   it** (`gh run watch`) rather than assuming, because the upload is the one step
+   with no undo: PyPI refuses a re-upload of the same version, so a bad artifact
+   burns the number.
+5. A GitHub release titled `vX.Y.Z`, from the notes.
 6. Verify with a clean-environment `pip install ttkbootstrap==X.Y.Z`.
 
 ### Writing tests
