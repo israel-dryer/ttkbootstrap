@@ -26,36 +26,32 @@ requirement, and why a small value tweak usually beats restructuring layout.
 
 ## Direction
 
-> **STATUS (2026-08-17): 2.2.1 is the latest release; `master` now carries
-> unreleased 2.2.2 work.** 2.2.1 is tagged `v2.2.1`, on
-> [PyPI](https://pypi.org/project/ttkbootstrap/2.2.1/), GitHub release live,
-> verified by a clean-environment install. `pyproject.toml` still reads 2.2.1 —
-> the bump lands at release time — and per the standing convention the next
-> release is cut from **`master`**, never from a `2.2.x` branch.
+> **STATUS (2026-08-17): ttkbootstrap 2.2.2 is RELEASED.** Tagged `v2.2.2`, on
+> [PyPI](https://pypi.org/project/ttkbootstrap/2.2.2/), GitHub release live,
+> verified by a clean-environment install that also rendered a dialog glyph icon
+> (the fix the release exists for). **`master` reads 2.2.2**, and per the standing
+> convention **`master` is always the most recent release**.
 >
-> **On `master` since `v2.2.1`:** the message-dialog icon fix (**#1343**, closing
-> discussion 1342) and the docs-site domain swap (**#1345**). No open issues, no
-> open PRs. Two milestones are open: **`2.2.2`** (both of those) and **`3.0`**,
-> still holding only **#1276** (make `DateEntry` `value=None` the default).
+> **Only one milestone is open: `3.0`**, holding **#1276** (make `DateEntry`
+> `value=None` the default). No open issues besides it, no open PRs.
 >
-> **The change log is live at `development/2_2_2_changes.md`** — scoped relative
-> to 2.2.1, one entry so far (message dialogs accept an icon glyph name). Log
-> there as you land, not at release time. It is the release-notes source, and the
-> release audits it against `git diff v2.2.1..master`. #1345 has no row on
-> purpose: it moved links and packaging metadata, not behavior or appearance.
+> **The next user-visible change starts a new change log.** Create
+> `development/2_3_changes.md` (or `2_2_3_` for a patch) when the first one lands,
+> scoped **relative to 2.2.2**, and log there as you land — not at release time. It
+> is the release-notes source, and the release audits it against
+> `git diff v2.2.2..master`.
 >
 > **A `2.2.x` bucket is only ever the *next* release.** A patch is cut from
 > `master` and `release/*` exists only for *superseded majors*, so the moment
-> `master` reads 2.3.0 there is no branch a 2.2.2 could come from and anything
+> `master` reads 2.3.0 there is no branch a 2.2.3 could come from and anything
 > left on `2.2.x` can never ship. This stranded #1322 on `2.1.x` and had to be
-> unwound at release time. If the next release turns out to be a minor, retarget
-> the open `2.2.2` milestone rather than leaving work in it.
+> unwound at release time.
 >
-> **Publishing is no longer manual.** 2.2.1 was built and uploaded by hand from a
-> developer box; 2.2.2 adds `.github/workflows/publish.yml`, which builds and
-> publishes from the pushed **tag** through PyPI Trusted Publishing. 2.2.2 is its
-> first real run, so watch it rather than assuming — the upload is the one step
-> with no undo. See "Releasing" below.
+> **Publishing is no longer manual, and 2.2.2 proved it.** 2.2.1 was built and
+> uploaded by hand from a developer box; `.github/workflows/publish.yml` now
+> builds and publishes from the pushed **tag** through PyPI Trusted Publishing,
+> with signed attestations and no stored token. Its first real run went green
+> end to end. See "Releasing" below.
 
 ### The 2.x line
 
@@ -67,6 +63,7 @@ requirement, and why a small value tweak usually beats restructuring layout.
 | **2.1.1** | 2026-08-02 | Typing/docs patch — the widget type stubs came back (2.0 had dropped them, silently disabling keyword checking). |
 | **2.2.0** | 2026-08-06 | `ttkb` command line, 1.x theme converter, pre-root `Theme.register()`, `__version__`. |
 | **2.2.1** | 2026-08-14 | One fix: a menu bar is never painted in the border color, whatever the Tk build does (an X11 regression surfaced by CPython 3.13.15 mapping menu bars). |
+| **2.2.2** | 2026-08-17 | One fix: message dialogs accept a Bootstrap Icons glyph name for `icon=`, the form the reference pages always documented. Also the docs-site domain and the first release published from the tag by CI. |
 
 **The docs site is `www.ttkbootstrap.org`** (#1345) — a custom domain in front of
 the same Read the Docs build, so every RTD path is unchanged and only the host
@@ -89,7 +86,8 @@ redistributed into the topical sections below, where the next person will
 actually look for it. When you need the detail:
 
 - **`development/*_changes.md`** — the user-facing change log per release
-  (`2_1_changes.md`, `2_1_1_changes.md`, `2_2_changes.md`). Frozen once shipped.
+  (`2_1_changes.md`, `2_1_1_changes.md`, `2_2_changes.md`, `2_2_1_changes.md`,
+  `2_2_2_changes.md`). Frozen once shipped.
 - **`development/2_0_breaking_changes.md`** — every 1.x→2.x behavior change, with
   rationale. Still the place to log a break.
 - **`development/*_design.md`** — 26 design passes (engine, theme anchors,
