@@ -35,7 +35,7 @@ behavior (so that *vanilla* `tkinter.ttk`/`tkinter` widgets accept
 of a class you do not control, use `bootify(cls)` or `apply_bootstyle(widget,
 bootstyle)`.
 
-For more information, see: https://ttkbootstrap.readthedocs.io/
+For more information, see: https://www.ttkbootstrap.org/
 """
 from importlib.metadata import (
     PackageNotFoundError as _PackageNotFoundError,
