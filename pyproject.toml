@@ -56,6 +56,11 @@ Documentation = "https://www.ttkbootstrap.org/en/latest/"
 ttkbootstrap = "ttkbootstrap.cli:main"
 ttkb = "ttkbootstrap.cli:main"
 
+[project.entry-points."pyinstaller40"]
+# Include a hook to add the data files to a PyInstaller bundle
+# https://pyinstaller.org/en/stable/hooks.html#providing-pyinstaller-hooks-with-your-package
+hook-dirs = "ttkbootstrap._pyinstaller:get_hook_dirs"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 
