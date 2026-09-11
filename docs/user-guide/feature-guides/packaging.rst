@@ -45,7 +45,7 @@ Or on the command line:
 :func:`~ttkbootstrap._pyinstaller.get_hook_dirs` returns the directory holding the hook
 
 What the hook does
------------------
+------------------
 
 The hook consists of a single line of ``collect_data_files`` which collects all of the static assets required.
 

@@ -197,6 +197,12 @@ Each subsystem, end to end — its concepts and its usage in one place.
 
       The custom style-construction toolkit — assets, layouts, and icons.
 
+   .. grid-item-card:: Packaging
+      :link: feature-guides/packaging
+      :link-type: doc
+
+      Shipping an application whose icons still work once frozen.
+
 How-To
 ------
 
@@ -312,6 +318,7 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way.
    feature-guides/dialogs
    feature-guides/theming
    feature-guides/custom-styles
+   feature-guides/packaging
 
 .. toctree::
    :hidden:
