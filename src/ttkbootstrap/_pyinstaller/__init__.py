@@ -1,7 +1,6 @@
 """Pyinstaller hook to include static assets"""
 
 import os
-from typing import List
 
 
 def get_hook_dirs() -> list[str]:
