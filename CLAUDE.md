@@ -4,681 +4,427 @@ Guidance for working in the ttkbootstrap repository.
 
 ## What this is
 
-ttkbootstrap is a theming extension for tkinter/ttk: it generates modern,
-flat, Bootstrap-inspired themes on demand and adds a `bootstyle` keyword
-API to ttk widgets. Pure Python; the only runtime dependency is Pillow
-(used for image-based widget assets). Public API entry point is
-`src/ttkbootstrap/__init__.py`, typically imported as `import ttkbootstrap as ttk`.
+ttkbootstrap is a theming extension for tkinter/ttk: it generates flat,
+Bootstrap-inspired themes on demand and adds a `bootstyle` keyword API to ttk
+widgets. Pure Python; the only runtime dependency is Pillow. Public entry point
+is `src/ttkbootstrap/__init__.py`, imported as `import ttkbootstrap as ttk`.
 
-- Package version / metadata: `pyproject.toml` (src layout, `requires-python >=3.10`).
-- Docs site: Sphinx + `pydata_sphinx_theme` (`docs/`, config in `docs/conf.py`),
-  published to Read the Docs. (Was mkdocs pre-2.0.)
+- Metadata and version: `pyproject.toml` (src layout, `requires-python >=3.10`).
+- Docs: Sphinx + `pydata_sphinx_theme` in `docs/`, served by Read the Docs at
+  **`www.ttkbootstrap.org`**. 1.x lives on the `release/v1` branch and at
+  `/en/version-1/`; `/en/latest/` is 2.x.
 
-**Scope, and it is a real constraint:** ttkbootstrap is a **styling extension for
-vanilla tkinter — not a widget library.** The forward-looking framework is a
-separate project, **bootstack** (sibling repo at `D:/Development/bootstack`).
-Mine bootstack for *mechanisms* — memory/repaint, positioning, docs infra — and
-never for its style API.
+**Scope is a real constraint:** ttkbootstrap is a **styling extension for vanilla
+tkinter, not a widget library.** The forward-looking framework is the sibling
+project **bootstack** (`D:/Development/bootstack`) — borrow its *mechanisms*
+(repaint, positioning, docs infra), never its style API.
 
-The user base is predominantly **scientific and utility developers already on
-clam**, which is why aesthetic polish is a nice-to-have rather than a
-requirement, and why a small value tweak usually beats restructuring layout.
+The users are mostly **scientific and utility developers already on clam**:
+aesthetic polish is a nice-to-have, and a small value tweak usually beats
+restructuring layout.
 
-## Direction
+## Status
 
-> **STATUS (2026-08-17): ttkbootstrap 2.2.2 is RELEASED.** Tagged `v2.2.2`, on
-> [PyPI](https://pypi.org/project/ttkbootstrap/2.2.2/), GitHub release live,
-> verified by a clean-environment install that also rendered a dialog glyph icon
-> (the fix the release exists for). **`master` reads 2.2.2**, and per the standing
-> convention **`master` is always the most recent release**.
->
-> **Only one milestone is open: `3.0`**, holding **#1276** (make `DateEntry`
-> `value=None` the default). No open issues besides it, no open PRs.
->
-> **The next user-visible change starts a new change log.** Create
-> `development/2_3_changes.md` (or `2_2_3_` for a patch) when the first one lands,
-> scoped **relative to 2.2.2**, and log there as you land — not at release time. It
-> is the release-notes source, and the release audits it against
-> `git diff v2.2.2..master`.
->
-> **A `2.2.x` bucket is only ever the *next* release.** A patch is cut from
-> `master` and `release/*` exists only for *superseded majors*, so the moment
-> `master` reads 2.3.0 there is no branch a 2.2.3 could come from and anything
-> left on `2.2.x` can never ship. This stranded #1322 on `2.1.x` and had to be
-> unwound at release time.
->
-> **Publishing is no longer manual, and 2.2.2 proved it.** 2.2.1 was built and
-> uploaded by hand from a developer box; `.github/workflows/publish.yml` now
-> builds and publishes from the pushed **tag** through PyPI Trusted Publishing,
-> with signed attestations and no stored token. Its first real run went green
-> end to end. See "Releasing" below.
+- **Latest release: 2.2.2.** `master` also carries unreleased **2.2.3** work
+  (#1347, the PyInstaller hook).
+- **Open milestones:** `2.2.x` (#7, the rolling bucket for patch releases) and
+  `3.0` (#2, holding #1276). When `master` moves to a new minor, move whatever is
+  still open in `2.2.x` to the next milestone.
+- **Change log in progress:** `development/2_2_3_changes.md`, relative to 2.2.2.
+  Log each user-visible change as it lands, and keep entries short — what changed
+  and who it affects, not an essay.
 
-### The 2.x line
+## Where the record lives
 
-| Release | Date | What it was |
-| --- | --- | --- |
-| **2.0.0** | 2026-07-19 | The cleanup/consolidation rebuild — no new features. Mixin API replacing the import-time monkey-patch, canonical `bootstyle` grammar, semantic-anchor themes, a version-stamped repaint engine, font-glyph icons, and a from-scratch Sphinx docs site. |
-| **2.0.1** | 2026-07-23 | Two Tcl/Tk 9 fixes and nothing else: the scroll-event contract and the aqua scaling baseline. |
-| **2.1.0** | 2026-07-30 | Durable style options, `bootstyle` value tokens, the in-house themed file dialog, and multi-monitor-correct dialog positioning. |
-| **2.1.1** | 2026-08-02 | Typing/docs patch — the widget type stubs came back (2.0 had dropped them, silently disabling keyword checking). |
-| **2.2.0** | 2026-08-06 | `ttkb` command line, 1.x theme converter, pre-root `Theme.register()`, `__version__`. |
-| **2.2.1** | 2026-08-14 | One fix: a menu bar is never painted in the border color, whatever the Tk build does (an X11 regression surfaced by CPython 3.13.15 mapping menu bars). |
-| **2.2.2** | 2026-08-17 | One fix: message dialogs accept a Bootstrap Icons glyph name for `icon=`, the form the reference pages always documented. Also the docs-site domain and the first release published from the tag by CI. |
+- **`development/*_changes.md`** — user-facing change log per release; frozen once
+  shipped. The source for release notes.
+- **`development/2_0_breaking_changes.md`** — every 1.x→2.x behavior change. Still
+  the place to log a break.
+- **`development/*_design.md`** — design passes holding the *why* behind settled
+  decisions. Read the relevant one before reopening a decision.
+- **GitHub releases and closed milestones** — what shipped when.
+- **Git history** — the session narrative of the 2.x work.
 
-**The docs site is `www.ttkbootstrap.org`** (#1345) — a custom domain in front of
-the same Read the Docs build, so every RTD path is unchanged and only the host
-moved: `/en/latest/` and `/en/version-1/` both resolve, as does the bare root.
-Notes under `development/` keep the `readthedocs.io` host, recording what was
-true when written; nothing else should.
+## 3.0
 
-**1.x is preserved** on the `release/v1` branch and as the `version-1` docs
-version (`/en/version-1/`); `latest` serves the 2.x Sphinx docs. 1.x
-maintenance, if any, targets `release/v1`. RTD redirect map for the old mkdocs
-URLs: `development/2_0_rtd_redirects.md`.
+Milestone `3.0` holds deferred breaking work of two kinds:
 
-### Where the record lives
+- **Code shims** marked `removed in 3.0`. Find them with
+  `grep -r "removed in 3.0" src` — deliberately not listed anywhere, since a
+  hand-kept list drifts.
+- **Design decisions with no shim**, each tracked as its own issue (#1276).
 
-This file used to carry a session-by-session narrative of the whole 2.x
-initiative — about 2,160 lines. It was condensed once 2.2 shipped, because a
-finished release log is background, not an active worklist, and it crowded out
-the durable facts. **The narrative is in git history**; what survived is
-redistributed into the topical sections below, where the next person will
-actually look for it. When you need the detail:
-
-- **`development/*_changes.md`** — the user-facing change log per release
-  (`2_1_changes.md`, `2_1_1_changes.md`, `2_2_changes.md`, `2_2_1_changes.md`,
-  `2_2_2_changes.md`). Frozen once shipped.
-- **`development/2_0_breaking_changes.md`** — every 1.x→2.x behavior change, with
-  rationale. Still the place to log a break.
-- **`development/*_design.md`** — 26 design passes (engine, theme anchors,
-  bootstyle grammar, docs IA, durable options, value tokens, file dialog, …).
-  These hold the *why*, and several were gates the author confirmed before
-  implementation. Read the relevant one before reopening a settled decision.
-- **`development/2_0_plan.md`** — the original 2.0 worklist and locked decisions.
-- **GitHub releases + closed milestones** — what shipped when, per PR.
-
-### 3.0 (future major)
-
-Milestone **#2 (`3.0`)** is the home for deferred breaking work. Two kinds:
-
-- The **code shims** marked `removed in 3.0` (32 across 18 source files at 2.2).
-  They are **grep-discoverable** (`grep -r "removed in 3.0" src`), so
-  deliberately *not* enumerated in a meta-issue — a hand-maintained list would
-  only drift, which is the same reasoning that deleted `AGENTS.md`.
-- **Design decisions with no code shim** — the fragile ones, which get their own
-  tracked issues. First is **#1276**.
-
-Don't build a full 3.0 removal checklist until 3.0 is actually scoped.
+Don't build a 3.0 removal checklist until 3.0 is scoped.
 
 ## Repository layout
 
 ```
 src/ttkbootstrap/
-  __init__.py        # public exports; defines the concrete BootMixin/AutoStyleMixin widget
-                     #   subclasses (e.g. `class Button(BootMixin, ttk.Button)`) that carry the
-                     #   `bootstyle`/`autostyle` api + fluent pack/grid/place (return self). No
-                     #   import-time monkey-patch (2.0, PR 3) — opt into it via enable_global_api().
-                     #   Blessed tk widgets: Tk/Menu/Text/Canvas/Listbox/TkFrame/TkLabel.
-                     #   `LabelFrame` is the ttk alias for `Labelframe` (matching tkinter.ttk),
-                     #   NOT the classic tk widget (that 1.x meaning was dropped — see
-                     #   development/2_0_breaking_changes.md).
-  style/             # THE CORE — theme/style engine package (see below). Split from the old
-                     #   style.py in 2.0 (PR 4); public import path `ttkbootstrap.style` unchanged.
-                     #   theme.py (Colors, ThemeDefinition), builders_tk.py (StyleBuilderTK),
-                     #   builders_ttk.py (StyleBuilderTTK — the bulk), engine.py (Style),
-                     #   bootstyle.py (Keywords, Bootstyle, tokenizer, FluentGeometryMixin +
-                     #     BootMixin/AutoStyleMixin, delivery),
-                     #   _compat.py (legacy-form quarantine: normalize_bootstyle, strictness).
-  window.py          # Window / Toplevel classes
-  constants.py       # constants (PRIMARY, SUCCESS, ...) + the single bootstyle vocab source of
-                     #   truth: BOOTSTYLE_* tuples, BootColor/BootType/BootBase, generated BootStyle
-  colorutils.py      # color math (Colors helpers, make_transparent, contrast)
-  validation.py      # the Validation namespace (text/numeric/range/regex/add)
-  menu.py            # ttk.Menu + the native macOS application menu (no-ops off macOS)
-  cli.py             # the `ttkb` / `ttkbootstrap` command (version/demo/convert-theme/creator)
-  convert_theme.py   # 1.x theme file -> Theme(...).register() source. Pure text, no Tk.
+  __init__.py        # public exports; the concrete widget subclasses
+                     #   (`class Button(BootMixin, ttk.Button)`) carrying `bootstyle` and
+                     #   fluent pack/grid/place. Classic tk widgets with `autostyle`:
+                     #   Tk/Text/Canvas/Listbox/TkFrame/TkLabel. `LabelFrame` is the ttk
+                     #   alias for `Labelframe`, not the tk widget. The global monkey-patch
+                     #   is opt-in via enable_global_api().
+  __init__.pyi       # GENERATED widget type stub (tools/generate_widget_stubs.py)
+  style/             # the theme/style engine (see below)
+  window.py          # App / Window / Toplevel
+  constants.py       # constants + the single bootstyle vocabulary source of truth
+  colorutils.py      # color math
+  validation.py      # the Validation namespace
+  menu.py            # ttk.Menu + the native macOS application menu
+  cli.py             # `ttkb` command: version / demo / convert-theme / creator
+  convert_theme.py   # 1.x theme file -> Theme(...).register() source; pure text, no Tk
   __main__.py        # the widget demo (`ttkb demo`)
-  themes/standard.py # STANDARD_THEMES dict: pre-2.0 (Bootswatch) color defs, kept only for
-                     #   the legacy theme-name migration path (removed in 3.0)
-  themes/builtin.py  # CURATED_THEMES: the curated 2.0 semantic-anchor Theme families
-                     #   (custom themes live in user code via Theme(...).register(), not here)
-  widgets/           # CANONICAL custom widgets: dateentry, meter, floodgauge, tableview,
-                     #   scrolled, tooltip, toast, labeledscale
-  dialogs/           # Messagebox, Querybox, colorchooser, colordropper, datepicker,
-                     #   fontdialog, filedialog (the in-house themed one; X11 default)
-  utils/             # PUBLIC utilities: config (deferred-apply seam), fonts, localization
-  localization/      # msgcat-based i18n (msgs.py holds translations)
-  internal/          # PRIVATE plumbing (no underscore in the name): publisher.py, utility.py,
-                     #   positioning.py, configure_delegation.py, busy.py (tkinter busy shim).
-                     #   No back-compat guarantee. See "internal/ vs public" below.
-  utility.py         # PUBLIC utility funcs: enable_high_dpi_awareness, scale_size
-  publisher.py       # deprecation shim -> internal/publisher.py (warns; removed in 3.0)
-  assets/icons/      # vendored Bootstrap Icons font + glyphmap (package data — a wheel
-                     #   missing it installs fine and dies at first render)
-tests/               # HEADLESS pytest only, CI-runnable. ~37 test_*.py + conftest.py,
-                     #   plus widget_styles/, widgets/, cli/, localization/ subpackages.
-examples/            # manual visual gates — one mainloop() app per visual subsystem (color
-                     #   states, surfaces, icons, recolored assets, value tokens, file dialog).
-                     #   Need a display; NOT collected by pytest. Per-widget tours and API
-                     #   demos were removed in 2.2 — `ttkb demo` and the docs cover those.
+  themes/            # builtin.py (curated 2.x themes), standard.py + legacy.py (pre-2.0
+                     #   Bootswatch names, migration path only; removed in 3.0)
+  widgets/           # custom widgets: dateentry, meter, floodgauge, tableview, scrolled,
+                     #   tooltip, toast, labeledscale
+  dialogs/           # message, query, colorchooser, colordropper, datepicker, fontdialog,
+                     #   filedialog (the in-house themed one; X11 default)
+  utils/             # PUBLIC helpers: color, config (pre-root deferred setters), fonts,
+                     #   platform, scaling
+  localization/      # msgcat-based i18n (msgcat.py, api.py, msgs.py translations)
+  internal/          # PRIVATE plumbing, no back-compat: busy, configure_delegation,
+                     #   positioning, publisher, utility, wheel (scroll normalization)
+  utility.py         # deprecation shim -> utils/ (removed in 3.0)
+  publisher.py       # deprecation shim -> internal/publisher.py (removed in 3.0)
+  assets/            # PACKAGE DATA: icons/ (Bootstrap Icons font, glyphmap, metrics),
+                     #   elements/ (ttk element rasters + manifest), app_icons/
+  _pyinstaller/      # PyInstaller hook, registered via the `pyinstaller40` entry point.
+                     #   The hook must assign `datas`; tests/test_pyinstaller_hook.py checks.
+tests/               # HEADLESS pytest only, CI-run
+examples/            # manual visual gates (need a display; not collected by pytest)
 docs/, gallery/      # documentation and showcase apps
-tools/               # generators + manual verification gates (see Dev environment below)
+tools/               # generators and manual verification gates
 ```
 
-### internal/ vs public (important — new in 2.0)
+### internal/ vs public
 
-Implementation-detail modules live in **`src/ttkbootstrap/internal/`** (the
-name is `internal`, *not* `_internal`). Anything under it has no
+`src/ttkbootstrap/internal/` (named `internal`, not `_internal`) has no
 back-compat guarantee.
 
-When moving something public→internal, leave a thin shim at the old public path
-that re-exports from `internal/` and emits a `DeprecationWarning` ("…moved to
-ttkbootstrap.internal.X; removed in 3.0") — e.g. `ttkbootstrap.publisher`. For a
-module that stays public but sheds internal helpers (e.g. `utility.py`), forward
-the moved names via module-level `__getattr__` with the same warning instead of
-a whole shim module. **Importing `ttkbootstrap` itself must stay warning-free**
-— shims warn only when an old path is actually used.
+When moving something public→internal, leave a thin shim at the old path that
+re-exports and emits a `DeprecationWarning` ("…moved to …; removed in 3.0"), as
+`ttkbootstrap.publisher` does. **Importing `ttkbootstrap` itself must stay
+warning-free** — shims warn only when the old path is used. Edit real
+implementations, never a shim.
 
-The older top-level shims (`ttkbootstrap.scrolled/tableview/toast/tooltip`,
-`dialogs/dialogs.py`) were **removed** in #1068 — import from
-`ttkbootstrap.widgets.<name>` / `ttkbootstrap.dialogs`. Edit real
-implementations in `src/ttkbootstrap/widgets/`, never a shim.
+## The style engine (`style/`)
 
-## The style engine (`style/` package)
+`ttkbootstrap.style` re-exports the package surface. Modules:
 
-Everything visual flows through here. Split from the old monolithic `style.py`
-in 2.0 (PR 4) into a `style/` package; `ttkbootstrap.style` re-exports the full
-surface, so the import path is unchanged. The submodules layer downward
-(`theme` → `builders_tk` → `builders_ttk` → `engine` → `bootstyle`), with a few
-function-local back-edge imports. Key classes (by module):
+- **`engine.py` — `Style`**, the process-wide singleton (`Style.get_instance()`,
+  subclasses `ttk.Style`). Owns theme definitions, the active theme, the durable
+  user-override layer, the image cache, and `theme_use()`.
+- **`builders_ttk.py` — `StyleBuilderTTK`**, the per-theme coordinator: color
+  helpers, surfaces, `build_style(variant, widget_family, colorname)`, and
+  `create_default_style()`.
+- **`builders/`** — one module of ttk style **recipes** per widget family
+  (`button.py`, `entry.py`, …), each registered with
+  `@register_builder(variant, widget_family)` in `builders/registry.py`. A recipe
+  configures its style through `builder.configure` and calls
+  `builder.register_ttkstyle`.
+- **`builders_tk.py` — `StyleBuilderTK`** styles the classic tk widgets.
+- **`bootstyle.py` — `Bootstyle`**, the resolver (`update_ttk_widget_style()` maps
+  a `bootstyle`/`style` string to a built style), plus `BootMixin` /
+  `AutoStyleMixin` and `enable_global_api()`.
+- **`theme.py`** — `Colors`, `ThemeDefinition`, `Theme`.
+- **`icons.py`, `elements.py`, `assets.py`, `layout.py`, `scaling.py`** — glyph
+  rendering, element raster recoloring, the image toolkit, layout helpers, and
+  logical-unit scaling.
+- **`_compat.py`** — quarantine for legacy bootstyle spellings (tuple/list forms;
+  warn and normalize through 2.x).
 
-- **`Style`** (`engine.py`) — singleton (`Style.get_instance()`), subclasses
-  `ttk.Style`. Owns theme definitions and the active theme. `theme_use()`
-  switches themes and runs the version-stamped theme walk (PR 1) that repaints
-  only stale mounted widgets — styles rebuild lazily/O(mounted), not all up front.
-- **`StyleBuilderTTK`** (`builders_ttk.py`) — holds `create_*_style(colorname)`
-  methods (e.g. `create_button_style`, `create_outline_toolbutton_style`). These
-  build a ttk style and call `_register_ttkstyle()`.
-- **`StyleBuilderTK`** (`builders_tk.py`) — styles legacy `tk.*` widgets (Menu,
-  Text, Canvas, …).
-- **`Colors` / `ThemeDefinition`** (`theme.py`) — the color model + theme
-  container.
-- **`Bootstyle`** (`bootstyle.py`) — the resolver: `update_ttk_widget_style()` maps a
-  `bootstyle=`/`style=` string to a built ttk style. Two delivery paths feed it
-  (2.0, PR 3): the default `BootMixin`/`AutoStyleMixin` concrete subclasses
-  (in `__init__.py`), and the opt-in global monkey-patch
-  (`enable_global_api()` → `setup_ttkbootstrap_api()`). As of 2.0 the
-  parser is a real **tokenizer over a closed vocabulary** (fixed slot order
-  `[color-][modifier-]<base-type>[-orient]`), not a substring regex: unknown
-  tokens fail loudly (warn by default; `set_bootstyle_strict(True)` /
-  `TTKBOOTSTRAP_STRICT=1` raises). It handles **two input dialects** —
-  dash/space bootstyle strings (loud) vs already-built dotted ttk style names
-  from the theme walk / `Style.configure` / custom styles (lenient). The vocab
-  lives once in `constants.py`; the reference (`BootStyle` `Literal` + docs
-  table) is generated by `tools/generate_bootstyle_reference.py`, sync-tested.
-  Legacy forms (tuple/list bootstyle) are quarantined in `style/_compat.py`
-  (warn-and-normalize through 2.x, removed in 3.0).
+**The bootstyle parser is a tokenizer over a closed vocabulary**, slot order
+`[color-][modifier-]<base-type>[-orient]`. Unknown tokens warn by default and
+raise under `set_bootstyle_strict(True)` or `TTKBOOTSTRAP_STRICT=1`. It accepts two
+dialects: space/dash bootstyle strings (strict) and already-built dotted ttk style
+names (lenient). The vocabulary lives in `constants.py`; the `BootStyle` `Literal`
+and the docs table are generated by `tools/generate_bootstyle_reference.py`.
 
-### Lazy style building — the model to keep in mind
+### Styles are built lazily
 
-Styles are built **on demand**, not up front. The base `TButton`, `TEntry`,
-etc. are only configured the first time a widget that needs them is created
-(or via `_create_ttk_styles_on_theme_change` for already-registered styles).
-At theme load, `create_default_style()` configures the root `.` style plus a
-small set of always-needed styles.
+A style is built the first time a widget needs it. At theme load,
+`create_default_style()` configures the root `.` style and builds a small eager
+set: button, entry, combobox, menubutton and scrollbar (native dialogs use them
+without the app ever creating one), the link button, and the tooltip label.
 
-Consequence (and a real past bug, #1062): native/third-party ttk widgets the
-app never instantiates directly — e.g. the `ttk::button` widgets inside Tk's
-file dialog on Linux — fall back to the bare clam look if no corresponding
-ttkbootstrap widget has been created. The fix pattern is to build the needed
-base style eagerly in `create_default_style()`.
+`theme_use()` bumps a theme version and walks the mounted widget tree, rebuilding
+only the styles live widgets reference; durable user overrides are replayed per
+theme.
+
+**Consequence:** native or third-party ttk widgets the app never creates (e.g.
+the buttons inside Tk's Linux file dialog) show bare clam unless their base style
+is in the eager set. That is the fix pattern.
 
 ## Gotchas
 
-- **`Style` is a process-wide singleton (`Style.instance`) tied to the first Tk
-  root.** Creating and destroying separate roots in one process leaves the
-  singleton mis-bound, so later theming silently no-ops. Tests share ONE root
-  via the `root` fixture in `tests/conftest.py` — see "Writing tests" below.
-  (Properly fixing the singleton is part of the deferred `style.py` engine
-  rewrite.)
-- **Themes are clam-derived** (`theme_create(name, TTK_CLAM)`). An unstyled
-  base ttk style shows clam's default appearance until ttkbootstrap configures it.
-- **Framework code uses `_build_configure`, never the public `Style.configure`.**
-  The durable style-options layer captures public `configure` calls as *user*
-  overrides and re-applies them after every build, so a recipe or an internal
-  helper calling the public method miscaptures its own values as a fake user
-  override. Two real cases were fixed this way (`create_default_style`'s
-  `symbol.Link.TButton`/`tooltip.TLabel`, and `apply_icon`'s derived style).
-- **Durability ≠ the widget honoring the option.** The layer faithfully persists
-  any allowlisted option, including ones the widget never reads. Probed: ttk
-  `Entry`/`Combobox`/`Spinbox` read `font` from the widget or the named
-  `TkTextFont`, **not** the style, so `configure("TEntry", font=…)` persists and
-  never renders; `sashthickness` works only on the global pseudo-style `"Sash"`,
-  because `ttk::panedwindow` is a C widget querying that literal name. A third
-  class is self-inflicted: **a recipe that `map`s an option for *all* states
-  masks `configure` entirely** — audit for that shape before adding a map.
-- **"Works ≠ designed surface."** A composite widget's container-`Frame` option
-  passthrough (`borderwidth`/`relief`/`padding` on DateEntry/Meter/LabeledScale/
-  Tableview) happens to work and is **not API** — don't document it. Designed
-  delegates (DateEntry `state`/`width`) are.
+- **`Style` is a singleton bound to the first Tk root.** Creating and destroying
+  separate roots in one process mis-binds it and theming silently no-ops. Tests
+  share one root (see "Writing tests").
+- **Themes are clam-derived** (`theme_create(name, TTK_CLAM)`): an unbuilt style
+  shows clam's look.
+- **Framework code uses `_build_configure` (via `builder.configure`), never the
+  public `Style.configure`.** The public method records values as durable *user*
+  overrides and replays them after every build.
+- **Durable ≠ honored.** The override layer persists any allowlisted option,
+  including ones the widget never reads: ttk `Entry`/`Combobox`/`Spinbox` take
+  `font` from the widget or `TkTextFont`, not the style; `sashthickness` works only
+  on the pseudo-style `"Sash"`. And **a recipe that `map`s an option for all
+  states masks `configure` entirely** — check before adding one.
+- **Works ≠ API.** Option passthrough to a composite widget's container frame
+  (`borderwidth`/`relief`/`padding` on DateEntry, Meter, LabeledScale, Tableview)
+  is not API — don't document it. Designed delegates (DateEntry `state`/`width`)
+  are.
 - **`bootstyle` on a widget with its own ttk class** warns and keeps the current
-  style rather than raising. Full vocabulary applies to standard ttk classes; an
-  explicit base type (`"info-frame"`) borrows a recipe. Composite internals
-  follow the theme on their own — only the accent isn't fanned out, and
-  `apply_bootstyle` on the child is the designed path.
+  style. An explicit base type (`"info-frame"`) borrows a recipe. Composite
+  internals follow the theme; the accent is not fanned out — `apply_bootstyle` on
+  the child is the designed path.
 
 ## Platform & Tk facts
 
-Measured, not assumed — each of these cost a real bug. Anything touching
-geometry, scaling, assets or event bindings should be read against them.
+Measured, not assumed. Read these before touching geometry, scaling, assets or
+event bindings.
 
-### Monitor layout and window placement
+### Monitors and window placement
 
-- **Tk exposes no monitor enumeration on any platform.** On X11 `winfo
-  screenwidth` reports the **union of every display**, and `winfo vrootwidth`
-  falls back to that same value unless a virtual-root WM is running (nothing
-  modern sets `__SWM_VROOT`) — so Tk's own metrics can never locate a monitor
-  seam there, which is how a clamp against them let a dialog straddle two
-  screens. Windows differs: `winfo screenwidth` is the primary monitor,
-  `winfo vrootwidth` the virtual desktop, and the difference derives the grid.
-- `internal/positioning.py` resolves the layout **`screeninfo` → X11 Xinerama
-  via ctypes → Tk vroot**. **The library has never used `subprocess`** — ctypes
-  is the house pattern (same as the Windows DPI and shell APIs); don't shell out
-  to `xrandr`. Verified 4/4 on dual-monitor Windows and 5/5 on dual-monitor X11.
-- **macOS multi-monitor is taken on trust** (no second display to test with).
-  With `screeninfo` installed everything after the layout is
-  platform-independent arithmetic already covered elsewhere; without it aqua has
-  no enumeration at all, and the fallback is made *safe* rather than merely
-  untested by `test_placement_stays_on_screen_when_no_layout_is_available` —
-  worst case is landing on the wrong display, never straddling or off-edge. The
-  real closure is the deferred `CGGetActiveDisplayList` ctypes call.
-- **`withdraw()` goes before you build a window's contents, not after.** Building
-  widgets *shows* the window, and re-showing an already-shown window is a fresh
-  placement the WM decides for itself (measured drifting hundreds of px, differently
-  each run). Reproduced in pure tkinter, so it is the window manager, not us.
-- **"Has this window ever been shown?" must be tracked, not inferred.** A
-  never-mapped window reports 1×1 on x11, but on **win32 the root reports the
-  size Tk started it at** — so a `winfo_width() > 1` test is x11 reasoning that
-  centers the wrong box on Windows. `_ever_shown` is set from a `<Map>`/
-  `<Configure>` handler instead.
-- **A `geometry()` readback is not the position you applied on X11** — a
-  withdrawn window reports the WM's own placement (asked `+4460+20`, reads back
-  `+32+32`). Record the call instead of reading it back.
-- **A dialog positioned while withdrawn measures its content request, not the
-  size it will map at** — clamp against the minsize/geometry floor it will
-  actually get, or the button column lands off-screen.
-- **WSLg reports a `-32730` sentinel position** until the compositor has mapped a
-  window, so a `geometry()` + `update()` then measure sequence parks the window
-  nowhere. Settle-wait before measuring, or a check passes vacuously.
+- **Tk has no monitor enumeration.** On X11 `winfo screenwidth` is the union of all
+  displays and `vrootwidth` usually equals it, so Tk can't find a monitor seam. On
+  Windows `screenwidth` is the primary monitor and `vrootwidth` the virtual
+  desktop.
+- `internal/positioning.py` resolves the layout **`screeninfo` → X11 Xinerama via
+  ctypes → Tk vroot**. **Use ctypes, never `subprocess`** (no shelling out to
+  `xrandr`).
+- **macOS multi-monitor is untested.** Without `screeninfo` aqua has no
+  enumeration; the fallback is guaranteed safe (never straddles or goes off-edge)
+  but may choose the wrong display.
+- **`withdraw()` before building a window's contents.** Building shows the window,
+  and re-showing it lets the WM re-place it.
+- **Track "ever shown", don't infer it.** A never-mapped window is 1×1 on X11, but
+  a win32 root reports its initial size. `_ever_shown` is set from
+  `<Map>`/`<Configure>`.
+- **On X11 a `geometry()` readback is the WM's placement**, not what you applied.
+  Record the call.
+- **A withdrawn dialog measures its content request**, not its mapped size — clamp
+  against the minsize/geometry it will actually get.
+- **WSLg reports a `-32730` sentinel position** until the compositor maps the
+  window. Wait before measuring.
 
 ### Tcl/Tk versions
 
-- **Tk 9 moved the aqua scaling baseline from 72 to 96 dpi** — every asset and
-  padding rendered 33% larger than designed while text stayed put. Tk 9 also
-  changed the scroll-event contract: trackpads fire `<TouchpadScroll>`, wheel
-  deltas need normalizing to ±120, and X11 no longer delivers Button-4/5.
-- **CI is Tk 8.6 everywhere**, so a Tk 9 run is a manual step — worth doing for
-  anything touching scaling, assets, geometry or event bindings. On the Mac,
-  Homebrew `/opt/homebrew/bin/python3.14` is Tk 9.
+- **Tk 9 moved the aqua scaling baseline from 72 to 96 dpi**, and changed scroll
+  events: `<TouchpadScroll>` for trackpads, wheel deltas normalized to ±120, no
+  Button-4/5 on X11 (`internal/wheel.py`).
+- **CI is Tk 8.6 only.** Run Tk 9 by hand for scaling, asset, geometry or binding
+  changes — on the Mac, Homebrew `python3.14` is Tk 9.
+- **A CPython patch release can change Tk behavior on the same Tk patchlevel**
+  (3.13.15 started mapping menu bars on Tk 8.6.14). Record the build with
+  `tools/report_tk_build.py` rather than reasoning from version strings.
 
-### Widget-level behavior
+### Widget behavior
 
-- **`tk busy` is a no-op on macOS/Aqua**, and tkinter's busy methods are
-  **3.13+** (`internal/busy.py` shims the older line). The macOS no-op is
-  deliberately not emulated: Tk's busy window is a *transparent* input shield and
-  Tk has no transparent color, so any emulation is opaque and hides the UI.
-- **`tk.Menu` has no border color of its own** — no `highlightthickness`,
-  `relief="solid"` is hardcoded black, and the 3D reliefs derive both shades from
-  `-background`. The only route to a flat hairline is painting the *menu* in the
-  border color and each *entry* in the surface color. That holds for a popup and
-  **not** a menu bar (whose entries cover only the left of the bar), so a menu
-  bar must be refused explicitly — ask whether the menu is installed as a
-  window's `-menu` (or is the `-type menubar` clone). It used to be inferred
-  from `<Map>`, on the measurement that **Tk displays a menu bar through a
-  clone** so the widget you style never maps. **That is a property of the build,
-  not a guarantee** — under CPython 3.13.15 it maps, which painted every X11 menu
-  bar in the border color. **Not a Tk version difference**: CI's py3.10 job does
-  *not* map it on the same **Tk 8.6.14**, so the interpreter is part of it and
-  the exact mechanism is still unidentified. Which is the lesson — a behavioral
-  Tk fact is worth re-deriving rather than leaning on, and worth designing out
-  when the invariant can be asked for directly instead.
-- **A style `lookup` can return a `_tkinter.Tcl_Obj`** once the style is *built*
-  (`int()` rejects it, `str()` renders the number), and padding reads as `'10 4'`
-  or `(10, 4)` depending on whether a rebuild has happened. Compare as numbers.
-- **Font families that are not installed do not round-trip** — Tk substitutes, so
-  asserting `== "Georgia"` asserts the host's font inventory.
-- **`-topmost` is a hint a window manager may decline.** Assert it at the kwargs
-  seam, not by reading it back.
-- **`event_generate` bypasses pointer hit-testing** and can never prove input is
-  blocked — probe with `winfo_containing` plus a positive control.
+- **`tk busy` is a no-op on aqua** and tkinter's busy methods are 3.13+
+  (`internal/busy.py` backports). Don't emulate on aqua: Tk has no transparent
+  color, so any shield hides the UI.
+- **`tk.Menu` has no border color.** A flat hairline means painting the menu in
+  the border color and each entry in the surface color — right for popups, wrong
+  for a menu bar. Refuse menu bars by asking whether the menu is a window's
+  `-menu` (or the `-type menubar` clone), not by inferring from `<Map>`.
+- **A style `lookup` can return a `Tcl_Obj`** once built, and padding reads as
+  `'10 4'` or `(10, 4)`. Compare as numbers.
+- **Uninstalled font families don't round-trip** — Tk substitutes.
+- **`-topmost` is a hint the WM may decline.** Assert it at the kwargs seam.
+- **`event_generate` bypasses hit-testing**, so it can't prove input is blocked —
+  use `winfo_containing` plus a positive control.
 
 ## Dev environment & commands
 
-A virtualenv with an editable install lives at `.venv/` (Python 3.x on macOS;
-`python` on PATH resolves to it). The package is also importable with
-`PYTHONPATH=src`.
-
-**This project is developed across several boxes, each a separate working copy
-with its own venv — none of it carries over.** Start a session by confirming
-which one you are on rather than assuming:
+**Several boxes, each its own working copy and venvs.** Confirm which one you are
+on first.
 
 | Box | Notes |
 | --- | --- |
-| **Windows** | The canonical screenshot-capture box, and the only one where the demo has been eyeballed. The box has **two Windows accounts**, each with its own venv — `.venv-home` belongs to one, `.venv` to the other, each is unusable from the other, and neither is stale. `gh` is installed. Runs at 100% scaling = 1× density. |
-| **macOS** | One venv per Tk line: `.venv` is Tk 8.6, `.venv314` is Tk 9. Retina = 2× density. The only box that can capture native aqua menus or the application-menu shot. |
-| **WSL2 / Linux** | Checkout at `/home/iddryer/ttkbootstrap` with a *Linux* venv. **`gh` is not installed** — a PR can still be opened by reading the token from the credential helper the pushes use and POSTing to the API, but installing `gh` would make it a one-liner. |
+| **Windows** | Screenshot-capture box, 100% scaling (1×). Two Windows accounts share the checkout and each owns different venvs (`.venv`, `.venv-home`, `.venv314`, …); a venv from the other account won't launch. Check `pyvenv.cfg`'s `home` to see whose it is. `gh` is installed. |
+| **macOS** | `.venv` is Tk 8.6, `.venv314` is Tk 9. Retina (2×). The only box for native aqua menu shots. |
+| **WSL2 / Linux** | Checkout at `/home/iddryer/ttkbootstrap` with its own Linux venv. No `gh`. |
 
-- Run the headless suite: `python -m pytest -q` (config in `pyproject.toml`
-  under `[tool.pytest.ini_options]`; `testpaths = ["tests"]`).
-- pytest is installed in `.venv`. If a fresh env lacks it: `pip install pytest`.
-- The visual gates in `examples/` call `mainloop()` and need a display — they are
-  NOT collected by pytest, so nothing catches a deprecation that lands in them.
-  Sweep them when you deprecate something (2.2 found tuple `bootstyle`, legacy
-  Bootswatch theme names and the `inverse` modifier still in there).
-- Build docs: `python -m sphinx -b html -W -q -E docs <out>` (must exit 0 — the
-  docs are kept warning-clean; RTD enforces `fail_on_warning`). Deps in
-  `docs/requirements.txt`. **`.venv-home` belongs to the other Windows account on
-  that box** (its base interpreter lives under that account's home), so it is
-  unusable from the one `.venv` belongs to — the docs deps were installed into
-  `.venv` there on 2026-07-27. Use whichever venv matches the account you are on;
-  neither is stale.
-- `pip install -r requirements.txt` (root) installs the local gate set — pytest,
-  `screeninfo`, and the docs deps. RTD reads `docs/requirements.txt` directly.
-- **An editable install wins over a worktree's own `src/`.** A branch suite run
-  from a `git worktree` silently tests the *main* checkout's code; pin
-  `PYTHONPATH` to the worktree's `src` when testing a branch checked out
-  elsewhere.
-- **Regenerate the type stub** after adding a widget or editing an `Options`
-  table on a `docs/reference/api/` page: `python tools/generate_widget_stubs.py`
-  (writes `src/ttkbootstrap/__init__.pyi`; `--output` targets somewhere else).
-  `tests/test_widget_stubs.py` fails until the committed stub matches, and it
-  regenerates in a **subprocess** — an in-process run would read the `(*args,
-  **kwargs)` wrappers `enable_global_api()` installs on the tkinter classes,
-  since another test in the suite enables it. The same file also audits the
-  reference tables against the live Tk option set, so an undocumented option
-  fails there rather than becoming a false positive in a user's type checker.
-- **The stub's *tooltip* is a separate, manual gate:**
-  `python tools/verify_hover.py` (needs `pip install pyright jedi`). A stub can
-  type-check perfectly and still show the wrong hover — the first working
-  version put the `Args:` docstring on the class, so editors read `__init__`,
-  found nothing, and fell back to `BootMixin.__init__`'s "*args, \*\*kwargs"
-  text. The script drives **pyright over LSP** (`textDocument/hover`, i.e. what
-  VS Code/Pylance renders) and **jedi** for signature + `bootstyle=`
-  completion. **PyCharm is not covered and cannot be scripted** — check it by
-  hand when a report names it, as #1327 did.
-- **CI runs the two automatable gates** (`.github/workflows/ci.yml`, #1317 — the
-  other workflow, `publish.yml`, fires only on a pushed tag) on
-  push to `master` and every PR: the suite on **all three windowing systems** —
-  Linux, Windows and macOS on py3.13, plus the py3.10 floor from
-  `pyproject.toml` (macOS added in #1319) — and the docs under `-W`.
-  `fail-fast` is off so one platform's failure cannot hide another's — the whole
-  reason it exists, after a Windows-only failure sat on `master` for two days
-  (#1315). All three report **identical counts**, which is the signal to watch:
-  the suite's platform branches are forced probes (the #1229 convention), not
-  `skipif`, so every box runs the whole matrix and the numbers should match.
-  **`screeninfo` is left uninstalled on purpose** (it is optional at runtime, so
-  omitting it exercises the more fragile fallback layout path), and the Xvfb
-  display is pinned to 96 dpi to be a standard-density screen.
-- **CI does not cover Tk 9 or anything visual.** Every runner is **Tk 8.6** — the
-  workflow reports the Tcl/Tk build per job (`tools/report_tk_build.py`) rather
-  than leaving it inferred from the Python version, because 8.6-vs-9 is the split
-  behind the aqua dpi baseline and the scroll-event contract. Adding a Tk 9 job is
-  not free: `setup-python` ships no interpreter built against it. Visual gates stay
-  manual and still need the right box — see `tools/verify_positioning.py` and the
-  screenshot harness.
-- **The report includes the Tk *patchlevel*, because `tk=8.6` is not a build.**
-  A CPython **patch** release can change behavior: 3.13.14 → 3.13.15 started
-  mapping menu bars and broke `test_a_never_posted_menu_is_not_painted` on ubuntu
-  py3.13 alone. The patchlevel then showed it is **not** a Tk-version story — both
-  ubuntu jobs run **Tk 8.6.14** and only the 3.13 one mapped — so record the build
-  and let it correct you rather than reasoning from the version string. Observed
-  spread: linux 8.6.14, win32 8.6.15, darwin 8.6.18.
-- **A red job on a branch that touches no `src/` deserves a control run.**
-  Re-run **`master`'s own workflow** before believing the branch caused it — CI
-  had not run on `master` for 8 days, and the identical failure there is what
-  established the drift in one step.
+- **Suite:** `python -m pytest -q`.
+- **Docs:** `python -m sphinx -b html -W -q -E docs <out>` must exit 0 (RTD sets
+  `fail_on_warning`). Deps in `docs/requirements.txt`.
+- **Local gate set:** `pip install -r requirements.txt` (pytest, `screeninfo`, docs
+  deps).
+- **An editable install wins over a worktree's `src/`** — set `PYTHONPATH` to the
+  worktree's `src` when testing a branch checked out elsewhere. An editable
+  install's metadata (version, entry points) is also frozen at install time;
+  reinstall after changing `pyproject.toml`.
+- **`examples/` isn't collected by pytest**, so deprecations there go unnoticed —
+  sweep them when you deprecate something.
+- **Regenerate the type stub** after adding a widget or editing an `Options` table
+  on a `docs/reference/api/` page: `python tools/generate_widget_stubs.py`.
+  `tests/test_widget_stubs.py` fails until the stub matches (it regenerates in a
+  subprocess, because another test enables the global API), and it audits those
+  tables against the live Tk option set.
+- **Stub tooltips are a separate manual gate:** `python tools/verify_hover.py`
+  (needs `pyright` and `jedi`). PyCharm can't be scripted — check by hand when a
+  report names it.
 
-### Generators and manual gates (`tools/`)
+### CI
 
-Several artifacts are **generated, not hand-maintained** — the recurring lesson
-being that a hand-kept parallel copy only drifts (it is also why `AGENTS.md` was
-deleted and why the 3.0 shim list stays grep-discoverable).
+`.github/workflows/ci.yml` runs on push to `master` and on every PR: the suite on
+ubuntu, windows and macOS (py3.13) plus ubuntu py3.10, and the docs under `-W`.
 
-- **`generate_widget_stubs.py`** → `src/ttkbootstrap/__init__.pyi`. Which classes
-  need stubbing is *discovered* (an exported mixin subclass with a generic ctor),
-  and each one's options **and description** come from the authored
-  `docs/reference/api/` pages, so tooltip and documentation cannot drift.
-- **`generate_bootstyle_reference.py`** → the `BootStyle` `Literal` and the docs
-  reference table, from vocab × registry. Sync-tested.
-- **`verify_positioning.py`** — a PASS/FAIL line per placement check. Its
-  docstring explains why a green run on one box proves little; it has been run
-  green on Windows, X11 and macOS (both Tk lines), twice each — **with and
-  without `screeninfo`**, since forcing it off is the only way to exercise the
-  fallback layout path.
-- **`verify_hover.py`** — drives pyright over LSP and jedi. **PyCharm cannot be
-  scripted**; check it by hand when a report names it.
-- **`report_tk_build.py`** — platform, Python, and the Tcl/Tk **patchlevel**. Run
-  it on a box before blaming its Tk for something; CI runs it per job.
-- **`check_dist.py`** — opens a built wheel and sdist and asserts what
-  `twine check` cannot see: the package data is in the wheel, the sdist has no
-  docs, and the version is the one expected. The publish workflow runs it; see
-  "Releasing".
-- **`docs/scripts/take_screenshots.py`** — scene files in
-  `docs/screenshots/<page>.py` mirroring each page's own code blocks, captured
-  per theme. PNGs keep the capture box's full pixel density and every rST image
-  directive pins `:width: <logical>px` (the harness prints it) — never downscale,
-  never leave unpinned.
+- `fail-fast` is off so one platform can't hide another's failure.
+- **Every job should report identical test counts** — platform branches are forced
+  probes, not `skipif`.
+- `screeninfo` is deliberately not installed (it exercises the fallback layout
+  path), and Xvfb is pinned to 96 dpi.
+- Each job prints its Tcl/Tk patchlevel. There is no Tk 9 job and nothing visual.
+- **A red job on a branch that touches no `src/`:** re-run `master`'s workflow
+  before blaming the branch.
 
-The **eyeball** gates live in `examples/` rather than `tools/` — one app per
-visual subsystem, each with a light/dark toggle, to be looked at rather than
-asserted: `color_states_preview.py` (every color × state across the widget set),
-`surface_preview.py` (the elevation scale), `icon_preview.py` /
-`icon_button_preview.py` (the icon engine), `recolor_assets_preview.py`
-(`--scale 1.0|1.25|1.5|2.0`, the one gate that takes an argument),
-`value_token_preview.py`, `themed_file_dialog.py` /
+### Generators and gates (`tools/`)
+
+Generated artifacts are never hand-edited — a hand-kept parallel copy drifts.
+
+- **`generate_widget_stubs.py`** → `__init__.pyi`, from the `docs/reference/api/`
+  pages (options and descriptions).
+- **`generate_bootstyle_reference.py`** → the `BootStyle` `Literal` and docs table.
+  Sync-tested.
+- **`generate_style_reference.py`** → per-widget styling partials for the API pages.
+- **`generate_icon_metrics.py`** → `assets/icons/icon_metrics.json`.
+- **`make_app_ico.py`** → the packaged app icons from `assets/app_icons/` at the repo
+  root.
+- **`verify_positioning.py`** — PASS/FAIL placement checks. Run with and without
+  `screeninfo`.
+- **`verify_hover.py`** — editor hover and completion via pyright and jedi.
+- **`report_tk_build.py`** — platform, Python and Tcl/Tk patchlevel.
+- **`check_dist.py`** — opens a built wheel and sdist: required package data
+  (font, element rasters, `py.typed`, stub, PyInstaller hook), no `docs/` or
+  `development/` in the sdist, and `--expect-version`.
+- **`docs/scripts/take_screenshots.py`** — scenes in `docs/screenshots/<page>.py`,
+  captured per theme. Keep full pixel density and pin `:width: <logical>px` on
+  every image directive (the harness prints it). `theme_gallery.py` captures the
+  Themes catalog cards.
+
+**Eyeball gates in `examples/`**, one per visual subsystem, each with a light/dark
+toggle: `color_states_preview.py`, `surface_preview.py`, `icon_preview.py`,
+`icon_button_preview.py`, `recolor_assets_preview.py` (`--scale`),
+`value_token_preview.py`, `themed_file_dialog.py`,
 `file_dialog_default_routing.py`, `neutral_preview.py`, and
-`prerelease_visual_review.py` (the whole-widget-set sweep, run before a release).
-They are the re-runnable proof behind the design docs' recorded PASSes, so a
-color or asset change should be checked against the matching one.
+`prerelease_visual_review.py` (the whole widget set, before a release). Check color
+or asset changes against the matching one.
 
 ### Releasing
 
-**The pushed tag publishes** (`.github/workflows/publish.yml`, added at 2.2.2).
-It runs the suite, builds, `twine check`s, audits the archives
-(`tools/check_dist.py`) and uploads through **PyPI Trusted Publishing** — GitHub
-mints a short-lived OIDC token for that one workflow, so no API token is stored
-anywhere. Nothing is built on a developer box any more; the human steps are the
-bump, the change log, the tag and the GitHub release.
+Releases are cut from `master`; `release/*` branches exist only for superseded
+majors. **A pushed `vX.Y.Z` tag publishes:** `.github/workflows/publish.yml` runs
+the suite, builds, `twine check`s, runs `check_dist.py --expect-version <tag>`, and
+uploads via PyPI Trusted Publishing (no stored token). `gh workflow run
+publish.yml` is a dry run — everything except the upload.
 
-**`master` is always the most recent release** — a patch release is cut from
-`master`, so the version bump lands there naturally; `release/*` exists only for
-*superseded* majors.
-
-**A dispatch run is the dry run.** `gh workflow run publish.yml` does everything
-except the upload, which is gated on `github.ref_type == 'tag'` — so the workflow
-itself can be exercised without spending a version number.
-
-**`tools/check_dist.py` opens the archives, which `twine check` never does.** It
-asserts the wheel carries the vendored icon font, the ttk element rasters,
-`py.typed` and the generated stub — each package data whose absence is invisible
-until a user hits it (a wheel without the font installs fine and dies at first
-render; 2.0 shipped with no stub at all) — and that the sdist carries no `docs/`,
-`development/`, `examples/` or `gallery/`. It takes `--expect-version`, which on a
-tag run is the tag, so a tag pushed without the bump fails the release instead of
-publishing the wrong version. Worth running against a local build too:
-`python tools/check_dist.py <dir> [--expect-version X.Y.Z]`.
-
-**Building by hand still works and is still per-box.** `dist/` and
-`.pytest_cache/` in this checkout are owned by whichever Windows account last
-built; from the other one they cannot be deleted or even `Get-Acl`'d, so
-"empty `dist/` first" simply fails — build to a throwaway `--outdir` instead. That
-also means `dist/` keeps superseded wheels, so a by-hand upload needs an
-**explicit version glob** (`twine upload dist/ttkbootstrap-X.Y.Z*`); a bare
-`dist/*` at 2.1.0 would have tried to re-publish the 2.0.0 artifacts sitting
-there. `build` and `twine` are **not** installed in every venv.
-
-1. Bump `version` in `pyproject.toml`, **at release time, on `master`**. It is the
-   only place the version is written — nothing under `src/`, `docs/` or `tools/`
-   hardcodes it, and the workflow checks the built version against the tag.
-   2.0.1 shipped its bump on a throwaway `release/2.0` branch and
-   `master` kept claiming 2.0.0 for days — don't repeat that branch.
-   `docs/conf.py` reads the *installed* distribution's version through
-   `importlib.metadata` into `release`/`version`. Neither is rendered anywhere
-   today (`html_title` is a fixed string and there is no version switcher), so a
-   wrong value is latent rather than visible — but do not read a local docs build
-   as confirmation of the bump: an editable install keeps whatever metadata it was
-   built with, and this checkout's has read **2.0.0a1** for the whole 2.x cycle.
-   RTD is unaffected; it installs fresh, so it reports the real version.
-2. Fold `development/2_<x>_changes.md` into the release notes.
-3. Push `master` and confirm CI is green on it. Also run the docs under `-W`
-   locally if the release touched them — RTD builds on its own schedule and the
-   publish workflow does not gate on docs.
-4. Annotated tag `vX.Y.Z`, pushed. That triggers the publish workflow — **watch
-   it** (`gh run watch`) rather than assuming, because the upload is the one step
-   with no undo: PyPI refuses a re-upload of the same version, so a bad artifact
-   burns the number.
-5. A GitHub release titled `vX.Y.Z`, from the notes.
+1. Bump `version` in `pyproject.toml` on `master`. It is the only place the version
+   is written.
+2. Fold `development/<version>_changes.md` into the release notes.
+3. Push `master` and confirm CI is green. Build the docs under `-W` if they changed
+   (publishing doesn't gate on docs).
+4. Push an annotated tag `vX.Y.Z` and **watch the run** (`gh run watch`). PyPI
+   refuses re-uploads, so a bad artifact burns the version number.
+5. Create a GitHub release `vX.Y.Z` from the notes.
 6. Verify with a clean-environment `pip install ttkbootstrap==X.Y.Z`.
+
+**Building by hand:** `dist/` and `.pytest_cache/` may be owned by the other Windows
+account and undeletable — build to a throwaway `--outdir`. `build` and `twine`
+aren't in every venv. A local docs build reports the editable install's stale
+version; RTD installs fresh.
 
 ### Writing tests
 
-`tests/` is headless-only. New GUI tests should **take the `root` fixture** from
-`tests/conftest.py` (one shared session root; widgets and theme are reset per
-test) instead of creating their own `ttk.Window` — creating your own root
-re-triggers the singleton mis-binding above. Query a built style's value with
-`app.tk.call("ttk::style", "lookup", "<Style>", "-<option>")`. Put any
-interactive/visual demo in `examples/`, not `tests/` — but `examples/` is a
-curated set of subsystem gates, not a dumping ground. Extend the gate that
-already covers the subsystem before adding a file to it.
+`tests/` is headless-only. **Take the `root` fixture** from `tests/conftest.py`
+(one shared root, reset per test) instead of creating a window — a second root
+mis-binds the `Style` singleton. Read a built style with
+`app.tk.call("ttk::style", "lookup", "<Style>", "-<option>")`. Visual demos go in
+`examples/`, extending the existing gate for the subsystem.
 
 - **The shared root is pinned to `Scaling.baseline`**, so the suite is
-  density-independent and passes at 1.0, 1.4, 1.6667 and 2.0. Don't reintroduce
-  a bare pixel assertion that only holds at 1×.
-- **Force a platform probe rather than `skipif`.** Every platform branch is
-  asserted on every box, so all CI jobs report **identical counts** — a `skipif`
-  would leave a Mac dev running neither branch.
-- **A test that mutates global style state passes alone and fails in the suite.**
-  Style overrides leak across tests (something already leaves `Link.TButton`
-  padding at `40 2`), so `create_default_style` is idempotent at session start
-  and *not* once styles carry overrides.
-- **Prove a new check fails against the bug by reverting the fix, never by
-  reading the code.** Two guards in this repo passed vacuously for weeks — one
-  searched for strings that lived *inside* the function it was guarding, so
-  deleting the call site left it green.
+  density-independent. No bare pixel assertions that only hold at 1×.
+- **Force platform probes instead of `skipif`**, so every box runs every branch.
+- **Global style state leaks across tests** — a test that mutates it can pass alone
+  and fail in the suite.
+- **Prove a new check fails by reverting the fix**, not by reading the code. Guards
+  here have passed vacuously before.
 
 ## Documentation
 
-Full IA, charters and the curriculum map: `development/2_0_docs_design.md`.
-The governing principle: **the docs teach tkinter itself, in the ttkbootstrap
-dialect** — a self-sufficient learning source. Teach, don't defer.
+Full IA and charters: `development/2_0_docs_design.md`. **The docs teach tkinter
+itself, in the ttkbootstrap dialect** — a self-sufficient learning source.
 
-- **Bands sort by depth:** Getting Started · Fundamentals · Feature guides ·
-  How-To. There is **no "Concepts" band**. **No band index pages** — the sidebar
-  and the user-guide cards already do that job.
-- **Teach by building, never option-tours.** Feature guides are build-a-real-flow
-  guides. **One job per How-To**, with a task-shaped title short enough not to
-  wrap.
-- **No internal jargon or implementation asides** — including "under the hood"
-  notes that re-expose what an API hides. State what a thing **is**, not what it
-  isn't; the rationale for a limitation belongs in git, not on the page.
-- **In examples:** `theme=` (not `themename=`), curated 2.x theme names (not
-  legacy Bootswatch), spaces in multi-token `bootstyle` values (`"primary
-  outline"`, except `inverse-<color>`), `ttkb <command>` for CLI invocations, and
-  **no backslash line-continuations** — assign to a variable and reuse.
-- **Don't `/`-join items in a table cell** — one per line via an rST line block
-  (prose slashes are fine). A line block inside a list-table cell needs a **blank
-  line before it**.
-- **Every snippet is run headlessly before it ships**, and a code block must be
-  runnable on its own — a block that ends by using a name it never bound is a
-  defect, even when it reads as a continuation of the block above.
+- **Bands sort by depth:** Getting Started · Foundations · Feature guides · How-To.
+  No band index pages.
+- **Teach by building, not option tours.** Feature guides cover a subsystem end to
+  end; **a How-To does one job**, with a short task-shaped title.
+- **No internal jargon or implementation asides.** State what a thing is; the
+  rationale for a limitation belongs in git.
+- **In examples:** `theme=` (not `themename=`), curated 2.x theme names, spaces in
+  multi-token `bootstyle` (`"primary outline"`, except `inverse-<color>`),
+  `ttkb <command>` for the CLI, no backslash continuations.
+- **In table cells, don't `/`-join items** — one per line via an rST line block,
+  with a blank line before it inside a list-table cell.
+- **Every snippet is run before it ships**, and every code block runs on its own.
 
-**Three rST defect classes `-W` does not flag** — a clean build is not evidence
-the markup parsed:
-
-1. Nested inline markup inside `**bold**` leaks literal backticks.
-2. A line block inside a list-table cell without a preceding blank line leaks a
-   literal `|`.
-3. **An inline-literal start-string not preceded by whitespace never parses.**
-   Two rST literals joined by `..` ship raw backticks to the page, because rST
-   only begins inline markup after whitespace or an opener (`(` `[` `<` `-` `:`)
-   and `.` is not one. The *closing* backticks are fine, so the line renders
-   half-correct.
-
-**The cheap catch-all for all three:** strip tags from every built page and
-search the body text for surviving double backticks.
+**`-W` misses three rST defects:** nested inline markup inside `**bold**`; a line
+block in a list-table cell without a preceding blank line; and an inline literal
+not preceded by whitespace or an opener (e.g. two literals joined by `..`). **The
+catch-all:** strip tags from the built pages and search the text for surviving
+double backticks.
 
 ## Conventions
 
-- Match the style of the file you're editing (comment density, naming).
-- **Public-name casing (2.0 standardization):** ttkbootstrap-authored identifiers
-  (functions, methods, new kwargs) use `snake_case` (`apply_icon`, `icon_size`,
-  `high_dpi`, `window_type`); names that pass through to a real Tk/ttk option or
-  method keep Tk's spelling verbatim (`iconphoto`, `minsize`/`maxsize`, `compound`,
-  `themename`); `bootstyle`/`autostyle` are grandfathered brand tokens, not a
-  template for new names. Test: "am I forwarding a real Tk name?" — yes → Tk
-  spelling; no → snake_case.
-- Custom widgets that need image assets generate them through the style
-  builder / Pillow pipeline; favor native ttk/clam mechanisms over images
-  where both are viable (perf and cross-platform consistency).
-- Commit messages: imperative subject; reference the issue (`fixes #NNNN`)
-  where applicable.
-- Branch + PR per change. **Work targets `master`**; 1.x maintenance, if any,
-  targets **`release/v1`**.
-- **Set a milestone on every issue AND every PR** — not just issues. The
-  milestone is the single source of truth for "which release is this in"
-  ([[feedback_no_version_labels]] is the other half: no `Version x` labels), and
-  it is only as good as its coverage. Most 2.1 PRs went unmilestoned, so
-  `gh pr list --search "milestone:2.1"` returned 17 when 19 code changes had
-  shipped — the milestone stopped being usable for exactly the question it
-  exists to answer, and reconstructing the release required diffing merged PR
-  numbers against the change log by hand. Set it when you open the PR;
-  `gh pr edit <n> --milestone "2.1"` after the fact works but is easy to forget.
+- Match the style of the file you're editing.
+- **Public-name casing:** ttkbootstrap-authored names use `snake_case` (`apply_icon`,
+  `icon_size`); names forwarded to a real Tk option or method keep Tk's spelling
+  (`iconphoto`, `minsize`, `themename`). `bootstyle`/`autostyle` are grandfathered.
+- Custom widgets generate image assets through the style builder / Pillow
+  pipeline; prefer native ttk/clam mechanisms where both work.
+- **Commit messages:** `type: imperative subject` (`fix:`, `docs:`, `build:`,
+  `ci:`, `release:`), referencing the issue where there is one.
+- Branch and PR per change, targeting `master` (1.x: `release/v1`).
+- **Milestone every issue and PR that ships something** — the milestone is how
+  "which release is this in" gets answered. No `Version x` labels.
 
 ### Working with git here
 
-Each of these cost real rework at least once.
-
-- **Verify `git branch --show-current` before pushing.** A
-  `checkout -b … || checkout …` fallback once left commits on a second branch
-  while `git push origin <name>` pushed a different ref — a PR merged without the
-  work reported in it.
-- **`git merge-tree | grep '^<<<<<<<'` is not a conflict check** on modern git
-  (it reported 0 conflicts for two branches that then conflicted). Do a
-  **throwaway trial merge**. It is also the only way to gate the *combined*
-  result of two PRs, which neither PR's own CI covers.
-- **A branch showing large deletions in `git diff master..<branch>` is behind**,
-  not carrying removals.
-- **GitHub may squash-merge**, so the merge commit is a new SHA and
-  `git branch -d` reports "not fully merged". `git cherry master <branch>`
-  matches by patch-id and still reports 0 for a squash whose content landed — a
-  non-zero count means *look*, not *unmerged*. Don't assume the squash behavior
-  either: some merges here are real merge commits.
-- **`git reset --hard` discards uncommitted WIP, including the author's.** Being
-  careful not to *commit* someone's WIP is not the same as not *destroying* it —
-  stash first, or use a plain `git reset`, when the tree is dirty.
-- **"Push" is not "merge."** Push the branch; merging is a separate decision.
-- **A commit pushed to a PR branch after the PR merged does not land** — verify
-  the merge SHA includes your latest push.
-- **The author keeps live WIP in the working tree.** Leave modified files you did
-  not touch alone.
+- **Check `git branch --show-current` before pushing.**
+- **Commits use `israel.dryer@gmail.com`.** Check `git config user.email` in a new
+  checkout — a checkout-local override has put the wrong address on pushed
+  commits.
+- **Pushing to a contributor's PR branch:** `gh pr checkout <n>` sets the push
+  remote to their fork, but an IDE push or `git push -u origin` sends it to
+  `origin` instead. Afterwards confirm
+  `gh pr view <n> --json headRefOid` matches `git rev-parse HEAD`.
+- **`git merge-tree | grep '^<<<<<<<'` is not a conflict check** — do a throwaway
+  trial merge, which is also the only way to test two PRs combined.
+- **Large deletions in `git diff master..<branch>`** mean the branch is behind.
+- **PRs here are merged both ways (merge commit and squash)**, so `git branch -d`
+  may call a merged branch "not fully merged" and `git cherry` can mislead too.
+  Look before assuming it's unmerged.
+- **`git reset --hard` destroys the author's uncommitted WIP.** The author keeps
+  live WIP in the tree — leave files you didn't touch alone, and stash first.
+- **Push is not merge**, and a commit pushed after a PR merged doesn't land —
+  verify the merge includes your last push.
 
 ### Reviews
 
-- **A review finding is a hypothesis with a reproduction attached, not a
-  verdict.** The reproduction proves the *defect*; it does not make the proposed
-  *fix* right. Probe the recommendation against real data before implementing it
-  — one confident finding here reasoned from the PR's own test fixture and would
-  have washed out selection backgrounds across every converted theme.
-- **A careful self-review has missed real defects in every round so far**, and
-  several were the artifact being *wrong* rather than merely narrow. Budget for
-  the review; don't treat it as a formality.
-- **Type-checking cannot see a bad tooltip**, and a passing test cannot see a
-  filtering constructor. Probe the thing a user actually experiences.
+- **A review finding is a hypothesis with a reproduction**, not a verdict. The
+  reproduction proves the defect, not the proposed fix — probe the fix against
+  real data too.
+- **Self-review has missed real defects every round.** Budget for it.
+- **Probe what the user experiences** — type-checking can't see a bad tooltip, and
+  CI can't see a build artifact that never runs.
 
 ### Writing for people
 
-- **Release notes, PR bodies and issue comments go unwrapped** so the web
-  reflows them; repo source docs keep their wrapped convention.
-- **Unwrapped is not unstructured** — notes need real section headings and bullet
-  lists. Folding a *wrapped* change log into them means rewriting each paragraph
-  as one long line, never pasting it through.
+- **Release notes, PR bodies and issue comments go unwrapped** so the web reflows
+  them; repo source docs stay wrapped.
+- **Unwrapped is not unstructured** — use headings and bullet lists, and rewrite
+  wrapped change-log paragraphs as single lines rather than pasting them.
