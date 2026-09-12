@@ -271,6 +271,12 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way.
 
       The titlebar and taskbar icon, and the Windows ``.ico`` case.
 
+   .. grid-item-card:: Package your app
+      :link: how-to/packaging
+      :link-type: doc
+
+      A standalone program with PyInstaller, icons and all.
+
 .. toctree::
    :hidden:
    :caption: Getting Started
@@ -328,3 +334,4 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way.
    how-to/animate-gif
    how-to/splash-screen
    how-to/application-icon
+   how-to/packaging
