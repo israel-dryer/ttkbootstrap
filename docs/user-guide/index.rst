@@ -197,12 +197,6 @@ Each subsystem, end to end — its concepts and its usage in one place.
 
       The custom style-construction toolkit — assets, layouts, and icons.
 
-   .. grid-item-card:: Packaging
-      :link: feature-guides/packaging
-      :link-type: doc
-
-      Shipping an application whose icons still work once frozen.
-
 How-To
 ------
 
@@ -277,6 +271,12 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way.
 
       The titlebar and taskbar icon, and the Windows ``.ico`` case.
 
+   .. grid-item-card:: Package your app
+      :link: how-to/packaging
+      :link-type: doc
+
+      A standalone program with PyInstaller, icons and all.
+
 .. toctree::
    :hidden:
    :caption: Getting Started
@@ -318,7 +318,6 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way.
    feature-guides/dialogs
    feature-guides/theming
    feature-guides/custom-styles
-   feature-guides/packaging
 
 .. toctree::
    :hidden:
@@ -335,3 +334,4 @@ Task-focused recipes — common tkinter jobs done the ttkbootstrap way.
    how-to/animate-gif
    how-to/splash-screen
    how-to/application-icon
+   how-to/packaging
