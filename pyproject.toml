@@ -72,7 +72,9 @@ where = ["src"]
 # graft already sweeps them in, but the stub is what restores widget parameters
 # in an IDE (#1327), so a wheel that quietly ships without it is a silent
 # regression rather than a visible failure.
-"ttkbootstrap" = ["py.typed", "*.pyi", "themes/*.json", "assets/*", "assets/icons/*", "assets/elements/*", "assets/app_icons/ttkbootstrap.ico", "assets/app_icons/ttkbootstrap.png"]
+"ttkbootstrap" = [
+    "py.typed", "*.pyi", "themes/*.json", "assets/*", "assets/icons/*", "assets/elements/*",
+    "assets/app_icons/ttkbootstrap.ico", "assets/app_icons/ttkbootstrap.png", "_pyinstaller/*.py"]
 
 [tool.pytest.ini_options]
 # Only the headless suite under tests/ is collected. Interactive mainloop()

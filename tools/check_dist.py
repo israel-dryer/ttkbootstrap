@@ -38,6 +38,8 @@ REQUIRED_IN_WHEEL = (
     "ttkbootstrap/assets/elements/manifest.json",
     "ttkbootstrap/assets/elements/checkbox-checked.png",
     "ttkbootstrap/py.typed",
+    "ttkbootstrap/_pyinstaller/__init__.py",
+    "ttkbootstrap/_pyinstaller/hook-ttkbootstrap.py",
     "ttkbootstrap/__init__.pyi",
 )
 
