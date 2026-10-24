@@ -221,6 +221,27 @@ def test_scrolledtext_autohide_does_not_resize_the_frame(root):
     assert st._border.winfo_reqheight() == h_shown
 
 
+def test_scrolledframe_autohide_does_not_reflow_the_content(root):
+    # Regression (#1352): hiding the scrollbar collapsed its grid column, so the
+    # canvas widened and the content reflowed by the bar's width on every hover
+    # crossing. Its lane is now reserved, as in ScrolledText.
+    holder = ttk.Frame(root, width=300, height=200)
+    holder.pack_propagate(False)
+    holder.pack()
+    sf = ScrolledFrame(holder, auto_hide=True)
+    sf.pack(fill="both", expand=True)
+    for i in range(30):
+        ttk.Label(sf, text=f"row {i}").pack(anchor="w")
+    sf.show_scrollbars()
+    sf.update_idletasks()
+    # the content window is sized to the canvas, so a stable canvas is a
+    # stable content width
+    shown = sf._canvas.winfo_width()
+    sf.hide_scrollbars()
+    sf.update_idletasks()
+    assert sf._canvas.winfo_width() == shown
+
+
 def test_scrolledtext_focus_drives_the_border_state(root):
     # The border ring is a ttk state map on the highlight frame; focus toggles
     # the frame's `focus` state rather than swapping the style name.

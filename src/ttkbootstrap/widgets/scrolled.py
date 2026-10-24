@@ -413,6 +413,12 @@ class ScrolledFrame(ttk.Frame):
         )
         self._vbar.grid(row=0, column=1, sticky=NS)
         self._canvas.configure(yscrollcommand=self._vbar.set)
+        # Reserve the scrollbar's lane so auto-hide (grid_remove/grid on hover)
+        # doesn't widen the canvas -- and reflow the content -- when the bar
+        # comes and goes. Same as ScrolledText.
+        self.container.grid_columnconfigure(
+            1, minsize=self._vbar.winfo_reqwidth()
+        )
 
         # content frame lives inside the canvas -> native scroll fractions +
         # native destroy cascade.
