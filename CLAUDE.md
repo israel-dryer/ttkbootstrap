@@ -26,16 +26,12 @@ restructuring layout.
 ## Status
 
 - **Latest release: 2.2.3** (the PyInstaller hook, #1347). `master` reads 2.2.3
-  and carries no unreleased work.
+  and carries unreleased 2.2.4 work, logged in `development/2_2_4_changes.md`.
 - **Open milestones:** `2.2.x` (#7, the rolling bucket for patch releases) and
   `3.0` (#2, holding #1276). When `master` moves to a new minor, move whatever is
   still open in `2.2.x` to the next milestone.
-- **Next change log:** create `development/2_2_4_changes.md` (or `2_3_changes.md`)
-  with the first user-visible change, relative to 2.2.3. Log each change as it
-  lands, and keep entries short — what changed and who it affects, not an essay.
-- **Candidate patch:** a frozen app reports `ttk.__version__` as `"unknown"`, since
-  the hook doesn't bundle the package metadata. Cosmetic; the fix is adding
-  `copy_metadata("ttkbootstrap")` to the hook's `datas`.
+- **Change log:** log each change in `development/2_2_4_changes.md` as it lands,
+  and keep entries short — what changed and who it affects, not an essay.
 
 ## Where the record lives
 
