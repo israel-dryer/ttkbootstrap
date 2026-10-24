@@ -29,6 +29,7 @@ DURABLE_STYLE_OPTIONS = frozenset({
     "padding",
     "borderwidth",
     "focusthickness",
+    "focuswidth",
     "thickness",
     "rowheight",
     "sashthickness",
