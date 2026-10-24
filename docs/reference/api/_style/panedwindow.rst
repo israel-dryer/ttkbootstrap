@@ -51,6 +51,6 @@ Hand-styling example
    style = app.style
 
    style.configure("my.Horizontal.TPanedwindow", background="#3498db", foreground="white")
-   ttk.Panedwindow(app, style="my.Horizontal.TPanedwindow").pack(padx=8, pady=8)
+   ttk.Panedwindow(app, orient="horizontal", style="my.Horizontal.TPanedwindow").pack(padx=8, pady=8)
 
    app.mainloop()

@@ -51,6 +51,6 @@ Hand-styling example
    style = app.style
 
    style.configure("my.Horizontal.TSeparator", background="#3498db", foreground="white")
-   ttk.Separator(app, style="my.Horizontal.TSeparator").pack(padx=8, pady=8)
+   ttk.Separator(app, orient="horizontal", style="my.Horizontal.TSeparator").pack(padx=8, pady=8)
 
    app.mainloop()
