@@ -57,6 +57,6 @@ Hand-styling example
    style = app.style
 
    style.configure("my.Horizontal.TScale", background="#3498db", foreground="white")
-   ttk.Scale(app, style="my.Horizontal.TScale").pack(padx=8, pady=8)
+   ttk.Scale(app, orient="horizontal", style="my.Horizontal.TScale").pack(padx=8, pady=8)
 
    app.mainloop()

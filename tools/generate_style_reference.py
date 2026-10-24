@@ -59,7 +59,7 @@ _PARTIAL_OUT = _ROOT / "docs" / "reference" / "api" / "_style"
 
 # Families whose ttk style name carries an orientation segment; the reference
 # documents the horizontal form (a note points at the vertical twin).
-_ORIENT_FAMILIES = {"scale", "progressbar", "separator", "panedwindow", "floodgauge"}
+_ORIENT_FAMILIES = {"scale", "progressbar", "separator", "panedwindow", "floodgauge", "scrollbar"}
 
 # Families ttkbootstrap draws from pre-rendered image elements (keyed to the
 # bootstyle color) rather than clam's drawing primitives. For these, most
@@ -298,7 +298,10 @@ def _example_rst(family):
         # only text-bearing widgets accept `-text`; adding it to a Scale/Frame/
         # Treeview/... would raise `unknown option "-text"` when copied.
         text = 'text="Custom", ' if family in _TEXT_BEARING else ""
-        lines.append(f'   ttk.{widget}(app, {text}style="{custom}").pack(padx=8, pady=8)')
+        # the style is the horizontal form, and Scrollbar/Panedwindow default
+        # to vertical, so the widget must say so.
+        orient = 'orient="horizontal", ' if family in _ORIENT_FAMILIES else ""
+        lines.append(f'   ttk.{widget}(app, {text}{orient}style="{custom}").pack(padx=8, pady=8)')
         lines += ["", "   app.mainloop()"]
     else:
         lines += [

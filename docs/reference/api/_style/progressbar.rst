@@ -60,6 +60,6 @@ Hand-styling example
    style = app.style
 
    style.configure("my.Horizontal.TProgressbar", background="#3498db", foreground="white")
-   ttk.Progressbar(app, style="my.Horizontal.TProgressbar").pack(padx=8, pady=8)
+   ttk.Progressbar(app, orient="horizontal", style="my.Horizontal.TProgressbar").pack(padx=8, pady=8)
 
    app.mainloop()

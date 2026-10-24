@@ -31,14 +31,14 @@ Configurable style options
 
 Options you can set with ``style.configure(...)`` / ``style.map(...)``:
 
-``arrowcolor``, ``arrowsize``, ``background``, ``bordercolor``, ``darkcolor``, ``fieldbackground``, ``font``, ``foreground``, ``gripcount``, ``lightcolor``, ``orient``, ``padding``, ``relief``, ``shiftrelief``, ``sliderlength``, ``troughcolor``, ``width``
+``background``, ``bordercolor``, ``darkcolor``, ``fieldbackground``, ``font``, ``foreground``, ``lightcolor``, ``padding``, ``relief``, ``shiftrelief``, ``width``
 
 Supported states
 ~~~~~~~~~~~~~~~~
 
 The states you can target with ``style.map(...)`` to vary appearance by interaction:
 
-``!disabled``, ``disabled``, ``focus``, ``invalid``, ``pressed``, ``readonly``
+``!disabled``, ``disabled``, ``focus``, ``invalid``, ``readonly``
 
 Hand-styling example
 ~~~~~~~~~~~~~~~~~~~~

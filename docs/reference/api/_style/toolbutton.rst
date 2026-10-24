@@ -13,6 +13,8 @@ Any of the accent colors -- ``primary``, ``secondary``, ``success``, ``info``, `
      - ttk style name
    * - ``primary toolbutton``
      - ``primary.Toolbutton``
+   * - ``primary ghost toolbutton``
+     - ``primary.Ghost.Toolbutton``
    * - ``primary outline toolbutton``
      - ``primary.Outline.Toolbutton``
 

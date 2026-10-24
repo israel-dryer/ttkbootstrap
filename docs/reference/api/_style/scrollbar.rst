@@ -5,6 +5,9 @@ Bootstyle mapping
 
 Any of the accent colors -- ``primary``, ``secondary``, ``success``, ``info``, ``warning``, ``danger``, ``light``, ``dark`` -- substitutes for ``primary`` below. ``neutral`` does not apply to this family.
 
+A vertical widget resolves to the ``Vertical.`` twin of each style name above.
+
+
 .. list-table::
    :header-rows: 1
    :widths: 50 50
@@ -12,18 +15,24 @@ Any of the accent colors -- ``primary``, ``secondary``, ``success``, ``info``, `
    * - ``bootstyle``
      - ttk style name
    * - ``primary``
-     - ``primary.TScrollbar``
+     - ``primary.Horizontal.TScrollbar``
    * - ``primary round``
-     - ``primary.Round.TScrollbar``
+     - ``primary.Round.Horizontal.TScrollbar``
    * - ``primary thin``
-     - ``primary.Thin.TScrollbar``
+     - ``primary.Thin.Horizontal.TScrollbar``
 
 Layout (elements)
 ~~~~~~~~~~~~~~~~~
 
 The widget is drawn from these nested parts. Each is an *element* you can target by name in a custom layout:
 
-*(no ttk layout introspected)*
+.. code-block:: text
+
+   Horizontal.Scrollbar.trough
+     primary.Horizontal.TScrollbar.thumb
+       primary.Horizontal.TScrollbar.startcap
+       primary.Horizontal.TScrollbar.endcap
+       primary.Horizontal.TScrollbar.fill
 
 Configurable style options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -34,14 +43,14 @@ Configurable style options
 
 Options you can set with ``style.configure(...)`` / ``style.map(...)``:
 
-*(none)*
+``arrowcolor``, ``arrowsize``, ``background``, ``bordercolor``, ``borderwidth``, ``darkcolor``, ``fieldbackground``, ``focuscolor``, ``focuswidth``, ``gripcount``, ``lightcolor``, ``orient``, ``padding``, ``relief``, ``shiftrelief``, ``sliderlength``, ``troughcolor``
 
 Supported states
 ~~~~~~~~~~~~~~~~
 
-This style declares no ``style.map(...)`` overrides; any state-dependent appearance is drawn from its image elements.
+The states you can target with ``style.map(...)`` to vary appearance by interaction:
 
-
+``active``, ``pressed``
 
 Hand-styling example
 ~~~~~~~~~~~~~~~~~~~~
@@ -53,7 +62,7 @@ Hand-styling example
    app = ttk.App()
    style = app.style
 
-   style.configure("my.TScrollbar", background="#3498db", foreground="white")
-   ttk.Scrollbar(app, style="my.TScrollbar").pack(padx=8, pady=8)
+   style.configure("my.Horizontal.TScrollbar", background="#3498db", foreground="white")
+   ttk.Scrollbar(app, orient="horizontal", style="my.Horizontal.TScrollbar").pack(padx=8, pady=8)
 
    app.mainloop()
