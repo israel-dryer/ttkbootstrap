@@ -43,7 +43,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
-dependencies = ["pillow>=10,<13"]
+dependencies = ["pillow>=10,<14"]
 
 [project.urls]
 Homepage = "https://github.com/israel-dryer/ttkbootstrap"
