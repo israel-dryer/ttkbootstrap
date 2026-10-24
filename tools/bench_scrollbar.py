@@ -35,11 +35,26 @@ BASELINE = "ttk_clam"
 THUMB_FRACTIONS = (0.05, 0.25, 0.5, 0.9)
 
 
+def _dpi_aware():
+    """What `Window(scaling=)` does on Windows before setting `tk scaling`, so
+    the stock variants draw at the same density as ttkbootstrap's."""
+    try:
+        from ctypes import windll
+        try:
+            windll.shcore.SetProcessDpiAwareness(1)
+        except Exception:
+            windll.user32.SetProcessDPIAware()
+    except Exception:
+        pass
+
+
 def _build(kind, scaling):
     import tkinter as tk
     from tkinter import ttk
 
     if kind in ("tk_classic", "ttk_clam"):
+        if scaling is not None:
+            _dpi_aware()
         root = tk.Tk()
         if scaling is not None:
             root.tk.call("tk", "scaling", scaling)
@@ -49,7 +64,7 @@ def _build(kind, scaling):
         return root, ttk.Scrollbar(root, orient="vertical")
 
     import ttkbootstrap as ttkb
-    root = ttkb.Window(theme="litera", scaling=scaling)
+    root = ttkb.Window(theme="bootstrap-light", scaling=scaling)
     return root, ttkb.Scrollbar(root, orient="vertical", bootstyle=kind)
 
 
@@ -105,7 +120,7 @@ def main():
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--iters", type=int, default=300,
-                        help="redraws timed per thumb size (default 300)")
+                        help="redraws timed per thumb size (default 300, min 2)")
     parser.add_argument("--height", type=int, default=800,
                         help="scrollbar height in px (default 800)")
     parser.add_argument("--scaling", type=float, default=None,
@@ -113,6 +128,8 @@ def main():
                              "(default: the display's own)")
     parser.add_argument("--child", help=argparse.SUPPRESS)
     args = parser.parse_args()
+    if args.iters < 2:
+        parser.error("--iters must be at least 2")
 
     if args.child:
         _child(args.child, args.iters, args.height, args.scaling)

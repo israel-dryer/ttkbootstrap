@@ -76,4 +76,4 @@ def test_scrollbar_thumb_color_follows_state(root):
         return str(root.tk.call("ttk::style", "lookup", "Vertical.TScrollbar",
                                 "-fieldbackground", state)).lower()
 
-    assert fill() != fill("active") != fill("pressed")
+    assert len({fill(), fill("active"), fill("pressed")}) == 3

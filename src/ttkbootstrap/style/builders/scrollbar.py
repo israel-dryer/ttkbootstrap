@@ -4,12 +4,13 @@ import tkinter as tk
 
 from ttkbootstrap.constants import *
 from ttkbootstrap.style import StyleBuilderTTK
-from ttkbootstrap.style.layout import El, layout, state_map
+from ttkbootstrap.style.layout import El, image_element, layout, state_map
 from ttkbootstrap.style.builders.registry import register_builder
 
 
 # A few-pixel thumb for the 'thin' variant -- suits narrow lists/dropdowns.
 _THIN_SCROLLBAR_THICKNESS = 4
+_THIN_SCROLLBAR_MIN_THUMB = 8  # minimum thumb length (logical)
 
 # The standard scrollbar thumb thickness (square + round variants).
 _SCROLLBAR_THICKNESS = 8
@@ -84,8 +85,14 @@ def _scrollbar_thumb(builder, ttk_style, orient, thumb, trough, *,
     reads, so `background` stays the trough color like every other region.
     """
     vertical = orient == "vertical"
-    pad = builder.scale_size(inset)
-    builder.configure(ttk_style, fieldbackground=thumb,
+    scaling = builder.style.scaling
+    pad = scaling.logical(inset)
+    # Size the cap from the full thickness: rounding the inset and the cap
+    # separately would add a pixel to the bar at fractional scaling. The
+    # physical width is passed back in logical units, which the asset toolkit
+    # rounds to the same pixel count.
+    cap_thickness = (scaling.logical(thickness) - 2 * pad) / scaling.factor
+    builder.configure(ttk_style, fieldbackground=thumb, focuswidth=0,
                       padding=(pad, 0) if vertical else (0, pad))
     state_map(builder.style, ttk_style, fieldbackground={
         "pressed": builder.pressed(thumb), "active": builder.active(thumb)})
@@ -96,11 +103,11 @@ def _scrollbar_thumb(builder, ttk_style, orient, thumb, trough, *,
     for end in ("start", "end"):
         def image(color):
             return _scrollbar_cap(builder, color, trough, orient, end,
-                                  thickness - 2 * inset, cap, rounded)
-        builder.style.element_create(
-            f"{ttk_style}.{end}cap", "image", image(thumb),
-            ("pressed", image(builder.pressed(thumb))),
-            ("active", image(builder.active(thumb))),
+                                  cap_thickness, cap, rounded)
+        image_element(
+            builder.style, f"{ttk_style}.{end}cap", default=image(thumb),
+            states={"pressed": image(builder.pressed(thumb)),
+                    "active": image(builder.active(thumb))},
             sticky=cap_sticky)
 
     start_side, end_side = ("top", "bottom") if vertical else ("left", "right")
@@ -200,7 +207,8 @@ def build_thin_scrollbar_style(builder: StyleBuilderTTK, colorname=DEFAULT):
         # a `t`-px-thick sliver that stretches along the track
         thumb_el = _scrollbar_thumb(
             builder, ttk_style, orient, thumb, surface,
-            thickness=_THIN_SCROLLBAR_THICKNESS, inset=0, cap=4, rounded=False)
+            thickness=_THIN_SCROLLBAR_THICKNESS, inset=0,
+            cap=_THIN_SCROLLBAR_MIN_THUMB // 2, rounded=False)
         layout(builder.style, ttk_style,
                El(trough_el, sticky=sticky, children=[thumb_el]))
         builder.register_ttkstyle(ttk_style)
