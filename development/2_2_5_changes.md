@@ -1,6 +1,6 @@
 # ttkbootstrap 2.2.5 — notable changes
 
-Changes since **2.2.4**. Unreleased.
+Changes since **2.2.4**. Released 2026-10-24.
 
 | Area                                  | Kind |
 |---------------------------------------|------|

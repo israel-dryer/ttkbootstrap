@@ -25,13 +25,13 @@ restructuring layout.
 
 ## Status
 
-- **Latest release: 2.2.4** (Pillow 13, #1350; frozen-app version, #1351).
-  `master` reads 2.2.4 and carries no unreleased work.
+- **Latest release: 2.2.5** (scrollbar redraw speed, #1349; ScrolledFrame
+  auto-hide reflow, #1352). `master` reads 2.2.5 and carries no unreleased work.
 - **Open milestones:** `2.2.x` (#7, the rolling bucket for patch releases) and
   `3.0` (#2, holding #1276). When `master` moves to a new minor, move whatever is
   still open in `2.2.x` to the next milestone.
-- **Next change log:** create `development/2_2_5_changes.md` (or `2_3_changes.md`)
-  with the first user-visible change, relative to 2.2.4. Log each change as it
+- **Next change log:** create `development/2_2_6_changes.md` (or `2_3_changes.md`)
+  with the first user-visible change, relative to 2.2.5. Log each change as it
   lands, and keep entries short — what changed and who it affects, not an essay.
 - **conda-forge:** packaged at `conda-forge/ttkbootstrap-feedstock` (recipe
   `recipe/recipe.yaml`). The bot's version-bump PR doesn't touch the run
