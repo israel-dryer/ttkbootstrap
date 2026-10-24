@@ -38,14 +38,20 @@ def test_hook_assigns_the_collected_data_to_datas():
     # PyInstaller reads only the hook's `datas` global. Calling
     # collect_data_files without assigning it collects nothing, and a text
     # search for the call cannot tell the difference -- so parse the file.
+    # copy_metadata bundles the dist-info that `__version__` is read from;
+    # without it a frozen app reports "unknown".
     tree = ast.parse(_hook_path().read_text(encoding="utf-8-sig"))
-    collected = [
-        node.value.args[0].value
+    collected = sorted(
+        (call.func.id, call.args[0].value)
         for node in tree.body
         if isinstance(node, ast.Assign)
         and [getattr(t, "id", None) for t in node.targets] == ["datas"]
-        and isinstance(node.value, ast.Call)
-        and getattr(node.value.func, "id", None) == "collect_data_files"
-        and node.value.args
+        for call in ast.walk(node.value)
+        if isinstance(call, ast.Call)
+        and isinstance(call.func, ast.Name)
+        and call.args
+    )
+    assert collected == [
+        ("collect_data_files", "ttkbootstrap.assets"),
+        ("copy_metadata", "ttkbootstrap"),
     ]
-    assert collected == ["ttkbootstrap.assets"]

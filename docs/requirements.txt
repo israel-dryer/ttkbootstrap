@@ -5,4 +5,4 @@ sphinx-copybutton
 sphinx-autobuild
 sphinx-notfound-page
 myst-parser
-Pillow>=10,<13
+Pillow>=10,<14

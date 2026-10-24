@@ -1,21 +1,26 @@
 # ttkbootstrap 2.2.4 — notable changes
 
-Changes since **2.2.3**. Unreleased.
+Changes since **2.2.3**. Released 2026-10-23.
 
-| Area                          | Kind |
-|-------------------------------|------|
-| **Scrollbars redraw quickly** | Fix  |
+| Area                                 | Kind  |
+|--------------------------------------|-------|
+| **Pillow 13 allowed**                | Build |
+| **Frozen apps report their version** | Fix   |
 
 No API breaks.
 
 ---
 
-## Scrollbars redraw quickly *(Fix)*
+## Pillow 13 allowed *(Build)*
 
-The scrollbar thumb was an image whose 1px middle ttk tiles, so every redraw painted the thumb one pixel-row at a time:
-about 8.7 ms for a tall thumb at 96 dpi, ~350x a stock `ttk.Scrollbar`. At some display scalings (e.g. Tk scaling 1.6)
-the rounding left no middle at all, and the default and round thumbs drew only their end caps. The thumb is now two
-small cap images around a solid fill, which redraws as fast as stock ttk at any length; the minimum thumb length is
-16px instead of 17. `tools/bench_scrollbar.py` measures it.
+The Pillow requirement is now `pillow>=10,<14`, so apps can install Pillow 13.0.0 and its security fixes. Python 3.10
+still gets Pillow 12, since Pillow 13 drops 3.10.
 
-**Affected**: default, round and thin scrollbars, every 2.x release. (#1348)
+**Affected**: every app pinned below Pillow 13 by ttkbootstrap's `<13` cap. (#1350, contributed by @dwf981)
+
+## Frozen apps report their version *(Fix)*
+
+In an app built with PyInstaller, `ttk.__version__` read `"unknown"`, because the hook bundled ttkbootstrap's assets
+but not its package metadata. The hook now bundles both.
+
+**Affected**: 2.2.3, the first release with the hook.
