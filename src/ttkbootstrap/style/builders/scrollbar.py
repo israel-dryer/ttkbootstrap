@@ -83,6 +83,14 @@ def _scrollbar_thumb(builder, ttk_style, orient, thumb, trough, *,
     The fill is the default theme's `field` element (flat at borderwidth 0),
     colored by `fieldbackground` -- an option nothing else on a scrollbar
     reads, so `background` stays the trough color like every other region.
+
+    The children are named `*.thumb` on purpose: Tk's scrollbar bindings
+    (library/ttk/scrollbar.tcl) decide whether a press starts a drag with
+    `switch -glob -- [$w identify $x $y] { *thumb {...} *trough {...} }`, and
+    `identify` returns the *innermost* element under the pointer. Named
+    `.fill` / `.startcap` / `.endcap`, they match neither pattern, so pressing
+    the thumb does nothing and only trough clicks work. Ending the names in
+    `thumb` keeps every part of the thumb draggable.
     """
     vertical = orient == "vertical"
     scaling = builder.style.scaling
@@ -98,14 +106,14 @@ def _scrollbar_thumb(builder, ttk_style, orient, thumb, trough, *,
         "pressed": builder.pressed(thumb), "active": builder.active(thumb)})
 
     builder.style.element_create(f"{ttk_style}.thumb", "from", TTK_DEFAULT, "padding")
-    builder.style.element_create(f"{ttk_style}.fill", "from", TTK_DEFAULT, "field")
+    builder.style.element_create(f"{ttk_style}.fill.thumb", "from", TTK_DEFAULT, "field")
     cap_sticky = "ew" if vertical else "ns"
     for end in ("start", "end"):
         def image(color):
             return _scrollbar_cap(builder, color, trough, orient, end,
                                   cap_thickness, cap, rounded)
         image_element(
-            builder.style, f"{ttk_style}.{end}cap", default=image(thumb),
+            builder.style, f"{ttk_style}.{end}cap.thumb", default=image(thumb),
             states={"pressed": image(builder.pressed(thumb)),
                     "active": image(builder.active(thumb))},
             sticky=cap_sticky)
@@ -113,9 +121,9 @@ def _scrollbar_thumb(builder, ttk_style, orient, thumb, trough, *,
     start_side, end_side = ("top", "bottom") if vertical else ("left", "right")
     return El(f"{ttk_style}.thumb", expand="1", sticky="ns" if vertical else "we",
               children=[
-                  El(f"{ttk_style}.startcap", side=start_side, sticky=cap_sticky),
-                  El(f"{ttk_style}.endcap", side=end_side, sticky=cap_sticky),
-                  El(f"{ttk_style}.fill", sticky="nswe")])
+                  El(f"{ttk_style}.startcap.thumb", side=start_side, sticky=cap_sticky),
+                  El(f"{ttk_style}.endcap.thumb", side=end_side, sticky=cap_sticky),
+                  El(f"{ttk_style}.fill.thumb", sticky="nswe")])
 
 
 def _build_scrollbar(builder: StyleBuilderTTK, colorname, rounded):
