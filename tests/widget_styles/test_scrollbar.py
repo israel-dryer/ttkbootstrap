@@ -67,6 +67,20 @@ def test_scrollbar_thumb_does_not_stretch_an_image(root, bootstyle, orient):
         assert root.tk.call("ttk::style", "element", "options", name), name
 
 
+@pytest.mark.parametrize("bootstyle", ["default", "round", "thin", "primary round"])
+@pytest.mark.parametrize("orient", ["vertical", "horizontal"])
+def test_scrollbar_thumb_resolves_a_valid_focuscolor(root, bootstyle, orient):
+    """Tk 8.6.15+ gave the default theme's `field` element (the thumb body) a
+    color-typed `-focuscolor`. The root style sets it to "", which fails to
+    allocate, so Tk silently skips drawing the body and only the caps show
+    (#1355). The thumb style must resolve a real color."""
+    sb = ttk.Scrollbar(root, orient=orient, bootstyle=bootstyle)
+    root.update_idletasks()
+    color = _lookup(root, sb.cget("style"), "focuscolor")
+    assert color
+    root.winfo_rgb(color)  # raises if not a valid color
+
+
 def test_scrollbar_thumb_color_follows_state(root):
     """The thumb body darkens/lightens on hover and press, like the caps."""
     ttk.Scrollbar(root, orient="vertical")
