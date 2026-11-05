@@ -25,13 +25,16 @@ restructuring layout.
 
 ## Status
 
-- **Latest release: 2.2.5** (scrollbar redraw speed, #1349; ScrolledFrame
-  auto-hide reflow, #1352). `master` reads 2.2.5 and carries no unreleased work.
+- **Latest release: 2.2.7** (scrollbar thumb body drawn on Tk 8.6.15+, #1355).
+  `master` reads 2.2.7 and carries no unreleased work.
+- **Open issue #1357:** the macOS CI job is pinned to Python 3.13.16 because the
+  3.13.17 build drops events to hidden windows (upstream python/cpython#161428).
+  Unpin in `ci.yml` once a fixed build ships.
 - **Open milestones:** `2.2.x` (#7, the rolling bucket for patch releases) and
   `3.0` (#2, holding #1276). When `master` moves to a new minor, move whatever is
   still open in `2.2.x` to the next milestone.
-- **Next change log:** create `development/2_2_6_changes.md` (or `2_3_changes.md`)
-  with the first user-visible change, relative to 2.2.5. Log each change as it
+- **Next change log:** create `development/2_2_8_changes.md` (or `2_3_changes.md`)
+  with the first user-visible change, relative to 2.2.7. Log each change as it
   lands, and keep entries short — what changed and who it affects, not an essay.
 - **conda-forge:** packaged at `conda-forge/ttkbootstrap-feedstock` (recipe
   `recipe/recipe.yaml`). The bot's version-bump PR doesn't touch the run
@@ -222,8 +225,13 @@ event bindings.
 - **CI is Tk 8.6 only.** Run Tk 9 by hand for scaling, asset, geometry or binding
   changes — on the Mac, Homebrew `python3.14` is Tk 9.
 - **A CPython patch release can change Tk behavior on the same Tk patchlevel**
-  (3.13.15 started mapping menu bars on Tk 8.6.14). Record the build with
+  (3.13.15 started mapping menu bars on Tk 8.6.14; the 3.13.17 macOS build drops
+  every event sent to a widget in a hidden window, #1357). Record the build with
   `tools/report_tk_build.py` rather than reasoning from version strings.
+- **Tk 8.6.15 gave the default theme's `field` element a color-typed
+  `-focuscolor`.** The root style sets `focuscolor=""`, and an option that fails to
+  allocate makes Tk silently skip drawing the element. Any style using an element
+  cloned `from default` must resolve valid colors for all its options (#1355).
 
 ### Widget behavior
 
@@ -275,7 +283,8 @@ on first.
 ### CI
 
 `.github/workflows/ci.yml` runs on push to `master` and on every PR: the suite on
-ubuntu, windows and macOS (py3.13) plus ubuntu py3.10, and the docs under `-W`.
+ubuntu, windows and macOS (py3.13; macOS pinned to 3.13.16, #1357) plus ubuntu
+py3.10, and the docs under `-W`.
 
 - `fail-fast` is off so one platform can't hide another's failure.
 - **Every job should report identical test counts** — platform branches are forced
@@ -284,7 +293,9 @@ ubuntu, windows and macOS (py3.13) plus ubuntu py3.10, and the docs under `-W`.
   path), and Xvfb is pinned to 96 dpi.
 - Each job prints its Tcl/Tk patchlevel. There is no Tk 9 job and nothing visual.
 - **A red job on a branch that touches no `src/`:** re-run `master`'s workflow
-  before blaming the branch.
+  before blaming the branch. If `master` is red too, diff the job's Python and
+  runner-image versions against the last green run, then bisect by pinning
+  `python-version` on a throwaway branch.
 
 ### Generators and gates (`tools/`)
 
