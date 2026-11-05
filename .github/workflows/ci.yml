@@ -36,8 +36,10 @@ jobs:
           # aqua is the third windowing system and behaves differently enough to
           # have had its own fixes (the Tk 9 dpi baseline, native popup chrome,
           # the busy no-op). Its positioning work is still hand-verified.
+          # Pinned: python.org's 3.13.17 macOS build drops every event sent to a
+          # widget in a hidden window (#1357). Unpin once a fixed build ships.
           - os: macos-latest
-            python: "3.13"
+            python: "3.13.16"
           # The floor declared in pyproject.toml, so a 3.11+ only construct
           # cannot slip in.
           - os: ubuntu-latest
