@@ -100,7 +100,11 @@ def _scrollbar_thumb(builder, ttk_style, orient, thumb, trough, *,
     # physical width is passed back in logical units, which the asset toolkit
     # rounds to the same pixel count.
     cap_thickness = (scaling.logical(thickness) - 2 * pad) / scaling.factor
+    # Tk 8.6.15+ gave `field` a color-typed `-focuscolor`; the empty one
+    # inherited from `.` fails to allocate and the fill is silently not drawn
+    # (#1355). Any valid color will do -- `focuswidth=0` keeps it unpainted.
     builder.configure(ttk_style, fieldbackground=thumb, focuswidth=0,
+                      focuscolor=thumb,
                       padding=(pad, 0) if vertical else (0, pad))
     state_map(builder.style, ttk_style, fieldbackground={
         "pressed": builder.pressed(thumb), "active": builder.active(thumb)})
